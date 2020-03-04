@@ -1,11 +1,11 @@
-const i18n={
+const i18n = {
     "zh-cn": {
         language: "语言",
         auto: "自动",
         needBanana: "此key需要收集 s% 个香蕉, 是否继续?",
         needPoints: "此key需要收集 s% , 是否继续?",
-        notice:"提示",
-        confirm:"确定",
+        notice: "提示",
+        confirm: "确定",
         cancel: "取消",
         canceled: "已取消",
         processTasksInfo: "正在处理任务信息...",
@@ -82,9 +82,9 @@ const i18n={
         connectWss: "正在连接WSS...",
         connectWssWait: "正在连接WSS, 请稍候！",
         beforeFuck: "每次点击\"Fuck\"按钮前请手动完成人机验证！！！",
-        getTaskStatus:"正在获取任务完成状态(时间稍长，请耐心等待)...",
-        wssConnected:"WSS已连接!",
-        wssConnectSuccess:"WSS连接成功",
+        getTaskStatus: "正在获取任务完成状态(时间稍长，请耐心等待)...",
+        wssConnected: "WSS已连接!",
+        wssConnectSuccess: "WSS连接成功",
         wssDisconnected: "WSS连接断开！",
         wssReconnect: "WSS连接断开，正在重连...",
         noLogin: "您尚未登录！",
@@ -269,17 +269,17 @@ const i18n={
     }
 };
 let language = getLanguage();
-function getLanguage(){
-    let lan = GM_getValue("language")||"auto";
-    if (lan==="auto"){
+function getLanguage() {
+    let lan = GM_getValue("language") || "auto";
+    if (lan === "auto") {
         let browserLanguage = (navigator.browserLanguage || navigator.language).toLowerCase();
-        lan=browserLanguage.includes("en")?"en":"zh-cn";
+        lan = browserLanguage.includes("en") ? "en" : "zh-cn";
     }
     return lan;
 }
-function getI18n(name,str=null){
+function getI18n(name, str = null) {
     let value = "null";
-    if (str) value = i18n[language][name] ? i18n[language][name].replace("s%",str):"null";
-    else value = i18n[language][name]||"null";
+    if (str) value = i18n[language][name] ? i18n[language][name].replace("s%", str) : "null";
+    else value = i18n[language][name] || "null";
     return value;
 }

@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.1.17
+// @version        2.1.18
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -35,7 +35,7 @@
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.17
+// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.18
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -838,21 +838,21 @@
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         onerror: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         ontimeout: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         r: resolve,
                         status
@@ -944,21 +944,21 @@
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         onerror: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         ontimeout: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         r: resolve,
                         status
@@ -1041,21 +1041,21 @@
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         onerror: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         ontimeout: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         r: resolve,
                         status
@@ -1139,21 +1139,21 @@
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         onerror: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         ontimeout: (response) => {
                             resolve({
                                 result: 'error',
                                 statusText: response.statusText,
                                 status: response.status
-                            })
+                            });
                         },
                         r: resolve,
                         status
@@ -1265,7 +1265,7 @@
                 }).then(() => {
                     status.warning('Complete');
                     r(1);
-                })
+                });
             },
             forOrder: function({
                 arr,
@@ -1299,7 +1299,7 @@
                                 i: ++i,
                                 time,
                                 complete
-                            })
+                            });
                         }, time);
                     } else {
                         callback({
@@ -1330,7 +1330,7 @@
                             v.icon = "el-icon-download";
                             v.title = getI18n("updateNow") + response.response.version;
                             v.checkUpdate = function() {
-                                window.open("https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js", "_blank")
+                                window.open("https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js", "_blank");
                             };
                             if (s) status.success(getI18n("newVer") + response.response.version);
                             v.hidden = false;
@@ -1495,7 +1495,7 @@
                     confs[id] = conf;
                 }
                 for (let checkbox of $('.non-global input')) {
-                    if ($(checkbox).is(":checked")) confs[$(checkbox).attr('name')].load = 1
+                    if ($(checkbox).is(":checked")) confs[$(checkbox).attr('name')].load = 1;
                 }
                 let lotteryUserInfo = GM_getValue('conf') ? GM_getValue('conf').lotteryUserInfo : false;
                 if (lotteryUserInfo) confs.lotteryUserInfo = lotteryUserInfo;
@@ -1619,7 +1619,7 @@
                 for (let k in opt) {
                     ret = new RegExp("(" + k + ")").exec(fmt);
                     if (ret) {
-                        fmt = fmt.replace(ret[1], (ret[1].length === 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+                        fmt = fmt.replace(ret[1], (ret[1].length === 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")));
                     }
                 }
                 return fmt;
@@ -2930,7 +2930,7 @@
                         });
                         $(".hclonely-google").unbind();
                         $(".hclonely-google").click(() => {
-                            $("#captcha")[0].scrollIntoView()
+                            $("#captcha")[0].scrollIntoView();
                         });
                     });
                 } else {
@@ -4495,7 +4495,7 @@
                 if (this.conf.fuck.doTask) {
                     let main = fuc.echoLog({
                         type: 'custom',
-                        text: `<li>${getI18n("fglTimeout","Visit MAIN DRAW")}<font></font></li>`
+                        text: `<li>${getI18n("fglTimeout", "Visit MAIN DRAW")}<font></font></li>`
                     });
                     $.post('/draw/register-visit', {
                             drawId: DashboardApp.draws.main.actual.id
@@ -6569,9 +6569,9 @@
                 el: '#fuck-task-btn',
                 data: {
                     icon: "el-icon-arrow-right",
-                    title: "收起",
+                    title: getI18n("hide"),
                     show: true,
-                    style: `position:absolute;left:-20px;width:20px;border:0px;border-top-right-radius:0px;border-bottom-right-radius:0px;padding:0;height:${btnNum*40}px;opacity:80%;`,
+                    style: `position:absolute;left:-20px;width:20px;border:0px;border-top-right-radius:0px;border-bottom-right-radius:0px;padding:0;height:${btnNum * 40}px;opacity:80%;`,
                     buttons: [{
                             id: 'fuck-task',
                             text: website.setting.fuckText || 'FuckTask',
@@ -6651,7 +6651,7 @@
                     }
                 }
             });
-            let infoArea = new Vue({
+            new Vue({
                 el: '#fuck-task-info',
             }).$notify({
                 title: getI18n("taskLog"),
@@ -6771,8 +6771,7 @@
             vueUi.$message({
                 type: "error",
                 duration: 0,
-                message: "getI18n("
-                jsError ")",
+                message: getI18n("jsError"),
                 showClose: true
             });
         }, 500);

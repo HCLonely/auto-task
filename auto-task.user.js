@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.1.18
+// @version        2.1.19
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -31,11 +31,12 @@
 // @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
 // @include        https://blog.hclonely.com/auto-task/setting.html
+// @include        https://blog.hclonely.com/auto-task/setting_en.html
 // @include        https://blog.hclonely.com/auto-task/announcement.html
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.18
+// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.19
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -188,7 +189,46 @@
             copySetting: "请将设置文件里的内容复制到下面！",
             loadSettingText: "正在加载设置...",
             jsError: "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
-            ajaxError: "Ajax请求出错"
+            ajaxError: "Ajax请求出错",
+            group: "加组",
+            curator: "关注鉴赏家",
+            developer: "关注开发商",
+            publisher: "关注发行商",
+            announcement: "点赞通知",
+            wishlist: "加愿望单",
+            fGame: "关注游戏",
+            visit: "访问链接",
+            verify: "验证任务",
+            autoLogin: "自动登录",
+            doTask: "做任务",
+            autoLoginDes: "自动登录，第一次需要手动登录（仅适用于freegamelottery网站）",
+            doTaskDes: "依次做\"MAIN DRAW\",\"SURVEY DRAW\",\"VIDEO DRAW\",\"STACKPOT\"等任务",
+            ungroup: '退组',
+            uncurator: '取关鉴赏家',
+            undeveloper: '取关开发商',
+            unpublisher: '取关发行商',
+            unwishlist: '移除愿望单',
+            unfGame: '取关游戏',
+            ungroupDes: '退出steam组(Group)',
+            uncuratorDes: '取关steam鉴赏家(Curator)',
+            undeveloperDes: '取关steam开发商(Developer)',
+            unpublisherDes: '取关steam发行商(Publisher)',
+            unwishlistDes: '将游戏移除愿望单(Wishlist)',
+            unfGameDes: '取关游戏(Followed game)',
+            showLogs: '默认显示日志',
+            showDetails: '输出详细日志',
+            checkLogin: '登录检测',
+            checkLeft: '剩余key检测',
+            autoOpen: '自动打开任务页面',
+            autoCheckUpdate: '自动检测更新',
+            reCaptcha: '人机验证修复',
+            showLogsDes: '默认显示右下角任务日志',
+            showDetailsDes: '控制台输出详细日志',
+            checkLoginDes: '检测是否已登录，没登录则跳转到登录页面',
+            checkLeftDes: '检测是否有剩余key，没有剩余key则提醒',
+            autoOpenDes: '未完成的任务自动打开任务页面手动完成（需要关闭浏览器弹窗拦截）',
+            reCaptchaDes: '如果Gamehag网站人机验证出错，请尝试打开/关闭此选项',
+            globalSettings: "全局设置"
         },
         "en": {
             language: "Language",
@@ -219,7 +259,7 @@
             getAnnouncement: "Getting update announcement...",
             visitHistory: "History",
             close: "Close",
-            websiteSetting: "website settings",
+            websiteSetting: " website settings",
             updateCommunityId: "Updating Steam Community SessionID (for joining and leaving groups)...",
             updateStoreId: "Updating Steam Store SessionID (for adding to wishlist, following game, following curator, etc.)...",
             joinGroup: "Joining the Steam group",
@@ -322,7 +362,46 @@
             copySetting: "Please copy the contents of the settings file to the following",
             loadSettingText: "Loading settings...",
             jsError: "Script execution error, please see the console for details (red background part)!",
-            ajaxError: "Ajax request error"
+            ajaxError: "Ajax request error",
+            group: "Join group",
+            curator: "Follow curator",
+            developer: "Follow developer",
+            publisher: "Follow publisher",
+            announcement: "Like announcement",
+            wishlist: "Add to wishlist",
+            fGame: "Follow game",
+            visit: "Visit link",
+            verify: "Verify",
+            autoLogin: "Auto login",
+            doTask: "Do the task",
+            autoLoginDes: "Automatic login, manual login required for the first time (only for freegamelottery website)",
+            doTaskDes: "Do \"MAIN DRAW\", \"SURVEY DRAW\", \"VIDEO DRAW\", and \"STACKPOT\" tasks in that order",
+            ungroup: 'Leave group',
+            uncurator: 'Unfollow curator',
+            undeveloper: 'Unfollow developer',
+            unpublisher: 'Unfollow publisher',
+            unwishlist: 'Remove from wishlist',
+            unfGame: 'Unfollow game',
+            ungroupDes: 'Leave the steam group',
+            uncuratorDes: 'Unfollow the steam curator',
+            undeveloperDes: 'Unfollow the steam developer',
+            unpublisherDes: 'Unfollow the steam publisher',
+            unwishlistDes: 'Remove game from wishlist',
+            unfGameDes: 'Unfollow game',
+            showLogs: 'Show logs',
+            showDetails: 'Output verbose logs',
+            checkLogin: 'Login check',
+            checkLeft: 'Remaining key check',
+            autoOpen: 'Open task page automatically',
+            autoCheckUpdate: 'Check for updates automatically',
+            reCaptcha: 'Repair reCaptcha',
+            showLogsDes: 'Show task log in bottom right corner by default',
+            showDetailsDes: 'Output verbose logs to the console',
+            checkLoginDes: 'Check if you are logged in, jump to login page if not logged in',
+            checkLeftDes: 'Check if there are remaining keys, and remind if there are no remaining keys',
+            autoOpenDes: 'Unfinished tasks automatically open the task page for manual completion (requires closing the browser pop-up block)',
+            reCaptchaDes: 'If the Gamehag website has an ergonomic error, try turning this option on / off',
+            globalSettings: "Global Settings"
         }
     };
     let language = getLanguage();
@@ -5301,90 +5380,90 @@
 
         function loadSetting() {
             const eNameToNameJoin = {
-                group: '加组',
-                curator: '关注鉴赏家',
-                developer: '关注开发商',
-                publisher: '关注发行商',
-                announcement: '点赞通知',
-                wishlist: '加愿望单',
-                followGame: '关注游戏',
-                visit: '访问链接',
-                verify: '验证任务',
-                autoLogin: '自动登录',
-                doTask: '做任务'
+                group: getI18n("group"),
+                curator: getI18n("curator"),
+                developer: getI18n("developer"),
+                publisher: getI18n("publisher"),
+                announcement: getI18n("announcement"),
+                wishlist: getI18n("wishlist"),
+                followGame: getI18n("fGame"),
+                visit: getI18n("visit"),
+                verify: getI18n("verify"),
+                autoLogin: getI18n("autoLogin"),
+                doTask: getI18n("doTask")
             };
             const eNameToNameRemove = {
-                group: '退组',
-                curator: '取关鉴赏家',
-                developer: '取关开发商',
-                publisher: '取关发行商',
-                wishlist: '移除愿望单',
-                unfollowGame: '取关游戏',
+                group: getI18n("ungroup"),
+                curator: getI18n("uncurator"),
+                developer: getI18n("undeveloper"),
+                publisher: getI18n("unpublisher"),
+                wishlist: getI18n("unwishlist"),
+                unfollowGame: getI18n("unfGame")
             };
             const eNameToNameOther = {
-                showLogs: '默认显示日志',
-                showDetails: '输出详细日志',
-                checkLogin: '登录检测',
-                checkLeft: '剩余key检测',
-                autoOpen: '自动打开任务页面',
-                checkUpdate: '自动检测更新',
-                reCaptcha: '人机验证修复'
+                showLogs: getI18n("showLogs"),
+                showDetails: getI18n("showDetails"),
+                checkLogin: getI18n("checkLogin"),
+                checkLeft: getI18n("checkLeft"),
+                autoOpen: getI18n("autoOpen"),
+                autoCheckUpdate: getI18n("checkUpdate"),
+                reCaptcha: getI18n("reCaptcha")
             };
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '关注开发商',
+                        name: getI18n("developer"),
                         eName: 'developer',
                         des: "Follow XXX developer"
                     },
                     {
-                        name: '关注发行商',
+                        name: getI18n("publisher"),
                         eName: 'publisher',
                         des: "Follow XXX publisher"
                     },
                     {
-                        name: '点赞通知',
+                        name: getI18n("announcement"),
                         eName: 'announcement',
                         des: "Like Steam announcement"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     },
                     {
-                        name: '自动登录',
+                        name: getI18n("autoLogin"),
                         eName: 'autoLogin',
-                        des: "自动登录，第一次需要手动登录（仅适用于freegamelottery网站）"
+                        des: getI18n("autoLoginDes")
                     },
                     {
-                        name: '做任务',
+                        name: getI18n("doTask"),
                         eName: 'doTask',
-                        des: '依次做"MAIN DRAW","SURVEY DRAW","VIDEO DRAW","STACKPOT"等任务'
+                        des: getI18n("doTaskDes")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
@@ -5393,45 +5472,45 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '关注开发商', '关注发行商', '点赞通知', '加愿望单', '关注游戏', '访问链接', '验证任务', '做任务'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify"), getI18n("doTask")];
 
                 const joinOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '关注开发商',
+                        name: getI18n("developer"),
                         eName: 'developer',
                         des: "Follow XXX developer"
                     },
                     {
-                        name: '关注发行商',
+                        name: getI18n("publisher"),
                         eName: 'publisher',
                         des: "Follow XXX publisher"
                     },
                     {
-                        name: '点赞通知',
+                        name: getI18n("announcement"),
                         eName: 'announcement',
                         des: "Like Steam announcement"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     }
@@ -5442,37 +5521,37 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '关注开发商', '关注发行商', '点赞通知', '加愿望单', '关注游戏', '访问链接'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     },
                     {
-                        name: '取关开发商',
+                        name: getI18n("undeveloper"),
                         eName: 'developer',
-                        des: "取关steam开发商(Developer)"
+                        des: getI18n("undeveloperDes")
                     },
                     {
-                        name: '取关发行商',
+                        name: getI18n("unpublisher"),
                         eName: 'publisher',
-                        des: "取关steam发行商(Publisher)"
+                        des: getI18n("unpublisherDes")
                     },
                     {
-                        name: '移除愿望单',
+                        name: getI18n("unwishlist"),
                         eName: 'wishlist',
-                        des: "将游戏移除愿望单(Wishlist)"
+                        des: getI18n("unwishlistDes")
                     },
                     {
-                        name: '取关游戏',
+                        name: getI18n("unfGame"),
                         eName: 'unfollowGame',
-                        des: "取关游戏(Followed game)"
+                        des: getI18n("unfGameDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
@@ -5481,42 +5560,42 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家', '取关开发商', '取关发行商', '移除愿望单', '取关游戏'];
+                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
 
                 const otherOptions = [{
-                        name: '登录检测',
+                        name: getI18n("checkLogin"),
                         eName: 'checkLogin',
-                        des: "检测是否已登录，没登录则跳转到登录页面"
+                        des: getI18n("checkLoginDes")
                     },
                     {
-                        name: '剩余key检测',
+                        name: getI18n("checkLeft"),
                         eName: 'checkLeft',
-                        des: "检测是否有剩余key，没有剩余key则提醒"
+                        des: getI18n("checkLeftDes")
                     },
                     {
-                        name: '自动打开任务页面',
+                        name: getI18n("autoOpen"),
                         eName: 'autoOpen',
-                        des: "未完成的任务自动打开任务页面手动完成（需要关闭浏览器弹窗拦截）"
+                        des: getI18n("autoOpenDes")
                     },
                     {
-                        name: '默认显示日志',
+                        name: getI18n("showLogs"),
                         eName: 'showLogs',
-                        des: "默认显示右下角任务日志"
+                        des: getI18n("showLogsDes")
                     },
                     {
-                        name: '输出详细日志',
+                        name: getI18n("showDetails"),
                         eName: 'showDetails',
-                        des: "控制台输出详细日志"
+                        des: getI18n("showDetailsDes")
                     },
                     {
-                        name: '自动检测更新',
+                        name: getI18n("autoCheckUpdate"),
                         eName: 'checkUpdate',
-                        des: "自动检测更新"
+                        des: getI18n("autoCheckUpdate")
                     },
                     {
-                        name: '人机验证修复',
+                        name: getI18n("reCaptcha"),
                         eName: 'reCaptcha',
-                        des: "如果Gamehag网站人机验证出错，请尝试打开/关闭此选项"
+                        des: getI18n("reCaptchaDes")
                     },
                 ];
                 const checkedOthers = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
@@ -5525,12 +5604,12 @@
                         conf.push(eNameToNameOther[eName]);
                     }
                     return conf;
-                })() : ['登录检测', '剩余key检测', '默认显示日志'];
+                })() : [getI18n("checkLogin"), getI18n("checkLeft"), getI18n("showLogs")];
 
                 new Vue({
                     el: '#global',
                     data: {
-                        header: '全局设置',
+                        header: getI18n("globalSettings"),
                         fuck: {
                             checkAll: fuckOptions.length === checkedFucks.length,
                             checkedFucks: checkedFucks,
@@ -5602,37 +5681,37 @@
             })();
             (function() {
                 const joinOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '关注开发商',
+                        name: getI18n("developer"),
                         eName: 'developer',
                         des: "Follow XXX developer"
                     },
                     {
-                        name: '关注发行商',
+                        name: getI18n("publisher"),
                         eName: 'publisher',
                         des: "Follow XXX publisher"
                     },
                     {
-                        name: '点赞通知',
+                        name: getI18n("announcement"),
                         eName: 'announcement',
                         des: "Like Steam announcement"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     }
@@ -5643,37 +5722,37 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '关注开发商', '关注发行商', '点赞通知', '加愿望单', '关注游戏'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     },
                     {
-                        name: '取关开发商',
+                        name: getI18n("undeveloper"),
                         eName: 'developer',
-                        des: "取关steam开发商(Developer)"
+                        des: getI18n("undeveloperDes")
                     },
                     {
-                        name: '取关发行商',
+                        name: getI18n("unpublisher"),
                         eName: 'publisher',
-                        des: "取关steam发行商(Publisher)"
+                        des: getI18n("unpublisherDes")
                     },
                     {
-                        name: '移除愿望单',
+                        name: getI18n("unwishlist"),
                         eName: 'wishlist',
-                        des: "将游戏移除愿望单(Wishlist)"
+                        des: getI18n("unwishlistDes")
                     },
                     {
-                        name: '取关游戏',
+                        name: getI18n("unfGame"),
                         eName: 'unfollowGame',
-                        des: "取关游戏(Followed game)"
+                        des: getI18n("unfGameDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').giveawaysu) ? (() => {
@@ -5682,12 +5761,12 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家', '取关开发商', '取关发行商', '移除愿望单', '取关游戏'];
+                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
 
                 new Vue({
                     el: '#giveawaysu',
                     data: {
-                        header: 'giveaway.su网站设置',
+                        header: 'giveaway.su' + getI18n("websiteSetting"),
                         checked: GM_getValue('conf') ? GM_getValue('conf').giveawaysu ? GM_getValue('conf').giveawaysu.load ? true : false : false : false,
                         remove: {
                             checkAll: removeOptions.length === checkedRemoves.length,
@@ -5730,44 +5809,44 @@
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '关注开发商',
+                        name: getI18n("developer"),
                         eName: 'developer',
                         des: "Follow XXX developer"
                     },
                     {
-                        name: '关注发行商',
+                        name: getI18n("publisher"),
                         eName: 'publisher',
                         des: "Follow XXX publisher"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').marvelousga) ? (() => {
@@ -5776,37 +5855,37 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '关注开发商', '关注发行商', '加愿望单', '关注游戏', '访问链接', '验证任务'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     },
                     {
-                        name: '取关开发商',
+                        name: getI18n("undeveloper"),
                         eName: 'developer',
-                        des: "取关steam开发商(Developer)"
+                        des: getI18n("undeveloperDes")
                     },
                     {
-                        name: '取关发行商',
+                        name: getI18n("unpublisher"),
                         eName: 'publisher',
-                        des: "取关steam发行商(Publisher)"
+                        des: getI18n("unpublisherDes")
                     },
                     {
-                        name: '移除愿望单',
+                        name: getI18n("unwishlist"),
                         eName: 'wishlist',
-                        des: "将游戏移除愿望单(Wishlist)"
+                        des: getI18n("unwishlistDes")
                     },
                     {
-                        name: '取关游戏',
+                        name: getI18n("unfGame"),
                         eName: 'unfollowGame',
-                        des: "取关游戏(Followed game)"
+                        des: getI18n("unfGameDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').marvelousga) ? (() => {
@@ -5815,50 +5894,50 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家', '取关开发商', '取关发行商', '移除愿望单', '取关游戏'];
+                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
 
                 fuc.creatSetting("marvelousga", "marvelousGA & dupedornot", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '关注开发商',
+                        name: getI18n("developer"),
                         eName: 'developer',
                         des: "Follow XXX developer"
                     },
                     {
-                        name: '关注发行商',
+                        name: getI18n("publisher"),
                         eName: 'publisher',
                         des: "Follow XXX publisher"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').banana) ? (() => {
@@ -5867,37 +5946,37 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '关注开发商', '关注发行商', '加愿望单', '关注游戏', '访问链接', '验证任务'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     },
                     {
-                        name: '取关开发商',
+                        name: getI18n("undeveloper"),
                         eName: 'developer',
-                        des: "取关steam开发商(Developer)"
+                        des: getI18n("undeveloperDes")
                     },
                     {
-                        name: '取关发行商',
+                        name: getI18n("unpublisher"),
                         eName: 'publisher',
-                        des: "取关steam发行商(Publisher)"
+                        des: getI18n("unpublisherDes")
                     },
                     {
-                        name: '移除愿望单',
+                        name: getI18n("unwishlist"),
                         eName: 'wishlist',
-                        des: "将游戏移除愿望单(Wishlist)"
+                        des: getI18n("unwishlistDes")
                     },
                     {
-                        name: '取关游戏',
+                        name: getI18n("unfGame"),
                         eName: 'unfollowGame',
-                        des: "取关游戏(Followed game)"
+                        des: getI18n("unfGameDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').banana) ? (() => {
@@ -5906,25 +5985,25 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家', '取关开发商', '取关发行商', '移除愿望单', '取关游戏'];
+                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
 
                 fuc.creatSetting("banana", "grabfreegame & bananagiveaway", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamecode) ? (() => {
@@ -5933,38 +6012,38 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '访问链接', '验证任务'];
+                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
 
                 const removeOptions = [{
-                    name: '退组',
+                    name: getI18n("ungroup"),
                     eName: 'group',
-                    des: "退出steam组(Group)"
-                }, ];
+                    des: getI18n("ungroupDes")
+                }];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gamecode) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamecode.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组'];
+                })() : [getI18n("ungroup")];
 
                 fuc.creatSetting("gamecode", "gamecode.win", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamehag) ? (() => {
@@ -5973,38 +6052,38 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '访问链接', '验证任务'];
+                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
 
                 const removeOptions = [{
-                    name: '退组',
+                    name: getI18n("ungroup"),
                     eName: 'group',
-                    des: "退出steam组(Group)"
-                }, ];
+                    des: getI18n("ungroupDes")
+                }];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gamehag) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamehag.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组'];
+                })() : [getI18n("ungroup")];
 
                 fuc.creatSetting("gamehag", "gamehag", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').prys) ? (() => {
@@ -6013,17 +6092,17 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '验证任务'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("verify")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').prys) ? (() => {
@@ -6032,33 +6111,33 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家'];
+                })() : [getI18n("ungroup"), getI18n("uncurator")];
 
                 fuc.creatSetting("prys", "prys", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '关注鉴赏家',
+                        name: getI18n("curator"),
                         eName: 'curator',
                         des: "Follow XXX curator"
                     },
                     {
-                        name: '加愿望单',
+                        name: getI18n("wishlist"),
                         eName: 'wishlist',
                         des: "Add XXX to your wishlist"
                     },
                     {
-                        name: '关注游戏',
+                        name: getI18n("fGame"),
                         eName: 'followGame',
                         des: "Click \"Follow\" button"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     }
@@ -6069,27 +6148,27 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '关注鉴赏家', '加愿望单', '关注游戏', '访问链接'];
+                })() : [getI18n("group"), getI18n("curator"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit")];
 
                 const removeOptions = [{
-                        name: '退组',
+                        name: getI18n("ungroup"),
                         eName: 'group',
-                        des: "退出steam组(Group)"
+                        des: getI18n("ungroupDes")
                     },
                     {
-                        name: '取关鉴赏家',
+                        name: getI18n("uncurator"),
                         eName: 'curator',
-                        des: "取关steam鉴赏家(Curator)"
+                        des: getI18n("uncuratorDes")
                     },
                     {
-                        name: '移除愿望单',
+                        name: getI18n("unwishlist"),
                         eName: 'wishlist',
-                        des: "将游戏移除愿望单(Wishlist)"
+                        des: getI18n("unwishlistDes")
                     },
                     {
-                        name: '取关游戏',
+                        name: getI18n("unfGame"),
                         eName: 'unfollowGame',
-                        des: "取关游戏(Followed game)"
+                        des: getI18n("unfGameDes")
                     }
                 ];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
@@ -6098,18 +6177,18 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组', '取关鉴赏家', '移除愿望单', '取关游戏'];
+                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("unwishlist"), getI18n("unfGame")];
 
                 fuc.creatSetting("givekey", "givekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     }
@@ -6120,12 +6199,12 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '访问链接'];
+                })() : [getI18n("group"), getI18n("visit")];
 
                 const removeOptions = [{
-                    name: '退组',
+                    name: getI18n("ungroup"),
                     eName: 'group',
-                    des: "退出steam组(Group)"
+                    des: getI18n("ungroupDes")
                 }];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
                     let conf = [];
@@ -6133,25 +6212,25 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组'];
+                })() : [getI18n("ungroup")];
 
                 fuc.creatSetting("takekey", "takekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '加组',
+                        name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
                     },
                     {
-                        name: '访问链接',
+                        name: getI18n("visit"),
                         eName: 'visit',
                         des: "Visit XXX page"
                     },
                     {
-                        name: '验证任务',
+                        name: getI18n("verify"),
                         eName: 'verify',
-                        des: "验证任务"
+                        des: getI18n("verify")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gleam) ? (() => {
@@ -6160,12 +6239,12 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['加组', '访问链接', '验证任务'];
+                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
 
                 const removeOptions = [{
-                    name: '退组',
+                    name: getI18n("ungroup"),
                     eName: 'group',
-                    des: "退出steam组(Group)"
+                    des: getI18n("ungroupDes")
                 }];
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gleam) ? (() => {
                     let conf = [];
@@ -6173,20 +6252,20 @@
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : ['退组'];
+                })() : [getI18n("ungroup")];
 
                 fuc.creatSetting("gleam", "gleam.io", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
                 const fuckOptions = [{
-                        name: '自动登录',
+                        name: getI18n("autoLogin"),
                         eName: 'autoLogin',
-                        des: "自动登录，第一次需要手动登录"
+                        des: getI18n("autoLoginDes")
                     },
                     {
-                        name: '做任务',
+                        name: getI18n("doTask"),
                         eName: 'doTask',
-                        des: '依次做"MAIN DRAW","SURVEY DRAW","VIDEO DRAW","STACKPOT"等任务'
+                        des: getI18n("doTaskDes")
                     }
                 ];
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').freegamelottery) ? (() => {
@@ -6195,7 +6274,7 @@
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : ['做任务'];
+                })() : [getI18n("doTask")];
 
                 new Vue({
                     el: '#freegamelottery',
@@ -6695,7 +6774,7 @@
                 },
                 methods: {
                     setting() {
-                        window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
+                        language === "en" ? window.open("https://blog.hclonely.com/auto-task/setting_en.html", "_blank") : window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
                     },
                     updateText() {
                         fuc.getAnnouncement(this);

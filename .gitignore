@@ -4,7 +4,8 @@ chubkeys.js
 main.css
 pack.js
 test.js
-set.html
+setting_raw.html
+setting_en_raw.html
 /.idea/
 /node_modules/
 main-pre.js

@@ -208,7 +208,7 @@ if (window.location.host.includes('hclonely')) {
         },
         methods: {
             setting() {
-                window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
+                language === "en" ? window.open("https://blog.hclonely.com/auto-task/setting_en.html", "_blank") : window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
             },
             updateText() {
                 fuc.getAnnouncement(this);

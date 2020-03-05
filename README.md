@@ -70,7 +70,7 @@
 
 # 5.反馈方式
 
-1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new)提交
+1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交
 2. 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
 
 # 6.更新公告

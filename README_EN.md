@@ -15,7 +15,7 @@
 * [gleam.io](http://gleam.io/)
 * [spoune](https://www.spoune.com/index.php)
 
-# 2.install
+# 2.Installation
 
 * [Click here to install (recommended)](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js)
 * [Go to GreasyFork to install](https://greasyfork.org/zh-CN/scripts/370650)
@@ -67,7 +67,7 @@
 
 # 5.Feedback
 
-* [GitHub](https://github.com/HCLonely/auto-task/issues/new)
+* [GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)
 * [Keylol](https://keylol.com/t455167-1-1)
 
 # 6.Update announcement

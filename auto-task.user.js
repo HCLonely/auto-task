@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.1.20
+// @version        2.1.21
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -36,7 +36,7 @@
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.20
+// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.21
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -1704,7 +1704,7 @@
                 return fmt;
             },
             addBackground: function() {
-                GM_addStyle(`body {background-image:url(http://wx3.sinaimg.cn/large/006brDXlly1ft9lm37ot7j31hc0u0an5.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
+                GM_addStyle(`body {background-image:url(//img.hclonely.com/www/006brDXlly1ft9lm7ns5zj31hc0u0qh3.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
             },
             isEmptyObjArr: function(object) {
                 for (let value of Object.values(object)) {
@@ -5409,8 +5409,8 @@
                 autoCheckUpdate: getI18n("checkUpdate"),
                 reCaptcha: getI18n("reCaptcha")
             };
-            (function() {
-                const fuckOptions = [{
+            const Options = {
+                fuckOptions: [{
                         name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
@@ -5465,16 +5465,8 @@
                         eName: 'doTask',
                         des: getI18n("doTaskDes")
                     }
-                ];
-                const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
-                    let conf = [];
-                    for (let eName of Object.keys(GM_getValue('conf').global.fuck)) {
-                        conf.push(eNameToNameJoin[eName]);
-                    }
-                    return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify"), getI18n("doTask")];
-
-                const joinOptions = [{
+                ],
+                joinOptions: [{
                         name: getI18n("group"),
                         eName: 'group',
                         des: "Join XXX steam group"
@@ -5514,16 +5506,8 @@
                         eName: 'visit',
                         des: "Visit XXX page"
                     }
-                ];
-                const checkedJoins = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
-                    let conf = [];
-                    for (let eName of Object.keys(GM_getValue('conf').global.join)) {
-                        conf.push(eNameToNameJoin[eName]);
-                    }
-                    return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit")];
-
-                const removeOptions = [{
+                ],
+                removeOptions: [{
                         name: getI18n("ungroup"),
                         eName: 'group',
                         des: getI18n("ungroupDes")
@@ -5553,16 +5537,8 @@
                         eName: 'unfollowGame',
                         des: getI18n("unfGameDes")
                     }
-                ];
-                const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
-                    let conf = [];
-                    for (let eName of Object.keys(GM_getValue('conf').global.remove)) {
-                        conf.push(eNameToNameRemove[eName]);
-                    }
-                    return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
-
-                const otherOptions = [{
+                ],
+                otherOptions: [{
                         name: getI18n("checkLogin"),
                         eName: 'checkLogin',
                         des: getI18n("checkLoginDes")
@@ -5597,14 +5573,58 @@
                         eName: 'reCaptcha',
                         des: getI18n("reCaptchaDes")
                     },
-                ];
+                ],
+                checkedFucks: [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify"), getI18n("autoLogin"), getI18n("doTask")],
+                checkedJoins: [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit")],
+                checkedRemoves: [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")],
+                checkedOthers: [getI18n("checkLogin"), getI18n("checkLeft"), getI18n("autoOpen"), getI18n("showLogs"), getI18n("showDetails"), getI18n("autoCheckUpdate"), getI18n("reCaptcha")]
+            };
+
+            function getOptions(type, options) {
+                let opt = [];
+                let defaultOpt = Options[type];
+                options.map(function(e, i) {
+                    opt.push(defaultOpt[e]);
+                });
+                return opt;
+            }
+
+            (function() {
+                const fuckOptions = getOptions("fuckOptions", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+                const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
+                    let conf = [];
+                    for (let eName of Object.keys(GM_getValue('conf').global.fuck)) {
+                        conf.push(eNameToNameJoin[eName]);
+                    }
+                    return conf;
+                })() : getOptions("checkedFucks", [0, 1, 2, 3, 4, 5, 6, 7, 8, 10]);
+
+                const joinOptions = getOptions("joinOptions", [0, 1, 2, 3, 4, 5, 6, 7]);
+                const checkedJoins = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
+                    let conf = [];
+                    for (let eName of Object.keys(GM_getValue('conf').global.join)) {
+                        conf.push(eNameToNameJoin[eName]);
+                    }
+                    return conf;
+                })() : getOptions("checkedJoins", [0, 1, 2, 3, 4, 5, 6, 7]);
+
+                const removeOptions = getOptions("removeOptions", [0, 1, 2, 3, 4, 5]);
+                const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
+                    let conf = [];
+                    for (let eName of Object.keys(GM_getValue('conf').global.remove)) {
+                        conf.push(eNameToNameRemove[eName]);
+                    }
+                    return conf;
+                })() : getOptions("checkedRemoves", [0, 1, 2, 3, 4, 5]);
+
+                const otherOptions = getOptions("otherOptions", [0, 1, 2, 3, 4, 5, 6]);
                 const checkedOthers = (GM_getValue('conf') && GM_getValue('conf').global) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').global.other)) {
                         conf.push(eNameToNameOther[eName]);
                     }
                     return conf;
-                })() : [getI18n("checkLogin"), getI18n("checkLeft"), getI18n("showLogs")];
+                })() : getOptions("checkedOthers", [0, 1, 3]);
 
                 new Vue({
                     el: '#global',
@@ -5680,88 +5700,23 @@
                 });
             })();
             (function() {
-                const joinOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("curator"),
-                        eName: 'curator',
-                        des: "Follow XXX curator"
-                    },
-                    {
-                        name: getI18n("developer"),
-                        eName: 'developer',
-                        des: "Follow XXX developer"
-                    },
-                    {
-                        name: getI18n("publisher"),
-                        eName: 'publisher',
-                        des: "Follow XXX publisher"
-                    },
-                    {
-                        name: getI18n("announcement"),
-                        eName: 'announcement',
-                        des: "Like Steam announcement"
-                    },
-                    {
-                        name: getI18n("wishlist"),
-                        eName: 'wishlist',
-                        des: "Add XXX to your wishlist"
-                    },
-                    {
-                        name: getI18n("fGame"),
-                        eName: 'followGame',
-                        des: "Click \"Follow\" button"
-                    }
-                ];
+                const joinOptions = getOptions("joinOptions", [0, 1, 2, 3, 4, 5, 6]);
                 const checkedJoins = (GM_getValue('conf') && GM_getValue('conf').giveawaysu) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').giveawaysu.join)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("announcement"), getI18n("wishlist"), getI18n("fGame")];
+                })() : getOptions("checkedJoins", [0, 1, 2, 3, 4, 5, 6]);
 
-                const removeOptions = [{
-                        name: getI18n("ungroup"),
-                        eName: 'group',
-                        des: getI18n("ungroupDes")
-                    },
-                    {
-                        name: getI18n("uncurator"),
-                        eName: 'curator',
-                        des: getI18n("uncuratorDes")
-                    },
-                    {
-                        name: getI18n("undeveloper"),
-                        eName: 'developer',
-                        des: getI18n("undeveloperDes")
-                    },
-                    {
-                        name: getI18n("unpublisher"),
-                        eName: 'publisher',
-                        des: getI18n("unpublisherDes")
-                    },
-                    {
-                        name: getI18n("unwishlist"),
-                        eName: 'wishlist',
-                        des: getI18n("unwishlistDes")
-                    },
-                    {
-                        name: getI18n("unfGame"),
-                        eName: 'unfollowGame',
-                        des: getI18n("unfGameDes")
-                    }
-                ];
+                const removeOptions = getOptions("removeOptions", [0, 1, 2, 3, 4, 5]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').giveawaysu) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').giveawaysu.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
+                })() : getOptions("checkedRemoves", [0, 1, 2, 3, 4, 5]);
 
                 new Vue({
                     el: '#giveawaysu',
@@ -5808,473 +5763,182 @@
                 });
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("curator"),
-                        eName: 'curator',
-                        des: "Follow XXX curator"
-                    },
-                    {
-                        name: getI18n("developer"),
-                        eName: 'developer',
-                        des: "Follow XXX developer"
-                    },
-                    {
-                        name: getI18n("publisher"),
-                        eName: 'publisher',
-                        des: "Follow XXX publisher"
-                    },
-                    {
-                        name: getI18n("wishlist"),
-                        eName: 'wishlist',
-                        des: "Add XXX to your wishlist"
-                    },
-                    {
-                        name: getI18n("fGame"),
-                        eName: 'followGame',
-                        des: "Click \"Follow\" button"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 1, 2, 3, 5, 6, 7, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').marvelousga) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').marvelousga.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 1, 2, 3, 5, 6, 7, 8]);
 
-                const removeOptions = [{
-                        name: getI18n("ungroup"),
-                        eName: 'group',
-                        des: getI18n("ungroupDes")
-                    },
-                    {
-                        name: getI18n("uncurator"),
-                        eName: 'curator',
-                        des: getI18n("uncuratorDes")
-                    },
-                    {
-                        name: getI18n("undeveloper"),
-                        eName: 'developer',
-                        des: getI18n("undeveloperDes")
-                    },
-                    {
-                        name: getI18n("unpublisher"),
-                        eName: 'publisher',
-                        des: getI18n("unpublisherDes")
-                    },
-                    {
-                        name: getI18n("unwishlist"),
-                        eName: 'wishlist',
-                        des: getI18n("unwishlistDes")
-                    },
-                    {
-                        name: getI18n("unfGame"),
-                        eName: 'unfollowGame',
-                        des: getI18n("unfGameDes")
-                    }
-                ];
+                const removeOptions = getOptions("removeOptions", [0, 1, 2, 3, 4, 5]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').marvelousga) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').marvelousga.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
+                })() : getOptions("checkedRemoves", [0, 1, 2, 3, 4, 5]);
 
                 fuc.creatSetting("marvelousga", "marvelousGA & dupedornot", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("curator"),
-                        eName: 'curator',
-                        des: "Follow XXX curator"
-                    },
-                    {
-                        name: getI18n("developer"),
-                        eName: 'developer',
-                        des: "Follow XXX developer"
-                    },
-                    {
-                        name: getI18n("publisher"),
-                        eName: 'publisher',
-                        des: "Follow XXX publisher"
-                    },
-                    {
-                        name: getI18n("wishlist"),
-                        eName: 'wishlist',
-                        des: "Add XXX to your wishlist"
-                    },
-                    {
-                        name: getI18n("fGame"),
-                        eName: 'followGame',
-                        des: "Click \"Follow\" button"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 1, 2, 3, 5, 6, 7, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').banana) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').banana.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("developer"), getI18n("publisher"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 1, 2, 3, 5, 6, 7, 8]);
 
-                const removeOptions = [{
-                        name: getI18n("ungroup"),
-                        eName: 'group',
-                        des: getI18n("ungroupDes")
-                    },
-                    {
-                        name: getI18n("uncurator"),
-                        eName: 'curator',
-                        des: getI18n("uncuratorDes")
-                    },
-                    {
-                        name: getI18n("undeveloper"),
-                        eName: 'developer',
-                        des: getI18n("undeveloperDes")
-                    },
-                    {
-                        name: getI18n("unpublisher"),
-                        eName: 'publisher',
-                        des: getI18n("unpublisherDes")
-                    },
-                    {
-                        name: getI18n("unwishlist"),
-                        eName: 'wishlist',
-                        des: getI18n("unwishlistDes")
-                    },
-                    {
-                        name: getI18n("unfGame"),
-                        eName: 'unfollowGame',
-                        des: getI18n("unfGameDes")
-                    }
-                ];
+                const removeOptions = getOptions("removeOptions", [0, 1, 2, 3, 4, 5]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').banana) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').banana.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("undeveloper"), getI18n("unpublisher"), getI18n("unwishlist"), getI18n("unfGame")];
+                })() : getOptions("checkedRemoves", [0, 1, 2, 3, 4, 5]);
 
                 fuc.creatSetting("banana", "grabfreegame & bananagiveaway", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 7, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamecode) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamecode.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 7, 8]);
 
-                const removeOptions = [{
-                    name: getI18n("ungroup"),
-                    eName: 'group',
-                    des: getI18n("ungroupDes")
-                }];
+                const removeOptions = getOptions("removeOptions", [0]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gamecode) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamecode.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup")];
+                })() : getOptions("checkedRemoves", [0]);
 
                 fuc.creatSetting("gamecode", "gamecode.win", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 7, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamehag) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamehag.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 7, 8]);
 
-                const removeOptions = [{
-                    name: getI18n("ungroup"),
-                    eName: 'group',
-                    des: getI18n("ungroupDes")
-                }];
+                const removeOptions = getOptions("removeOptions", [0]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gamehag) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gamehag.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup")];
+                })() : getOptions("checkedRemoves", [0]);
 
                 fuc.creatSetting("gamehag", "gamehag", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("curator"),
-                        eName: 'curator',
-                        des: "Follow XXX curator"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 1, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').prys) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').prys.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 1, 8]);
 
-                const removeOptions = [{
-                        name: getI18n("ungroup"),
-                        eName: 'group',
-                        des: getI18n("ungroupDes")
-                    },
-                    {
-                        name: getI18n("uncurator"),
-                        eName: 'curator',
-                        des: getI18n("uncuratorDes")
-                    }
-                ];
+                const removeOptions = getOptions("removeOptions", [0, 1]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').prys) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').prys.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator")];
+                })() : getOptions("checkedRemoves", [0, 1]);
 
                 fuc.creatSetting("prys", "prys", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("curator"),
-                        eName: 'curator',
-                        des: "Follow XXX curator"
-                    },
-                    {
-                        name: getI18n("wishlist"),
-                        eName: 'wishlist',
-                        des: "Add XXX to your wishlist"
-                    },
-                    {
-                        name: getI18n("fGame"),
-                        eName: 'followGame',
-                        des: "Click \"Follow\" button"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 1, 5, 6, 7]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').givekey.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("curator"), getI18n("wishlist"), getI18n("fGame"), getI18n("visit")];
+                })() : getOptions("checkedFucks", [0, 1, 5, 6, 7]);
 
-                const removeOptions = [{
-                        name: getI18n("ungroup"),
-                        eName: 'group',
-                        des: getI18n("ungroupDes")
-                    },
-                    {
-                        name: getI18n("uncurator"),
-                        eName: 'curator',
-                        des: getI18n("uncuratorDes")
-                    },
-                    {
-                        name: getI18n("unwishlist"),
-                        eName: 'wishlist',
-                        des: getI18n("unwishlistDes")
-                    },
-                    {
-                        name: getI18n("unfGame"),
-                        eName: 'unfollowGame',
-                        des: getI18n("unfGameDes")
-                    }
-                ];
+                const removeOptions = getOptions("removeOptions", [0, 1, 4, 5]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').givekey.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup"), getI18n("uncurator"), getI18n("unwishlist"), getI18n("unfGame")];
+                })() : getOptions("checkedRemoves", [0, 1, 4, 5]);
 
                 fuc.creatSetting("givekey", "givekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 7]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').givekey.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("visit")];
+                })() : getOptions("checkedFucks", [0, 7]);
 
-                const removeOptions = [{
-                    name: getI18n("ungroup"),
-                    eName: 'group',
-                    des: getI18n("ungroupDes")
-                }];
+                const removeOptions = getOptions("removeOptions", [0]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').givekey.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup")];
+                })() : getOptions("checkedRemoves", [0]);
 
                 fuc.creatSetting("takekey", "takekey.ru", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("group"),
-                        eName: 'group',
-                        des: "Join XXX steam group"
-                    },
-                    {
-                        name: getI18n("visit"),
-                        eName: 'visit',
-                        des: "Visit XXX page"
-                    },
-                    {
-                        name: getI18n("verify"),
-                        eName: 'verify',
-                        des: getI18n("verify")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [0, 7, 8]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gleam) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gleam.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("group"), getI18n("visit"), getI18n("verify")];
+                })() : getOptions("checkedFucks", [0, 7, 8]);
 
-                const removeOptions = [{
-                    name: getI18n("ungroup"),
-                    eName: 'group',
-                    des: getI18n("ungroupDes")
-                }];
+                const removeOptions = getOptions("removeOptions", [0]);
                 const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').gleam) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').gleam.remove)) {
                         conf.push(eNameToNameRemove[eName]);
                     }
                     return conf;
-                })() : [getI18n("ungroup")];
+                })() : getOptions("checkedRemoves", [0]);
 
                 fuc.creatSetting("gleam", "gleam.io", fuckOptions, checkedFucks, removeOptions, checkedRemoves);
             })();
             (function() {
-                const fuckOptions = [{
-                        name: getI18n("autoLogin"),
-                        eName: 'autoLogin',
-                        des: getI18n("autoLoginDes")
-                    },
-                    {
-                        name: getI18n("doTask"),
-                        eName: 'doTask',
-                        des: getI18n("doTaskDes")
-                    }
-                ];
+                const fuckOptions = getOptions("fuckOptions", [9, 10]);
                 const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').freegamelottery) ? (() => {
                     let conf = [];
                     for (let eName of Object.keys(GM_getValue('conf').freegamelottery.fuck)) {
                         conf.push(eNameToNameJoin[eName]);
                     }
                     return conf;
-                })() : [getI18n("doTask")];
+                })() : getOptions("checkedFucks", [10]);
 
                 new Vue({
                     el: '#freegamelottery',

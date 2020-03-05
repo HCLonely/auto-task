@@ -903,7 +903,7 @@ const fuc = {
         return fmt;
     },
     addBackground: function () {
-        GM_addStyle(`body {background-image:url(http://wx3.sinaimg.cn/large/006brDXlly1ft9lm37ot7j31hc0u0an5.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
+        GM_addStyle(`body {background-image:url(//img.hclonely.com/www/006brDXlly1ft9lm7ns5zj31hc0u0qh3.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}`);
     },
     isEmptyObjArr: function (object) {
         for (let value of Object.values(object)) {

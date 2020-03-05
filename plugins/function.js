@@ -557,7 +557,7 @@ const fuc = {
     getFinalUrl: function (r, url, options = {}) {
         let conf = {
             url: options.url || url,
-            method: options.method || "GET",
+            method: options.method || "HEAD",
             onload: (response) => {
                 r({ result: 'success', finalUrl: response.finalUrl, url });
             },

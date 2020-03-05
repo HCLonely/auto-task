@@ -47,7 +47,7 @@
 * Check for updates automatically
 * Export and import settings
 
-**<span style="color: #ff0000;">The above features are not all enabled by default. For detailed settings, please go to [setting page](https://blog.hclonely.com/auto-task/setting.html). Don't forget to save after setting!!!</span>**
+**<span style="color: #ff0000;">The above features are not all enabled by default. For detailed settings, please go to [setting page](https://blog.hclonely.com/auto-task/setting_en.html). Don't forget to save after setting!!!</span>**
 
 **<span style="color: #ff0000;">If you use 2.0+ version for the first time, it is recommended to set it first!</span>**
 

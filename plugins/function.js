@@ -557,7 +557,7 @@ const fuc = {
     getFinalUrl: function (r, url, options = {}) {
         let conf = {
             url: options.url || url,
-            method: options.method || "HEAD",
+            method: options.method || "GET",
             onload: (response) => {
                 r({ result: 'success', finalUrl: response.finalUrl, url });
             },
@@ -568,6 +568,7 @@ const fuc = {
         this.httpRequest(conf);
     },
     visitLink: function (r, url, options = {}) {
+        if(!options.method) options.method="HEAD";
         let status = this.echoLog({ type: 'visitLink', text: url });
         new Promise(resolve => {
             this.getFinalUrl(resolve, url, options);

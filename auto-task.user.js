@@ -2,12 +2,12 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.1.22
+// @version        2.1.23
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://github.com/HCLonely/auto-task/raw/master/favicon.ico
+// @iconURL        https://userjs.hclonely.com/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
@@ -30,13 +30,13 @@
 // @include        *://gleam.io/*
 // @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
-// @include        https://blog.hclonely.com/auto-task/setting.html
-// @include        https://blog.hclonely.com/auto-task/setting_en.html
-// @include        https://blog.hclonely.com/auto-task/announcement.html
+// @include        https://userjs.hclonely.com/setting.html
+// @include        https://userjs.hclonely.com/setting_en.html
+// @include        https://userjs.hclonely.com/announcement.html
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.22
+// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.1.23
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -1478,7 +1478,7 @@
                                 confirmButtonText: getI18n("visitHistory"),
                                 cancelButtonText: getI18n("close")
                             }).then(() => {
-                                window.open("https://blog.hclonely.com/auto-task/announcement.html", "_blank");
+                                window.open("https://userjs.hclonely.com/announcement.html", "_blank");
                             }).catch(() => {});
                         } else {
                             status.error("Error:" + (response.statusText || response.status));
@@ -4901,7 +4901,7 @@
                         taskBtn.removeAttr("href")[0].click();
                         let time = taskTime.match(/[\d]+/);
                         if (time) {
-                            GM_openInTab("https://blog.hclonely.com/auto-task/time.html?time=" + time[0], {
+                            GM_openInTab("https://userjs.hclonely.com/time.html?time=" + time[0], {
                                 active: 1,
                                 setParent: 1
                             }).onclose = () => {
@@ -6439,7 +6439,7 @@
                 },
                 methods: {
                     setting() {
-                        language === "en" ? window.open("https://blog.hclonely.com/auto-task/setting_en.html", "_blank") : window.open("https://blog.hclonely.com/auto-task/setting.html", "_blank");
+                        language === "en" ? window.open("https://userjs.hclonely.com/setting_en.html", "_blank") : window.open("https://userjs.hclonely.com/setting.html", "_blank");
                     },
                     updateText() {
                         fuc.getAnnouncement(this);

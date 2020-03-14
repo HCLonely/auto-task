@@ -219,7 +219,7 @@ const gleam = {
                 taskBtn.removeAttr("href")[0].click();
                 let time = taskTime.match(/[\d]+/);
                 if (time) {
-                    GM_openInTab("https://blog.hclonely.com/auto-task/time.html?time=" + time[0], { active: 1, setParent: 1 }).onclose = () => {
+                    GM_openInTab("https://userjs.hclonely.com/time.html?time=" + time[0], { active: 1, setParent: 1 }).onclose = () => {
                         status.warning("Complete");
                         taskBtn.attr("target", "_blank").attr("href", href);
                         gleam.visit_link(links, ++i, r);

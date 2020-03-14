@@ -677,7 +677,7 @@ const fuc = {
                         confirmButtonText: getI18n("visitHistory"),
                         cancelButtonText: getI18n("close")
                     }).then(() => {
-                        window.open("https://blog.hclonely.com/auto-task/announcement.html", "_blank");
+                        window.open("https://userjs.hclonely.com/announcement.html", "_blank");
                     }).catch(() => { });
                 } else {
                     status.error("Error:" + (response.statusText || response.status));

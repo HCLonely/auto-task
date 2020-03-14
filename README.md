@@ -75,6 +75,6 @@
 
 # 6.更新公告
 
-[https://blog.hclonely.com/auto-task/announcement.html](https://blog.hclonely.com/auto-task/announcement.html)
+[https://userjs.hclonely.com/announcement.html](https://userjs.hclonely.com/announcement.html)
 
 <span style="color: #ff0000;">**新版本测试时间较短，可能会有BUG，欢迎前来反馈，之前的版本已留档（[点此安装](https://greasyfork.org/zh-CN/scripts/395098)），不会再更新！**</span>

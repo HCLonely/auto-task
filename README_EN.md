@@ -72,6 +72,6 @@
 
 # 6.Update announcement
 
-[https://blog.hclonely.com/auto-task/announcement.html](https://blog.hclonely.com/auto-task/announcement.html)
+[https://userjs.hclonely.com/announcement.html](https://userjs.hclonely.com/announcement.html)
 
 <span style="color: #ff0000;">**The new version has a short test time, and there may be bugs. Welcome to come back. The previous version([Click here to install](https://greasyfork.org/zh-CN/scripts/395098)) has been saved. Never update!**</span>

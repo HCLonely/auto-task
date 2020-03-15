@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name           自动任务
 // @name:en        Auto Task

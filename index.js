@@ -128,8 +128,7 @@ function packUserJs () {
   const loadAnnouncement = fs.readFileSync('plugins/loadAnnouncement.js', 'utf-8')
   const main = fs.readFileSync('main.js', 'utf-8')
 
-  const data = `
-${header}
+  const data = `${header}
 
 ${data_1}
 

@@ -1,0 +1,52 @@
+{
+  "name": "autotask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "pack.js",
+  "scripts": {
+    "test": "node test.js && standard auto-task.user.js --fix",
+    "start": "node index.js -p && standard auto-task.user.js --fix"
+  },
+  "author": "HCLonely",
+  "license": "MIT",
+  "devDependencies": {
+    "clean-css": "^4.2.3",
+    "commander": "^5.0.0",
+    "html-minifier": "^4.0.0",
+    "standard": "^14.3.2"
+  },
+  "standard": {
+    "globals": [
+      "$",
+      "GM_setValue",
+      "GM_getValue",
+      "GM_listValues",
+      "GM_deleteValue",
+      "GM_addStyle",
+      "GM_xmlhttpRequest",
+      "GM_getResourceText",
+      "GM_registerMenuCommand",
+      "GM_info",
+      "GM_openInTab",
+      "GM_download",
+      "Vue",
+      "File",
+      "FileReader",
+      "location",
+      "getUrlTwitter",
+      "getUrlTwitch",
+      "getUrlFacebook",
+      "getUrlSteam",
+      "getUrlYoutube",
+      "totalTasks",
+      "checkClick",
+      "getURLParameter",
+      "showAlert",
+      "urlPath",
+      "checkUser",
+      "Centrifuge",
+      "DashboardApp",
+      "captchaCheck"
+    ]
+  }
+}

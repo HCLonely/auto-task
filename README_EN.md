@@ -1,3 +1,5 @@
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
+
 # 1.Applicable website
 
 * [giveaway.su](https://giveaway.su/)

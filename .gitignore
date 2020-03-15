@@ -1,16 +1,3 @@
-announce.json
-announce.html
-chubkeys.js
-main.css
-pack.js
-test.js
-setting_raw.html
-setting_en_raw.html
 /.idea/
 /node_modules/
-main-pre.js
 gamehunt.js
-.jshintignore
-.jshintrc
-package.json
-loadSetting.js

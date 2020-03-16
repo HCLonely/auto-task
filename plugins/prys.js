@@ -10,7 +10,7 @@ const prys = { // eslint-disable-line no-unused-vars
       if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
     }
     if (callback === 'do_task') {
-      const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+      const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
       this.groups = []
       this.curators = []
@@ -56,7 +56,7 @@ const prys = { // eslint-disable-line no-unused-vars
           this.curators = fuc.unique(this.curators)
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
           this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.groups.length > 0 || this.curators.length > 0) {
             this.do_task()
           } else {
@@ -69,7 +69,7 @@ const prys = { // eslint-disable-line no-unused-vars
         this.curators = fuc.unique(this.curators)
         this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
         this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         if (this.groups.length > 0 || this.curators.length > 0) {
           this.do_task()
         } else {
@@ -90,7 +90,7 @@ const prys = { // eslint-disable-line no-unused-vars
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
       }
     } else if (callback === 'remove') {
-      const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+      const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
         this.taskInfo = taskInfo
         this.remove(true)
@@ -130,7 +130,7 @@ const prys = { // eslint-disable-line no-unused-vars
           Promise.all(pro).finally(data => {
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
             this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
               this.remove(true)
             } else {
@@ -140,7 +140,7 @@ const prys = { // eslint-disable-line no-unused-vars
         } else {
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
           this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
             this.remove(true)
           } else {
@@ -264,11 +264,11 @@ const prys = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = location.search.match(/id=([\d]+)/)
+    const id = window.location.search.match(/id=([\d]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   updateSteamInfo: function (callback) {

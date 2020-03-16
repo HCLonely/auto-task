@@ -4,7 +4,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     this.get_tasks('do_task')
   },
   get_tasks: function (callback = 'do_task') {
-    const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
@@ -50,7 +50,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
       this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
       this.tasks = fuc.unique(this.tasks)
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
       if (callback === 'do_task') {
@@ -189,7 +189,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = $('#giveawaySlug').val() || location.href
+    const id = $('#giveawaySlug').val() || window.location.href
     return id
   },
   updateSteamInfo: function (callback) {

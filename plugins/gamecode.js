@@ -8,7 +8,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
     const verifyBtns = $('[id^=listOfTasks_btnVerify]:not(:contains(VERIFIED))')
     const allVerifyBtns = $('[id^=listOfTasks_btnVerify]')
     if (callback === 'do_task') {
-      const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+      const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
       this.groups = []
       for (const btn of verifyBtns) {
@@ -31,7 +31,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
       }
       this.groups = fuc.unique(this.groups)
       this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       if (this.groups.length > 0) {
         this.do_task()
       } else {
@@ -105,7 +105,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       }
     } else if (callback === 'remove') {
-      const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+      const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
         this.taskInfo = taskInfo
         this.remove(true)
@@ -120,7 +120,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
           }
         }
         this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         if (this.taskInfo.groups.length > 0) {
           this.remove(true)
         } else {
@@ -220,7 +220,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = $('#giveawayID').val() || location.href
+    const id = $('#giveawayID').val() || window.location.href
     return id
   },
   updateSteamInfo: function (callback) {

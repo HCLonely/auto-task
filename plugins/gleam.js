@@ -4,7 +4,7 @@ const gleam = { // eslint-disable-line no-unused-vars
     this.get_tasks('do_task')
   },
   get_tasks: function (callback = 'do_task') {
-    const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
@@ -81,7 +81,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       this.groups = fuc.unique(this.groups)
       this.others = fuc.unique(this.others)
       this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
       if (callback === 'do_task') {
@@ -240,7 +240,7 @@ const gleam = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = location.pathname.replace(/\?.*/, '') || location.href
+    const id = window.location.pathname.replace(/\?.*/, '') || window.location.href
     return id
   },
   updateSteamInfo: function (callback) {

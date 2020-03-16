@@ -19,7 +19,7 @@ const banana = { // eslint-disable-line no-unused-vars
     }
   },
   get_tasks: function (callback = 'do_task') {
-    const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') {
       this.remove(true)
@@ -45,7 +45,7 @@ const banana = { // eslint-disable-line no-unused-vars
           if (/join.*?steam.*?group/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {
                 if (r.result === 'success') {
                   const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
@@ -64,7 +64,7 @@ const banana = { // eslint-disable-line no-unused-vars
           } else if (/follow.*?curator/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {
                 if (r.result === 'success') {
                   const curatorId = r.finalUrl.match(/curator\/([\d]+)/)
@@ -83,7 +83,7 @@ const banana = { // eslint-disable-line no-unused-vars
           } else if (/wishlist/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {
                 if (r.result === 'success') {
                   const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)
@@ -107,7 +107,7 @@ const banana = { // eslint-disable-line no-unused-vars
               }
             }
             pro.push(new Promise(resolve => {
-              this.links.push(location.origin + location.pathname + '?q=' + taskId[1])
+              this.links.push(window.location.origin + window.location.pathname + '?q=' + taskId[1])
               this.taskIds.push(taskId[1])
               resolve(1)
             }))
@@ -126,7 +126,7 @@ const banana = { // eslint-disable-line no-unused-vars
         this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
         this.taskIds = fuc.unique(this.taskIds)
         this.tasks = fuc.unique(this.tasks)
-        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
         if (callback === 'do_task') {
@@ -195,7 +195,7 @@ const banana = { // eslint-disable-line no-unused-vars
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
         pro.push(new Promise((resolve) => {
           fuc.httpRequest({
-            url: location.origin + location.pathname + '?verify=' + task.taskId,
+            url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
             method: 'GET',
             onload: function (response) {
               if (debug) console.log(response)
@@ -212,7 +212,7 @@ const banana = { // eslint-disable-line no-unused-vars
         if (this.verifyBtn.length > 0) {
           this.verifyBtn.removeAttr('disabled')[0].click()
         } else {
-          location.reload(true)
+          window.location.reload(true)
         }
       })
     } else {
@@ -260,11 +260,11 @@ const banana = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = location.href.match(/\/giveaway\/([\w\d-]+)/)
+    const id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   updateSteamInfo: function (callback) {

@@ -21,7 +21,7 @@ const givekey = { // eslint-disable-line no-unused-vars
     this.wGames = []
     this.fGames = []
     this.links = []
-    const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     for (const id of tasks) {
       const task = $('#task_' + id)
@@ -88,13 +88,13 @@ const givekey = { // eslint-disable-line no-unused-vars
       } else {
         fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noAutoFinish')}</font></li>` })
       }
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
     })
   },
   get_tasks: function () {
-    const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.taskInfo = taskInfoHistory
       this.remove(true)
@@ -135,7 +135,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
         this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
         this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
-        GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
         if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0 || this.taskInfo.wGames.length > 0) {
@@ -196,7 +196,7 @@ const givekey = { // eslint-disable-line no-unused-vars
   },
   verify: function () {
     givekey.wssApp.status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTaskStatus')}<font></font></li>` })
-    givekey.wssApp.request('/distribution/check', 'post', { id: location.href.match(/[\d]+/)[0], g_captcha: $('[name="g-recaptcha-response"]').val() })
+    givekey.wssApp.request('/distribution/check', 'post', { id: window.location.href.match(/[\d]+/)[0], g_captcha: $('[name="g-recaptcha-response"]').val() })
   },
   remove: function (remove = false) {
     const pro = []
@@ -243,7 +243,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       status: {},
       message: {},
       loading: false,
-      centrifuge: new Centrifuge(/givekey.ru/.test(location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
+      centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
       uid: $('meta[name="uid"]').attr('content'),
       init: function (m) {
         this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
@@ -338,11 +338,11 @@ const givekey = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = location.href.match(/distribution\/([\d]+)/)
+    const id = window.location.href.match(/distribution\/([\d]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   updateSteamInfo: function (callback) {

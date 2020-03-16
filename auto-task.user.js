@@ -1,3 +1,4 @@
+
 // ==UserScript==
 // @name           自动任务
 // @name:en        Auto Task
@@ -7,7 +8,7 @@
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://userjs.hclonely.com/favicon.ico
+// @iconURL        https://github.com/HCLonely/auto-task/raw/master/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
@@ -1368,7 +1369,7 @@
     const giveawaysu = { // eslint-disable-line no-unused-vars
       get_tasks: function (e) {
         // 获取任务信息
-        const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
           this.taskInfo = taskInfo
           this.do_task('remove')
@@ -1458,7 +1459,7 @@
           this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements)
           this.taskInfo.links = fuc.unique(this.taskInfo.links)
           // 任务链接处理完成
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
           e === 'doTask' ? this.do_task('join') : this.do_task('remove')
@@ -1617,11 +1618,11 @@
         this.get_tasks('remove')
       },
       get_giveawayId: function () {
-        const id = location.href.match(/view\/([\d]+)/)
+        const id = window.location.href.match(/view\/([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       checkLogin: function () {
@@ -1667,7 +1668,7 @@
         this.get_tasks('do_task')
       },
       get_tasks: function (callback = 'do_task') {
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
@@ -1713,7 +1714,7 @@
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
           this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
           this.tasks = fuc.unique(this.tasks)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
           if (callback === 'do_task') {
@@ -1852,7 +1853,7 @@
         }
       },
       get_giveawayId: function () {
-        const id = $('#giveawaySlug').val() || location.href
+        const id = $('#giveawaySlug').val() || window.location.href
         return id
       },
       updateSteamInfo: function (callback) {
@@ -1927,7 +1928,7 @@
         }
       },
       get_tasks: function (callback = 'do_task') {
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
         if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') {
           this.remove(true)
@@ -1953,7 +1954,7 @@
               if (/join.*?steam.*?group/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
-                    fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                    fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
                     if (r.result === 'success') {
                       const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
@@ -1972,7 +1973,7 @@
               } else if (/follow.*?curator/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
-                    fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                    fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
                     if (r.result === 'success') {
                       const curatorId = r.finalUrl.match(/curator\/([\d]+)/)
@@ -1991,7 +1992,7 @@
               } else if (/wishlist/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
-                    fuc.getFinalUrl(resolve, location.origin + location.pathname + '?q=' + taskId[1])
+                    fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
                     if (r.result === 'success') {
                       const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)
@@ -2015,7 +2016,7 @@
                   }
                 }
                 pro.push(new Promise(resolve => {
-                  this.links.push(location.origin + location.pathname + '?q=' + taskId[1])
+                  this.links.push(window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   this.taskIds.push(taskId[1])
                   resolve(1)
                 }))
@@ -2034,7 +2035,7 @@
             this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
             this.taskIds = fuc.unique(this.taskIds)
             this.tasks = fuc.unique(this.tasks)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             status.success()
             if (debug) console.log(this)
             if (callback === 'do_task') {
@@ -2103,7 +2104,7 @@
             const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
             pro.push(new Promise((resolve) => {
               fuc.httpRequest({
-                url: location.origin + location.pathname + '?verify=' + task.taskId,
+                url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
                 method: 'GET',
                 onload: function (response) {
                   if (debug) console.log(response)
@@ -2120,7 +2121,7 @@
             if (this.verifyBtn.length > 0) {
               this.verifyBtn.removeAttr('disabled')[0].click()
             } else {
-              location.reload(true)
+              window.location.reload(true)
             }
           })
         } else {
@@ -2168,11 +2169,11 @@
         }
       },
       get_giveawayId: function () {
-        const id = location.href.match(/\/giveaway\/([\w\d-]+)/)
+        const id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       updateSteamInfo: function (callback) {
@@ -2241,7 +2242,7 @@
         const verifyBtns = $('[id^=listOfTasks_btnVerify]:not(:contains(VERIFIED))')
         const allVerifyBtns = $('[id^=listOfTasks_btnVerify]')
         if (callback === 'do_task') {
-          const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
           this.groups = []
           for (const btn of verifyBtns) {
@@ -2264,7 +2265,7 @@
           }
           this.groups = fuc.unique(this.groups)
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.groups.length > 0) {
             this.do_task()
           } else {
@@ -2338,7 +2339,7 @@
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
           }
         } else if (callback === 'remove') {
-          const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
             this.taskInfo = taskInfo
             this.remove(true)
@@ -2353,7 +2354,7 @@
               }
             }
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             if (this.taskInfo.groups.length > 0) {
               this.remove(true)
             } else {
@@ -2453,7 +2454,7 @@
         }
       },
       get_giveawayId: function () {
-        const id = $('#giveawayID').val() || location.href
+        const id = $('#giveawayID').val() || window.location.href
         return id
       },
       updateSteamInfo: function (callback) {
@@ -2507,7 +2508,7 @@
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
         const verifyBtns = $('button[data-id]')
         if (callback === 'do_task') {
-          const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
           this.groups = []
           this.tasks = []
@@ -2524,7 +2525,7 @@
           this.groups = fuc.unique(this.groups)
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
           this.tasks = fuc.unique(this.tasks)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.tasks.length > 0) {
             this.do_task()
           } else {
@@ -2637,11 +2638,11 @@
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
       },
       get_giveawayId: function () {
-        const id = location.href.match(/\/giveaway\/([\d]+)/)
+        const id = window.location.href.match(/\/giveaway\/([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       checkLogin: function () { },
@@ -2682,7 +2683,7 @@
           if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
         }
         if (callback === 'do_task') {
-          const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+          const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
           this.groups = []
           this.curators = []
@@ -2728,7 +2729,7 @@
               this.curators = fuc.unique(this.curators)
               this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
               this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-              GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
               if (this.groups.length > 0 || this.curators.length > 0) {
                 this.do_task()
               } else {
@@ -2741,7 +2742,7 @@
             this.curators = fuc.unique(this.curators)
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
             this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             if (this.groups.length > 0 || this.curators.length > 0) {
               this.do_task()
             } else {
@@ -2762,7 +2763,7 @@
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
           }
         } else if (callback === 'remove') {
-          const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
             this.taskInfo = taskInfo
             this.remove(true)
@@ -2802,7 +2803,7 @@
               Promise.all(pro).finally(data => {
                 this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
                 this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-                GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+                GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
                 if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
                   this.remove(true)
                 } else {
@@ -2812,7 +2813,7 @@
             } else {
               this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
               this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-              GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
               if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
                 this.remove(true)
               } else {
@@ -2936,11 +2937,11 @@
         }
       },
       get_giveawayId: function () {
-        const id = location.search.match(/id=([\d]+)/)
+        const id = window.location.search.match(/id=([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       updateSteamInfo: function (callback) {
@@ -3302,7 +3303,7 @@
         this.wGames = []
         this.fGames = []
         this.links = []
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
         for (const id of tasks) {
           const task = $('#task_' + id)
@@ -3369,13 +3370,13 @@
           } else {
             fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noAutoFinish')}</font></li>` })
           }
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
         })
       },
       get_tasks: function () {
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.taskInfo = taskInfoHistory
           this.remove(true)
@@ -3416,7 +3417,7 @@
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
             this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
             this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             status.success()
             if (debug) console.log(this)
             if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0 || this.taskInfo.wGames.length > 0) {
@@ -3477,7 +3478,7 @@
       },
       verify: function () {
         givekey.wssApp.status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTaskStatus')}<font></font></li>` })
-        givekey.wssApp.request('/distribution/check', 'post', { id: location.href.match(/[\d]+/)[0], g_captcha: $('[name="g-recaptcha-response"]').val() })
+        givekey.wssApp.request('/distribution/check', 'post', { id: window.location.href.match(/[\d]+/)[0], g_captcha: $('[name="g-recaptcha-response"]').val() })
       },
       remove: function (remove = false) {
         const pro = []
@@ -3524,7 +3525,7 @@
           status: {},
           message: {},
           loading: false,
-          centrifuge: new Centrifuge(/givekey.ru/.test(location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
+          centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
           uid: $('meta[name="uid"]').attr('content'),
           init: function (m) {
             this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
@@ -3619,11 +3620,11 @@
         }
       },
       get_giveawayId: function () {
-        const id = location.href.match(/distribution\/([\d]+)/)
+        const id = window.location.href.match(/distribution\/([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       updateSteamInfo: function (callback) {
@@ -3696,11 +3697,11 @@
         fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
       },
       get_giveawayId: function () {
-        const id = location.href.match(/giveaway\/([\d]+)/)
+        const id = window.location.href.match(/giveaway\/([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       checkLogin: function () {
@@ -3793,7 +3794,7 @@
                           DashboardApp.draws.stackpot.actual.haveVisited = 1
                           stackpot.success()
                           fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglComplete')}<font></font></li>` })
-                          location.href = '/#/draw/stackpot'
+                          window.location.href = '/#/draw/stackpot'
                           window.location.reload(true)
                         })
                     })
@@ -3819,7 +3820,7 @@
         this.get_tasks('do_task')
       },
       get_tasks: function (callback = 'do_task') {
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
@@ -3896,7 +3897,7 @@
           this.groups = fuc.unique(this.groups)
           this.others = fuc.unique(this.others)
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
           if (callback === 'do_task') {
@@ -4055,7 +4056,7 @@
         }
       },
       get_giveawayId: function () {
-        const id = location.pathname.replace(/\?.*/, '') || location.href
+        const id = window.location.pathname.replace(/\?.*/, '') || window.location.href
         return id
       },
       updateSteamInfo: function (callback) {
@@ -4255,7 +4256,7 @@
         this.get_tasks('do_task')
       },
       get_tasks: function (callback = 'do_task') {
-        const taskInfoHistory = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
@@ -4312,7 +4313,7 @@
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
             // this.taskInfo.curators=fuc.unique(this.taskInfo.curators);
             this.tasks = fuc.unique(this.tasks)
-            GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             status.success()
             if (debug) console.log(this)
             if (callback === 'do_task') {
@@ -4390,11 +4391,11 @@
         }
       },
       get_giveawayId: function () {
-        const id = location.href.match(/distribution\/([\d]+)/)
+        const id = window.location.href.match(/distribution\/([\d]+)/)
         if (id) {
           return id[1]
         } else {
-          return location.href
+          return window.location.href
         }
       },
       updateSteamInfo: function (callback) {
@@ -5027,7 +5028,7 @@
                       type: 'success',
                       message: getI18n('loadSettingComplete')
                     })
-                    location.reload()
+                    window.location.reload()
                   } catch (e) {
                     cMsg.close()
                     vueUi.$message({
@@ -5080,7 +5081,7 @@
                         type: 'success',
                         message: getI18n('loadSettingComplete')
                       })
-                      location.reload()
+                      window.location.reload()
                     } catch (e) {
                       cMsg.close()
                       vueUi.$message({

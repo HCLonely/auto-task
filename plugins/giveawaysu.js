@@ -2,7 +2,7 @@
 const giveawaysu = { // eslint-disable-line no-unused-vars
   get_tasks: function (e) {
     // 获取任务信息
-    const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+    const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
       this.taskInfo = taskInfo
       this.do_task('remove')
@@ -92,7 +92,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements)
       this.taskInfo.links = fuc.unique(this.taskInfo.links)
       // 任务链接处理完成
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
       e === 'doTask' ? this.do_task('join') : this.do_task('remove')
@@ -251,11 +251,11 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     this.get_tasks('remove')
   },
   get_giveawayId: function () {
-    const id = location.href.match(/view\/([\d]+)/)
+    const id = window.location.href.match(/view\/([\d]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   checkLogin: function () {

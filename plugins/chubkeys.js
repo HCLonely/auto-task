@@ -10,11 +10,11 @@ const chubkeys = { // eslint-disable-line no-unused-vars
     fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
   },
   get_giveawayId: function () {
-    const id = location.href.match(/giveaway\/([\d]+)/)
+    const id = window.location.href.match(/giveaway\/([\d]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   checkLogin: function () {

@@ -65,7 +65,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
                       DashboardApp.draws.stackpot.actual.haveVisited = 1
                       stackpot.success()
                       fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglComplete')}<font></font></li>` })
-                      location.href = '/#/draw/stackpot'
+                      window.location.href = '/#/draw/stackpot'
                       window.location.reload(true)
                     })
                 })

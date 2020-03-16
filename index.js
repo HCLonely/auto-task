@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 /* eslint-disable no-useless-escape */
 const fs = require('fs')
 const minify = require('html-minifier').minify
@@ -108,57 +107,21 @@ function packUserJs () {
     
     try{`
 
-  const data_1 = fs.readFileSync('plugins/function.js', 'utf-8')
-  const data_2 = fs.readFileSync('plugins/giveawaysu.js', 'utf-8')
-  const data_3 = fs.readFileSync('plugins/marvelousga.js', 'utf-8')
-  const data_4 = fs.readFileSync('plugins/banana.js', 'utf-8')
-  const data_5 = fs.readFileSync('plugins/gamecode.js', 'utf-8')
-  const data_6 = fs.readFileSync('plugins/gamehag.js', 'utf-8')
-  const data_7 = fs.readFileSync('plugins/prys.js', 'utf-8')
-  const data_8 = fs.readFileSync('plugins/indiedb.js', 'utf-8')
-  const data_9 = fs.readFileSync('plugins/opiumpulses.js', 'utf-8')
-  const data_10 = fs.readFileSync('plugins/givekey.js', 'utf-8')
-  const data_11 = fs.readFileSync('plugins/chubkeys.js', 'utf-8')
-  const data_12 = fs.readFileSync('plugins/freegamelottery.js', 'utf-8')
-  const data_13 = fs.readFileSync('plugins/gleam.js', 'utf-8')
-  const data_14 = fs.readFileSync('plugins/spoune.js', 'utf-8')
-  const data_15 = fs.readFileSync('plugins/takekey.js', 'utf-8')
-
+  const functionJs = fs.readFileSync('plugins/function.js', 'utf-8')
+  const pluginsFiles = fs.readdirSync('plugins')
+  let pluginsData = ''
+  pluginsFiles.map((e, i) => {
+    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js'].includes(e)) {
+      pluginsData += '\n\n' + fs.readFileSync('plugins/' + e, 'utf-8')
+    }
+  })
   const loadSetting = fs.readFileSync('plugins/loadSetting.js', 'utf-8')
   const loadAnnouncement = fs.readFileSync('plugins/loadAnnouncement.js', 'utf-8')
   const main = fs.readFileSync('main.js', 'utf-8')
 
   const data = `${header}
 
-${data_1}
-
-${data_2}
-
-${data_3}
-
-${data_4}
-
-${data_5}
-
-${data_6}
-
-${data_7}
-
-${data_8}
-
-${data_9}
-
-${data_10}
-
-${data_11}
-
-${data_12}
-
-${data_13}
-
-${data_14}
-
-${data_15}
+${functionJs}${pluginsData}
 
 ${loadSetting}
 
@@ -192,13 +155,13 @@ ${main}
   })
 }
 
-function minHtml (filename_1, filename_2) {
-  const html = fs.readFileSync(filename_1, 'utf-8')
-  fs.writeFile(filename_2, minify(html, { removeComments: true, collapseWhitespace: true, minifyCSS: true }), function (error) {
+function minHtml (filename1, filename2) {
+  const html = fs.readFileSync(filename1, 'utf-8')
+  fs.writeFile(filename2, minify(html, { removeComments: true, collapseWhitespace: true, minifyCSS: true }), function (error) {
     if (error) {
       console.log(error)
     } else {
-      console.log(filename_2 + '写入成功')
+      console.log(filename2 + '写入成功')
     }
   })
 }

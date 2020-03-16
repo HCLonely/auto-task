@@ -575,7 +575,7 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
                   type: 'success',
                   message: getI18n('loadSettingComplete')
                 })
-                location.reload()
+                window.location.reload()
               } catch (e) {
                 cMsg.close()
                 vueUi.$message({
@@ -628,7 +628,7 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
                     type: 'success',
                     message: getI18n('loadSettingComplete')
                   })
-                  location.reload()
+                  window.location.reload()
                 } catch (e) {
                   cMsg.close()
                   vueUi.$message({

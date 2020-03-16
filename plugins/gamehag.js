@@ -7,7 +7,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const verifyBtns = $('button[data-id]')
     if (callback === 'do_task') {
-      const taskInfo = GM_getValue('taskInfo[' + location.host + this.get_giveawayId() + ']')
+      const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
       this.groups = []
       this.tasks = []
@@ -24,7 +24,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
       this.groups = fuc.unique(this.groups)
       this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
       this.tasks = fuc.unique(this.tasks)
-      GM_setValue('taskInfo[' + location.host + this.get_giveawayId() + ']', this.taskInfo)
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       if (this.tasks.length > 0) {
         this.do_task()
       } else {
@@ -137,11 +137,11 @@ const gamehag = { // eslint-disable-line no-unused-vars
     fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
   },
   get_giveawayId: function () {
-    const id = location.href.match(/\/giveaway\/([\d]+)/)
+    const id = window.location.href.match(/\/giveaway\/([\d]+)/)
     if (id) {
       return id[1]
     } else {
-      return location.href
+      return window.location.href
     }
   },
   checkLogin: function () { },

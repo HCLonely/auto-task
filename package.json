@@ -1,7 +1,7 @@
 {
   "name": "autotask",
   "version": "1.0.0",
-  "description": "",
+  "description": "key站自动任务脚本",
   "main": "index.js",
   "scripts": {
     "test": "standard && node test.js && standard auto-task.user.js --fix",
@@ -32,7 +32,6 @@
       "Vue",
       "File",
       "FileReader",
-      "location",
       "getUrlTwitter",
       "getUrlTwitch",
       "getUrlFacebook",

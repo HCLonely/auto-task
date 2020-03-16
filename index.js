@@ -4,6 +4,7 @@ const minify = require('html-minifier').minify
 const CleanCSS = require('clean-css')
 const { program } = require('commander')
 
+program.version('1.0.0')
 program
   .option('-p, --pack', '生成auto-task.user.js文件')
   .option('-s, --setting', '生成setting.html,setting_en.html文件')
@@ -111,7 +112,7 @@ function packUserJs () {
   const pluginsFiles = fs.readdirSync('plugins')
   let pluginsData = ''
   pluginsFiles.map((e, i) => {
-    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js'].includes(e)) {
+    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js', 'i18n.js'].includes(e)) {
       pluginsData += '\n\n' + fs.readFileSync('plugins/' + e, 'utf-8')
     }
   })

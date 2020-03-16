@@ -4,7 +4,7 @@
   "description": "key站自动任务脚本",
   "main": "index.js",
   "scripts": {
-    "test": "standard && node test.js && standard auto-task.user.js --fix",
+    "test": "node test.js && standard --fix",
     "start": "node index.js -p && standard auto-task.user.js --fix"
   },
   "author": "HCLonely",

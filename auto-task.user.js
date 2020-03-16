@@ -8,7 +8,7 @@
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://github.com/HCLonely/auto-task/raw/master/favicon.ico
+// @iconURL        https://userjs.hclonely.com/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
@@ -1366,548 +1366,6 @@
       }
     }
 
-    const giveawaysu = { // eslint-disable-line no-unused-vars
-      get_tasks: function (e) {
-        // 获取任务信息
-        const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-        if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
-          this.taskInfo = taskInfo
-          this.do_task('remove')
-        } else {
-          if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-          const tasks = $('#actions tr')
-          for (const task of tasks) {
-            const taskDes = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
-            const taskInfo = this.which_task(taskDes)
-            for (const info of taskInfo) {
-              if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
-                this.taskInfo[info.name + 's'].push(info.link)
-                this.taskInfo.links.push(info.link)
-              }
-            }
-          }
-          status.success()
-          this.getFinalUrl(e)
-        }
-      },
-      which_task: function (taskDes) {
-        const taskInfo = []
-        const taskName = taskDes.text().trim()
-        const link = taskDes.attr('href')
-        if (/disable adblock/gim.test(taskName)) {
-          return [{ name: 'nonSteam' }]
-        } else if (/join.*group/gim.test(taskName)) {
-          taskInfo.push({ name: 'group', link })
-          this.community = 1
-        } else if (/like.*announcement/gim.test(taskName)) {
-          taskInfo.push({ name: 'announcement', link })
-          this.community = 1
-        } else if (/follow.*publisher/gim.test(taskName)) {
-          taskInfo.push({ name: 'publisher', link })
-          this.store = 1
-        } else if (/follow.*developer/gim.test(taskName)) {
-          taskInfo.push({ name: 'developer', link })
-          this.store = 1
-        } else if (/follow.*curator|subscribe.*curator/gim.test(taskName)) {
-          taskInfo.push({ name: 'curator', link })
-          this.store = 1
-        } else {
-          if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Join.*Discord.*server)|(Follow.*on.*Facebook)/gim.test(taskName)) {
-            this.links.push(link)
-          } else {
-            if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
-              taskInfo.push({ name: 'wGame', link })
-              this.store = 1
-            }
-            if (/follow.*button/gim.test(taskName)) {
-              taskInfo.push({ name: 'fGame', link })
-              this.store = 1
-            }
-          }
-          if (taskInfo.length === 0) return [{ name: 'nonSteam' }]
-        }
-        return taskInfo
-      },
-      getFinalUrl: function (e) {
-        // 处理任务链接
-        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
-        const pro = []
-        for (const link of this.taskInfo.links) {
-          pro.push(new Promise(resolve => {
-            if (this.taskInfo.toFinalUrl[link]) {
-              resolve({ result: 'success' })
-            } else {
-              fuc.getFinalUrl(resolve, link)
-            }
-          }))
-        }
-        Promise.all(pro).then(data => {
-          for (const r of data) {
-            if (r.finalUrl) {
-              this.taskInfo.toFinalUrl[r.url] = r.finalUrl
-            }
-          }
-
-          this.links = fuc.unique(this.links)
-          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-          this.taskInfo.publishers = fuc.unique(this.taskInfo.publishers)
-          this.taskInfo.developers = fuc.unique(this.taskInfo.developers)
-          this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
-          this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
-          this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements)
-          this.taskInfo.links = fuc.unique(this.taskInfo.links)
-          // 任务链接处理完成
-          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-          status.success()
-          if (debug) console.log(this)
-          e === 'doTask' ? this.do_task('join') : this.do_task('remove')
-        }).catch(error => {
-          status.error()
-          if (debug) console.log(error)
-        })
-      },
-      do_task: function (act) {
-        if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
-          for (const link of fuc.unique(this.links)) {
-            window.open(link, '_blank')
-          }
-        }
-        if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
-        if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
-        new Promise(resolve => {
-          if (this.taskInfo.groups.length > 0 || this.taskInfo.announcements.length > 0) {
-            if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
-              fuc.updateSteamInfo(resolve, 'all')
-            } else {
-              fuc.updateSteamInfo(resolve, 'community')
-            }
-          } else if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
-            fuc.updateSteamInfo(resolve, 'store')
-          } else {
-            resolve(1)
-          }
-        }).then(s => {
-          if (s === 1) {
-            const pro = []
-            for (const group of fuc.unique(this.taskInfo.groups)) {
-              if (this.taskInfo.toFinalUrl[group]) {
-                const groupName = this.taskInfo.toFinalUrl[group].match(/groups\/(.+)\/?/)
-                if (groupName) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.group) {
-                      fuc.joinSteamGroup(resolve, groupName[1])
-                    } else if (act === 'remove' && this.conf.remove.group) {
-                      fuc.leaveSteamGroup(resolve, groupName[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const curator of fuc.unique(this.taskInfo.curators)) {
-              if (this.taskInfo.toFinalUrl[curator]) {
-                const curatorId = this.taskInfo.toFinalUrl[curator].match(/curator\/([\d]+)/)
-                if (curatorId) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.curator) {
-                      fuc.followCurator(resolve, curatorId[1])
-                    } else if (act === 'remove' && this.conf.remove.curator) {
-                      fuc.unfollowCurator(resolve, curatorId[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const publisher of fuc.unique(this.taskInfo.publishers)) {
-              if (this.taskInfo.toFinalUrl[publisher]) {
-                const publisherName = this.taskInfo.toFinalUrl[publisher].includes('publisher') ? this.taskInfo.toFinalUrl[publisher].match(/publisher\/(.+)\/?/) : this.taskInfo.toFinalUrl[publisher].match(/pub\/(.+)\/?/)
-                if (publisherName) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.publisher) {
-                      fuc.followPublisher(resolve, publisherName[1])
-                    } else if (act === 'remove' && this.conf.remove.publisher) {
-                      fuc.unfollowPublisher(resolve, publisherName[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const developer of fuc.unique(this.taskInfo.developers)) {
-              if (this.taskInfo.toFinalUrl[developer]) {
-                const developerName = this.taskInfo.toFinalUrl[developer].includes('developer') ? this.taskInfo.toFinalUrl[developer].match(/developer\/(.+)\/?/) : this.taskInfo.toFinalUrl[developer].match(/dev\/(.+)\/?/)
-                if (developerName) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.developer) {
-                      fuc.followDeveloper(resolve, developerName[1])
-                    } else if (act === 'remove' && this.conf.remove.developer) {
-                      fuc.unfollowDeveloper(resolve, developerName[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const game of fuc.unique(this.taskInfo.fGames)) {
-              if (this.taskInfo.toFinalUrl[game]) {
-                const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
-                if (gameId) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.followGame) {
-                      fuc.followGame(resolve, gameId[1])
-                    } else if (act === 'remove' && this.conf.remove.unfollowGame) {
-                      fuc.unfollowGame(resolve, gameId[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const game of fuc.unique(this.taskInfo.wGames)) {
-              if (this.taskInfo.toFinalUrl[game]) {
-                const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
-                if (gameId) {
-                  pro.push(new Promise(resolve => {
-                    if (act === 'join' && this.conf.join.wishlist) {
-                      fuc.addWishlist(resolve, gameId[1])
-                    } else if (act === 'remove' && this.conf.remove.wishlist) {
-                      fuc.removeWishlist(resolve, gameId[1])
-                    } else {
-                      resolve(1)
-                    }
-                  }))
-                }
-              }
-            }
-            for (const announcement of fuc.unique(this.taskInfo.announcements)) {
-              if (this.taskInfo.toFinalUrl[announcement]) {
-                const announcementUrl = this.taskInfo.toFinalUrl[announcement]
-                const announcementId = announcementUrl.match(/announcements\/detail\/([\d]+)/)
-                if (announcementId) {
-                  if (act === 'join' && this.conf.join.announcement) {
-                    pro.push(new Promise(resolve => {
-                      fuc.likeAnnouncements(resolve, announcementUrl, announcementId[1])
-                    }))
-                  }
-                }
-              }
-            }
-            Promise.all(pro).finally(data => {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-              if (act === 'join') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
-            })
-          }
-        })
-      },
-      fuck: function () {
-      },
-      verify: function () {
-      },
-      join: function () {
-        this.get_tasks('doTask')
-      },
-      remove: function () {
-        this.get_tasks('remove')
-      },
-      get_giveawayId: function () {
-        const id = window.location.href.match(/view\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
-      },
-      checkLogin: function () {
-        if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
-      },
-      checkLeft: function (ui) {
-        if ($('.giveaway-ended').length > 0) {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
-            confirmButtonText: getI18n('confirm'),
-            cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(() => {
-            window.close()
-          })
-        }
-      },
-      community: 0,
-      store: 0,
-      links: [], // 非steam任务
-      taskInfo: {
-        groups: [], // 任务需要加的组
-        curators: [], // 任务需要关注的鉴赏家
-        publishers: [], // 任务需要关注的发行商
-        developers: [], // 任务需要关注的开发商
-        fGames: [], // 任务需要关注的游戏
-        wGames: [], // 任务需要加愿望单的游戏
-        announcements: [], // 任务需要点赞的通知
-        links: [], // 原始链接
-        toFinalUrl: {}// 链接转换
-      },
-      setting: {
-        fuck: false,
-        verify: false,
-        join: true,
-        remove: true
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').giveawaysu && GM_getValue('conf').giveawaysu.load) ? GM_getValue('conf').giveawaysu : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
-    const marvelousga = { // eslint-disable-line no-unused-vars
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
-      get_tasks: function (callback = 'do_task') {
-        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-        if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-        if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
-          this.remove(true)
-        } else {
-          this.tasks = []
-          this.groups = []
-          this.curators = []
-          this.links = []
-          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-
-          const tasksContainer = $('.container_task')
-          for (const task of tasksContainer) { // 遍历任务信息
-            const taskDes = $(task).find('.card-body p.card-text.monospace')
-            const verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
-            if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) { // 加组任务
-              const groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
-              if (verifyBtn.length > 0) {
-                this.groups.push(groupName)
-              }
-              this.taskInfo.groups.push(groupName)
-            }
-            if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) { // 关注鉴赏家任务
-              const curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
-              if (verifyBtn.length > 0) {
-                this.curators.push(curatorName)
-              }
-              this.taskInfo.curators.push(curatorName)
-            }
-            if (/visit.*?this.*?page/gim.test(taskDes.text()) && verifyBtn.length > 0) { // 浏览页面任务
-              const pageUrl = taskDes.find('a[id^="task_webpage_clickedLink"]').attr('href')
-              this.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
-            }
-            if (verifyBtn.length > 0) { // 任务验证信息
-              const provider = verifyBtn.attr('id').split('_')[1]
-              const taskRoute = verifyBtn.attr('id').split('_')[2]
-              const taskId = verifyBtn.attr('id').split('_')[3]
-              this.tasks.push({ provider, taskRoute, taskId, taskDes: taskDes.html() })
-            }
-          }
-          this.groups = fuc.unique(this.groups)
-          this.curators = fuc.unique(this.curators)
-          this.links = fuc.unique(this.links)
-          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-          this.tasks = fuc.unique(this.tasks)
-          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-          status.success()
-          if (debug) console.log(this)
-          if (callback === 'do_task') {
-            if (this.tasks.length === 0) {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-              if (this.conf.fuck.verify) this.verify()
-            } else {
-              this.do_task()
-            }
-          } else if (callback === 'verify') {
-            this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
-          } else {
-            !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('cannotRemove')}</font></li>` })
-          }
-        }
-      },
-      do_task: function () {
-        this.updateSteamInfo(() => {
-          const pro = []
-          const groups = fuc.unique(this.groups)
-          const curators = fuc.unique(this.curators)
-          const links = fuc.unique(this.links)
-          if (this.conf.fuck.group) {
-            for (const group of groups) {
-              pro.push(new Promise((resolve) => {
-                fuc.joinSteamGroup(resolve, group)
-              }))
-            }
-          }
-          if (this.conf.fuck.curator) {
-            for (const curator of curators) {
-              pro.push(new Promise((resolve) => {
-                fuc.followCurator(resolve, curator)
-              }))
-            }
-          }
-          if (this.conf.fuck.visit) {
-            for (const link of links) {
-              pro.push(new Promise((resolve) => {
-                fuc.visitLink(resolve, link.pageUrl, {
-                  url: '/ajax/verifyTasks/webpage/clickedLink',
-                  method: 'POST',
-                  headers: {
-                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-                  },
-                  data: $.param({
-                    giveaway_slug: this.get_giveawayId(),
-                    giveaway_task_id: link.taskId
-                  })
-                })
-              }))
-            }
-          }
-          Promise.all(pro).finally(resolve => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            if (this.conf.fuck.verify) this.verify()
-          })
-        })
-      },
-      verify: function (verify = false) {
-        if (verify) {
-          const pro = []
-          for (const task of fuc.unique(this.tasks)) {
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
-              fuc.httpRequest({
-                url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
-                method: 'POST',
-                dataType: 'json',
-                headers: {
-                  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: $.param({
-                  giveaway_slug: this.get_giveawayId(),
-                  giveaway_task_id: task.taskId
-                }),
-                onload: function (response) {
-                  if (debug) console.log(response)
-                  if (response.status === 200) {
-                    if (response.response.status === 1) {
-                      $(`#task_${task.provider}_${task.taskRoute}_${task.taskId}`).text('VERIFIED')
-                      status.success(response.response.percentageNanoBar.toFixed(2) + '%')
-                      resolve({ result: 'success', statusText: response.statusText, status: response.status })
-                    } else {
-                      status.error('Error:' + (response.response.message || 'error'))
-                      if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
-                      resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                    }
-                  } else {
-                    status.error('Error:' + (response.response.message || response.statusText || response.status))
-                    if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
-                    resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                  }
-                },
-                r: resolve,
-                status
-              })
-            }))
-          }
-          Promise.all(pro).finally(resolve => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
-            $('#get_key_container').show()
-            $('.hclonely-google').unbind()
-            $('.hclonely-google').click(() => { $('#get_key_container')[0].scrollIntoView() })
-          })
-        } else {
-          this.get_tasks('verify')
-        }
-      },
-      remove: function (remove = false) {
-        const pro = []
-        if (remove) {
-          this.updateSteamInfo(() => {
-            if (this.conf.remove.group) {
-              for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
-                  fuc.leaveSteamGroup(resolve, group)
-                }))
-              }
-            }
-            if (this.conf.remove.curator) {
-              for (const curator of fuc.unique(this.taskInfo.curators)) {
-                pro.push(new Promise((resolve) => {
-                  fuc.unfollowCurator(resolve, curator)
-                }))
-              }
-            }
-            Promise.all(pro).finally(data => {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            })
-          })
-        } else {
-          this.get_tasks('remove')
-        }
-      },
-      get_giveawayId: function () {
-        const id = $('#giveawaySlug').val() || window.location.href
-        return id
-      },
-      updateSteamInfo: function (callback) {
-        new Promise(resolve => {
-          if (this.taskInfo.groups.length > 0) {
-            if (this.taskInfo.curators.length > 0) {
-              fuc.updateSteamInfo(resolve, 'all')
-            } else {
-              fuc.updateSteamInfo(resolve, 'community')
-            }
-          } else if (this.taskInfo.curators.length > 0) {
-            fuc.updateSteamInfo(resolve, 'store')
-          } else {
-            resolve(1)
-          }
-        }).then(s => {
-          if (s === 1) {
-            callback()
-          }
-        })
-      },
-      checkLogin: function () {
-        if ($('a[href*=login]').length > 0) window.open('/login', '_self')
-      },
-      checkLeft: function (ui) {
-        if ($('h3.text-danger:contains(this giveaway is closed)').length > 0) {
-          $('#link_to_click').remove()
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
-            confirmButtonText: getI18n('confirm'),
-            cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(() => {
-            window.close()
-          })
-        }
-      },
-      groups: [], // 任务需要加的组
-      curators: [], // 任务需要关注的鉴赏家
-      links: [], // 需要浏览的页面链接
-      taskInfo: {
-        groups: [], // 所有任务需要加的组
-        curators: []// 所有任务需要关注的鉴赏家
-      },
-      tasks: [], // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        join: false,
-        remove: true
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').marvelousga && GM_getValue('conf').marvelousga.load) ? GM_getValue('conf').marvelousga : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
     const banana = { // eslint-disable-line no-unused-vars
       fuck: function (vue) {
         const needBanana = $("p:contains('Collect'):contains('banana')")
@@ -2231,6 +1689,135 @@
         remove: true
       },
       conf: GM_getValue('conf') ? ((GM_getValue('conf').banana && GM_getValue('conf').banana.load) ? GM_getValue('conf').banana : (GM_getValue('conf').global || defaultConf)) : defaultConf
+    }
+
+    const chubkeys = { // eslint-disable-line no-unused-vars
+      fuck: function () {
+        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
+      },
+      verify: function () {
+        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
+      },
+      remove: function () {
+        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
+      },
+      get_giveawayId: function () {
+        const id = window.location.href.match(/giveaway\/([\d]+)/)
+        if (id) {
+          return id[1]
+        } else {
+          return window.location.href
+        }
+      },
+      checkLogin: function () {
+        if ($('a.nav-link[href*=login]').length > 0) window.open('/login', '_self')
+      },
+      checkLeft: function (ui) {
+        if ($('div.card-body h5:contains(There are no more keys left)').length > 0) {
+          ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            center: true
+          }).then(() => {
+            window.close()
+          })
+        }
+      },
+      setting: {
+        fuck: true,
+        verify: true,
+        join: false,
+        remove: true
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').chubkeys && GM_getValue('conf').chubkeys.load) ? GM_getValue('conf').chubkeys : (GM_getValue('conf').global || defaultConf)) : defaultConf
+    }
+
+    const freegamelottery = { // eslint-disable-line no-unused-vars
+      fuck: function (vue) {
+        GM_setValue('lottery', 1)
+        if ($('a.registration-button').length > 0) {
+          if (this.conf.fuck.autoLogin) {
+            const userInfo = GM_getValue('conf').lotteryUserInfo
+            if (userInfo) {
+              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('logining')}<font></font></li>` })
+              fuc.httpRequest({
+                url: 'https://freegamelottery.com/user/login',
+                method: 'POST',
+                data: `username=${userInfo.username}&password=${userInfo.password}&rememberMe=1`,
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                onload: function (data) {
+                  if (data.status === 200) {
+                    status.success()
+                    window.location.reload(true)
+                  } else {
+                    status.error('Error:' + (data.statusText || data.status))
+                  }
+                },
+                status
+              })
+            } else {
+              vue.$message({ type: 'warning', message: getI18n('needLogin') })
+              $('a.registration-button')[0].click()
+              $('button[value=Login]').click(() => {
+                const conf = GM_getValue('conf')
+                conf.lotteryUserInfo = { username: $('#modal_login').val(), password: $('#modal_password').val() }
+                GM_setValue('conf', conf)
+              })
+            }
+          } else {
+            vue.$message({ type: 'warning', message: getI18n('needLogin') })
+            $('a.registration-button')[0].click()
+          }
+        } else {
+          this.draw()
+        }
+      },
+      draw: function () {
+        GM_setValue('lottery', 0)
+        if (this.conf.fuck.doTask) {
+          const main = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit MAIN DRAW')}<font></font></li>` })
+          $.post('/draw/register-visit', { drawId: DashboardApp.draws.main.actual.id })
+            .done(function () {
+              DashboardApp.draws.main.actual.haveVisited = true
+              main.success()
+              const survey = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit SURVEY DRAW')}<font></font></li>` })
+              $.post('/draw/register-visit', { type: 'survey', drawId: DashboardApp.draws.survey.actual.id })
+                .done(function () {
+                  DashboardApp.draws.survey.actual.haveVisited = 1
+                  survey.success()
+                  const video = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit VIDEO DRAW')}<font></font></li>` })
+                  $.post('/draw/register-visit', { drawId: DashboardApp.draws.video.actual.id })
+                    .done(function () {
+                      DashboardApp.draws.video.actual.haveVisited = true
+                      video.success()
+                      const stackpot = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit STACKPOT')}<font></font></li>` })
+                      $.post('/draw/register-visit', { type: 'stackpot', drawId: DashboardApp.draws.stackpot.actual.id })
+                        .done(function () {
+                          DashboardApp.draws.stackpot.actual.haveVisited = 1
+                          stackpot.success()
+                          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglComplete')}<font></font></li>` })
+                          window.location.href = '/#/draw/stackpot'
+                          window.location.reload(true)
+                        })
+                    })
+                })
+            })
+        }
+      },
+      verify: function () { },
+      remove: function () { },
+      checkLogin: function () { },
+      checkLeft: function (ui) { },
+      setting: {
+        fuck: true,
+        verify: false,
+        join: false,
+        remove: false
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').freegamelottery && GM_getValue('conf').freegamelottery.load) ? GM_getValue('conf').freegamelottery : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
     const gamecode = { // eslint-disable-line no-unused-vars
@@ -2672,301 +2259,270 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').gamehag && GM_getValue('conf').gamehag.load) ? GM_getValue('conf').gamehag : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const prys = { // eslint-disable-line no-unused-vars
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
-      get_tasks: function (callback = 'do_task') {
-        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-        const steps = $('#steps tbody tr')
-        for (let i = 0; i < steps.length; i++) {
-          if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
-        }
-        if (callback === 'do_task') {
-          const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-          if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-          this.groups = []
-          this.curators = []
-          const pro = []
-          for (const step of steps) {
-            if ($(step).find('span:contains(Success)').length === 0) {
-              if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-                const curatorId = link.match(/curator\/([\d]+)/)
-                if (curatorId) {
-                  this.curators.push(curatorId[1])
-                  this.taskInfo.curators.push(curatorId[1])
-                }
-              } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
-                const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
-                const groupName = link.match(/groups\/(.+)\/?/)
-                if (groupName) {
-                  this.groups.push(groupName[1])
-                  this.taskInfo.groups.push(groupName[1])
-                }
-              } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
-                const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
-                  new Promise(resolve => {
-                    fuc.getFinalUrl(resolve, link)
-                  }).then(data => {
-                    if (data.result === 'success') {
-                      const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
-                      if (groupName) {
-                        this.groups.push(groupName[1])
-                        this.taskInfo.groups.push(groupName[1])
-                      }
-                    }
-                    r(1)
-                  })
-                }))
-              }
-            }
-          }
-          if (pro.length > 0) {
-            Promise.all(pro).finally(data => {
-              this.groups = fuc.unique(this.groups)
-              this.curators = fuc.unique(this.curators)
-              this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-              this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-              if (this.groups.length > 0 || this.curators.length > 0) {
-                this.do_task()
-              } else {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-                if (this.conf.fuck.verify) this.verify()
-              }
-            })
-          } else {
-            this.groups = fuc.unique(this.groups)
-            this.curators = fuc.unique(this.curators)
-            this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-            this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-            if (this.groups.length > 0 || this.curators.length > 0) {
-              this.do_task()
-            } else {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-              if (this.conf.fuck.verify) this.verify()
-            }
-          }
-        } else if (callback === 'verify') {
-          this.tasks = []
-          const checks = $('#steps tbody a[id^=check]')
-          if (checks.length > 0) {
-            for (const check of checks) {
-              const id = $(check).attr('id').match(/[\d]+/)
-              if (id) this.tasks.push({ id: id[0], taskDes: $(check).parent().prev().html().trim() })
-            }
-            this.verify(true)
-          } else {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
-          }
-        } else if (callback === 'remove') {
-          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-          if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
-            this.taskInfo = taskInfo
-            this.remove(true)
-          } else {
-            const pro = []
-            for (const step of steps) {
-              if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-                const curatorId = link.match(/curator\/([\d]+)/)
-                if (curatorId) {
-                  this.taskInfo.curators.push(curatorId[1])
-                }
-              } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
-                const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
-                const groupName = link.match(/groups\/(.+)\/?/)
-                if (groupName) {
-                  this.taskInfo.groups.push(groupName[1])
-                }
-              } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
-                const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
-                  new Promise(resolve => {
-                    fuc.getFinalUrl(resolve, link)
-                  }).then(data => {
-                    if (data.result === 'success') {
-                      const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
-                      if (groupName) {
-                        this.taskInfo.groups.push(groupName[1])
-                      }
-                    }
-                    r(1)
-                  })
-                }))
-              }
-            }
-            if (pro.length > 0) {
-              Promise.all(pro).finally(data => {
-                this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-                this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-                GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-                if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
-                  this.remove(true)
-                } else {
-                  fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
-                }
-              })
-            } else {
-              this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-              this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-              if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
-                this.remove(true)
-              } else {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
-              }
-            }
-          }
+    const giveawaysu = { // eslint-disable-line no-unused-vars
+      get_tasks: function (e) {
+        // 获取任务信息
+        const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+        if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
+          this.taskInfo = taskInfo
+          this.do_task('remove')
         } else {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
+          if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
+          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+          const tasks = $('#actions tr')
+          for (const task of tasks) {
+            const taskDes = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
+            const taskInfo = this.which_task(taskDes)
+            for (const info of taskInfo) {
+              if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
+                this.taskInfo[info.name + 's'].push(info.link)
+                this.taskInfo.links.push(info.link)
+              }
+            }
+          }
+          status.success()
+          this.getFinalUrl(e)
         }
-        status.success()
-        if (debug) console.log(this)
       },
-      do_task: function () {
-        this.updateSteamInfo(() => {
-          const pro = []
-          const groups = fuc.unique(this.groups)
-          const curators = fuc.unique(this.curators)
-          if (this.conf.fuck.group) {
-            for (const group of groups) {
-              pro.push(new Promise((resolve) => {
-                fuc.joinSteamGroup(resolve, group)
-              }))
-            }
-          }
-          if (this.conf.fuck.curator) {
-            for (const curator of curators) {
-              pro.push(new Promise((resolve) => {
-                fuc.followCurator(resolve, curator)
-              }))
-            }
-          }
-          Promise.all(pro).finally(resolve => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            if (this.conf.fuck.verify) this.verify()
-          })
-        })
-      },
-      verify: function (verify = false) {
-        if (verify) {
-          const pro = []
-          for (const task of fuc.unique(this.tasks)) {
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
-              this.checkStep(task.id, resolve, status)
-            }))
-          }
-          Promise.all(pro).finally(resolve => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
-          })
+      which_task: function (taskDes) {
+        const taskInfo = []
+        const taskName = taskDes.text().trim()
+        const link = taskDes.attr('href')
+        if (/disable adblock/gim.test(taskName)) {
+          return [{ name: 'nonSteam' }]
+        } else if (/join.*group/gim.test(taskName)) {
+          taskInfo.push({ name: 'group', link })
+          this.community = 1
+        } else if (/like.*announcement/gim.test(taskName)) {
+          taskInfo.push({ name: 'announcement', link })
+          this.community = 1
+        } else if (/follow.*publisher/gim.test(taskName)) {
+          taskInfo.push({ name: 'publisher', link })
+          this.store = 1
+        } else if (/follow.*developer/gim.test(taskName)) {
+          taskInfo.push({ name: 'developer', link })
+          this.store = 1
+        } else if (/follow.*curator|subscribe.*curator/gim.test(taskName)) {
+          taskInfo.push({ name: 'curator', link })
+          this.store = 1
         } else {
-          this.get_tasks('verify')
-        }
-      },
-      checkStep: function (step, r, status, captcha) {
-        if (!captcha) captcha = null
-        if (step !== 'captcha') {
-          $('#check' + step).replaceWith('<span id="check' + step +
-            '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
-        }
-        $.post('/api/check_step', {
-          step: step,
-          id: getURLParameter('id'),
-          'g-recaptcha-response': captcha
-        }, function (json) {
-          r(1)
-          if (json.success && step !== 'captcha') {
-            $('#check' + step).replaceWith('<span class="text-success" id="check' + step +
-                    '"><i class="fa fa-check"></i> Success</span>')
-            status.success()
-          } else if (step !== 'captcha') {
-            $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                    ')"><i class="fa fa-question"></i> Check</a>')
-            status.error((json.response ? json.response.error ? json.response.error : 'Error' : 'Error'))
-          }
-          if (json.response) {
-            if (json.response.captcha && json.success) {
-              showAlert('info', json.response.captcha)
-              captchaCheck()
-            } else if (json.response.captcha) {
-              showAlert('warning', json.response.captcha)
-              captchaCheck()
+          if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Join.*Discord.*server)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+            this.links.push(link)
+          } else {
+            if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
+              taskInfo.push({ name: 'wGame', link })
+              this.store = 1
             }
-            if (json.response.prize) {
-              showAlert('success',
-                'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' +
-                        json.response.prize + '</h2>')
+            if (/follow.*button/gim.test(taskName)) {
+              taskInfo.push({ name: 'fGame', link })
+              this.store = 1
             }
           }
-        }).fail(function () {
-          r(1)
-          $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                ')"><i class="fa fa-question"></i> Check</a>')
-          status.error('Error:0')
-        })
+          if (taskInfo.length === 0) return [{ name: 'nonSteam' }]
+        }
+        return taskInfo
       },
-      remove: function (remove = false) {
+      getFinalUrl: function (e) {
+        // 处理任务链接
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
         const pro = []
-        if (remove) {
-          this.updateSteamInfo(() => {
-            if (this.conf.remove.group) {
-              for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
-                  fuc.leaveSteamGroup(resolve, group)
-                }))
-              }
+        for (const link of this.taskInfo.links) {
+          pro.push(new Promise(resolve => {
+            if (this.taskInfo.toFinalUrl[link]) {
+              resolve({ result: 'success' })
+            } else {
+              fuc.getFinalUrl(resolve, link)
             }
-            if (this.conf.remove.curator) {
-              for (const curator of fuc.unique(this.taskInfo.curators)) {
-                pro.push(new Promise((resolve) => {
-                  fuc.unfollowCurator(resolve, curator)
-                }))
-              }
+          }))
+        }
+        Promise.all(pro).then(data => {
+          for (const r of data) {
+            if (r.finalUrl) {
+              this.taskInfo.toFinalUrl[r.url] = r.finalUrl
             }
-            Promise.all(pro).finally(data => {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            })
-          })
-        } else {
-          this.get_tasks('remove')
-        }
+          }
+
+          this.links = fuc.unique(this.links)
+          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+          this.taskInfo.publishers = fuc.unique(this.taskInfo.publishers)
+          this.taskInfo.developers = fuc.unique(this.taskInfo.developers)
+          this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
+          this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
+          this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements)
+          this.taskInfo.links = fuc.unique(this.taskInfo.links)
+          // 任务链接处理完成
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+          status.success()
+          if (debug) console.log(this)
+          e === 'doTask' ? this.do_task('join') : this.do_task('remove')
+        }).catch(error => {
+          status.error()
+          if (debug) console.log(error)
+        })
       },
-      get_giveawayId: function () {
-        const id = window.location.search.match(/id=([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
+      do_task: function (act) {
+        if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
+          for (const link of fuc.unique(this.links)) {
+            window.open(link, '_blank')
+          }
         }
-      },
-      updateSteamInfo: function (callback) {
+        if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
+        if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
         new Promise(resolve => {
-          if (this.taskInfo.groups.length > 0) {
-            if (this.taskInfo.curators.length > 0) {
+          if (this.taskInfo.groups.length > 0 || this.taskInfo.announcements.length > 0) {
+            if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (this.taskInfo.curators.length > 0) {
+          } else if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
           }
         }).then(s => {
           if (s === 1) {
-            callback()
+            const pro = []
+            for (const group of fuc.unique(this.taskInfo.groups)) {
+              if (this.taskInfo.toFinalUrl[group]) {
+                const groupName = this.taskInfo.toFinalUrl[group].match(/groups\/(.+)\/?/)
+                if (groupName) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.group) {
+                      fuc.joinSteamGroup(resolve, groupName[1])
+                    } else if (act === 'remove' && this.conf.remove.group) {
+                      fuc.leaveSteamGroup(resolve, groupName[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const curator of fuc.unique(this.taskInfo.curators)) {
+              if (this.taskInfo.toFinalUrl[curator]) {
+                const curatorId = this.taskInfo.toFinalUrl[curator].match(/curator\/([\d]+)/)
+                if (curatorId) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.curator) {
+                      fuc.followCurator(resolve, curatorId[1])
+                    } else if (act === 'remove' && this.conf.remove.curator) {
+                      fuc.unfollowCurator(resolve, curatorId[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const publisher of fuc.unique(this.taskInfo.publishers)) {
+              if (this.taskInfo.toFinalUrl[publisher]) {
+                const publisherName = this.taskInfo.toFinalUrl[publisher].includes('publisher') ? this.taskInfo.toFinalUrl[publisher].match(/publisher\/(.+)\/?/) : this.taskInfo.toFinalUrl[publisher].match(/pub\/(.+)\/?/)
+                if (publisherName) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.publisher) {
+                      fuc.followPublisher(resolve, publisherName[1])
+                    } else if (act === 'remove' && this.conf.remove.publisher) {
+                      fuc.unfollowPublisher(resolve, publisherName[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const developer of fuc.unique(this.taskInfo.developers)) {
+              if (this.taskInfo.toFinalUrl[developer]) {
+                const developerName = this.taskInfo.toFinalUrl[developer].includes('developer') ? this.taskInfo.toFinalUrl[developer].match(/developer\/(.+)\/?/) : this.taskInfo.toFinalUrl[developer].match(/dev\/(.+)\/?/)
+                if (developerName) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.developer) {
+                      fuc.followDeveloper(resolve, developerName[1])
+                    } else if (act === 'remove' && this.conf.remove.developer) {
+                      fuc.unfollowDeveloper(resolve, developerName[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const game of fuc.unique(this.taskInfo.fGames)) {
+              if (this.taskInfo.toFinalUrl[game]) {
+                const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
+                if (gameId) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.followGame) {
+                      fuc.followGame(resolve, gameId[1])
+                    } else if (act === 'remove' && this.conf.remove.unfollowGame) {
+                      fuc.unfollowGame(resolve, gameId[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const game of fuc.unique(this.taskInfo.wGames)) {
+              if (this.taskInfo.toFinalUrl[game]) {
+                const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
+                if (gameId) {
+                  pro.push(new Promise(resolve => {
+                    if (act === 'join' && this.conf.join.wishlist) {
+                      fuc.addWishlist(resolve, gameId[1])
+                    } else if (act === 'remove' && this.conf.remove.wishlist) {
+                      fuc.removeWishlist(resolve, gameId[1])
+                    } else {
+                      resolve(1)
+                    }
+                  }))
+                }
+              }
+            }
+            for (const announcement of fuc.unique(this.taskInfo.announcements)) {
+              if (this.taskInfo.toFinalUrl[announcement]) {
+                const announcementUrl = this.taskInfo.toFinalUrl[announcement]
+                const announcementId = announcementUrl.match(/announcements\/detail\/([\d]+)/)
+                if (announcementId) {
+                  if (act === 'join' && this.conf.join.announcement) {
+                    pro.push(new Promise(resolve => {
+                      fuc.likeAnnouncements(resolve, announcementUrl, announcementId[1])
+                    }))
+                  }
+                }
+              }
+            }
+            Promise.all(pro).finally(data => {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+              if (act === 'join') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
+            })
           }
         })
       },
-      checkLogin: function () { },
+      fuck: function () {
+      },
+      verify: function () {
+      },
+      join: function () {
+        this.get_tasks('doTask')
+      },
+      remove: function () {
+        this.get_tasks('remove')
+      },
+      get_giveawayId: function () {
+        const id = window.location.href.match(/view\/([\d]+)/)
+        if (id) {
+          return id[1]
+        } else {
+          return window.location.href
+        }
+      },
+      checkLogin: function () {
+        if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
+      },
       checkLeft: function (ui) {
-        const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
-        if (!(left.length > 0 && left[1] !== '0')) {
+        if ($('.giveaway-ended').length > 0) {
           ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
@@ -2977,308 +2533,27 @@
           })
         }
       },
-      groups: [], // 任务需要加的组
-      curators: [], // 任务需要关注的鉴赏家
+      community: 0,
+      store: 0,
+      links: [], // 非steam任务
       taskInfo: {
-        groups: [], // 所有任务需要加的组
-        curators: []// 所有任务需要关注的鉴赏家
+        groups: [], // 任务需要加的组
+        curators: [], // 任务需要关注的鉴赏家
+        publishers: [], // 任务需要关注的发行商
+        developers: [], // 任务需要关注的开发商
+        fGames: [], // 任务需要关注的游戏
+        wGames: [], // 任务需要加愿望单的游戏
+        announcements: [], // 任务需要点赞的通知
+        links: [], // 原始链接
+        toFinalUrl: {}// 链接转换
       },
-      tasks: [], // 任务信息
       setting: {
-        fuck: true,
-        verify: true,
-        join: false,
+        fuck: false,
+        verify: false,
+        join: true,
         remove: true
       },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').prys && GM_getValue('conf').prys.load) ? GM_getValue('conf').prys : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
-    const indiedb = { // eslint-disable-line no-unused-vars
-      fuck: function () {
-        if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
-        const currentoption = $('a.buttonenter.buttongiveaway')
-        if (/join giveaway/gim.test(currentoption.text())) {
-          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
-          const do_task = this.do_task // eslint-disable-line camelcase
-          fuc.httpRequest({
-            url: currentoption.attr('href'),
-            method: 'POST',
-            data: 'ajax=t',
-            dataType: 'json',
-            headers: {
-              'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-              accept: 'application/json, text/javascript, */*; q=0.01'
-            },
-            onload: function (response) {
-              if (debug) console.log(response)
-              if (response.status === 200 && response.response) {
-                if (response.response.success) {
-                  currentoption.addClass('buttonentered').text('Success - Giveaway joined')
-                  $('#giveawaysjoined').slideDown()
-                  $('#giveawaysrecommend').slideDown()
-                  status.success('Success' + (response.response.text ? (':' + response.response.text) : ''))
-                  do_task()
-                } else {
-                  status.error('Error' + (response.response.text ? (':' + response.response.text) : ''))
-                }
-              } else {
-                status.error('Error:' + (response.statusText || response.status))
-              }
-            }
-          })
-        } else if (/success/gim.test($('a.buttonenter.buttongiveaway').text())) {
-          this.do_task()
-        } else {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needJoinGiveaway')}</font></li>` })
-        }
-      },
-      do_task: function () {
-        const id = $('script').map(function (i, e) {
-          if (/\$\(document\)/gim.test(e.innerHTML)) {
-            const optionId = e.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)[0].match(/[\d]+/)[0]
-            const taskId = e.innerHTML.match(/"\/[\d]+"/gim)[0].match(/[\d]+/)[0]
-            return [taskId, optionId]
-          }
-        })
-        if (id.length === 2) {
-          const tasks = $('#giveawaysjoined a[class*=promo]')
-          const pro = []
-          for (const task of tasks) {
-            const promo = $(task)
-            if (!promo.hasClass('buttonentered')) {
-              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${promo.parents('p').text()}...<font></font></li>` })
-              if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-                pro.push(new Promise(resolve => {
-                  $.ajax({
-                    type: 'POST',
-                    url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : (promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo')) + '/' + id[0]),
-                    timeout: 60000,
-                    dataType: 'json',
-                    data: { ajax: 't' },
-                    error: function (response, error, exception) {
-                      if (debug) console.log({ response, error, exception })
-                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                      resolve(0)
-                    },
-                    success: function (response) {
-                      if (debug) console.log(response)
-                      if (response.success) {
-                        status.success('Success:' + response.text)
-                        promo.addClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                        resolve(1)
-                      } else {
-                        status.error('Error:' + response.text)
-                        resolve(0)
-                      }
-                    }
-                  })
-                }))
-              } else if (promo.hasClass('emailoptinpromo')) {
-                pro.push(new Promise(resolve => {
-                  $.ajax({
-                    type: 'POST',
-                    url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
-                    timeout: 60000,
-                    dataType: 'json',
-                    data: { ajax: 't', emailsystoggle: 4 },
-                    error: function (response, error, exception) {
-                      if (debug) console.log({ response, error, exception })
-                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                      resolve(0)
-                    },
-                    success: function (response) {
-                      if (debug) console.log(response)
-                      if (response.success) {
-                        status.success('Success:' + response.text)
-                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                        resolve(1)
-                      } else {
-                        status.error('Error:' + response.text)
-                        resolve(0)
-                      }
-                    }
-                  })
-                }))
-              } else if (promo.hasClass('watchingpromo')) {
-                pro.push(new Promise(resolve => {
-                  const data = fuc.getUrlQuery(promo.attr('href'))
-                  data.ajax = 't'
-                  $.ajax({
-                    type: 'POST',
-                    url: urlPath(promo.attr('href').split(/[?#]/)[0]),
-                    timeout: 60000,
-                    dataType: 'json',
-                    data: data,
-                    error: function (response, error, exception) {
-                      if (debug) console.log({ response, error, exception })
-                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                      resolve(0)
-                    },
-                    success: function (response) {
-                      if (debug) console.log(response)
-                      if (response.success) {
-                        status.success('Success:' + response.text)
-                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                        resolve(1)
-                      } else {
-                        status.error('Error:' + response.text)
-                        resolve(0)
-                      }
-                    }
-                  })
-                }))
-              } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-                pro.push(new Promise(resolve => {
-                  $.ajax({
-                    type: 'POST',
-                    url: urlPath(promo.attr('href')),
-                    timeout: 60000,
-                    dataType: 'json',
-                    data: { ajax: 't' },
-                    error: function (response, error, exception) {
-                      if (debug) console.log({ response, error, exception })
-                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                      resolve(0)
-                    },
-                    success: function (response) {
-                      if (debug) console.log(response)
-                      if (response.success) {
-                        status.success('Success:' + response.text)
-                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                        resolve(1)
-                      } else {
-                        status.error('Error:' + response.text)
-                        resolve(0)
-                      }
-                    }
-                  })
-                }))
-              } else {
-                status.error('Error:' + getI18n('unknowntype'))
-              }
-            }
-          }
-          Promise.all(pro).finally(() => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('allTasksComplete')}</font></li>` })
-          })
-        } else {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getIdFailed')}</font></li>` })
-        }
-      },
-      verify: function () {
-      },
-      remove: function () {
-      },
-      checkLogin: function () {
-        if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
-      },
-      checkLeft: function (ui) { },
-      setting: {
-        fuck: true,
-        verify: false,
-        join: false,
-        remove: false
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').indiedb && GM_getValue('conf').indiedb.load) ? GM_getValue('conf').indiedb : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
-    const opiumpulses = { // eslint-disable-line no-unused-vars
-      fuck: function () {
-        this.get_tasks('FREE')
-      },
-      get_tasks: function (type = 'FREE') {
-        const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
-        const myPoint = this.myPoints
-        const maxPoint = this.maxPoint()
-        const option = {
-          arr: items,
-          time: 100,
-          i: 0,
-          callback: ({ arr, i, end }) => {
-            if (end) {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('joinLotteryComplete')}</font></li>` })
-            } else {
-              const item = arr[i]
-              const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
-              if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
-              } else if (type === 'points' && !needPoints) {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
-              } else {
-                if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                  i++
-                  option.i = i
-                  fuc.forOrder(option)
-                } else {
-                  const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
-                  const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
-                  if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
-                    const giveawayId = a.attr('onclick').match(/[\d]+/)
-                    if (giveawayId) {
-                      checkUser(giveawayId[0])
-                    }
-                  }
-                  new Promise(resolve => {
-                    fuc.httpRequest({
-                      url: a.attr('href'),
-                      method: 'GET',
-                      onload: response => {
-                        if (debug) console.log(response)
-                        if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
-                          status.success()
-                          const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
-                          if (type === 'points' && points) {
-                            if (debug) console.log(getI18n('pointsLeft') + points[1])
-                            opiumpulses.myPoints = parseInt(points[1])
-                          }
-                        } else {
-                          status.error('Success:' + (response.status || response.statusText))
-                        }
-                        resolve(1)
-                      },
-                      status,
-                      r: resolve
-                    })
-                  }).then(data => {
-                    i++
-                    option.i = i
-                    fuc.forOrder(option)
-                  })
-                }
-              }
-            }
-          },
-          complete: true
-        }
-        fuc.forOrder(option)
-      },
-      verify: function () {
-        const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
-        if (myPoints) {
-          this.myPoints = myPoints
-          this.get_tasks('points')
-        } else {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })
-        }
-      },
-      remove: function () { },
-      checkLogin: function () { },
-      checkLeft: function (ui) { },
-      myPoints: 0,
-      setting: {
-        fuck: true,
-        fuckText: 'Free',
-        fuckTitle: getI18n('joinFreeLottery'),
-        verify: true,
-        verifyText: 'Point',
-        verifyTitle: getI18n('joinPointLottery'),
-        join: false,
-        remove: false
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').opiumpulses && GM_getValue('conf').opiumpulses.load) ? GM_getValue('conf').opiumpulses : (GM_getValue('conf').global || defaultConf)) : defaultConf,
-      maxPoint: function () {
-        return this.conf['max-point'] || Infinity
-      }
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').giveawaysu && GM_getValue('conf').giveawaysu.load) ? GM_getValue('conf').giveawaysu : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
     const givekey = { // eslint-disable-line no-unused-vars
@@ -3686,135 +2961,6 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').givekey && GM_getValue('conf').givekey.load) ? GM_getValue('conf').givekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const chubkeys = { // eslint-disable-line no-unused-vars
-      fuck: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      verify: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      remove: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      get_giveawayId: function () {
-        const id = window.location.href.match(/giveaway\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
-      },
-      checkLogin: function () {
-        if ($('a.nav-link[href*=login]').length > 0) window.open('/login', '_self')
-      },
-      checkLeft: function (ui) {
-        if ($('div.card-body h5:contains(There are no more keys left)').length > 0) {
-          ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            window.close()
-          })
-        }
-      },
-      setting: {
-        fuck: true,
-        verify: true,
-        join: false,
-        remove: true
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').chubkeys && GM_getValue('conf').chubkeys.load) ? GM_getValue('conf').chubkeys : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
-    const freegamelottery = { // eslint-disable-line no-unused-vars
-      fuck: function (vue) {
-        GM_setValue('lottery', 1)
-        if ($('a.registration-button').length > 0) {
-          if (this.conf.fuck.autoLogin) {
-            const userInfo = GM_getValue('conf').lotteryUserInfo
-            if (userInfo) {
-              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('logining')}<font></font></li>` })
-              fuc.httpRequest({
-                url: 'https://freegamelottery.com/user/login',
-                method: 'POST',
-                data: `username=${userInfo.username}&password=${userInfo.password}&rememberMe=1`,
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-                },
-                onload: function (data) {
-                  if (data.status === 200) {
-                    status.success()
-                    window.location.reload(true)
-                  } else {
-                    status.error('Error:' + (data.statusText || data.status))
-                  }
-                },
-                status
-              })
-            } else {
-              vue.$message({ type: 'warning', message: getI18n('needLogin') })
-              $('a.registration-button')[0].click()
-              $('button[value=Login]').click(() => {
-                const conf = GM_getValue('conf')
-                conf.lotteryUserInfo = { username: $('#modal_login').val(), password: $('#modal_password').val() }
-                GM_setValue('conf', conf)
-              })
-            }
-          } else {
-            vue.$message({ type: 'warning', message: getI18n('needLogin') })
-            $('a.registration-button')[0].click()
-          }
-        } else {
-          this.draw()
-        }
-      },
-      draw: function () {
-        GM_setValue('lottery', 0)
-        if (this.conf.fuck.doTask) {
-          const main = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit MAIN DRAW')}<font></font></li>` })
-          $.post('/draw/register-visit', { drawId: DashboardApp.draws.main.actual.id })
-            .done(function () {
-              DashboardApp.draws.main.actual.haveVisited = true
-              main.success()
-              const survey = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit SURVEY DRAW')}<font></font></li>` })
-              $.post('/draw/register-visit', { type: 'survey', drawId: DashboardApp.draws.survey.actual.id })
-                .done(function () {
-                  DashboardApp.draws.survey.actual.haveVisited = 1
-                  survey.success()
-                  const video = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit VIDEO DRAW')}<font></font></li>` })
-                  $.post('/draw/register-visit', { drawId: DashboardApp.draws.video.actual.id })
-                    .done(function () {
-                      DashboardApp.draws.video.actual.haveVisited = true
-                      video.success()
-                      const stackpot = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit STACKPOT')}<font></font></li>` })
-                      $.post('/draw/register-visit', { type: 'stackpot', drawId: DashboardApp.draws.stackpot.actual.id })
-                        .done(function () {
-                          DashboardApp.draws.stackpot.actual.haveVisited = 1
-                          stackpot.success()
-                          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglComplete')}<font></font></li>` })
-                          window.location.href = '/#/draw/stackpot'
-                          window.location.reload(true)
-                        })
-                    })
-                })
-            })
-        }
-      },
-      verify: function () { },
-      remove: function () { },
-      checkLogin: function () { },
-      checkLeft: function (ui) { },
-      setting: {
-        fuck: true,
-        verify: false,
-        join: false,
-        remove: false
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').freegamelottery && GM_getValue('conf').freegamelottery.load) ? GM_getValue('conf').freegamelottery : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
     const gleam = { // eslint-disable-line no-unused-vars
       fuck: function () {
         this.get_tasks('do_task')
@@ -4103,6 +3249,860 @@
         remove: true
       },
       conf: GM_getValue('conf') ? ((GM_getValue('conf').gleam && GM_getValue('conf').gleam.load) ? GM_getValue('conf').gleam : (GM_getValue('conf').global || defaultConf)) : defaultConf
+    }
+
+    const indiedb = { // eslint-disable-line no-unused-vars
+      fuck: function () {
+        if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
+        const currentoption = $('a.buttonenter.buttongiveaway')
+        if (/join giveaway/gim.test(currentoption.text())) {
+          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
+          const do_task = this.do_task // eslint-disable-line camelcase
+          fuc.httpRequest({
+            url: currentoption.attr('href'),
+            method: 'POST',
+            data: 'ajax=t',
+            dataType: 'json',
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              accept: 'application/json, text/javascript, */*; q=0.01'
+            },
+            onload: function (response) {
+              if (debug) console.log(response)
+              if (response.status === 200 && response.response) {
+                if (response.response.success) {
+                  currentoption.addClass('buttonentered').text('Success - Giveaway joined')
+                  $('#giveawaysjoined').slideDown()
+                  $('#giveawaysrecommend').slideDown()
+                  status.success('Success' + (response.response.text ? (':' + response.response.text) : ''))
+                  do_task()
+                } else {
+                  status.error('Error' + (response.response.text ? (':' + response.response.text) : ''))
+                }
+              } else {
+                status.error('Error:' + (response.statusText || response.status))
+              }
+            }
+          })
+        } else if (/success/gim.test($('a.buttonenter.buttongiveaway').text())) {
+          this.do_task()
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needJoinGiveaway')}</font></li>` })
+        }
+      },
+      do_task: function () {
+        const id = $('script').map(function (i, e) {
+          if (/\$\(document\)/gim.test(e.innerHTML)) {
+            const optionId = e.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)[0].match(/[\d]+/)[0]
+            const taskId = e.innerHTML.match(/"\/[\d]+"/gim)[0].match(/[\d]+/)[0]
+            return [taskId, optionId]
+          }
+        })
+        if (id.length === 2) {
+          const tasks = $('#giveawaysjoined a[class*=promo]')
+          const pro = []
+          for (const task of tasks) {
+            const promo = $(task)
+            if (!promo.hasClass('buttonentered')) {
+              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${promo.parents('p').text()}...<font></font></li>` })
+              if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
+                pro.push(new Promise(resolve => {
+                  $.ajax({
+                    type: 'POST',
+                    url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : (promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo')) + '/' + id[0]),
+                    timeout: 60000,
+                    dataType: 'json',
+                    data: { ajax: 't' },
+                    error: function (response, error, exception) {
+                      if (debug) console.log({ response, error, exception })
+                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
+                      resolve(0)
+                    },
+                    success: function (response) {
+                      if (debug) console.log(response)
+                      if (response.success) {
+                        status.success('Success:' + response.text)
+                        promo.addClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
+                        resolve(1)
+                      } else {
+                        status.error('Error:' + response.text)
+                        resolve(0)
+                      }
+                    }
+                  })
+                }))
+              } else if (promo.hasClass('emailoptinpromo')) {
+                pro.push(new Promise(resolve => {
+                  $.ajax({
+                    type: 'POST',
+                    url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
+                    timeout: 60000,
+                    dataType: 'json',
+                    data: { ajax: 't', emailsystoggle: 4 },
+                    error: function (response, error, exception) {
+                      if (debug) console.log({ response, error, exception })
+                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
+                      resolve(0)
+                    },
+                    success: function (response) {
+                      if (debug) console.log(response)
+                      if (response.success) {
+                        status.success('Success:' + response.text)
+                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
+                        resolve(1)
+                      } else {
+                        status.error('Error:' + response.text)
+                        resolve(0)
+                      }
+                    }
+                  })
+                }))
+              } else if (promo.hasClass('watchingpromo')) {
+                pro.push(new Promise(resolve => {
+                  const data = fuc.getUrlQuery(promo.attr('href'))
+                  data.ajax = 't'
+                  $.ajax({
+                    type: 'POST',
+                    url: urlPath(promo.attr('href').split(/[?#]/)[0]),
+                    timeout: 60000,
+                    dataType: 'json',
+                    data: data,
+                    error: function (response, error, exception) {
+                      if (debug) console.log({ response, error, exception })
+                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
+                      resolve(0)
+                    },
+                    success: function (response) {
+                      if (debug) console.log(response)
+                      if (response.success) {
+                        status.success('Success:' + response.text)
+                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
+                        resolve(1)
+                      } else {
+                        status.error('Error:' + response.text)
+                        resolve(0)
+                      }
+                    }
+                  })
+                }))
+              } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
+                pro.push(new Promise(resolve => {
+                  $.ajax({
+                    type: 'POST',
+                    url: urlPath(promo.attr('href')),
+                    timeout: 60000,
+                    dataType: 'json',
+                    data: { ajax: 't' },
+                    error: function (response, error, exception) {
+                      if (debug) console.log({ response, error, exception })
+                      status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
+                      resolve(0)
+                    },
+                    success: function (response) {
+                      if (debug) console.log(response)
+                      if (response.success) {
+                        status.success('Success:' + response.text)
+                        promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
+                        resolve(1)
+                      } else {
+                        status.error('Error:' + response.text)
+                        resolve(0)
+                      }
+                    }
+                  })
+                }))
+              } else {
+                status.error('Error:' + getI18n('unknowntype'))
+              }
+            }
+          }
+          Promise.all(pro).finally(() => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('allTasksComplete')}</font></li>` })
+          })
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getIdFailed')}</font></li>` })
+        }
+      },
+      verify: function () {
+      },
+      remove: function () {
+      },
+      checkLogin: function () {
+        if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
+      },
+      checkLeft: function (ui) { },
+      setting: {
+        fuck: true,
+        verify: false,
+        join: false,
+        remove: false
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').indiedb && GM_getValue('conf').indiedb.load) ? GM_getValue('conf').indiedb : (GM_getValue('conf').global || defaultConf)) : defaultConf
+    }
+
+    const marvelousga = { // eslint-disable-line no-unused-vars
+      fuck: function () {
+        this.get_tasks('do_task')
+      },
+      get_tasks: function (callback = 'do_task') {
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+        if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
+        if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
+          this.remove(true)
+        } else {
+          this.tasks = []
+          this.groups = []
+          this.curators = []
+          this.links = []
+          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+
+          const tasksContainer = $('.container_task')
+          for (const task of tasksContainer) { // 遍历任务信息
+            const taskDes = $(task).find('.card-body p.card-text.monospace')
+            const verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
+            if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) { // 加组任务
+              const groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
+              if (verifyBtn.length > 0) {
+                this.groups.push(groupName)
+              }
+              this.taskInfo.groups.push(groupName)
+            }
+            if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) { // 关注鉴赏家任务
+              const curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
+              if (verifyBtn.length > 0) {
+                this.curators.push(curatorName)
+              }
+              this.taskInfo.curators.push(curatorName)
+            }
+            if (/visit.*?this.*?page/gim.test(taskDes.text()) && verifyBtn.length > 0) { // 浏览页面任务
+              const pageUrl = taskDes.find('a[id^="task_webpage_clickedLink"]').attr('href')
+              this.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
+            }
+            if (verifyBtn.length > 0) { // 任务验证信息
+              const provider = verifyBtn.attr('id').split('_')[1]
+              const taskRoute = verifyBtn.attr('id').split('_')[2]
+              const taskId = verifyBtn.attr('id').split('_')[3]
+              this.tasks.push({ provider, taskRoute, taskId, taskDes: taskDes.html() })
+            }
+          }
+          this.groups = fuc.unique(this.groups)
+          this.curators = fuc.unique(this.curators)
+          this.links = fuc.unique(this.links)
+          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+          this.tasks = fuc.unique(this.tasks)
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+          status.success()
+          if (debug) console.log(this)
+          if (callback === 'do_task') {
+            if (this.tasks.length === 0) {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+              if (this.conf.fuck.verify) this.verify()
+            } else {
+              this.do_task()
+            }
+          } else if (callback === 'verify') {
+            this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
+          } else {
+            !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('cannotRemove')}</font></li>` })
+          }
+        }
+      },
+      do_task: function () {
+        this.updateSteamInfo(() => {
+          const pro = []
+          const groups = fuc.unique(this.groups)
+          const curators = fuc.unique(this.curators)
+          const links = fuc.unique(this.links)
+          if (this.conf.fuck.group) {
+            for (const group of groups) {
+              pro.push(new Promise((resolve) => {
+                fuc.joinSteamGroup(resolve, group)
+              }))
+            }
+          }
+          if (this.conf.fuck.curator) {
+            for (const curator of curators) {
+              pro.push(new Promise((resolve) => {
+                fuc.followCurator(resolve, curator)
+              }))
+            }
+          }
+          if (this.conf.fuck.visit) {
+            for (const link of links) {
+              pro.push(new Promise((resolve) => {
+                fuc.visitLink(resolve, link.pageUrl, {
+                  url: '/ajax/verifyTasks/webpage/clickedLink',
+                  method: 'POST',
+                  headers: {
+                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                  },
+                  data: $.param({
+                    giveaway_slug: this.get_giveawayId(),
+                    giveaway_task_id: link.taskId
+                  })
+                })
+              }))
+            }
+          }
+          Promise.all(pro).finally(resolve => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+            if (this.conf.fuck.verify) this.verify()
+          })
+        })
+      },
+      verify: function (verify = false) {
+        if (verify) {
+          const pro = []
+          for (const task of fuc.unique(this.tasks)) {
+            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
+            pro.push(new Promise((resolve) => {
+              fuc.httpRequest({
+                url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
+                method: 'POST',
+                dataType: 'json',
+                headers: {
+                  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: $.param({
+                  giveaway_slug: this.get_giveawayId(),
+                  giveaway_task_id: task.taskId
+                }),
+                onload: function (response) {
+                  if (debug) console.log(response)
+                  if (response.status === 200) {
+                    if (response.response.status === 1) {
+                      $(`#task_${task.provider}_${task.taskRoute}_${task.taskId}`).text('VERIFIED')
+                      status.success(response.response.percentageNanoBar.toFixed(2) + '%')
+                      resolve({ result: 'success', statusText: response.statusText, status: response.status })
+                    } else {
+                      status.error('Error:' + (response.response.message || 'error'))
+                      if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                      resolve({ result: 'error', statusText: response.statusText, status: response.status })
+                    }
+                  } else {
+                    status.error('Error:' + (response.response.message || response.statusText || response.status))
+                    if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                    resolve({ result: 'error', statusText: response.statusText, status: response.status })
+                  }
+                },
+                r: resolve,
+                status
+              })
+            }))
+          }
+          Promise.all(pro).finally(resolve => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
+            $('#get_key_container').show()
+            $('.hclonely-google').unbind()
+            $('.hclonely-google').click(() => { $('#get_key_container')[0].scrollIntoView() })
+          })
+        } else {
+          this.get_tasks('verify')
+        }
+      },
+      remove: function (remove = false) {
+        const pro = []
+        if (remove) {
+          this.updateSteamInfo(() => {
+            if (this.conf.remove.group) {
+              for (const group of fuc.unique(this.taskInfo.groups)) {
+                pro.push(new Promise((resolve) => {
+                  fuc.leaveSteamGroup(resolve, group)
+                }))
+              }
+            }
+            if (this.conf.remove.curator) {
+              for (const curator of fuc.unique(this.taskInfo.curators)) {
+                pro.push(new Promise((resolve) => {
+                  fuc.unfollowCurator(resolve, curator)
+                }))
+              }
+            }
+            Promise.all(pro).finally(data => {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+            })
+          })
+        } else {
+          this.get_tasks('remove')
+        }
+      },
+      get_giveawayId: function () {
+        const id = $('#giveawaySlug').val() || window.location.href
+        return id
+      },
+      updateSteamInfo: function (callback) {
+        new Promise(resolve => {
+          if (this.taskInfo.groups.length > 0) {
+            if (this.taskInfo.curators.length > 0) {
+              fuc.updateSteamInfo(resolve, 'all')
+            } else {
+              fuc.updateSteamInfo(resolve, 'community')
+            }
+          } else if (this.taskInfo.curators.length > 0) {
+            fuc.updateSteamInfo(resolve, 'store')
+          } else {
+            resolve(1)
+          }
+        }).then(s => {
+          if (s === 1) {
+            callback()
+          }
+        })
+      },
+      checkLogin: function () {
+        if ($('a[href*=login]').length > 0) window.open('/login', '_self')
+      },
+      checkLeft: function (ui) {
+        if ($('h3.text-danger:contains(this giveaway is closed)').length > 0) {
+          $('#link_to_click').remove()
+          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+            confirmButtonText: getI18n('confirm'),
+            cancelButtonText: getI18n('cancel'),
+            type: 'warning',
+            center: true
+          }).then(() => {
+            window.close()
+          })
+        }
+      },
+      groups: [], // 任务需要加的组
+      curators: [], // 任务需要关注的鉴赏家
+      links: [], // 需要浏览的页面链接
+      taskInfo: {
+        groups: [], // 所有任务需要加的组
+        curators: []// 所有任务需要关注的鉴赏家
+      },
+      tasks: [], // 任务信息
+      setting: {
+        fuck: true,
+        verify: true,
+        join: false,
+        remove: true
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').marvelousga && GM_getValue('conf').marvelousga.load) ? GM_getValue('conf').marvelousga : (GM_getValue('conf').global || defaultConf)) : defaultConf
+    }
+
+    const opiumpulses = { // eslint-disable-line no-unused-vars
+      fuck: function () {
+        this.get_tasks('FREE')
+      },
+      get_tasks: function (type = 'FREE') {
+        const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
+        const myPoint = this.myPoints
+        const maxPoint = this.maxPoint()
+        const option = {
+          arr: items,
+          time: 100,
+          i: 0,
+          callback: ({ arr, i, end }) => {
+            if (end) {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('joinLotteryComplete')}</font></li>` })
+            } else {
+              const item = arr[i]
+              const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
+              if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
+                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
+              } else if (type === 'points' && !needPoints) {
+                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
+              } else {
+                if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
+                  i++
+                  option.i = i
+                  fuc.forOrder(option)
+                } else {
+                  const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
+                  const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
+                  if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
+                    const giveawayId = a.attr('onclick').match(/[\d]+/)
+                    if (giveawayId) {
+                      checkUser(giveawayId[0])
+                    }
+                  }
+                  new Promise(resolve => {
+                    fuc.httpRequest({
+                      url: a.attr('href'),
+                      method: 'GET',
+                      onload: response => {
+                        if (debug) console.log(response)
+                        if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
+                          status.success()
+                          const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
+                          if (type === 'points' && points) {
+                            if (debug) console.log(getI18n('pointsLeft') + points[1])
+                            opiumpulses.myPoints = parseInt(points[1])
+                          }
+                        } else {
+                          status.error('Success:' + (response.status || response.statusText))
+                        }
+                        resolve(1)
+                      },
+                      status,
+                      r: resolve
+                    })
+                  }).then(data => {
+                    i++
+                    option.i = i
+                    fuc.forOrder(option)
+                  })
+                }
+              }
+            }
+          },
+          complete: true
+        }
+        fuc.forOrder(option)
+      },
+      verify: function () {
+        const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
+        if (myPoints) {
+          this.myPoints = myPoints
+          this.get_tasks('points')
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })
+        }
+      },
+      remove: function () { },
+      checkLogin: function () { },
+      checkLeft: function (ui) { },
+      myPoints: 0,
+      setting: {
+        fuck: true,
+        fuckText: 'Free',
+        fuckTitle: getI18n('joinFreeLottery'),
+        verify: true,
+        verifyText: 'Point',
+        verifyTitle: getI18n('joinPointLottery'),
+        join: false,
+        remove: false
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').opiumpulses && GM_getValue('conf').opiumpulses.load) ? GM_getValue('conf').opiumpulses : (GM_getValue('conf').global || defaultConf)) : defaultConf,
+      maxPoint: function () {
+        return this.conf['max-point'] || Infinity
+      }
+    }
+
+    const prys = { // eslint-disable-line no-unused-vars
+      fuck: function () {
+        this.get_tasks('do_task')
+      },
+      get_tasks: function (callback = 'do_task') {
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+        const steps = $('#steps tbody tr')
+        for (let i = 0; i < steps.length; i++) {
+          if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
+        }
+        if (callback === 'do_task') {
+          const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+          if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
+          this.groups = []
+          this.curators = []
+          const pro = []
+          for (const step of steps) {
+            if ($(step).find('span:contains(Success)').length === 0) {
+              if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                const curatorId = link.match(/curator\/([\d]+)/)
+                if (curatorId) {
+                  this.curators.push(curatorId[1])
+                  this.taskInfo.curators.push(curatorId[1])
+                }
+              } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
+                const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
+                const groupName = link.match(/groups\/(.+)\/?/)
+                if (groupName) {
+                  this.groups.push(groupName[1])
+                  this.taskInfo.groups.push(groupName[1])
+                }
+              } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
+            pro.push(new Promise(r => { // eslint-disable-line
+                  new Promise(resolve => {
+                    fuc.getFinalUrl(resolve, link)
+                  }).then(data => {
+                    if (data.result === 'success') {
+                      const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
+                      if (groupName) {
+                        this.groups.push(groupName[1])
+                        this.taskInfo.groups.push(groupName[1])
+                      }
+                    }
+                    r(1)
+                  })
+                }))
+              }
+            }
+          }
+          if (pro.length > 0) {
+            Promise.all(pro).finally(data => {
+              this.groups = fuc.unique(this.groups)
+              this.curators = fuc.unique(this.curators)
+              this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+              this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+              if (this.groups.length > 0 || this.curators.length > 0) {
+                this.do_task()
+              } else {
+                fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+                if (this.conf.fuck.verify) this.verify()
+              }
+            })
+          } else {
+            this.groups = fuc.unique(this.groups)
+            this.curators = fuc.unique(this.curators)
+            this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+            this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+            if (this.groups.length > 0 || this.curators.length > 0) {
+              this.do_task()
+            } else {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+              if (this.conf.fuck.verify) this.verify()
+            }
+          }
+        } else if (callback === 'verify') {
+          this.tasks = []
+          const checks = $('#steps tbody a[id^=check]')
+          if (checks.length > 0) {
+            for (const check of checks) {
+              const id = $(check).attr('id').match(/[\d]+/)
+              if (id) this.tasks.push({ id: id[0], taskDes: $(check).parent().prev().html().trim() })
+            }
+            this.verify(true)
+          } else {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
+          }
+        } else if (callback === 'remove') {
+          const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+          if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) {
+            this.taskInfo = taskInfo
+            this.remove(true)
+          } else {
+            const pro = []
+            for (const step of steps) {
+              if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                const curatorId = link.match(/curator\/([\d]+)/)
+                if (curatorId) {
+                  this.taskInfo.curators.push(curatorId[1])
+                }
+              } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
+                const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
+                const groupName = link.match(/groups\/(.+)\/?/)
+                if (groupName) {
+                  this.taskInfo.groups.push(groupName[1])
+                }
+              } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
+            pro.push(new Promise(r => { // eslint-disable-line
+                  new Promise(resolve => {
+                    fuc.getFinalUrl(resolve, link)
+                  }).then(data => {
+                    if (data.result === 'success') {
+                      const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
+                      if (groupName) {
+                        this.taskInfo.groups.push(groupName[1])
+                      }
+                    }
+                    r(1)
+                  })
+                }))
+              }
+            }
+            if (pro.length > 0) {
+              Promise.all(pro).finally(data => {
+                this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+                this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+                GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+                if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
+                  this.remove(true)
+                } else {
+                  fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
+                }
+              })
+            } else {
+              this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+              this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+              if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
+                this.remove(true)
+              } else {
+                fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
+              }
+            }
+          }
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
+        }
+        status.success()
+        if (debug) console.log(this)
+      },
+      do_task: function () {
+        this.updateSteamInfo(() => {
+          const pro = []
+          const groups = fuc.unique(this.groups)
+          const curators = fuc.unique(this.curators)
+          if (this.conf.fuck.group) {
+            for (const group of groups) {
+              pro.push(new Promise((resolve) => {
+                fuc.joinSteamGroup(resolve, group)
+              }))
+            }
+          }
+          if (this.conf.fuck.curator) {
+            for (const curator of curators) {
+              pro.push(new Promise((resolve) => {
+                fuc.followCurator(resolve, curator)
+              }))
+            }
+          }
+          Promise.all(pro).finally(resolve => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+            if (this.conf.fuck.verify) this.verify()
+          })
+        })
+      },
+      verify: function (verify = false) {
+        if (verify) {
+          const pro = []
+          for (const task of fuc.unique(this.tasks)) {
+            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
+            pro.push(new Promise((resolve) => {
+              this.checkStep(task.id, resolve, status)
+            }))
+          }
+          Promise.all(pro).finally(resolve => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
+          })
+        } else {
+          this.get_tasks('verify')
+        }
+      },
+      checkStep: function (step, r, status, captcha) {
+        if (!captcha) captcha = null
+        if (step !== 'captcha') {
+          $('#check' + step).replaceWith('<span id="check' + step +
+            '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
+        }
+        $.post('/api/check_step', {
+          step: step,
+          id: getURLParameter('id'),
+          'g-recaptcha-response': captcha
+        }, function (json) {
+          r(1)
+          if (json.success && step !== 'captcha') {
+            $('#check' + step).replaceWith('<span class="text-success" id="check' + step +
+                    '"><i class="fa fa-check"></i> Success</span>')
+            status.success()
+          } else if (step !== 'captcha') {
+            $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
+                    ')"><i class="fa fa-question"></i> Check</a>')
+            status.error((json.response ? json.response.error ? json.response.error : 'Error' : 'Error'))
+          }
+          if (json.response) {
+            if (json.response.captcha && json.success) {
+              showAlert('info', json.response.captcha)
+              captchaCheck()
+            } else if (json.response.captcha) {
+              showAlert('warning', json.response.captcha)
+              captchaCheck()
+            }
+            if (json.response.prize) {
+              showAlert('success',
+                'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' +
+                        json.response.prize + '</h2>')
+            }
+          }
+        }).fail(function () {
+          r(1)
+          $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
+                ')"><i class="fa fa-question"></i> Check</a>')
+          status.error('Error:0')
+        })
+      },
+      remove: function (remove = false) {
+        const pro = []
+        if (remove) {
+          this.updateSteamInfo(() => {
+            if (this.conf.remove.group) {
+              for (const group of fuc.unique(this.taskInfo.groups)) {
+                pro.push(new Promise((resolve) => {
+                  fuc.leaveSteamGroup(resolve, group)
+                }))
+              }
+            }
+            if (this.conf.remove.curator) {
+              for (const curator of fuc.unique(this.taskInfo.curators)) {
+                pro.push(new Promise((resolve) => {
+                  fuc.unfollowCurator(resolve, curator)
+                }))
+              }
+            }
+            Promise.all(pro).finally(data => {
+              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+            })
+          })
+        } else {
+          this.get_tasks('remove')
+        }
+      },
+      get_giveawayId: function () {
+        const id = window.location.search.match(/id=([\d]+)/)
+        if (id) {
+          return id[1]
+        } else {
+          return window.location.href
+        }
+      },
+      updateSteamInfo: function (callback) {
+        new Promise(resolve => {
+          if (this.taskInfo.groups.length > 0) {
+            if (this.taskInfo.curators.length > 0) {
+              fuc.updateSteamInfo(resolve, 'all')
+            } else {
+              fuc.updateSteamInfo(resolve, 'community')
+            }
+          } else if (this.taskInfo.curators.length > 0) {
+            fuc.updateSteamInfo(resolve, 'store')
+          } else {
+            resolve(1)
+          }
+        }).then(s => {
+          if (s === 1) {
+            callback()
+          }
+        })
+      },
+      checkLogin: function () { },
+      checkLeft: function (ui) {
+        const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
+        if (!(left.length > 0 && left[1] !== '0')) {
+          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+            confirmButtonText: getI18n('confirm'),
+            cancelButtonText: getI18n('cancel'),
+            type: 'warning',
+            center: true
+          }).then(() => {
+            window.close()
+          })
+        }
+      },
+      groups: [], // 任务需要加的组
+      curators: [], // 任务需要关注的鉴赏家
+      taskInfo: {
+        groups: [], // 所有任务需要加的组
+        curators: []// 所有任务需要关注的鉴赏家
+      },
+      tasks: [], // 任务信息
+      setting: {
+        fuck: true,
+        verify: true,
+        join: false,
+        remove: true
+      },
+      conf: GM_getValue('conf') ? ((GM_getValue('conf').prys && GM_getValue('conf').prys.load) ? GM_getValue('conf').prys : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
     const spoune = { // eslint-disable-line no-unused-vars

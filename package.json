@@ -5,7 +5,7 @@
   "main": "pack.js",
   "scripts": {
     "test": "node test.js && standard auto-task.user.js --fix",
-    "start": "node index.js -p && standard auto-task.user.js --fix"
+    "start": "standard && node index.js -p && standard auto-task.user.js --fix"
   },
   "author": "HCLonely",
   "license": "MIT",

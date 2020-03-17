@@ -86,7 +86,7 @@ const fuc = {
     if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
       const pro = []
       if (type === 'community' || type === 'all') {
-        pro.push(new Promise(r => { // eslint-disable-line
+        pro.push(new Promise(resolve => {
           const status = this.echoLog({ type: 'updateSteamCommunity' })
           this.httpRequest({
             url: 'https://steamcommunity.com/my',
@@ -101,19 +101,19 @@ const fuc = {
                 if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
                 if (userName) steamInfo.userName = userName[1]
                 status.success()
-                r({ result: 'success', statusText: response.statusText, status: response.status })
+                resolve()
               } else {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                r({ result: 'error', statusText: response.statusText, status: response.status })
+                resolve()
               }
             },
-            r,
+            r: resolve,
             status
           })
         }))
       }
       if (type === 'store' || type === 'all') {
-        pro.push(new Promise(r => { // eslint-disable-line
+        pro.push(new Promise(resolve => { // eslint-disable-line
           const status = this.echoLog({ type: 'updateSteamStore' })
 
           this.httpRequest({
@@ -125,13 +125,13 @@ const fuc = {
                 const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
                 if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
                 status.success()
-                r({ result: 'success', statusText: response.statusText, status: response.status })
+                resolve()
               } else {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                r({ result: 'error', statusText: response.statusText, status: response.status })
+                resolve()
               }
             },
-            r,
+            r: resolve,
             status
           })
         }))
@@ -139,10 +139,10 @@ const fuc = {
       Promise.all(pro).then(data => {
         steamInfo.updateTime = new Date().getTime()
         GM_setValue('steamInfo', steamInfo)
-        r(1)
+        r()
       })
     } else {
-      r(1)
+      r()
     }
   },
   joinSteamGroup: function (r, group) {
@@ -575,24 +575,6 @@ const fuc = {
       status.warning('Complete')
       r(1)
     })
-  },
-  forOrder: function ({ arr, callback, i = 0, time = 0, complete = false }) {
-    if (complete) {
-      if (i < arr.length) {
-        callback({ arr, i, end: false }) // eslint-disable-line
-      } else {
-        callback({ end: true }) // eslint-disable-line
-      }
-    } else {
-      if (i < arr.length) {
-        callback({ e: arr[i], end: false }) // eslint-disable-line
-        setTimeout(function () {
-          fuc.forOrder({ arr, callback, i: ++i, time, complete })
-        }, time)
-      } else {
-        callback({ end: true }) // eslint-disable-line
-      }
-    }
   },
   checkUpdate: function (v, s = false) {
     v.icon = 'el-icon-loading'

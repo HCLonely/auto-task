@@ -1,4 +1,3 @@
-
 // ==UserScript==
 // @name           自动任务
 // @name:en        Auto Task
@@ -527,7 +526,7 @@
         if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
           const pro = []
           if (type === 'community' || type === 'all') {
-        pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(resolve => {
               const status = this.echoLog({ type: 'updateSteamCommunity' })
               this.httpRequest({
                 url: 'https://steamcommunity.com/my',
@@ -542,19 +541,19 @@
                     if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
                     if (userName) steamInfo.userName = userName[1]
                     status.success()
-                    r({ result: 'success', statusText: response.statusText, status: response.status })
+                    resolve()
                   } else {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    r({ result: 'error', statusText: response.statusText, status: response.status })
+                    resolve()
                   }
                 },
-                r,
+                r: resolve,
                 status
               })
             }))
           }
           if (type === 'store' || type === 'all') {
-        pro.push(new Promise(r => { // eslint-disable-line
+        pro.push(new Promise(resolve => { // eslint-disable-line
               const status = this.echoLog({ type: 'updateSteamStore' })
 
               this.httpRequest({
@@ -566,13 +565,13 @@
                     const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
                     if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
                     status.success()
-                    r({ result: 'success', statusText: response.statusText, status: response.status })
+                    resolve()
                   } else {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    r({ result: 'error', statusText: response.statusText, status: response.status })
+                    resolve()
                   }
                 },
-                r,
+                r: resolve,
                 status
               })
             }))
@@ -580,10 +579,10 @@
           Promise.all(pro).then(data => {
             steamInfo.updateTime = new Date().getTime()
             GM_setValue('steamInfo', steamInfo)
-            r(1)
+            r()
           })
         } else {
-          r(1)
+          r()
         }
       },
       joinSteamGroup: function (r, group) {
@@ -1016,24 +1015,6 @@
           status.warning('Complete')
           r(1)
         })
-      },
-      forOrder: function ({ arr, callback, i = 0, time = 0, complete = false }) {
-        if (complete) {
-          if (i < arr.length) {
-        callback({ arr, i, end: false }) // eslint-disable-line
-          } else {
-        callback({ end: true }) // eslint-disable-line
-          }
-        } else {
-          if (i < arr.length) {
-        callback({ e: arr[i], end: false }) // eslint-disable-line
-            setTimeout(function () {
-              fuc.forOrder({ arr, callback, i: ++i, time, complete })
-            }, time)
-          } else {
-        callback({ end: true }) // eslint-disable-line
-          }
-        }
       },
       checkUpdate: function (v, s = false) {
         v.icon = 'el-icon-loading'
@@ -2140,82 +2121,75 @@
         status.success()
         if (debug) console.log(this)
       },
-      do_task: function () {
+      do_task: async function () {
         const pro = []
         const tasks = fuc.unique(this.tasks)
-        fuc.forOrder({
-          arr: tasks,
-          time: 500,
-          callback: ({ e, end }) => {
-            if (!end) {
-              const task = e
-              pro.push(new Promise((resolve) => {
-                fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-              }))
-              if (/play.*?games/gim.test(task.taskDes)) {
-                pro.push(new Promise((resolve) => {
-                  fuc.visitLink(resolve, '/games', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-                }))
-                pro.push(new Promise((resolve) => {
-                  fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-                }))
-              }
-            } else {
-              Promise.all(pro).finally(resolve => {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-                if (this.conf.fuck.verify) this.verify()
-              })
-            }
+        for (let i = 0; i < tasks.length; i++) {
+          const task = tasks[i]
+          pro.push(new Promise((resolve) => {
+            fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+          }))
+          if (/play.*?games/gim.test(task.taskDes)) {
+            pro.push(new Promise((resolve) => {
+              fuc.visitLink(resolve, '/games', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+            }))
+            pro.push(new Promise((resolve) => {
+              fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+            }))
           }
+          await new Promise(resolve => {
+            setTimeout(() => { resolve() }, 1000)
+          })
+        }
+        Promise.all(pro).finally(resolve => {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+          if (this.conf.fuck.verify) this.verify()
         })
       },
-      verify: function (verify = false) {
+      verify: async function (verify = false) {
         if (verify) {
           const pro = []
-          fuc.forOrder({
-            arr: fuc.unique(this.tasks),
-            time: 500,
-            callback: ({ e, end }) => {
-              if (!end) {
-                const task = e
-                const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
-                pro.push(new Promise((resolve) => {
-                  fuc.httpRequest({
-                    url: '/api/v1/giveaway/sendtask',
-                    method: 'POST',
-                    dataType: 'json',
-                    headers: {
-                      'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                      'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: 'task_id=' + task.taskId,
-                    onload: function (response) {
-                      if (debug) console.log(response)
-                      if (response.response) {
-                        if (response.response.status === 'success') {
-                          status.success()
-                          $(`div.task-reward[href="#task-${task.taskId}-collapse"]`).html('<svg class="nc-icon nc-align-to-text grid-24 glyph"><use xlink:href="/icons/nci-fill.svg#nc-icon-check-simple" /></svg>')
-                          resolve({ result: 'success', statusText: response.statusText, status: response.status })
-                        } else {
-                          status.error('Error:' + (response.response.message || response.statusText || response.status || 'error'))
-                          if (globalConf.other.autoOpen) window.open(`/giveaway/click/${task.taskId}`, '_blank')
-                          resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                        }
-                      } else {
-                        status.error('Error:' + response.statusText)
-                        resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                      }
-                    },
-                    r: resolve,
-                    status
-                  })
-                }))
-              } else {
-                Promise.all(pro).finally(resolve => {
-                  fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
-                })
-              }
-            }
+          const tasks = fuc.unique(this.tasks)
+          for (let i = 0; i < tasks.length; i++) {
+            const task = tasks[i]
+            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
+            pro.push(new Promise((resolve) => {
+              fuc.httpRequest({
+                url: '/api/v1/giveaway/sendtask',
+                method: 'POST',
+                dataType: 'json',
+                headers: {
+                  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: 'task_id=' + task.taskId,
+                onload: function (response) {
+                  if (debug) console.log(response)
+                  if (response.response) {
+                    if (response.response.status === 'success') {
+                      status.success()
+                      $(`div.task-reward[href="#task-${task.taskId}-collapse"]`).html('<svg class="nc-icon nc-align-to-text grid-24 glyph"><use xlink:href="/icons/nci-fill.svg#nc-icon-check-simple" /></svg>')
+                      resolve({ result: 'success', statusText: response.statusText, status: response.status })
+                    } else {
+                      status.error('Error:' + (response.response.message || response.statusText || response.status || 'error'))
+                      if (globalConf.other.autoOpen) window.open(`/giveaway/click/${task.taskId}`, '_blank')
+                      resolve({ result: 'error', statusText: response.statusText, status: response.status })
+                    }
+                  } else {
+                    status.error('Error:' + response.statusText)
+                    resolve({ result: 'error', statusText: response.statusText, status: response.status })
+                  }
+                },
+                r: resolve,
+                status
+              })
+            }))
+            await new Promise(resolve => {
+              setTimeout(() => { resolve() }, 1000)
+            })
+          }
+          Promise.all(pro).finally(resolve => {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
           })
         } else {
           this.get_tasks('verify')
@@ -3689,71 +3663,54 @@
       fuck: function () {
         this.get_tasks('FREE')
       },
-      get_tasks: function (type = 'FREE') {
+      get_tasks: async function (type = 'FREE') {
         const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
         const myPoint = this.myPoints
         const maxPoint = this.maxPoint()
-        const option = {
-          arr: items,
-          time: 100,
-          i: 0,
-          callback: ({ arr, i, end }) => {
-            if (end) {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('joinLotteryComplete')}</font></li>` })
-            } else {
-              const item = arr[i]
-              const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
-              if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
-              } else if (type === 'points' && !needPoints) {
-                fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
-              } else {
-                if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                  i++
-                  option.i = i
-                  fuc.forOrder(option)
-                } else {
-                  const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
-                  const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
-                  if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
-                    const giveawayId = a.attr('onclick').match(/[\d]+/)
-                    if (giveawayId) {
-                      checkUser(giveawayId[0])
-                    }
-                  }
-                  new Promise(resolve => {
-                    fuc.httpRequest({
-                      url: a.attr('href'),
-                      method: 'GET',
-                      onload: response => {
-                        if (debug) console.log(response)
-                        if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
-                          status.success()
-                          const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
-                          if (type === 'points' && points) {
-                            if (debug) console.log(getI18n('pointsLeft') + points[1])
-                            opiumpulses.myPoints = parseInt(points[1])
-                          }
-                        } else {
-                          status.error('Success:' + (response.status || response.statusText))
-                        }
-                        resolve(1)
-                      },
-                      status,
-                      r: resolve
-                    })
-                  }).then(data => {
-                    i++
-                    option.i = i
-                    fuc.forOrder(option)
-                  })
-                }
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i]
+          const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
+          if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
+          } else if (type === 'points' && !needPoints) {
+            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
+          } else if (!(type === 'points' && parseInt(needPoints[0]) > maxPoint)) {
+            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
+            const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
+            if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
+              const giveawayId = a.attr('onclick').match(/[\d]+/)
+              if (giveawayId) {
+                checkUser(giveawayId[0])
               }
             }
-          },
-          complete: true
+            await new Promise(resolve => {
+              fuc.httpRequest({
+                url: a.attr('href'),
+                method: 'GET',
+                onload: response => {
+                  if (debug) console.log(response)
+                  if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
+                    status.success()
+                    const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
+                    if (type === 'points' && points) {
+                      if (debug) console.log(getI18n('pointsLeft') + points[1])
+                      opiumpulses.myPoints = parseInt(points[1])
+                    }
+                  } else {
+                    status.error('Success:' + (response.status || response.statusText))
+                  }
+                  resolve(1)
+                },
+                status,
+                r: resolve
+              })
+            }).then(data => {
+              return true
+            }).catch(() => {
+              return false
+            })
+          }
         }
-        fuc.forOrder(option)
       },
       verify: function () {
         const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
@@ -4127,21 +4084,17 @@
         }
         status.warning('Complete')
         if (this.tasks.length > 0) {
-          this.do_task()
+          this.verify()
         } else {
           fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noAutoFinish')}</font></li>` })
         }
       },
-      do_task: function () {
-        fuc.forOrder({ arr: fuc.unique(this.tasks), i: 0, callback: spoune.verify, complete: true })
-      },
-      verify: function ({ arr, i, end }) {
-        if (end) {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
-        } else {
-          const task = arr[i]
+      verify: async function ({ arr, i, end }) {
+        const tasks = fuc.unique(this.tasks)
+        for (let i = 0; i < tasks.length; i++) {
+          const task = tasks[i]
           const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}${task.text}...<font></font></li>` })
-          new Promise(resolve => {
+          await new Promise(resolve => {
             fuc.httpRequest({
               url: `/controller.php?taskDetail=${task.id}&show`,
               method: 'get',
@@ -4165,7 +4118,7 @@
                                 if (debug) console.log(response)
                                 if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
                                   status.success()
-                                  resolve(1)
+                                  resolve()
                                 } else {
                                   const href = response.responseText.match(/href="\.(\/verify[\w\W]*?)"/) || response.responseText.match(/href="\.(\/steamgroup[\w\W]*?)"/)
                                   if (href) {
@@ -4179,14 +4132,14 @@
                                         } else {
                                           status.error('Error:' + (response.statusText || response.status))
                                         }
-                                        resolve(1)
+                                        resolve()
                                       },
                                       r: resolve,
                                       status
                                     })
                                   } else {
                                     status.error('Error:' + (response.statusText || response.status))
-                                    resolve(0)
+                                    resolve()
                                   }
                                 }
                               },
@@ -4195,11 +4148,11 @@
                             })
                           } else {
                             status.error('Error:' + getI18n('getUrlFailed', '2'))
-                            resolve(0)
+                            resolve()
                           }
                         } else {
                           status.error('Error:' + (response.statusText || response.status))
-                          resolve(0)
+                          resolve()
                         }
                       },
                       r: resolve,
@@ -4207,20 +4160,23 @@
                     })
                   } else {
                     status.error('Error:' + getI18n('getUrlFailed', '1'))
-                    resolve(0)
+                    resolve()
                   }
                 } else {
                   status.error('Error:' + (response.statusText || response.status))
-                  resolve(0)
+                  resolve()
                 }
               },
               r: resolve,
               status
             })
-          }).finally(() => {
-            fuc.forOrder({ arr, i: ++i, callback: spoune.verify, complete: true })
+          }).then(() => {
+            return true
+          }).catch(() => {
+            return false
           })
         }
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
       },
       remove: function () { },
       checkLogin: function () { },

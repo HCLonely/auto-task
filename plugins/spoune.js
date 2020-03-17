@@ -21,21 +21,17 @@ const spoune = { // eslint-disable-line no-unused-vars
     }
     status.warning('Complete')
     if (this.tasks.length > 0) {
-      this.do_task()
+      this.verify()
     } else {
       fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noAutoFinish')}</font></li>` })
     }
   },
-  do_task: function () {
-    fuc.forOrder({ arr: fuc.unique(this.tasks), i: 0, callback: spoune.verify, complete: true })
-  },
-  verify: function ({ arr, i, end }) {
-    if (end) {
-      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
-    } else {
-      const task = arr[i]
+  verify: async function ({ arr, i, end }) {
+    const tasks = fuc.unique(this.tasks)
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i]
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}${task.text}...<font></font></li>` })
-      new Promise(resolve => {
+      await new Promise(resolve => {
         fuc.httpRequest({
           url: `/controller.php?taskDetail=${task.id}&show`,
           method: 'get',
@@ -59,7 +55,7 @@ const spoune = { // eslint-disable-line no-unused-vars
                             if (debug) console.log(response)
                             if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
                               status.success()
-                              resolve(1)
+                              resolve()
                             } else {
                               const href = response.responseText.match(/href="\.(\/verify[\w\W]*?)"/) || response.responseText.match(/href="\.(\/steamgroup[\w\W]*?)"/)
                               if (href) {
@@ -73,14 +69,14 @@ const spoune = { // eslint-disable-line no-unused-vars
                                     } else {
                                       status.error('Error:' + (response.statusText || response.status))
                                     }
-                                    resolve(1)
+                                    resolve()
                                   },
                                   r: resolve,
                                   status
                                 })
                               } else {
                                 status.error('Error:' + (response.statusText || response.status))
-                                resolve(0)
+                                resolve()
                               }
                             }
                           },
@@ -89,11 +85,11 @@ const spoune = { // eslint-disable-line no-unused-vars
                         })
                       } else {
                         status.error('Error:' + getI18n('getUrlFailed', '2'))
-                        resolve(0)
+                        resolve()
                       }
                     } else {
                       status.error('Error:' + (response.statusText || response.status))
-                      resolve(0)
+                      resolve()
                     }
                   },
                   r: resolve,
@@ -101,20 +97,23 @@ const spoune = { // eslint-disable-line no-unused-vars
                 })
               } else {
                 status.error('Error:' + getI18n('getUrlFailed', '1'))
-                resolve(0)
+                resolve()
               }
             } else {
               status.error('Error:' + (response.statusText || response.status))
-              resolve(0)
+              resolve()
             }
           },
           r: resolve,
           status
         })
-      }).finally(() => {
-        fuc.forOrder({ arr, i: ++i, callback: spoune.verify, complete: true })
+      }).then(() => {
+        return true
+      }).catch(() => {
+        return false
       })
     }
+    fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
   },
   remove: function () { },
   checkLogin: function () { },

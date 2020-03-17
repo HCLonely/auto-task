@@ -52,82 +52,75 @@ const gamehag = { // eslint-disable-line no-unused-vars
     status.success()
     if (debug) console.log(this)
   },
-  do_task: function () {
+  do_task: async function () {
     const pro = []
     const tasks = fuc.unique(this.tasks)
-    fuc.forOrder({
-      arr: tasks,
-      time: 500,
-      callback: ({ e, end }) => {
-        if (!end) {
-          const task = e
-          pro.push(new Promise((resolve) => {
-            fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-          }))
-          if (/play.*?games/gim.test(task.taskDes)) {
-            pro.push(new Promise((resolve) => {
-              fuc.visitLink(resolve, '/games', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-            }))
-            pro.push(new Promise((resolve) => {
-              fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
-            }))
-          }
-        } else {
-          Promise.all(pro).finally(resolve => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            if (this.conf.fuck.verify) this.verify()
-          })
-        }
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i]
+      pro.push(new Promise((resolve) => {
+        fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+      }))
+      if (/play.*?games/gim.test(task.taskDes)) {
+        pro.push(new Promise((resolve) => {
+          fuc.visitLink(resolve, '/games', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+        }))
+        pro.push(new Promise((resolve) => {
+          fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
+        }))
       }
+      await new Promise(resolve => {
+        setTimeout(() => { resolve() }, 1000)
+      })
+    }
+    Promise.all(pro).finally(resolve => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verify) this.verify()
     })
   },
-  verify: function (verify = false) {
+  verify: async function (verify = false) {
     if (verify) {
       const pro = []
-      fuc.forOrder({
-        arr: fuc.unique(this.tasks),
-        time: 500,
-        callback: ({ e, end }) => {
-          if (!end) {
-            const task = e
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
-              fuc.httpRequest({
-                url: '/api/v1/giveaway/sendtask',
-                method: 'POST',
-                dataType: 'json',
-                headers: {
-                  'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-                },
-                data: 'task_id=' + task.taskId,
-                onload: function (response) {
-                  if (debug) console.log(response)
-                  if (response.response) {
-                    if (response.response.status === 'success') {
-                      status.success()
-                      $(`div.task-reward[href="#task-${task.taskId}-collapse"]`).html('<svg class="nc-icon nc-align-to-text grid-24 glyph"><use xlink:href="/icons/nci-fill.svg#nc-icon-check-simple" /></svg>')
-                      resolve({ result: 'success', statusText: response.statusText, status: response.status })
-                    } else {
-                      status.error('Error:' + (response.response.message || response.statusText || response.status || 'error'))
-                      if (globalConf.other.autoOpen) window.open(`/giveaway/click/${task.taskId}`, '_blank')
-                      resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                    }
-                  } else {
-                    status.error('Error:' + response.statusText)
-                    resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                  }
-                },
-                r: resolve,
-                status
-              })
-            }))
-          } else {
-            Promise.all(pro).finally(resolve => {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
-            })
-          }
-        }
+      const tasks = fuc.unique(this.tasks)
+      for (let i = 0; i < tasks.length; i++) {
+        const task = tasks[i]
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
+        pro.push(new Promise((resolve) => {
+          fuc.httpRequest({
+            url: '/api/v1/giveaway/sendtask',
+            method: 'POST',
+            dataType: 'json',
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: 'task_id=' + task.taskId,
+            onload: function (response) {
+              if (debug) console.log(response)
+              if (response.response) {
+                if (response.response.status === 'success') {
+                  status.success()
+                  $(`div.task-reward[href="#task-${task.taskId}-collapse"]`).html('<svg class="nc-icon nc-align-to-text grid-24 glyph"><use xlink:href="/icons/nci-fill.svg#nc-icon-check-simple" /></svg>')
+                  resolve({ result: 'success', statusText: response.statusText, status: response.status })
+                } else {
+                  status.error('Error:' + (response.response.message || response.statusText || response.status || 'error'))
+                  if (globalConf.other.autoOpen) window.open(`/giveaway/click/${task.taskId}`, '_blank')
+                  resolve({ result: 'error', statusText: response.statusText, status: response.status })
+                }
+              } else {
+                status.error('Error:' + response.statusText)
+                resolve({ result: 'error', statusText: response.statusText, status: response.status })
+              }
+            },
+            r: resolve,
+            status
+          })
+        }))
+        await new Promise(resolve => {
+          setTimeout(() => { resolve() }, 1000)
+        })
+      }
+      Promise.all(pro).finally(resolve => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       })
     } else {
       this.get_tasks('verify')

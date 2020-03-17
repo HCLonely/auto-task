@@ -3,71 +3,54 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
   fuck: function () {
     this.get_tasks('FREE')
   },
-  get_tasks: function (type = 'FREE') {
+  get_tasks: async function (type = 'FREE') {
     const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
     const myPoint = this.myPoints
     const maxPoint = this.maxPoint()
-    const option = {
-      arr: items,
-      time: 100,
-      i: 0,
-      callback: ({ arr, i, end }) => {
-        if (end) {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('joinLotteryComplete')}</font></li>` })
-        } else {
-          const item = arr[i]
-          const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
-          if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
-          } else if (type === 'points' && !needPoints) {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
-          } else {
-            if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-              i++
-              option.i = i
-              fuc.forOrder(option)
-            } else {
-              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
-              const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
-              if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
-                const giveawayId = a.attr('onclick').match(/[\d]+/)
-                if (giveawayId) {
-                  checkUser(giveawayId[0])
-                }
-              }
-              new Promise(resolve => {
-                fuc.httpRequest({
-                  url: a.attr('href'),
-                  method: 'GET',
-                  onload: response => {
-                    if (debug) console.log(response)
-                    if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
-                      status.success()
-                      const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
-                      if (type === 'points' && points) {
-                        if (debug) console.log(getI18n('pointsLeft') + points[1])
-                        opiumpulses.myPoints = parseInt(points[1])
-                      }
-                    } else {
-                      status.error('Success:' + (response.status || response.statusText))
-                    }
-                    resolve(1)
-                  },
-                  status,
-                  r: resolve
-                })
-              }).then(data => {
-                i++
-                option.i = i
-                fuc.forOrder(option)
-              })
-            }
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i]
+      const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
+      if (type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint) {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noPoints')}</font></li>` })
+      } else if (type === 'points' && !needPoints) {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getNeedPointsFailed')}</font></li>` })
+      } else if (!(type === 'points' && parseInt(needPoints[0]) > maxPoint)) {
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${$(item).find('.giveaways-page-item-footer-name').text().trim()}</a>...<font></font></li>` })
+        const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
+        if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
+          const giveawayId = a.attr('onclick').match(/[\d]+/)
+          if (giveawayId) {
+            checkUser(giveawayId[0])
           }
         }
-      },
-      complete: true
+        await new Promise(resolve => {
+          fuc.httpRequest({
+            url: a.attr('href'),
+            method: 'GET',
+            onload: response => {
+              if (debug) console.log(response)
+              if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
+                status.success()
+                const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
+                if (type === 'points' && points) {
+                  if (debug) console.log(getI18n('pointsLeft') + points[1])
+                  opiumpulses.myPoints = parseInt(points[1])
+                }
+              } else {
+                status.error('Success:' + (response.status || response.statusText))
+              }
+              resolve(1)
+            },
+            status,
+            r: resolve
+          })
+        }).then(data => {
+          return true
+        }).catch(() => {
+          return false
+        })
+      }
     }
-    fuc.forOrder(option)
   },
   verify: function () {
     const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)

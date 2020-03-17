@@ -5,7 +5,7 @@ const indiedb = { // eslint-disable-line no-unused-vars
     const currentoption = $('a.buttonenter.buttongiveaway')
     if (/join giveaway/gim.test(currentoption.text())) {
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
-      const do_task = this.do_task // eslint-disable-line camelcase
+      const doTask = this.do_task
       fuc.httpRequest({
         url: currentoption.attr('href'),
         method: 'POST',
@@ -23,7 +23,7 @@ const indiedb = { // eslint-disable-line no-unused-vars
               $('#giveawaysjoined').slideDown()
               $('#giveawaysrecommend').slideDown()
               status.success('Success' + (response.response.text ? (':' + response.response.text) : ''))
-              do_task()
+              doTask()
             } else {
               status.error('Error' + (response.response.text ? (':' + response.response.text) : ''))
             }

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "node test.js && standard --fix",
-    "start": "node index.js -p && standard auto-task.user.js --fix"
+    "start": "node index.js -p && standard --fix"
   },
   "author": "HCLonely",
   "license": "MIT",

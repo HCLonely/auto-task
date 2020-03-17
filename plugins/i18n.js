@@ -346,7 +346,7 @@ const i18n = {
     globalSettings: 'Global Settings'
   }
 }
-const language = getLanguage()
+let language = getLanguage() // eslint-disable-line prefer-const
 function getLanguage () {
   let lan = GM_getValue('language') || 'auto'
   if (lan === 'auto') {

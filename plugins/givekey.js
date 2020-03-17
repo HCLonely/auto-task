@@ -31,7 +31,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         this.groups.push(href.match(/groups\/(.+)/)[1])
         this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
       } else if (task.text().includes('加入愿望单')) {
-        pro.push(new Promise(r => { // eslint-disable-line
+        pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
           }).then(data => {
@@ -50,7 +50,7 @@ const givekey = { // eslint-disable-line no-unused-vars
           })
         }))
       } else if (task.text().includes('关注开发商')) {
-        pro.push(new Promise(r => { // eslint-disable-line
+        pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
           }).then(data => {
@@ -109,7 +109,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         } else if (href.includes('steamcommunity.com/groups/')) {
           this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
         } else if ($(task).text().includes('加入愿望单')) {
-          pro.push(new Promise(r => { // eslint-disable-line
+          pro.push(new Promise(r => { // eslint-disable-line promise/param-names
             new Promise(resolve => {
               fuc.getFinalUrl(resolve, href)
             }).then(data => {

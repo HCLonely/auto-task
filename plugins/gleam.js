@@ -103,7 +103,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       const youtubes = fuc.unique(this.youtubes)
       const others = fuc.unique(this.others)
       const links = fuc.unique(this.links)
-      const disc_fb_ytb = [...discords, ...facebooks, ...youtubes] // eslint-disable-line camelcase
+      const socals = [...discords, ...facebooks, ...youtubes]
       if (this.conf.fuck.group && groups.length > 0) {
         for (const group of groups) {
           pro.push(new Promise((resolve) => {
@@ -127,8 +127,8 @@ const gleam = { // eslint-disable-line no-unused-vars
             }
           }
         }
-        if (disc_fb_ytb.length > 0) {
-          for (const task of disc_fb_ytb) { // eslint-disable-line camelcase
+        if (socals.length > 0) {
+          for (const task of socals) {
             const title = $(task).find('.entry-method-title').text().trim()
             const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
             const button = $(task).find('a.btn-info:first').attr('href')

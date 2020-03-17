@@ -33,7 +33,7 @@ const prys = { // eslint-disable-line no-unused-vars
             }
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {
@@ -111,7 +111,7 @@ const prys = { // eslint-disable-line no-unused-vars
             }
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {

@@ -43,7 +43,7 @@ const banana = { // eslint-disable-line no-unused-vars
         if (taskId) {
           this.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
           if (/join.*?steam.*?group/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {
@@ -62,7 +62,7 @@ const banana = { // eslint-disable-line no-unused-vars
               })
             }))
           } else if (/follow.*?curator/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {
@@ -81,7 +81,7 @@ const banana = { // eslint-disable-line no-unused-vars
               })
             }))
           } else if (/wishlist/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
               }).then(r => {

@@ -516,7 +516,7 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
         }
       }
     })
-    const download = new Vue({ // eslint-disable-line no-unused-vars
+    new Vue({ // eslint-disable-line no-new
       el: '#download',
       data: {
         title: getI18n('downloadSetting')

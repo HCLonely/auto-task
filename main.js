@@ -268,6 +268,6 @@ GM_registerMenuCommand('Language', () => {
     type: 'info'
   }).then(value => {
     if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
-    language = getLanguage() // eslint-disable-line
+    language = getLanguage() // eslint-disable-line no-global-assign
   }).catch(() => { })
 })

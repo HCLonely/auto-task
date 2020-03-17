@@ -404,7 +404,7 @@
       globalSettings: 'Global Settings'
     }
   }
-  const language = getLanguage()
+  let language = getLanguage() // eslint-disable-line prefer-const
   function getLanguage () {
     let lan = GM_getValue('language') || 'auto'
     if (lan === 'auto') {
@@ -553,7 +553,7 @@
             }))
           }
           if (type === 'store' || type === 'all') {
-        pro.push(new Promise(resolve => { // eslint-disable-line
+            pro.push(new Promise(resolve => {
               const status = this.echoLog({ type: 'updateSteamStore' })
 
               this.httpRequest({
@@ -1299,10 +1299,10 @@
         const q = {}
         if (url) {
           if (url.includes('?')) {
-        url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => q[k] = v) // eslint-disable-line
+            url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
           }
         } else {
-      location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => q[k] = v) // eslint-disable-line
+          window.location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
         }
         return q
       },
@@ -1391,7 +1391,7 @@
             if (taskId) {
               this.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
               if (/join.*?steam.*?group/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -1410,7 +1410,7 @@
                   })
                 }))
               } else if (/follow.*?curator/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -1429,7 +1429,7 @@
                   })
                 }))
               } else if (/wishlist/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line
+                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -2562,7 +2562,7 @@
             this.groups.push(href.match(/groups\/(.+)/)[1])
             this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
           } else if (task.text().includes('加入愿望单')) {
-        pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
               }).then(data => {
@@ -2581,7 +2581,7 @@
               })
             }))
           } else if (task.text().includes('关注开发商')) {
-        pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
               }).then(data => {
@@ -2640,7 +2640,7 @@
             } else if (href.includes('steamcommunity.com/groups/')) {
               this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
             } else if ($(task).text().includes('加入愿望单')) {
-          pro.push(new Promise(r => { // eslint-disable-line
+              pro.push(new Promise(r => { // eslint-disable-line promise/param-names
                 new Promise(resolve => {
                   fuc.getFinalUrl(resolve, href)
                 }).then(data => {
@@ -3039,7 +3039,7 @@
           const youtubes = fuc.unique(this.youtubes)
           const others = fuc.unique(this.others)
           const links = fuc.unique(this.links)
-          const disc_fb_ytb = [...discords, ...facebooks, ...youtubes] // eslint-disable-line camelcase
+          const socals = [...discords, ...facebooks, ...youtubes]
           if (this.conf.fuck.group && groups.length > 0) {
             for (const group of groups) {
               pro.push(new Promise((resolve) => {
@@ -3063,8 +3063,8 @@
                 }
               }
             }
-            if (disc_fb_ytb.length > 0) {
-              for (const task of disc_fb_ytb) { // eslint-disable-line camelcase
+            if (socals.length > 0) {
+              for (const task of socals) {
                 const title = $(task).find('.entry-method-title').text().trim()
                 const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
                 const button = $(task).find('a.btn-info:first').attr('href')
@@ -3231,7 +3231,7 @@
         const currentoption = $('a.buttonenter.buttongiveaway')
         if (/join giveaway/gim.test(currentoption.text())) {
           const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
-          const do_task = this.do_task // eslint-disable-line camelcase
+          const doTask = this.do_task
           fuc.httpRequest({
             url: currentoption.attr('href'),
             method: 'POST',
@@ -3249,7 +3249,7 @@
                   $('#giveawaysjoined').slideDown()
                   $('#giveawaysrecommend').slideDown()
                   status.success('Success' + (response.response.text ? (':' + response.response.text) : ''))
-                  do_task()
+                  doTask()
                 } else {
                   status.error('Error' + (response.response.text ? (':' + response.response.text) : ''))
                 }
@@ -3775,7 +3775,7 @@
                 }
               } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
+                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {
@@ -3853,7 +3853,7 @@
                 }
               } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line
+                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {
@@ -4232,7 +4232,7 @@
             const id = $(task).children('a[id]').attr('id')
             if (icon.hasClass('fa-steam')) {
               if (link && /gid\/[\d]+/.test(link)) {
-            pro.push(new Promise(r => { // eslint-disable-line
+                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {
@@ -4925,7 +4925,7 @@
             }
           }
         })
-        const download = new Vue({ // eslint-disable-line no-unused-vars
+        new Vue({ // eslint-disable-line no-new
           el: '#download',
           data: {
             title: getI18n('downloadSetting')
@@ -5385,7 +5385,7 @@
         type: 'info'
       }).then(value => {
         if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
-    language = getLanguage() // eslint-disable-line
+        language = getLanguage() // eslint-disable-line no-global-assign
       }).catch(() => { })
     })
   } catch (e) {

@@ -113,7 +113,7 @@ const fuc = {
         }))
       }
       if (type === 'store' || type === 'all') {
-        pro.push(new Promise(resolve => { // eslint-disable-line
+        pro.push(new Promise(resolve => {
           const status = this.echoLog({ type: 'updateSteamStore' })
 
           this.httpRequest({
@@ -859,10 +859,10 @@ const fuc = {
     const q = {}
     if (url) {
       if (url.includes('?')) {
-        url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => q[k] = v) // eslint-disable-line
+        url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
       }
     } else {
-      location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => q[k] = v) // eslint-disable-line
+      window.location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
     }
     return q
   },

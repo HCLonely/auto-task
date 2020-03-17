@@ -24,7 +24,7 @@ const takekey = { // eslint-disable-line no-unused-vars
         const id = $(task).children('a[id]').attr('id')
         if (icon.hasClass('fa-steam')) {
           if (link && /gid\/[\d]+/.test(link)) {
-            pro.push(new Promise(r => { // eslint-disable-line
+            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {

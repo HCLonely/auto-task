@@ -37,7 +37,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
                   opiumpulses.myPoints = parseInt(points[1])
                 }
               } else {
-                status.error('Success:' + (response.status || response.statusText))
+                status.error('Error:' + (response.status || response.statusText))
               }
               resolve(1)
             },
@@ -51,6 +51,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
         })
       }
     }
+    fuc.echoLog({ type: 'custom', text: '<li>-----END-----</li>' })
   },
   verify: function () {
     const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)

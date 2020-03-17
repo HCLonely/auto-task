@@ -1,5 +1,7 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const gamecode = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('gamecode.win') },
+  before: () => { fuc.newTabBlock() },
   fuck: function () {
     this.get_tasks('do_task')
   },

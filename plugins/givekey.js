@@ -1,5 +1,17 @@
 /* global getI18n, fuc, defaultConf, debug */
 const givekey = { // eslint-disable-line no-unused-vars
+  test: () => { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
+  before: website => {
+    const init = setInterval(() => {
+      try {
+        if (Centrifuge) {
+          clearInterval(init)
+          website.creat_app()
+        }
+      } catch (e) { }
+    }, 500)
+  },
+  after: () => { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
   fuck: function (btnArea) {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
     if (transBtn.css('background-position') === '-68px 0px') {

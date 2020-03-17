@@ -1,5 +1,6 @@
 /* global getI18n, fuc, defaultConf, debug */
 const prys = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('prys.revadike') },
   fuck: function () {
     this.get_tasks('do_task')
   },
@@ -290,7 +291,6 @@ const prys = { // eslint-disable-line no-unused-vars
       }
     })
   },
-  checkLogin: function () { },
   checkLeft: function (ui) {
     const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
     if (!(left.length > 0 && left[1] !== '0')) {

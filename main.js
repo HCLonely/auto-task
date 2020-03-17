@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, getLanguage, language, vueUi, takekey, spoune, gleam, freegamelottery, chubkeys, Centrifuge, banana, givekey, opiumpulses, indiedb, prys, gamehag, gamecode, loadSetting, loadAnnouncement, giveawaysu, marvelousga */
+/* global getI18n, fuc, plugins, globalConf, defaultConf, getLanguage, language, vueUi, loadSetting, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
     fuc.addBackground()
@@ -11,53 +11,17 @@ if (window.location.host.includes('hclonely')) {
   fuc.newTabBlock()
 } else {
   let website = {}
-  if (window.location.host.includes('giveaway.su')) {
-    website = giveawaysu
-  } else if (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) {
-    fuc.newTabBlock()
-    website = marvelousga
-  } else if (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) {
-    website = banana
-  } else if (window.location.host.includes('gamecode.win')) {
-    fuc.newTabBlock()
-    website = gamecode
-  } else if (window.location.host.includes('gamehag')) {
-    $('#getkey').removeAttr('disabled')
-    if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+  plugins.map((e, i) => {
+    if (e.test()) {
+      website = e
+      if (website.before) website.before(website)
+    }
+  })
 
-    website = gamehag
-  } else if (window.location.host.includes('prys.revadike')) {
-    website = prys
-  } else if (window.location.host.includes('indiedb')) {
-    website = indiedb
-  } else if (window.location.host.includes('opiumpulses')) {
-    website = opiumpulses
-  } else if (window.location.host.includes('gkey') || window.location.host.includes('givekey')) {
-    website = givekey
-    const init = setInterval(() => {
-      try {
-        if (Centrifuge) {
-          clearInterval(init)
-          website.creat_app()
-        }
-      } catch (e) { }
-    }, 500)
-  } else if (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) {
-    website = chubkeys
-  } else if (window.location.host.includes('freegamelottery')) {
-    website = freegamelottery
-  } else if (window.location.host.includes('gleam.io')) {
-    website = gleam
-  } else if (window.location.host.includes('spoune')) {
-    website = spoune
-  } else if (window.location.host.includes('takekey')) {
-    website = takekey
-  }
-
-  if (globalConf.other.checkLogin) {
+  if (globalConf.other.checkLogin && website.checkLogin) {
     website.checkLogin()
   }
-  if (globalConf.other.checkLeft) {
+  if (globalConf.other.checkLeft && website.checkLeft) {
     website.checkLeft(vueUi)
   }
 
@@ -243,11 +207,7 @@ if (window.location.host.includes('hclonely')) {
       display: 'flex' // eslint-disable-line no-dupe-keys
     }, 0)
   }
-  if (window.location.host.includes('gkey') || window.location.host.includes('givekey')) {
-    $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-  } else if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
-    website.draw()
-  }
+  if (website.after) website.after(website)
 }
 
 GM_registerMenuCommand(getI18n('readme'), () => { window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank') })

@@ -1,5 +1,6 @@
 /* global getI18n, fuc, defaultConf, debug */
 const spoune = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('spoune') },
   fuck: function () {
     this.get_tasks()
   },
@@ -115,8 +116,6 @@ const spoune = { // eslint-disable-line no-unused-vars
     }
     fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
   },
-  remove: function () { },
-  checkLogin: function () { },
   checkLeft: function (ui) {
     const checkLeft = setInterval(() => {
       if ($('#keysAvailable').length > 0) {

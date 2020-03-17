@@ -1,5 +1,6 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const gleam = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('gleam.io') },
   fuck: function () {
     this.get_tasks('do_task')
   },
@@ -256,7 +257,6 @@ const gleam = { // eslint-disable-line no-unused-vars
       }
     })
   },
-  checkLogin: function () { },
   checkLeft: function (ui) {
     if ($('.massive-message:contains(ended)').is(':visible')) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {

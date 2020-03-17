@@ -1348,6 +1348,7 @@
     }
 
     const banana = { // eslint-disable-line no-unused-vars
+      test: () => { return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) },
       fuck: function (vue) {
         const needBanana = $("p:contains('Collect'):contains('banana')")
         const needPoints = $("p:contains('Collect'):contains('point')")
@@ -1673,6 +1674,7 @@
     }
 
     const chubkeys = { // eslint-disable-line no-unused-vars
+      test: () => { return (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) },
       fuck: function () {
         fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
       },
@@ -1715,6 +1717,12 @@
     }
 
     const freegamelottery = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('freegamelottery') },
+      after: website => {
+        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
+          website.draw()
+        }
+      },
       fuck: function (vue) {
         GM_setValue('lottery', 1)
         if ($('a.registration-button').length > 0) {
@@ -1788,10 +1796,6 @@
             })
         }
       },
-      verify: function () { },
-      remove: function () { },
-      checkLogin: function () { },
-      checkLeft: function (ui) { },
       setting: {
         fuck: true,
         verify: false,
@@ -1802,6 +1806,8 @@
     }
 
     const gamecode = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('gamecode.win') },
+      before: () => { fuc.newTabBlock() },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -2069,6 +2075,11 @@
     }
 
     const gamehag = { // eslint-disable-line no-unused-vars
+      test: () => { window.location.host.includes('gamehag') },
+      before: () => {
+        $('#getkey').removeAttr('disabled')
+        if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+      },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -2206,7 +2217,6 @@
           return window.location.href
         }
       },
-      checkLogin: function () { },
       checkLeft: function (ui) {
         if ($('.giveaway-counter:first .strong').text() === '0') {
           ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
@@ -2234,6 +2244,7 @@
     }
 
     const giveawaysu = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('giveaway.su') },
       get_tasks: function (e) {
         // 获取任务信息
         const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
@@ -2531,6 +2542,18 @@
     }
 
     const givekey = { // eslint-disable-line no-unused-vars
+      test: () => { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
+      before: website => {
+        const init = setInterval(() => {
+          try {
+            if (Centrifuge) {
+              clearInterval(init)
+              website.creat_app()
+            }
+          } catch (e) { }
+        }, 500)
+      },
+      after: () => { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
       fuck: function (btnArea) {
         const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
         if (transBtn.css('background-position') === '-68px 0px') {
@@ -2936,6 +2959,7 @@
     }
 
     const gleam = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('gleam.io') },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -3192,7 +3216,6 @@
           }
         })
       },
-      checkLogin: function () { },
       checkLeft: function (ui) {
         if ($('.massive-message:contains(ended)').is(':visible')) {
           ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
@@ -3226,6 +3249,7 @@
     }
 
     const indiedb = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('indiedb') },
       fuck: function () {
         if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
         const currentoption = $('a.buttonenter.buttongiveaway')
@@ -3397,14 +3421,9 @@
           fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getIdFailed')}</font></li>` })
         }
       },
-      verify: function () {
-      },
-      remove: function () {
-      },
       checkLogin: function () {
         if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
       },
-      checkLeft: function (ui) { },
       setting: {
         fuck: true,
         verify: false,
@@ -3415,6 +3434,8 @@
     }
 
     const marvelousga = { // eslint-disable-line no-unused-vars
+      test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
+      before: () => { fuc.newTabBlock() },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -3660,6 +3681,7 @@
     }
 
     const opiumpulses = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('opiumpulses') },
       fuck: function () {
         this.get_tasks('FREE')
       },
@@ -3722,9 +3744,6 @@
           fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })
         }
       },
-      remove: function () { },
-      checkLogin: function () { },
-      checkLeft: function (ui) { },
       myPoints: 0,
       setting: {
         fuck: true,
@@ -3743,6 +3762,7 @@
     }
 
     const prys = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('prys.revadike') },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -4033,7 +4053,6 @@
           }
         })
       },
-      checkLogin: function () { },
       checkLeft: function (ui) {
         const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
         if (!(left.length > 0 && left[1] !== '0')) {
@@ -4064,6 +4083,7 @@
     }
 
     const spoune = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('spoune') },
       fuck: function () {
         this.get_tasks()
       },
@@ -4179,8 +4199,6 @@
         }
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
       },
-      remove: function () { },
-      checkLogin: function () { },
       checkLeft: function (ui) {
         const checkLeft = setInterval(() => {
           if ($('#keysAvailable').length > 0) {
@@ -4209,6 +4227,7 @@
     }
 
     const takekey = { // eslint-disable-line no-unused-vars
+      test: () => { return window.location.host.includes('takekey') },
       fuck: function () {
         this.get_tasks('do_task')
       },
@@ -5117,6 +5136,8 @@
       })
     }
 
+    const plugins = [banana, chubkeys, freegamelottery, gamecode, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
+
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
         fuc.addBackground()
@@ -5129,53 +5150,17 @@
       fuc.newTabBlock()
     } else {
       let website = {}
-      if (window.location.host.includes('giveaway.su')) {
-        website = giveawaysu
-      } else if (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) {
-        fuc.newTabBlock()
-        website = marvelousga
-      } else if (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) {
-        website = banana
-      } else if (window.location.host.includes('gamecode.win')) {
-        fuc.newTabBlock()
-        website = gamecode
-      } else if (window.location.host.includes('gamehag')) {
-        $('#getkey').removeAttr('disabled')
-        if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+      plugins.map((e, i) => {
+        if (e.test()) {
+          website = e
+          if (website.before) website.before(website)
+        }
+      })
 
-        website = gamehag
-      } else if (window.location.host.includes('prys.revadike')) {
-        website = prys
-      } else if (window.location.host.includes('indiedb')) {
-        website = indiedb
-      } else if (window.location.host.includes('opiumpulses')) {
-        website = opiumpulses
-      } else if (window.location.host.includes('gkey') || window.location.host.includes('givekey')) {
-        website = givekey
-        const init = setInterval(() => {
-          try {
-            if (Centrifuge) {
-              clearInterval(init)
-              website.creat_app()
-            }
-          } catch (e) { }
-        }, 500)
-      } else if (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) {
-        website = chubkeys
-      } else if (window.location.host.includes('freegamelottery')) {
-        website = freegamelottery
-      } else if (window.location.host.includes('gleam.io')) {
-        website = gleam
-      } else if (window.location.host.includes('spoune')) {
-        website = spoune
-      } else if (window.location.host.includes('takekey')) {
-        website = takekey
-      }
-
-      if (globalConf.other.checkLogin) {
+      if (globalConf.other.checkLogin && website.checkLogin) {
         website.checkLogin()
       }
-      if (globalConf.other.checkLeft) {
+      if (globalConf.other.checkLeft && website.checkLeft) {
         website.checkLeft(vueUi)
       }
 
@@ -5361,11 +5346,7 @@
           display: 'flex' // eslint-disable-line no-dupe-keys
         }, 0)
       }
-      if (window.location.host.includes('gkey') || window.location.host.includes('givekey')) {
-        $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-      } else if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
-        website.draw()
-      }
+      if (website.after) website.after(website)
     }
 
     GM_registerMenuCommand(getI18n('readme'), () => { window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank') })

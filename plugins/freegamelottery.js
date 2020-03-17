@@ -1,5 +1,11 @@
 /* global getI18n, fuc, defaultConf, DashboardApp */
 const freegamelottery = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('freegamelottery') },
+  after: website => {
+    if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
+      website.draw()
+    }
+  },
   fuck: function (vue) {
     GM_setValue('lottery', 1)
     if ($('a.registration-button').length > 0) {
@@ -73,10 +79,6 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
         })
     }
   },
-  verify: function () { },
-  remove: function () { },
-  checkLogin: function () { },
-  checkLeft: function (ui) { },
   setting: {
     fuck: true,
     verify: false,

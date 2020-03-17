@@ -1,5 +1,6 @@
 /* global getI18n, fuc, defaultConf, debug */
 const indiedb = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('indiedb') },
   fuck: function () {
     if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
     const currentoption = $('a.buttonenter.buttongiveaway')
@@ -171,14 +172,9 @@ const indiedb = { // eslint-disable-line no-unused-vars
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getIdFailed')}</font></li>` })
     }
   },
-  verify: function () {
-  },
-  remove: function () {
-  },
   checkLogin: function () {
     if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
   },
-  checkLeft: function (ui) { },
   setting: {
     fuck: true,
     verify: false,

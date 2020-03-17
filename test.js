@@ -90,10 +90,12 @@ function pack () {
 
   const functionJs = fs.readFileSync('plugins/function.js', 'utf-8')
   const pluginsFiles = fs.readdirSync('plugins')
+  const plugins = []
   let pluginsData = ''
   pluginsFiles.map((e, i) => {
     if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js', 'i18n.js'].includes(e)) {
       pluginsData += '\n\n' + fs.readFileSync('plugins/' + e, 'utf-8')
+      plugins.push(e.replace('.js', ''))
     }
   })
   const loadSetting = fs.readFileSync('plugins/loadSetting.js', 'utf-8')
@@ -107,6 +109,8 @@ ${functionJs}${pluginsData}
 ${loadSetting}
 
 ${loadAnnouncement}
+
+const plugins = ${JSON.stringify(plugins).replace(/'|"/g, '')}
 
 ${main}
 

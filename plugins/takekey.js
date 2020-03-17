@@ -1,5 +1,6 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const takekey = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('takekey') },
   fuck: function () {
     this.get_tasks('do_task')
   },

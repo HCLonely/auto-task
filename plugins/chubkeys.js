@@ -1,5 +1,6 @@
 /* global fuc, defaultConf */
 const chubkeys = { // eslint-disable-line no-unused-vars
+  test: () => { return (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) },
   fuck: function () {
     fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
   },

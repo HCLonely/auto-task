@@ -1,5 +1,10 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const gamehag = { // eslint-disable-line no-unused-vars
+  test: () => { window.location.host.includes('gamehag') },
+  before: () => {
+    $('#getkey').removeAttr('disabled')
+    if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+  },
   fuck: function () {
     this.get_tasks('do_task')
   },
@@ -137,7 +142,6 @@ const gamehag = { // eslint-disable-line no-unused-vars
       return window.location.href
     }
   },
-  checkLogin: function () { },
   checkLeft: function (ui) {
     if ($('.giveaway-counter:first .strong').text() === '0') {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {

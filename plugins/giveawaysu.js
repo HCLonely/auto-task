@@ -1,5 +1,6 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const giveawaysu = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('giveaway.su') },
   get_tasks: function (e) {
     // 获取任务信息
     const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')

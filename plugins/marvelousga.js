@@ -1,5 +1,7 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const marvelousga = { // eslint-disable-line no-unused-vars
+  test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
+  before: () => { fuc.newTabBlock() },
   fuck: function () {
     this.get_tasks('do_task')
   },

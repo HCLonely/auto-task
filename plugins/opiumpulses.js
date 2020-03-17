@@ -1,5 +1,6 @@
 /* global getI18n, fuc, defaultConf, debug */
 const opiumpulses = { // eslint-disable-line no-unused-vars
+  test: () => { return window.location.host.includes('opiumpulses') },
   fuck: function () {
     this.get_tasks('FREE')
   },
@@ -62,9 +63,6 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })
     }
   },
-  remove: function () { },
-  checkLogin: function () { },
-  checkLeft: function (ui) { },
   myPoints: 0,
   setting: {
     fuck: true,

@@ -1,5 +1,6 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const banana = { // eslint-disable-line no-unused-vars
+  test: () => { return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) },
   fuck: function (vue) {
     const needBanana = $("p:contains('Collect'):contains('banana')")
     const needPoints = $("p:contains('Collect'):contains('point')")

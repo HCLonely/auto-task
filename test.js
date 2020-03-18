@@ -21,7 +21,7 @@ function pack () {
 // @iconURL        https://userjs.hclonely.com/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js
+// @updateURL      https://userjs.hclonely.com/auto-task.user.js
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*
@@ -47,7 +47,7 @@ function pack () {
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=${version}
+// @resource       css https://userjs.hclonely.com/auto-task.min.css?ver=${version}
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues

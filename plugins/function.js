@@ -581,7 +581,7 @@ const fuc = {
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/master/version?t=' + new Date().getTime(),
+      url: 'https://userjs.hclonely.com/version?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload: (response) => {
@@ -594,7 +594,7 @@ const fuc = {
         } else if (response.response) {
           v.icon = 'el-icon-download'
           v.title = getI18n('updateNow') + response.response.version
-          v.checkUpdate = function () { window.open('https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js', '_blank') }
+          v.checkUpdate = function () { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
           if (s) status.success(getI18n('newVer') + response.response.version)
           v.hidden = false
         } else {
@@ -634,7 +634,7 @@ const fuc = {
     v.announcementIcon = 'el-icon-loading'
     const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/master/new.json?t=' + new Date().getTime(),
+      url: 'https://userjs.hclonely.com/new.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload: (response) => {

@@ -130,7 +130,7 @@ ${loadSetting}
 
 ${loadAnnouncement}
 
-const plugins = ${JSON.stringify(plugins)}
+const plugins = ${JSON.stringify(plugins).replace(/'|"/g, '')}
 
 ${main}
 

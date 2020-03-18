@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.1
+// @version        2.2.2
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -36,7 +36,7 @@
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.2.1
+// @resource       css https://github.com/HCLonely/auto-task/raw/master/auto-task.min.css?ver=2.2.2
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -5136,7 +5136,7 @@
       })
     }
 
-    const plugins = ['banana', 'chubkeys', 'freegamelottery', 'gamecode', 'gamehag', 'giveawaysu', 'givekey', 'gleam', 'indiedb', 'marvelousga', 'opiumpulses', 'prys', 'spoune', 'takekey']
+    const plugins = [banana, chubkeys, freegamelottery, gamecode, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {

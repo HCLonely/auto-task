@@ -2,7 +2,14 @@
 
 [English Document](https://github.com/HCLonely/auto-task/blob/master/README_EN.md)
 
-# 1.适用网站
+# 安装
+
+1. 安装 [Tampermonkey](https://www.tampermonkey.net/)
+2. 安装 [auto-task](https://userjs.hclonely.com/auto-task.user.js) 脚本
+3. 首次使用建议先 [设置](https://userjs.hclonely.com/setting.html)
+4. 如果弹出 `一个用户脚本试图访问跨源资源`, 请点击 `总是允许全部域名`
+
+# 适用网站
 
 * [giveaway.su](https://giveaway.su/)
 * [marvelousga](https://marvelousga.com/)
@@ -19,12 +26,7 @@
 * [gleam.io](http://gleam.io/)
 * [spoune](https://www.spoune.com/index.php)
 
-# 2.脚本链接
-
-* [点此安装（建议）](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js)
-* [前往GreasyFork安装](https://greasyfork.org/zh-CN/scripts/370650)
-
-# 3.功能
+# 功能
 
 * 自动完成Steam任务：
   * 加组
@@ -55,7 +57,7 @@
 
 **<span style="color: #ff0000;">首次使用2.0+版本建议先设置！</span>**
 
-# 4.常见问题解决办法
+# 常见问题解决办法
 
 1. `giveaway.su`网站`0000-0000-0000`问题
 
@@ -69,12 +71,12 @@
 
     解决办法：参考[#8](https://github.com/HCLonely/auto-task/issues/8)
 
-# 5.反馈方式
+# 反馈方式
 
 1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交
 2. 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
 
-# 6.更新公告
+# 更新公告
 
 [https://userjs.hclonely.com/announcement.html](https://userjs.hclonely.com/announcement.html)
 

@@ -1,6 +1,13 @@
 [![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
 
-# 1.Applicable website
+# Installation
+
+1. Install [Tampermonkey](https://www.tampermonkey.net/)
+2. Install [auto-task.user.js](https://userjs.hclonely.com/auto-task.user.js)
+3. It is recommended to [set it](https://userjs.hclonely.com/setting.html) for the first time
+4. If the `A userscript wants to access a cross-origin resource` page pops up, please click `Always allow all domains`
+
+# Applicable website
 
 * [giveaway.su](https://giveaway.su/)
 * [marvelousga](https://marvelousga.com/)
@@ -17,12 +24,7 @@
 * [gleam.io](http://gleam.io/)
 * [spoune](https://www.spoune.com/index.php)
 
-# 2.Installation
-
-* [Click here to install (recommended)](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js)
-* [Go to GreasyFork to install](https://greasyfork.org/zh-CN/scripts/370650)
-
-# 3.Features
+# Features
 
 * Automate Steam tasks：
   * Join group
@@ -53,7 +55,7 @@
 
 **<span style="color: #ff0000;">If you use 2.0+ version for the first time, it is recommended to set it first!</span>**
 
-# 4.Solutions to common problems
+# Solutions to common problems
 
 1. `giveaway.su` website `0000-0000-0000`
 
@@ -67,12 +69,12 @@
 
     Solution: Reference [#8](https://github.com/HCLonely/auto-task/issues/8)
 
-# 5.Feedback
+# Feedback
 
 * [GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)
 * [Keylol](https://keylol.com/t455167-1-1)
 
-# 6.Update announcement
+# Update announcement
 
 [https://userjs.hclonely.com/announcement.html](https://userjs.hclonely.com/announcement.html)
 

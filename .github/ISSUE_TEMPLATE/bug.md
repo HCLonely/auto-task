@@ -12,8 +12,8 @@ about: 报告问题
 - [] 我已经查看了[常见问题解决办法](https://github.com/HCLonely/auto-task#常见问题解决办法)但没有解决 | I have seen [Solutions to common problems](https://github.com/HCLonely/auto-task/blob/master/README_EN.md#solutions-to-common-problems) but not solved.
 - [] 我已经查看了[issues](https://github.com/HCLonely/auto-task/issues?q=)但没有解决 | I have seen [issues](https://github.com/HCLonely/auto-task/issues?q=) but not solved.
 
-**关于哪一个网站（必需）**
-<!-- Which website (required) -->
+**关于哪一个网站，最好提供具体网址（必需）**
+<!-- Which website? It is better to provide a specific URL. (required) -->
 
 
 **使用的浏览器和脚本管理器**

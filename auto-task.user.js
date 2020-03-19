@@ -404,7 +404,7 @@
       globalSettings: 'Global Settings'
     }
   }
-  let language = getLanguage() // eslint-disable-line prefer-const
+  let language = getLanguage()
   function getLanguage () {
     let lan = GM_getValue('language') || 'auto'
     if (lan === 'auto') {
@@ -413,7 +413,7 @@
     }
     return lan
   }
-  function getI18n (name, str = null) { // eslint-disable-line no-unused-vars
+  function getI18n (name, str = null) {
     let value = 'null'
     if (str) value = i18n[language][name] ? i18n[language][name].replace('s%', str) : 'null'
     else value = i18n[language][name] || 'null'
@@ -1347,7 +1347,7 @@
       }
     }
 
-    const banana = { // eslint-disable-line no-unused-vars
+    const banana = {
       test: () => { return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) },
       fuck: function (vue) {
         const needBanana = $("p:contains('Collect'):contains('banana')")
@@ -1673,7 +1673,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').banana && GM_getValue('conf').banana.load) ? GM_getValue('conf').banana : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const chubkeys = { // eslint-disable-line no-unused-vars
+    const chubkeys = {
       test: () => { return (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) },
       fuck: function () {
         fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
@@ -1716,7 +1716,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').chubkeys && GM_getValue('conf').chubkeys.load) ? GM_getValue('conf').chubkeys : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const freegamelottery = { // eslint-disable-line no-unused-vars
+    const freegamelottery = {
       test: () => { return window.location.host.includes('freegamelottery') },
       after: website => {
         if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
@@ -1805,7 +1805,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').freegamelottery && GM_getValue('conf').freegamelottery.load) ? GM_getValue('conf').freegamelottery : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const gamecode = { // eslint-disable-line no-unused-vars
+    const gamecode = {
       test: () => { return window.location.host.includes('gamecode.win') },
       before: () => { fuc.newTabBlock() },
       fuck: function () {
@@ -2074,7 +2074,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').gamecode && GM_getValue('conf').gamecode.load) ? GM_getValue('conf').gamecode : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const gamehag = { // eslint-disable-line no-unused-vars
+    const gamehag = {
       test: () => { return window.location.host.includes('gamehag') },
       before: () => {
         $('#getkey').removeAttr('disabled')
@@ -2243,7 +2243,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').gamehag && GM_getValue('conf').gamehag.load) ? GM_getValue('conf').gamehag : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const giveawaysu = { // eslint-disable-line no-unused-vars
+    const giveawaysu = {
       test: () => { return window.location.host.includes('giveaway.su') },
       get_tasks: function (e) {
         // 获取任务信息
@@ -2541,7 +2541,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').giveawaysu && GM_getValue('conf').giveawaysu.load) ? GM_getValue('conf').giveawaysu : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const givekey = { // eslint-disable-line no-unused-vars
+    const givekey = {
       test: () => { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
       before: website => {
         const init = setInterval(() => {
@@ -2958,7 +2958,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').givekey && GM_getValue('conf').givekey.load) ? GM_getValue('conf').givekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const gleam = { // eslint-disable-line no-unused-vars
+    const gleam = {
       test: () => { return window.location.host.includes('gleam.io') },
       fuck: function () {
         this.get_tasks('do_task')
@@ -2981,7 +2981,7 @@
           const tasksContainer = $('div.entry-content .entry-method')
           for (const task of tasksContainer) { // 遍历任务信息
             if ($(task).find('i.fa-question').length > 0) {
-              if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)')) {
+              if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
                 this.links.push(task)
               } else {
                 const icon = $(task).find('.icon-wrapper i')
@@ -3180,7 +3180,7 @@
             taskBtn.removeAttr('href')[0].click()
             const time = taskTime.match(/[\d]+/)
             if (time) {
-              const url = language === 'en' ? 'https ://userjs.hclonely.com/time_en.html?time=' : 'https://userjs.hclonely.com/time.html?time='
+              const url = language === 'en' ? 'https://userjs.hclonely.com/time_en.html?time=' : 'https://userjs.hclonely.com/time.html?time='
               GM_openInTab(url + time[0], { active: 1, setParent: 1 }).onclose = () => {
                 status.warning('Complete')
                 taskBtn.attr('target', '_blank').attr('href', href)
@@ -3249,7 +3249,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').gleam && GM_getValue('conf').gleam.load) ? GM_getValue('conf').gleam : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const indiedb = { // eslint-disable-line no-unused-vars
+    const indiedb = {
       test: () => { return window.location.host.includes('indiedb') },
       fuck: function () {
         if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
@@ -3434,7 +3434,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').indiedb && GM_getValue('conf').indiedb.load) ? GM_getValue('conf').indiedb : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const marvelousga = { // eslint-disable-line no-unused-vars
+    const marvelousga = {
       test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
       before: () => { fuc.newTabBlock() },
       fuck: function () {
@@ -3681,7 +3681,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').marvelousga && GM_getValue('conf').marvelousga.load) ? GM_getValue('conf').marvelousga : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const opiumpulses = { // eslint-disable-line no-unused-vars
+    const opiumpulses = {
       test: () => { return window.location.host.includes('opiumpulses') },
       fuck: function () {
         this.get_tasks('FREE')
@@ -3762,7 +3762,7 @@
       }
     }
 
-    const prys = { // eslint-disable-line no-unused-vars
+    const prys = {
       test: () => { return window.location.host.includes('prys.revadike') },
       fuck: function () {
         this.get_tasks('do_task')
@@ -4083,7 +4083,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').prys && GM_getValue('conf').prys.load) ? GM_getValue('conf').prys : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const spoune = { // eslint-disable-line no-unused-vars
+    const spoune = {
       test: () => { return window.location.host.includes('spoune') },
       fuck: function () {
         this.get_tasks()
@@ -4227,7 +4227,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').spoune && GM_getValue('conf').spoune.load) ? GM_getValue('conf').spoune : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const takekey = { // eslint-disable-line no-unused-vars
+    const takekey = {
       test: () => { return window.location.host.includes('takekey') },
       fuck: function () {
         this.get_tasks('do_task')
@@ -4429,7 +4429,7 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').takekey && GM_getValue('conf').takekey.load) ? GM_getValue('conf').takekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const loadSetting = function () { // eslint-disable-line no-unused-vars
+    const loadSetting = function () {
       const eNameToNameJoin = {
         group: getI18n('group'),
         curator: getI18n('curator'),
@@ -5098,7 +5098,7 @@
       })()
     }
 
-    const loadAnnouncement = function () { // eslint-disable-line no-unused-vars
+    const loadAnnouncement = function () {
       new Promise(resolve => {
         fuc.httpRequest({
           url: 'https://userjs.hclonely.com/announcement.json',
@@ -5368,7 +5368,7 @@
         type: 'info'
       }).then(value => {
         if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
-        language = getLanguage() // eslint-disable-line no-global-assign
+        language = getLanguage()
       }).catch(() => { })
     })
   } catch (e) {

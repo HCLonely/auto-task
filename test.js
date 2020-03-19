@@ -122,7 +122,7 @@ ${main}
     }
     
 })();
-`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '')
+`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign)/g, '')
   fs.writeFile('version', JSON.stringify(ver), function (error) {
     if (error) {
       console.log(error)

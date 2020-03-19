@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.3
+// @version        2.2.4
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -36,7 +36,7 @@
 // @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
 // @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
 // @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://userjs.hclonely.com/auto-task.min.css?ver=2.2.3
+// @resource       css https://userjs.hclonely.com/auto-task.min.css?ver=2.2.4
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -579,10 +579,10 @@
           Promise.all(pro).then(data => {
             steamInfo.updateTime = new Date().getTime()
             GM_setValue('steamInfo', steamInfo)
-            r()
+            r(1)
           })
         } else {
-          r()
+          r(1)
         }
       },
       joinSteamGroup: function (r, group) {

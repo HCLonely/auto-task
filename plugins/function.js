@@ -139,10 +139,10 @@ const fuc = {
       Promise.all(pro).then(data => {
         steamInfo.updateTime = new Date().getTime()
         GM_setValue('steamInfo', steamInfo)
-        r()
+        r(1)
       })
     } else {
-      r()
+      r(1)
     }
   },
   joinSteamGroup: function (r, group) {

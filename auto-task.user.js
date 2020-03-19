@@ -2981,7 +2981,7 @@
           const tasksContainer = $('div.entry-content .entry-method')
           for (const task of tasksContainer) { // 遍历任务信息
             if ($(task).find('i.fa-question').length > 0) {
-              if ($(task).hasClass('visit')) {
+              if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)')) {
                 this.links.push(task)
               } else {
                 const icon = $(task).find('.icon-wrapper i')
@@ -3180,7 +3180,8 @@
             taskBtn.removeAttr('href')[0].click()
             const time = taskTime.match(/[\d]+/)
             if (time) {
-              GM_openInTab('https://userjs.hclonely.com/time.html?time=' + time[0], { active: 1, setParent: 1 }).onclose = () => {
+              const url = language === 'en' ? 'https ://userjs.hclonely.com/time_en.html?time=' : 'https://userjs.hclonely.com/time.html?time='
+              GM_openInTab(url + time[0], { active: 1, setParent: 1 }).onclose = () => {
                 status.warning('Complete')
                 taskBtn.attr('target', '_blank').attr('href', href)
                 gleam.visit_link(links, ++i, r)

@@ -53,7 +53,7 @@
 * 自动检测更新
 * 导出导入设置
 
-**<span style="color: #ff0000;">以上功能默认情况下并不是全部开启的，详细设置请前往[设置页面](https://blog.hclonely.com/auto-task/setting.html)，设置完别忘了保存！！！</span>**
+**<span style="color: #ff0000;">以上功能默认情况下并不是全部开启的，详细设置请前往[设置页面](https://userjs.hclonely.com/setting.html)，设置完别忘了保存！！！</span>**
 
 **<span style="color: #ff0000;">首次使用2.0+版本建议先设置！</span>**
 

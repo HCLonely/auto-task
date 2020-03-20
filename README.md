@@ -71,6 +71,10 @@
 
     解决办法：参考[#8](https://github.com/HCLonely/auto-task/issues/8)
 
+4. 设置页面打不开
+
+    解决办法：CODING 服务器抽风了，挂代理或等一段时间
+
 # 反馈方式
 
 1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交

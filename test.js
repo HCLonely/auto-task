@@ -21,7 +21,7 @@ function pack () {
 // @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@${version}/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/auto-task.user.js
+// @updateURL      https://userjs.hclonely.com/auto-task.user.js
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*

@@ -7,6 +7,24 @@
 3. It is recommended to [set it](https://userjs.hclonely.com/setting.html) for the first time
 4. If the `A userscript wants to access a cross-origin resource` page pops up, please click `Always allow all domains`
 
+**If there is a bug in the script, please check if the script is the latest version, if not, please update to the latest version.**
+
+**If a bug occurs after updating the script, you can go to `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@version/auto-task.user.js` (*change `version` to the previous version Version number, for example: `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/auto-task.user.js`*) to install the previous version (only supports versions after 2.2.5 ). And then feedback BUG, waiting for repair.**
+
+# Solutions to common problems
+
+1. `giveaway.su` website `0000-0000-0000`
+
+    Solution: Close the script manager and the ad blocking plugin after completing the task with the script, and then refresh the page to verify the task yourself.
+
+2. `givekey.su` website CAPTCHA
+
+    Solution: Every time you click the `Fuck` button, you must complete the CAPTCHA yourself.
+
+3. `givekey.su` website wss connection error
+
+    Solution: Reference [#8](https://github.com/HCLonely/auto-task/issues/8)
+
 # Applicable website
 
 * [giveaway.su](https://giveaway.su/)
@@ -54,20 +72,6 @@
 **<span style="color: #ff0000;">The above features are not all enabled by default. For detailed settings, please go to [setting page](https://userjs.hclonely.com/setting_en.html). Don't forget to save after setting!!!</span>**
 
 **<span style="color: #ff0000;">If you use 2.0+ version for the first time, it is recommended to set it first!</span>**
-
-# Solutions to common problems
-
-1. `giveaway.su` website `0000-0000-0000`
-
-    Solution: Close the script manager and the ad blocking plugin after completing the task with the script, and then refresh the page to verify the task yourself.
-
-2. `givekey.su` website CAPTCHA
-
-    Solution: Every time you click the `Fuck` button, you must complete the CAPTCHA yourself.
-
-3. `givekey.su` website wss connection error
-
-    Solution: Reference [#8](https://github.com/HCLonely/auto-task/issues/8)
 
 # Feedback
 

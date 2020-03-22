@@ -9,6 +9,28 @@
 3. 首次使用建议先 [设置](https://userjs.hclonely.com/setting.html)
 4. 如果弹出 `一个用户脚本试图访问跨源资源`, 请点击 `总是允许全部域名`
 
+**如果脚本出现BUG, 请先检查脚本是否为最新版, 如果不是请更新到最新版。**
+
+**如果更新脚本后出现BUG, 可以先前往 `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@version/auto-task.user.js`(*把`version`改为上一个版本的版本号, 例: `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/auto-task.user.js`*) 安装之前的版本(仅支持2.2.5之后的版本), 然后反馈BUG, 等待修复。**
+
+# 常见问题解决办法
+
+1. `giveaway.su`网站`0000-0000-0000`问题
+
+    解决办法：用脚本做完任务后关闭脚本管理器和广告屏蔽插件，然后刷新网页手动验证任务
+
+2. `givekey.su`网站人机验证问题
+
+    解决办法：每次点击`Fuck`按钮前都要手动完成人机验证
+
+3. `givekey.su`网站wss连接出错
+
+    解决办法：参考[#8](https://github.com/HCLonely/auto-task/issues/8)
+
+4. 设置页面打不开
+
+    解决办法：CODING 服务器抽风了，挂代理或等一段时间
+
 # 适用网站
 
 * [giveaway.su](https://giveaway.su/)
@@ -57,28 +79,10 @@
 
 **<span style="color: #ff0000;">首次使用2.0+版本建议先设置！</span>**
 
-# 常见问题解决办法
-
-1. `giveaway.su`网站`0000-0000-0000`问题
-
-    解决办法：用脚本做完任务后关闭脚本管理器和广告屏蔽插件，然后刷新网页手动验证任务
-
-2. `givekey.su`网站人机验证问题
-
-    解决办法：每次点击`Fuck`按钮前都要手动完成人机验证
-
-3. `givekey.su`网站wss连接出错
-
-    解决办法：参考[#8](https://github.com/HCLonely/auto-task/issues/8)
-
-4. 设置页面打不开
-
-    解决办法：CODING 服务器抽风了，挂代理或等一段时间
-
 # 反馈方式
 
 1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交
-2. 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
+2. 前往[我的博客](https://blog.hclonely.com/posts/777c60d5/)提交
 
 # 更新公告
 

@@ -81,8 +81,8 @@
 
 # 反馈方式
 
-1. 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交
-2. 前往[我的博客](https://blog.hclonely.com/posts/777c60d5/)提交
+* 在[GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)提交
+* 前往[其乐（原蒸汽动力）论坛](https://keylol.com/t455167-1-1)提交
 
 # 更新公告
 

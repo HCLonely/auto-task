@@ -75,8 +75,7 @@
 
 # Feedback
 
-* [GitHub](https://github.com/HCLonely/auto-task/issues/new/choose)
-* [Keylol](https://keylol.com/t455167-1-1)
+* [Issue](https://github.com/HCLonely/auto-task/issues/new/choose)
 
 # Update announcement
 

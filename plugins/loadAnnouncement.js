@@ -2,7 +2,7 @@
 const loadAnnouncement = function () { // eslint-disable-line no-unused-vars
   new Promise(resolve => {
     fuc.httpRequest({
-      url: 'https://userjs.hclonely.com/announcement.json',
+      url: 'https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/announcement.json',
       method: 'get',
       dataType: 'json',
       onload: response => {

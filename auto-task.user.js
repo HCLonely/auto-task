@@ -2,15 +2,15 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.4
+// @version        2.2.5
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://userjs.hclonely.com/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.5/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://userjs.hclonely.com/auto-task.user.js
+// @updateURL      https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/auto-task.user.js
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*
@@ -33,10 +33,10 @@
 // @include        https://userjs.hclonely.com/setting.html
 // @include        https://userjs.hclonely.com/setting_en.html
 // @include        https://userjs.hclonely.com/announcement.html
-// @require        https://cdn.bootcss.com/vue/2.6.10/vue.min.js
-// @require        https://cdn.bootcss.com/element-ui/2.12.0/index.js
-// @require        https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js
-// @resource       css https://userjs.hclonely.com/auto-task.min.css?ver=2.2.4
+// @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
+// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.js
+// @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.5/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -48,6 +48,18 @@
 // @grant          GM_info
 // @grant          GM_openInTab
 // @grant          GM_download
+// @connect        userjs.hclonely.com
+// @connect        cdn.jsdelivr.net
+// @connect        store.steampowered.com
+// @connect        steamcommunity.com
+// @connect        twitter.com
+// @connect        youtube.com
+// @connect        facebook.com
+// @connect        instagram.com
+// @connect        vk.com
+// @connect        discordapp.com
+// @connect        github.com
+// @connect        twitch.tv
 // @connect        *
 // @run-at         document-end
 // @compatible     chrome >=58,没有测试其他浏览器的兼容性
@@ -1021,7 +1033,7 @@
         let status = false
         if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
         this.httpRequest({
-          url: 'https://userjs.hclonely.com/version?t=' + new Date().getTime(),
+          url: 'https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/version',
           method: 'get',
           dataType: 'json',
           onload: (response) => {
@@ -1034,7 +1046,7 @@
             } else if (response.response) {
               v.icon = 'el-icon-download'
               v.title = getI18n('updateNow') + response.response.version
-              v.checkUpdate = function () { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
+              v.checkUpdate = function () { window.open('https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/auto-task.user.js', '_blank') }
               if (s) status.success(getI18n('newVer') + response.response.version)
               v.hidden = false
             } else {
@@ -1074,7 +1086,7 @@
         v.announcementIcon = 'el-icon-loading'
         const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
         this.httpRequest({
-          url: 'https://userjs.hclonely.com/new.json?t=' + new Date().getTime(),
+          url: 'https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/new.json',
           method: 'get',
           dataType: 'json',
           onload: (response) => {
@@ -5101,7 +5113,7 @@
     const loadAnnouncement = function () {
       new Promise(resolve => {
         fuc.httpRequest({
-          url: 'https://userjs.hclonely.com/announcement.json',
+          url: 'https://cdn.jsdelivr.net/gh/HCLonely/auto-task@latest/announcement.json',
           method: 'get',
           dataType: 'json',
           onload: response => {

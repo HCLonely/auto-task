@@ -12,10 +12,6 @@
 
 [![GitHub file size in bytes](https://img.shields.io/github/size/HCLonely/auto-task/auto-task.user.js)](https://github.com/HCLonely/auto-task/blob/master/auto-task.user.js)
 
-![GitHub language count](https://img.shields.io/github/languages/count/HCLonely/auto-task)
-
-![GitHub top language](https://img.shields.io/github/languages/top/HCLonely/auto-task)
-
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/HCLonely/auto-task/Test)
 
 [English Document](https://github.com/HCLonely/auto-task/blob/master/README_EN.md)

@@ -1,4 +1,22 @@
-[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+
+![Chrome >= 58](https://img.shields.io/badge/Chrome-%3E%3D%2058-blue)
+
+[![GitHub](https://img.shields.io/github/license/HCLonely/auto-task)](https://github.com/HCLonely/auto-task/blob/master/LICENSE)
+
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/HCLonely/auto-task)](https://github.com/HCLonely/auto-task/releases)
+
+[![GitHub Release Date](https://img.shields.io/github/release-date/HCLonely/auto-task)](https://github.com/HCLonely/auto-task/releases)
+
+![jsDelivr hits (GitHub)](https://img.shields.io/jsdelivr/gh/hm/HCLonely/auto-task)
+
+[![GitHub file size in bytes](https://img.shields.io/github/size/HCLonely/auto-task/auto-task.user.js)](https://github.com/HCLonely/auto-task/blob/master/auto-task.user.js)
+
+![GitHub language count](https://img.shields.io/github/languages/count/HCLonely/auto-task)
+
+![GitHub top language](https://img.shields.io/github/languages/top/HCLonely/auto-task)
+
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/HCLonely/auto-task/Test)
 
 # Installation
 

@@ -95,7 +95,7 @@ function packUserJs (test = false) {
 // @connect        twitch.tv
 // @connect        *
 // @run-at         document-end
-// @compatible     chrome >=58,没有测试其他浏览器的兼容性
+// @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
 // ==/UserScript==
 
 (function() {

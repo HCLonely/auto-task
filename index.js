@@ -10,10 +10,12 @@ program
   .option('-s, --setting', '生成setting.html,setting_en.html文件')
   .option('-a, --announcement', '生成announcement.html文件')
   .option('-c, --css', '生成auto-task.min.css文件')
+  .option('-t, --test', '生成auto-task.user.js文件(Test)')
 
 program.parse(process.argv)
 
 if (program.pack) packUserJs()
+if (program.test) packUserJs(true)
 if (program.setting) {
   minHtml('setting_raw.html', 'setting.html')
   minHtml('setting_en_raw.html', 'setting_en.html')
@@ -21,11 +23,11 @@ if (program.setting) {
 if (program.announcement) minHtml('announcement_raw.html', 'announcement.html')
 if (program.css) minCss()
 
-function packUserJs () {
+function packUserJs (test = false) {
   const ver = JSON.parse(fs.readFileSync('version', 'utf-8'))
   let version = ver.version
   const versionArr = version.split('.')
-  versionArr[2]++
+  if (!test) versionArr[2]++
   version = versionArr.join('.')
   ver.version = version
   const i18n = fs.readFileSync('plugins/i18n.js', 'utf-8')
@@ -167,7 +169,7 @@ ${main}
       console.log(error)
     } else {
       console.log('auto-task.user.js写入成功')
-      update()
+      if (!test) update()
     }
   })
 }

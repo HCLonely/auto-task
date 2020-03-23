@@ -4,12 +4,18 @@
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/)
 2. Install [auto-task.user.js](https://userjs.hclonely.com/auto-task.user.js)
-3. It is recommended to [set it](https://userjs.hclonely.com/setting.html) for the first time
+3. It is recommended to [set it](https://userjs.hclonely.com/setting_en.html) for the first time
 4. If the `A userscript wants to access a cross-origin resource` page pops up, please click `Always allow all domains`
 
 **If there is a bug in the script, please check if the script is the latest version, if not, please update to the latest version.**
 
 **If a bug occurs after updating the script, you can go to `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@version/auto-task.user.js` (*change `version` to the previous version Version number, for example: `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/auto-task.user.js`*) to install the previous version (only supports versions after 2.2.5 ). And then feedback BUG, waiting for repair.**
+
+# Function of each button
+
+- The function of the `Fuck`, `Join`, `Verify`, `Remove` buttons can be found on the [settings page](https://userjs.hclonely.com/setting_en.html)
+- The function of the `Showlogs`, `Hidelogs` buttons: show/hide logs in bottom right corner
+- `Clear cache` function in the bottom right corner: Each time the script finishes the task, it saves the task information to use the `Remove` function. If you are prompted that `all tasks have been completed` but have not done any tasks, you can try `Clear cache`, and then refresh and do the tasks again. `Clear cache` will cause tasks previously done to fail to` Remove`.
 
 # Solutions to common problems
 

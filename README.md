@@ -13,6 +13,12 @@
 
 **如果更新脚本后出现BUG, 可以先前往 `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@version/auto-task.user.js`(*把`version`改为上一个版本的版本号, 例: `https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/auto-task.user.js`*) 安装之前的版本(仅支持2.2.5之后的版本), 然后反馈BUG, 等待修复。**
 
+# 每个按钮功能
+
+- `Fuck`, `Join`, `Verify`, `Remove` 按钮功能请前往[设置页面](https://userjs.hclonely.com/setting.html)查看
+- `Showlogs`, `Hidelogs` 按钮: 显示/隐藏右下角日志
+- 右下角的`清理缓存`功能: 脚本每次做完任务后会保存任务信息以便使用`Remove`功能, 如果提示`所有任务已完成`但没有做任何任务可以尝试`清理缓存`, 然后刷新一下再做任务, `清理缓存`后会导致之前做过的任务无法`Remove`
+
 # 常见问题解决办法
 
 1. `giveaway.su`网站`0000-0000-0000`问题

@@ -47,7 +47,6 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_info
 // @grant          GM_openInTab
-// @grant          GM_download
 // @connect        userjs.hclonely.com
 // @connect        cdn.jsdelivr.net
 // @connect        store.steampowered.com
@@ -62,8 +61,10 @@
 // @connect        twitch.tv
 // @connect        *
 // @run-at         document-end
-// @compatible     chrome >=58,没有测试其他浏览器的兼容性
+// @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
 // ==/UserScript==
+
+/* global $,Vue,getUrlTwitter,getUrlTwitch,getUrlFacebook,getUrlSteam,getUrlYoutube,totalTasks,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
 
 (function () {
   'use strict'
@@ -1404,7 +1405,7 @@
             if (taskId) {
               this.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
               if (/join.*?steam.*?group/gim.test(taskDes.text())) {
-                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -1423,7 +1424,7 @@
                   })
                 }))
               } else if (/follow.*?curator/gim.test(taskDes.text())) {
-                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -1442,7 +1443,7 @@
                   })
                 }))
               } else if (/wishlist/gim.test(taskDes.text())) {
-                pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(res => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
                   }).then(r => {
@@ -2597,7 +2598,7 @@
             this.groups.push(href.match(/groups\/(.+)/)[1])
             this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
           } else if (task.text().includes('加入愿望单')) {
-            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+        pro.push(new Promise(r => { // eslint-disable-line
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
               }).then(data => {
@@ -2616,7 +2617,7 @@
               })
             }))
           } else if (task.text().includes('关注开发商')) {
-            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+        pro.push(new Promise(r => { // eslint-disable-line
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
               }).then(data => {
@@ -2675,7 +2676,7 @@
             } else if (href.includes('steamcommunity.com/groups/')) {
               this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
             } else if ($(task).text().includes('加入愿望单')) {
-              pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+          pro.push(new Promise(r => { // eslint-disable-line
                 new Promise(resolve => {
                   fuc.getFinalUrl(resolve, href)
                 }).then(data => {
@@ -3809,7 +3810,7 @@
                 }
               } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(r => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {
@@ -3887,7 +3888,7 @@
                 }
               } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(r => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {
@@ -4265,7 +4266,7 @@
             const id = $(task).children('a[id]').attr('id')
             if (icon.hasClass('fa-steam')) {
               if (link && /gid\/[\d]+/.test(link)) {
-                pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(r => { // eslint-disable-line
                   new Promise(resolve => {
                     fuc.getFinalUrl(resolve, link)
                   }).then(data => {

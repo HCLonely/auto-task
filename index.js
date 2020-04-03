@@ -80,7 +80,6 @@ function packUserJs (test = false) {
 // @grant          GM_registerMenuCommand
 // @grant          GM_info
 // @grant          GM_openInTab
-// @grant          GM_download
 // @connect        userjs.hclonely.com
 // @connect        cdn.jsdelivr.net
 // @connect        store.steampowered.com
@@ -98,29 +97,7 @@ function packUserJs (test = false) {
 // @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
 // ==/UserScript==
 
-(function() {
-    'use strict';
-    
-    ${i18n}
-    GM_addStyle(GM_getResourceText('css'));
-    $('body').append('<div v-cloak id="vue-ui"></div>');
-    let vueUi=new Vue({el:"#vue-ui"});
-    Vue.config.errorHandler = function(err, vm, info) {
-        setTimeout(()=>{
-            vueUi.$message({type:"error",duration:0,message:getI18n("jsError"),showClose:true});
-        },500);
-        console.log("%c%s","color:white;background:red","Info:"+info+"\\nError:"+err.stack);
-    }
-    $(document).ajaxError(function(event,xhr,options,exc){
-        vueUi.$message({type:"error",duration:0,message:getI18n("jsError"),showClose:true});
-        console.log("%c%s","color:white;background:red",getI18n("ajaxError")+"：");
-        console.log("Event:",event);
-        console.log("XMLHttpRequest :",xhr);
-        console.log("Options:",options);
-        console.log("JavaScript exception:",exc);
-    });
-    
-    try{`
+/* global $,Vue,getUrlTwitter,getUrlTwitch,getUrlFacebook,getUrlSteam,getUrlYoutube,totalTasks,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */`
 
   const functionJs = fs.readFileSync('plugins/function.js', 'utf-8')
   const pluginsFiles = fs.readdirSync('plugins')
@@ -136,7 +113,29 @@ function packUserJs (test = false) {
   const loadAnnouncement = fs.readFileSync('plugins/loadAnnouncement.js', 'utf-8')
   const main = fs.readFileSync('main.js', 'utf-8')
 
-  const data = `${header}
+  const body = `(function() {
+    'use strict'
+
+    ${i18n}
+    GM_addStyle(GM_getResourceText('css'))
+    $('body').append('<div v-cloak id="vue-ui"></div>')
+    const vueUi = new Vue({ el: '#vue-ui' })
+    Vue.config.errorHandler = function (err, vm, info) {
+      setTimeout(() => {
+        vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
+      }, 500)
+      console.log('%c%s', 'color:white;background:red', 'Info:' + info + '\\nError:' + err.stack)
+    }
+    $(document).ajaxError(function (event, xhr, options, exc) {
+      vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
+      console.log('%c%s', 'color:white;background:red', getI18n('ajaxError') + '：')
+      console.log('Event:', event)
+      console.log('XMLHttpRequest :', xhr)
+      console.log('Options:', options)
+      console.log('JavaScript exception:', exc)
+    })
+    
+    try{
 
 ${functionJs}${pluginsData}
 
@@ -149,14 +148,15 @@ const plugins = ${JSON.stringify(plugins).replace(/'|"/g, '')}
 ${main}
 
     }catch(e){
-        setTimeout(()=>{
-            vueUi.$message({type:"error",duration:0,message:getI18n("jsError"),showClose:true});
-        },500);
-        console.log("%c%s","color:white;background:red",e.stack);
+        setTimeout(() => {
+          vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
+        }, 500)
+        console.log('%c%s', 'color:white;background:red', e.stack)
     }
     
-})();
-`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign)/g, '')
+})()
+`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign)/g, '').replace(/ promise\/param-names/g, '')
+  const data = header + '\n\n' + body
   fs.writeFile('version', JSON.stringify(ver), function (error) {
     if (error) {
       console.log(error)

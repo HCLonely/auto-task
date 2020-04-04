@@ -64,7 +64,7 @@ function packUserJs (test = false) {
 // @include        https://userjs.hclonely.com/setting_en.html
 // @include        https://userjs.hclonely.com/announcement.html
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
-// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/indexmin.js
+// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@${version}/auto-task.min.css
 // @grant          GM_setValue

@@ -2,6 +2,7 @@ const { exec } = require('child_process')
 const fs = require('fs')
 
 function shell (e, next = null) {
+  console.log(`> ${e}`)
   const command = exec(e, (error, options, stdout, stderr) => {
     if (error) {
       console.log(error)

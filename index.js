@@ -1,15 +1,13 @@
 /* eslint-disable no-useless-escape */
 const fs = require('fs')
-const minify = require('html-minifier').minify
-const CleanCSS = require('clean-css')
 const { program } = require('commander')
+const { minify } = require('html-minifier')
 
 program.version('1.0.0')
 program
   .option('-p, --pack', '生成auto-task.user.js文件')
   .option('-s, --setting', '生成setting.html,setting_en.html文件')
   .option('-a, --announcement', '生成announcement.html文件')
-  .option('-c, --css', '生成auto-task.min.css文件')
   .option('-t, --test', '生成auto-task.user.js文件(Test)')
 
 program.parse(process.argv)
@@ -21,7 +19,6 @@ if (program.setting) {
   minHtml('setting_en_raw.html', 'setting_en.html')
 }
 if (program.announcement) minHtml('announcement_raw.html', 'announcement.html')
-if (program.css) minCss()
 
 function packUserJs (test = false) {
   const ver = JSON.parse(fs.readFileSync('version', 'utf-8'))
@@ -67,7 +64,7 @@ function packUserJs (test = false) {
 // @include        https://userjs.hclonely.com/setting_en.html
 // @include        https://userjs.hclonely.com/announcement.html
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
-// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.js
+// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/indexmin.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@${version}/auto-task.min.css
 // @grant          GM_setValue
@@ -181,19 +178,6 @@ function minHtml (filename1, filename2) {
       console.log(error)
     } else {
       console.log(filename2 + '写入成功')
-    }
-  })
-}
-function minCss () {
-  const css = fs.readFileSync('main.css', 'utf-8')
-  const options = { level: 1 }
-  const output = new CleanCSS(options).minify(css)
-  const minCss = output.styles
-  fs.writeFile('auto-task.min.css', minCss, function (error) {
-    if (error) {
-      console.log(error)
-    } else {
-      console.log('auto-task.min.css写入成功')
     }
   })
 }

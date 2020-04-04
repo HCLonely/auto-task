@@ -2,12 +2,12 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.6
+// @version        2.2.7
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.7/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://userjs.hclonely.com/auto-task.user.js
@@ -34,9 +34,9 @@
 // @include        https://userjs.hclonely.com/setting_en.html
 // @include        https://userjs.hclonely.com/announcement.html
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
-// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.js
+// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/indexmin.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.6/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.7/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -102,6 +102,8 @@
       websiteSetting: '网站设置',
       updateCommunityId: '正在更新Steam社区SessionID(用于加组退组)...',
       updateStoreId: '正在更新Steam商店SessionID(用于添加愿望单、关注游戏、关注鉴赏家等)...',
+      loginSteamCommunity: '请先登录<a href="https://steamcommunity.com/login/home" target="_blank">Steam社区</a>',
+      loginSteamStore: '请先登录<a href="https://store.steampowered.com/login" target="_blank">Steam商店</a>',
       joinGroup: '正在加入Steam组',
       getGroupId: '正在获取Steam组ID',
       leaveGroup: '正在退出Steam组',
@@ -275,6 +277,8 @@
       websiteSetting: ' website settings',
       updateCommunityId: 'Updating Steam Community SessionID (for joining and leaving groups)...',
       updateStoreId: 'Updating Steam Store SessionID (for adding to wishlist, following game, following curator, etc.)...',
+      loginSteamCommunity: 'Please log in to the <a href="https://steamcommunity.com/login/home" target="_blank">Steam Community</a>.',
+      loginSteamStore: 'Please log in to the <a href="https://store.steampowered.com/login" target="_blank">Steam Store</a>.',
       joinGroup: 'Joining the Steam group',
       getGroupId: 'Getting Steam group ID',
       leaveGroup: 'Leaving Steam group',
@@ -530,8 +534,7 @@
           if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
         }
         if (debug) {
-          console.log('发送请求:')
-          console.log(requestObj)
+          console.log('发送请求:', requestObj)
         }
         GM_xmlhttpRequest(requestObj)
       },
@@ -539,7 +542,7 @@
         if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
           const pro = []
           if (type === 'community' || type === 'all') {
-            pro.push(new Promise(resolve => {
+            pro.push(new Promise((resolve, reject) => {
               const status = this.echoLog({ type: 'updateSteamCommunity' })
               this.httpRequest({
                 url: 'https://steamcommunity.com/my',
@@ -547,17 +550,22 @@
                 onload: (response) => {
                   if (debug) console.log(response)
                   if (response.status === 200) {
-                    const steam64Id = response.responseText.match(/g_steamID = "(.+?)";/)
-                    const communitySessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                    const userName = response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
-                    if (steam64Id) steamInfo.steam64Id = steam64Id[1]
-                    if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
-                    if (userName) steamInfo.userName = userName[1]
-                    status.success()
-                    resolve()
+                    if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
+                      status.error('Error:' + getI18n('loginSteamCommunity'), true)
+                      reject(Error('Not Login'))
+                    } else {
+                      const steam64Id = response.responseText.match(/g_steamID = "(.+?)";/)
+                      const communitySessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                      const userName = response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
+                      if (steam64Id) steamInfo.steam64Id = steam64Id[1]
+                      if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
+                      if (userName) steamInfo.userName = userName[1]
+                      status.success()
+                      resolve()
+                    }
                   } else {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    resolve()
+                    reject(Error('Request Failed'))
                   }
                 },
                 r: resolve,
@@ -566,7 +574,7 @@
             }))
           }
           if (type === 'store' || type === 'all') {
-            pro.push(new Promise(resolve => {
+            pro.push(new Promise((resolve, reject) => {
               const status = this.echoLog({ type: 'updateSteamStore' })
 
               this.httpRequest({
@@ -575,13 +583,18 @@
                 onload: (response) => {
                   if (debug) console.log(response)
                   if (response.status === 200) {
-                    const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                    if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
-                    status.success()
-                    resolve()
+                    if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
+                      status.error('Error:' + getI18n('loginSteamStore'), true)
+                      reject(Error('Not Login'))
+                    } else {
+                      const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                      if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
+                      status.success()
+                      resolve()
+                    }
                   } else {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    resolve()
+                    reject(Error('Request Failed'))
                   }
                 },
                 r: resolve,
@@ -1288,21 +1301,21 @@
         const font = ele.find('font')
         const status = {
           font,
-          success: function (text = 'Success') {
+          success: function (text = 'Success', html = false) {
             this.font.attr('class', '').addClass('success')
-            this.font.text(text)
+            html ? this.font.html(text) : this.font.text(text)
           },
-          error: function (text = 'Error') {
+          error: function (text = 'Error', html = false) {
             this.font.attr('class', '').addClass('error')
-            this.font.text(text)
+            html ? this.font.html(text) : this.font.text(text)
           },
-          warning: function (text = 'Warning') {
+          warning: function (text = 'Warning', html = false) {
             this.font.attr('class', '').addClass('warning')
-            this.font.text(text)
+            html ? this.font.html(text) : this.font.text(text)
           },
-          info: function (text = 'Info') {
+          info: function (text = 'Info', html = false) {
             this.font.attr('class', '').addClass('info')
-            this.font.text(text)
+            html ? this.font.html(text) : this.font.text(text)
           }
         }
         return status
@@ -1322,12 +1335,12 @@
       dateFormat: function (fmt, date) {
         let ret
         const opt = {
-          'Y+': date.getFullYear().toString(), // 年
-          'm+': (date.getMonth() + 1).toString(), // 月
-          'd+': date.getDate().toString(), // 日
-          'H+': date.getHours().toString(), // 时
-          'M+': date.getMinutes().toString(), // 分
-          'S+': date.getSeconds().toString() // 秒
+          'Y+': date.getFullYear().toString(),
+          'm+': (date.getMonth() + 1).toString(),
+          'd+': date.getDate().toString(),
+          'H+': date.getHours().toString(),
+          'M+': date.getMinutes().toString(),
+          'S+': date.getSeconds().toString()
         }
         for (const k in opt) {
           ret = new RegExp('(' + k + ')').exec(fmt)

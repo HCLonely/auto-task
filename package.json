@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "node index.js -t && standard --fix",
-    "start": "node index.js -p && standard --fix"
+    "build": "node index.js -p && standard --fix",
+    "push": "node gitpush.js",
+    "start": "node index.js -p && standard --fix && node gitpush.js"
   },
   "author": "HCLonely",
   "license": "MIT",
   "devDependencies": {
-    "clean-css": "^4.2.3",
     "commander": "^5.0.0",
     "html-minifier": "^4.0.0",
     "standard": "^14.3.2"

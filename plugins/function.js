@@ -77,8 +77,7 @@ const fuc = {
       if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
     }
     if (debug) {
-      console.log('发送请求:')
-      console.log(requestObj)
+      console.log('发送请求:', requestObj)
     }
     GM_xmlhttpRequest(requestObj)
   },
@@ -86,7 +85,7 @@ const fuc = {
     if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
       const pro = []
       if (type === 'community' || type === 'all') {
-        pro.push(new Promise(resolve => {
+        pro.push(new Promise((resolve, reject) => {
           const status = this.echoLog({ type: 'updateSteamCommunity' })
           this.httpRequest({
             url: 'https://steamcommunity.com/my',
@@ -94,17 +93,22 @@ const fuc = {
             onload: (response) => {
               if (debug) console.log(response)
               if (response.status === 200) {
-                const steam64Id = response.responseText.match(/g_steamID = "(.+?)";/)
-                const communitySessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                const userName = response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
-                if (steam64Id) steamInfo.steam64Id = steam64Id[1]
-                if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
-                if (userName) steamInfo.userName = userName[1]
-                status.success()
-                resolve()
+                if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
+                  status.error('Error:' + getI18n('loginSteamCommunity'), true)
+                  reject(Error('Not Login'))
+                } else {
+                  const steam64Id = response.responseText.match(/g_steamID = "(.+?)";/)
+                  const communitySessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                  const userName = response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
+                  if (steam64Id) steamInfo.steam64Id = steam64Id[1]
+                  if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
+                  if (userName) steamInfo.userName = userName[1]
+                  status.success()
+                  resolve()
+                }
               } else {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                resolve()
+                reject(Error('Request Failed'))
               }
             },
             r: resolve,
@@ -113,7 +117,7 @@ const fuc = {
         }))
       }
       if (type === 'store' || type === 'all') {
-        pro.push(new Promise(resolve => {
+        pro.push(new Promise((resolve, reject) => {
           const status = this.echoLog({ type: 'updateSteamStore' })
 
           this.httpRequest({
@@ -122,13 +126,18 @@ const fuc = {
             onload: (response) => {
               if (debug) console.log(response)
               if (response.status === 200) {
-                const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
-                status.success()
-                resolve()
+                if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
+                  status.error('Error:' + getI18n('loginSteamStore'), true)
+                  reject(Error('Not Login'))
+                } else {
+                  const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                  if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
+                  status.success()
+                  resolve()
+                }
               } else {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                resolve()
+                reject(Error('Request Failed'))
               }
             },
             r: resolve,
@@ -835,21 +844,21 @@ const fuc = {
     const font = ele.find('font')
     const status = {
       font,
-      success: function (text = 'Success') {
+      success: function (text = 'Success', html = false) {
         this.font.attr('class', '').addClass('success')
-        this.font.text(text)
+        html ? this.font.html(text) : this.font.text(text)
       },
-      error: function (text = 'Error') {
+      error: function (text = 'Error', html = false) {
         this.font.attr('class', '').addClass('error')
-        this.font.text(text)
+        html ? this.font.html(text) : this.font.text(text)
       },
-      warning: function (text = 'Warning') {
+      warning: function (text = 'Warning', html = false) {
         this.font.attr('class', '').addClass('warning')
-        this.font.text(text)
+        html ? this.font.html(text) : this.font.text(text)
       },
-      info: function (text = 'Info') {
+      info: function (text = 'Info', html = false) {
         this.font.attr('class', '').addClass('info')
-        this.font.text(text)
+        html ? this.font.html(text) : this.font.text(text)
       }
     }
     return status
@@ -869,12 +878,12 @@ const fuc = {
   dateFormat: function (fmt, date) {
     let ret
     const opt = {
-      'Y+': date.getFullYear().toString(), // 年
-      'm+': (date.getMonth() + 1).toString(), // 月
-      'd+': date.getDate().toString(), // 日
-      'H+': date.getHours().toString(), // 时
-      'M+': date.getMinutes().toString(), // 分
-      'S+': date.getSeconds().toString() // 秒
+      'Y+': date.getFullYear().toString(),
+      'm+': (date.getMonth() + 1).toString(),
+      'd+': date.getDate().toString(),
+      'H+': date.getHours().toString(),
+      'M+': date.getMinutes().toString(),
+      'S+': date.getSeconds().toString()
     }
     for (const k in opt) {
       ret = new RegExp('(' + k + ')').exec(fmt)

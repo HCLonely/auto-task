@@ -18,7 +18,7 @@ function shell (e, next = null) {
 
 shell('git add .', () => {
   const announcement = JSON.parse(fs.readFileSync('announcement_raw.json')).join('\n')
-  shell(`git commit -m '${announcement}'`, () => {
+  shell(`git commit -m ${announcement}`, () => {
     shell('git push')
   })
 })

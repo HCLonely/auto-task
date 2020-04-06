@@ -4,6 +4,10 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/HCLonely/auto-task)](https://github.com/HCLonely/auto-task/releases)
 ![GitHub Workflow Status](https://img.shields.io/github/workflow/status/HCLonely/auto-task/Test)
 
+# Warning
+
+**The preview version may need to enable [Experimental JavaScript](chrome://flags/#enable-javascript-harmony).**
+
 # Installation
 
 1. Install [Tampermonkey](https://www.tampermonkey.net/)
@@ -42,7 +46,7 @@
 * [dupedornot](https://dupedornot.com/)
 * [grabfreegame](https://www.grabfreegame.com/)
 * [bananagiveaway](https://www.bananagiveaway.com/)
-* [gamecode.win](https://gamecode.win/)
+* ~~[gamecode.win](https://gamecode.win/)~~
 * [gamehag](https://gamehag.com/giveaway)
 * [prys](https://prys.revadike.com/)
 * [indiedb](https://www.indiedb.com/giveaways)

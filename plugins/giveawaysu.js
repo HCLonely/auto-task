@@ -1,7 +1,7 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const giveawaysu = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('giveaway.su') },
-  get_tasks: function (e) {
+  test () { return window.location.host.includes('giveaway.su') },
+  get_tasks (e) {
     // 获取任务信息
     const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
@@ -25,7 +25,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       this.getFinalUrl(e)
     }
   },
-  which_task: function (taskDes) {
+  which_task (taskDes) {
     const taskInfo = []
     const taskName = taskDes.text().trim()
     const link = taskDes.attr('href')
@@ -63,7 +63,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     }
     return taskInfo
   },
-  getFinalUrl: function (e) {
+  getFinalUrl (e) {
     // 处理任务链接
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
     const pro = []
@@ -102,7 +102,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       if (debug) console.log(error)
     })
   },
-  do_task: function (act) {
+  do_task (act) {
     if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
       for (const link of fuc.unique(this.links)) {
         window.open(link, '_blank')
@@ -241,18 +241,18 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       }
     })
   },
-  fuck: function () { },
-  verify: function () { },
-  join: function () { this.get_tasks('doTask') },
-  remove: function () { this.get_tasks('remove') },
-  get_giveawayId: function () {
+  fuck () { },
+  verify () { },
+  join () { this.get_tasks('doTask') },
+  remove () { this.get_tasks('remove') },
+  get_giveawayId () {
     const id = window.location.href.match(/view\/([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  checkLogin: function () {
+  checkLogin () {
     if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     if ($('.giveaway-ended').length > 0) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
         confirmButtonText: getI18n('confirm'),
@@ -284,5 +284,5 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     join: true,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').giveawaysu && GM_getValue('conf').giveawaysu.load) ? GM_getValue('conf').giveawaysu : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.giveawaysu?.load ? GM_getValue('conf').giveawaysu : (GM_getValue('conf')?.global || defaultConf)
 }

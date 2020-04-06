@@ -1,7 +1,7 @@
 /* global getI18n, fuc, defaultConf, debug */
 const givekey = { // eslint-disable-line no-unused-vars
-  test: () => { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
-  before: website => {
+  test () { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
+  before (website) {
     const init = setInterval(() => {
       try {
         if (typeof Centrifuge !== 'undefined') {
@@ -11,8 +11,8 @@ const givekey = { // eslint-disable-line no-unused-vars
       } catch (e) { }
     }, 500)
   },
-  after: () => { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
-  fuck: function (btnArea) {
+  after () { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
+  fuck (btnArea) {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
     if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
     if (!$('#btngo').text().includes('Получить ключ')) {
@@ -24,7 +24,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
     }
   },
-  analyze_tasks: function (tasks) {
+  analyze_tasks (tasks) {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
     const pro = []
     this.groups = []
@@ -103,7 +103,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       if (debug) console.log(this)
     })
   },
-  get_tasks: function () {
+  get_tasks () {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.taskInfo = taskInfoHistory
@@ -156,7 +156,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       })
     }
   },
-  do_task: function () {
+  do_task () {
     this.updateSteamInfo(() => {
       const pro = []
       const groups = fuc.unique(this.groups)
@@ -166,7 +166,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       const links = fuc.unique(this.links)
       if (this.conf.fuck.group) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
@@ -180,21 +180,21 @@ const givekey = { // eslint-disable-line no-unused-vars
       }
       if (this.conf.fuck.followGame) {
         for (const game of fGames) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followGame(resolve, game)
           }))
         }
       }
       if (this.conf.fuck.curator) {
         for (const curator of curators) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followCurator(resolve, curator)
           }))
         }
       }
       if (this.conf.fuck.visit) {
         for (const link of links) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, link)
           }))
         }
@@ -204,38 +204,38 @@ const givekey = { // eslint-disable-line no-unused-vars
       })
     })
   },
-  verify: function () {
+  verify () {
     givekey.wssApp.status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTaskStatus')}<font></font></li>` })
     givekey.wssApp.request('/distribution/check', 'post', { id: window.location.href.match(/[\d]+/)[0], g_captcha: $('[name="g-recaptcha-response"]').val() })
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
         if (this.conf.remove.unfollowGame) {
           for (const game of fuc.unique(this.taskInfo.fGames)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowCurator(resolve, game)
             }))
           }
         }
         if (this.conf.remove.wishlist) {
           for (const game of fuc.unique(this.taskInfo.wGames)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.removeWishlist(resolve, game)
             }))
           }
         }
         if (this.conf.remove.curator) {
           for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowCurator(resolve, curator)
             }))
           }
@@ -248,17 +248,17 @@ const givekey = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
-  creat_app: function () {
+  creat_app  () {
     this.wssApp = {
       status: {},
       message: {},
       loading: false,
       centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
       uid: $('meta[name="uid"]').attr('content'),
-      init: function (m) {
+      init (m) {
         this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
         this.centrifuge.connect()
-        this.centrifuge.on('connect', function (e) {
+        this.centrifuge.on('connect', e => {
           if (debug) console.log(getI18n('wssConnected'))
           $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
           givekey.wssApp.message.close()
@@ -277,20 +277,20 @@ const givekey = { // eslint-disable-line no-unused-vars
             )
           }
         })
-        this.centrifuge.on('disconnect', function (e) {
+        this.centrifuge.on('disconnect', e => {
           if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)
           $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
           givekey.wssApp.message = m.$message({ message: getI18n('wssReconnect'), type: 'warning', duration: 0 })
         })
         if (this.uid) {
-          this.centrifuge.subscribe(`usr#${this.uid}`, (data) => {
+          this.centrifuge.subscribe(`usr#${this.uid}`, data => {
             if (debug) console.log(data)
             givekey.wssApp.status.success()
             if (data.data.js) {
               const taskA = data.data.js.split(';')
               if (taskA) {
                 const tasks = []
-                taskA.map((e) => {
+                taskA.map(e => {
                   if (e.includes('btn-danger')) tasks.push(e.match(/[\d]+/)[0])
                 })
                 givekey.analyze_tasks(tasks)
@@ -299,7 +299,7 @@ const givekey = { // eslint-disable-line no-unused-vars
           })
         }
       },
-      request: (url, type, data, page) => {
+      request (url, type, data, page) {
         if (url) {
           data = data || {}
           type = type || 'post'
@@ -314,11 +314,11 @@ const givekey = { // eslint-disable-line no-unused-vars
             headers: {
               'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function (data) {
+            success (data) {
               if (debug) console.log(data)
               if (data.msg && !data.msg.data.includes('Проверяем! Пожалуйста подождите')) givekey.wssApp.status.error(data.msg.data.replace('Вы уже участвовали в этой раздаче!', '你已经参与了此赠key!'))
             },
-            error: function (e) {
+            error (e) {
               if (debug) console.log(e)
               switch (e.status) {
                 case 401:
@@ -347,11 +347,11 @@ const givekey = { // eslint-disable-line no-unused-vars
       }
     }
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  updateSteamInfo: function (callback) {
+  updateSteamInfo (callback) {
     new Promise(resolve => {
       if (this.taskInfo.groups.length > 0) {
         if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
@@ -370,10 +370,10 @@ const givekey = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLogin: function () {
+  checkLogin () {
     if ($("a[href='/auth']").length > 0) window.open('/auth/vk', '_self')
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     if ($('#keys_count').text() === '0') {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
         confirmButtonText: getI18n('confirm'),
@@ -407,5 +407,5 @@ const givekey = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').givekey && GM_getValue('conf').givekey.load) ? GM_getValue('conf').givekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.givekey?.load ? GM_getValue('conf').givekey : (GM_getValue('conf')?.global || defaultConf)
 }

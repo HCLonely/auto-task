@@ -1,8 +1,8 @@
 /* global getI18n, fuc, defaultConf, debug */
 const opiumpulses = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('opiumpulses') },
-  fuck: function () { this.get_tasks('FREE') },
-  get_tasks: async function (type = 'FREE') {
+  test () { return window.location.host.includes('opiumpulses') },
+  fuck () { this.get_tasks('FREE') },
+  async get_tasks (type = 'FREE') {
     const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
     const myPoint = this.myPoints
     const maxPoint = this.maxPoint()
@@ -24,7 +24,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
           fuc.httpRequest({
             url: a.attr('href'),
             method: 'GET',
-            onload: response => {
+            onload (response) {
               if (debug) console.log(response)
               if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
                 status.success()
@@ -50,7 +50,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
     }
     fuc.echoLog({ type: 'custom', text: '<li>-----END-----</li>' })
   },
-  verify: function () {
+  verify () {
     const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
     if (myPoints) {
       this.myPoints = myPoints
@@ -70,8 +70,6 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
     join: false,
     remove: false
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').opiumpulses && GM_getValue('conf').opiumpulses.load) ? GM_getValue('conf').opiumpulses : (GM_getValue('conf').global || defaultConf)) : defaultConf,
-  maxPoint: function () {
-    return this.conf['max-point'] || Infinity
-  }
+  conf: GM_getValue('conf')?.opiumpulses?.load ? GM_getValue('conf').opiumpulses : (GM_getValue('conf')?.global || defaultConf),
+  maxPoint () { return this.conf.maxPoint || Infinity }
 }

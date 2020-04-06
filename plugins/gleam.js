@@ -1,8 +1,8 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug, language */
 const gleam = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('gleam.io') },
-  fuck: function () { this.get_tasks('do_task') },
-  get_tasks: function (callback = 'do_task') {
+  test () { return window.location.host.includes('gleam.io') },
+  fuck () { this.get_tasks('do_task') },
+  get_tasks (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
@@ -92,7 +92,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       }
     }
   },
-  do_task: function () {
+  do_task () {
     this.updateSteamInfo(() => {
       const pro = []
       const groups = fuc.unique(this.groups)
@@ -105,7 +105,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       const socals = [...discords, ...facebooks, ...youtubes]
       if (this.conf.fuck.group && groups.length > 0) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
@@ -141,7 +141,7 @@ const gleam = { // eslint-disable-line no-unused-vars
         }
       }
       if ((globalConf.other.autoOpen || this.conf.fuck.visit) && links.length > 0) {
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           this.visit_link(links, 0, resolve)
         }))
       }
@@ -161,7 +161,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       })
     })
   },
-  verify: function (i = 0) {
+  verify (i = 0) {
     if ($('.ng-scope[ng-include*=challenge]').is(':visible')) {
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('notRobot')}</font></li>` })
       return
@@ -189,13 +189,13 @@ const gleam = { // eslint-disable-line no-unused-vars
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font><font class="warning">${getI18n('finishSelf')}</font></li>` })
     }
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
@@ -208,7 +208,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
-  visit_link: function (links, i, r) {
+  visit_link (links, i, r) {
     if (i < links.length) {
       const title = $(links[i]).find('.entry-method-title').text().trim()
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
@@ -239,10 +239,10 @@ const gleam = { // eslint-disable-line no-unused-vars
       r(1)
     }
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     return window.location.pathname.replace(/\?.*/, '') || window.location.href
   },
-  updateSteamInfo: function (callback) {
+  updateSteamInfo (callback) {
     new Promise(resolve => {
       if (this.taskInfo.groups.length > 0) {
         fuc.updateSteamInfo(resolve, 'community')
@@ -255,7 +255,7 @@ const gleam = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     if ($('.massive-message:contains(ended)').is(':visible')) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
         confirmButtonText: getI18n('confirm'),
@@ -284,5 +284,5 @@ const gleam = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').gleam && GM_getValue('conf').gleam.load) ? GM_getValue('conf').gleam : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: (GM_getValue('conf')?.gleam && GM_getValue('conf')?.gleam?.load) ? GM_getValue('conf').gleam : (GM_getValue('conf')?.global || defaultConf)
 }

@@ -1,8 +1,8 @@
 /* global getI18n, fuc, defaultConf, debug */
 const prys = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('prys.revadike') },
-  fuck: function () { this.get_tasks('do_task') },
-  get_tasks: function (callback = 'do_task') {
+  test () { return window.location.host.includes('prys.revadike') },
+  fuck () { this.get_tasks('do_task') },
+  get_tasks (callback = 'do_task') {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const steps = $('#steps tbody tr')
     for (let i = 0; i < steps.length; i++) {
@@ -149,7 +149,7 @@ const prys = { // eslint-disable-line no-unused-vars
     status.success()
     if (debug) console.log(this)
   },
-  do_task: function () {
+  do_task () {
     this.updateSteamInfo(() => {
       const pro = []
       const groups = fuc.unique(this.groups)
@@ -174,7 +174,7 @@ const prys = { // eslint-disable-line no-unused-vars
       })
     })
   },
-  verify: function (verify = false) {
+  verify (verify = false) {
     if (verify) {
       const pro = []
       for (const task of fuc.unique(this.tasks)) {
@@ -190,7 +190,7 @@ const prys = { // eslint-disable-line no-unused-vars
       this.get_tasks('verify')
     }
   },
-  checkStep: function (step, r, status, captcha) {
+  checkStep (step, r, status, captcha) {
     if (!captcha) captcha = null
     if (step !== 'captcha') {
       $('#check' + step).replaceWith('<span id="check' + step + '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
@@ -199,7 +199,7 @@ const prys = { // eslint-disable-line no-unused-vars
       step: step,
       id: getURLParameter('id'),
       'g-recaptcha-response': captcha
-    }, function (json) {
+    }, json => {
       r(1)
       if (json.success && step !== 'captcha') {
         $('#check' + step).replaceWith('<span class="text-success" id="check' + step + '"><i class="fa fa-check"></i> Success</span>')
@@ -220,13 +220,13 @@ const prys = { // eslint-disable-line no-unused-vars
           showAlert('success', 'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' + json.response.prize + '</h2>')
         }
       }
-    }).fail(function () {
+    }).fail(() => {
       r(1)
       $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
       status.error('Error:0')
     })
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
@@ -252,11 +252,11 @@ const prys = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     const id = window.location.search.match(/id=([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  updateSteamInfo: function (callback) {
+  updateSteamInfo (callback) {
     new Promise(resolve => {
       if (this.taskInfo.groups.length > 0) {
         if (this.taskInfo.curators.length > 0) {
@@ -275,7 +275,7 @@ const prys = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
     if (!(left.length > 0 && left[1] !== '0')) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
@@ -301,5 +301,5 @@ const prys = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').prys && GM_getValue('conf').prys.load) ? GM_getValue('conf').prys : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.prys?.load ? GM_getValue('conf').prys : (GM_getValue('conf')?.global || defaultConf)
 }

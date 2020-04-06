@@ -1,8 +1,8 @@
 /* global getI18n, fuc, defaultConf, debug */
 const spoune = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('spoune') },
-  fuck: function () { this.get_tasks() },
-  get_tasks: function () {
+  test () { return window.location.host.includes('spoune') },
+  fuck () { this.get_tasks() },
+  get_tasks () {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const giveawayTasks = $('#GiveawayTasks button')
     for (const task of giveawayTasks) {
@@ -25,7 +25,7 @@ const spoune = { // eslint-disable-line no-unused-vars
       fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('noAutoFinish')}</font></li>` })
     }
   },
-  verify: async function ({ arr, i, end }) {
+  async verify ({ arr, i, end }) {
     const tasks = fuc.unique(this.tasks)
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
@@ -34,7 +34,7 @@ const spoune = { // eslint-disable-line no-unused-vars
         fuc.httpRequest({
           url: `/controller.php?taskDetail=${task.id}&show`,
           method: 'get',
-          onload: response => {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               const src = response.responseText.match(/src="\.([\w\W]*?)">/)
@@ -42,7 +42,7 @@ const spoune = { // eslint-disable-line no-unused-vars
                 fuc.httpRequest({
                   url: src[1],
                   method: 'get',
-                  onload: response => {
+                  onload (response) {
                     if (debug) console.log(response)
                     if (response.status === 200) {
                       const href = response.responseText.match(/href="\.(\/verify[\w\W]*?)"/) || response.responseText.match(/href="\.(\/steamgroup[\w\W]*?)"/)
@@ -50,7 +50,7 @@ const spoune = { // eslint-disable-line no-unused-vars
                         fuc.httpRequest({
                           url: '/werbung' + href[1],
                           method: 'get',
-                          onload: response => {
+                          onload (response) {
                             if (debug) console.log(response)
                             if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
                               status.success()
@@ -61,7 +61,7 @@ const spoune = { // eslint-disable-line no-unused-vars
                                 fuc.httpRequest({
                                   url: '/werbung' + href[1],
                                   method: 'get',
-                                  onload: response => {
+                                  onload (response) {
                                     if (debug) console.log(response)
                                     if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
                                       status.success()
@@ -114,7 +114,7 @@ const spoune = { // eslint-disable-line no-unused-vars
     }
     fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     const checkLeft = setInterval(() => {
       if ($('#keysAvailable').length > 0) {
         clearInterval(checkLeft)
@@ -138,5 +138,5 @@ const spoune = { // eslint-disable-line no-unused-vars
     join: false,
     remove: false
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').spoune && GM_getValue('conf').spoune.load) ? GM_getValue('conf').spoune : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.spoune?.load ? GM_getValue('conf').spoune : (GM_getValue('conf')?.global || defaultConf)
 }

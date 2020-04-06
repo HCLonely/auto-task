@@ -1,8 +1,8 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const takekey = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('takekey') },
-  fuck: function () { this.get_tasks('do_task') },
-  get_tasks: function (callback = 'do_task') {
+  test () { return window.location.host.includes('takekey') },
+  fuck () { this.get_tasks('do_task') },
+  get_tasks (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
@@ -76,7 +76,7 @@ const takekey = { // eslint-disable-line no-unused-vars
       })
     }
   },
-  do_task: function () {
+  do_task () {
     this.updateSteamInfo(() => {
       const pro = []
       const groups = fuc.unique(this.groups)
@@ -115,10 +115,10 @@ const takekey = { // eslint-disable-line no-unused-vars
       })
     })
   },
-  verify: function () {
+  verify () {
     setTimeout(() => { $('.fa-check').click() }, 1000)
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
@@ -137,11 +137,11 @@ const takekey = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  updateSteamInfo: function (callback) {
+  updateSteamInfo (callback) {
     new Promise(resolve => {
       if (this.taskInfo.groups.length > 0) {
         if (this.taskInfo.curators.length > 0) {
@@ -160,10 +160,10 @@ const takekey = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLogin: function () {
+  checkLogin () {
     if ($('i.fa-sign-in').length > 0) window.open('/auth/steam', '_self')
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     const leftKey = $('span:contains(Осталось ключей)').text().match(/[\d]+/)
     if (!(leftKey && parseInt(leftKey[0]) > 0)) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
@@ -192,5 +192,5 @@ const takekey = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').takekey && GM_getValue('conf').takekey.load) ? GM_getValue('conf').takekey : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.takekey?.load ? GM_getValue('conf').takekey : (GM_getValue('conf')?.global || defaultConf)
 }

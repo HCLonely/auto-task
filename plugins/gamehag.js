@@ -1,12 +1,12 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const gamehag = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('gamehag') },
-  before: () => {
+  test () { return window.location.host.includes('gamehag') },
+  before () {
     $('#getkey').removeAttr('disabled')
     if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
   },
-  fuck: function () { this.get_tasks('do_task') },
-  get_tasks: function (callback = 'do_task') {
+  fuck () { this.get_tasks('do_task') },
+  get_tasks (callback = 'do_task') {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const verifyBtns = $('button[data-id]')
     if (callback === 'do_task') {
@@ -55,19 +55,19 @@ const gamehag = { // eslint-disable-line no-unused-vars
     status.success()
     if (debug) console.log(this)
   },
-  do_task: async function () {
+  async do_task () {
     const pro = []
     const tasks = fuc.unique(this.tasks)
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
-      pro.push(new Promise((resolve) => {
+      pro.push(new Promise(resolve => {
         fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
       }))
       if (/play.*?games/gim.test(task.taskDes)) {
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           fuc.visitLink(resolve, '/games', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
         }))
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
         }))
       }
@@ -80,14 +80,14 @@ const gamehag = { // eslint-disable-line no-unused-vars
       if (this.conf.fuck.verify) this.verify()
     })
   },
-  verify: async function (verify = false) {
+  async verify (verify = false) {
     if (verify) {
       const pro = []
       const tasks = fuc.unique(this.tasks)
       for (let i = 0; i < tasks.length; i++) {
         const task = tasks[i]
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           fuc.httpRequest({
             url: '/api/v1/giveaway/sendtask',
             method: 'POST',
@@ -97,7 +97,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
               'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
             },
             data: 'task_id=' + task.taskId,
-            onload: function (response) {
+            onload (response) {
               if (debug) console.log(response)
               if (response.response) {
                 if (response.response.status === 'success') {
@@ -129,14 +129,14 @@ const gamehag = { // eslint-disable-line no-unused-vars
       this.get_tasks('verify')
     }
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     const id = window.location.href.match(/\/giveaway\/([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     if ($('.giveaway-counter:first .strong').text() === '0') {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
         confirmButtonText: getI18n('confirm'),
@@ -159,5 +159,5 @@ const gamehag = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').gamehag && GM_getValue('conf').gamehag.load) ? GM_getValue('conf').gamehag : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.gamehag?.load ? GM_getValue('conf').gamehag : (GM_getValue('conf')?.global || defaultConf)
 }

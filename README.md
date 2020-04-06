@@ -6,6 +6,10 @@
 
 [English Document](https://github.com/HCLonely/auto-task/blob/master/README_EN.md)
 
+# 警告
+
+**预览版可能需要启用[实验性JS功能](chrome://flags/#enable-javascript-harmony)**
+
 # 安装
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/)
@@ -48,7 +52,7 @@
 * [dupedornot](https://dupedornot.com/)
 * [grabfreegame](https://www.grabfreegame.com/)
 * [bananagiveaway](https://www.bananagiveaway.com/)
-* [gamecode.win](https://gamecode.win/)
+* ~~[gamecode.win](https://gamecode.win/)~~
 * [gamehag](https://gamehag.com/giveaway)
 * [prys](https://prys.revadike.com/)
 * [indiedb](https://www.indiedb.com/giveaways)

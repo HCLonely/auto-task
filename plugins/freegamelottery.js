@@ -1,10 +1,10 @@
 /* global getI18n, fuc, defaultConf, DashboardApp */
 const freegamelottery = { // eslint-disable-line no-unused-vars
-  test: () => { return window.location.host.includes('freegamelottery') },
-  after: website => {
+  test () { return window.location.host.includes('freegamelottery') },
+  after (website) {
     if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
   },
-  fuck: function (vue) {
+  fuck (vue) {
     GM_setValue('lottery', 1)
     if ($('a.registration-button').length > 0) {
       if (this.conf.fuck.autoLogin) {
@@ -18,7 +18,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
             },
-            onload: function (data) {
+            onload (data) {
               if (data.status === 200) {
                 status.success()
                 window.location.reload(true)
@@ -45,27 +45,27 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
       this.draw()
     }
   },
-  draw: function () {
+  draw () {
     GM_setValue('lottery', 0)
     if (this.conf.fuck.doTask) {
       const main = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit MAIN DRAW')}<font></font></li>` })
       $.post('/draw/register-visit', { drawId: DashboardApp.draws.main.actual.id })
-        .done(function () {
+        .done(() => {
           DashboardApp.draws.main.actual.haveVisited = true
           main.success()
           const survey = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit SURVEY DRAW')}<font></font></li>` })
           $.post('/draw/register-visit', { type: 'survey', drawId: DashboardApp.draws.survey.actual.id })
-            .done(function () {
+            .done(() => {
               DashboardApp.draws.survey.actual.haveVisited = 1
               survey.success()
               const video = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit VIDEO DRAW')}<font></font></li>` })
               $.post('/draw/register-visit', { drawId: DashboardApp.draws.video.actual.id })
-                .done(function () {
+                .done(() => {
                   DashboardApp.draws.video.actual.haveVisited = true
                   video.success()
                   const stackpot = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglTimeout', 'Visit STACKPOT')}<font></font></li>` })
                   $.post('/draw/register-visit', { type: 'stackpot', drawId: DashboardApp.draws.stackpot.actual.id })
-                    .done(function () {
+                    .done(() => {
                       DashboardApp.draws.stackpot.actual.haveVisited = 1
                       stackpot.success()
                       fuc.echoLog({ type: 'custom', text: `<li>${getI18n('fglComplete')}<font></font></li>` })
@@ -83,5 +83,5 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
     join: false,
     remove: false
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').freegamelottery && GM_getValue('conf').freegamelottery.load) ? GM_getValue('conf').freegamelottery : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.freegamelottery?.load ? GM_getValue('conf').freegamelottery : (GM_getValue('conf')?.global || defaultConf)
 }

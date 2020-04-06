@@ -354,7 +354,7 @@ let language = getLanguage() // eslint-disable-line prefer-const
 function getLanguage () {
   let lan = GM_getValue('language') || 'auto'
   if (lan === 'auto') {
-    const browserLanguage = (navigator.browserLanguage || navigator.language).toLowerCase()
+    const browserLanguage = (navigator?.browserLanguage || navigator?.language || '').toLowerCase()
     lan = browserLanguage.includes('en') ? 'en' : 'zh-cn'
   }
   return lan

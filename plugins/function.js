@@ -1,11 +1,11 @@
 /* global getI18n, vueUi */
-const steamInfo = GM_getValue('steamInfo') || {
+const steamInfo = Object.assgin({
   userName: '',
   steam64Id: '',
   communitySessionID: '',
   storeSessionID: '',
   updateTime: 0
-}
+}, GM_getValue('steamInfo'))
 const defaultConf = {
   fuck: {
     group: 1,
@@ -49,37 +49,34 @@ const defaultConf = {
   },
   announcement: ''
 }
-const globalConf = (GM_getValue('conf') && GM_getValue('conf').global) ? GM_getValue('conf').global : defaultConf
+const globalConf = Object.assgin(defaultConf, GM_getValue('conf')?.global)
 const debug = !!globalConf.other.showDetails
 const fuc = {
-  httpRequest: function (e) {
-    const requestObj = {}
-    requestObj.url = e.url
-    requestObj.method = e.method.toUpperCase()
-    requestObj.timeout = e.timeout || 30000
-    if (e.dataType) requestObj.responseType = e.dataType
-    if (e.headers) requestObj.headers = e.headers
-    if (e.data) requestObj.data = e.data
-    if (e.onload) requestObj.onload = e.onload
-    requestObj.ontimeout = e.ontimeout || function (data) {
-      if (debug) console.log(data)
-      if (e.status) e.status.error('Error:Timeout(0)')
-      if (e.r) e.r({ result: 'error', statusText: 'Timeout', status: 0, option: e })
-    }
-    requestObj.onabort = e.onabort || function (data) {
-      if (debug) console.log(data)
-      if (e.status) e.status.error('Error:Aborted(0)')
-      if (e.r) e.r({ result: 'error', statusText: 'Aborted', status: 0, option: e })
-    }
-    requestObj.onerror = e.onerror || function (data) {
-      if (debug) console.log(data)
-      if (e.status) e.status.error('Error:Error(0)')
-      if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
-    }
+  httpRequest (e) {
+    e.method = e.method.toUpperCase()
+    if (e.dataType) e.responseType = e.dataType
+    const requestObj = Object.assgin({
+      timeout: 3000,
+      ontimeout (data) {
+        if (debug) console.log(data)
+        if (e.status) e.status.error('Error:Timeout(0)')
+        if (e.r) e.r({ result: 'error', statusText: 'Timeout', status: 0, option: e })
+      },
+      onabort (data) {
+        if (debug) console.log(data)
+        if (e.status) e.status.error('Error:Aborted(0)')
+        if (e.r) e.r({ result: 'error', statusText: 'Aborted', status: 0, option: e })
+      },
+      onerror (data) {
+        if (debug) console.log(data)
+        if (e.status) e.status.error('Error:Error(0)')
+        if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
+      }
+    }, e)
     if (debug) console.log('发送请求:', requestObj)
     GM_xmlhttpRequest(requestObj)
   },
-  updateSteamInfo: function (r, type = 'all', update = false) {
+  updateSteamInfo (r, type = 'all', update = false) {
     if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
       const pro = []
       if (type === 'community' || type === 'all') {
@@ -88,7 +85,7 @@ const fuc = {
           this.httpRequest({
             url: 'https://steamcommunity.com/my',
             method: 'GET',
-            onload: (response) => {
+            onload (response) {
               if (debug) console.log(response)
               if (response.status === 200) {
                 if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
@@ -121,7 +118,7 @@ const fuc = {
           this.httpRequest({
             url: 'https://store.steampowered.com/stats/',
             method: 'GET',
-            onload: (response) => {
+            onload (response) {
               if (debug) console.log(response)
               if (response.status === 200) {
                 if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
@@ -154,7 +151,7 @@ const fuc = {
       r(1)
     }
   },
-  joinSteamGroup: function (r, group) {
+  joinSteamGroup (r, group) {
     const status = this.echoLog({ type: 'joinSteamGroup', text: group })
 
     this.httpRequest({
@@ -162,7 +159,7 @@ const fuc = {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
       data: $.param({ action: 'join', sessionID: steamInfo.communitySessionID }),
-      onload: (response) => {
+      onload (response) {
         if (debug) console.log(response)
         if (response.status === 200 && !response.responseText.includes('grouppage_join_area')) {
           status.success()
@@ -176,7 +173,7 @@ const fuc = {
       status
     })
   },
-  getGroupID: function (groupName, callback) {
+  getGroupID (groupName, callback) {
     const status = this.echoLog({ type: 'getGroupId', text: groupName })
     const groupNameToId = GM_getValue('groupNameToId') || {}
     if (groupNameToId[groupName]) {
@@ -188,7 +185,7 @@ const fuc = {
           url: 'https://steamcommunity.com/groups/' + groupName,
           method: 'GET',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               const groupId = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)
@@ -207,7 +204,7 @@ const fuc = {
             }
           },
           status,
-          r: () => {
+          r () {
             resolve(false)
           }
         })
@@ -218,7 +215,7 @@ const fuc = {
       })
     }
   },
-  leaveSteamGroup: function (r, groupName) {
+  leaveSteamGroup (r, groupName) {
     this.getGroupID(groupName, (groupName, groupId) => {
       const status = this.echoLog({ type: 'leaveSteamGroup', text: groupName })
 
@@ -227,7 +224,7 @@ const fuc = {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         data: $.param({ sessionID: steamInfo.communitySessionID, action: 'leaveGroup', groupId: groupId }),
-        onload: (response) => {
+        onload (response) {
           if (debug) console.log(response)
           if (response.status === 200 && response.finalUrl.includes('groups') && $(response.responseText.toLowerCase()).find(`a[href='https://steamcommunity.com/groups/${groupName.toLowerCase()}']`).length === 0) {
             status.success()
@@ -242,7 +239,7 @@ const fuc = {
       })
     })
   },
-  followCurator: function (r, curatorId, follow = '1', status = '') {
+  followCurator (r, curatorId, follow = '1', status = '') {
     status = status || this.echoLog({ type: follow === '1' ? 'followCurator' : 'unfollowCurator', text: curatorId })
 
     this.httpRequest({
@@ -251,13 +248,13 @@ const fuc = {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
       data: $.param({ clanid: curatorId, sessionid: steamInfo.storeSessionID, follow: follow }),
       dataType: 'json',
-      onload: (response) => {
+      onload (response) {
         if (debug) console.log(response)
-        if (response.status === 200 && response.response && response.response.success && response.response.success.success === 1) {
+        if (response.status === 200 && response?.response?.success?.success === 1) {
           status.success()
           r({ result: 'success', statusText: response.statusText, status: response.status })
         } else {
-          status.error(`Error:${response.response.msg || response.statusText}(${response.response.success || response.status})`)
+          status.error(`Error:${response.response?.msg || response.statusText}(${response.response?.success || response.status})`)
           r({ result: 'error', statusText: response.statusText, status: response.status })
         }
       },
@@ -265,10 +262,10 @@ const fuc = {
       status
     })
   },
-  unfollowCurator: function (r, curatorId) {
+  unfollowCurator (r, curatorId) {
     this.followCurator(r, curatorId, '0')
   },
-  getCuratorID: function (developerName, callback, isPublisher = 0) {
+  getCuratorID (developerName, callback, isPublisher = 0) {
     const status = this.echoLog({ type: isPublisher ? 'getPublisherId' : 'getDeveloperId', text: developerName })
     const developerNameToId = GM_getValue('developerNameToId') || {}
     if (developerNameToId[developerName]) {
@@ -280,7 +277,7 @@ const fuc = {
           url: `https://store.steampowered.com/${isPublisher ? 'publisher' : 'developer'}/${developerName}`,
           method: 'GET',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               const developerId = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)
@@ -299,7 +296,7 @@ const fuc = {
             }
           },
           status,
-          r: () => { resolve(false) }
+          r () { resolve(false) }
         })
       }).then(curatorId => {
         if (curatorId !== false && callback) callback(developerName, curatorId)
@@ -308,25 +305,25 @@ const fuc = {
       })
     }
   },
-  followDeveloper: function (r, developerName, isPublisher = 0) {
+  followDeveloper (r, developerName, isPublisher = 0) {
     this.getCuratorID(developerName, (developerName, curatorId) => {
       const status = this.echoLog({ type: isPublisher ? 'followPublisher' : 'followDeveloper', text: developerName })
       this.followCurator(r, curatorId, '1', status)
     }, isPublisher)
   },
-  unfollowDeveloper: function (r, developerName, isPublisher = 0) {
+  unfollowDeveloper (r, developerName, isPublisher = 0) {
     this.getCuratorID(developerName, (developerName, curatorId) => {
       const status = this.echoLog({ type: isPublisher ? 'unfollowPublisher' : 'unfollowDeveloper', text: developerName })
       this.followCurator(r, curatorId, '0', status)
     }, isPublisher)
   },
-  followPublisher: function (r, publisherName) {
+  followPublisher (r, publisherName) {
     this.followDeveloper(r, publisherName, 1)
   },
-  unfollowPublisher: function (r, publisherName) {
+  unfollowPublisher (r, publisherName) {
     this.unfollowDeveloper(r, publisherName, 1)
   },
-  addWishlist: function (r, gameId) {
+  addWishlist (r, gameId) {
     const status = this.echoLog({ type: 'addWishlist', text: gameId })
     new Promise(resolve => {
       this.httpRequest({
@@ -335,18 +332,18 @@ const fuc = {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         data: $.param({ sessionid: steamInfo.storeSessionID, appid: gameId }),
         dataType: 'json',
-        onload: function (response) {
+        onload (response) {
           if (debug) console.log(response)
-          if (response.status === 200 && response.response && response.response.success === true) {
+          if (response.status === 200 && response.response?.success === true) {
             status.success()
             resolve({ result: 'success', statusText: response.statusText, status: response.status })
           } else {
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           }
         },
-        onabort: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        onerror: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        ontimeout: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onabort (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onerror (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        ontimeout (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
         r: resolve,
         status
       })
@@ -357,7 +354,7 @@ const fuc = {
         this.httpRequest({
           url: 'https://store.steampowered.com/app/' + gameId,
           method: 'GET',
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('已在库中')) {
@@ -383,7 +380,7 @@ const fuc = {
       console.error(err)
     })
   },
-  removeWishlist: function (r, gameId) {
+  removeWishlist (r, gameId) {
     const status = this.echoLog({ type: 'removeWishlist', text: gameId })
     new Promise(resolve => {
       this.httpRequest({
@@ -392,18 +389,18 @@ const fuc = {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         data: $.param({ sessionid: steamInfo.storeSessionID, appid: gameId }),
         dataType: 'json',
-        onload: function (response) {
+        onload (response) {
           if (debug) console.log(response)
-          if (response.status === 200 && response.response && response.response.success === true) {
+          if (response.status === 200 && response.response?.success === true) {
             status.success()
             resolve({ result: 'success', statusText: response.statusText, status: response.status })
           } else {
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           }
         },
-        onabort: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        onerror: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        ontimeout: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onabort (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onerror (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        ontimeout (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
         r: resolve,
         status
       })
@@ -414,7 +411,7 @@ const fuc = {
         this.httpRequest({
           url: 'https://store.steampowered.com/app/' + gameId,
           method: 'GET',
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               if (response.responseText.includes('class="queue_actions_ctn"') && (response.responseText.includes('已在库中') || response.responseText.includes('添加至您的愿望单'))) {
@@ -437,7 +434,7 @@ const fuc = {
       console.error(err)
     })
   },
-  followGame: function (r, gameId) {
+  followGame (r, gameId) {
     const status = this.echoLog({ type: 'followGame', text: gameId })
     new Promise(resolve => {
       this.httpRequest({
@@ -445,7 +442,7 @@ const fuc = {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         data: $.param({ sessionid: steamInfo.storeSessionID, appid: gameId }),
-        onload: function (response) {
+        onload (response) {
           if (debug) console.log(response)
           if (response.status === 200 && response.responseText === 'true') {
             status.success()
@@ -454,9 +451,9 @@ const fuc = {
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           }
         },
-        onabort: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        onerror: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        ontimeout: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onabort (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onerror (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        ontimeout (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
         r: resolve,
         status
       })
@@ -467,7 +464,7 @@ const fuc = {
         this.httpRequest({
           url: 'https://store.steampowered.com/app/' + gameId,
           method: 'GET',
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
@@ -490,7 +487,7 @@ const fuc = {
       console.error(err)
     })
   },
-  unfollowGame: function (r, gameId) {
+  unfollowGame (r, gameId) {
     const status = this.echoLog({ type: 'unfollowGame', text: gameId })
     new Promise(resolve => {
       this.httpRequest({
@@ -498,7 +495,7 @@ const fuc = {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
         data: $.param({ sessionid: steamInfo.storeSessionID, appid: gameId, unfollow: '1' }),
-        onload: function (response) {
+        onload (response) {
           if (debug) console.log(response)
           if (response.status === 200 && response.responseText === 'true') {
             status.success()
@@ -507,9 +504,9 @@ const fuc = {
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           }
         },
-        onabort: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        onerror: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        ontimeout: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onabort (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onerror (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        ontimeout (response) { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
         r: resolve,
         status
       })
@@ -520,7 +517,7 @@ const fuc = {
         this.httpRequest({
           url: 'https://store.steampowered.com/app/' + gameId,
           method: 'GET',
-          onload: function (response) {
+          onload (response) {
             if (debug) console.log(response)
             if (response.status === 200) {
               if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
@@ -543,7 +540,7 @@ const fuc = {
       console.error(err)
     })
   },
-  likeAnnouncements: function (r, url, id) {
+  likeAnnouncements (r, url, id) {
     const status = this.echoLog({ type: 'likeAnnouncements', url, id })
 
     this.httpRequest({
@@ -552,13 +549,13 @@ const fuc = {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
       data: $.param({ sessionid: steamInfo.communitySessionID, voteup: true }),
       dataType: 'json',
-      onload: (response) => {
+      onload (response) {
         if (debug) console.log(response)
-        if (response.status === 200 && response.response && response.response.success === 1) {
+        if (response.status === 200 && response.response?.success === 1) {
           status.success()
           r({ result: 'success', statusText: response.statusText, status: response.status })
         } else {
-          status.error(`Error:${response.response.msg || response.statusText}(${response.response.success || response.status})`)
+          status.error(`Error:${response.response?.msg || response.statusText}(${response.response?.success || response.status})`)
           r({ result: 'error', statusText: response.statusText, status: response.status })
         }
       },
@@ -566,20 +563,18 @@ const fuc = {
       status
     })
   },
-  getFinalUrl: function (r, url, options = {}) {
-    const conf = {
-      url: options.url || url,
-      method: options.method || 'GET',
-      onload: (response) => {
+  getFinalUrl (r, url, options = null) {
+    const conf = Object.assgin({
+      url,
+      method: 'GET',
+      onload (response) {
         r({ result: 'success', finalUrl: response.finalUrl, url })
       },
       r
-    }
-    if (options.headers) conf.headers = options.headers
-    if (options.data) conf.data = options.data
+    }, options)
     this.httpRequest(conf)
   },
-  visitLink: function (r, url, options = {}) {
+  visitLink (r, url, options = {}) {
     if (!options.method) options.method = 'HEAD'
     const status = this.echoLog({ type: 'visitLink', text: url })
     new Promise(resolve => {
@@ -591,7 +586,7 @@ const fuc = {
       console.error(err)
     })
   },
-  checkUpdate: function (v, s = false) {
+  checkUpdate (v, s = false) {
     v.icon = 'el-icon-loading'
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
@@ -599,7 +594,7 @@ const fuc = {
       url: 'https://userjs.hclonely.com/version?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
-      onload: (response) => {
+      onload (response) {
         if (debug) console.log(response)
         if (response.response && response.response.version === GM_info.script.version) {
           v.icon = 'el-icon-refresh'
@@ -609,7 +604,7 @@ const fuc = {
         } else if (response.response) {
           v.icon = 'el-icon-download'
           v.title = getI18n('updateNow') + response.response.version
-          v.checkUpdate = function () { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
+          v.checkUpdate = () => { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
           if (s) status.success(getI18n('newVer') + response.response.version)
           v.hidden = false
         } else {
@@ -624,19 +619,19 @@ const fuc = {
           GM_setValue('conf', conf)
         }
       },
-      ontimeout: (response) => {
+      ontimeout (response) {
         if (debug) console.log(response)
         v.icon = 'el-icon-refresh'
         v.title = getI18n('checkUpdate')
         if (s) status.error('Error:Timeout(0)')
       },
-      onabort: (response) => {
+      onabort (response) {
         if (debug) console.log(response)
         v.icon = 'el-icon-refresh'
         v.title = getI18n('checkUpdate')
         if (s) status.error('Error:Abort(0)')
       },
-      onerror: (response) => {
+      onerror (response) {
         if (debug) console.log(response)
         v.icon = 'el-icon-refresh'
         v.title = getI18n('checkUpdate')
@@ -645,14 +640,14 @@ const fuc = {
       status
     })
   },
-  getAnnouncement: function (v) {
+  getAnnouncement (v) {
     v.announcementIcon = 'el-icon-loading'
     const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
     this.httpRequest({
       url: 'https://userjs.hclonely.com/new.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
-      onload: (response) => {
+      onload (response) {
         if (debug) console.log(response)
         if (response.responseText && response.response) {
           status.success()
@@ -680,17 +675,17 @@ const fuc = {
         }
         v.announcementIcon = 'el-icon-document'
       },
-      ontimeout: (response) => {
+      ontimeout (response) {
         if (debug) console.log(response)
         v.announcementIcon = 'el-icon-document'
         status.error('Error:Timeout(0)')
       },
-      onabort: (response) => {
+      onabort (response) {
         if (debug) console.log(response)
         v.announcementIcon = 'el-icon-document'
         status.error('Error:Abort(0)')
       },
-      onerror: (response) => {
+      onerror (response) {
         if (debug) console.log(response)
         v.announcementIcon = 'el-icon-document'
         status.error('Error:Error(0)')
@@ -698,13 +693,13 @@ const fuc = {
       status
     })
   },
-  newTabBlock: function () {
+  newTabBlock () {
     const d = new Date()
     const cookiename = 'haveVisited1'
     document.cookie = cookiename + '=1; path=/'
     document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
   },
-  creatSetting: function (settingName, header, fuckOptions, checkedFucks, removeOptions, checkedRemoves) {
+  creatSetting (settingName, header, fuckOptions, checkedFucks, removeOptions, checkedRemoves) {
     new Vue({ // eslint-disable-line no-new
       el: `#${settingName}`,
       data: {
@@ -749,7 +744,7 @@ const fuc = {
       }
     })
   },
-  creatConf: function () {
+  creatConf () {
     const confs = {}
     for (const div of $('div.setting')) {
       const id = $(div).attr('id')
@@ -778,7 +773,7 @@ const fuc = {
     if (announcement) confs.announcement = announcement
     return confs
   },
-  echoLog: function (e) {
+  echoLog (e) {
     let ele = ''
     switch (e.type) {
       case 'updateSteamCommunity':
@@ -850,19 +845,19 @@ const fuc = {
     const font = ele.find('font')
     const status = {
       font,
-      success: function (text = 'Success', html = false) {
+      success (text = 'Success', html = false) {
         this.font.attr('class', '').addClass('success')
         html ? this.font.html(text) : this.font.text(text)
       },
-      error: function (text = 'Error', html = false) {
+      error (text = 'Error', html = false) {
         this.font.attr('class', '').addClass('error')
         html ? this.font.html(text) : this.font.text(text)
       },
-      warning: function (text = 'Warning', html = false) {
+      warning (text = 'Warning', html = false) {
         this.font.attr('class', '').addClass('warning')
         html ? this.font.html(text) : this.font.text(text)
       },
-      info: function (text = 'Info', html = false) {
+      info (text = 'Info', html = false) {
         this.font.attr('class', '').addClass('info')
         html ? this.font.html(text) : this.font.text(text)
       }
@@ -870,7 +865,7 @@ const fuc = {
     return status
   },
   unique: e => [...new Set(e)],
-  getUrlQuery: function (url) {
+  getUrlQuery (url) {
     const q = {}
     if (url) {
       if (url.includes('?')) url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
@@ -879,7 +874,7 @@ const fuc = {
     }
     return q
   },
-  dateFormat: function (fmt, date) {
+  dateFormat (fmt, date) {
     let ret = null
     const opt = {
       'Y+': date.getFullYear().toString(),
@@ -897,10 +892,10 @@ const fuc = {
     }
     return fmt
   },
-  addBackground: function () {
+  addBackground () {
     GM_addStyle('body {background-image:url(//img.hclonely.com/www/006brDXlly1ft9lm7ns5zj31hc0u0qh3.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}')
   },
-  isEmptyObjArr: function (object) {
+  isEmptyObjArr (object) {
     for (const value of Object.values(object)) {
       if (Object.prototype.toString.call(value) === '[object Array]') {
         if (value.length !== 0) return false

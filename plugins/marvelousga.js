@@ -1,9 +1,9 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const marvelousga = { // eslint-disable-line no-unused-vars
-  test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
-  before: () => { fuc.newTabBlock() },
-  fuck: function () { this.get_tasks('do_task') },
-  get_tasks: function (callback = 'do_task') {
+  test () { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
+  before () { fuc.newTabBlock() },
+  fuck () { this.get_tasks('do_task') },
+  get_tasks (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
@@ -67,7 +67,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       }
     }
   },
-  do_task: function () {
+  do_task () {
     this.updateSteamInfo(() => {
       const pro = []
       const groups = fuc.unique(this.groups)
@@ -111,7 +111,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       })
     })
   },
-  verify: function (verify = false) {
+  verify (verify = false) {
     if (verify) {
       const pro = []
       for (const task of fuc.unique(this.tasks)) {
@@ -129,7 +129,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
               giveaway_slug: this.get_giveawayId(),
               giveaway_task_id: task.taskId
             }),
-            onload: function (response) {
+            onload (response) {
               if (debug) console.log(response)
               if (response.status === 200) {
                 if (response.response.status === 1) {
@@ -162,7 +162,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       this.get_tasks('verify')
     }
   },
-  remove: function (remove = false) {
+  remove (remove = false) {
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
@@ -188,10 +188,10 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
-  get_giveawayId: function () {
+  get_giveawayId () {
     return $('#giveawaySlug').val() || window.location.href
   },
-  updateSteamInfo: function (callback) {
+  updateSteamInfo (callback) {
     new Promise(resolve => {
       if (this.taskInfo.groups.length > 0) {
         if (this.taskInfo.curators.length > 0) {
@@ -210,10 +210,10 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLogin: function () {
+  checkLogin () {
     if ($('a[href*=login]').length > 0) window.open('/login', '_self')
   },
-  checkLeft: function (ui) {
+  checkLeft (ui) {
     if ($('h3.text-danger:contains(this giveaway is closed)').length > 0) {
       $('#link_to_click').remove()
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
@@ -240,5 +240,5 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     join: false,
     remove: true
   },
-  conf: GM_getValue('conf') ? ((GM_getValue('conf').marvelousga && GM_getValue('conf').marvelousga.load) ? GM_getValue('conf').marvelousga : (GM_getValue('conf').global || defaultConf)) : defaultConf
+  conf: GM_getValue('conf')?.marvelousga?.load ? GM_getValue('conf').marvelousga : (GM_getValue('conf')?.global || defaultConf)
 }

@@ -1,11 +1,11 @@
 /* global getI18n, fuc, debug, vueUi */
-const loadAnnouncement = function () { // eslint-disable-line no-unused-vars
+const loadAnnouncement = () => { // eslint-disable-line no-unused-vars
   new Promise(resolve => {
     fuc.httpRequest({
       url: 'https://userjs.hclonely.com/announcement.json',
       method: 'get',
       dataType: 'json',
-      onload: response => {
+      onload (response) {
         if (debug) console.log(response)
         if (response.status === 200 && response.response) {
           resolve({ result: 'success', data: response.response })

@@ -12,11 +12,13 @@
   "author": "HCLonely",
   "license": "MIT",
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "commander": "^5.0.0",
     "html-minifier": "^4.0.0",
     "standard": "^14.3.2"
   },
   "standard": {
+    "parser": "babel-eslint",
     "globals": [
       "$",
       "GM_setValue",

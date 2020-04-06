@@ -455,7 +455,7 @@
   })
 
   try {
-    const steamInfo = Object.assgin({
+    const steamInfo = Object.assign({
       userName: '',
       steam64Id: '',
       communitySessionID: '',
@@ -505,13 +505,13 @@
       },
       announcement: ''
     }
-    const globalConf = Object.assgin(defaultConf, GM_getValue('conf')?.global)
+    const globalConf = Object.assign(defaultConf, GM_getValue('conf')?.global)
     const debug = !!globalConf.other.showDetails
     const fuc = {
       httpRequest (e) {
         e.method = e.method.toUpperCase()
         if (e.dataType) e.responseType = e.dataType
-        const requestObj = Object.assgin({
+        const requestObj = Object.assign({
           timeout: 3000,
           ontimeout (data) {
             if (debug) console.log(data)
@@ -1020,7 +1020,7 @@
         })
       },
       getFinalUrl (r, url, options = null) {
-        const conf = Object.assgin({
+        const conf = Object.assign({
           url,
           method: 'GET',
           onload (response) {

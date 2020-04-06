@@ -16,7 +16,6 @@
 // @include        *://dupedornot.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
-// @include        *://gamecode.win/*
 // @include        /https?:\/\/gamehag.com/.*?giveaway\/.*/
 // @include        *://prys.revadike.com/giveaway/?id=*
 // @include        *://www.indiedb.com/giveaways*

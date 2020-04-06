@@ -596,7 +596,7 @@ const fuc = {
       dataType: 'json',
       onload (response) {
         if (debug) console.log(response)
-        if (response.response?.version === GM_info.script.version) {
+        if ('pre-' + response.response?.version === GM_info.script.version) {
           v.icon = 'el-icon-refresh'
           v.title = getI18n('checkUpdate')
           if (s) status.success(getI18n('thisIsNew'))

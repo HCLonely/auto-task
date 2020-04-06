@@ -2,9 +2,7 @@
 const marvelousga = { // eslint-disable-line no-unused-vars
   test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
   before: () => { fuc.newTabBlock() },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -77,21 +75,21 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       const links = fuc.unique(this.links)
       if (this.conf.fuck.group) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
       }
       if (this.conf.fuck.curator) {
         for (const curator of curators) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followCurator(resolve, curator)
           }))
         }
       }
       if (this.conf.fuck.visit) {
         for (const link of links) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, link.pageUrl, {
               url: '/ajax/verifyTasks/webpage/clickedLink',
               method: 'POST',
@@ -107,7 +105,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
           }))
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
       })
@@ -118,7 +116,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       const pro = []
       for (const task of fuc.unique(this.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           fuc.httpRequest({
             url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
             method: 'POST',
@@ -154,7 +152,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
           })
         }))
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
         $('#get_key_container').show()
         $('.hclonely-google').unbind()
@@ -170,19 +168,19 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
         if (this.conf.remove.curator) {
           for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowCurator(resolve, curator)
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -191,8 +189,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = $('#giveawaySlug').val() || window.location.href
-    return id
+    return $('#giveawaySlug').val() || window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -208,9 +205,9 @@ const marvelousga = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLogin: function () {

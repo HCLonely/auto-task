@@ -533,9 +533,7 @@
           if (e.status) e.status.error('Error:Error(0)')
           if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
         }
-        if (debug) {
-          console.log('发送请求:', requestObj)
-        }
+        if (debug) console.log('发送请求:', requestObj)
         GM_xmlhttpRequest(requestObj)
       },
       updateSteamInfo: function (r, type = 'all', update = false) {
@@ -602,10 +600,12 @@
               })
             }))
           }
-          Promise.all(pro).then(data => {
+          Promise.all(pro).then(() => {
             steamInfo.updateTime = new Date().getTime()
             GM_setValue('steamInfo', steamInfo)
             r(1)
+          }).catch(err => {
+            console.error(err)
           })
         } else {
           r(1)
@@ -640,7 +640,7 @@
           status.success()
           callback(groupName, groupNameToId[groupName])
         } else {
-          const pro = new Promise(resolve => {
+          new Promise(resolve => {
             this.httpRequest({
               url: 'https://steamcommunity.com/groups/' + groupName,
               method: 'GET',
@@ -651,7 +651,7 @@
                   const groupId = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)
                   if (groupId === null) {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    resolve('err')
+                    resolve(false)
                   } else {
                     status.success()
                     groupNameToId[groupName] = groupId[1]
@@ -660,19 +660,18 @@
                   }
                 } else {
                   status.error('Error:' + response.statusText + '(' + response.status + ')')
-                  resolve('err')
+                  resolve(false)
                 }
               },
               status,
               r: () => {
-                resolve('err')
+                resolve(false)
               }
             })
-          })
-          pro.then(function (groupId) {
-            if (groupId !== 'err' && callback) {
-              callback(groupName, groupId)
-            }
+          }).then(groupId => {
+            if (groupId !== false && callback) callback(groupName, groupId)
+          }).catch(err => {
+            console.error(err)
           })
         }
       },
@@ -733,7 +732,7 @@
           status.success()
           callback(developerName, developerNameToId[developerName])
         } else {
-          const pro = new Promise(resolve => {
+          new Promise(resolve => {
             this.httpRequest({
               url: `https://store.steampowered.com/${isPublisher ? 'publisher' : 'developer'}/${developerName}`,
               method: 'GET',
@@ -744,7 +743,7 @@
                   const developerId = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)
                   if (developerId === null) {
                     status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    resolve('err')
+                    resolve(false)
                   } else {
                     status.success()
                     developerNameToId[developerName] = developerId[1]
@@ -753,19 +752,16 @@
                   }
                 } else {
                   status.error('Error:' + response.statusText + '(' + response.status + ')')
-                  resolve('err')
+                  resolve(false)
                 }
               },
               status,
-              r: () => {
-                resolve('err')
-              }
+              r: () => { resolve(false) }
             })
-          })
-          pro.then(function (curatorId) {
-            if (curatorId !== 'err' && callback) {
-              callback(developerName, curatorId)
-            }
+          }).then(curatorId => {
+            if (curatorId !== false && callback) callback(developerName, curatorId)
+          }).catch(err => {
+            console.error(err)
           })
         }
       },
@@ -805,9 +801,9 @@
                 resolve({ result: 'error', statusText: response.statusText, status: response.status })
               }
             },
-            onabort: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-            onerror: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-            ontimeout: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+            onabort: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+            onerror: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+            ontimeout: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
             r: resolve,
             status
           })
@@ -840,6 +836,8 @@
               status
             })
           }
+        }).catch(err => {
+          console.error(err)
         })
       },
       removeWishlist: function (r, gameId) {
@@ -892,6 +890,8 @@
               status
             })
           }
+        }).catch(err => {
+          console.error(err)
         })
       },
       followGame: function (r, gameId) {
@@ -943,6 +943,8 @@
               status
             })
           }
+        }).catch(err => {
+          console.error(err)
         })
       },
       unfollowGame: function (r, gameId) {
@@ -994,6 +996,8 @@
               status
             })
           }
+        }).catch(err => {
+          console.error(err)
         })
       },
       likeAnnouncements: function (r, url, id) {
@@ -1040,6 +1044,8 @@
         }).then(() => {
           status.warning('Complete')
           r(1)
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkUpdate: function (v, s = false) {
@@ -1324,16 +1330,14 @@
       getUrlQuery: function (url) {
         const q = {}
         if (url) {
-          if (url.includes('?')) {
-            url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
-          }
+          if (url.includes('?')) url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
         } else {
           window.location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
         }
         return q
       },
       dateFormat: function (fmt, date) {
-        let ret
+        let ret = null
         const opt = {
           'Y+': date.getFullYear().toString(),
           'm+': (date.getMonth() + 1).toString(),
@@ -1356,17 +1360,11 @@
       isEmptyObjArr: function (object) {
         for (const value of Object.values(object)) {
           if (Object.prototype.toString.call(value) === '[object Array]') {
-            if (value.length !== 0) {
-              return false
-            }
+            if (value.length !== 0) return false
           } else if (Object.prototype.toString.call(value) === '[object Object]') {
-            if (Object.keys(value).length !== 0) {
-              return false
-            }
+            if (Object.keys(value).length !== 0) return false
           } else if (Object.prototype.toString.call(value) === '[object String]') {
-            if (value !== '') {
-              return false
-            }
+            if (value !== '') return false
           }
         }
         return true
@@ -1388,7 +1386,9 @@
             type: 'warning'
           }).then(() => {
             this.get_tasks('do_task')
-          }).catch(() => { })
+          }).catch(err => {
+            console.error(err)
+          })
         } else {
           this.get_tasks('do_task')
         }
@@ -1396,7 +1396,7 @@
       get_tasks: function (callback = 'do_task') {
         const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-        if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') {
+        if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
           this.tasks = []
@@ -1489,7 +1489,7 @@
               }
             }
           }
-          Promise.all(pro).finally(data => {
+          Promise.all(pro).finally(() => {
             this.links = fuc.unique(this.links)
             this.groups = fuc.unique(this.groups)
             this.curators = fuc.unique(this.curators)
@@ -1524,40 +1524,40 @@
           const links = fuc.unique(this.links)
           if (this.conf.fuck.group) {
             for (const group of groups) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.joinSteamGroup(resolve, group)
               }))
             }
           }
           if (this.conf.fuck.curator) {
             for (const curator of curators) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.followCurator(resolve, curator)
               }))
             }
           }
           if (this.conf.fuck.wishlist) {
             for (const gameId of wishlists) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.addWishlist(resolve, gameId)
               }))
             }
           }
           if (this.conf.fuck.followGame) {
             for (const gameId of fGames) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.followGame(resolve, gameId)
               }))
             }
           }
           if (this.conf.fuck.visit) {
             for (const link of links) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.visitLink(resolve, link)
               }))
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify()
           })
@@ -1568,7 +1568,7 @@
           const pro = []
           for (const task of fuc.unique(this.tasks)) {
             const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.httpRequest({
                 url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
                 method: 'GET',
@@ -1582,13 +1582,9 @@
               })
             }))
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
-            if (this.verifyBtn.length > 0) {
-              this.verifyBtn.removeAttr('disabled')[0].click()
-            } else {
-              window.location.reload(true)
-            }
+            this.verifyBtn.length > 0 ? this.verifyBtn.removeAttr('disabled')[0].click() : window.location.reload(true)
           })
         } else {
           this.get_tasks('verify')
@@ -1600,33 +1596,33 @@
           this.updateSteamInfo(() => {
             if (this.conf.remove.group) {
               for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.leaveSteamGroup(resolve, group)
                 }))
               }
             }
             if (this.conf.remove.curator) {
               for (const curator of fuc.unique(this.taskInfo.curators)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.unfollowCurator(resolve, curator)
                 }))
               }
             }
             if (this.conf.remove.wishlist) {
               for (const gameId of fuc.unique(this.taskInfo.wishlists)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.removeWishlist(resolve, gameId)
                 }))
               }
             }
             if (this.conf.remove.unfollowGame) {
               for (const gameId of fuc.unique(this.taskInfo.fGames)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.unfollowGame(resolve, gameId)
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -1636,11 +1632,7 @@
       },
       get_giveawayId: function () {
         const id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -1656,9 +1648,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLogin: function () {
@@ -1699,55 +1691,10 @@
       conf: GM_getValue('conf') ? ((GM_getValue('conf').banana && GM_getValue('conf').banana.load) ? GM_getValue('conf').banana : (GM_getValue('conf').global || defaultConf)) : defaultConf
     }
 
-    const chubkeys = {
-      test: () => { return (window.location.host.includes('chubkeys') || window.location.host.includes('giveawayhopper')) },
-      fuck: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      verify: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      remove: function () {
-        fuc.echoLog({ type: 'custom', text: '<li><font class="warning">因为做新版脚本时此网站没有赠key,所以暂时不支持此网站，如果此网站有赠key,请联系作者！</font></li>' })
-      },
-      get_giveawayId: function () {
-        const id = window.location.href.match(/giveaway\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
-      },
-      checkLogin: function () {
-        if ($('a.nav-link[href*=login]').length > 0) window.open('/login', '_self')
-      },
-      checkLeft: function (ui) {
-        if ($('div.card-body h5:contains(There are no more keys left)').length > 0) {
-          ui.$confirm('此页面已经没有剩余key了, 是否关闭?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-            center: true
-          }).then(() => {
-            window.close()
-          })
-        }
-      },
-      setting: {
-        fuck: true,
-        verify: true,
-        join: false,
-        remove: true
-      },
-      conf: GM_getValue('conf') ? ((GM_getValue('conf').chubkeys && GM_getValue('conf').chubkeys.load) ? GM_getValue('conf').chubkeys : (GM_getValue('conf').global || defaultConf)) : defaultConf
-    }
-
     const freegamelottery = {
       test: () => { return window.location.host.includes('freegamelottery') },
       after: website => {
-        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
-          website.draw()
-        }
+        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
       },
       fuck: function (vue) {
         GM_setValue('lottery', 1)
@@ -1834,9 +1781,7 @@
     const gamecode = {
       test: () => { return window.location.host.includes('gamecode.win') },
       before: () => { fuc.newTabBlock() },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
         const verifyBtns = $('[id^=listOfTasks_btnVerify]:not(:contains(VERIFIED))')
@@ -1849,18 +1794,14 @@
             if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
               const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
               const groupName = link.match(/groups\/(.+)\/?/)
-              if (groupName) {
-                this.groups.push(groupName[1])
-              }
+              if (groupName) this.groups.push(groupName[1])
             }
           }
           for (const btn of allVerifyBtns) {
             if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
               const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
               const groupName = link.match(/groups\/(.+)\/?/)
-              if (groupName) {
-                this.taskInfo.groups.push(groupName[1])
-              }
+              if (groupName) this.taskInfo.groups.push(groupName[1])
             }
           }
           this.groups = fuc.unique(this.groups)
@@ -1948,9 +1889,7 @@
               if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
                 const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
                 const groupName = link.match(/groups\/(.+)\/?/)
-                if (groupName) {
-                  this.taskInfo.groups.push(groupName[1])
-                }
+                if (groupName) this.taskInfo.groups.push(groupName[1])
               }
             }
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
@@ -1978,7 +1917,7 @@
               }))
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify()
           })
@@ -2025,7 +1964,7 @@
               })
             }))
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
             $('.hclonely-google').unbind()
             $('.hclonely-google').click(() => { $('#captcha')[0].scrollIntoView() })
@@ -2040,12 +1979,12 @@
           this.updateSteamInfo(() => {
             if (this.conf.remove.group) {
               for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.leaveSteamGroup(resolve, group)
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -2054,20 +1993,15 @@
         }
       },
       get_giveawayId: function () {
-        const id = $('#giveawayID').val() || window.location.href
-        return id
+        return $('#giveawayID').val() || window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
-          if (this.taskInfo.groups.length > 0) {
-            fuc.updateSteamInfo(resolve, 'community')
-          } else {
-            resolve(1)
-          }
+          this.taskInfo.groups.length > 0 ? fuc.updateSteamInfo(resolve, 'community') : resolve(1)
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLogin: function () {
@@ -2106,9 +2040,7 @@
         $('#getkey').removeAttr('disabled')
         if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
       },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
         const verifyBtns = $('button[data-id]')
@@ -2178,7 +2110,7 @@
             setTimeout(() => { resolve() }, 1000)
           })
         }
-        Promise.all(pro).finally(resolve => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
           if (this.conf.fuck.verify) this.verify()
         })
@@ -2225,7 +2157,7 @@
               setTimeout(() => { resolve() }, 1000)
             })
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
           })
         } else {
@@ -2237,11 +2169,7 @@
       },
       get_giveawayId: function () {
         const id = window.location.href.match(/\/giveaway\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       checkLeft: function (ui) {
         if ($('.giveaway-counter:first .strong').text() === '0') {
@@ -2504,30 +2432,20 @@
                 }
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
               if (act === 'join') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
             })
           }
         })
       },
-      fuck: function () {
-      },
-      verify: function () {
-      },
-      join: function () {
-        this.get_tasks('doTask')
-      },
-      remove: function () {
-        this.get_tasks('remove')
-      },
+      fuck: function () { },
+      verify: function () { },
+      join: function () { this.get_tasks('doTask') },
+      remove: function () { this.get_tasks('remove') },
       get_giveawayId: function () {
         const id = window.location.href.match(/view\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       checkLogin: function () {
         if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
@@ -2572,7 +2490,7 @@
       before: website => {
         const init = setInterval(() => {
           try {
-            if (Centrifuge) {
+            if (typeof Centrifuge !== 'undefined') {
               clearInterval(init)
               website.creat_app()
             }
@@ -2582,9 +2500,7 @@
       after: () => { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
       fuck: function (btnArea) {
         const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
-        if (transBtn.css('background-position') === '-68px 0px') {
-          transBtn[0].click()
-        }
+        if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
         if (!$('#btngo').text().includes('Получить ключ')) {
           fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
         } else {
@@ -2769,7 +2685,7 @@
               }))
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
           })
         })
@@ -2810,7 +2726,7 @@
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -2919,11 +2835,7 @@
       },
       get_giveawayId: function () {
         const id = window.location.href.match(/distribution\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -2939,9 +2851,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLogin: function () {
@@ -2986,9 +2898,7 @@
 
     const gleam = {
       test: () => { return window.location.host.includes('gleam.io') },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -3142,7 +3052,7 @@
               fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${taskType}</font></li>` })
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify(0)
           })
@@ -3151,7 +3061,7 @@
       verify: function (i = 0) {
         if ($('.ng-scope[ng-include*=challenge]').is(':visible')) {
           fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('notRobot')}</font></li>` })
-          return 0
+          return
         }
         const tasks = $('div.entry-content .entry-method')
         if (i < tasks.length) {
@@ -3187,7 +3097,7 @@
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -3227,8 +3137,7 @@
         }
       },
       get_giveawayId: function () {
-        const id = window.location.pathname.replace(/\?.*/, '') || window.location.href
-        return id
+        return window.location.pathname.replace(/\?.*/, '') || window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -3238,9 +3147,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLeft: function (ui) {
@@ -3463,9 +3372,7 @@
     const marvelousga = {
       test: () => { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
       before: () => { fuc.newTabBlock() },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -3538,21 +3445,21 @@
           const links = fuc.unique(this.links)
           if (this.conf.fuck.group) {
             for (const group of groups) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.joinSteamGroup(resolve, group)
               }))
             }
           }
           if (this.conf.fuck.curator) {
             for (const curator of curators) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.followCurator(resolve, curator)
               }))
             }
           }
           if (this.conf.fuck.visit) {
             for (const link of links) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.visitLink(resolve, link.pageUrl, {
                   url: '/ajax/verifyTasks/webpage/clickedLink',
                   method: 'POST',
@@ -3568,7 +3475,7 @@
               }))
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify()
           })
@@ -3579,7 +3486,7 @@
           const pro = []
           for (const task of fuc.unique(this.tasks)) {
             const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.httpRequest({
                 url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                 method: 'POST',
@@ -3615,7 +3522,7 @@
               })
             }))
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
             $('#get_key_container').show()
             $('.hclonely-google').unbind()
@@ -3631,19 +3538,19 @@
           this.updateSteamInfo(() => {
             if (this.conf.remove.group) {
               for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.leaveSteamGroup(resolve, group)
                 }))
               }
             }
             if (this.conf.remove.curator) {
               for (const curator of fuc.unique(this.taskInfo.curators)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.unfollowCurator(resolve, curator)
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -3652,8 +3559,7 @@
         }
       },
       get_giveawayId: function () {
-        const id = $('#giveawaySlug').val() || window.location.href
-        return id
+        return $('#giveawaySlug').val() || window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -3669,9 +3575,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLogin: function () {
@@ -3709,9 +3615,7 @@
 
     const opiumpulses = {
       test: () => { return window.location.host.includes('opiumpulses') },
-      fuck: function () {
-        this.get_tasks('FREE')
-      },
+      fuck: function () { this.get_tasks('FREE') },
       get_tasks: async function (type = 'FREE') {
         const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
         const myPoint = this.myPoints
@@ -3728,9 +3632,7 @@
             const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
             if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
               const giveawayId = a.attr('onclick').match(/[\d]+/)
-              if (giveawayId) {
-                checkUser(giveawayId[0])
-              }
+              if (giveawayId) checkUser(giveawayId[0])
             }
             await new Promise(resolve => {
               fuc.httpRequest({
@@ -3790,9 +3692,7 @@
 
     const prys = {
       test: () => { return window.location.host.includes('prys.revadike') },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
         const steps = $('#steps tbody tr')
@@ -3841,7 +3741,7 @@
             }
           }
           if (pro.length > 0) {
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               this.groups = fuc.unique(this.groups)
               this.curators = fuc.unique(this.curators)
               this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
@@ -3890,15 +3790,11 @@
               if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
                 const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
                 const curatorId = link.match(/curator\/([\d]+)/)
-                if (curatorId) {
-                  this.taskInfo.curators.push(curatorId[1])
-                }
+                if (curatorId) this.taskInfo.curators.push(curatorId[1])
               } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
                 const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
                 const groupName = link.match(/groups\/(.+)\/?/)
-                if (groupName) {
-                  this.taskInfo.groups.push(groupName[1])
-                }
+                if (groupName) this.taskInfo.groups.push(groupName[1])
               } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
             pro.push(new Promise(r => { // eslint-disable-line
@@ -3917,7 +3813,7 @@
               }
             }
             if (pro.length > 0) {
-              Promise.all(pro).finally(data => {
+              Promise.all(pro).finally(() => {
                 this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
                 this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
                 GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
@@ -3951,19 +3847,19 @@
           const curators = fuc.unique(this.curators)
           if (this.conf.fuck.group) {
             for (const group of groups) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.joinSteamGroup(resolve, group)
               }))
             }
           }
           if (this.conf.fuck.curator) {
             for (const curator of curators) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.followCurator(resolve, curator)
               }))
             }
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify()
           })
@@ -3974,11 +3870,11 @@
           const pro = []
           for (const task of fuc.unique(this.tasks)) {
             const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               this.checkStep(task.id, resolve, status)
             }))
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
           })
         } else {
@@ -3988,8 +3884,7 @@
       checkStep: function (step, r, status, captcha) {
         if (!captcha) captcha = null
         if (step !== 'captcha') {
-          $('#check' + step).replaceWith('<span id="check' + step +
-            '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
+          $('#check' + step).replaceWith('<span id="check' + step + '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
         }
         $.post('/api/check_step', {
           step: step,
@@ -3998,12 +3893,10 @@
         }, function (json) {
           r(1)
           if (json.success && step !== 'captcha') {
-            $('#check' + step).replaceWith('<span class="text-success" id="check' + step +
-                    '"><i class="fa fa-check"></i> Success</span>')
+            $('#check' + step).replaceWith('<span class="text-success" id="check' + step + '"><i class="fa fa-check"></i> Success</span>')
             status.success()
           } else if (step !== 'captcha') {
-            $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                    ')"><i class="fa fa-question"></i> Check</a>')
+            $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
             status.error((json.response ? json.response.error ? json.response.error : 'Error' : 'Error'))
           }
           if (json.response) {
@@ -4015,15 +3908,12 @@
               captchaCheck()
             }
             if (json.response.prize) {
-              showAlert('success',
-                'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' +
-                        json.response.prize + '</h2>')
+              showAlert('success', 'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' + json.response.prize + '</h2>')
             }
           }
         }).fail(function () {
           r(1)
-          $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                ')"><i class="fa fa-question"></i> Check</a>')
+          $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
           status.error('Error:0')
         })
       },
@@ -4033,19 +3923,19 @@
           this.updateSteamInfo(() => {
             if (this.conf.remove.group) {
               for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.leaveSteamGroup(resolve, group)
                 }))
               }
             }
             if (this.conf.remove.curator) {
               for (const curator of fuc.unique(this.taskInfo.curators)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.unfollowCurator(resolve, curator)
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -4055,11 +3945,7 @@
       },
       get_giveawayId: function () {
         const id = window.location.search.match(/id=([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -4075,9 +3961,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLeft: function (ui) {
@@ -4111,9 +3997,7 @@
 
     const spoune = {
       test: () => { return window.location.host.includes('spoune') },
-      fuck: function () {
-        this.get_tasks()
-      },
+      fuck: function () { this.get_tasks() },
       get_tasks: function () {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
         const giveawayTasks = $('#GiveawayTasks button')
@@ -4255,9 +4139,7 @@
 
     const takekey = {
       test: () => { return window.location.host.includes('takekey') },
-      fuck: function () {
-        this.get_tasks('do_task')
-      },
+      fuck: function () { this.get_tasks('do_task') },
       get_tasks: function (callback = 'do_task') {
         const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -4342,7 +4224,7 @@
           const vks = fuc.unique(this.vks)
           if (this.conf.fuck.group) {
             for (const group of groups) {
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.joinSteamGroup(resolve, group)
               }))
             }
@@ -4352,7 +4234,7 @@
               const a = $(`a[id='${link}']`).attr('onclick', 'return false;')
               a[0].click()
               a.removeAttr('onclick')
-              pro.push(new Promise((resolve) => {
+              pro.push(new Promise(resolve => {
                 fuc.visitLink(resolve, $(`a[id='${link}']`).attr('href'))
               }))
             }
@@ -4365,7 +4247,7 @@
           for (const other of others) {
             fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${$(other).attr('class')}</font></li>` })
           }
-          Promise.all(pro).finally(resolve => {
+          Promise.all(pro).finally(() => {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verify) this.verify()
           })
@@ -4380,12 +4262,12 @@
           this.updateSteamInfo(() => {
             if (this.conf.remove.group) {
               for (const group of fuc.unique(this.taskInfo.groups)) {
-                pro.push(new Promise((resolve) => {
+                pro.push(new Promise(resolve => {
                   fuc.leaveSteamGroup(resolve, group)
                 }))
               }
             }
-            Promise.all(pro).finally(data => {
+            Promise.all(pro).finally(() => {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             })
           })
@@ -4395,11 +4277,7 @@
       },
       get_giveawayId: function () {
         const id = window.location.href.match(/distribution\/([\d]+)/)
-        if (id) {
-          return id[1]
-        } else {
-          return window.location.href
-        }
+        return id ? id[1] : window.location.href
       },
       updateSteamInfo: function (callback) {
         new Promise(resolve => {
@@ -4415,9 +4293,9 @@
             resolve(1)
           }
         }).then(s => {
-          if (s === 1) {
-            callback()
-          }
+          if (s === 1) callback()
+        }).catch(err => {
+          console.error(err)
         })
       },
       checkLogin: function () {
@@ -5149,9 +5027,7 @@
           })
           new Vue({ // eslint-disable-line no-new
             el: '#app',
-            data: {
-              announcements: announcements
-            }
+            data: { announcements }
           })
         } else {
           vueUi.$message({ type: 'error', duration: 0, message: `${getI18n('loadAnnouncementFailed')}${data.statusText || getI18n('checkConsole')}！`, showClose: true })
@@ -5163,7 +5039,7 @@
       })
     }
 
-    const plugins = [banana, chubkeys, freegamelottery, gamecode, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
+    const plugins = [banana, freegamelottery, gamecode, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
@@ -5184,12 +5060,8 @@
         }
       })
 
-      if (globalConf.other.checkLogin && website.checkLogin) {
-        website.checkLogin()
-      }
-      if (globalConf.other.checkLeft && website.checkLeft) {
-        website.checkLeft(vueUi)
-      }
+      if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
+      if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft(vueUi)
 
       $('body').append(`
 <div id="fuck-task-app">
@@ -5221,36 +5093,28 @@
               text: website.setting.fuckText || 'FuckTask',
               title: website.setting.fuckTitle || getI18n('fuckBtnTitle'),
               show: website.setting.fuck,
-              click: () => {
-                website.fuck(btnArea)
-              }
+              click: () => { website.fuck(btnArea) }
             },
             {
               id: 'verify-task',
               text: website.setting.verifyText || 'Verify',
               title: website.setting.verifyTitle || getI18n('verifyBtnTitle'),
               show: website.setting.verify,
-              click: () => {
-                website.verify()
-              }
+              click: () => { website.verify() }
             },
             {
               id: 'join-task',
               text: website.setting.joinText || 'Join',
               title: website.setting.joinDes || getI18n('joinBtnTitle'),
               show: website.setting.join,
-              click: () => {
-                website.join()
-              }
+              click: () => { website.join() }
             },
             {
               id: 'remove-task',
               text: website.setting.removeText || 'Remove',
               title: website.setting.removeTitle || getI18n('removeBtnTitle'),
               show: website.setting.remove,
-              click: () => {
-                website.remove()
-              }
+              click: () => { website.remove() }
             }
           ],
           drawerBtn: {
@@ -5265,15 +5129,11 @@
             if (this.show) {
               this.icon = 'el-icon-arrow-left'
               this.title = getI18n('show')
-              $('#fuck-task-btn').animate({
-                width: '0'
-              })
+              $('#fuck-task-btn').animate({ width: '0' })
             } else {
               this.icon = 'el-icon-arrow-right'
               this.title = getI18n('hide')
-              $('#fuck-task-btn').animate({
-                width: '110'
-              })
+              $('#fuck-task-btn').animate({ width: '110' })
             }
             this.show = !this.show
           },
@@ -5281,15 +5141,11 @@
             if (this.drawerBtn.show) {
               this.drawerBtn.text = 'ShowLogs'
               this.drawerBtn.title = getI18n('showLog')
-              $('.fuck-task-logs').animate({
-                right: '-100%'
-              }, 'fast')
+              $('.fuck-task-logs').animate({ right: '-100%' }, 'fast')
             } else {
               this.drawerBtn.text = 'HideLogs'
               this.drawerBtn.title = getI18n('hideLog')
-              $('.fuck-task-logs').animate({
-                right: '16px'
-              }, 'fast')
+              $('.fuck-task-logs').animate({ right: '16px' }, 'fast')
             }
             this.drawerBtn.show = !this.drawerBtn.show
           }
@@ -5360,9 +5216,8 @@
           }
         }
       })
-      if (globalConf.other.checkUpdate) {
-        fuc.checkUpdate(extraBtn)
-      }
+
+      if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
 
       $('.fuck-task-logs .el-notification__content').show()
       if (!showLogs) {
@@ -5395,7 +5250,7 @@
       }).then(value => {
         if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
         language = getLanguage()
-      }).catch(() => { })
+      })
     })
   } catch (e) {
     setTimeout(() => {

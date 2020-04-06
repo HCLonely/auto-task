@@ -1,9 +1,7 @@
 /* global getI18n, fuc, defaultConf, debug */
 const spoune = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('spoune') },
-  fuck: function () {
-    this.get_tasks()
-  },
+  fuck: function () { this.get_tasks() },
   get_tasks: function () {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const giveawayTasks = $('#GiveawayTasks button')

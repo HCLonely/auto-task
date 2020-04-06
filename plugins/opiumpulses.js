@@ -1,9 +1,7 @@
 /* global getI18n, fuc, defaultConf, debug */
 const opiumpulses = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('opiumpulses') },
-  fuck: function () {
-    this.get_tasks('FREE')
-  },
+  fuck: function () { this.get_tasks('FREE') },
   get_tasks: async function (type = 'FREE') {
     const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`)
     const myPoint = this.myPoints
@@ -20,9 +18,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
         const a = $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
         if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
           const giveawayId = a.attr('onclick').match(/[\d]+/)
-          if (giveawayId) {
-            checkUser(giveawayId[0])
-          }
+          if (giveawayId) checkUser(giveawayId[0])
         }
         await new Promise(resolve => {
           fuc.httpRequest({

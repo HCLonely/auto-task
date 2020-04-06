@@ -24,9 +24,7 @@ const loadAnnouncement = function () { // eslint-disable-line no-unused-vars
       })
       new Vue({ // eslint-disable-line no-new
         el: '#app',
-        data: {
-          announcements: announcements
-        }
+        data: { announcements }
       })
     } else {
       vueUi.$message({ type: 'error', duration: 0, message: `${getI18n('loadAnnouncementFailed')}${data.statusText || getI18n('checkConsole')}！`, showClose: true })

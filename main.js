@@ -18,12 +18,8 @@ if (window.location.host.includes('hclonely')) {
     }
   })
 
-  if (globalConf.other.checkLogin && website.checkLogin) {
-    website.checkLogin()
-  }
-  if (globalConf.other.checkLeft && website.checkLeft) {
-    website.checkLeft(vueUi)
-  }
+  if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
+  if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft(vueUi)
 
   $('body').append(`
 <div id="fuck-task-app">
@@ -55,36 +51,28 @@ if (window.location.host.includes('hclonely')) {
           text: website.setting.fuckText || 'FuckTask',
           title: website.setting.fuckTitle || getI18n('fuckBtnTitle'),
           show: website.setting.fuck,
-          click: () => {
-            website.fuck(btnArea)
-          }
+          click: () => { website.fuck(btnArea) }
         },
         {
           id: 'verify-task',
           text: website.setting.verifyText || 'Verify',
           title: website.setting.verifyTitle || getI18n('verifyBtnTitle'),
           show: website.setting.verify,
-          click: () => {
-            website.verify()
-          }
+          click: () => { website.verify() }
         },
         {
           id: 'join-task',
           text: website.setting.joinText || 'Join',
           title: website.setting.joinDes || getI18n('joinBtnTitle'),
           show: website.setting.join,
-          click: () => {
-            website.join()
-          }
+          click: () => { website.join() }
         },
         {
           id: 'remove-task',
           text: website.setting.removeText || 'Remove',
           title: website.setting.removeTitle || getI18n('removeBtnTitle'),
           show: website.setting.remove,
-          click: () => {
-            website.remove()
-          }
+          click: () => { website.remove() }
         }
       ],
       drawerBtn: {
@@ -99,15 +87,11 @@ if (window.location.host.includes('hclonely')) {
         if (this.show) {
           this.icon = 'el-icon-arrow-left'
           this.title = getI18n('show')
-          $('#fuck-task-btn').animate({
-            width: '0'
-          })
+          $('#fuck-task-btn').animate({ width: '0' })
         } else {
           this.icon = 'el-icon-arrow-right'
           this.title = getI18n('hide')
-          $('#fuck-task-btn').animate({
-            width: '110'
-          })
+          $('#fuck-task-btn').animate({ width: '110' })
         }
         this.show = !this.show
       },
@@ -115,15 +99,11 @@ if (window.location.host.includes('hclonely')) {
         if (this.drawerBtn.show) {
           this.drawerBtn.text = 'ShowLogs'
           this.drawerBtn.title = getI18n('showLog')
-          $('.fuck-task-logs').animate({
-            right: '-100%'
-          }, 'fast')
+          $('.fuck-task-logs').animate({ right: '-100%' }, 'fast')
         } else {
           this.drawerBtn.text = 'HideLogs'
           this.drawerBtn.title = getI18n('hideLog')
-          $('.fuck-task-logs').animate({
-            right: '16px'
-          }, 'fast')
+          $('.fuck-task-logs').animate({ right: '16px' }, 'fast')
         }
         this.drawerBtn.show = !this.drawerBtn.show
       }
@@ -194,9 +174,8 @@ if (window.location.host.includes('hclonely')) {
       }
     }
   })
-  if (globalConf.other.checkUpdate) {
-    fuc.checkUpdate(extraBtn)
-  }
+
+  if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
 
   $('.fuck-task-logs .el-notification__content').show()
   if (!showLogs) {
@@ -229,5 +208,5 @@ GM_registerMenuCommand('Language', () => {
   }).then(value => {
     if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
     language = getLanguage() // eslint-disable-line no-global-assign
-  }).catch(() => { })
+  })
 })

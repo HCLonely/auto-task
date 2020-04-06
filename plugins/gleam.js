@@ -1,9 +1,7 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug, language */
 const gleam = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('gleam.io') },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -157,7 +155,7 @@ const gleam = { // eslint-disable-line no-unused-vars
           fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${taskType}</font></li>` })
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify(0)
       })
@@ -166,7 +164,7 @@ const gleam = { // eslint-disable-line no-unused-vars
   verify: function (i = 0) {
     if ($('.ng-scope[ng-include*=challenge]').is(':visible')) {
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('notRobot')}</font></li>` })
-      return 0
+      return
     }
     const tasks = $('div.entry-content .entry-method')
     if (i < tasks.length) {
@@ -202,7 +200,7 @@ const gleam = { // eslint-disable-line no-unused-vars
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -242,8 +240,7 @@ const gleam = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = window.location.pathname.replace(/\?.*/, '') || window.location.href
-    return id
+    return window.location.pathname.replace(/\?.*/, '') || window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -253,9 +250,9 @@ const gleam = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLeft: function (ui) {

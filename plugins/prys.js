@@ -1,9 +1,7 @@
 /* global getI18n, fuc, defaultConf, debug */
 const prys = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('prys.revadike') },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const steps = $('#steps tbody tr')
@@ -52,7 +50,7 @@ const prys = { // eslint-disable-line no-unused-vars
         }
       }
       if (pro.length > 0) {
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           this.groups = fuc.unique(this.groups)
           this.curators = fuc.unique(this.curators)
           this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
@@ -101,15 +99,11 @@ const prys = { // eslint-disable-line no-unused-vars
           if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
             const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
             const curatorId = link.match(/curator\/([\d]+)/)
-            if (curatorId) {
-              this.taskInfo.curators.push(curatorId[1])
-            }
+            if (curatorId) this.taskInfo.curators.push(curatorId[1])
           } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
             const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
             const groupName = link.match(/groups\/(.+)\/?/)
-            if (groupName) {
-              this.taskInfo.groups.push(groupName[1])
-            }
+            if (groupName) this.taskInfo.groups.push(groupName[1])
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
             pro.push(new Promise(r => { // eslint-disable-line promise/param-names
@@ -128,7 +122,7 @@ const prys = { // eslint-disable-line no-unused-vars
           }
         }
         if (pro.length > 0) {
-          Promise.all(pro).finally(data => {
+          Promise.all(pro).finally(() => {
             this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
             this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
             GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
@@ -162,19 +156,19 @@ const prys = { // eslint-disable-line no-unused-vars
       const curators = fuc.unique(this.curators)
       if (this.conf.fuck.group) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
       }
       if (this.conf.fuck.curator) {
         for (const curator of curators) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followCurator(resolve, curator)
           }))
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
       })
@@ -185,11 +179,11 @@ const prys = { // eslint-disable-line no-unused-vars
       const pro = []
       for (const task of fuc.unique(this.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           this.checkStep(task.id, resolve, status)
         }))
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('prysAllTasksComplete')}</font></li>` })
       })
     } else {
@@ -199,8 +193,7 @@ const prys = { // eslint-disable-line no-unused-vars
   checkStep: function (step, r, status, captcha) {
     if (!captcha) captcha = null
     if (step !== 'captcha') {
-      $('#check' + step).replaceWith('<span id="check' + step +
-            '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
+      $('#check' + step).replaceWith('<span id="check' + step + '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
     }
     $.post('/api/check_step', {
       step: step,
@@ -209,12 +202,10 @@ const prys = { // eslint-disable-line no-unused-vars
     }, function (json) {
       r(1)
       if (json.success && step !== 'captcha') {
-        $('#check' + step).replaceWith('<span class="text-success" id="check' + step +
-                    '"><i class="fa fa-check"></i> Success</span>')
+        $('#check' + step).replaceWith('<span class="text-success" id="check' + step + '"><i class="fa fa-check"></i> Success</span>')
         status.success()
       } else if (step !== 'captcha') {
-        $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                    ')"><i class="fa fa-question"></i> Check</a>')
+        $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
         status.error((json.response ? json.response.error ? json.response.error : 'Error' : 'Error'))
       }
       if (json.response) {
@@ -226,15 +217,12 @@ const prys = { // eslint-disable-line no-unused-vars
           captchaCheck()
         }
         if (json.response.prize) {
-          showAlert('success',
-            'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' +
-                        json.response.prize + '</h2>')
+          showAlert('success', 'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">' + json.response.prize + '</h2>')
         }
       }
     }).fail(function () {
       r(1)
-      $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step +
-                ')"><i class="fa fa-question"></i> Check</a>')
+      $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
       status.error('Error:0')
     })
   },
@@ -244,19 +232,19 @@ const prys = { // eslint-disable-line no-unused-vars
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
         if (this.conf.remove.curator) {
           for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowCurator(resolve, curator)
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -266,11 +254,7 @@ const prys = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId: function () {
     const id = window.location.search.match(/id=([\d]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -286,9 +270,9 @@ const prys = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLeft: function (ui) {

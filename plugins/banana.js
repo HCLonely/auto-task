@@ -14,7 +14,9 @@ const banana = { // eslint-disable-line no-unused-vars
         type: 'warning'
       }).then(() => {
         this.get_tasks('do_task')
-      }).catch(() => { })
+      }).catch(err => {
+        console.error(err)
+      })
     } else {
       this.get_tasks('do_task')
     }
@@ -22,7 +24,7 @@ const banana = { // eslint-disable-line no-unused-vars
   get_tasks: function (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-    if (callback === 'remove' && taskInfoHistory && taskInfoHistory !== '{"groups":[],"curators":[],"wishlists":[],"fGames":[]}') {
+    if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
       this.tasks = []
@@ -115,7 +117,7 @@ const banana = { // eslint-disable-line no-unused-vars
           }
         }
       }
-      Promise.all(pro).finally(data => {
+      Promise.all(pro).finally(() => {
         this.links = fuc.unique(this.links)
         this.groups = fuc.unique(this.groups)
         this.curators = fuc.unique(this.curators)
@@ -150,40 +152,40 @@ const banana = { // eslint-disable-line no-unused-vars
       const links = fuc.unique(this.links)
       if (this.conf.fuck.group) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
       }
       if (this.conf.fuck.curator) {
         for (const curator of curators) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followCurator(resolve, curator)
           }))
         }
       }
       if (this.conf.fuck.wishlist) {
         for (const gameId of wishlists) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.addWishlist(resolve, gameId)
           }))
         }
       }
       if (this.conf.fuck.followGame) {
         for (const gameId of fGames) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.followGame(resolve, gameId)
           }))
         }
       }
       if (this.conf.fuck.visit) {
         for (const link of links) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, link)
           }))
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
       })
@@ -194,7 +196,7 @@ const banana = { // eslint-disable-line no-unused-vars
       const pro = []
       for (const task of fuc.unique(this.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-        pro.push(new Promise((resolve) => {
+        pro.push(new Promise(resolve => {
           fuc.httpRequest({
             url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
             method: 'GET',
@@ -208,13 +210,9 @@ const banana = { // eslint-disable-line no-unused-vars
           })
         }))
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
-        if (this.verifyBtn.length > 0) {
-          this.verifyBtn.removeAttr('disabled')[0].click()
-        } else {
-          window.location.reload(true)
-        }
+        this.verifyBtn.length > 0 ? this.verifyBtn.removeAttr('disabled')[0].click() : window.location.reload(true)
       })
     } else {
       this.get_tasks('verify')
@@ -226,33 +224,33 @@ const banana = { // eslint-disable-line no-unused-vars
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
         if (this.conf.remove.curator) {
           for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowCurator(resolve, curator)
             }))
           }
         }
         if (this.conf.remove.wishlist) {
           for (const gameId of fuc.unique(this.taskInfo.wishlists)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.removeWishlist(resolve, gameId)
             }))
           }
         }
         if (this.conf.remove.unfollowGame) {
           for (const gameId of fuc.unique(this.taskInfo.fGames)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.unfollowGame(resolve, gameId)
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -262,11 +260,7 @@ const banana = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId: function () {
     const id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -282,9 +276,9 @@ const banana = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLogin: function () {

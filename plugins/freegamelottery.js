@@ -2,9 +2,7 @@
 const freegamelottery = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('freegamelottery') },
   after: website => {
-    if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) {
-      website.draw()
-    }
+    if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
   },
   fuck: function (vue) {
     GM_setValue('lottery', 1)

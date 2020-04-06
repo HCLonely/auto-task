@@ -4,7 +4,7 @@ const givekey = { // eslint-disable-line no-unused-vars
   before: website => {
     const init = setInterval(() => {
       try {
-        if (Centrifuge) {
+        if (typeof Centrifuge !== 'undefined') {
           clearInterval(init)
           website.creat_app()
         }
@@ -14,9 +14,7 @@ const givekey = { // eslint-disable-line no-unused-vars
   after: () => { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
   fuck: function (btnArea) {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
-    if (transBtn.css('background-position') === '-68px 0px') {
-      transBtn[0].click()
-    }
+    if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
     if (!$('#btngo').text().includes('Получить ключ')) {
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
     } else {
@@ -201,7 +199,7 @@ const givekey = { // eslint-disable-line no-unused-vars
           }))
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     })
@@ -242,7 +240,7 @@ const givekey = { // eslint-disable-line no-unused-vars
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -351,11 +349,7 @@ const givekey = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId: function () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -371,9 +365,9 @@ const givekey = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLogin: function () {

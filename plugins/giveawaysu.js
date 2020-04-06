@@ -234,30 +234,20 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
             }
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
           if (act === 'join') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
         })
       }
     })
   },
-  fuck: function () {
-  },
-  verify: function () {
-  },
-  join: function () {
-    this.get_tasks('doTask')
-  },
-  remove: function () {
-    this.get_tasks('remove')
-  },
+  fuck: function () { },
+  verify: function () { },
+  join: function () { this.get_tasks('doTask') },
+  remove: function () { this.get_tasks('remove') },
   get_giveawayId: function () {
     const id = window.location.href.match(/view\/([\d]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   checkLogin: function () {
     if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')

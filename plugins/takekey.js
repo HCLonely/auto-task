@@ -1,9 +1,7 @@
 /* global getI18n, fuc, globalConf, defaultConf, debug */
 const takekey = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('takekey') },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -88,7 +86,7 @@ const takekey = { // eslint-disable-line no-unused-vars
       const vks = fuc.unique(this.vks)
       if (this.conf.fuck.group) {
         for (const group of groups) {
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.joinSteamGroup(resolve, group)
           }))
         }
@@ -98,7 +96,7 @@ const takekey = { // eslint-disable-line no-unused-vars
           const a = $(`a[id='${link}']`).attr('onclick', 'return false;')
           a[0].click()
           a.removeAttr('onclick')
-          pro.push(new Promise((resolve) => {
+          pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, $(`a[id='${link}']`).attr('href'))
           }))
         }
@@ -111,7 +109,7 @@ const takekey = { // eslint-disable-line no-unused-vars
       for (const other of others) {
         fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${$(other).attr('class')}</font></li>` })
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
       })
@@ -126,12 +124,12 @@ const takekey = { // eslint-disable-line no-unused-vars
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -141,11 +139,7 @@ const takekey = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId: function () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
@@ -161,9 +155,9 @@ const takekey = { // eslint-disable-line no-unused-vars
         resolve(1)
       }
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLogin: function () {

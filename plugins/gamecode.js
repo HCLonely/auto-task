@@ -2,9 +2,7 @@
 const gamecode = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('gamecode.win') },
   before: () => { fuc.newTabBlock() },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const verifyBtns = $('[id^=listOfTasks_btnVerify]:not(:contains(VERIFIED))')
@@ -17,18 +15,14 @@ const gamecode = { // eslint-disable-line no-unused-vars
         if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
           const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
           const groupName = link.match(/groups\/(.+)\/?/)
-          if (groupName) {
-            this.groups.push(groupName[1])
-          }
+          if (groupName) this.groups.push(groupName[1])
         }
       }
       for (const btn of allVerifyBtns) {
         if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
           const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
           const groupName = link.match(/groups\/(.+)\/?/)
-          if (groupName) {
-            this.taskInfo.groups.push(groupName[1])
-          }
+          if (groupName) this.taskInfo.groups.push(groupName[1])
         }
       }
       this.groups = fuc.unique(this.groups)
@@ -116,9 +110,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
           if ($(btn).attr('id').split('_')[4] === 'joinGroup') {
             const link = $(btn).parent().find("a[href*='steamcommunity.com/groups/']").attr('href')
             const groupName = link.match(/groups\/(.+)\/?/)
-            if (groupName) {
-              this.taskInfo.groups.push(groupName[1])
-            }
+            if (groupName) this.taskInfo.groups.push(groupName[1])
           }
         }
         this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
@@ -146,7 +138,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
           }))
         }
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
       })
@@ -193,7 +185,7 @@ const gamecode = { // eslint-disable-line no-unused-vars
           })
         }))
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
         $('.hclonely-google').unbind()
         $('.hclonely-google').click(() => { $('#captcha')[0].scrollIntoView() })
@@ -208,12 +200,12 @@ const gamecode = { // eslint-disable-line no-unused-vars
       this.updateSteamInfo(() => {
         if (this.conf.remove.group) {
           for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise((resolve) => {
+            pro.push(new Promise(resolve => {
               fuc.leaveSteamGroup(resolve, group)
             }))
           }
         }
-        Promise.all(pro).finally(data => {
+        Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
@@ -222,20 +214,15 @@ const gamecode = { // eslint-disable-line no-unused-vars
     }
   },
   get_giveawayId: function () {
-    const id = $('#giveawayID').val() || window.location.href
-    return id
+    return $('#giveawayID').val() || window.location.href
   },
   updateSteamInfo: function (callback) {
     new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        fuc.updateSteamInfo(resolve, 'community')
-      } else {
-        resolve(1)
-      }
+      this.taskInfo.groups.length > 0 ? fuc.updateSteamInfo(resolve, 'community') : resolve(1)
     }).then(s => {
-      if (s === 1) {
-        callback()
-      }
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkLogin: function () {

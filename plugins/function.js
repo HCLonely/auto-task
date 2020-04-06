@@ -76,9 +76,7 @@ const fuc = {
       if (e.status) e.status.error('Error:Error(0)')
       if (e.r) e.r({ result: 'error', statusText: 'Error', status: 0, option: e })
     }
-    if (debug) {
-      console.log('发送请求:', requestObj)
-    }
+    if (debug) console.log('发送请求:', requestObj)
     GM_xmlhttpRequest(requestObj)
   },
   updateSteamInfo: function (r, type = 'all', update = false) {
@@ -145,10 +143,12 @@ const fuc = {
           })
         }))
       }
-      Promise.all(pro).then(data => {
+      Promise.all(pro).then(() => {
         steamInfo.updateTime = new Date().getTime()
         GM_setValue('steamInfo', steamInfo)
         r(1)
+      }).catch(err => {
+        console.error(err)
       })
     } else {
       r(1)
@@ -183,7 +183,7 @@ const fuc = {
       status.success()
       callback(groupName, groupNameToId[groupName])
     } else {
-      const pro = new Promise(resolve => {
+      new Promise(resolve => {
         this.httpRequest({
           url: 'https://steamcommunity.com/groups/' + groupName,
           method: 'GET',
@@ -194,7 +194,7 @@ const fuc = {
               const groupId = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)
               if (groupId === null) {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                resolve('err')
+                resolve(false)
               } else {
                 status.success()
                 groupNameToId[groupName] = groupId[1]
@@ -203,19 +203,18 @@ const fuc = {
               }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
-              resolve('err')
+              resolve(false)
             }
           },
           status,
           r: () => {
-            resolve('err')
+            resolve(false)
           }
         })
-      })
-      pro.then(function (groupId) {
-        if (groupId !== 'err' && callback) {
-          callback(groupName, groupId)
-        }
+      }).then(groupId => {
+        if (groupId !== false && callback) callback(groupName, groupId)
+      }).catch(err => {
+        console.error(err)
       })
     }
   },
@@ -276,7 +275,7 @@ const fuc = {
       status.success()
       callback(developerName, developerNameToId[developerName])
     } else {
-      const pro = new Promise(resolve => {
+      new Promise(resolve => {
         this.httpRequest({
           url: `https://store.steampowered.com/${isPublisher ? 'publisher' : 'developer'}/${developerName}`,
           method: 'GET',
@@ -287,7 +286,7 @@ const fuc = {
               const developerId = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)
               if (developerId === null) {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
-                resolve('err')
+                resolve(false)
               } else {
                 status.success()
                 developerNameToId[developerName] = developerId[1]
@@ -296,19 +295,16 @@ const fuc = {
               }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
-              resolve('err')
+              resolve(false)
             }
           },
           status,
-          r: () => {
-            resolve('err')
-          }
+          r: () => { resolve(false) }
         })
-      })
-      pro.then(function (curatorId) {
-        if (curatorId !== 'err' && callback) {
-          callback(developerName, curatorId)
-        }
+      }).then(curatorId => {
+        if (curatorId !== false && callback) callback(developerName, curatorId)
+      }).catch(err => {
+        console.error(err)
       })
     }
   },
@@ -348,9 +344,9 @@ const fuc = {
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           }
         },
-        onabort: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        onerror: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
-        ontimeout: (response) => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onabort: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        onerror: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
+        ontimeout: response => { resolve({ result: 'error', statusText: response.statusText, status: response.status }) },
         r: resolve,
         status
       })
@@ -383,6 +379,8 @@ const fuc = {
           status
         })
       }
+    }).catch(err => {
+      console.error(err)
     })
   },
   removeWishlist: function (r, gameId) {
@@ -435,6 +433,8 @@ const fuc = {
           status
         })
       }
+    }).catch(err => {
+      console.error(err)
     })
   },
   followGame: function (r, gameId) {
@@ -486,6 +486,8 @@ const fuc = {
           status
         })
       }
+    }).catch(err => {
+      console.error(err)
     })
   },
   unfollowGame: function (r, gameId) {
@@ -537,6 +539,8 @@ const fuc = {
           status
         })
       }
+    }).catch(err => {
+      console.error(err)
     })
   },
   likeAnnouncements: function (r, url, id) {
@@ -583,6 +587,8 @@ const fuc = {
     }).then(() => {
       status.warning('Complete')
       r(1)
+    }).catch(err => {
+      console.error(err)
     })
   },
   checkUpdate: function (v, s = false) {
@@ -867,16 +873,14 @@ const fuc = {
   getUrlQuery: function (url) {
     const q = {}
     if (url) {
-      if (url.includes('?')) {
-        url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
-      }
+      if (url.includes('?')) url.split('?')[1].replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
     } else {
       window.location.search.replace(/([^?&=]+)=([^&]+)/g, (_, k, v) => { q[k] = v })
     }
     return q
   },
   dateFormat: function (fmt, date) {
-    let ret
+    let ret = null
     const opt = {
       'Y+': date.getFullYear().toString(),
       'm+': (date.getMonth() + 1).toString(),
@@ -899,17 +903,11 @@ const fuc = {
   isEmptyObjArr: function (object) {
     for (const value of Object.values(object)) {
       if (Object.prototype.toString.call(value) === '[object Array]') {
-        if (value.length !== 0) {
-          return false
-        }
+        if (value.length !== 0) return false
       } else if (Object.prototype.toString.call(value) === '[object Object]') {
-        if (Object.keys(value).length !== 0) {
-          return false
-        }
+        if (Object.keys(value).length !== 0) return false
       } else if (Object.prototype.toString.call(value) === '[object String]') {
-        if (value !== '') {
-          return false
-        }
+        if (value !== '') return false
       }
     }
     return true

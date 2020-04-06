@@ -5,9 +5,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
     $('#getkey').removeAttr('disabled')
     if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
   },
-  fuck: function () {
-    this.get_tasks('do_task')
-  },
+  fuck: function () { this.get_tasks('do_task') },
   get_tasks: function (callback = 'do_task') {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
     const verifyBtns = $('button[data-id]')
@@ -77,7 +75,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
         setTimeout(() => { resolve() }, 1000)
       })
     }
-    Promise.all(pro).finally(resolve => {
+    Promise.all(pro).finally(() => {
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       if (this.conf.fuck.verify) this.verify()
     })
@@ -124,7 +122,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
           setTimeout(() => { resolve() }, 1000)
         })
       }
-      Promise.all(pro).finally(resolve => {
+      Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       })
     } else {
@@ -136,11 +134,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId: function () {
     const id = window.location.href.match(/\/giveaway\/([\d]+)/)
-    if (id) {
-      return id[1]
-    } else {
-      return window.location.href
-    }
+    return id ? id[1] : window.location.href
   },
   checkLeft: function (ui) {
     if ($('.giveaway-counter:first .strong').text() === '0') {

@@ -1,16 +1,16 @@
 // ==UserScript==
-// @name           自动任务
-// @name:en        Auto Task
+// @name           自动任务预览版
+// @name:en        Auto Task Preview Edition
 // @namespace      auto-task
-// @version        2.2.7
+// @version        pre-2.2.8
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.7/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://userjs.hclonely.com/auto-task.user.js
+// @updateURL      https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*
@@ -36,7 +36,7 @@
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.7/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -61,7 +61,7 @@
 // @connect        twitch.tv
 // @connect        *
 // @run-at         document-end
-// @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
+// @compatible     chrome >= 80, 启用 Experimental JavaScript 功能
 // ==/UserScript==
 
 /* global $,Vue,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
@@ -1048,21 +1048,21 @@
         let status = false
         if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
         this.httpRequest({
-          url: 'https://userjs.hclonely.com/version?t=' + new Date().getTime(),
+          url: 'https://github.com/HCLonely/auto-task/raw/preview/version?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload (response) {
             if (debug) console.log(response)
-            if (response.response && response.response.version === GM_info.script.version) {
+            if (response.response?.version === GM_info.script.version) {
               v.icon = 'el-icon-refresh'
               v.title = getI18n('checkUpdate')
               if (s) status.success(getI18n('thisIsNew'))
               v.hidden = true
-            } else if (response.response) {
+            } else if (response.response?.version) {
               v.icon = 'el-icon-download'
-              v.title = getI18n('updateNow') + response.response.version
-              v.checkUpdate = () => { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
-              if (s) status.success(getI18n('newVer') + response.response.version)
+              v.title = getI18n('updateNow') + 'pre-' + response.response.version
+              v.checkUpdate = () => { window.open('https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js', '_blank') }
+              if (s) status.success(getI18n('newVer') + 'pre-' + response.response.version)
               v.hidden = false
             } else {
               v.icon = 'el-icon-refresh'
@@ -1070,7 +1070,7 @@
               if (s) status.error('Error:' + (response.statusText || response.status))
             }
             const conf = GM_getValue('conf') || defaultConf
-            if (response.response && response.response.time !== conf.announcement) {
+            if (response.response?.time !== conf.announcement) {
               v.announcementHidden = false
               conf.announcement = response.response.time
               GM_setValue('conf', conf)
@@ -1101,7 +1101,7 @@
         v.announcementIcon = 'el-icon-loading'
         const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
         this.httpRequest({
-          url: 'https://userjs.hclonely.com/new.json?t=' + new Date().getTime(),
+          url: 'https://github.com/HCLonely/auto-task/raw/preview/new.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload (response) {
@@ -1119,7 +1119,7 @@
                 if (/^[\d]+$/.test(index)) hArr.push(h('p', null, `${parseInt(index) + 1}.${data.text[index]}`))
               }
               vueUi.$msgbox({
-                title: `V${data.version}(${fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time))})`,
+                title: `pre-${data.version}(${fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time))})`,
                 message: h('div', null, hArr),
                 showCancelButton: true,
                 confirmButtonText: getI18n('visitHistory'),
@@ -4722,7 +4722,7 @@
     const loadAnnouncement = () => {
       new Promise(resolve => {
         fuc.httpRequest({
-          url: 'https://userjs.hclonely.com/announcement.json',
+          url: 'https://github.com/HCLonely/auto-task/raw/preview/announcement.json',
           method: 'get',
           dataType: 'json',
           onload (response) {

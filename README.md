@@ -8,7 +8,7 @@
 
 # 警告
 
-**预览版可能需要启用[实验性JS功能](chrome://flags/#enable-javascript-harmony)**
+**预览版可能需要启用`实验性JS功能`**
 
 # 安装
 

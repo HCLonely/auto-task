@@ -591,21 +591,21 @@ const fuc = {
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://userjs.hclonely.com/version?t=' + new Date().getTime(),
+      url: 'https://github.com/HCLonely/auto-task/raw/preview/version?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {
         if (debug) console.log(response)
-        if (response.response && response.response.version === GM_info.script.version) {
+        if (response.response?.version === GM_info.script.version) {
           v.icon = 'el-icon-refresh'
           v.title = getI18n('checkUpdate')
           if (s) status.success(getI18n('thisIsNew'))
           v.hidden = true
-        } else if (response.response) {
+        } else if (response.response?.version) {
           v.icon = 'el-icon-download'
-          v.title = getI18n('updateNow') + response.response.version
-          v.checkUpdate = () => { window.open('https://userjs.hclonely.com/auto-task.user.js', '_blank') }
-          if (s) status.success(getI18n('newVer') + response.response.version)
+          v.title = getI18n('updateNow') + 'pre-' + response.response.version
+          v.checkUpdate = () => { window.open('https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js', '_blank') }
+          if (s) status.success(getI18n('newVer') + 'pre-' + response.response.version)
           v.hidden = false
         } else {
           v.icon = 'el-icon-refresh'
@@ -613,7 +613,7 @@ const fuc = {
           if (s) status.error('Error:' + (response.statusText || response.status))
         }
         const conf = GM_getValue('conf') || defaultConf
-        if (response.response && response.response.time !== conf.announcement) {
+        if (response.response?.time !== conf.announcement) {
           v.announcementHidden = false
           conf.announcement = response.response.time
           GM_setValue('conf', conf)
@@ -644,7 +644,7 @@ const fuc = {
     v.announcementIcon = 'el-icon-loading'
     const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://userjs.hclonely.com/new.json?t=' + new Date().getTime(),
+      url: 'https://github.com/HCLonely/auto-task/raw/preview/new.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {
@@ -662,7 +662,7 @@ const fuc = {
             if (/^[\d]+$/.test(index)) hArr.push(h('p', null, `${parseInt(index) + 1}.${data.text[index]}`))
           }
           vueUi.$msgbox({
-            title: `V${data.version}(${fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time))})`,
+            title: `pre-${data.version}(${fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time))})`,
             message: h('div', null, hArr),
             showCancelButton: true,
             confirmButtonText: getI18n('visitHistory'),

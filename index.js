@@ -29,18 +29,18 @@ function packUserJs (test = false) {
   ver.version = version
   const i18n = fs.readFileSync('plugins/i18n.js', 'utf-8')
   const header = `// ==UserScript==
-// @name           自动任务
-// @name:en        Auto Task
+// @name           自动任务预览版
+// @name:en        Auto Task Preview Edition
 // @namespace      auto-task
-// @version        ${version}
+// @version        pre-${version}
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@${version}/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://userjs.hclonely.com/auto-task.user.js
+// @updateURL      https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*
@@ -66,7 +66,7 @@ function packUserJs (test = false) {
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@${version}/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -91,7 +91,7 @@ function packUserJs (test = false) {
 // @connect        twitch.tv
 // @connect        *
 // @run-at         document-end
-// @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
+// @compatible     chrome >= 80, 启用 Experimental JavaScript 功能
 // ==/UserScript==
 
 /* global $,Vue,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */`

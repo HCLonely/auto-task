@@ -6,7 +6,7 @@
 
 # Warning
 
-**The preview version may need to enable [Experimental JavaScript](chrome://flags/#enable-javascript-harmony).**
+**The preview version may need to enable `Experimental JavaScript`.**
 
 # Installation
 

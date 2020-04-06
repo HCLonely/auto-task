@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug */
+/* global getI18n, fuc, globalConf, defaultConf, debug, getUrlTwitter, getUrlTwitch, getUrlFacebook,getUrlSteam, getUrlYoutube, totalTasks */
 const gamecode = { // eslint-disable-line no-unused-vars
   test: () => { return window.location.host.includes('gamecode.win') },
   before: () => { fuc.newTabBlock() },

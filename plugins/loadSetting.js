@@ -300,6 +300,7 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
 
     fuc.creatSetting('banana', 'grabfreegame & bananagiveaway', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
   })();
+  /* disable
   (function () {
     const fuckOptions = getOptions('fuckOptions', [0, 7, 8])
     const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamecode) ? (() => {
@@ -321,6 +322,7 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
 
     fuc.creatSetting('gamecode', 'gamecode.win', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
   })();
+  */
   (function () {
     const fuckOptions = getOptions('fuckOptions', [0, 7, 8])
     const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').gamehag) ? (() => {
@@ -386,18 +388,18 @@ const loadSetting = function () { // eslint-disable-line no-unused-vars
   })();
   (function () {
     const fuckOptions = getOptions('fuckOptions', [0, 7])
-    const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
+    const checkedFucks = (GM_getValue('conf') && GM_getValue('conf').takekey) ? (() => {
       const conf = []
-      for (const eName of Object.keys(GM_getValue('conf').givekey.fuck)) {
+      for (const eName of Object.keys(GM_getValue('conf').takekey.fuck)) {
         conf.push(eNameToNameJoin[eName])
       }
       return conf
     })() : getOptions('checkedFucks', [0, 7])
 
     const removeOptions = getOptions('removeOptions', [0])
-    const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').givekey) ? (() => {
+    const checkedRemoves = (GM_getValue('conf') && GM_getValue('conf').takekey) ? (() => {
       const conf = []
-      for (const eName of Object.keys(GM_getValue('conf').givekey.remove)) {
+      for (const eName of Object.keys(GM_getValue('conf').takekey.remove)) {
         conf.push(eNameToNameRemove[eName])
       }
       return conf

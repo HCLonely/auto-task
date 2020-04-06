@@ -48,7 +48,7 @@
 * [dupedornot](https://dupedornot.com/)
 * [grabfreegame](https://www.grabfreegame.com/)
 * [bananagiveaway](https://www.bananagiveaway.com/)
-* [gamecode.win](https://gamecode.win/)
+* ~~[gamecode.win](https://gamecode.win/)~~
 * [gamehag](https://gamehag.com/giveaway)
 * [prys](https://prys.revadike.com/)
 * [indiedb](https://www.indiedb.com/giveaways)

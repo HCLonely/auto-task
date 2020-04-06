@@ -94,14 +94,15 @@ function packUserJs (test = false) {
 // @compatible     chrome >= 58, 没有测试其他浏览器的兼容性
 // ==/UserScript==
 
-/* global $,Vue,getUrlTwitter,getUrlTwitch,getUrlFacebook,getUrlSteam,getUrlYoutube,totalTasks,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */`
+/* global $,Vue,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */`
 
+  const disabledPlugins = ['gamecode.js']
   const functionJs = fs.readFileSync('plugins/function.js', 'utf-8')
   const pluginsFiles = fs.readdirSync('plugins')
   const plugins = []
   let pluginsData = ''
   pluginsFiles.map((e, i) => {
-    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js', 'i18n.js'].includes(e)) {
+    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js', 'i18n.js'].includes(e) && !disabledPlugins.includes(e)) {
       pluginsData += '\n\n' + fs.readFileSync('plugins/' + e, 'utf-8')
       plugins.push(e.replace('.js', ''))
     }
@@ -153,7 +154,7 @@ ${main}
     
 })()
 `.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign)/g, '').replace(/ promise\/param-names/g, '')
-  const data = header + '\n\n' + body
+  const data = header + '\n\n' + body.replace(/\/\* disable[\w\W]*?\*\//g, '')
   fs.writeFile('version', JSON.stringify(ver), function (error) {
     if (error) {
       console.log(error)

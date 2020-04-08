@@ -10,6 +10,12 @@
 
 **预览版可能需要启用`实验性JS功能`**
 
+# 测试环境
+
+- Chrome 83.0.4100.3（正式版本）dev （64 位）
+- 启用 `Experimental JavaScript` 功能
+- Tampermonkey Beta v4.10.6112
+
 # 安装
 
 1. 安装 [Tampermonkey](https://www.tampermonkey.net/)

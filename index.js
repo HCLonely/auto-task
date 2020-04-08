@@ -27,7 +27,7 @@ function packUserJs (test = false) {
   if (!test) versionArr[2]++
   version = versionArr.join('.')
   ver.version = version
-  const i18n = fs.readFileSync('plugins/i18n.js', 'utf-8')
+  const i18n = fs.readFileSync('lib/i18n.js', 'utf-8')
   const header = `// ==UserScript==
 // @name           自动任务预览版
 // @name:en        Auto Task Preview Edition
@@ -96,18 +96,18 @@ function packUserJs (test = false) {
 /* global $,Vue,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */`
 
   const disabledPlugins = ['gamecode.js']
-  const functionJs = fs.readFileSync('plugins/function.js', 'utf-8')
+  const functionJs = fs.readFileSync('lib/function.js', 'utf-8')
   const pluginsFiles = fs.readdirSync('plugins')
   const plugins = []
   let pluginsData = ''
   pluginsFiles.map((e, i) => {
-    if (!['function.js', 'loadSetting.js', 'loadAnnouncement.js', 'i18n.js'].includes(e) && !disabledPlugins.includes(e)) {
+    if (!disabledPlugins.includes(e)) {
       pluginsData += '\n\n' + fs.readFileSync('plugins/' + e, 'utf-8')
       plugins.push(e.replace('.js', ''))
     }
   })
-  const loadSetting = fs.readFileSync('plugins/loadSetting.js', 'utf-8')
-  const loadAnnouncement = fs.readFileSync('plugins/loadAnnouncement.js', 'utf-8')
+  const loadSetting = fs.readFileSync('lib/loadSetting.js', 'utf-8')
+  const loadAnnouncement = fs.readFileSync('lib/loadAnnouncement.js', 'utf-8')
   const main = fs.readFileSync('main.js', 'utf-8')
 
   const body = `(function() {

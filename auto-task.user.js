@@ -512,7 +512,7 @@
         e.method = e.method.toUpperCase()
         if (e.dataType) e.responseType = e.dataType
         const requestObj = Object.assign({
-          timeout: 3000,
+          timeout: 30000,
           ontimeout (data) {
             if (debug) console.log(data)
             if (e.status) e.status.error('Error:Timeout(0)')

@@ -46,7 +46,7 @@
 * [gamehag](https://gamehag.com/giveaway)
 * [prys](https://prys.revadike.com/)
 * [indiedb](https://www.indiedb.com/giveaways)
-* [givekey](https://givekey.ru/)(Need to set the language to "Русский")
+* [givekey](https://givekey.ru/)(Need to set the language to "English")
 * [takekey](https://takekey.ru/)
 * [freegamelottery](https://freegamelottery.com/)
 * [gleam.io](http://gleam.io/)

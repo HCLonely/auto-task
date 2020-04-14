@@ -15,14 +15,13 @@ const givekey = { // eslint-disable-line no-unused-vars
   fuck: function (btnArea) {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
     if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
-    if (!$('#btngo').text().includes('Получить ключ')) {
-      fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
-    } else {
-      givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
-      $(() => givekey.wssApp.init(btnArea))
-      fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
-      fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
-    }
+    fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
+    givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
+    $(() => givekey.wssApp.init(btnArea))
+    fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
+    fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
+    fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('gkrobot')}</font></li>` })
+    window.open($('a[id^="task_"').attr('href'), '_blank')
   },
   analyze_tasks: function (tasks) {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
@@ -40,7 +39,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       } else if (href.includes('steamcommunity.com/groups')) {
         this.groups.push(href.match(/groups\/(.+)/)[1])
         this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-      } else if (task.text().includes('加入愿望单')) {
+      } else if (/Add to wishlist/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
@@ -59,16 +58,17 @@ const givekey = { // eslint-disable-line no-unused-vars
             }
           })
         }))
-      } else if (task.text().includes('关注开发商')) {
+        /* disable
+      } else if (/Subscribe to the curator/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
           }).then(data => {
             if (data.result === 'success') {
-              const appId = data.finalUrl.match(/app\/([\d]+)/)
-              if (appId) {
-                this.wGames.push(appId[1])
-                this.taskInfo.wGames.push(appId[1])
+              const curator = data.finalUrl.match(/curator\/([\d]+)/)
+              if (curator) {
+                this.curators.push(curator[1])
+                this.taskInfo.curators.push(curator[1])
                 r(1)
               } else {
                 r(0)
@@ -78,6 +78,26 @@ const givekey = { // eslint-disable-line no-unused-vars
             }
           })
         }))
+      } else if (/Subscribe to the developer/i.test(task.text())) {
+        pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+          new Promise(resolve => {
+            fuc.getFinalUrl(resolve, href)
+          }).then(data => {
+            if (data.result === 'success') {
+              const developer = data.finalUrl.match(/developer\/([^/]+)/)
+              if (developer) {
+                this.developers.push(developer[1])
+                this.taskInfo.developers.push(developer[1])
+                r(1)
+              } else {
+                r(0)
+              }
+            } else {
+              r(0)
+            }
+          })
+        }))
+        */
       } else if (href.includes('store.steampowered.com/app')) {
         this.fGames.push(href.match(/app\/([\d]+)/)[1])
         this.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
@@ -118,7 +138,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         if (href.includes('vk.com')) {
         } else if (href.includes('steamcommunity.com/groups/')) {
           this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-        } else if ($(task).text().includes('加入愿望单')) {
+        } else if (/Add to wishlist/i.test(task.text())) {
           pro.push(new Promise(r => { // eslint-disable-line promise/param-names
             new Promise(resolve => {
               fuc.getFinalUrl(resolve, href)
@@ -263,19 +283,6 @@ const givekey = { // eslint-disable-line no-unused-vars
           $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
           givekey.wssApp.message.close()
           m.$message({ message: getI18n('wssConnectSuccess'), type: 'success' })
-          for (const a of $('a[id^=task_]')) {
-            $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论')
-              .replace('Подписаться на разработчика', '订阅开发商')
-              .replace('Подписаться на куратора', '订阅鉴赏家')
-              .replace('Поставить лайк', '点赞')
-              .replace('Подписаться на игру', '关注游戏')
-              .replace(/Subscribe|Подписаться/, '订阅/加组')
-              .replace('Сделать репост', '转发')
-              .replace('Добавить в список желаемого', '加入愿望单')
-              .replace('Сделать обзор на игру', '评论')
-              .replace('Посетить web-сайт', '访问页面')
-            )
-          }
         })
         this.centrifuge.on('disconnect', function (e) {
           if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)
@@ -389,10 +396,12 @@ const givekey = { // eslint-disable-line no-unused-vars
   curators: [], // 任务需要关注的鉴赏家
   fGames: [], // 任务需要关注的游戏
   wGames: [], // 任务需要加愿望单的游戏
+  developers: [], // 任务需要关注的开发商
   links: [], // 需要浏览的页面链接
   taskInfo: {
     groups: [], // 所有任务需要加的组
     curators: [], // 所有任务需要关注的鉴赏家
+    developers: [], // 任务需要关注的开发商
     fGames: [], // 所有任务需要关注的游戏
     wGames: []// 所有任务需要加愿望单的游戏
   },

@@ -62,7 +62,7 @@
 * [gamehag](https://gamehag.com/giveaway)
 * [prys](https://prys.revadike.com/)
 * [indiedb](https://www.indiedb.com/giveaways)
-* [givekey](https://givekey.ru/)(需要将语言设置为”Русский”)
+* [givekey](https://givekey.ru/)(需要将语言设置为"English")
 * [takekey](https://takekey.ru/)
 * [freegamelottery](https://freegamelottery.com/)
 * [gleam.io](http://gleam.io/)

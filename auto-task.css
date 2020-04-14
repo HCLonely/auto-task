@@ -1,5 +1,14 @@
 @charset "UTF-8";
 
+[id^="task_"],.h-captcha,#btngo{
+    visibility: visible !important;
+}
+
+.rtp-overlay{
+    display: none !important;
+    visibility: hidden !important;
+}
+
 .fuck-task-logs li {
     display: list-item !important;
     float: none !important;

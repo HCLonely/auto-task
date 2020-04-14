@@ -2,7 +2,7 @@
 // @name           自动任务预览版
 // @name:en        Auto Task Preview Edition
 // @namespace      auto-task
-// @version        pre-2.2.8
+// @version        pre-2.2.9
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -150,7 +150,8 @@
       finishSelf: '没完成的请手动完成！',
       getUrlFailed: '获取任务链接失败( s% )',
       closeExtensions: '建议关闭脚本管理器和广告屏蔽插件再获取key！',
-      changeLanguage: '需要将页面语言设置为"Русский"(将页面右下角的自动翻译关闭)！',
+      changeLanguage: '需要将页面语言设置为"English"(将页面右下角的自动翻译关闭)！如果已设置为"English"，请忽视本条信息',
+      gkrobot: '请在弹出的页面完成验证（如果有的话），然后关闭页面',
       connectWss: '正在连接WSS...',
       connectWssWait: '正在连接WSS, 请稍候！',
       beforeFuck: '每次点击"Fuck"按钮前请手动完成人机验证！！！',
@@ -325,7 +326,8 @@
       finishSelf: 'Unfinished tasks please do it yourself!',
       getUrlFailed: 'Failed to get task link( s% )',
       closeExtensions: 'It is recommended to close the script manager and the ad blocking plugin before obtaining the key!',
-      changeLanguage: 'Need to set the page language to "Русский"(Turn off automatic translation in the bottom right corner of the page)!',
+      changeLanguage: 'Need to set the page language to "English" (Turn off automatic translation in the bottom right corner of the page)! If it is set to "English", please ignore this message.',
+      gkrobot: 'Please complete the verification on the pop-up page (if any), and then close the page.',
       connectWss: 'Connecting to WSS...',
       connectWssWait: 'Connecting to WSS, please wait!',
       beforeFuck: 'Please complete the verification before clicking the "Fuck" button!!!',
@@ -464,44 +466,44 @@
     }, GM_getValue('steamInfo'))
     const defaultConf = {
       fuck: {
-        group: 1,
-        curator: 1,
-        developer: 1,
-        publisher: 1,
-        announcement: 1,
-        wishlist: 1,
-        followGame: 1,
-        visit: 1,
-        verify: 1
+        group: true,
+        curator: true,
+        developer: true,
+        publisher: true,
+        announcement: true,
+        wishlist: true,
+        followGame: true,
+        visit: true,
+        verify: true
       },
       verify: {
-        verify: 1
+        verify: true
       },
       join: {
-        group: 1,
-        curator: 1,
-        developer: 1,
-        publisher: 1,
-        announcement: 1,
-        wishlist: 1,
-        followGame: 1,
-        visit: 1
+        group: true,
+        curator: true,
+        developer: true,
+        publisher: true,
+        announcement: true,
+        wishlist: true,
+        followGame: true,
+        visit: true
       },
       remove: {
-        group: 1,
-        curator: 1,
-        developer: 1,
-        publisher: 1,
-        wishlist: 1,
-        followGame: 1
+        group: true,
+        curator: true,
+        developer: true,
+        publisher: true,
+        wishlist: true,
+        followGame: true
       },
       other: {
-        showLogs: 1,
-        showDetails: 0,
-        checkLogin: 1,
-        checkLeft: 1,
-        autoOpen: 0,
-        reCaptcha: 0
+        showLogs: true,
+        showDetails: false,
+        checkLogin: true,
+        checkLeft: true,
+        autoOpen: false,
+        reCaptcha: false
       },
       announcement: ''
     }
@@ -2239,14 +2241,12 @@
       fuck (btnArea) {
         const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
         if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
-        if (!$('#btngo').text().includes('Получить ключ')) {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
-        } else {
-          givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
-          $(() => givekey.wssApp.init(btnArea))
-          fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
-          fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
-        }
+        fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
+        givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
+        $(() => givekey.wssApp.init(btnArea))
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
+        window.open($('a[id^="task_"').attr('href'), '_blank')
       },
       analyze_tasks (tasks) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
@@ -2264,26 +2264,7 @@
           } else if (href.includes('steamcommunity.com/groups')) {
             this.groups.push(href.match(/groups\/(.+)/)[1])
             this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-          } else if (task.text().includes('加入愿望单')) {
-        pro.push(new Promise(r => { // eslint-disable-line
-              new Promise(resolve => {
-                fuc.getFinalUrl(resolve, href)
-              }).then(data => {
-                if (data.result === 'success') {
-                  const appId = data.finalUrl.match(/app\/([\d]+)/)
-                  if (appId) {
-                    this.wGames.push(appId[1])
-                    this.taskInfo.wGames.push(appId[1])
-                    r(1)
-                  } else {
-                    r(0)
-                  }
-                } else {
-                  r(0)
-                }
-              })
-            }))
-          } else if (task.text().includes('关注开发商')) {
+          } else if (/Add to wishlist/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
@@ -2342,7 +2323,7 @@
             if (href.includes('vk.com')) {
             } else if (href.includes('steamcommunity.com/groups/')) {
               this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-            } else if ($(task).text().includes('加入愿望单')) {
+            } else if (/Add to wishlist/i.test(task.text())) {
           pro.push(new Promise(r => { // eslint-disable-line
                 new Promise(resolve => {
                   fuc.getFinalUrl(resolve, href)

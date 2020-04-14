@@ -15,14 +15,12 @@ const givekey = { // eslint-disable-line no-unused-vars
   fuck (btnArea) {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
     if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
-    if (!$('#btngo').text().includes('Получить ключ')) {
-      fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
-    } else {
-      givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
-      $(() => givekey.wssApp.init(btnArea))
-      fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
-      fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
-    }
+    fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
+    givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
+    $(() => givekey.wssApp.init(btnArea))
+    fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
+    fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
+    window.open($('a[id^="task_"').attr('href'), '_blank')
   },
   analyze_tasks (tasks) {
     const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
@@ -40,7 +38,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       } else if (href.includes('steamcommunity.com/groups')) {
         this.groups.push(href.match(/groups\/(.+)/)[1])
         this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-      } else if (task.text().includes('加入愿望单')) {
+      } else if (/Add to wishlist/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
@@ -59,25 +57,46 @@ const givekey = { // eslint-disable-line no-unused-vars
             }
           })
         }))
-      } else if (task.text().includes('关注开发商')) {
-        pro.push(new Promise(r => { // eslint-disable-line promise/param-names
-          new Promise(resolve => {
-            fuc.getFinalUrl(resolve, href)
-          }).then(data => {
-            if (data.result === 'success') {
-              const appId = data.finalUrl.match(/app\/([\d]+)/)
-              if (appId) {
-                this.wGames.push(appId[1])
-                this.taskInfo.wGames.push(appId[1])
-                r(1)
-              } else {
-                r(0)
-              }
+        /* disable
+    } else if (/Subscribe to the curator/i.test(task.text())) {
+      pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+        new Promise(resolve => {
+          fuc.getFinalUrl(resolve, href)
+        }).then(data => {
+          if (data.result === 'success') {
+            const curator = data.finalUrl.match(/curator\/([\d]+)/)
+            if (curator) {
+              this.curators.push(curator[1])
+              this.taskInfo.curators.push(curator[1])
+              r(1)
             } else {
               r(0)
             }
-          })
-        }))
+          } else {
+            r(0)
+          }
+        })
+      }))
+    } else if (/Subscribe to the developer/i.test(task.text())) {
+      pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+        new Promise(resolve => {
+          fuc.getFinalUrl(resolve, href)
+        }).then(data => {
+          if (data.result === 'success') {
+            const developer = data.finalUrl.match(/developer\/([^/]+)/)
+            if (developer) {
+              this.developers.push(developer[1])
+              this.taskInfo.developers.push(developer[1])
+              r(1)
+            } else {
+              r(0)
+            }
+          } else {
+            r(0)
+          }
+        })
+      }))
+      */
       } else if (href.includes('store.steampowered.com/app')) {
         this.fGames.push(href.match(/app\/([\d]+)/)[1])
         this.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
@@ -118,7 +137,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         if (href.includes('vk.com')) {
         } else if (href.includes('steamcommunity.com/groups/')) {
           this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-        } else if ($(task).text().includes('加入愿望单')) {
+        } else if (/Add to wishlist/i.test(task.text())) {
           pro.push(new Promise(r => { // eslint-disable-line promise/param-names
             new Promise(resolve => {
               fuc.getFinalUrl(resolve, href)

@@ -20,6 +20,7 @@ const givekey = { // eslint-disable-line no-unused-vars
     $(() => givekey.wssApp.init(btnArea))
     fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
     fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
+    fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('gkrobot')}</font></li>` })
     window.open($('a[id^="task_"').attr('href'), '_blank')
   },
   analyze_tasks (tasks) {
@@ -282,19 +283,6 @@ const givekey = { // eslint-disable-line no-unused-vars
           $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
           givekey.wssApp.message.close()
           m.$message({ message: getI18n('wssConnectSuccess'), type: 'success' })
-          for (const a of $('a[id^=task_]')) {
-            $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论')
-              .replace('Подписаться на разработчика', '订阅开发商')
-              .replace('Подписаться на куратора', '订阅鉴赏家')
-              .replace('Поставить лайк', '点赞')
-              .replace('Подписаться на игру', '关注游戏')
-              .replace(/Subscribe|Подписаться/, '订阅/加组')
-              .replace('Сделать репост', '转发')
-              .replace('Добавить в список желаемого', '加入愿望单')
-              .replace('Сделать обзор на игру', '评论')
-              .replace('Посетить web-сайт', '访问页面')
-            )
-          }
         })
         this.centrifuge.on('disconnect', e => {
           if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)
@@ -390,7 +378,7 @@ const givekey = { // eslint-disable-line no-unused-vars
     })
   },
   checkLogin () {
-    if ($("a[href='/auth']").length > 0) window.open('/auth/vk', '_self')
+    if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
   },
   checkLeft (ui) {
     if ($('#keys_count').text() === '0') {

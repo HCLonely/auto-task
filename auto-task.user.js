@@ -2,12 +2,12 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.9
+// @version        2.2.10
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.9/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.10/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://userjs.hclonely.com/auto-task.user.js
@@ -35,7 +35,7 @@
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.9/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.10/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -2569,7 +2569,7 @@
         })
       },
       checkLogin: function () {
-        if ($("a[href='/auth']").length > 0) window.open('/auth/vk', '_self')
+        if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
       },
       checkLeft: function (ui) {
         if ($('#keys_count').text() === '0') {

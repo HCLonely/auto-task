@@ -378,7 +378,7 @@ const givekey = { // eslint-disable-line no-unused-vars
     })
   },
   checkLogin: function () {
-    if ($("a[href='/auth']").length > 0) window.open('/auth/vk', '_self')
+    if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
   },
   checkLeft: function (ui) {
     if ($('#keys_count').text() === '0') {

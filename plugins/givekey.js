@@ -39,7 +39,7 @@ const givekey = { // eslint-disable-line no-unused-vars
       } else if (href.includes('steamcommunity.com/groups')) {
         this.groups.push(href.match(/groups\/(.+)/)[1])
         this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-      } else if (/Add to wishlist/i.test(task.text())) {
+      } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line promise/param-names
           new Promise(resolve => {
             fuc.getFinalUrl(resolve, href)
@@ -138,7 +138,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         if (href.includes('vk.com')) {
         } else if (href.includes('steamcommunity.com/groups/')) {
           this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-        } else if (/Add to wishlist/i.test(task.text())) {
+        } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
           pro.push(new Promise(r => { // eslint-disable-line promise/param-names
             new Promise(resolve => {
               fuc.getFinalUrl(resolve, href)
@@ -283,6 +283,19 @@ const givekey = { // eslint-disable-line no-unused-vars
           $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
           givekey.wssApp.message.close()
           m.$message({ message: getI18n('wssConnectSuccess'), type: 'success' })
+          for (const a of $('a[id^=task_]')) {
+            $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论')
+              .replace('Подписаться на разработчика', '订阅开发商')
+              .replace('Подписаться на куратора', '订阅鉴赏家')
+              .replace('Поставить лайк', '点赞')
+              .replace('Подписаться на игру', '关注游戏')
+              .replace(/Subscribe|Подписаться/, '订阅/加组')
+              .replace('Сделать репост', '转发')
+              .replace('Добавить в список желаемого', '加入愿望单')
+              .replace('Сделать обзор на игру', '评论')
+              .replace('Посетить web-сайт', '访问页面')
+            )
+          }
         })
         this.centrifuge.on('disconnect', function (e) {
           if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)

@@ -2,12 +2,12 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        2.2.10
+// @version        2.2.11
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.10/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.11/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL      https://userjs.hclonely.com/auto-task.user.js
@@ -35,7 +35,7 @@
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.10/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@2.2.11/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -150,7 +150,7 @@
       finishSelf: '没完成的请手动完成！',
       getUrlFailed: '获取任务链接失败( s% )',
       closeExtensions: '建议关闭脚本管理器和广告屏蔽插件再获取key！',
-      changeLanguage: '需要将页面语言设置为"English"(将页面右下角的自动翻译关闭)！如果已设置为"English"，请忽视本条信息',
+      changeLanguage: '需要将页面语言设置为"English"或"Русский"(将页面右下角的自动翻译关闭)！如果已设置，请忽视本条信息',
       gkrobot: '请在弹出的页面完成验证（如果有的话），然后关闭页面',
       connectWss: '正在连接WSS...',
       connectWssWait: '正在连接WSS, 请稍候！',
@@ -326,7 +326,7 @@
       finishSelf: 'Unfinished tasks please do it yourself!',
       getUrlFailed: 'Failed to get task link( s% )',
       closeExtensions: 'It is recommended to close the script manager and the ad blocking plugin before obtaining the key!',
-      changeLanguage: 'Need to set the page language to "English" (Turn off automatic translation in the bottom right corner of the page)! If it is set to "English", please ignore this message.',
+      changeLanguage: 'Need to set the page language to "English" or "Русский" (Turn off automatic translation in the bottom right corner of the page)! If it is set to "English" or "Русский", please ignore this message.',
       gkrobot: 'Please complete the verification on the pop-up page (if any), and then close the page.',
       connectWss: 'Connecting to WSS...',
       connectWssWait: 'Connecting to WSS, please wait!',
@@ -2270,7 +2270,7 @@
           } else if (href.includes('steamcommunity.com/groups')) {
             this.groups.push(href.match(/groups\/(.+)/)[1])
             this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-          } else if (/Add to wishlist/i.test(task.text())) {
+          } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
         pro.push(new Promise(r => { // eslint-disable-line
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, href)
@@ -2329,7 +2329,7 @@
             if (href.includes('vk.com')) {
             } else if (href.includes('steamcommunity.com/groups/')) {
               this.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-            } else if (/Add to wishlist/i.test(task.text())) {
+            } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
           pro.push(new Promise(r => { // eslint-disable-line
                 new Promise(resolve => {
                   fuc.getFinalUrl(resolve, href)
@@ -2474,6 +2474,19 @@
               $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
               givekey.wssApp.message.close()
               m.$message({ message: getI18n('wssConnectSuccess'), type: 'success' })
+              for (const a of $('a[id^=task_]')) {
+                $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论')
+                  .replace('Подписаться на разработчика', '订阅开发商')
+                  .replace('Подписаться на куратора', '订阅鉴赏家')
+                  .replace('Поставить лайк', '点赞')
+                  .replace('Подписаться на игру', '关注游戏')
+                  .replace(/Subscribe|Подписаться/, '订阅/加组')
+                  .replace('Сделать репост', '转发')
+                  .replace('Добавить в список желаемого', '加入愿望单')
+                  .replace('Сделать обзор на игру', '评论')
+                  .replace('Посетить web-сайт', '访问页面')
+                )
+              }
             })
             this.centrifuge.on('disconnect', function (e) {
               if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)

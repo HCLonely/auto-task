@@ -1,0 +1,71 @@
+// ==UserScript==
+// @name           自动任务预览版
+// @name:en        Auto Task Preview Edition
+// @namespace      auto-task
+// @version        pre-VERSION
+// @description    自动完成赠key站任务
+// @description:en Automatically complete giveaway tasks
+// @author         HCLonely
+// @license        MIT
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/favicon.ico
+// @homepage       https://blog.hclonely.com/posts/777c60d5/
+// @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
+// @updateURL      https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js
+// @include        *://giveaway.su/giveaway/view/*
+// @include        *://marvelousga.com/*
+// @include        *://dupedornot.com/*
+// @include        *://www.grabfreegame.com/giveaway/*
+// @include        *://www.bananagiveaway.com/giveaway/*
+// @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
+// @include        *://prys.revadike.com/giveaway/?id=*
+// @include        *://www.indiedb.com/giveaways*
+// @include        *://www.opiumpulses.com/giveaways
+// @include        *://gkey.fun/distribution/*
+// @include        *://givekey.ru/distribution/*
+// @include        *://takekey.ru/distribution/*
+// @include        *://chubkeys.com/giveaway/*
+// @include        *://giveawayhopper.com/giveaway/*
+// @include        *://*freegamelottery.com*
+// @include        *://gleam.io/*
+// @include        *://www.spoune.com/index.php*
+// @exclude        *googleads*
+// @include        https://auto-task.hclonely.com/setting.html
+// @include        https://auto-task.hclonely.com/setting_en.html
+// @include        https://auto-task.hclonely.com/announcement.html
+
+// @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
+// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
+
+// @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
+// @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
+// @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
+// @require        https://cdn.jsdelivr.net/npm/promise-polyfill
+// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/lib/auto-task.min.css
+// @grant          GM_setValue
+// @grant          GM_getValue
+// @grant          GM_listValues
+// @grant          GM_deleteValue
+// @grant          GM_addStyle
+// @grant          GM_xmlhttpRequest
+// @grant          GM_getResourceText
+// @grant          GM_registerMenuCommand
+// @grant          GM_info
+// @grant          GM_openInTab
+// @connect        auto-task.hclonely.com
+// @connect        cdn.jsdelivr.net
+// @connect        store.steampowered.com
+// @connect        steamcommunity.com
+// @connect        twitter.com
+// @connect        youtube.com
+// @connect        facebook.com
+// @connect        instagram.com
+// @connect        vk.com
+// @connect        discordapp.com
+// @connect        github.com
+// @connect        twitch.tv
+// @connect        *
+// @run-at         document-end
+// ==/UserScript==
+
+/* global $,Vue,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences */

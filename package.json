@@ -1,0 +1,58 @@
+{
+  "name": "autotask",
+  "version": "3.0.0",
+  "announcement": [
+    "givekey.ru兼容\"English\"和\"Русский\""
+  ],
+  "description": "key站自动任务脚本",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js -t && standard --fix",
+    "build": "node index.js -p && standard --fix auto-task.user.js",
+    "push": "node gitpush.js",
+    "start": "node index.js -p && standard --fix && node gitpush.js"
+  },
+  "author": "HCLonely",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "babel-eslint": "^10.1.0",
+    "commander": "^5.0.0",
+    "html-minifier": "^4.0.0",
+    "standard": "^14.3.2"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "globals": [
+      "$",
+      "GM_setValue",
+      "GM_getValue",
+      "GM_listValues",
+      "GM_deleteValue",
+      "GM_addStyle",
+      "GM_xmlhttpRequest",
+      "GM_getResourceText",
+      "GM_registerMenuCommand",
+      "GM_info",
+      "GM_openInTab",
+      "Vue",
+      "File",
+      "FileReader",
+      "getUrlTwitter",
+      "getUrlTwitch",
+      "getUrlFacebook",
+      "getUrlSteam",
+      "getUrlYoutube",
+      "totalTasks",
+      "checkClick",
+      "getURLParameter",
+      "showAlert",
+      "urlPath",
+      "checkUser",
+      "Centrifuge",
+      "DashboardApp",
+      "captchaCheck"
+    ]
+  }
+}

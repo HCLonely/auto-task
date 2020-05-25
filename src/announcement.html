@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh">
+<link rel="icon" href="/favicon.ico" type="image/x-icon">
+<head>
+    <meta charset="UTF-8">
+    <title>自动任务脚本更新公告</title>
+    <style>
+        [v-cloak] {
+            display: none
+        }
+    </style>
+</head>
+<body>
+<h1 class="non-js">此页面需要安装<a href="https://github.com/HCLonely/auto-task" target="_blank">自动任务脚本</a></h1>
+<h1 class="non-js">如果已安装此脚本，请稍等片刻！</h1>
+<h1 class="non-js">This page requires the <a href="https://github.com/HCLonely/auto-task" target="_blank">Auto Task
+        Script</a> to be installed</h1>
+<h1 class="non-js">If you have this script installed, please wait a moment!</h1>
+<div v-cloak id="app" class="announcement">
+    <el-card v-for="announcement in announcements" class="box-card">
+        <div slot="header" class="clearfix">
+            <strong>{{`版本: ${announcement.version}  更新时间: ${announcement.time}`}}</strong>
+        </div>
+        <div v-for="(text,index) in announcement.text" :key="text.index" class="text item">
+            {{`${index+1}.${announcement.text[index]}`}}
+        </div>
+    </el-card>
+</div>
+</body>
+</html>

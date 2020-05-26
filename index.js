@@ -14,6 +14,7 @@ program
   .option('-p, --pack', '生成auto-task.user.js文件')
   .option('-s, --setting', '压缩setting.html文件')
   .option('-a, --announcement', '压缩announcement.html文件')
+  .option('-h, --html', '压缩所有html文件')
   .option('-t, --test', '生成auto-task.user.js文件(Test)')
   .option('-j, --js', '生成index.min.js文件')
 
@@ -21,10 +22,15 @@ program.parse(process.argv)
 
 if (program.pack) packUserJs()
 if (program.test) packUserJs(true)
-if (program.setting) {
-  minHtml('setting.html')
-}
+if (program.setting) minHtml('setting.html')
 if (program.announcement) minHtml('announcement.html')
+if (program.html) {
+  minHtml('setting.html')
+  minHtml('announcement.html')
+  minHtml('index.html')
+  minHtml('time.html')
+  minHtml('time_en.html')
+}
 if (program.js) publicJs()
 
 function packUserJs (test = false) {
@@ -106,8 +112,8 @@ ${main}
 }
 
 function minHtml (filename) {
-  const html = fs.readFileSync(path.join('./src', filename), 'utf-8')
-  fs.writeFile(path.join('./public', filename), minify(html, { removeComments: true, collapseWhitespace: true, minifyCSS: true }), function (error) {
+  const html = fs.readFileSync(path.join('./src/html', filename), 'utf-8')
+  fs.writeFile(path.join('./public', filename), minify(html, { removeComments: true, collapseWhitespace: true, minifyCSS: true, minifyJS: true }), function (error) {
     if (error) {
       return console.error(filename + '文件写入失败: ', error)
     }

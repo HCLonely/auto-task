@@ -64,9 +64,15 @@ function loadSettings (userConfig) {
   <button type="button" class="btn btn-primary" onclick="importConfig()">${getI18n('importSetting')}</button>
 </div>`)
   }
+  $('input[name$="-all"]').unbind('click').click(function (e) {
+    const type = $(this).attr('name').replace('-all', '')
+    const group = $('input[name^="' + type + '"]')
+    $(this).is(':checked') ? group.prop('checked', true) : group.prop('checked', false)
+  })
   $('.non-js').hide()
   return true
 }
+
 function loadLatestVersion () {
   $.get('https://auto-task.hclonely.com/version.json', function (data, status, xhr) {
     if (status === 'success') {
@@ -281,8 +287,3 @@ function resetSetting () {
     }
   })
 }
-$('input[name$="-all"]').click(function (e) {
-  const type = $(this).attr('name').replace('-all', '')
-  const group = $('input[name^="' + type + '"]')
-  $(this).is(':checked') ? group.prop('checked', true) : group.prop('checked', false)
-})

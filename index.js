@@ -4,6 +4,7 @@ const path = require('path')
 const { program } = require('commander')
 const { minify } = require('html-minifier')
 const babel = require('@babel/core')
+const UglifyJS = require('uglify-js')
 
 const version = require('./package.json').version // 加载版本信息
 const announcement = require('./package.json').announcement // 加载版本信息
@@ -11,9 +12,10 @@ const announcement = require('./package.json').announcement // 加载版本信�
 program.version(version)
 program
   .option('-p, --pack', '生成auto-task.user.js文件')
-  .option('-s, --setting', '生成setting.html,setting_en.html文件')
-  .option('-a, --announcement', '生成announcement.html文件')
+  .option('-s, --setting', '压缩setting.html文件')
+  .option('-a, --announcement', '压缩announcement.html文件')
   .option('-t, --test', '生成auto-task.user.js文件(Test)')
+  .option('-j, --js', '生成index.min.js文件')
 
 program.parse(process.argv)
 
@@ -21,9 +23,9 @@ if (program.pack) packUserJs()
 if (program.test) packUserJs(true)
 if (program.setting) {
   minHtml('setting.html')
-  minHtml('setting_en.html')
 }
 if (program.announcement) minHtml('announcement.html')
+if (program.js) publicJs()
 
 function packUserJs (test = false) {
   const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version) // 加载Tampermonkey头部信息
@@ -136,5 +138,21 @@ function update () {
     }
 
     console.log('announcement.json写入成功')
+  })
+}
+function publicJs () {
+  const defaultConfig = fs.readFileSync('./public/js/defaultConfig.js', 'utf-8')
+  const i18n = fs.readFileSync('./public/js/i18n.js', 'utf-8')
+  const main = fs.readFileSync('./public/js/main.js', 'utf-8')
+  babel.transform(defaultConfig + '\n' + i18n + '\n' + main, {}, function (err, result) {
+    if (err) {
+      return console.error('babel转换public js失败: ', err)
+    }
+    fs.writeFile('./public/js/index.min.js', UglifyJS.minify(result.code).code, function (error) {
+      if (error) {
+        return console.error('index.min.js文件写入失败: ', error)
+      }
+      console.log('index.min.js文件写入成功')
+    })
   })
 }

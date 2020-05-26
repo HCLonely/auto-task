@@ -141,9 +141,9 @@ function update () {
   })
 }
 function publicJs () {
-  const defaultConfig = fs.readFileSync('./public/js/defaultConfig.js', 'utf-8')
-  const i18n = fs.readFileSync('./public/js/i18n.js', 'utf-8')
-  const main = fs.readFileSync('./public/js/main.js', 'utf-8')
+  const defaultConfig = fs.readFileSync('./src/js/defaultConfig.js', 'utf-8')
+  const i18n = fs.readFileSync('./src/js/i18n.js', 'utf-8')
+  const main = fs.readFileSync('./src/js/main.js', 'utf-8')
   babel.transform(defaultConfig + '\n' + i18n + '\n' + main, {}, function (err, result) {
     if (err) {
       return console.error('babel转换public js失败: ', err)

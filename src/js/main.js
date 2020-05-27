@@ -74,7 +74,7 @@ function loadSettings (userConfig) {
 }
 
 function loadLatestVersion () {
-  $.get('https://auto-task.hclonely.com/version.json', function (data, status, xhr) {
+  $.get('/version.json?t=' + new Date().getTime(), function (data, status, xhr) {
     if (status === 'success') {
       $('#latestVersion').text(data.version)
     } else {

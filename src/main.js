@@ -1,10 +1,8 @@
 /* global getI18n, fuc, plugins, globalConf, defaultConf, getLanguage, language, vueUi, loadSetting, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
-    fuc.addBackground()
     loadSetting()
   } else if (window.location.pathname.includes('announcement')) {
-    fuc.addBackground()
     loadAnnouncement()
   }
 } else if ((window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot') || window.location.host.includes('gamecode.win')) && (!window.location.pathname.includes('giveaway'))) {

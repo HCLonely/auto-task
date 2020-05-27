@@ -593,21 +593,21 @@ const fuc = {
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/preview/version?t=' + new Date().getTime(),
+      url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {
         if (debug) console.log(response)
-        if ('pre-' + response.response?.version === GM_info.script.version) {
+        if (response.response?.version === GM_info.script.version) {
           v.icon = 'el-icon-refresh'
           v.title = getI18n('checkUpdate')
           if (s) status.success(getI18n('thisIsNew'))
           v.hidden = true
         } else if (response.response?.version) {
           v.icon = 'el-icon-download'
-          v.title = getI18n('updateNow') + 'pre-' + response.response.version
-          v.checkUpdate = () => { window.open('https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js', '_blank') }
-          if (s) status.success(getI18n('newVer') + 'pre-' + response.response.version)
+          v.title = getI18n('updateNow') + response.response.version
+          v.checkUpdate = () => { window.open('https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js', '_blank') }
+          if (s) status.success(getI18n('newVer') + response.response.version)
           v.hidden = false
         } else {
           v.icon = 'el-icon-refresh'
@@ -646,7 +646,7 @@ const fuc = {
     v.announcementIcon = 'el-icon-loading'
     const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/preview/new.json?t=' + new Date().getTime(),
+      url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {
@@ -700,80 +700,6 @@ const fuc = {
     const cookiename = 'haveVisited1'
     document.cookie = cookiename + '=1; path=/'
     document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
-  },
-  creatSetting (settingName, header, fuckOptions, checkedFucks, removeOptions, checkedRemoves) {
-    new Vue({ // eslint-disable-line no-new
-      el: `#${settingName}`,
-      data: {
-        header: `${header} ${getI18n('websiteSetting')}`,
-        checked: GM_getValue('conf') ? GM_getValue('conf')[settingName] ? (!!GM_getValue('conf')[settingName].load) : false : false,
-        fuck: {
-          checkAll: fuckOptions.length === checkedFucks.length,
-          checkedFucks: checkedFucks,
-          fucks: fuckOptions,
-          isIndeterminate: fuckOptions.length !== checkedFucks.length
-        },
-        remove: {
-          checkAll: removeOptions.length === checkedRemoves.length,
-          checkedRemoves: checkedRemoves,
-          removes: removeOptions,
-          isIndeterminate: removeOptions.length !== checkedRemoves.length
-        },
-        openDelay: 100,
-        rowType: 'flex',
-        rowAlign: 'middle',
-        verify: '1'
-      },
-      methods: {
-        fuckHandleCheckAllChange (val) {
-          this.fuck.checkedFucks = val ? fuckOptions.map(e => e.name) : []
-          this.fuck.isIndeterminate = false
-        },
-        handleCheckedFucksChange (value) {
-          const checkedCount = value.length
-          this.fuck.checkAll = checkedCount === this.fuck.fucks.length
-          this.fuck.isIndeterminate = checkedCount > 0 && checkedCount < this.fuck.fucks.length
-        },
-        removeHandleCheckAllChange (val) {
-          this.remove.checkedRemoves = val ? removeOptions.map(e => e.name) : []
-          this.remove.isIndeterminate = false
-        },
-        handleCheckedRemovesChange (value) {
-          const checkedCount = value.length
-          this.remove.checkAll = checkedCount === this.remove.removes.length
-          this.remove.isIndeterminate = checkedCount > 0 && checkedCount < this.remove.removes.length
-        }
-      }
-    })
-  },
-  creatConf () {
-    const confs = {}
-    for (const div of $('div.setting')) {
-      const id = $(div).attr('id')
-      const conf = {}
-      for (const form of $(div).find('form')) {
-        const name = $(form).attr('name')
-        if (name === 'max-point') {
-          const value = $(form).find('input').val()
-          conf[name] = /^[\d]+$/.test(value) ? value : 0
-        } else {
-          const setting = {}
-          for (const data of $(form).serializeArray()) {
-            setting[data.name] = 1
-          }
-          conf[name] = setting
-        }
-      }
-      confs[id] = conf
-    }
-    for (const checkbox of $('.non-global input')) {
-      if ($(checkbox).is(':checked')) confs[$(checkbox).attr('name')].load = 1
-    }
-    const lotteryUserInfo = GM_getValue('conf') ? GM_getValue('conf').lotteryUserInfo : false
-    if (lotteryUserInfo) confs.lotteryUserInfo = lotteryUserInfo
-    const announcement = GM_getValue('conf') ? GM_getValue('conf').announcement : false
-    if (announcement) confs.announcement = announcement
-    return confs
   },
   echoLog (e) {
     let ele = ''
@@ -893,9 +819,6 @@ const fuc = {
       }
     }
     return fmt
-  },
-  addBackground () {
-    GM_addStyle('body {background-image:url(//img.hclonely.com/www/006brDXlly1ft9lm7ns5zj31hc0u0qh3.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}')
   },
   isEmptyObjArr (object) {
     for (const value of Object.values(object)) {

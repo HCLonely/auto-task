@@ -122,7 +122,7 @@ function minHtml (filename) {
   })
 }
 function update () {
-  const announcementHistory = JSON.parse(fs.readFileSync('announcement.json', 'utf-8'))
+  const announcementHistory = JSON.parse(fs.readFileSync('./public/announcement.json', 'utf-8'))
   const time = new Date().getTime()
   const newVersion = {
     version: version,
@@ -138,7 +138,7 @@ function update () {
     console.log('version.json写入成功')
   })
 
-  fs.writeFile('announcement.json', JSON.stringify(announcementHistory), function (error) {
+  fs.writeFile('./public/announcement.json', JSON.stringify(announcementHistory), function (error) {
     if (error) {
       return console.error('announcement.json文件写入失败: ', error)
     }
@@ -159,6 +159,18 @@ function publicJs () {
         return console.error('index.min.js文件写入失败: ', error)
       }
       console.log('index.min.js文件写入成功')
+    })
+  })
+  const loadAnnouncement = fs.readFileSync('./src/js/loadAnnouncement.js', 'utf-8')
+  babel.transform(loadAnnouncement, {}, function (err, result) {
+    if (err) {
+      return console.error('babel转换loadAnnouncement.js失败: ', err)
+    }
+    fs.writeFile('./public/js/loadAnnouncement.min.js', UglifyJS.minify(result.code).code, function (error) {
+      if (error) {
+        return console.error('loadAnnouncement.min.js文件写入失败: ', error)
+      }
+      console.log('loadAnnouncement.min.js文件写入成功')
     })
   })
 }

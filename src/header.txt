@@ -30,7 +30,6 @@
 // @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
 // @include        https://auto-task.hclonely.com/setting.html
-// @include        https://auto-task.hclonely.com/setting_en.html
 // @include        https://auto-task.hclonely.com/announcement.html
 
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js

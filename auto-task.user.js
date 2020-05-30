@@ -29,14 +29,17 @@
 // @include        *://gleam.io/*
 // @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
-// @include        https://userjs.hclonely.com/setting.html
-// @include        https://userjs.hclonely.com/setting_en.html
-// @include        https://userjs.hclonely.com/announcement.html
+// @include        https://auto-task.hclonely.com/setting.html
+// @include        https://auto-task.hclonely.com/announcement.html
+
 // @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
+
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
-// @resource       css https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/lib/auto-task.min.css
+// @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
+// @require        https://cdn.jsdelivr.net/npm/promise-polyfill
+// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/lib/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -47,7 +50,7 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_info
 // @grant          GM_openInTab
-// @connect        userjs.hclonely.com
+// @connect        auto-task.hclonely.com
 // @connect        cdn.jsdelivr.net
 // @connect        store.steampowered.com
 // @connect        steamcommunity.com
@@ -63,7 +66,7 @@
 // @run-at         document-end
 // ==/UserScript==
 
-/* global $,Vue,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
+/* global loadSetting,loadAnnouncement,$,Vue,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences */
 
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
@@ -72,17 +75,17 @@ function asyncGeneratorStep (gen, resolve, reject, _next, _throw, key, arg) { tr
 
 function _asyncToGenerator (fn) { return function () { var self = this; var args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next (value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value) } function _throw (err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err) } _next(undefined) }) } }
 
+function _createForOfIteratorHelper (o) { if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e) { throw _e }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var it; var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e2) { didErr = true; err = _e2 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
+
 function _toConsumableArray (arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread() }
 
 function _nonIterableSpread () { throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') }
 
+function _unsupportedIterableToArray (o, minLen) { if (!o) return; if (typeof o === 'string') return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === 'Object' && o.constructor) n = o.constructor.name; if (n === 'Map' || n === 'Set') return Array.from(o); if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen) }
+
 function _iterableToArray (iter) { if (typeof Symbol !== 'undefined' && Symbol.iterator in Object(iter)) return Array.from(iter) }
 
 function _arrayWithoutHoles (arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr) }
-
-function _createForOfIteratorHelper (o) { if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e) { throw _e }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var it; var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e2) { didErr = true; err = _e2 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
-
-function _unsupportedIterableToArray (o, minLen) { if (!o) return; if (typeof o === 'string') return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === 'Object' && o.constructor) n = o.constructor.name; if (n === 'Map' || n === 'Set') return Array.from(o); if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen) }
 
 function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i] } return arr2 }
 
@@ -215,56 +218,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       downloadSetting: '下载设置文件',
       processSetting: '正在处理设置...',
       creatUrlFailed: '创建下载链接失败！',
-      loadSetting: '加载设置文件',
-      readSetting: '正在读取设置文件...',
-      readSettingComplete: '设置文件读取完成！',
-      readSettingFailed: '读取设置文件失败！',
-      loadSettingComplete: '设置加载完成！',
-      loadSettingFailed: '设置加载失败',
-      notSupport: '当前浏览器不支持直接读取文件，已触发备用方案！',
-      copySetting: '请将设置文件里的内容复制到下面！',
-      loadSettingText: '正在加载设置...',
       jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
-      ajaxError: 'Ajax请求出错',
-      group: '加组',
-      curator: '关注鉴赏家',
-      developer: '关注开发商',
-      publisher: '关注发行商',
-      announcement: '点赞通知',
-      wishlist: '加愿望单',
-      fGame: '关注游戏',
-      visit: '访问链接',
-      verify: '验证任务',
-      autoLogin: '自动登录',
-      doTask: '做任务',
-      autoLoginDes: '自动登录，第一次需要手动登录（仅适用于freegamelottery网站）',
-      doTaskDes: '依次做"MAIN DRAW","SURVEY DRAW","VIDEO DRAW","STACKPOT"等任务',
-      ungroup: '退组',
-      uncurator: '取关鉴赏家',
-      undeveloper: '取关开发商',
-      unpublisher: '取关发行商',
-      unwishlist: '移除愿望单',
-      unfGame: '取关游戏',
-      ungroupDes: '退出steam组(Group)',
-      uncuratorDes: '取关steam鉴赏家(Curator)',
-      undeveloperDes: '取关steam开发商(Developer)',
-      unpublisherDes: '取关steam发行商(Publisher)',
-      unwishlistDes: '将游戏移除愿望单(Wishlist)',
-      unfGameDes: '取关游戏(Followed game)',
-      showLogs: '默认显示日志',
-      showDetails: '输出详细日志',
-      checkLogin: '登录检测',
-      checkLeft: '剩余key检测',
-      autoOpen: '自动打开任务页面',
-      autoCheckUpdate: '自动检测更新',
-      reCaptcha: '人机验证修复',
-      showLogsDes: '默认显示右下角任务日志',
-      showDetailsDes: '控制台输出详细日志',
-      checkLoginDes: '检测是否已登录，没登录则跳转到登录页面',
-      checkLeftDes: '检测是否有剩余key，没有剩余key则提醒',
-      autoOpenDes: '未完成的任务自动打开任务页面手动完成（需要关闭浏览器弹窗拦截）',
-      reCaptchaDes: '如果Gamehag网站人机验证出错，请尝试打开/关闭此选项',
-      globalSettings: '全局设置'
+      ajaxError: 'Ajax请求出错'
     },
     en: {
       language: 'Language',
@@ -390,57 +345,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       resetSettingCancel: 'Canceled reset',
       downloadSetting: 'Download the settings file',
       processSetting: 'Processing settings...',
-      creatUrlFailed: 'Failed to create download link!',
-      loadSetting: 'Load settings file',
-      readSetting: 'Reading settings file...',
-      readSettingComplete: 'Setting file read completed!',
-      readSettingFailed: 'Failed to read the settings file!',
-      loadSettingComplete: 'Settings are loaded!',
-      loadSettingFailed: 'Failed to load settings',
-      notSupport: 'The current browser does not support reading files directly, an alternative has been triggered!',
-      copySetting: 'Please copy the contents of the settings file to the following',
-      loadSettingText: 'Loading settings...',
       jsError: 'Script execution error, please see the console for details (red background part)!',
-      ajaxError: 'Ajax request error',
-      group: 'Join group',
-      curator: 'Follow curator',
-      developer: 'Follow developer',
-      publisher: 'Follow publisher',
-      announcement: 'Like announcement',
-      wishlist: 'Add to wishlist',
-      fGame: 'Follow game',
-      visit: 'Visit link',
-      verify: 'Verify',
-      autoLogin: 'Auto login',
-      doTask: 'Do the task',
-      autoLoginDes: 'Automatic login, manual login required for the first time (only for freegamelottery website)',
-      doTaskDes: 'Do "MAIN DRAW", "SURVEY DRAW", "VIDEO DRAW", and "STACKPOT" tasks in that order',
-      ungroup: 'Leave group',
-      uncurator: 'Unfollow curator',
-      undeveloper: 'Unfollow developer',
-      unpublisher: 'Unfollow publisher',
-      unwishlist: 'Remove from wishlist',
-      unfGame: 'Unfollow game',
-      ungroupDes: 'Leave the steam group',
-      uncuratorDes: 'Unfollow the steam curator',
-      undeveloperDes: 'Unfollow the steam developer',
-      unpublisherDes: 'Unfollow the steam publisher',
-      unwishlistDes: 'Remove game from wishlist',
-      unfGameDes: 'Unfollow game',
-      showLogs: 'Show logs',
-      showDetails: 'Output verbose logs',
-      checkLogin: 'Login check',
-      checkLeft: 'Remaining key check',
-      autoOpen: 'Open task page automatically',
-      autoCheckUpdate: 'Check for updates automatically',
-      reCaptcha: 'Repair reCaptcha',
-      showLogsDes: 'Show task log in bottom right corner by default',
-      showDetailsDes: 'Output verbose logs to the console',
-      checkLoginDes: 'Check if you are logged in, jump to login page if not logged in',
-      checkLeftDes: 'Check if there are remaining keys, and remind if there are no remaining keys',
-      autoOpenDes: 'Unfinished tasks automatically open the task page for manual completion (requires closing the browser pop-up block)',
-      reCaptchaDes: 'If the Gamehag website has an ergonomic error, try turning this option on / off',
-      globalSettings: 'Global Settings'
+      ajaxError: 'Ajax request error'
     }
   }
   var language = getLanguage()
@@ -498,7 +404,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   })
 
   try {
-    var _GM_getValue, _GM_getValue2, _GM_getValue2$banana, _GM_getValue3, _GM_getValue4, _GM_getValue4$freegam, _GM_getValue5, _GM_getValue6, _GM_getValue6$gamehag, _GM_getValue7, _GM_getValue8, _GM_getValue8$giveawa, _GM_getValue9, _GM_getValue10, _GM_getValue10$giveke, _GM_getValue11, _GM_getValue12, _GM_getValue13, _GM_getValue13$gleam, _GM_getValue14, _GM_getValue15, _GM_getValue15$indied, _GM_getValue16, _GM_getValue17, _GM_getValue17$marvel, _GM_getValue18, _GM_getValue19, _GM_getValue19$opiump, _GM_getValue20, _GM_getValue21, _GM_getValue21$prys, _GM_getValue22, _GM_getValue23, _GM_getValue23$spoune, _GM_getValue24, _GM_getValue25, _GM_getValue25$takeke, _GM_getValue26
+    var _config$banana, _GM_getValue, _GM_getValue$freegame, _GM_getValue2, _GM_getValue3, _GM_getValue3$gamehag, _GM_getValue4, _config$giveawaysu, _GM_getValue5, _GM_getValue5$givekey, _GM_getValue6, _GM_getValue7, _GM_getValue8, _GM_getValue8$gleam, _GM_getValue9, _GM_getValue10, _GM_getValue10$indied, _GM_getValue11, _GM_getValue12, _GM_getValue12$marvel, _GM_getValue13, _GM_getValue14, _GM_getValue14$opiump, _GM_getValue15, _GM_getValue16, _GM_getValue16$prys, _GM_getValue17, _GM_getValue18, _GM_getValue18$spoune, _GM_getValue19, _GM_getValue20, _GM_getValue20$takeke, _GM_getValue21
 
     var steamInfo = Object.assign({
       userName: '',
@@ -509,36 +415,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     }, GM_getValue('steamInfo'))
     var defaultConf = {
       fuck: {
-        group: true,
-        curator: true,
-        developer: true,
-        publisher: true,
-        announcement: true,
-        wishlist: true,
+        joinSteamGroup: true,
+        followCurator: true,
+        followDeveloper: true,
+        followPublisher: true,
+        likeAnnouncement: true,
+        addToWishlist: true,
         followGame: true,
-        visit: true,
-        verify: true
+        visitLink: true,
+        verifyTask: true,
+        doTask: true,
+        autoLogin: false
       },
       verify: {
-        verify: true
-      },
-      join: {
-        group: true,
-        curator: true,
-        developer: true,
-        publisher: true,
-        announcement: true,
-        wishlist: true,
-        followGame: true,
-        visit: true
+        verifyTask: true
       },
       remove: {
-        group: true,
-        curator: true,
-        developer: true,
-        publisher: true,
-        wishlist: true,
-        followGame: true
+        leaveSteamGroup: true,
+        unfollowCurator: true,
+        unfollowDeveloper: true,
+        unfollowPublisher: true,
+        removeFromWishlist: true,
+        unfollowGame: true
       },
       other: {
         showLogs: true,
@@ -550,7 +448,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       announcement: ''
     }
-    var globalConf = Object.assign(defaultConf, (_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : _GM_getValue.global)
+    var config = Object.assign(defaultConf, GM_getValue('conf') || {})
+    var globalConf = config.global
     var debug = !!globalConf.other.showDetails
     var fuc = {
       httpRequest: function httpRequest (e) {
@@ -1472,7 +1371,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }
         this.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/preview/version?t=' + new Date().getTime(),
+          url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload: function onload (response) {
@@ -1480,20 +1379,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             if (debug) console.log(response)
 
-            if ('pre-' + ((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : _response$response9.version) === GM_info.script.version) {
+            if (((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : _response$response9.version) === GM_info.script.version) {
               v.icon = 'el-icon-refresh'
               v.title = getI18n('checkUpdate')
               if (s) status.success(getI18n('thisIsNew'))
               v.hidden = true
             } else if ((_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : _response$response10.version) {
               v.icon = 'el-icon-download'
-              v.title = getI18n('updateNow') + 'pre-' + response.response.version
+              v.title = getI18n('updateNow') + response.response.version
 
               v.checkUpdate = function () {
-                window.open('https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js', '_blank')
+                window.open('https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js', '_blank')
               }
 
-              if (s) status.success(getI18n('newVer') + 'pre-' + response.response.version)
+              if (s) status.success(getI18n('newVer') + response.response.version)
               v.hidden = false
             } else {
               v.icon = 'el-icon-refresh'
@@ -1537,7 +1436,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           text: '<li>'.concat(getI18n('getAnnouncement'), '<font></font></li>')
         })
         this.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/preview/new.json?t=' + new Date().getTime(),
+          url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload: function onload (response) {
@@ -1595,132 +1494,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var cookiename = 'haveVisited1'
         document.cookie = cookiename + '=1; path=/'
         document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
-      },
-      creatSetting: function creatSetting (settingName, header, fuckOptions, checkedFucks, removeOptions, checkedRemoves) {
-        new Vue({
-          el: '#'.concat(settingName),
-          data: {
-            header: ''.concat(header, ' ').concat(getI18n('websiteSetting')),
-            checked: GM_getValue('conf') ? GM_getValue('conf')[settingName] ? !!GM_getValue('conf')[settingName].load : false : false,
-            fuck: {
-              checkAll: fuckOptions.length === checkedFucks.length,
-              checkedFucks: checkedFucks,
-              fucks: fuckOptions,
-              isIndeterminate: fuckOptions.length !== checkedFucks.length
-            },
-            remove: {
-              checkAll: removeOptions.length === checkedRemoves.length,
-              checkedRemoves: checkedRemoves,
-              removes: removeOptions,
-              isIndeterminate: removeOptions.length !== checkedRemoves.length
-            },
-            openDelay: 100,
-            rowType: 'flex',
-            rowAlign: 'middle',
-            verify: '1'
-          },
-          methods: {
-            fuckHandleCheckAllChange: function fuckHandleCheckAllChange (val) {
-              this.fuck.checkedFucks = val ? fuckOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.fuck.isIndeterminate = false
-            },
-            handleCheckedFucksChange: function handleCheckedFucksChange (value) {
-              var checkedCount = value.length
-              this.fuck.checkAll = checkedCount === this.fuck.fucks.length
-              this.fuck.isIndeterminate = checkedCount > 0 && checkedCount < this.fuck.fucks.length
-            },
-            removeHandleCheckAllChange: function removeHandleCheckAllChange (val) {
-              this.remove.checkedRemoves = val ? removeOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.remove.isIndeterminate = false
-            },
-            handleCheckedRemovesChange: function handleCheckedRemovesChange (value) {
-              var checkedCount = value.length
-              this.remove.checkAll = checkedCount === this.remove.removes.length
-              this.remove.isIndeterminate = checkedCount > 0 && checkedCount < this.remove.removes.length
-            }
-          }
-        })
-      },
-      creatConf: function creatConf () {
-        var confs = {}
-
-        var _iterator = _createForOfIteratorHelper($('div.setting'))
-        var _step
-
-        try {
-          for (_iterator.s(); !(_step = _iterator.n()).done;) {
-            var div = _step.value
-            var id = $(div).attr('id')
-            var conf = {}
-
-            var _iterator3 = _createForOfIteratorHelper($(div).find('form'))
-            var _step3
-
-            try {
-              for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-                var form = _step3.value
-                var name = $(form).attr('name')
-
-                if (name === 'max-point') {
-                  var value = $(form).find('input').val()
-                  conf[name] = /^[\d]+$/.test(value) ? value : 0
-                } else {
-                  var setting = {}
-
-                  var _iterator4 = _createForOfIteratorHelper($(form).serializeArray())
-                  var _step4
-
-                  try {
-                    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-                      var data = _step4.value
-                      setting[data.name] = 1
-                    }
-                  } catch (err) {
-                    _iterator4.e(err)
-                  } finally {
-                    _iterator4.f()
-                  }
-
-                  conf[name] = setting
-                }
-              }
-            } catch (err) {
-              _iterator3.e(err)
-            } finally {
-              _iterator3.f()
-            }
-
-            confs[id] = conf
-          }
-        } catch (err) {
-          _iterator.e(err)
-        } finally {
-          _iterator.f()
-        }
-
-        var _iterator2 = _createForOfIteratorHelper($('.non-global input'))
-        var _step2
-
-        try {
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            var checkbox = _step2.value
-            if ($(checkbox).is(':checked')) confs[$(checkbox).attr('name')].load = 1
-          }
-        } catch (err) {
-          _iterator2.e(err)
-        } finally {
-          _iterator2.f()
-        }
-
-        var lotteryUserInfo = GM_getValue('conf') ? GM_getValue('conf').lotteryUserInfo : false
-        if (lotteryUserInfo) confs.lotteryUserInfo = lotteryUserInfo
-        var announcement = GM_getValue('conf') ? GM_getValue('conf').announcement : false
-        if (announcement) confs.announcement = announcement
-        return confs
       },
       echoLog: function echoLog (e) {
         var ele = ''
@@ -1884,9 +1657,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
         return fmt
       },
-      addBackground: function addBackground () {
-        GM_addStyle('body {background-image:url(//img.hclonely.com/www/006brDXlly1ft9lm7ns5zj31hc0u0qh3.jpg);background-position:center bottom;background-size:cover;background-attachment:fixed;background-repeat:no-repeat;}')
-      },
       isEmptyObjArr: function isEmptyObjArr (object) {
         for (var _i = 0, _Object$values = Object.values(object); _i < _Object$values.length; _i++) {
           var value = _Object$values[_i]
@@ -1901,6 +1671,124 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         return true
+      },
+      toggleActions: function toggleActions (_ref) {
+        var website = _ref.website
+        var type = _ref.type
+        var elements = _ref.elements
+        var resolve = _ref.resolve
+        var action = _ref.action
+        var _ref$toFinalUrl = _ref.toFinalUrl
+        var toFinalUrl = _ref$toFinalUrl === void 0 ? {} : _ref$toFinalUrl
+        var pro = []
+
+        var _iterator = _createForOfIteratorHelper(fuc.unique(elements))
+        var _step
+
+        try {
+          var _loop = function _loop () {
+            var _elementName
+
+            var element = _step.value
+            var elementName = null
+
+            if (website === 'giveawaysu' && toFinalUrl[element]) {
+              var toFinalUrlElement = toFinalUrl[element] || ''
+
+              switch (type) {
+                case 'group':
+                  elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
+                  break
+
+                case 'curator':
+                  elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
+                  break
+
+                case 'publisher':
+                  elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/)
+                  break
+
+                case 'developer':
+                  elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
+                  break
+
+                case 'game':
+                case 'wishlist':
+                  elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+                  break
+
+                case 'announcement':
+                  elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                  break
+
+                default:
+                  elementName = null
+              }
+            } else {
+              elementName = [null, element]
+            }
+
+            if ((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1]) {
+              switch (type) {
+                case 'group':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.joinSteamGroup(resolve, elementName[1]) : fuc.leaveSteamGroup(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'curator':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.followCurator(resolve, elementName[1]) : fuc.unfollowCurator(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'publisher':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.followPublisher(resolve, elementName[1]) : fuc.unfollowPublisher(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'developer':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.followDeveloper(resolve, elementName[1]) : fuc.unfollowDeveloper(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'wishlist':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.addWishlist(resolve, elementName[1]) : fuc.removeWishlist(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'game':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.followGame(resolve, elementName[1]) : fuc.unfollowGame(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'announcement':
+                  pro.push(new Promise(function (resolve) {
+                    if (action === 'like') {
+                      fuc.likeAnnouncements(resolve, elementName.input, elementName[1])
+                    }
+                  }))
+                  break
+              }
+            }
+          }
+
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            _loop()
+          }
+        } catch (err) {
+          _iterator.e(err)
+        } finally {
+          _iterator.f()
+        }
+
+        Promise.all(pro).finally(function () {
+          resolve()
+        })
       }
     }
     var banana = {
@@ -1954,12 +1842,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var tasksUl = $('ul.tasks li:not(:contains(Completed))')
           var pro = []
 
-          var _iterator5 = _createForOfIteratorHelper(tasksUl)
-          var _step5
+          var _iterator2 = _createForOfIteratorHelper(tasksUl)
+          var _step2
 
           try {
-            var _loop = function _loop () {
-              var task = _step5.value
+            var _loop2 = function _loop2 () {
+              var task = _step2.value
               // 遍历任务信息
               var taskDes = $(task).find('p')
               var verifyBtn = $(task).find('button:contains(Verify)')
@@ -2057,13 +1945,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
-            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-              _loop()
+            for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+              _loop2()
             }
           } catch (err) {
-            _iterator5.e(err)
+            _iterator2.e(err)
           } finally {
-            _iterator5.f()
+            _iterator2.f()
           }
 
           Promise.all(pro).finally(function () {
@@ -2101,132 +1989,55 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       do_task: function do_task () {
         var _this14 = this
 
-        this.updateSteamInfo(function () {
-          var pro = []
-          var groups = fuc.unique(_this14.groups)
-          var curators = fuc.unique(_this14.curators)
-          var wishlists = fuc.unique(_this14.wishlists)
-          var fGames = fuc.unique(_this14.fGames)
-          var links = fuc.unique(_this14.links)
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
+          var pro, links, _iterator3, _step3, _loop3
 
-          if (_this14.conf.fuck.group) {
-            var _iterator6 = _createForOfIteratorHelper(groups)
-            var _step6
+          return regeneratorRuntime.wrap(function _callee$ (_context) {
+            while (1) {
+              switch (_context.prev = _context.next) {
+                case 0:
+                  pro = []
+                  links = fuc.unique(_this14.links)
+                  _context.next = 4
+                  return _this14.toggleActions('fuck', pro)
 
-            try {
-              var _loop2 = function _loop2 () {
-                var group = _step6.value
-                pro.push(new Promise(function (resolve) {
-                  fuc.joinSteamGroup(resolve, group)
-                }))
+                case 4:
+                  if (_this14.conf.fuck.visitLink) {
+                    _iterator3 = _createForOfIteratorHelper(links)
+
+                    try {
+                      _loop3 = function _loop3 () {
+                        var link = _step3.value
+                        pro.push(new Promise(function (resolve) {
+                          fuc.visitLink(resolve, link)
+                        }))
+                      }
+
+                      for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+                        _loop3()
+                      }
+                    } catch (err) {
+                      _iterator3.e(err)
+                    } finally {
+                      _iterator3.f()
+                    }
+                  }
+
+                  Promise.all(pro).finally(function () {
+                    fuc.echoLog({
+                      type: 'custom',
+                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                    })
+                    if (_this14.conf.fuck.verify) _this14.verify()
+                  })
+
+                case 6:
+                case 'end':
+                  return _context.stop()
               }
-
-              for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-                _loop2()
-              }
-            } catch (err) {
-              _iterator6.e(err)
-            } finally {
-              _iterator6.f()
             }
-          }
-
-          if (_this14.conf.fuck.curator) {
-            var _iterator7 = _createForOfIteratorHelper(curators)
-            var _step7
-
-            try {
-              var _loop3 = function _loop3 () {
-                var curator = _step7.value
-                pro.push(new Promise(function (resolve) {
-                  fuc.followCurator(resolve, curator)
-                }))
-              }
-
-              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-                _loop3()
-              }
-            } catch (err) {
-              _iterator7.e(err)
-            } finally {
-              _iterator7.f()
-            }
-          }
-
-          if (_this14.conf.fuck.wishlist) {
-            var _iterator8 = _createForOfIteratorHelper(wishlists)
-            var _step8
-
-            try {
-              var _loop4 = function _loop4 () {
-                var gameId = _step8.value
-                pro.push(new Promise(function (resolve) {
-                  fuc.addWishlist(resolve, gameId)
-                }))
-              }
-
-              for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-                _loop4()
-              }
-            } catch (err) {
-              _iterator8.e(err)
-            } finally {
-              _iterator8.f()
-            }
-          }
-
-          if (_this14.conf.fuck.followGame) {
-            var _iterator9 = _createForOfIteratorHelper(fGames)
-            var _step9
-
-            try {
-              var _loop5 = function _loop5 () {
-                var gameId = _step9.value
-                pro.push(new Promise(function (resolve) {
-                  fuc.followGame(resolve, gameId)
-                }))
-              }
-
-              for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-                _loop5()
-              }
-            } catch (err) {
-              _iterator9.e(err)
-            } finally {
-              _iterator9.f()
-            }
-          }
-
-          if (_this14.conf.fuck.visit) {
-            var _iterator10 = _createForOfIteratorHelper(links)
-            var _step10
-
-            try {
-              var _loop6 = function _loop6 () {
-                var link = _step10.value
-                pro.push(new Promise(function (resolve) {
-                  fuc.visitLink(resolve, link)
-                }))
-              }
-
-              for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-                _loop6()
-              }
-            } catch (err) {
-              _iterator10.e(err)
-            } finally {
-              _iterator10.f()
-            }
-          }
-
-          Promise.all(pro).finally(function () {
-            fuc.echoLog({
-              type: 'custom',
-              text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-            })
-            if (_this14.conf.fuck.verify) _this14.verify()
-          })
-        })
+          }, _callee)
+        })))
       },
       verify: function verify () {
         var _this15 = this
@@ -2234,19 +2045,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var pro = []
+          var _pro = []
 
-          var _iterator11 = _createForOfIteratorHelper(fuc.unique(this.tasks))
-          var _step11
+          var _iterator4 = _createForOfIteratorHelper(fuc.unique(this.tasks))
+          var _step4
 
           try {
-            var _loop7 = function _loop7 () {
-              var task = _step11.value
+            var _loop4 = function _loop4 () {
+              var task = _step4.value
               var status = fuc.echoLog({
                 type: 'custom',
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
-              pro.push(new Promise(function (resolve) {
+
+              _pro.push(new Promise(function (resolve) {
                 fuc.httpRequest({
                   url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
                   method: 'GET',
@@ -2265,16 +2077,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }))
             }
 
-            for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-              _loop7()
+            for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+              _loop4()
             }
           } catch (err) {
-            _iterator11.e(err)
+            _iterator4.e(err)
           } finally {
-            _iterator11.f()
+            _iterator4.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font></li>')
@@ -2292,109 +2104,90 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(function () {
-            if (_this16.conf.remove.group) {
-              var _iterator12 = _createForOfIteratorHelper(fuc.unique(_this16.taskInfo.groups))
-              var _step12
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee2 () {
+            return regeneratorRuntime.wrap(function _callee2$ (_context2) {
+              while (1) {
+                switch (_context2.prev = _context2.next) {
+                  case 0:
+                    _context2.next = 2
+                    return _this16.toggleActions('fuck', pro)
 
-              try {
-                var _loop8 = function _loop8 () {
-                  var group = _step12.value
-                  pro.push(new Promise(function (resolve) {
-                    fuc.leaveSteamGroup(resolve, group)
-                  }))
-                }
+                  case 2:
+                    Promise.all(pro).finally(function () {
+                      fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                      })
+                    })
 
-                for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-                  _loop8()
+                  case 3:
+                  case 'end':
+                    return _context2.stop()
                 }
-              } catch (err) {
-                _iterator12.e(err)
-              } finally {
-                _iterator12.f()
               }
-            }
-
-            if (_this16.conf.remove.curator) {
-              var _iterator13 = _createForOfIteratorHelper(fuc.unique(_this16.taskInfo.curators))
-              var _step13
-
-              try {
-                var _loop9 = function _loop9 () {
-                  var curator = _step13.value
-                  pro.push(new Promise(function (resolve) {
-                    fuc.unfollowCurator(resolve, curator)
-                  }))
-                }
-
-                for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-                  _loop9()
-                }
-              } catch (err) {
-                _iterator13.e(err)
-              } finally {
-                _iterator13.f()
-              }
-            }
-
-            if (_this16.conf.remove.wishlist) {
-              var _iterator14 = _createForOfIteratorHelper(fuc.unique(_this16.taskInfo.wishlists))
-              var _step14
-
-              try {
-                var _loop10 = function _loop10 () {
-                  var gameId = _step14.value
-                  pro.push(new Promise(function (resolve) {
-                    fuc.removeWishlist(resolve, gameId)
-                  }))
-                }
-
-                for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-                  _loop10()
-                }
-              } catch (err) {
-                _iterator14.e(err)
-              } finally {
-                _iterator14.f()
-              }
-            }
-
-            if (_this16.conf.remove.unfollowGame) {
-              var _iterator15 = _createForOfIteratorHelper(fuc.unique(_this16.taskInfo.fGames))
-              var _step15
-
-              try {
-                var _loop11 = function _loop11 () {
-                  var gameId = _step15.value
-                  pro.push(new Promise(function (resolve) {
-                    fuc.unfollowGame(resolve, gameId)
-                  }))
-                }
-
-                for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-                  _loop11()
-                }
-              } catch (err) {
-                _iterator15.e(err)
-              } finally {
-                _iterator15.f()
-              }
-            }
-
-            Promise.all(pro).finally(function () {
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-              })
-            })
-          })
+            }, _callee2)
+          })))
         } else {
           this.get_tasks('remove')
         }
       },
+      toggleActions: function toggleActions (action, pro) {
+        var groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+        var curators = action === 'fuck' ? this.curators : this.taskInfo.curators
+        var wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
+        var fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
+
+        if (this.conf[action].joinSteamGroup && groups.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'banana',
+              type: 'group',
+              elements: groups,
+              resolve: resolve,
+              action: action
+            })
+          }))
+        }
+
+        if (this.conf.fuck.followCurator && curators.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'banana',
+              type: 'curator',
+              elements: curators,
+              resolve: resolve,
+              action: action
+            })
+          }))
+        }
+
+        if (this.conf.fuck.addToWishlist && wishlists.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'banana',
+              type: 'wishlist',
+              elements: wishlists,
+              resolve: resolve,
+              action: action
+            })
+          }))
+        }
+
+        if (this.conf.fuck.followGame && fGames.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'banana',
+              type: 'game',
+              elements: fGames,
+              resolve: resolve,
+              action: action
+            })
+          }))
+        }
+      },
       get_giveawayId: function get_giveawayId () {
         var id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
-        return id ? id[1] : window.location.href
+        return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
         var _this17 = this
@@ -2460,10 +2253,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       setting: {
         fuck: true,
         verify: true,
-        join: false,
         remove: true
       },
-      conf: ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : (_GM_getValue2$banana = _GM_getValue2.banana) === null || _GM_getValue2$banana === void 0 ? void 0 : _GM_getValue2$banana.load) ? GM_getValue('conf').banana : ((_GM_getValue3 = GM_getValue('conf')) === null || _GM_getValue3 === void 0 ? void 0 : _GM_getValue3.global) || defaultConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.load) ? config.banana : globalConf
     }
     var freegamelottery = {
       test: function test () {
@@ -2587,7 +2379,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: false
       },
-      conf: ((_GM_getValue4 = GM_getValue('conf')) === null || _GM_getValue4 === void 0 ? void 0 : (_GM_getValue4$freegam = _GM_getValue4.freegamelottery) === null || _GM_getValue4$freegam === void 0 ? void 0 : _GM_getValue4$freegam.load) ? GM_getValue('conf').freegamelottery : ((_GM_getValue5 = GM_getValue('conf')) === null || _GM_getValue5 === void 0 ? void 0 : _GM_getValue5.global) || defaultConf
+      conf: ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$freegame = _GM_getValue.freegamelottery) === null || _GM_getValue$freegame === void 0 ? void 0 : _GM_getValue$freegame.load) ? GM_getValue('conf').freegamelottery : ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.global) || defaultConf
     }
     var gamehag = {
       test: function test () {
@@ -2614,12 +2406,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.groups = []
           this.tasks = []
 
-          var _iterator16 = _createForOfIteratorHelper(verifyBtns)
-          var _step16
+          var _iterator5 = _createForOfIteratorHelper(verifyBtns)
+          var _step5
 
           try {
-            for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-              var btn = _step16.value
+            for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+              var btn = _step5.value
 
               var _taskId = $(btn).attr('data-id')
 
@@ -2633,9 +2425,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator16.e(err)
+            _iterator5.e(err)
           } finally {
-            _iterator16.f()
+            _iterator5.f()
           }
 
           if ($('a.giveaway-survey').length > 0) {
@@ -2664,12 +2456,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         } else if (callback === 'verify') {
           this.tasks = []
 
-          var _iterator17 = _createForOfIteratorHelper(verifyBtns)
-          var _step17
+          var _iterator6 = _createForOfIteratorHelper(verifyBtns)
+          var _step6
 
           try {
-            for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-              var _btn = _step17.value
+            for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+              var _btn = _step6.value
 
               var _taskId2 = $(_btn).attr('data-id')
 
@@ -2683,9 +2475,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator17.e(err)
+            _iterator6.e(err)
           } finally {
-            _iterator17.f()
+            _iterator6.f()
           }
 
           this.tasks = fuc.unique(this.tasks)
@@ -2716,20 +2508,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       do_task: function do_task () {
         var _this18 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
-          var pro, tasks, _loop12, i
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
+          var pro, tasks, _loop5, i
 
-          return regeneratorRuntime.wrap(function _callee$ (_context2) {
+          return regeneratorRuntime.wrap(function _callee3$ (_context4) {
             while (1) {
-              switch (_context2.prev = _context2.next) {
+              switch (_context4.prev = _context4.next) {
                 case 0:
                   pro = []
                   tasks = fuc.unique(_this18.tasks)
-                  _loop12 = /* #__PURE__ */regeneratorRuntime.mark(function _loop12 (i) {
+                  _loop5 = /* #__PURE__ */regeneratorRuntime.mark(function _loop5 (i) {
                     var task
-                    return regeneratorRuntime.wrap(function _loop12$ (_context) {
+                    return regeneratorRuntime.wrap(function _loop5$ (_context3) {
                       while (1) {
-                        switch (_context.prev = _context.next) {
+                        switch (_context3.prev = _context3.next) {
                           case 0:
                             task = tasks[i]
                             pro.push(new Promise(function (resolve) {
@@ -2757,7 +2549,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               }))
                             }
 
-                            _context.next = 5
+                            _context3.next = 5
                             return new Promise(function (resolve) {
                               setTimeout(function () {
                                 resolve()
@@ -2766,24 +2558,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 5:
                           case 'end':
-                            return _context.stop()
+                            return _context3.stop()
                         }
                       }
-                    }, _loop12)
+                    }, _loop5)
                   })
                   i = 0
 
                 case 4:
                   if (!(i < tasks.length)) {
-                    _context2.next = 9
+                    _context4.next = 9
                     break
                   }
 
-                  return _context2.delegateYield(_loop12(i), 't0', 6)
+                  return _context4.delegateYield(_loop5(i), 't0', 6)
 
                 case 6:
                   i++
-                  _context2.next = 4
+                  _context4.next = 4
                   break
 
                 case 9:
@@ -2797,44 +2589,45 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 10:
                 case 'end':
-                  return _context2.stop()
+                  return _context4.stop()
               }
             }
-          }, _callee)
+          }, _callee3)
         }))()
       },
       verify: function verify () {
         var _arguments = arguments
         var _this19 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee2 () {
-          var verify, pro, tasks, _loop13, i
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
+          var verify, _pro2, tasks, _loop6, i
 
-          return regeneratorRuntime.wrap(function _callee2$ (_context4) {
+          return regeneratorRuntime.wrap(function _callee4$ (_context6) {
             while (1) {
-              switch (_context4.prev = _context4.next) {
+              switch (_context6.prev = _context6.next) {
                 case 0:
                   verify = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : false
 
                   if (!verify) {
-                    _context4.next = 14
+                    _context6.next = 14
                     break
                   }
 
-                  pro = []
+                  _pro2 = []
                   tasks = fuc.unique(_this19.tasks)
-                  _loop13 = /* #__PURE__ */regeneratorRuntime.mark(function _loop13 (i) {
+                  _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 (i) {
                     var task, status
-                    return regeneratorRuntime.wrap(function _loop13$ (_context3) {
+                    return regeneratorRuntime.wrap(function _loop6$ (_context5) {
                       while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context5.prev = _context5.next) {
                           case 0:
                             task = tasks[i]
                             status = fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('verifyingTask'), '<a href="/giveaway/click/').concat(task.taskId, '" target="_blank">').concat(task.taskDes.trim(), '</a>...<font></font></li>')
                             })
-                            pro.push(new Promise(function (resolve) {
+
+                            _pro2.push(new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: '/api/v1/giveaway/sendtask',
                                 method: 'POST',
@@ -2878,7 +2671,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                                 status: status
                               })
                             }))
-                            _context3.next = 5
+
+                            _context5.next = 5
                             return new Promise(function (resolve) {
                               setTimeout(function () {
                                 resolve()
@@ -2887,34 +2681,34 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 5:
                           case 'end':
-                            return _context3.stop()
+                            return _context5.stop()
                         }
                       }
-                    }, _loop13)
+                    }, _loop6)
                   })
                   i = 0
 
                 case 6:
                   if (!(i < tasks.length)) {
-                    _context4.next = 11
+                    _context6.next = 11
                     break
                   }
 
-                  return _context4.delegateYield(_loop13(i), 't0', 8)
+                  return _context6.delegateYield(_loop6(i), 't0', 8)
 
                 case 8:
                   i++
-                  _context4.next = 6
+                  _context6.next = 6
                   break
 
                 case 11:
-                  Promise.all(pro).finally(function () {
+                  Promise.all(_pro2).finally(function () {
                     fuc.echoLog({
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font></li>')
                     })
                   })
-                  _context4.next = 15
+                  _context6.next = 15
                   break
 
                 case 14:
@@ -2922,10 +2716,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 15:
                 case 'end':
-                  return _context4.stop()
+                  return _context6.stop()
               }
             }
-          }, _callee2)
+          }, _callee4)
         }))()
       },
       remove: function remove () {
@@ -2965,7 +2759,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue6 = GM_getValue('conf')) === null || _GM_getValue6 === void 0 ? void 0 : (_GM_getValue6$gamehag = _GM_getValue6.gamehag) === null || _GM_getValue6$gamehag === void 0 ? void 0 : _GM_getValue6$gamehag.load) ? GM_getValue('conf').gamehag : ((_GM_getValue7 = GM_getValue('conf')) === null || _GM_getValue7 === void 0 ? void 0 : _GM_getValue7.global) || defaultConf
+      conf: ((_GM_getValue3 = GM_getValue('conf')) === null || _GM_getValue3 === void 0 ? void 0 : (_GM_getValue3$gamehag = _GM_getValue3.gamehag) === null || _GM_getValue3$gamehag === void 0 ? void 0 : _GM_getValue3$gamehag.load) ? GM_getValue('conf').gamehag : ((_GM_getValue4 = GM_getValue('conf')) === null || _GM_getValue4 === void 0 ? void 0 : _GM_getValue4.global) || defaultConf
     }
     var giveawaysu = {
       test: function test () {
@@ -2986,22 +2780,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
           var tasks = $('#actions tr')
 
-          var _iterator18 = _createForOfIteratorHelper(tasks)
-          var _step18
+          var _iterator7 = _createForOfIteratorHelper(tasks)
+          var _step7
 
           try {
-            for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-              var task = _step18.value
+            for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+              var task = _step7.value
               var taskDes = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
 
               var _taskInfo = this.which_task(taskDes)
 
-              var _iterator19 = _createForOfIteratorHelper(_taskInfo)
-              var _step19
+              var _iterator8 = _createForOfIteratorHelper(_taskInfo)
+              var _step8
 
               try {
-                for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-                  var info = _step19.value
+                for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+                  var info = _step8.value
 
                   if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
                     this.taskInfo[info.name + 's'].push(info.link)
@@ -3009,15 +2803,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 }
               } catch (err) {
-                _iterator19.e(err)
+                _iterator8.e(err)
               } finally {
-                _iterator19.f()
+                _iterator8.f()
               }
             }
           } catch (err) {
-            _iterator18.e(err)
+            _iterator7.e(err)
           } finally {
-            _iterator18.f()
+            _iterator7.f()
           }
 
           status.success()
@@ -3103,12 +2897,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         var pro = []
 
-        var _iterator20 = _createForOfIteratorHelper(this.taskInfo.links)
-        var _step20
+        var _iterator9 = _createForOfIteratorHelper(this.taskInfo.links)
+        var _step9
 
         try {
-          var _loop14 = function _loop14 () {
-            var link = _step20.value
+          var _loop7 = function _loop7 () {
+            var link = _step9.value
             pro.push(new Promise(function (resolve) {
               if (_this20.taskInfo.toFinalUrl[link]) {
                 resolve({
@@ -3120,31 +2914,31 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }))
           }
 
-          for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-            _loop14()
+          for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+            _loop7()
           }
         } catch (err) {
-          _iterator20.e(err)
+          _iterator9.e(err)
         } finally {
-          _iterator20.f()
+          _iterator9.f()
         }
 
         Promise.all(pro).then(function (data) {
-          var _iterator21 = _createForOfIteratorHelper(data)
-          var _step21
+          var _iterator10 = _createForOfIteratorHelper(data)
+          var _step10
 
           try {
-            for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-              var r = _step21.value
+            for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+              var r = _step10.value
 
               if (r.finalUrl) {
                 _this20.taskInfo.toFinalUrl[r.url] = r.finalUrl
               }
             }
           } catch (err) {
-            _iterator21.e(err)
+            _iterator10.e(err)
           } finally {
-            _iterator21.f()
+            _iterator10.f()
           }
 
           _this20.links = fuc.unique(_this20.links)
@@ -3160,7 +2954,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           GM_setValue('taskInfo[' + window.location.host + _this20.get_giveawayId() + ']', _this20.taskInfo)
           status.success()
           if (debug) console.log(_this20)
-          e === 'doTask' ? _this20.do_task('join') : _this20.do_task('remove')
+          e === 'doTask' ? _this20.do_task('fuck') : _this20.do_task('remove')
         }).catch(function (error) {
           status.error()
           if (debug) console.log(error)
@@ -3168,22 +2962,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       do_task: function do_task (act) {
         var _this21 = this
-
-        if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
-          var _iterator22 = _createForOfIteratorHelper(fuc.unique(this.links))
-          var _step22
-
-          try {
-            for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
-              var link = _step22.value
-              window.open(link, '_blank')
-            }
-          } catch (err) {
-            _iterator22.e(err)
-          } finally {
-            _iterator22.f()
-          }
-        }
 
         if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
         if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
@@ -3201,228 +2979,105 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }
         }).then(function (s) {
           if (s === 1) {
-            var pro = []
+            var _pro3 = []
 
-            var _iterator23 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.groups))
-            var _step23
-
-            try {
-              for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
-                var group = _step23.value
-
-                if (_this21.taskInfo.toFinalUrl[group]) {
-                  (function () {
-                    var groupName = _this21.taskInfo.toFinalUrl[group].match(/groups\/(.+)\/?/)
-
-                    if (groupName) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.group) {
-                          fuc.joinSteamGroup(resolve, groupName[1])
-                        } else if (act === 'remove' && _this21.conf.remove.group) {
-                          fuc.leaveSteamGroup(resolve, groupName[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator23.e(err)
-            } finally {
-              _iterator23.f()
+            if (_this21.conf.fuck.joinSteamGroup && _this21.taskInfo.groups.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'group',
+                  elements: _this21.taskInfo.groups,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator24 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.curators))
-            var _step24
-
-            try {
-              for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-                var curator = _step24.value
-
-                if (_this21.taskInfo.toFinalUrl[curator]) {
-                  (function () {
-                    var curatorId = _this21.taskInfo.toFinalUrl[curator].match(/curator\/([\d]+)/)
-
-                    if (curatorId) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.curator) {
-                          fuc.followCurator(resolve, curatorId[1])
-                        } else if (act === 'remove' && _this21.conf.remove.curator) {
-                          fuc.unfollowCurator(resolve, curatorId[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator24.e(err)
-            } finally {
-              _iterator24.f()
+            if (_this21.conf.fuck.followCurator && _this21.taskInfo.curators.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'curator',
+                  elements: _this21.taskInfo.curators,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator25 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.publishers))
-            var _step25
-
-            try {
-              for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-                var publisher = _step25.value
-
-                if (_this21.taskInfo.toFinalUrl[publisher]) {
-                  (function () {
-                    var publisherName = _this21.taskInfo.toFinalUrl[publisher].includes('publisher') ? _this21.taskInfo.toFinalUrl[publisher].match(/publisher\/(.+)\/?/) : _this21.taskInfo.toFinalUrl[publisher].match(/pub\/(.+)\/?/)
-
-                    if (publisherName) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.publisher) {
-                          fuc.followPublisher(resolve, publisherName[1])
-                        } else if (act === 'remove' && _this21.conf.remove.publisher) {
-                          fuc.unfollowPublisher(resolve, publisherName[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator25.e(err)
-            } finally {
-              _iterator25.f()
+            if (_this21.conf.fuck.followPublisher && _this21.taskInfo.publishers.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'publisher',
+                  elements: _this21.taskInfo.publishers,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator26 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.developers))
-            var _step26
-
-            try {
-              for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
-                var developer = _step26.value
-
-                if (_this21.taskInfo.toFinalUrl[developer]) {
-                  (function () {
-                    var developerName = _this21.taskInfo.toFinalUrl[developer].includes('developer') ? _this21.taskInfo.toFinalUrl[developer].match(/developer\/(.+)\/?/) : _this21.taskInfo.toFinalUrl[developer].match(/dev\/(.+)\/?/)
-
-                    if (developerName) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.developer) {
-                          fuc.followDeveloper(resolve, developerName[1])
-                        } else if (act === 'remove' && _this21.conf.remove.developer) {
-                          fuc.unfollowDeveloper(resolve, developerName[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator26.e(err)
-            } finally {
-              _iterator26.f()
+            if (_this21.conf.fuck.followDeveloper && _this21.taskInfo.developers.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'developer',
+                  elements: _this21.taskInfo.developers,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator27 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.fGames))
-            var _step27
-
-            try {
-              for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
-                var game = _step27.value
-
-                if (_this21.taskInfo.toFinalUrl[game]) {
-                  (function () {
-                    var gameId = _this21.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
-
-                    if (gameId) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.followGame) {
-                          fuc.followGame(resolve, gameId[1])
-                        } else if (act === 'remove' && _this21.conf.remove.unfollowGame) {
-                          fuc.unfollowGame(resolve, gameId[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator27.e(err)
-            } finally {
-              _iterator27.f()
+            if (_this21.conf.fuck.followGame && _this21.taskInfo.fGames.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'game',
+                  elements: _this21.taskInfo.fGames,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator28 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.wGames))
-            var _step28
-
-            try {
-              for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
-                var _game = _step28.value
-
-                if (_this21.taskInfo.toFinalUrl[_game]) {
-                  (function () {
-                    var gameId = _this21.taskInfo.toFinalUrl[_game].match(/app\/([\d]+)/)
-
-                    if (gameId) {
-                      pro.push(new Promise(function (resolve) {
-                        if (act === 'join' && _this21.conf.join.wishlist) {
-                          fuc.addWishlist(resolve, gameId[1])
-                        } else if (act === 'remove' && _this21.conf.remove.wishlist) {
-                          fuc.removeWishlist(resolve, gameId[1])
-                        } else {
-                          resolve(1)
-                        }
-                      }))
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator28.e(err)
-            } finally {
-              _iterator28.f()
+            if (_this21.conf.fuck.addToWishlist && _this21.taskInfo.wGames.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'wishlist',
+                  elements: _this21.taskInfo.wGames,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            var _iterator29 = _createForOfIteratorHelper(fuc.unique(_this21.taskInfo.announcements))
-            var _step29
-
-            try {
-              for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
-                var announcement = _step29.value
-
-                if (_this21.taskInfo.toFinalUrl[announcement]) {
-                  (function () {
-                    var announcementUrl = _this21.taskInfo.toFinalUrl[announcement]
-                    var announcementId = announcementUrl.match(/announcements\/detail\/([\d]+)/)
-
-                    if (announcementId) {
-                      if (act === 'join' && _this21.conf.join.announcement) {
-                        pro.push(new Promise(function (resolve) {
-                          fuc.likeAnnouncements(resolve, announcementUrl, announcementId[1])
-                        }))
-                      }
-                    }
-                  })()
-                }
-              }
-            } catch (err) {
-              _iterator29.e(err)
-            } finally {
-              _iterator29.f()
+            if (_this21.conf.fuck.likeAnnouncement && _this21.taskInfo.announcements.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'announcement',
+                  elements: _this21.taskInfo.announcements,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
             }
 
-            Promise.all(pro).finally(function () {
+            Promise.all(_pro3).finally(function () {
               fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
               })
-              if (act === 'join') {
+              if (act === 'fuck') {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
@@ -3432,17 +3087,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }
         })
       },
-      fuck: function fuck () {},
-      verify: function verify () {},
-      join: function join () {
+      fuck: function fuck () {
         this.get_tasks('doTask')
       },
+      verify: function verify () {},
       remove: function remove () {
         this.get_tasks('remove')
       },
       get_giveawayId: function get_giveawayId () {
         var id = window.location.href.match(/view\/([\d]+)/)
-        return id ? id[1] : window.location.href
+        return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       checkLogin: function checkLogin () {
         if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
@@ -3484,12 +3138,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       },
       setting: {
-        fuck: false,
+        fuck: true,
         verify: false,
-        join: true,
         remove: true
       },
-      conf: ((_GM_getValue8 = GM_getValue('conf')) === null || _GM_getValue8 === void 0 ? void 0 : (_GM_getValue8$giveawa = _GM_getValue8.giveawaysu) === null || _GM_getValue8$giveawa === void 0 ? void 0 : _GM_getValue8$giveawa.load) ? GM_getValue('conf').giveawaysu : ((_GM_getValue9 = GM_getValue('conf')) === null || _GM_getValue9 === void 0 ? void 0 : _GM_getValue9.global) || defaultConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.load) ? config.giveawaysu : globalConf
     }
     var givekey = {
       test: function test () {
@@ -3551,12 +3204,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-        var _iterator30 = _createForOfIteratorHelper(tasks)
-        var _step30
+        var _iterator11 = _createForOfIteratorHelper(tasks)
+        var _step11
 
         try {
-          var _loop15 = function _loop15 () {
-            var id = _step30.value
+          var _loop8 = function _loop8 () {
+            var id = _step11.value
             var task = $('#task_' + id)
             var href = task.attr('href')
 
@@ -3595,13 +3248,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
 
-          for (_iterator30.s(); !(_step30 = _iterator30.n()).done;) {
-            _loop15()
+          for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+            _loop8()
           }
         } catch (err) {
-          _iterator30.e(err)
+          _iterator11.e(err)
         } finally {
-          _iterator30.f()
+          _iterator11.f()
         }
 
         Promise.all(pro).finally(function () {
@@ -3636,26 +3289,26 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.taskInfo = taskInfoHistory
           this.remove(true)
         } else {
-          var pro = []
+          var _pro4 = []
           var status = fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           })
           var tasksContainer = $('a[id^=task_]')
 
-          var _iterator31 = _createForOfIteratorHelper(tasksContainer)
-          var _step31
+          var _iterator12 = _createForOfIteratorHelper(tasksContainer)
+          var _step12
 
           try {
-            var _loop16 = function _loop16 () {
-              var task = _step31.value
+            var _loop9 = function _loop9 () {
+              var task = _step12.value
               // 遍历任务信息
               var href = task.attr('href')
 
               if (href.includes('vk.com')) {} else if (href.includes('steamcommunity.com/groups/')) {
                 _this23.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
               } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
-                pro.push(new Promise(function (r) {
+                _pro4.push(new Promise(function (r) {
                   new Promise(function (resolve) {
                     fuc.getFinalUrl(resolve, href)
                   }).then(function (data) {
@@ -3681,16 +3334,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
-            for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
-              _loop16()
+            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+              _loop9()
             }
           } catch (err) {
-            _iterator31.e(err)
+            _iterator12.e(err)
           } finally {
-            _iterator31.f()
+            _iterator12.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro4).finally(function () {
             _this23.taskInfo.groups = fuc.unique(_this23.taskInfo.groups)
             _this23.taskInfo.curators = fuc.unique(_this23.taskInfo.curators)
             _this23.taskInfo.wGames = fuc.unique(_this23.taskInfo.wGames)
@@ -3721,112 +3374,112 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var links = fuc.unique(_this24.links)
 
           if (_this24.conf.fuck.group) {
-            var _iterator32 = _createForOfIteratorHelper(groups)
-            var _step32
+            var _iterator13 = _createForOfIteratorHelper(groups)
+            var _step13
 
             try {
-              var _loop17 = function _loop17 () {
-                var group = _step32.value
+              var _loop10 = function _loop10 () {
+                var group = _step13.value
                 pro.push(new Promise(function (resolve) {
                   fuc.joinSteamGroup(resolve, group)
                 }))
               }
 
-              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
-                _loop17()
+              for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+                _loop10()
               }
             } catch (err) {
-              _iterator32.e(err)
+              _iterator13.e(err)
             } finally {
-              _iterator32.f()
+              _iterator13.f()
             }
           }
 
           if (_this24.conf.fuck.wishlist) {
-            var _iterator33 = _createForOfIteratorHelper(wGames)
-            var _step33
+            var _iterator14 = _createForOfIteratorHelper(wGames)
+            var _step14
 
             try {
-              var _loop18 = function _loop18 () {
-                var game = _step33.value
+              var _loop11 = function _loop11 () {
+                var game = _step14.value
                 pro.push(new Promise(function (resolve) {
                   fuc.addWishlist(resolve, game)
                 }))
               }
 
-              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
-                _loop18()
+              for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+                _loop11()
               }
             } catch (err) {
-              _iterator33.e(err)
+              _iterator14.e(err)
             } finally {
-              _iterator33.f()
+              _iterator14.f()
             }
           }
 
           if (_this24.conf.fuck.followGame) {
-            var _iterator34 = _createForOfIteratorHelper(fGames)
-            var _step34
+            var _iterator15 = _createForOfIteratorHelper(fGames)
+            var _step15
 
             try {
-              var _loop19 = function _loop19 () {
-                var game = _step34.value
+              var _loop12 = function _loop12 () {
+                var game = _step15.value
                 pro.push(new Promise(function (resolve) {
                   fuc.followGame(resolve, game)
                 }))
               }
 
-              for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
-                _loop19()
+              for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+                _loop12()
               }
             } catch (err) {
-              _iterator34.e(err)
+              _iterator15.e(err)
             } finally {
-              _iterator34.f()
+              _iterator15.f()
             }
           }
 
           if (_this24.conf.fuck.curator) {
-            var _iterator35 = _createForOfIteratorHelper(curators)
-            var _step35
+            var _iterator16 = _createForOfIteratorHelper(curators)
+            var _step16
 
             try {
-              var _loop20 = function _loop20 () {
-                var curator = _step35.value
+              var _loop13 = function _loop13 () {
+                var curator = _step16.value
                 pro.push(new Promise(function (resolve) {
                   fuc.followCurator(resolve, curator)
                 }))
               }
 
-              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
-                _loop20()
+              for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+                _loop13()
               }
             } catch (err) {
-              _iterator35.e(err)
+              _iterator16.e(err)
             } finally {
-              _iterator35.f()
+              _iterator16.f()
             }
           }
 
           if (_this24.conf.fuck.visit) {
-            var _iterator36 = _createForOfIteratorHelper(links)
-            var _step36
+            var _iterator17 = _createForOfIteratorHelper(links)
+            var _step17
 
             try {
-              var _loop21 = function _loop21 () {
-                var link = _step36.value
+              var _loop14 = function _loop14 () {
+                var link = _step17.value
                 pro.push(new Promise(function (resolve) {
                   fuc.visitLink(resolve, link)
                 }))
               }
 
-              for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
-                _loop21()
+              for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+                _loop14()
               }
             } catch (err) {
-              _iterator36.e(err)
+              _iterator17.e(err)
             } finally {
-              _iterator36.f()
+              _iterator17.f()
             }
           }
 
@@ -3857,90 +3510,90 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (remove) {
           this.updateSteamInfo(function () {
             if (_this25.conf.remove.group) {
-              var _iterator37 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.groups))
-              var _step37
+              var _iterator18 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.groups))
+              var _step18
 
               try {
-                var _loop22 = function _loop22 () {
-                  var group = _step37.value
+                var _loop15 = function _loop15 () {
+                  var group = _step18.value
                   pro.push(new Promise(function (resolve) {
                     fuc.leaveSteamGroup(resolve, group)
                   }))
                 }
 
-                for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
-                  _loop22()
+                for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+                  _loop15()
                 }
               } catch (err) {
-                _iterator37.e(err)
+                _iterator18.e(err)
               } finally {
-                _iterator37.f()
+                _iterator18.f()
               }
             }
 
             if (_this25.conf.remove.unfollowGame) {
-              var _iterator38 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.fGames))
-              var _step38
+              var _iterator19 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.fGames))
+              var _step19
 
               try {
-                var _loop23 = function _loop23 () {
-                  var game = _step38.value
+                var _loop16 = function _loop16 () {
+                  var game = _step19.value
                   pro.push(new Promise(function (resolve) {
                     fuc.unfollowCurator(resolve, game)
                   }))
                 }
 
-                for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
-                  _loop23()
+                for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+                  _loop16()
                 }
               } catch (err) {
-                _iterator38.e(err)
+                _iterator19.e(err)
               } finally {
-                _iterator38.f()
+                _iterator19.f()
               }
             }
 
             if (_this25.conf.remove.wishlist) {
-              var _iterator39 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.wGames))
-              var _step39
+              var _iterator20 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.wGames))
+              var _step20
 
               try {
-                var _loop24 = function _loop24 () {
-                  var game = _step39.value
+                var _loop17 = function _loop17 () {
+                  var game = _step20.value
                   pro.push(new Promise(function (resolve) {
                     fuc.removeWishlist(resolve, game)
                   }))
                 }
 
-                for (_iterator39.s(); !(_step39 = _iterator39.n()).done;) {
-                  _loop24()
+                for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+                  _loop17()
                 }
               } catch (err) {
-                _iterator39.e(err)
+                _iterator20.e(err)
               } finally {
-                _iterator39.f()
+                _iterator20.f()
               }
             }
 
             if (_this25.conf.remove.curator) {
-              var _iterator40 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.curators))
-              var _step40
+              var _iterator21 = _createForOfIteratorHelper(fuc.unique(_this25.taskInfo.curators))
+              var _step21
 
               try {
-                var _loop25 = function _loop25 () {
-                  var curator = _step40.value
+                var _loop18 = function _loop18 () {
+                  var curator = _step21.value
                   pro.push(new Promise(function (resolve) {
                     fuc.unfollowCurator(resolve, curator)
                   }))
                 }
 
-                for (_iterator40.s(); !(_step40 = _iterator40.n()).done;) {
-                  _loop25()
+                for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+                  _loop18()
                 }
               } catch (err) {
-                _iterator40.e(err)
+                _iterator21.e(err)
               } finally {
-                _iterator40.f()
+                _iterator21.f()
               }
             }
 
@@ -3974,18 +3627,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 type: 'success'
               })
 
-              var _iterator41 = _createForOfIteratorHelper($('a[id^=task_]'))
-              var _step41
+              var _iterator22 = _createForOfIteratorHelper($('a[id^=task_]'))
+              var _step22
 
               try {
-                for (_iterator41.s(); !(_step41 = _iterator41.n()).done;) {
-                  var a = _step41.value
+                for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+                  var a = _step22.value
                   $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论').replace('Подписаться на разработчика', '订阅开发商').replace('Подписаться на куратора', '订阅鉴赏家').replace('Поставить лайк', '点赞').replace('Подписаться на игру', '关注游戏').replace(/Subscribe|Подписаться/, '订阅/加组').replace('Сделать репост', '转发').replace('Добавить в список желаемого', '加入愿望单').replace('Сделать обзор на игру', '评论').replace('Посетить web-сайт', '访问页面'))
                 }
               } catch (err) {
-                _iterator41.e(err)
+                _iterator22.e(err)
               } finally {
-                _iterator41.f()
+                _iterator22.f()
               }
             })
             this.centrifuge.on('disconnect', function (e) {
@@ -4149,7 +3802,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue10 = GM_getValue('conf')) === null || _GM_getValue10 === void 0 ? void 0 : (_GM_getValue10$giveke = _GM_getValue10.givekey) === null || _GM_getValue10$giveke === void 0 ? void 0 : _GM_getValue10$giveke.load) ? GM_getValue('conf').givekey : ((_GM_getValue11 = GM_getValue('conf')) === null || _GM_getValue11 === void 0 ? void 0 : _GM_getValue11.global) || defaultConf
+      conf: ((_GM_getValue5 = GM_getValue('conf')) === null || _GM_getValue5 === void 0 ? void 0 : (_GM_getValue5$givekey = _GM_getValue5.givekey) === null || _GM_getValue5$givekey === void 0 ? void 0 : _GM_getValue5$givekey.load) ? GM_getValue('conf').givekey : ((_GM_getValue6 = GM_getValue('conf')) === null || _GM_getValue6 === void 0 ? void 0 : _GM_getValue6.global) || defaultConf
     }
     var gleam = {
       test: function test () {
@@ -4179,12 +3832,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
           var tasksContainer = $('div.entry-content .entry-method')
 
-          var _iterator42 = _createForOfIteratorHelper(tasksContainer)
-          var _step42
+          var _iterator23 = _createForOfIteratorHelper(tasksContainer)
+          var _step23
 
           try {
-            for (_iterator42.s(); !(_step42 = _iterator42.n()).done;) {
-              var task = _step42.value
+            for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+              var task = _step23.value
 
               // 遍历任务信息
               if ($(task).find('i.fa-question').length > 0) {
@@ -4248,9 +3901,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator42.e(err)
+            _iterator23.e(err)
           } finally {
-            _iterator42.f()
+            _iterator23.f()
           }
 
           this.groups = fuc.unique(this.groups)
@@ -4292,35 +3945,35 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
           if (_this27.conf.fuck.group && groups.length > 0) {
-            var _iterator43 = _createForOfIteratorHelper(groups)
-            var _step43
+            var _iterator24 = _createForOfIteratorHelper(groups)
+            var _step24
 
             try {
-              var _loop26 = function _loop26 () {
-                var group = _step43.value
+              var _loop19 = function _loop19 () {
+                var group = _step24.value
                 pro.push(new Promise(function (resolve) {
                   fuc.joinSteamGroup(resolve, group)
                 }))
               }
 
-              for (_iterator43.s(); !(_step43 = _iterator43.n()).done;) {
-                _loop26()
+              for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+                _loop19()
               }
             } catch (err) {
-              _iterator43.e(err)
+              _iterator24.e(err)
             } finally {
-              _iterator43.f()
+              _iterator24.f()
             }
           }
 
           if (globalConf.other.autoOpen) {
             if (twitters.length > 0) {
-              var _iterator44 = _createForOfIteratorHelper(twitters)
-              var _step44
+              var _iterator25 = _createForOfIteratorHelper(twitters)
+              var _step25
 
               try {
-                for (_iterator44.s(); !(_step44 = _iterator44.n()).done;) {
-                  var twitter = _step44.value
+                for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+                  var twitter = _step25.value
                   var title = $(twitter).find('.entry-method-title').text().trim()
                   var status = fuc.echoLog({
                     type: 'custom',
@@ -4338,19 +3991,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 }
               } catch (err) {
-                _iterator44.e(err)
+                _iterator25.e(err)
               } finally {
-                _iterator44.f()
+                _iterator25.f()
               }
             }
 
             if (socals.length > 0) {
-              var _iterator45 = _createForOfIteratorHelper(socals)
-              var _step45
+              var _iterator26 = _createForOfIteratorHelper(socals)
+              var _step26
 
               try {
-                for (_iterator45.s(); !(_step45 = _iterator45.n()).done;) {
-                  var task = _step45.value
+                for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+                  var task = _step26.value
 
                   var _title2 = $(task).find('.entry-method-title').text().trim()
 
@@ -4370,9 +4023,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 }
               } catch (err) {
-                _iterator45.e(err)
+                _iterator26.e(err)
               } finally {
-                _iterator45.f()
+                _iterator26.f()
               }
             }
           }
@@ -4383,12 +4036,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }))
           }
 
-          var _iterator46 = _createForOfIteratorHelper(others)
-          var _step46
+          var _iterator27 = _createForOfIteratorHelper(others)
+          var _step27
 
           try {
-            for (_iterator46.s(); !(_step46 = _iterator46.n()).done;) {
-              var other = _step46.value
+            for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
+              var other = _step27.value
               var icon = $(other).find('.icon-wrapper i')
 
               if (icon.hasClass('fa-steam')) {
@@ -4407,9 +4060,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator46.e(err)
+            _iterator27.e(err)
           } finally {
-            _iterator46.f()
+            _iterator27.f()
           }
 
           Promise.all(pro).finally(function () {
@@ -4476,24 +4129,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (remove) {
           this.updateSteamInfo(function () {
             if (_this28.conf.remove.group) {
-              var _iterator47 = _createForOfIteratorHelper(fuc.unique(_this28.taskInfo.groups))
-              var _step47
+              var _iterator28 = _createForOfIteratorHelper(fuc.unique(_this28.taskInfo.groups))
+              var _step28
 
               try {
-                var _loop27 = function _loop27 () {
-                  var group = _step47.value
+                var _loop20 = function _loop20 () {
+                  var group = _step28.value
                   pro.push(new Promise(function (resolve) {
                     fuc.leaveSteamGroup(resolve, group)
                   }))
                 }
 
-                for (_iterator47.s(); !(_step47 = _iterator47.n()).done;) {
-                  _loop27()
+                for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+                  _loop20()
                 }
               } catch (err) {
-                _iterator47.e(err)
+                _iterator28.e(err)
               } finally {
-                _iterator47.f()
+                _iterator28.f()
               }
             }
 
@@ -4607,7 +4260,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue12 = GM_getValue('conf')) === null || _GM_getValue12 === void 0 ? void 0 : _GM_getValue12.gleam) && ((_GM_getValue13 = GM_getValue('conf')) === null || _GM_getValue13 === void 0 ? void 0 : (_GM_getValue13$gleam = _GM_getValue13.gleam) === null || _GM_getValue13$gleam === void 0 ? void 0 : _GM_getValue13$gleam.load) ? GM_getValue('conf').gleam : ((_GM_getValue14 = GM_getValue('conf')) === null || _GM_getValue14 === void 0 ? void 0 : _GM_getValue14.global) || defaultConf
+      conf: ((_GM_getValue7 = GM_getValue('conf')) === null || _GM_getValue7 === void 0 ? void 0 : _GM_getValue7.gleam) && ((_GM_getValue8 = GM_getValue('conf')) === null || _GM_getValue8 === void 0 ? void 0 : (_GM_getValue8$gleam = _GM_getValue8.gleam) === null || _GM_getValue8$gleam === void 0 ? void 0 : _GM_getValue8$gleam.load) ? GM_getValue('conf').gleam : ((_GM_getValue9 = GM_getValue('conf')) === null || _GM_getValue9 === void 0 ? void 0 : _GM_getValue9.global) || defaultConf
     }
     var indiedb = {
       test: function test () {
@@ -4681,14 +4334,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
         if (id.length === 2) {
           var tasks = $('#giveawaysjoined a[class*=promo]')
-          var pro = []
+          var _pro5 = []
 
-          var _iterator48 = _createForOfIteratorHelper(tasks)
-          var _step48
+          var _iterator29 = _createForOfIteratorHelper(tasks)
+          var _step29
 
           try {
-            var _loop28 = function _loop28 () {
-              var task = _step48.value
+            var _loop21 = function _loop21 () {
+              var task = _step29.value
               var promo = $(task)
 
               if (!promo.hasClass('buttonentered')) {
@@ -4698,7 +4351,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 })
 
                 if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-                  pro.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo') + '/' + id[0]),
@@ -4733,7 +4386,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (promo.hasClass('emailoptinpromo')) {
-                  pro.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
@@ -4769,7 +4422,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (promo.hasClass('watchingpromo')) {
-                  pro.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     var data = fuc.getUrlQuery(promo.attr('href'))
                     data.ajax = 't'
                     $.ajax({
@@ -4804,7 +4457,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-                  pro.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath(promo.attr('href')),
@@ -4844,16 +4497,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
-            for (_iterator48.s(); !(_step48 = _iterator48.n()).done;) {
-              _loop28()
+            for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
+              _loop21()
             }
           } catch (err) {
-            _iterator48.e(err)
+            _iterator29.e(err)
           } finally {
-            _iterator48.f()
+            _iterator29.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro5).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="warning">'.concat(getI18n('allTasksComplete'), '</font></li>')
@@ -4875,7 +4528,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: false
       },
-      conf: ((_GM_getValue15 = GM_getValue('conf')) === null || _GM_getValue15 === void 0 ? void 0 : (_GM_getValue15$indied = _GM_getValue15.indiedb) === null || _GM_getValue15$indied === void 0 ? void 0 : _GM_getValue15$indied.load) ? GM_getValue('conf').indiedb : ((_GM_getValue16 = GM_getValue('conf')) === null || _GM_getValue16 === void 0 ? void 0 : _GM_getValue16.global) || defaultConf
+      conf: ((_GM_getValue10 = GM_getValue('conf')) === null || _GM_getValue10 === void 0 ? void 0 : (_GM_getValue10$indied = _GM_getValue10.indiedb) === null || _GM_getValue10$indied === void 0 ? void 0 : _GM_getValue10$indied.load) ? GM_getValue('conf').indiedb : ((_GM_getValue11 = GM_getValue('conf')) === null || _GM_getValue11 === void 0 ? void 0 : _GM_getValue11.global) || defaultConf
     }
     var marvelousga = {
       test: function test () {
@@ -4905,12 +4558,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
           var tasksContainer = $('.container_task')
 
-          var _iterator49 = _createForOfIteratorHelper(tasksContainer)
-          var _step49
+          var _iterator30 = _createForOfIteratorHelper(tasksContainer)
+          var _step30
 
           try {
-            for (_iterator49.s(); !(_step49 = _iterator49.n()).done;) {
-              var task = _step49.value
+            for (_iterator30.s(); !(_step30 = _iterator30.n()).done;) {
+              var task = _step30.value
               // 遍历任务信息
               var taskDes = $(task).find('.card-body p.card-text.monospace')
               var verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
@@ -4960,9 +4613,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator49.e(err)
+            _iterator30.e(err)
           } finally {
-            _iterator49.f()
+            _iterator30.f()
           }
 
           this.groups = fuc.unique(this.groups)
@@ -5008,56 +4661,56 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var links = fuc.unique(_this30.links)
 
           if (_this30.conf.fuck.group) {
-            var _iterator50 = _createForOfIteratorHelper(groups)
-            var _step50
+            var _iterator31 = _createForOfIteratorHelper(groups)
+            var _step31
 
             try {
-              var _loop29 = function _loop29 () {
-                var group = _step50.value
+              var _loop22 = function _loop22 () {
+                var group = _step31.value
                 pro.push(new Promise(function (resolve) {
                   fuc.joinSteamGroup(resolve, group)
                 }))
               }
 
-              for (_iterator50.s(); !(_step50 = _iterator50.n()).done;) {
-                _loop29()
+              for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
+                _loop22()
               }
             } catch (err) {
-              _iterator50.e(err)
+              _iterator31.e(err)
             } finally {
-              _iterator50.f()
+              _iterator31.f()
             }
           }
 
           if (_this30.conf.fuck.curator) {
-            var _iterator51 = _createForOfIteratorHelper(curators)
-            var _step51
+            var _iterator32 = _createForOfIteratorHelper(curators)
+            var _step32
 
             try {
-              var _loop30 = function _loop30 () {
-                var curator = _step51.value
+              var _loop23 = function _loop23 () {
+                var curator = _step32.value
                 pro.push(new Promise(function (resolve) {
                   fuc.followCurator(resolve, curator)
                 }))
               }
 
-              for (_iterator51.s(); !(_step51 = _iterator51.n()).done;) {
-                _loop30()
+              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+                _loop23()
               }
             } catch (err) {
-              _iterator51.e(err)
+              _iterator32.e(err)
             } finally {
-              _iterator51.f()
+              _iterator32.f()
             }
           }
 
           if (_this30.conf.fuck.visit) {
-            var _iterator52 = _createForOfIteratorHelper(links)
-            var _step52
+            var _iterator33 = _createForOfIteratorHelper(links)
+            var _step33
 
             try {
-              var _loop31 = function _loop31 () {
-                var link = _step52.value
+              var _loop24 = function _loop24 () {
+                var link = _step33.value
                 pro.push(new Promise(function (resolve) {
                   fuc.visitLink(resolve, link.pageUrl, {
                     url: '/ajax/verifyTasks/webpage/clickedLink',
@@ -5074,13 +4727,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }))
               }
 
-              for (_iterator52.s(); !(_step52 = _iterator52.n()).done;) {
-                _loop31()
+              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
+                _loop24()
               }
             } catch (err) {
-              _iterator52.e(err)
+              _iterator33.e(err)
             } finally {
-              _iterator52.f()
+              _iterator33.f()
             }
           }
 
@@ -5099,19 +4752,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var pro = []
+          var _pro6 = []
 
-          var _iterator53 = _createForOfIteratorHelper(fuc.unique(this.tasks))
-          var _step53
+          var _iterator34 = _createForOfIteratorHelper(fuc.unique(this.tasks))
+          var _step34
 
           try {
-            var _loop32 = function _loop32 () {
-              var task = _step53.value
+            var _loop25 = function _loop25 () {
+              var task = _step34.value
               var status = fuc.echoLog({
                 type: 'custom',
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
-              pro.push(new Promise(function (resolve) {
+
+              _pro6.push(new Promise(function (resolve) {
                 fuc.httpRequest({
                   url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                   method: 'POST',
@@ -5161,16 +4815,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }))
             }
 
-            for (_iterator53.s(); !(_step53 = _iterator53.n()).done;) {
-              _loop32()
+            for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
+              _loop25()
             }
           } catch (err) {
-            _iterator53.e(err)
+            _iterator34.e(err)
           } finally {
-            _iterator53.f()
+            _iterator34.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro6).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font><font class="warning">').concat(getI18n('doYourself'), '<a class="hclonely-google" href="javascript:void(0)" target="_self">').concat(getI18n('googleVerify'), '</a>').concat(getI18n('getKey'), '!</font></li>')
@@ -5194,46 +4848,46 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (remove) {
           this.updateSteamInfo(function () {
             if (_this32.conf.remove.group) {
-              var _iterator54 = _createForOfIteratorHelper(fuc.unique(_this32.taskInfo.groups))
-              var _step54
+              var _iterator35 = _createForOfIteratorHelper(fuc.unique(_this32.taskInfo.groups))
+              var _step35
 
               try {
-                var _loop33 = function _loop33 () {
-                  var group = _step54.value
+                var _loop26 = function _loop26 () {
+                  var group = _step35.value
                   pro.push(new Promise(function (resolve) {
                     fuc.leaveSteamGroup(resolve, group)
                   }))
                 }
 
-                for (_iterator54.s(); !(_step54 = _iterator54.n()).done;) {
-                  _loop33()
+                for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
+                  _loop26()
                 }
               } catch (err) {
-                _iterator54.e(err)
+                _iterator35.e(err)
               } finally {
-                _iterator54.f()
+                _iterator35.f()
               }
             }
 
             if (_this32.conf.remove.curator) {
-              var _iterator55 = _createForOfIteratorHelper(fuc.unique(_this32.taskInfo.curators))
-              var _step55
+              var _iterator36 = _createForOfIteratorHelper(fuc.unique(_this32.taskInfo.curators))
+              var _step36
 
               try {
-                var _loop34 = function _loop34 () {
-                  var curator = _step55.value
+                var _loop27 = function _loop27 () {
+                  var curator = _step36.value
                   pro.push(new Promise(function (resolve) {
                     fuc.unfollowCurator(resolve, curator)
                   }))
                 }
 
-                for (_iterator55.s(); !(_step55 = _iterator55.n()).done;) {
-                  _loop34()
+                for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
+                  _loop27()
                 }
               } catch (err) {
-                _iterator55.e(err)
+                _iterator36.e(err)
               } finally {
-                _iterator55.f()
+                _iterator36.f()
               }
             }
 
@@ -5308,7 +4962,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue17 = GM_getValue('conf')) === null || _GM_getValue17 === void 0 ? void 0 : (_GM_getValue17$marvel = _GM_getValue17.marvelousga) === null || _GM_getValue17$marvel === void 0 ? void 0 : _GM_getValue17$marvel.load) ? GM_getValue('conf').marvelousga : ((_GM_getValue18 = GM_getValue('conf')) === null || _GM_getValue18 === void 0 ? void 0 : _GM_getValue18.global) || defaultConf
+      conf: ((_GM_getValue12 = GM_getValue('conf')) === null || _GM_getValue12 === void 0 ? void 0 : (_GM_getValue12$marvel = _GM_getValue12.marvelousga) === null || _GM_getValue12$marvel === void 0 ? void 0 : _GM_getValue12$marvel.load) ? GM_getValue('conf').marvelousga : ((_GM_getValue13 = GM_getValue('conf')) === null || _GM_getValue13 === void 0 ? void 0 : _GM_getValue13.global) || defaultConf
     }
     var opiumpulses = {
       test: function test () {
@@ -5321,11 +4975,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var _arguments2 = arguments
         var _this34 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
           var type, items, myPoint, maxPoint, i, item, needPoints
-          return regeneratorRuntime.wrap(function _callee4$ (_context6) {
+          return regeneratorRuntime.wrap(function _callee6$ (_context8) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context8.prev = _context8.next) {
                 case 0:
                   type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
                   items = $(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))"))
@@ -5335,7 +4989,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 5:
                   if (!(i < items.length)) {
-                    _context6.next = 21
+                    _context8.next = 21
                     break
                   }
 
@@ -5343,7 +4997,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                    _context6.next = 12
+                    _context8.next = 12
                     break
                   }
 
@@ -5351,12 +5005,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                   })
-                  _context6.next = 18
+                  _context8.next = 18
                   break
 
                 case 12:
                   if (!(type === 'points' && !needPoints)) {
-                    _context6.next = 16
+                    _context8.next = 16
                     break
                   }
 
@@ -5364,20 +5018,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                   })
-                  _context6.next = 18
+                  _context8.next = 18
                   break
 
                 case 16:
                   if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                    _context6.next = 18
+                    _context8.next = 18
                     break
                   }
 
-                  return _context6.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
+                  return _context8.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
                     var status, a, giveawayId
-                    return regeneratorRuntime.wrap(function _callee3$ (_context5) {
+                    return regeneratorRuntime.wrap(function _callee5$ (_context7) {
                       while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context7.prev = _context7.next) {
                           case 0:
                             status = fuc.echoLog({
                               type: 'custom',
@@ -5390,7 +5044,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               if (giveawayId) checkUser(giveawayId[0])
                             }
 
-                            _context5.next = 5
+                            _context7.next = 5
                             return new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: a.attr('href'),
@@ -5423,15 +5077,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 5:
                           case 'end':
-                            return _context5.stop()
+                            return _context7.stop()
                         }
                       }
-                    }, _callee3)
+                    }, _callee5)
                   })(), 't0', 18)
 
                 case 18:
                   i++
-                  _context6.next = 5
+                  _context8.next = 5
                   break
 
                 case 21:
@@ -5442,10 +5096,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 22:
                 case 'end':
-                  return _context6.stop()
+                  return _context8.stop()
               }
             }
-          }, _callee4)
+          }, _callee6)
         }))()
       },
       verify: function verify () {
@@ -5472,7 +5126,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: false
       },
-      conf: ((_GM_getValue19 = GM_getValue('conf')) === null || _GM_getValue19 === void 0 ? void 0 : (_GM_getValue19$opiump = _GM_getValue19.opiumpulses) === null || _GM_getValue19$opiump === void 0 ? void 0 : _GM_getValue19$opiump.load) ? GM_getValue('conf').opiumpulses : ((_GM_getValue20 = GM_getValue('conf')) === null || _GM_getValue20 === void 0 ? void 0 : _GM_getValue20.global) || defaultConf,
+      conf: ((_GM_getValue14 = GM_getValue('conf')) === null || _GM_getValue14 === void 0 ? void 0 : (_GM_getValue14$opiump = _GM_getValue14.opiumpulses) === null || _GM_getValue14$opiump === void 0 ? void 0 : _GM_getValue14$opiump.load) ? GM_getValue('conf').opiumpulses : ((_GM_getValue15 = GM_getValue('conf')) === null || _GM_getValue15 === void 0 ? void 0 : _GM_getValue15.global) || defaultConf,
       maxPoint: function maxPoint () {
         return this.conf.maxPoint || Infinity
       }
@@ -5503,14 +5157,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
           this.groups = []
           this.curators = []
-          var pro = []
+          var _pro7 = []
 
-          var _iterator56 = _createForOfIteratorHelper(steps)
-          var _step56
+          var _iterator37 = _createForOfIteratorHelper(steps)
+          var _step37
 
           try {
-            for (_iterator56.s(); !(_step56 = _iterator56.n()).done;) {
-              var step = _step56.value
+            for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
+              var step = _step37.value
 
               if ($(step).find('span:contains(Success)').length === 0) {
                 if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -5533,7 +5187,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                   (function () {
                     var link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-                    pro.push(new Promise(function (r) {
+
+                    _pro7.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5555,13 +5210,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator56.e(err)
+            _iterator37.e(err)
           } finally {
-            _iterator56.f()
+            _iterator37.f()
           }
 
-          if (pro.length > 0) {
-            Promise.all(pro).finally(function () {
+          if (_pro7.length > 0) {
+            Promise.all(_pro7).finally(function () {
               _this35.groups = fuc.unique(_this35.groups)
               _this35.curators = fuc.unique(_this35.curators)
               _this35.taskInfo.groups = fuc.unique(_this35.taskInfo.groups)
@@ -5600,12 +5255,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var checks = $('#steps tbody a[id^=check]')
 
           if (checks.length > 0) {
-            var _iterator57 = _createForOfIteratorHelper(checks)
-            var _step57
+            var _iterator38 = _createForOfIteratorHelper(checks)
+            var _step38
 
             try {
-              for (_iterator57.s(); !(_step57 = _iterator57.n()).done;) {
-                var check = _step57.value
+              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
+                var check = _step38.value
                 var id = $(check).attr('id').match(/[\d]+/)
                 if (id) {
                   this.tasks.push({
@@ -5615,9 +5270,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
               }
             } catch (err) {
-              _iterator57.e(err)
+              _iterator38.e(err)
             } finally {
-              _iterator57.f()
+              _iterator38.f()
             }
 
             this.verify(true)
@@ -5634,32 +5289,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             this.taskInfo = taskInfo
             this.remove(true)
           } else {
-            var _pro = []
+            var _pro8 = []
 
-            var _iterator58 = _createForOfIteratorHelper(steps)
-            var _step58
+            var _iterator39 = _createForOfIteratorHelper(steps)
+            var _step39
 
             try {
-              for (_iterator58.s(); !(_step58 = _iterator58.n()).done;) {
-                var _step59 = _step58.value
+              for (_iterator39.s(); !(_step39 = _iterator39.n()).done;) {
+                var _step40 = _step39.value
 
-                if ($(_step59).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                  var _link2 = $(_step59).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                if ($(_step40).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                  var _link2 = $(_step40).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
                   var _curatorId = _link2.match(/curator\/([\d]+)/)
 
                   if (_curatorId) this.taskInfo.curators.push(_curatorId[1])
-                } else if ($(_step59).find("a[href*='steampowered.com/groups/']").length > 0) {
-                  var _link3 = $(_step59).find("a[href*='steampowered.com/groups/']").attr('href')
+                } else if ($(_step40).find("a[href*='steampowered.com/groups/']").length > 0) {
+                  var _link3 = $(_step40).find("a[href*='steampowered.com/groups/']").attr('href')
 
                   var _groupName3 = _link3.match(/groups\/(.+)\/?/)
 
                   if (_groupName3) this.taskInfo.groups.push(_groupName3[1])
-                } else if ($(_step59).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                } else if ($(_step40).find("a[href*='steamcommunity.com/gid']").length > 0) {
                   (function () {
-                    var link = $(_step59).find("a[href*='steamcommunity.com/gid']").attr('href')
+                    var link = $(_step40).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro.push(new Promise(function (r) {
+                    _pro8.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5678,13 +5333,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
               }
             } catch (err) {
-              _iterator58.e(err)
+              _iterator39.e(err)
             } finally {
-              _iterator58.f()
+              _iterator39.f()
             }
 
-            if (_pro.length > 0) {
-              Promise.all(_pro).finally(function () {
+            if (_pro8.length > 0) {
+              Promise.all(_pro8).finally(function () {
                 _this35.taskInfo.groups = fuc.unique(_this35.taskInfo.groups)
                 _this35.taskInfo.curators = fuc.unique(_this35.taskInfo.curators)
                 GM_setValue('taskInfo[' + window.location.host + _this35.get_giveawayId() + ']', _this35.taskInfo)
@@ -5732,46 +5387,46 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var curators = fuc.unique(_this36.curators)
 
           if (_this36.conf.fuck.group) {
-            var _iterator59 = _createForOfIteratorHelper(groups)
-            var _step60
+            var _iterator40 = _createForOfIteratorHelper(groups)
+            var _step41
 
             try {
-              var _loop35 = function _loop35 () {
-                var group = _step60.value
+              var _loop28 = function _loop28 () {
+                var group = _step41.value
                 pro.push(new Promise(function (resolve) {
                   fuc.joinSteamGroup(resolve, group)
                 }))
               }
 
-              for (_iterator59.s(); !(_step60 = _iterator59.n()).done;) {
-                _loop35()
+              for (_iterator40.s(); !(_step41 = _iterator40.n()).done;) {
+                _loop28()
               }
             } catch (err) {
-              _iterator59.e(err)
+              _iterator40.e(err)
             } finally {
-              _iterator59.f()
+              _iterator40.f()
             }
           }
 
           if (_this36.conf.fuck.curator) {
-            var _iterator60 = _createForOfIteratorHelper(curators)
-            var _step61
+            var _iterator41 = _createForOfIteratorHelper(curators)
+            var _step42
 
             try {
-              var _loop36 = function _loop36 () {
-                var curator = _step61.value
+              var _loop29 = function _loop29 () {
+                var curator = _step42.value
                 pro.push(new Promise(function (resolve) {
                   fuc.followCurator(resolve, curator)
                 }))
               }
 
-              for (_iterator60.s(); !(_step61 = _iterator60.n()).done;) {
-                _loop36()
+              for (_iterator41.s(); !(_step42 = _iterator41.n()).done;) {
+                _loop29()
               }
             } catch (err) {
-              _iterator60.e(err)
+              _iterator41.e(err)
             } finally {
-              _iterator60.f()
+              _iterator41.f()
             }
           }
 
@@ -5790,33 +5445,34 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var pro = []
+          var _pro9 = []
 
-          var _iterator61 = _createForOfIteratorHelper(fuc.unique(this.tasks))
-          var _step62
+          var _iterator42 = _createForOfIteratorHelper(fuc.unique(this.tasks))
+          var _step43
 
           try {
-            var _loop37 = function _loop37 () {
-              var task = _step62.value
+            var _loop30 = function _loop30 () {
+              var task = _step43.value
               var status = fuc.echoLog({
                 type: 'custom',
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
-              pro.push(new Promise(function (resolve) {
+
+              _pro9.push(new Promise(function (resolve) {
                 _this37.checkStep(task.id, resolve, status)
               }))
             }
 
-            for (_iterator61.s(); !(_step62 = _iterator61.n()).done;) {
-              _loop37()
+            for (_iterator42.s(); !(_step43 = _iterator42.n()).done;) {
+              _loop30()
             }
           } catch (err) {
-            _iterator61.e(err)
+            _iterator42.e(err)
           } finally {
-            _iterator61.f()
+            _iterator42.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro9).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('prysAllTasksComplete'), '</font></li>')
@@ -5876,46 +5532,46 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (remove) {
           this.updateSteamInfo(function () {
             if (_this38.conf.remove.group) {
-              var _iterator62 = _createForOfIteratorHelper(fuc.unique(_this38.taskInfo.groups))
-              var _step63
+              var _iterator43 = _createForOfIteratorHelper(fuc.unique(_this38.taskInfo.groups))
+              var _step44
 
               try {
-                var _loop38 = function _loop38 () {
-                  var group = _step63.value
+                var _loop31 = function _loop31 () {
+                  var group = _step44.value
                   pro.push(new Promise(function (resolve) {
                     fuc.leaveSteamGroup(resolve, group)
                   }))
                 }
 
-                for (_iterator62.s(); !(_step63 = _iterator62.n()).done;) {
-                  _loop38()
+                for (_iterator43.s(); !(_step44 = _iterator43.n()).done;) {
+                  _loop31()
                 }
               } catch (err) {
-                _iterator62.e(err)
+                _iterator43.e(err)
               } finally {
-                _iterator62.f()
+                _iterator43.f()
               }
             }
 
             if (_this38.conf.remove.curator) {
-              var _iterator63 = _createForOfIteratorHelper(fuc.unique(_this38.taskInfo.curators))
-              var _step64
+              var _iterator44 = _createForOfIteratorHelper(fuc.unique(_this38.taskInfo.curators))
+              var _step45
 
               try {
-                var _loop39 = function _loop39 () {
-                  var curator = _step64.value
+                var _loop32 = function _loop32 () {
+                  var curator = _step45.value
                   pro.push(new Promise(function (resolve) {
                     fuc.unfollowCurator(resolve, curator)
                   }))
                 }
 
-                for (_iterator63.s(); !(_step64 = _iterator63.n()).done;) {
-                  _loop39()
+                for (_iterator44.s(); !(_step45 = _iterator44.n()).done;) {
+                  _loop32()
                 }
               } catch (err) {
-                _iterator63.e(err)
+                _iterator44.e(err)
               } finally {
-                _iterator63.f()
+                _iterator44.f()
               }
             }
 
@@ -5987,7 +5643,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue21 = GM_getValue('conf')) === null || _GM_getValue21 === void 0 ? void 0 : (_GM_getValue21$prys = _GM_getValue21.prys) === null || _GM_getValue21$prys === void 0 ? void 0 : _GM_getValue21$prys.load) ? GM_getValue('conf').prys : ((_GM_getValue22 = GM_getValue('conf')) === null || _GM_getValue22 === void 0 ? void 0 : _GM_getValue22.global) || defaultConf
+      conf: ((_GM_getValue16 = GM_getValue('conf')) === null || _GM_getValue16 === void 0 ? void 0 : (_GM_getValue16$prys = _GM_getValue16.prys) === null || _GM_getValue16$prys === void 0 ? void 0 : _GM_getValue16$prys.load) ? GM_getValue('conf').prys : ((_GM_getValue17 = GM_getValue('conf')) === null || _GM_getValue17 === void 0 ? void 0 : _GM_getValue17.global) || defaultConf
     }
     var spoune = {
       test: function test () {
@@ -6003,12 +5659,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         var giveawayTasks = $('#GiveawayTasks button')
 
-        var _iterator64 = _createForOfIteratorHelper(giveawayTasks)
-        var _step65
+        var _iterator45 = _createForOfIteratorHelper(giveawayTasks)
+        var _step46
 
         try {
-          for (_iterator64.s(); !(_step65 = _iterator64.n()).done;) {
-            var task = _step65.value
+          for (_iterator45.s(); !(_step46 = _iterator45.n()).done;) {
+            var task = _step46.value
             var taskClick = $(task).attr('onclick')
 
             if (taskClick) {
@@ -6033,9 +5689,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
         } catch (err) {
-          _iterator64.e(err)
+          _iterator45.e(err)
         } finally {
-          _iterator64.f()
+          _iterator45.f()
         }
 
         status.warning('Complete')
@@ -6049,30 +5705,30 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }
       },
-      verify: function verify (_ref) {
+      verify: function verify (_ref4) {
         var _this40 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
-          var arr, i, end, tasks, _loop40, _i2
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
+          var arr, i, end, tasks, _loop33, _i2
 
-          return regeneratorRuntime.wrap(function _callee5$ (_context8) {
+          return regeneratorRuntime.wrap(function _callee7$ (_context10) {
             while (1) {
-              switch (_context8.prev = _context8.next) {
+              switch (_context10.prev = _context10.next) {
                 case 0:
-                  arr = _ref.arr, i = _ref.i, end = _ref.end
+                  arr = _ref4.arr, i = _ref4.i, end = _ref4.end
                   tasks = fuc.unique(_this40.tasks)
-                  _loop40 = /* #__PURE__ */regeneratorRuntime.mark(function _loop40 (_i2) {
+                  _loop33 = /* #__PURE__ */regeneratorRuntime.mark(function _loop33 (_i2) {
                     var task, status
-                    return regeneratorRuntime.wrap(function _loop40$ (_context7) {
+                    return regeneratorRuntime.wrap(function _loop33$ (_context9) {
                       while (1) {
-                        switch (_context7.prev = _context7.next) {
+                        switch (_context9.prev = _context9.next) {
                           case 0:
                             task = tasks[_i2]
                             status = fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('doing')).concat(task.text, '...<font></font></li>')
                             })
-                            _context7.next = 4
+                            _context9.next = 4
                             return new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: '/controller.php?taskDetail='.concat(task.id, '&show'),
@@ -6165,24 +5821,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 4:
                           case 'end':
-                            return _context7.stop()
+                            return _context9.stop()
                         }
                       }
-                    }, _loop40)
+                    }, _loop33)
                   })
                   _i2 = 0
 
                 case 4:
                   if (!(_i2 < tasks.length)) {
-                    _context8.next = 9
+                    _context10.next = 9
                     break
                   }
 
-                  return _context8.delegateYield(_loop40(_i2), 't0', 6)
+                  return _context10.delegateYield(_loop33(_i2), 't0', 6)
 
                 case 6:
                   _i2++
-                  _context8.next = 4
+                  _context10.next = 4
                   break
 
                 case 9:
@@ -6193,10 +5849,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 10:
                 case 'end':
-                  return _context8.stop()
+                  return _context10.stop()
               }
             }
-          }, _callee5)
+          }, _callee7)
         }))()
       },
       checkLeft: function checkLeft (ui) {
@@ -6225,7 +5881,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: false
       },
-      conf: ((_GM_getValue23 = GM_getValue('conf')) === null || _GM_getValue23 === void 0 ? void 0 : (_GM_getValue23$spoune = _GM_getValue23.spoune) === null || _GM_getValue23$spoune === void 0 ? void 0 : _GM_getValue23$spoune.load) ? GM_getValue('conf').spoune : ((_GM_getValue24 = GM_getValue('conf')) === null || _GM_getValue24 === void 0 ? void 0 : _GM_getValue24.global) || defaultConf
+      conf: ((_GM_getValue18 = GM_getValue('conf')) === null || _GM_getValue18 === void 0 ? void 0 : (_GM_getValue18$spoune = _GM_getValue18.spoune) === null || _GM_getValue18$spoune === void 0 ? void 0 : _GM_getValue18$spoune.load) ? GM_getValue('conf').spoune : ((_GM_getValue19 = GM_getValue('conf')) === null || _GM_getValue19 === void 0 ? void 0 : _GM_getValue19.global) || defaultConf
     }
     var takekey = {
       test: function test () {
@@ -6248,19 +5904,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.groups = [] // this.curators=[];
 
           this.links = []
-          var pro = []
+          var _pro10 = []
           var status = fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           })
           var tasksContainer = $('#usl>div')
 
-          var _iterator65 = _createForOfIteratorHelper(tasksContainer)
-          var _step66
+          var _iterator46 = _createForOfIteratorHelper(tasksContainer)
+          var _step47
 
           try {
-            var _loop41 = function _loop41 () {
-              var task = _step66.value
+            var _loop34 = function _loop34 () {
+              var task = _step47.value
 
               // 遍历任务信息
               _this41.tasks.push(task)
@@ -6271,7 +5927,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               if (icon.hasClass('fa-steam')) {
                 if (link && /gid\/[\d]+/.test(link)) {
-                  pro.push(new Promise(function (r) {
+                  _pro10.push(new Promise(function (r) {
                     new Promise(function (resolve) {
                       fuc.getFinalUrl(resolve, link)
                     }).then(function (data) {
@@ -6304,16 +5960,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
-            for (_iterator65.s(); !(_step66 = _iterator65.n()).done;) {
-              _loop41()
+            for (_iterator46.s(); !(_step47 = _iterator46.n()).done;) {
+              _loop34()
             }
           } catch (err) {
-            _iterator65.e(err)
+            _iterator46.e(err)
           } finally {
-            _iterator65.f()
+            _iterator46.f()
           }
 
-          Promise.all(pro).finally(function () {
+          Promise.all(_pro10).finally(function () {
             _this41.groups = fuc.unique(_this41.groups) // this.curators=fuc.unique(this.curators);
 
             _this41.links = fuc.unique(_this41.links)
@@ -6356,34 +6012,34 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var vks = fuc.unique(_this42.vks)
 
           if (_this42.conf.fuck.group) {
-            var _iterator66 = _createForOfIteratorHelper(groups)
-            var _step67
+            var _iterator47 = _createForOfIteratorHelper(groups)
+            var _step48
 
             try {
-              var _loop42 = function _loop42 () {
-                var group = _step67.value
+              var _loop35 = function _loop35 () {
+                var group = _step48.value
                 pro.push(new Promise(function (resolve) {
                   fuc.joinSteamGroup(resolve, group)
                 }))
               }
 
-              for (_iterator66.s(); !(_step67 = _iterator66.n()).done;) {
-                _loop42()
+              for (_iterator47.s(); !(_step48 = _iterator47.n()).done;) {
+                _loop35()
               }
             } catch (err) {
-              _iterator66.e(err)
+              _iterator47.e(err)
             } finally {
-              _iterator66.f()
+              _iterator47.f()
             }
           }
 
           if (_this42.conf.fuck.visit) {
-            var _iterator67 = _createForOfIteratorHelper(links)
-            var _step68
+            var _iterator48 = _createForOfIteratorHelper(links)
+            var _step49
 
             try {
-              var _loop43 = function _loop43 () {
-                var link = _step68.value
+              var _loop36 = function _loop36 () {
+                var link = _step49.value
                 var a = $("a[id='".concat(link, "']")).attr('onclick', 'return false;')
                 a[0].click()
                 a.removeAttr('onclick')
@@ -6392,47 +6048,47 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }))
               }
 
-              for (_iterator67.s(); !(_step68 = _iterator67.n()).done;) {
-                _loop43()
+              for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
+                _loop36()
               }
             } catch (err) {
-              _iterator67.e(err)
+              _iterator48.e(err)
             } finally {
-              _iterator67.f()
+              _iterator48.f()
             }
           }
 
           if (globalConf.other.autoOpen) {
-            var _iterator68 = _createForOfIteratorHelper(vks)
-            var _step69
+            var _iterator49 = _createForOfIteratorHelper(vks)
+            var _step50
 
             try {
-              for (_iterator68.s(); !(_step69 = _iterator68.n()).done;) {
-                var vk = _step69.value
+              for (_iterator49.s(); !(_step50 = _iterator49.n()).done;) {
+                var vk = _step50.value
                 window.open(vk, '_blank')
               }
             } catch (err) {
-              _iterator68.e(err)
+              _iterator49.e(err)
             } finally {
-              _iterator68.f()
+              _iterator49.f()
             }
           }
 
-          var _iterator69 = _createForOfIteratorHelper(others)
-          var _step70
+          var _iterator50 = _createForOfIteratorHelper(others)
+          var _step51
 
           try {
-            for (_iterator69.s(); !(_step70 = _iterator69.n()).done;) {
-              var other = _step70.value
+            for (_iterator50.s(); !(_step51 = _iterator50.n()).done;) {
+              var other = _step51.value
               fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat($(other).attr('class'), '</font></li>')
               })
             }
           } catch (err) {
-            _iterator69.e(err)
+            _iterator50.e(err)
           } finally {
-            _iterator69.f()
+            _iterator50.f()
           }
 
           Promise.all(pro).finally(function () {
@@ -6458,24 +6114,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (remove) {
           this.updateSteamInfo(function () {
             if (_this43.conf.remove.group) {
-              var _iterator70 = _createForOfIteratorHelper(fuc.unique(_this43.taskInfo.groups))
-              var _step71
+              var _iterator51 = _createForOfIteratorHelper(fuc.unique(_this43.taskInfo.groups))
+              var _step52
 
               try {
-                var _loop44 = function _loop44 () {
-                  var group = _step71.value
+                var _loop37 = function _loop37 () {
+                  var group = _step52.value
                   pro.push(new Promise(function (resolve) {
                     fuc.leaveSteamGroup(resolve, group)
                   }))
                 }
 
-                for (_iterator70.s(); !(_step71 = _iterator70.n()).done;) {
-                  _loop44()
+                for (_iterator51.s(); !(_step52 = _iterator51.n()).done;) {
+                  _loop37()
                 }
               } catch (err) {
-                _iterator70.e(err)
+                _iterator51.e(err)
               } finally {
-                _iterator70.f()
+                _iterator51.f()
               }
             }
 
@@ -6554,911 +6210,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         join: false,
         remove: true
       },
-      conf: ((_GM_getValue25 = GM_getValue('conf')) === null || _GM_getValue25 === void 0 ? void 0 : (_GM_getValue25$takeke = _GM_getValue25.takekey) === null || _GM_getValue25$takeke === void 0 ? void 0 : _GM_getValue25$takeke.load) ? GM_getValue('conf').takekey : ((_GM_getValue26 = GM_getValue('conf')) === null || _GM_getValue26 === void 0 ? void 0 : _GM_getValue26.global) || defaultConf
+      conf: ((_GM_getValue20 = GM_getValue('conf')) === null || _GM_getValue20 === void 0 ? void 0 : (_GM_getValue20$takeke = _GM_getValue20.takekey) === null || _GM_getValue20$takeke === void 0 ? void 0 : _GM_getValue20$takeke.load) ? GM_getValue('conf').takekey : ((_GM_getValue21 = GM_getValue('conf')) === null || _GM_getValue21 === void 0 ? void 0 : _GM_getValue21.global) || defaultConf
     }
-
-    var loadSetting = function loadSetting () {
-      var eNameToNameJoin = {
-        group: getI18n('group'),
-        curator: getI18n('curator'),
-        developer: getI18n('developer'),
-        publisher: getI18n('publisher'),
-        announcement: getI18n('announcement'),
-        wishlist: getI18n('wishlist'),
-        followGame: getI18n('fGame'),
-        visit: getI18n('visit'),
-        verify: getI18n('verify'),
-        autoLogin: getI18n('autoLogin'),
-        doTask: getI18n('doTask')
-      }
-      var eNameToNameRemove = {
-        group: getI18n('ungroup'),
-        curator: getI18n('uncurator'),
-        developer: getI18n('undeveloper'),
-        publisher: getI18n('unpublisher'),
-        wishlist: getI18n('unwishlist'),
-        unfollowGame: getI18n('unfGame')
-      }
-      var eNameToNameOther = {
-        showLogs: getI18n('showLogs'),
-        showDetails: getI18n('showDetails'),
-        checkLogin: getI18n('checkLogin'),
-        checkLeft: getI18n('checkLeft'),
-        autoOpen: getI18n('autoOpen'),
-        autoCheckUpdate: getI18n('checkUpdate'),
-        reCaptcha: getI18n('reCaptcha')
-      }
-      var Options = {
-        fuckOptions: [{
-          name: getI18n('group'),
-          eName: 'group',
-          des: 'Join XXX steam group'
-        }, {
-          name: getI18n('curator'),
-          eName: 'curator',
-          des: 'Follow XXX curator'
-        }, {
-          name: getI18n('developer'),
-          eName: 'developer',
-          des: 'Follow XXX developer'
-        }, {
-          name: getI18n('publisher'),
-          eName: 'publisher',
-          des: 'Follow XXX publisher'
-        }, {
-          name: getI18n('announcement'),
-          eName: 'announcement',
-          des: 'Like Steam announcement'
-        }, {
-          name: getI18n('wishlist'),
-          eName: 'wishlist',
-          des: 'Add XXX to your wishlist'
-        }, {
-          name: getI18n('fGame'),
-          eName: 'followGame',
-          des: 'Click "Follow" button'
-        }, {
-          name: getI18n('visit'),
-          eName: 'visit',
-          des: 'Visit XXX page'
-        }, {
-          name: getI18n('verify'),
-          eName: 'verify',
-          des: getI18n('verify')
-        }, {
-          name: getI18n('autoLogin'),
-          eName: 'autoLogin',
-          des: getI18n('autoLoginDes')
-        }, {
-          name: getI18n('doTask'),
-          eName: 'doTask',
-          des: getI18n('doTaskDes')
-        }],
-        joinOptions: [{
-          name: getI18n('group'),
-          eName: 'group',
-          des: 'Join XXX steam group'
-        }, {
-          name: getI18n('curator'),
-          eName: 'curator',
-          des: 'Follow XXX curator'
-        }, {
-          name: getI18n('developer'),
-          eName: 'developer',
-          des: 'Follow XXX developer'
-        }, {
-          name: getI18n('publisher'),
-          eName: 'publisher',
-          des: 'Follow XXX publisher'
-        }, {
-          name: getI18n('announcement'),
-          eName: 'announcement',
-          des: 'Like Steam announcement'
-        }, {
-          name: getI18n('wishlist'),
-          eName: 'wishlist',
-          des: 'Add XXX to your wishlist'
-        }, {
-          name: getI18n('fGame'),
-          eName: 'followGame',
-          des: 'Click "Follow" button'
-        }, {
-          name: getI18n('visit'),
-          eName: 'visit',
-          des: 'Visit XXX page'
-        }],
-        removeOptions: [{
-          name: getI18n('ungroup'),
-          eName: 'group',
-          des: getI18n('ungroupDes')
-        }, {
-          name: getI18n('uncurator'),
-          eName: 'curator',
-          des: getI18n('uncuratorDes')
-        }, {
-          name: getI18n('undeveloper'),
-          eName: 'developer',
-          des: getI18n('undeveloperDes')
-        }, {
-          name: getI18n('unpublisher'),
-          eName: 'publisher',
-          des: getI18n('unpublisherDes')
-        }, {
-          name: getI18n('unwishlist'),
-          eName: 'wishlist',
-          des: getI18n('unwishlistDes')
-        }, {
-          name: getI18n('unfGame'),
-          eName: 'unfollowGame',
-          des: getI18n('unfGameDes')
-        }],
-        otherOptions: [{
-          name: getI18n('checkLogin'),
-          eName: 'checkLogin',
-          des: getI18n('checkLoginDes')
-        }, {
-          name: getI18n('checkLeft'),
-          eName: 'checkLeft',
-          des: getI18n('checkLeftDes')
-        }, {
-          name: getI18n('autoOpen'),
-          eName: 'autoOpen',
-          des: getI18n('autoOpenDes')
-        }, {
-          name: getI18n('showLogs'),
-          eName: 'showLogs',
-          des: getI18n('showLogsDes')
-        }, {
-          name: getI18n('showDetails'),
-          eName: 'showDetails',
-          des: getI18n('showDetailsDes')
-        }, {
-          name: getI18n('autoCheckUpdate'),
-          eName: 'checkUpdate',
-          des: getI18n('autoCheckUpdate')
-        }, {
-          name: getI18n('reCaptcha'),
-          eName: 'reCaptcha',
-          des: getI18n('reCaptchaDes')
-        }],
-        checkedFucks: [getI18n('group'), getI18n('curator'), getI18n('developer'), getI18n('publisher'), getI18n('announcement'), getI18n('wishlist'), getI18n('fGame'), getI18n('visit'), getI18n('verify'), getI18n('autoLogin'), getI18n('doTask')],
-        checkedJoins: [getI18n('group'), getI18n('curator'), getI18n('developer'), getI18n('publisher'), getI18n('announcement'), getI18n('wishlist'), getI18n('fGame'), getI18n('visit')],
-        checkedRemoves: [getI18n('ungroup'), getI18n('uncurator'), getI18n('undeveloper'), getI18n('unpublisher'), getI18n('unwishlist'), getI18n('unfGame')],
-        checkedOthers: [getI18n('checkLogin'), getI18n('checkLeft'), getI18n('autoOpen'), getI18n('showLogs'), getI18n('showDetails'), getI18n('autoCheckUpdate'), getI18n('reCaptcha')]
-      }
-
-      function getOptions (type, options) {
-        var opt = []
-        var defaultOpt = Options[type]
-        options.map(function (e, i) {
-          opt.push(defaultOpt[e])
-        })
-        return opt
-      }
-
-      (function () {
-        var _GM_getValue27, _GM_getValue28, _GM_getValue29, _GM_getValue30
-
-        var fuckOptions = getOptions('fuckOptions', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        var checkedFucks = ((_GM_getValue27 = GM_getValue('conf')) === null || _GM_getValue27 === void 0 ? void 0 : _GM_getValue27.global) ? (function () {
-          var conf = []
-
-          for (var _i3 = 0, _Object$keys = Object.keys(GM_getValue('conf').global.fuck); _i3 < _Object$keys.length; _i3++) {
-            var eName = _Object$keys[_i3]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 1, 2, 3, 4, 5, 6, 7, 8, 10])
-        var joinOptions = getOptions('joinOptions', [0, 1, 2, 3, 4, 5, 6, 7])
-        var checkedJoins = ((_GM_getValue28 = GM_getValue('conf')) === null || _GM_getValue28 === void 0 ? void 0 : _GM_getValue28.global) ? (function () {
-          var conf = []
-
-          for (var _i4 = 0, _Object$keys2 = Object.keys(GM_getValue('conf').global.join); _i4 < _Object$keys2.length; _i4++) {
-            var eName = _Object$keys2[_i4]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedJoins', [0, 1, 2, 3, 4, 5, 6, 7])
-        var removeOptions = getOptions('removeOptions', [0, 1, 2, 3, 4, 5])
-        var checkedRemoves = ((_GM_getValue29 = GM_getValue('conf')) === null || _GM_getValue29 === void 0 ? void 0 : _GM_getValue29.global) ? (function () {
-          var conf = []
-
-          for (var _i5 = 0, _Object$keys3 = Object.keys(GM_getValue('conf').global.remove); _i5 < _Object$keys3.length; _i5++) {
-            var eName = _Object$keys3[_i5]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1, 2, 3, 4, 5])
-        var otherOptions = getOptions('otherOptions', [0, 1, 2, 3, 4, 5, 6])
-        var checkedOthers = ((_GM_getValue30 = GM_getValue('conf')) === null || _GM_getValue30 === void 0 ? void 0 : _GM_getValue30.global) ? (function () {
-          var conf = []
-
-          for (var _i6 = 0, _Object$keys4 = Object.keys(GM_getValue('conf').global.other); _i6 < _Object$keys4.length; _i6++) {
-            var eName = _Object$keys4[_i6]
-            conf.push(eNameToNameOther[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedOthers', [0, 1, 3])
-        new Vue({
-          el: '#global',
-          data: {
-            header: getI18n('globalSettings'),
-            fuck: {
-              checkAll: fuckOptions.length === checkedFucks.length,
-              checkedFucks: checkedFucks,
-              fucks: fuckOptions,
-              isIndeterminate: fuckOptions.length !== checkedFucks.length
-            },
-            join: {
-              checkAll: joinOptions.length === checkedJoins.length,
-              checkedJoins: checkedJoins,
-              joins: joinOptions,
-              isIndeterminate: joinOptions.length !== checkedJoins.length
-            },
-            remove: {
-              checkAll: removeOptions.length === checkedRemoves.length,
-              checkedRemoves: checkedRemoves,
-              removes: removeOptions,
-              isIndeterminate: removeOptions.length !== checkedRemoves.length
-            },
-            other: {
-              checkAll: otherOptions.length === checkedOthers.length,
-              checkedOthers: checkedOthers,
-              others: otherOptions,
-              isIndeterminate: otherOptions.length !== checkedOthers.length
-            },
-            openDelay: 100,
-            rowType: 'flex',
-            rowAlign: 'middle',
-            verify: '1'
-          },
-          methods: {
-            fuckHandleCheckAllChange: function fuckHandleCheckAllChange (val) {
-              this.fuck.checkedFucks = val ? fuckOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.fuck.isIndeterminate = false
-            },
-            handleCheckedFucksChange: function handleCheckedFucksChange (value) {
-              var checkedCount = value.length
-              this.fuck.checkAll = checkedCount === this.fuck.fucks.length
-              this.fuck.isIndeterminate = checkedCount > 0 && checkedCount < this.fuck.fucks.length
-            },
-            joinHandleCheckAllChange: function joinHandleCheckAllChange (val) {
-              this.join.checkedJoins = val ? joinOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.join.isIndeterminate = false
-            },
-            handleCheckedJoinsChange: function handleCheckedJoinsChange (value) {
-              var checkedCount = value.length
-              this.join.checkAll = checkedCount === this.join.joins.length
-              this.join.isIndeterminate = checkedCount > 0 && checkedCount < this.join.joins.length
-            },
-            removeHandleCheckAllChange: function removeHandleCheckAllChange (val) {
-              this.remove.checkedRemoves = val ? removeOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.remove.isIndeterminate = false
-            },
-            handleCheckedRemovesChange: function handleCheckedRemovesChange (value) {
-              var checkedCount = value.length
-              this.remove.checkAll = checkedCount === this.remove.removes.length
-              this.remove.isIndeterminate = checkedCount > 0 && checkedCount < this.remove.removes.length
-            },
-            otherHandleCheckAllChange: function otherHandleCheckAllChange (val) {
-              this.other.checkedOthers = val ? otherOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.other.isIndeterminate = false
-            },
-            handleCheckedOthersChange: function handleCheckedOthersChange (value) {
-              var checkedCount = value.length
-              this.other.checkAll = checkedCount === this.other.others.length
-              this.other.isIndeterminate = checkedCount > 0 && checkedCount < this.other.others.length
-            }
-          }
-        })
-      })();
-
-      (function () {
-        var _GM_getValue31, _GM_getValue32, _GM_getValue33
-
-        var joinOptions = getOptions('joinOptions', [0, 1, 2, 3, 4, 5, 6])
-        var checkedJoins = ((_GM_getValue31 = GM_getValue('conf')) === null || _GM_getValue31 === void 0 ? void 0 : _GM_getValue31.giveawaysu) ? (function () {
-          var conf = []
-
-          for (var _i7 = 0, _Object$keys5 = Object.keys(GM_getValue('conf').giveawaysu.join); _i7 < _Object$keys5.length; _i7++) {
-            var eName = _Object$keys5[_i7]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedJoins', [0, 1, 2, 3, 4, 5, 6])
-        var removeOptions = getOptions('removeOptions', [0, 1, 2, 3, 4, 5])
-        var checkedRemoves = ((_GM_getValue32 = GM_getValue('conf')) === null || _GM_getValue32 === void 0 ? void 0 : _GM_getValue32.giveawaysu) ? (function () {
-          var conf = []
-
-          for (var _i8 = 0, _Object$keys6 = Object.keys(GM_getValue('conf').giveawaysu.remove); _i8 < _Object$keys6.length; _i8++) {
-            var eName = _Object$keys6[_i8]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1, 2, 3, 4, 5])
-        new Vue({
-          el: '#giveawaysu',
-          data: {
-            header: 'giveaway.su' + getI18n('websiteSetting'),
-            checked: ((_GM_getValue33 = GM_getValue('conf')) === null || _GM_getValue33 === void 0 ? void 0 : _GM_getValue33.giveawaysu) ? !!GM_getValue('conf').giveawaysu.load : false,
-            remove: {
-              checkAll: removeOptions.length === checkedRemoves.length,
-              checkedRemoves: checkedRemoves,
-              removes: removeOptions,
-              isIndeterminate: removeOptions.length !== checkedRemoves.length
-            },
-            join: {
-              checkAll: joinOptions.length === checkedJoins.length,
-              checkedJoins: checkedJoins,
-              joins: joinOptions,
-              isIndeterminate: joinOptions.length !== checkedJoins.length
-            },
-            openDelay: 100,
-            rowType: 'flex',
-            rowAlign: 'middle',
-            verify: '1'
-          },
-          methods: {
-            removeHandleCheckAllChange: function removeHandleCheckAllChange (val) {
-              this.remove.checkedRemoves = val ? removeOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.remove.isIndeterminate = false
-            },
-            handleCheckedRemovesChange: function handleCheckedRemovesChange (value) {
-              var checkedCount = value.length
-              this.remove.checkAll = checkedCount === this.remove.removes.length
-              this.remove.isIndeterminate = checkedCount > 0 && checkedCount < this.remove.removes.length
-            },
-            joinHandleCheckAllChange: function joinHandleCheckAllChange (val) {
-              this.join.checkedJoins = val ? joinOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.join.isIndeterminate = false
-            },
-            handleCheckedJoinsChange: function handleCheckedJoinsChange (value) {
-              var checkedCount = value.length
-              this.join.checkAll = checkedCount === this.join.joins.length
-              this.join.isIndeterminate = checkedCount > 0 && checkedCount < this.join.joins.length
-            }
-          }
-        })
-      })();
-
-      (function () {
-        var _GM_getValue34, _GM_getValue35
-
-        var fuckOptions = getOptions('fuckOptions', [0, 1, 2, 3, 5, 6, 7, 8])
-        var checkedFucks = ((_GM_getValue34 = GM_getValue('conf')) === null || _GM_getValue34 === void 0 ? void 0 : _GM_getValue34.marvelousga) ? (function () {
-          var conf = []
-
-          for (var _i9 = 0, _Object$keys7 = Object.keys(GM_getValue('conf').marvelousga.fuck); _i9 < _Object$keys7.length; _i9++) {
-            var eName = _Object$keys7[_i9]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 1, 2, 3, 5, 6, 7, 8])
-        var removeOptions = getOptions('removeOptions', [0, 1, 2, 3, 4, 5])
-        var checkedRemoves = ((_GM_getValue35 = GM_getValue('conf')) === null || _GM_getValue35 === void 0 ? void 0 : _GM_getValue35.marvelousga) ? (function () {
-          var conf = []
-
-          for (var _i10 = 0, _Object$keys8 = Object.keys(GM_getValue('conf').marvelousga.remove); _i10 < _Object$keys8.length; _i10++) {
-            var eName = _Object$keys8[_i10]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1, 2, 3, 4, 5])
-        fuc.creatSetting('marvelousga', 'marvelousGA & dupedornot', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue36, _GM_getValue37
-
-        var fuckOptions = getOptions('fuckOptions', [0, 1, 2, 3, 5, 6, 7, 8])
-        var checkedFucks = ((_GM_getValue36 = GM_getValue('conf')) === null || _GM_getValue36 === void 0 ? void 0 : _GM_getValue36.banana) ? (function () {
-          var conf = []
-
-          for (var _i11 = 0, _Object$keys9 = Object.keys(GM_getValue('conf').banana.fuck); _i11 < _Object$keys9.length; _i11++) {
-            var eName = _Object$keys9[_i11]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 1, 2, 3, 5, 6, 7, 8])
-        var removeOptions = getOptions('removeOptions', [0, 1, 2, 3, 4, 5])
-        var checkedRemoves = ((_GM_getValue37 = GM_getValue('conf')) === null || _GM_getValue37 === void 0 ? void 0 : _GM_getValue37.banana) ? (function () {
-          var conf = []
-
-          for (var _i12 = 0, _Object$keys10 = Object.keys(GM_getValue('conf').banana.remove); _i12 < _Object$keys10.length; _i12++) {
-            var eName = _Object$keys10[_i12]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1, 2, 3, 4, 5])
-        fuc.creatSetting('banana', 'grabfreegame & bananagiveaway', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue38, _GM_getValue39
-
-        var fuckOptions = getOptions('fuckOptions', [0, 7, 8])
-        var checkedFucks = ((_GM_getValue38 = GM_getValue('conf')) === null || _GM_getValue38 === void 0 ? void 0 : _GM_getValue38.gamehag) ? (function () {
-          var conf = []
-
-          for (var _i13 = 0, _Object$keys11 = Object.keys(GM_getValue('conf').gamehag.fuck); _i13 < _Object$keys11.length; _i13++) {
-            var eName = _Object$keys11[_i13]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 7, 8])
-        var removeOptions = getOptions('removeOptions', [0])
-        var checkedRemoves = ((_GM_getValue39 = GM_getValue('conf')) === null || _GM_getValue39 === void 0 ? void 0 : _GM_getValue39.gamehag) ? (function () {
-          var conf = []
-
-          for (var _i14 = 0, _Object$keys12 = Object.keys(GM_getValue('conf').gamehag.remove); _i14 < _Object$keys12.length; _i14++) {
-            var eName = _Object$keys12[_i14]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0])
-        fuc.creatSetting('gamehag', 'gamehag', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue40, _GM_getValue41
-
-        var fuckOptions = getOptions('fuckOptions', [0, 1, 8])
-        var checkedFucks = ((_GM_getValue40 = GM_getValue('conf')) === null || _GM_getValue40 === void 0 ? void 0 : _GM_getValue40.prys) ? (function () {
-          var conf = []
-
-          for (var _i15 = 0, _Object$keys13 = Object.keys(GM_getValue('conf').prys.fuck); _i15 < _Object$keys13.length; _i15++) {
-            var eName = _Object$keys13[_i15]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 1, 8])
-        var removeOptions = getOptions('removeOptions', [0, 1])
-        var checkedRemoves = ((_GM_getValue41 = GM_getValue('conf')) === null || _GM_getValue41 === void 0 ? void 0 : _GM_getValue41.prys) ? (function () {
-          var conf = []
-
-          for (var _i16 = 0, _Object$keys14 = Object.keys(GM_getValue('conf').prys.remove); _i16 < _Object$keys14.length; _i16++) {
-            var eName = _Object$keys14[_i16]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1])
-        fuc.creatSetting('prys', 'prys', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue42, _GM_getValue43
-
-        var fuckOptions = getOptions('fuckOptions', [0, 1, 5, 6, 7])
-        var checkedFucks = ((_GM_getValue42 = GM_getValue('conf')) === null || _GM_getValue42 === void 0 ? void 0 : _GM_getValue42.givekey) ? (function () {
-          var conf = []
-
-          for (var _i17 = 0, _Object$keys15 = Object.keys(GM_getValue('conf').givekey.fuck); _i17 < _Object$keys15.length; _i17++) {
-            var eName = _Object$keys15[_i17]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 1, 5, 6, 7])
-        var removeOptions = getOptions('removeOptions', [0, 1, 4, 5])
-        var checkedRemoves = ((_GM_getValue43 = GM_getValue('conf')) === null || _GM_getValue43 === void 0 ? void 0 : _GM_getValue43.givekey) ? (function () {
-          var conf = []
-
-          for (var _i18 = 0, _Object$keys16 = Object.keys(GM_getValue('conf').givekey.remove); _i18 < _Object$keys16.length; _i18++) {
-            var eName = _Object$keys16[_i18]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0, 1, 4, 5])
-        fuc.creatSetting('givekey', 'givekey.ru', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue44, _GM_getValue45
-
-        var fuckOptions = getOptions('fuckOptions', [0, 7])
-        var checkedFucks = ((_GM_getValue44 = GM_getValue('conf')) === null || _GM_getValue44 === void 0 ? void 0 : _GM_getValue44.takekey) ? (function () {
-          var conf = []
-
-          for (var _i19 = 0, _Object$keys17 = Object.keys(GM_getValue('conf').takekey.fuck); _i19 < _Object$keys17.length; _i19++) {
-            var eName = _Object$keys17[_i19]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 7])
-        var removeOptions = getOptions('removeOptions', [0])
-        var checkedRemoves = ((_GM_getValue45 = GM_getValue('conf')) === null || _GM_getValue45 === void 0 ? void 0 : _GM_getValue45.takekey) ? (function () {
-          var conf = []
-
-          for (var _i20 = 0, _Object$keys18 = Object.keys(GM_getValue('conf').takekey.remove); _i20 < _Object$keys18.length; _i20++) {
-            var eName = _Object$keys18[_i20]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0])
-        fuc.creatSetting('takekey', 'takekey.ru', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue46, _GM_getValue47
-
-        var fuckOptions = getOptions('fuckOptions', [0, 7, 8])
-        var checkedFucks = ((_GM_getValue46 = GM_getValue('conf')) === null || _GM_getValue46 === void 0 ? void 0 : _GM_getValue46.gleam) ? (function () {
-          var conf = []
-
-          for (var _i21 = 0, _Object$keys19 = Object.keys(GM_getValue('conf').gleam.fuck); _i21 < _Object$keys19.length; _i21++) {
-            var eName = _Object$keys19[_i21]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [0, 7, 8])
-        var removeOptions = getOptions('removeOptions', [0])
-        var checkedRemoves = ((_GM_getValue47 = GM_getValue('conf')) === null || _GM_getValue47 === void 0 ? void 0 : _GM_getValue47.gleam) ? (function () {
-          var conf = []
-
-          for (var _i22 = 0, _Object$keys20 = Object.keys(GM_getValue('conf').gleam.remove); _i22 < _Object$keys20.length; _i22++) {
-            var eName = _Object$keys20[_i22]
-            conf.push(eNameToNameRemove[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedRemoves', [0])
-        fuc.creatSetting('gleam', 'gleam.io', fuckOptions, checkedFucks, removeOptions, checkedRemoves)
-      })();
-
-      (function () {
-        var _GM_getValue48, _GM_getValue49
-
-        var fuckOptions = getOptions('fuckOptions', [9, 10])
-        var checkedFucks = ((_GM_getValue48 = GM_getValue('conf')) === null || _GM_getValue48 === void 0 ? void 0 : _GM_getValue48.freegamelottery) ? (function () {
-          var conf = []
-
-          for (var _i23 = 0, _Object$keys21 = Object.keys(GM_getValue('conf').freegamelottery.fuck); _i23 < _Object$keys21.length; _i23++) {
-            var eName = _Object$keys21[_i23]
-            conf.push(eNameToNameJoin[eName])
-          }
-
-          return conf
-        }()) : getOptions('checkedFucks', [10])
-        new Vue({
-          el: '#freegamelottery',
-          data: {
-            header: 'freegamelottery' + getI18n('websiteSetting'),
-            checked: ((_GM_getValue49 = GM_getValue('conf')) === null || _GM_getValue49 === void 0 ? void 0 : _GM_getValue49.freegamelottery) ? !!GM_getValue('conf').freegamelottery.load : false,
-            fuck: {
-              checkAll: fuckOptions.length === checkedFucks.length,
-              checkedFucks: checkedFucks,
-              fucks: fuckOptions,
-              isIndeterminate: fuckOptions.length !== checkedFucks.length
-            },
-            openDelay: 100,
-            rowType: 'flex',
-            rowAlign: 'middle',
-            verify: '1'
-          },
-          methods: {
-            fuckHandleCheckAllChange: function fuckHandleCheckAllChange (val) {
-              this.fuck.checkedFucks = val ? fuckOptions.map(function (e) {
-                return e.name
-              }) : []
-              this.fuck.isIndeterminate = false
-            },
-            handleCheckedFucksChange: function handleCheckedFucksChange (value) {
-              var checkedCount = value.length
-              this.fuck.checkAll = checkedCount === this.fuck.fucks.length
-              this.fuck.isIndeterminate = checkedCount > 0 && checkedCount < this.fuck.fucks.length
-            }
-          }
-        })
-      })();
-
-      (function () {
-        new Vue({
-          el: '#save',
-          data: {
-            title: getI18n('saveSetting')
-          },
-          methods: {
-            save: function save () {
-              var conf = fuc.creatConf()
-              GM_setValue('conf', conf)
-              this.$notify({
-                title: getI18n('saveSuccess'),
-                type: 'success'
-              })
-            }
-          }
-        })
-        new Vue({
-          el: '#reset',
-          data: {
-            title: getI18n('resetSetting')
-          },
-          methods: {
-            reset: function reset () {
-              this.$confirm(getI18n('resetSettingNotice'), getI18n('notice'), {
-                confirmButtonText: getI18n('confirm'),
-                cancelButtonText: getI18n('cancel'),
-                type: 'warning'
-              }).then(function () {
-                GM_deleteValue('conf')
-
-                if (!GM_getValue('conf')) {
-                  vueUi.$message({
-                    type: 'success',
-                    message: getI18n('resetSettingSuccess')
-                  })
-                } else {
-                  vueUi.$message({
-                    type: 'error',
-                    message: getI18n('resetSettingFailed')
-                  })
-                }
-              }).catch(function () {
-                vueUi.$message({
-                  type: 'info',
-                  message: getI18n('resetSettingCancel')
-                })
-              })
-            }
-          }
-        })
-        new Vue({
-          el: '#download',
-          data: {
-            title: getI18n('downloadSetting')
-          },
-          methods: {
-            download: function download () {
-              var msg = vueUi.$message({
-                type: 'info',
-                message: getI18n('processSetting')
-              })
-              var conf = fuc.creatConf()
-              var creatFile = new FileReader()
-
-              creatFile.onload = function () {
-                $('<a href="'.concat(creatFile.result, '" download="auto-task.conf.json" target="_self"></a>'))[0].click()
-              }
-
-              creatFile.onerror = function (e) {
-                if (debug) console.log(e)
-                msg.close()
-                vueUi.$message({
-                  type: 'error',
-                  message: getI18n('creatUrlFailed')
-                })
-              }
-
-              creatFile.readAsDataURL(new File([JSON.stringify(conf, null, 4)], 'setting.conf.txt'))
-            }
-          }
-        })
-        new Vue({
-          el: '#upload2',
-          data: {
-            title: getI18n('loadSetting'),
-            multiple: false,
-            sfl: false,
-            accept: 'json',
-            httpRequest: function httpRequest () {}
-          },
-          methods: {
-            upload: function upload (file) {
-              var msg = vueUi.$message({
-                type: 'info',
-                message: getI18n('readSetting')
-              })
-
-              if (window.FileReader) {
-                var reader = new FileReader()
-
-                reader.onload = function () {
-                  if (debug) console.log(reader.result)
-                  msg.close()
-                  var cMsg = vueUi.$message({
-                    type: 'success',
-                    message: getI18n('readSettingComplete')
-                  })
-
-                  try {
-                    GM_setValue('conf', JSON.parse(reader.result))
-                    cMsg.close()
-                    vueUi.$message({
-                      type: 'success',
-                      message: getI18n('loadSettingComplete')
-                    })
-                    window.location.reload()
-                  } catch (e) {
-                    cMsg.close()
-                    vueUi.$message({
-                      type: 'error',
-                      message: ''.concat(getI18n('loadSettingFailed'), '\uFF01')
-                    })
-                    if (debug) console.log(''.concat(getI18n('loadSettingFailed'), ': '), e)
-                  }
-                }
-
-                reader.onerror = function (e) {
-                  if (debug) console.log(e)
-                  msg.close()
-                  vueUi.$message({
-                    type: 'error',
-                    message: getI18n('readSettingFailed')
-                  })
-                }
-
-                reader.readAsText(file)
-              } else {
-                msg.close()
-                vueUi.$message({
-                  type: 'warning',
-                  duration: 5000,
-                  message: getI18n('notSupport')
-                })
-                this.$msgbox({
-                  title: getI18n('copySetting'),
-                  type: 'info',
-                  showClose: false,
-                  showCancelButton: true,
-                  confirmButtonText: getI18n('confirm'),
-                  cancelButtonText: getI18n('cancel'),
-                  closeOnClickModal: false,
-                  closeOnPressEscape: false,
-                  closeOnHashChange: false,
-                  center: true,
-                  showInput: true,
-                  inputType: 'textarea'
-                }).then(function (_ref2) {
-                  var value = _ref2.value
-                  if (debug) console.log(value)
-                  var cMsg = vueUi.$message({
-                    type: 'info',
-                    message: getI18n('loadSettingText')
-                  })
-
-                  try {
-                    GM_setValue('conf', JSON.parse(value))
-                    cMsg.close()
-                    vueUi.$message({
-                      type: 'success',
-                      message: getI18n('loadSettingComplete')
-                    })
-                    window.location.reload()
-                  } catch (e) {
-                    cMsg.close()
-                    vueUi.$message({
-                      type: 'error',
-                      message: ''.concat(getI18n('loadSettingFailed'), '\uFF01')
-                    })
-                    if (debug) console.log(''.concat(getI18n('loadSettingFailed'), ': '), e)
-                  }
-                }).catch(function (action) {
-                  vueUi.$message({
-                    type: 'info',
-                    message: getI18n('cancelled')
-                  })
-                })
-              }
-
-              this.$refs.upload.abort(file.name)
-            }
-          }
-        })
-      })();
-
-      (function () {
-        var _GM_getValue$opiumpul, _GM_getValue50, _GM_getValue50$opiump, _GM_getValue51
-
-        var maxPoint = (_GM_getValue$opiumpul = (_GM_getValue50 = GM_getValue('conf')) === null || _GM_getValue50 === void 0 ? void 0 : (_GM_getValue50$opiump = _GM_getValue50.opiumpulses) === null || _GM_getValue50$opiump === void 0 ? void 0 : _GM_getValue50$opiump.maxPoint) !== null && _GM_getValue$opiumpul !== void 0 ? _GM_getValue$opiumpul : 0
-        new Vue({
-          el: '#opiumpulses',
-          data: {
-            header: 'opiumpulses' + getI18n('websiteSetting'),
-            checked: ((_GM_getValue51 = GM_getValue('conf')) === null || _GM_getValue51 === void 0 ? void 0 : _GM_getValue51.opiumpulses) ? !!GM_getValue('conf').opiumpulses.load : false,
-            maxPoint: maxPoint,
-            openDelay: 100,
-            rowType: 'flex',
-            rowAlign: 'middle',
-            verify: '1'
-          }
-        })
-      })()
-    }
-
-    var loadAnnouncement = function loadAnnouncement () {
-      new Promise(function (resolve) {
-        fuc.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/preview/announcement.json',
-          method: 'get',
-          dataType: 'json',
-          onload: function onload (response) {
-            if (debug) console.log(response)
-
-            if (response.status === 200 && response.response) {
-              resolve({
-                result: 'success',
-                data: response.response
-              })
-            } else {
-              resolve({
-                result: 'error',
-                data: response
-              })
-            }
-          },
-          r: resolve
-        })
-      }).then(function (data) {
-        if (data.result === 'success') {
-          var announcements = data.data
-          announcements.map(function (e) {
-            e.time = fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(e.time))
-            return e
-          })
-          new Vue({
-            el: '#app',
-            data: {
-              announcements: announcements
-            }
-          })
-        } else {
-          vueUi.$message({
-            type: 'error',
-            duration: 0,
-            message: ''.concat(getI18n('loadAnnouncementFailed')).concat(data.statusText || getI18n('checkConsole'), '\uFF01'),
-            showClose: true
-          })
-          console.error(data)
-        }
-      }).catch(function (error) {
-        vueUi.$message({
-          type: 'error',
-          duration: 0,
-          message: ''.concat(getI18n('loadAnnouncementFailed') + getI18n('checkConsole')),
-          showClose: true
-        })
-        console.error(error)
-      })
-    }
-
     var plugins = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
-        fuc.addBackground()
-        loadSetting()
+        loadSetting(config)
       } else if (window.location.pathname.includes('announcement')) {
-        fuc.addBackground()
         loadAnnouncement()
       }
     } else if ((window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot') || window.location.host.includes('gamecode.win')) && !window.location.pathname.includes('giveaway')) {
@@ -7477,8 +6236,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var showLogs = globalConf.other ? globalConf.other.showLogs : defaultConf.other.showLogs
       var btnNum = 1
 
-      for (var _i24 = 0, _Object$values2 = Object.values(website.setting); _i24 < _Object$values2.length; _i24++) {
-        var _boolean = _Object$values2[_i24]
+      for (var _i3 = 0, _Object$values2 = Object.values(website.setting); _i3 < _Object$values2.length; _i3++) {
+        var _boolean = _Object$values2[_i3]
         if (_boolean === true) btnNum++
       }
 
@@ -7610,18 +6369,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             })
             var listValues = GM_listValues()
 
-            var _iterator71 = _createForOfIteratorHelper(listValues)
-            var _step72
+            var _iterator52 = _createForOfIteratorHelper(listValues)
+            var _step53
 
             try {
-              for (_iterator71.s(); !(_step72 = _iterator71.n()).done;) {
-                var value = _step72.value
+              for (_iterator52.s(); !(_step53 = _iterator52.n()).done;) {
+                var value = _step53.value
                 if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
               }
             } catch (err) {
-              _iterator71.e(err)
+              _iterator52.e(err)
             } finally {
-              _iterator71.f()
+              _iterator52.f()
             }
 
             status.success()

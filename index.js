@@ -38,8 +38,6 @@ function packUserJs (test = false) {
   const disabledPlugins = ['gamecode.js'] // 禁用的插件
   const i18n = fs.readFileSync('./src/tools/i18n.js', 'utf-8') // 加载i18n相关函数
   const functionJs = fs.readFileSync('./src/tools/function.js', 'utf-8') // 加载功能函数
-  const loadSetting = fs.readFileSync('./src/tools/loadSetting.js', 'utf-8') // 加载设置相关函数
-  const loadAnnouncement = fs.readFileSync('./src/tools/loadAnnouncement.js', 'utf-8') // 加载公告相关函数
   // 加载插件
   const pluginsFiles = fs.readdirSync('./src/plugins')
   const plugins = []
@@ -78,10 +76,6 @@ function packUserJs (test = false) {
     try{
 
 ${functionJs}${pluginsData}
-
-${loadSetting}
-
-${loadAnnouncement}
 
 const plugins = ${JSON.stringify(plugins).replace(/'|"/g, '')}
 

@@ -1,7 +1,7 @@
-/* global getI18n, fuc, plugins, globalConf, defaultConf, getLanguage, language, vueUi, loadSetting, loadAnnouncement */
+/* global getI18n, fuc, plugins, config, globalConf, defaultConf, getLanguage, language, vueUi, loadSetting, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
-    loadSetting()
+    loadSetting(config)
   } else if (window.location.pathname.includes('announcement')) {
     loadAnnouncement()
   }

@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug */
+/* global getI18n, fuc, config, debug, globalConf */
 const giveawaysu = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('giveaway.su') },
   get_tasks (e) {
@@ -96,18 +96,20 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
-      e === 'doTask' ? this.do_task('join') : this.do_task('remove')
+      e === 'doTask' ? this.do_task('fuck') : this.do_task('remove')
     }).catch(error => {
       status.error()
       if (debug) console.log(error)
     })
   },
   do_task (act) {
+    /* disable
     if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
       for (const link of fuc.unique(this.links)) {
         window.open(link, '_blank')
       }
     }
+    */
     if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
     if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
     new Promise(resolve => {
@@ -125,129 +127,54 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     }).then(s => {
       if (s === 1) {
         const pro = []
-        for (const group of fuc.unique(this.taskInfo.groups)) {
-          if (this.taskInfo.toFinalUrl[group]) {
-            const groupName = this.taskInfo.toFinalUrl[group].match(/groups\/(.+)\/?/)
-            if (groupName) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.group) {
-                  fuc.joinSteamGroup(resolve, groupName[1])
-                } else if (act === 'remove' && this.conf.remove.group) {
-                  fuc.leaveSteamGroup(resolve, groupName[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.joinSteamGroup && this.taskInfo.groups.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: this.taskInfo.groups, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const curator of fuc.unique(this.taskInfo.curators)) {
-          if (this.taskInfo.toFinalUrl[curator]) {
-            const curatorId = this.taskInfo.toFinalUrl[curator].match(/curator\/([\d]+)/)
-            if (curatorId) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.curator) {
-                  fuc.followCurator(resolve, curatorId[1])
-                } else if (act === 'remove' && this.conf.remove.curator) {
-                  fuc.unfollowCurator(resolve, curatorId[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.followCurator && this.taskInfo.curators.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: this.taskInfo.curators, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const publisher of fuc.unique(this.taskInfo.publishers)) {
-          if (this.taskInfo.toFinalUrl[publisher]) {
-            const publisherName = this.taskInfo.toFinalUrl[publisher].includes('publisher') ? this.taskInfo.toFinalUrl[publisher].match(/publisher\/(.+)\/?/) : this.taskInfo.toFinalUrl[publisher].match(/pub\/(.+)\/?/)
-            if (publisherName) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.publisher) {
-                  fuc.followPublisher(resolve, publisherName[1])
-                } else if (act === 'remove' && this.conf.remove.publisher) {
-                  fuc.unfollowPublisher(resolve, publisherName[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.followPublisher && this.taskInfo.publishers.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: this.taskInfo.publishers, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const developer of fuc.unique(this.taskInfo.developers)) {
-          if (this.taskInfo.toFinalUrl[developer]) {
-            const developerName = this.taskInfo.toFinalUrl[developer].includes('developer') ? this.taskInfo.toFinalUrl[developer].match(/developer\/(.+)\/?/) : this.taskInfo.toFinalUrl[developer].match(/dev\/(.+)\/?/)
-            if (developerName) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.developer) {
-                  fuc.followDeveloper(resolve, developerName[1])
-                } else if (act === 'remove' && this.conf.remove.developer) {
-                  fuc.unfollowDeveloper(resolve, developerName[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.followDeveloper && this.taskInfo.developers.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: this.taskInfo.developers, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const game of fuc.unique(this.taskInfo.fGames)) {
-          if (this.taskInfo.toFinalUrl[game]) {
-            const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
-            if (gameId) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.followGame) {
-                  fuc.followGame(resolve, gameId[1])
-                } else if (act === 'remove' && this.conf.remove.unfollowGame) {
-                  fuc.unfollowGame(resolve, gameId[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.followGame && this.taskInfo.fGames.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: this.taskInfo.fGames, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const game of fuc.unique(this.taskInfo.wGames)) {
-          if (this.taskInfo.toFinalUrl[game]) {
-            const gameId = this.taskInfo.toFinalUrl[game].match(/app\/([\d]+)/)
-            if (gameId) {
-              pro.push(new Promise(resolve => {
-                if (act === 'join' && this.conf.join.wishlist) {
-                  fuc.addWishlist(resolve, gameId[1])
-                } else if (act === 'remove' && this.conf.remove.wishlist) {
-                  fuc.removeWishlist(resolve, gameId[1])
-                } else {
-                  resolve(1)
-                }
-              }))
-            }
-          }
+        if (this.conf.fuck.addToWishlist && this.taskInfo.wGames.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: this.taskInfo.wGames, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
-        for (const announcement of fuc.unique(this.taskInfo.announcements)) {
-          if (this.taskInfo.toFinalUrl[announcement]) {
-            const announcementUrl = this.taskInfo.toFinalUrl[announcement]
-            const announcementId = announcementUrl.match(/announcements\/detail\/([\d]+)/)
-            if (announcementId) {
-              if (act === 'join' && this.conf.join.announcement) {
-                pro.push(new Promise(resolve => {
-                  fuc.likeAnnouncements(resolve, announcementUrl, announcementId[1])
-                }))
-              }
-            }
-          }
+        if (this.conf.fuck.likeAnnouncement && this.taskInfo.announcements.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: this.taskInfo.announcements, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
         }
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (act === 'join') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
+          if (act === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
         })
       }
     })
   },
-  fuck () { },
+  fuck () { this.get_tasks('doTask') },
   verify () { },
-  join () { this.get_tasks('doTask') },
   remove () { this.get_tasks('remove') },
   get_giveawayId () {
     const id = window.location.href.match(/view\/([\d]+)/)
-    return id ? id[1] : window.location.href
+    return id?.[1] || window.location.href
   },
   checkLogin () {
     if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
@@ -279,10 +206,9 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     toFinalUrl: {}// 链接转换
   },
   setting: {
-    fuck: false,
+    fuck: true,
     verify: false,
-    join: true,
     remove: true
   },
-  conf: GM_getValue('conf')?.giveawaysu?.load ? GM_getValue('conf').giveawaysu : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.giveawaysu?.load ? config.giveawaysu : globalConf
 }

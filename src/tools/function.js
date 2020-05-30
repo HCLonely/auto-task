@@ -23,16 +23,6 @@ const defaultConf = {
   verify: {
     verifyTask: true
   },
-  join: {
-    joinSteamGroup: true,
-    followCurator: true,
-    followDeveloper: true,
-    followPublisher: true,
-    likeAnnouncement: true,
-    addToWishlist: true,
-    followGame: true,
-    visitLink: true
-  },
   remove: {
     leaveSteamGroup: true,
     unfollowCurator: true,
@@ -51,7 +41,8 @@ const defaultConf = {
   },
   announcement: ''
 }
-const globalConf = Object.assign(defaultConf, GM_getValue('conf')?.global)
+const config = Object.assign(defaultConf, GM_getValue('conf') || {})
+const globalConf = config.global
 const debug = !!globalConf.other.showDetails
 const fuc = {
   httpRequest (e) {
@@ -831,5 +822,83 @@ const fuc = {
       }
     }
     return true
+  },
+  toggleActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
+    const pro = []
+    for (const element of fuc.unique(elements)) {
+      let elementName = null
+      if (website === 'giveawaysu' && toFinalUrl[element]) {
+        const toFinalUrlElement = toFinalUrl[element] || ''
+        switch (type) {
+          case 'group':
+            elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
+            break
+          case 'curator':
+            elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
+            break
+          case 'publisher':
+            elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/)
+            break
+          case 'developer':
+            elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
+            break
+          case 'game':
+          case 'wishlist':
+            elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+            break
+          case 'announcement':
+            elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+            break
+          default:
+            elementName = null
+        }
+      } else {
+        elementName = [null, element]
+      }
+      if (elementName?.[1]) {
+        switch (type) {
+          case 'group':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.joinSteamGroup(resolve, elementName[1]) : fuc.leaveSteamGroup(resolve, elementName[1])
+            }))
+            break
+          case 'curator':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.followCurator(resolve, elementName[1]) : fuc.unfollowCurator(resolve, elementName[1])
+            }))
+            break
+          case 'publisher':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.followPublisher(resolve, elementName[1]) : fuc.unfollowPublisher(resolve, elementName[1])
+            }))
+            break
+          case 'developer':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.followDeveloper(resolve, elementName[1]) : fuc.unfollowDeveloper(resolve, elementName[1])
+            }))
+            break
+          case 'wishlist':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.addWishlist(resolve, elementName[1]) : fuc.removeWishlist(resolve, elementName[1])
+            }))
+            break
+          case 'game':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.followGame(resolve, elementName[1]) : fuc.unfollowGame(resolve, elementName[1])
+            }))
+            break
+          case 'announcement':
+            pro.push(new Promise(resolve => {
+              if (action === 'like') {
+                fuc.likeAnnouncements(resolve, elementName.input, elementName[1])
+              }
+            }))
+            break
+        }
+      }
+    }
+    Promise.all(pro).finally(() => {
+      resolve()
+    })
   }
 }

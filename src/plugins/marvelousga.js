@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const marvelousga = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
   before () { fuc.newTabBlock() },
@@ -9,16 +9,24 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      this.tasks = []
-      this.groups = []
-      this.curators = []
-      this.links = []
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+      [this.tasks, this.groups, this.curators, this.links] = [[], [], [], []]
 
-      const tasksContainer = $('.container_task')
+      const [
+        status,
+        tasksContainer
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+        $('.container_task')
+      ]
+
       for (const task of tasksContainer) { // 遍历任务信息
-        const taskDes = $(task).find('.card-body p.card-text.monospace')
-        const verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
+        const [
+          taskDes,
+          verifyBtn
+        ] = [
+          $(task).find('.card-body p.card-text.monospace'),
+          $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
+        ]
         if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) { // 加组任务
           const groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
           if (verifyBtn.length > 0) {
@@ -38,18 +46,26 @@ const marvelousga = { // eslint-disable-line no-unused-vars
           this.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
         }
         if (verifyBtn.length > 0) { // 任务验证信息
-          const provider = verifyBtn.attr('id').split('_')[1]
-          const taskRoute = verifyBtn.attr('id').split('_')[2]
-          const taskId = verifyBtn.attr('id').split('_')[3]
+          const ids = verifyBtn.attr('id').split('_')
+          const [provider, taskRoute, taskId] = [ids[1], ids[2], ids[3]]
           this.tasks.push({ provider, taskRoute, taskId, taskDes: taskDes.html() })
         }
       }
-      this.groups = fuc.unique(this.groups)
-      this.curators = fuc.unique(this.curators)
-      this.links = fuc.unique(this.links)
-      this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-      this.tasks = fuc.unique(this.tasks)
+      [
+        this.groups,
+        this.curators,
+        this.links,
+        this.taskInfo.groups,
+        this.taskInfo.curators,
+        this.tasks
+      ] = [
+        fuc.unique(this.groups),
+        fuc.unique(this.curators),
+        fuc.unique(this.links),
+        fuc.unique(this.taskInfo.groups),
+        fuc.unique(this.taskInfo.curators),
+        fuc.unique(this.tasks)
+      ]
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
@@ -68,25 +84,9 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     }
   },
   do_task () {
-    this.updateSteamInfo(() => {
-      const pro = []
-      const groups = fuc.unique(this.groups)
-      const curators = fuc.unique(this.curators)
-      const links = fuc.unique(this.links)
-      if (this.conf.fuck.group) {
-        for (const group of groups) {
-          pro.push(new Promise(resolve => {
-            fuc.joinSteamGroup(resolve, group)
-          }))
-        }
-      }
-      if (this.conf.fuck.curator) {
-        for (const curator of curators) {
-          pro.push(new Promise(resolve => {
-            fuc.followCurator(resolve, curator)
-          }))
-        }
-      }
+    this.updateSteamInfo(async () => {
+      const [pro, links] = [[], fuc.unique(this.links)]
+      await this.toggleActions('fuck', pro)
       if (this.conf.fuck.visit) {
         for (const link of links) {
           pro.push(new Promise(resolve => {
@@ -165,21 +165,8 @@ const marvelousga = { // eslint-disable-line no-unused-vars
   remove (remove = false) {
     const pro = []
     if (remove) {
-      this.updateSteamInfo(() => {
-        if (this.conf.remove.group) {
-          for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise(resolve => {
-              fuc.leaveSteamGroup(resolve, group)
-            }))
-          }
-        }
-        if (this.conf.remove.curator) {
-          for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise(resolve => {
-              fuc.unfollowCurator(resolve, curator)
-            }))
-          }
-        }
+      this.updateSteamInfo(async () => {
+        await this.toggleActions('remove', pro)
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
@@ -187,6 +174,35 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     } else {
       this.get_tasks('remove')
     }
+  },
+  toggleActions (action, pro) {
+    const [groups, curators] = action === 'fuck'
+      ? [this.groups, this.curators]
+      : [this.taskInfo.groups, this.taskInfo.curators]
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'marvelousga', type: 'group', elements: groups, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'marvelousga', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    /* disable
+    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
+    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'marvelousga', type: 'wishlist', elements: wishlists, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'marvelousga', type: 'game', elements: fGames, resolve, action })
+      }))
+    }
+    */
   },
   get_giveawayId () {
     return $('#giveawaySlug').val() || window.location.href
@@ -237,8 +253,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: true,
-    join: false,
     remove: true
   },
-  conf: GM_getValue('conf')?.marvelousga?.load ? GM_getValue('conf').marvelousga : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.marvelousga?.load ? config.marvelousga : globalConf
 }

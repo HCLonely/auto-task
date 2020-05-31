@@ -37,6 +37,7 @@ function packUserJs (test = false) {
   const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version) // 加载Tampermonkey头部信息
   const disabledPlugins = ['gamecode.js'] // 禁用的插件
   const i18n = fs.readFileSync('./src/tools/i18n.js', 'utf-8') // 加载i18n相关函数
+  const defaultConfig = fs.readFileSync('./src/tools/defaultConfig.js', 'utf-8') // 加载默认设置
   const functionJs = fs.readFileSync('./src/tools/function.js', 'utf-8') // 加载功能函数
   // 加载插件
   const pluginsFiles = fs.readdirSync('./src/plugins')
@@ -74,6 +75,8 @@ function packUserJs (test = false) {
     })
     
     try{
+
+${defaultConfig}
 
 ${functionJs}${pluginsData}
 

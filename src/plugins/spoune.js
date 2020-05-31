@@ -1,10 +1,15 @@
-/* global getI18n, fuc, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const spoune = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('spoune') },
   fuck () { this.get_tasks() },
   get_tasks () {
-    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-    const giveawayTasks = $('#GiveawayTasks button')
+    const [
+      status,
+      giveawayTasks
+    ] = [
+      fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+      $('#GiveawayTasks button')
+    ]
     for (const task of giveawayTasks) {
       const taskClick = $(task).attr('onclick')
       if (taskClick) {
@@ -135,8 +140,7 @@ const spoune = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: false,
-    join: false,
     remove: false
   },
-  conf: GM_getValue('conf')?.spoune?.load ? GM_getValue('conf').spoune : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.spoune?.load ? config.spoune : globalConf
 }

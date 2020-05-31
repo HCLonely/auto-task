@@ -1,4 +1,4 @@
-/* global getI18n, fuc, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const givekey = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
   before (website) {
@@ -24,13 +24,17 @@ const givekey = { // eslint-disable-line no-unused-vars
     window.open($('a[id^="task_"').attr('href'), '_blank')
   },
   analyze_tasks (tasks) {
-    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
-    const pro = []
-    this.groups = []
-    this.wGames = []
-    this.fGames = []
-    this.links = []
-    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+    [this.groups, this.wGames, this.fGames, this.links] = [[], [], [], []]
+    const [
+      status,
+      pro,
+      taskInfoHistory
+    ] = [
+      fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` }),
+      [],
+      GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+    ]
+
     if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
     for (const id of tasks) {
       const task = $('#task_' + id)
@@ -106,13 +110,23 @@ const givekey = { // eslint-disable-line no-unused-vars
       }
     }
     Promise.all(pro).finally(() => {
-      this.groups = fuc.unique(this.groups)
-      this.wGames = fuc.unique(this.wGames)
-      this.fGames = fuc.unique(this.fGames)
-      this.links = fuc.unique(this.links)
-      this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
-      this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
+      [
+        this.groups,
+        this.wGames,
+        this.fGames,
+        this.links,
+        this.taskInfo.groups,
+        this.taskInfo.fGames,
+        this.taskInfo.wGames
+      ] = [
+        fuc.unique(this.groups),
+        fuc.unique(this.wGames),
+        fuc.unique(this.fGames),
+        fuc.unique(this.links),
+        fuc.unique(this.taskInfo.groups),
+        fuc.unique(this.taskInfo.fGames),
+        fuc.unique(this.taskInfo.wGames)
+      ]
       if (this.groups.length > 0 || this.fGames.length > 0 || this.links.length > 0 || this.wGames.length > 0) {
         this.do_task()
       } else {
@@ -129,10 +143,16 @@ const givekey = { // eslint-disable-line no-unused-vars
       this.taskInfo = taskInfoHistory
       this.remove(true)
     } else {
-      const pro = []
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+      const [
+        pro,
+        status,
+        tasksContainer
+      ] = [
+        [],
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+        $('a[id^=task_]')
+      ]
 
-      const tasksContainer = $('a[id^=task_]')
       for (const task of tasksContainer) { // 遍历任务信息
         const href = task.attr('href')
         if (href.includes('vk.com')) {
@@ -162,9 +182,7 @@ const givekey = { // eslint-disable-line no-unused-vars
         }
       }
       Promise.all(pro).finally(() => {
-        this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-        this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-        this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
+        [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wGames] = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators), fuc.unique(this.taskInfo.wGames)]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -177,42 +195,11 @@ const givekey = { // eslint-disable-line no-unused-vars
     }
   },
   do_task () {
-    this.updateSteamInfo(() => {
-      const pro = []
-      const groups = fuc.unique(this.groups)
-      const fGames = fuc.unique(this.fGames)
-      const wGames = fuc.unique(this.wGames)
-      const curators = fuc.unique(this.curators)
-      const links = fuc.unique(this.links)
-      if (this.conf.fuck.group) {
-        for (const group of groups) {
-          pro.push(new Promise(resolve => {
-            fuc.joinSteamGroup(resolve, group)
-          }))
-        }
-      }
-      if (this.conf.fuck.wishlist) {
-        for (const game of wGames) {
-          pro.push(new Promise(resolve => {
-            fuc.addWishlist(resolve, game)
-          }))
-        }
-      }
-      if (this.conf.fuck.followGame) {
-        for (const game of fGames) {
-          pro.push(new Promise(resolve => {
-            fuc.followGame(resolve, game)
-          }))
-        }
-      }
-      if (this.conf.fuck.curator) {
-        for (const curator of curators) {
-          pro.push(new Promise(resolve => {
-            fuc.followCurator(resolve, curator)
-          }))
-        }
-      }
-      if (this.conf.fuck.visit) {
+    this.updateSteamInfo(async () => {
+      const [pro, links] = [[], fuc.unique(this.links)]
+      await this.toggleActions('fuck', pro)
+
+      if (this.conf.fuck.visitLink) {
         for (const link of links) {
           pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, link)
@@ -231,41 +218,39 @@ const givekey = { // eslint-disable-line no-unused-vars
   remove (remove = false) {
     const pro = []
     if (remove) {
-      this.updateSteamInfo(() => {
-        if (this.conf.remove.group) {
-          for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise(resolve => {
-              fuc.leaveSteamGroup(resolve, group)
-            }))
-          }
-        }
-        if (this.conf.remove.unfollowGame) {
-          for (const game of fuc.unique(this.taskInfo.fGames)) {
-            pro.push(new Promise(resolve => {
-              fuc.unfollowCurator(resolve, game)
-            }))
-          }
-        }
-        if (this.conf.remove.wishlist) {
-          for (const game of fuc.unique(this.taskInfo.wGames)) {
-            pro.push(new Promise(resolve => {
-              fuc.removeWishlist(resolve, game)
-            }))
-          }
-        }
-        if (this.conf.remove.curator) {
-          for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise(resolve => {
-              fuc.unfollowCurator(resolve, curator)
-            }))
-          }
-        }
+      this.updateSteamInfo(async () => {
+        await this.toggleActions('remove', pro)
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
       })
     } else {
       this.get_tasks('remove')
+    }
+  },
+  toggleActions (action, pro) {
+    const [groups, curators, wishlists, fGames] = action === 'fuck'
+      ? [this.groups, this.curators, this.wishlists, this.fGames]
+      : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'givekey', type: 'group', elements: groups, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'givekey', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'givekey', type: 'wishlist', elements: wishlists, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'givekey', type: 'game', elements: fGames, resolve, action })
+      }))
     }
   },
   creat_app  () {
@@ -369,7 +354,7 @@ const givekey = { // eslint-disable-line no-unused-vars
   },
   get_giveawayId () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
-    return id ? id[1] : window.location.href
+    return id?.[1] || window.location.href
   },
   updateSteamInfo (callback) {
     new Promise(resolve => {
@@ -424,8 +409,7 @@ const givekey = { // eslint-disable-line no-unused-vars
     verify: true,
     verifyText: 'Fuck',
     verifyTitle: getI18n('initPlease'),
-    join: false,
     remove: true
   },
-  conf: GM_getValue('conf')?.givekey?.load ? GM_getValue('conf').givekey : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.givekey?.load ? config.givekey : globalConf
 }

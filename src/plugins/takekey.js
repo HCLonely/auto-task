@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const takekey = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('takekey') },
   fuck () { this.get_tasks('do_task') },
@@ -8,19 +8,28 @@ const takekey = { // eslint-disable-line no-unused-vars
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      this.tasks = []
-      this.groups = []
-      // this.curators=[];
-      this.links = []
-      const pro = []
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+      [this.tasks, this.groups, this.curators, this.links] = [[], [], [], []]
+      const [
+        pro,
+        status,
+        tasksContainer
+      ] = [
+        [],
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+        $('#usl>div')
+      ]
 
-      const tasksContainer = $('#usl>div')
       for (const task of tasksContainer) { // 遍历任务信息
         this.tasks.push(task)
-        const icon = $(task).find('i')
-        const link = $(task).children('a[id]').attr('href')
-        const id = $(task).children('a[id]').attr('id')
+        const [
+          icon,
+          link,
+          id
+        ] = [
+          $(task).find('i'),
+          $(task).children('a[id]').attr('href'),
+          $(task).children('a[id]').attr('id')
+        ]
         if (icon.hasClass('fa-steam')) {
           if (link && /gid\/[\d]+/.test(link)) {
             pro.push(new Promise(r => { // eslint-disable-line promise/param-names
@@ -53,13 +62,23 @@ const takekey = { // eslint-disable-line no-unused-vars
         }
       }
       Promise.all(pro).finally(() => {
-        this.groups = fuc.unique(this.groups)
-        // this.curators=fuc.unique(this.curators);
-        this.links = fuc.unique(this.links)
-        this.others = fuc.unique(this.others)
-        this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-        // this.taskInfo.curators=fuc.unique(this.taskInfo.curators);
-        this.tasks = fuc.unique(this.tasks)
+        [
+          this.groups,
+          this.curators,
+          this.links,
+          this.others,
+          this.taskInfo.groups,
+          this.taskInfo.curators,
+          this.tasks
+        ] = [
+          fuc.unique(this.groups),
+          fuc.unique(this.curators),
+          fuc.unique(this.links),
+          fuc.unique(this.others),
+          fuc.unique(this.taskInfo.groups),
+          fuc.unique(this.taskInfo.curators),
+          fuc.unique(this.tasks)
+        ]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -77,20 +96,19 @@ const takekey = { // eslint-disable-line no-unused-vars
     }
   },
   do_task () {
-    this.updateSteamInfo(() => {
-      const pro = []
-      const groups = fuc.unique(this.groups)
-      // let curators = fuc.unique(this.curators);
-      const links = fuc.unique(this.links)
-      const others = fuc.unique(this.others)
-      const vks = fuc.unique(this.vks)
-      if (this.conf.fuck.group) {
-        for (const group of groups) {
-          pro.push(new Promise(resolve => {
-            fuc.joinSteamGroup(resolve, group)
-          }))
-        }
-      }
+    this.updateSteamInfo(async () => {
+      const [
+        pro,
+        links,
+        others,
+        vks
+      ] = [
+        [],
+        fuc.unique(this.links),
+        fuc.unique(this.others),
+        fuc.unique(this.vks)
+      ]
+      await this.toggleActions('fuck', pro)
       if (this.conf.fuck.visit) {
         for (const link of links) {
           const a = $(`a[id='${link}']`).attr('onclick', 'return false;')
@@ -121,14 +139,8 @@ const takekey = { // eslint-disable-line no-unused-vars
   remove (remove = false) {
     const pro = []
     if (remove) {
-      this.updateSteamInfo(() => {
-        if (this.conf.remove.group) {
-          for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise(resolve => {
-              fuc.leaveSteamGroup(resolve, group)
-            }))
-          }
-        }
+      this.updateSteamInfo(async () => {
+        await this.toggleActions('remove', pro)
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
@@ -137,9 +149,37 @@ const takekey = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
+  toggleActions (action, pro) {
+    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'takekey', type: 'group', elements: groups, resolve, action })
+      }))
+    }
+    /* disable
+    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
+    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
+    const curators = action === 'fuck' ? this.curators : this.taskInfo.curators
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'takekey', type: 'wishlist', elements: wishlists, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'takekey', type: 'game', elements: fGames, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'takekey', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    */
+  },
   get_giveawayId () {
     const id = window.location.href.match(/distribution\/([\d]+)/)
-    return id ? id[1] : window.location.href
+    return id?.[1] || window.location.href
   },
   updateSteamInfo (callback) {
     new Promise(resolve => {
@@ -189,8 +229,7 @@ const takekey = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: true,
-    join: false,
     remove: true
   },
-  conf: GM_getValue('conf')?.takekey?.load ? GM_getValue('conf').takekey : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.takekey?.load ? config.takekey : globalConf
 }

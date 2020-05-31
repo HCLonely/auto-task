@@ -1,4 +1,4 @@
-/* global getI18n, fuc, defaultConf, DashboardApp */
+/* global getI18n, fuc, config, DashboardApp, globalConf */
 const freegamelottery = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('freegamelottery') },
   after (website) {
@@ -8,7 +8,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
     GM_setValue('lottery', 1)
     if ($('a.registration-button').length > 0) {
       if (this.conf.fuck.autoLogin) {
-        const userInfo = GM_getValue('conf').lotteryUserInfo
+        const userInfo = GM_getValue('conf').freegamelottery.userInfo
         if (userInfo) {
           const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('logining')}<font></font></li>` })
           fuc.httpRequest({
@@ -33,7 +33,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
           $('a.registration-button')[0].click()
           $('button[value=Login]').click(() => {
             const conf = GM_getValue('conf')
-            conf.lotteryUserInfo = { username: $('#modal_login').val(), password: $('#modal_password').val() }
+            conf.freegamelottery.userInfo = { username: $('#modal_login').val(), password: $('#modal_password').val() }
             GM_setValue('conf', conf)
           })
         }
@@ -80,8 +80,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: false,
-    join: false,
     remove: false
   },
-  conf: GM_getValue('conf')?.freegamelottery?.load ? GM_getValue('conf').freegamelottery : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.freegamelottery?.load ? config.freegamelottery : globalConf
 }

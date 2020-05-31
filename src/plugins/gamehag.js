@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const gamehag = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('gamehag') },
   before () {
@@ -7,26 +7,34 @@ const gamehag = { // eslint-disable-line no-unused-vars
   },
   fuck () { this.get_tasks('do_task') },
   get_tasks (callback = 'do_task') {
-    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-    const verifyBtns = $('button[data-id]')
+    const [
+      status,
+      verifyBtns
+    ] = [
+      fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+      $('button[data-id]')
+    ]
     if (callback === 'do_task') {
+      [this.groups, this.tasks] = [[], []]
       const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-      this.groups = []
-      this.tasks = []
       for (const btn of verifyBtns) {
-        const taskId = $(btn).attr('data-id')
-        const taskDes = $(btn).parent().prev().text()
+        const [taskId, taskDes] = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
         if ($(btn).parents('.task-content').next().text().includes('+1')) this.tasks.push({ taskId, taskDes })
       }
       if ($('a.giveaway-survey').length > 0) {
-        const taskId = $('a.giveaway-survey').attr('data-task_id')
-        const taskDes = 'Complete the survey'
+        const [taskId, taskDes] = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
         this.tasks.push({ taskId, taskDes })
       }
-      this.groups = fuc.unique(this.groups)
-      this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      this.tasks = fuc.unique(this.tasks)
+      [
+        this.groups,
+        this.taskInfo.groups,
+        this.tasks
+      ] = [
+        fuc.unique(this.groups),
+        fuc.unique(this.taskInfo.groups),
+        fuc.unique(this.tasks)
+      ]
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       if (this.tasks.length > 0) {
         this.do_task()
@@ -37,8 +45,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
     } else if (callback === 'verify') {
       this.tasks = []
       for (const btn of verifyBtns) {
-        const taskId = $(btn).attr('data-id')
-        const taskDes = $(btn).parent().prev().text()
+        const [taskId, taskDes] = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
         if ($(btn).parents('.task-content').next().text().includes('+1')) this.tasks.push({ taskId, taskDes })
       }
       this.tasks = fuc.unique(this.tasks)
@@ -56,8 +63,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
     if (debug) console.log(this)
   },
   async do_task () {
-    const pro = []
-    const tasks = fuc.unique(this.tasks)
+    const [pro, tasks] = [[], fuc.unique(this.tasks)]
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
       pro.push(new Promise(resolve => {
@@ -82,8 +88,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
   },
   async verify (verify = false) {
     if (verify) {
-      const pro = []
-      const tasks = fuc.unique(this.tasks)
+      const [pro, tasks] = [[], fuc.unique(this.tasks)]
       for (let i = 0; i < tasks.length; i++) {
         const task = tasks[i]
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
@@ -156,8 +161,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: true,
-    join: false,
     remove: true
   },
-  conf: GM_getValue('conf')?.gamehag?.load ? GM_getValue('conf').gamehag : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.gamehag?.load ? config.gamehag : globalConf
 }

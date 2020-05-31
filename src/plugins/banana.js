@@ -2,8 +2,7 @@
 const banana = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) },
   fuck (vue) {
-    const needBanana = $("p:contains('Collect'):contains('banana')")
-    const needPoints = $("p:contains('Collect'):contains('point')")
+    const [needBanana, needPoints] = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
     let msg = ''
     if (needBanana.length > 0) msg = getI18n('needBanana', needBanana.text().match(/[\d]+/gim)[0])
     if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
@@ -27,21 +26,20 @@ const banana = { // eslint-disable-line no-unused-vars
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      this.tasks = []
-      this.links = []
-      this.groups = []
-      this.curators = []
-      this.wishlists = []
-      this.fGames = []
-      this.taskIds = []
+      [this.tasks, this.links, this.groups, this.curators, this.wishlists, this.fGames, this.taskIds] = [[], [], [], [], [], [], []]
 
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksInfo')}<font></font></li>` })
+      const [
+        status,
+        tasksUl,
+        pro
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksInfo')}<font></font></li>` }),
+        $('ul.tasks li:not(:contains(Completed))'),
+        []
+      ]
 
-      const tasksUl = $('ul.tasks li:not(:contains(Completed))')
-      const pro = []
       for (const task of tasksUl) { // 遍历任务信息
-        const taskDes = $(task).find('p')
-        const verifyBtn = $(task).find('button:contains(Verify)')
+        const [taskDes, verifyBtn] = [$(task).find('p'), $(task).find('button:contains(Verify)')]
         const taskId = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : ''
         if (taskId) {
           this.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
@@ -118,17 +116,31 @@ const banana = { // eslint-disable-line no-unused-vars
         }
       }
       Promise.all(pro).finally(() => {
-        this.links = fuc.unique(this.links)
-        this.groups = fuc.unique(this.groups)
-        this.curators = fuc.unique(this.curators)
-        this.wishlists = fuc.unique(this.wishlists)
-        this.fGames = fuc.unique(this.fGames)
-        this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-        this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-        this.taskInfo.wishlists = fuc.unique(this.taskInfo.wishlists)
-        this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
-        this.taskIds = fuc.unique(this.taskIds)
-        this.tasks = fuc.unique(this.tasks)
+        [
+          this.links,
+          this.groups,
+          this.curators,
+          this.wishlists,
+          this.fGames,
+          this.taskInfo.groups,
+          this.taskInfo.curators,
+          this.taskInfo.wishlists,
+          this.taskInfo.fGames,
+          this.taskIds,
+          this.tasks
+        ] = [
+          fuc.unique(this.links),
+          fuc.unique(this.groups),
+          fuc.unique(this.curators),
+          fuc.unique(this.wishlists),
+          fuc.unique(this.fGames),
+          fuc.unique(this.taskInfo.groups),
+          fuc.unique(this.taskInfo.curators),
+          fuc.unique(this.taskInfo.wishlists),
+          fuc.unique(this.taskInfo.fGames),
+          fuc.unique(this.taskIds),
+          fuc.unique(this.tasks)
+        ]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -144,8 +156,7 @@ const banana = { // eslint-disable-line no-unused-vars
   },
   do_task () {
     this.updateSteamInfo(async () => {
-      const pro = []
-      const links = fuc.unique(this.links)
+      const [pro, links] = [[], fuc.unique(this.links)]
       await this.toggleActions('fuck', pro)
       if (this.conf.fuck.visitLink) {
         for (const link of links) {
@@ -191,7 +202,7 @@ const banana = { // eslint-disable-line no-unused-vars
     const pro = []
     if (remove) {
       this.updateSteamInfo(async () => {
-        await this.toggleActions('fuck', pro)
+        await this.toggleActions('remove', pro)
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
@@ -201,28 +212,27 @@ const banana = { // eslint-disable-line no-unused-vars
     }
   },
   toggleActions (action, pro) {
-    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
-    const curators = action === 'fuck' ? this.curators : this.taskInfo.curators
-    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
-    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
-    if (this.conf[action].joinSteamGroup && groups.length > 0) {
+    const [groups, curators, wishlists, fGames] = action === 'fuck'
+      ? [this.groups, this.curators, this.wishlists, this.fGames]
+      : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve: resolve, action: action })
+        fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
       }))
     }
-    if (this.conf.fuck.followCurator && curators.length > 0) {
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
       pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve: resolve, action: action })
+        fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve, action })
       }))
     }
-    if (this.conf.fuck.addToWishlist && wishlists.length > 0) {
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
       pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve: resolve, action: action })
+        fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve, action })
       }))
     }
-    if (this.conf.fuck.followGame && fGames.length > 0) {
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
       pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve: resolve, action: action })
+        fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
       }))
     }
   },

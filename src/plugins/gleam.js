@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, defaultConf, debug, language */
+/* global getI18n, fuc, globalConf, config, debug, language */
 const gleam = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('gleam.io') },
   fuck () { this.get_tasks('do_task') },
@@ -8,16 +8,16 @@ const gleam = { // eslint-disable-line no-unused-vars
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      this.twitters = []
-      this.facebooks = []
-      this.youtubes = []
-      this.discords = []
-      this.others = []
-      this.groups = []
-      this.links = []
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+      [this.twitters, this.facebooks, this.youtubes, this.discords, this.others, this.groups, this.links] = [[], [], [], [], [], [], []]
 
-      const tasksContainer = $('div.entry-content .entry-method')
+      const [
+        status,
+        tasksContainer
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+        $('div.entry-content .entry-method')
+      ]
+
       for (const task of tasksContainer) { // 遍历任务信息
         if ($(task).find('i.fa-question').length > 0) {
           if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
@@ -72,14 +72,24 @@ const gleam = { // eslint-disable-line no-unused-vars
           }
         }
       }
-      this.groups = fuc.unique(this.groups)
-      this.twitters = fuc.unique(this.twitters)
-      this.facebooks = fuc.unique(this.facebooks)
-      this.youtubes = fuc.unique(this.youtubes)
-      this.discords = fuc.unique(this.discords)
-      this.groups = fuc.unique(this.groups)
-      this.others = fuc.unique(this.others)
-      this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
+      [
+        this.groups,
+        this.twitters,
+        this.facebooks,
+        this.youtubes,
+        this.discords,
+        this.others,
+        this.taskInfo.groups
+      ] = [
+        fuc.unique(this.groups),
+        fuc.unique(this.twitters),
+        fuc.unique(this.facebooks),
+        fuc.unique(this.youtubes),
+        fuc.unique(this.discords),
+        fuc.unique(this.others),
+        fuc.unique(this.taskInfo.groups)
+      ]
+
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
@@ -94,29 +104,42 @@ const gleam = { // eslint-disable-line no-unused-vars
   },
   do_task () {
     this.updateSteamInfo(() => {
-      const pro = []
-      const groups = fuc.unique(this.groups)
-      const twitters = fuc.unique(this.twitters)
-      const discords = fuc.unique(this.discords)
-      const facebooks = fuc.unique(this.facebooks)
-      const youtubes = fuc.unique(this.youtubes)
-      const others = fuc.unique(this.others)
-      const links = fuc.unique(this.links)
+      const [
+        pro,
+        twitters,
+        discords,
+        facebooks,
+        youtubes,
+        others,
+        links
+      ] = [
+        [],
+        fuc.unique(this.twitters),
+        fuc.unique(this.discords),
+        fuc.unique(this.facebooks),
+        fuc.unique(this.youtubes),
+        fuc.unique(this.others),
+        fuc.unique(this.links)
+      ]
       const socals = [...discords, ...facebooks, ...youtubes]
-      if (this.conf.fuck.group && groups.length > 0) {
-        for (const group of groups) {
-          pro.push(new Promise(resolve => {
-            fuc.joinSteamGroup(resolve, group)
-          }))
-        }
+      if (this.conf.fuck.joinSteamGroup && this.groups.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', type: 'group', elements: this.groups, resolve, action: 'fuck' })
+        }))
       }
       if (globalConf.other.autoOpen) {
         if (twitters.length > 0) {
           for (const twitter of twitters) {
             const title = $(twitter).find('.entry-method-title').text().trim()
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
-            const followButton = $(twitter).find('a.twitter-button:contains(Follow)').attr('href')
-            const retweetButton = $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')
+            const [
+              status,
+              followButton,
+              retweetButton
+            ] = [
+              fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
+              $(twitter).find('a.twitter-button:contains(Follow)').attr('href'),
+              $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')
+            ]
             const button = followButton || retweetButton
             if (button) {
               window.open(button, '_blank')
@@ -129,8 +152,13 @@ const gleam = { // eslint-disable-line no-unused-vars
         if (socals.length > 0) {
           for (const task of socals) {
             const title = $(task).find('.entry-method-title').text().trim()
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
-            const button = $(task).find('a.btn-info:first').attr('href')
+            const [
+              status,
+              button
+            ] = [
+              fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
+              $(task).find('a.btn-info:first').attr('href')
+            ]
             if (button) {
               window.open(button, '_blank')
               status.warning(getI18n('openPage'))
@@ -193,12 +221,10 @@ const gleam = { // eslint-disable-line no-unused-vars
     const pro = []
     if (remove) {
       this.updateSteamInfo(() => {
-        if (this.conf.remove.group) {
-          for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise(resolve => {
-              fuc.leaveSteamGroup(resolve, group)
-            }))
-          }
+        if (this.conf.remove.leaveSteamGroup && this.taskInfo.groups.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'gleam', type: 'group', elements: this.taskInfo.groups, resolve, action: 'remove' })
+          }))
         }
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
@@ -211,8 +237,13 @@ const gleam = { // eslint-disable-line no-unused-vars
   visit_link (links, i, r) {
     if (i < links.length) {
       const title = $(links[i]).find('.entry-method-title').text().trim()
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
-      const taskTime = $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
+      const [
+        status,
+        taskTime
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
+        $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
+      ]
       if (taskTime) {
         const taskBtn = $(links[i]).find('a.btn-info')
         const href = taskBtn.attr('href')
@@ -281,8 +312,7 @@ const gleam = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: true,
-    join: false,
     remove: true
   },
-  conf: (GM_getValue('conf')?.gleam && GM_getValue('conf')?.gleam?.load) ? GM_getValue('conf').gleam : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.gleam?.load ? config.gleam : globalConf
 }

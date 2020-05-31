@@ -1,12 +1,17 @@
-/* global getI18n, fuc, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const indiedb = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('indiedb') },
   fuck () {
     if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
     const currentoption = $('a.buttonenter.buttongiveaway')
     if (/join giveaway/gim.test(currentoption.text())) {
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
-      const doTask = this.do_task
+      const [
+        status,
+        doTask
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` }),
+        this.do_task
+      ]
       fuc.httpRequest({
         url: currentoption.attr('href'),
         method: 'POST',
@@ -42,14 +47,14 @@ const indiedb = { // eslint-disable-line no-unused-vars
   do_task () {
     const id = $('script').map((i, e) => {
       if (/\$\(document\)/gim.test(e.innerHTML)) {
-        const optionId = e.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)[0].match(/[\d]+/)[0]
-        const taskId = e.innerHTML.match(/"\/[\d]+"/gim)[0].match(/[\d]+/)[0]
-        return [taskId, optionId]
+        return [
+          e.innerHTML.match(/"\/[\d]+"/gim)[0].match(/[\d]+/)[0],
+          e.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)[0].match(/[\d]+/)[0]
+        ]
       }
     })
     if (id.length === 2) {
-      const tasks = $('#giveawaysjoined a[class*=promo]')
-      const pro = []
+      const [tasks, pro] = [$('#giveawaysjoined a[class*=promo]'), []]
       for (const task of tasks) {
         const promo = $(task)
         if (!promo.hasClass('buttonentered')) {
@@ -178,8 +183,7 @@ const indiedb = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: false,
-    join: false,
     remove: false
   },
-  conf: GM_getValue('conf')?.indiedb?.load ? GM_getValue('conf').indiedb : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.indiedb?.load ? config.indiedb : globalConf
 }

@@ -1,4 +1,12 @@
-var defaultConfig = { // eslint-disable-line no-unused-vars
+/* eslint-disable no-unused-vars */
+const steamInfo = Object.assign({
+  userName: '',
+  steam64Id: '',
+  communitySessionID: '',
+  storeSessionID: '',
+  updateTime: 0
+}, GM_getValue('steamInfo'))
+const defaultConf = {
   global: {
     fuck: {
       joinSteamGroup: true,
@@ -201,3 +209,6 @@ var defaultConfig = { // eslint-disable-line no-unused-vars
   },
   announcement: ''
 }
+const config = Object.assign(defaultConf, GM_getValue('conf') || {})
+const globalConf = config.global
+const debug = !!globalConf.other.showDetails

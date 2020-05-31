@@ -1,19 +1,29 @@
-/* global getI18n, fuc, defaultConf, debug */
+/* global getI18n, fuc, globalConf, config, debug */
 const prys = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('prys.revadike') },
   fuck () { this.get_tasks('do_task') },
   get_tasks (callback = 'do_task') {
-    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-    const steps = $('#steps tbody tr')
+    const [
+      status,
+      steps
+    ] = [
+      fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+      $('#steps tbody tr')
+    ]
     for (let i = 0; i < steps.length; i++) {
       if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
     }
     if (callback === 'do_task') {
-      const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+      [this.groups, this.curators] = [[], []]
+      const [
+        taskInfoHistory,
+        pro
+      ] = [
+        GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'),
+        []
+      ]
       if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-      this.groups = []
-      this.curators = []
-      const pro = []
+
       for (const step of steps) {
         if ($(step).find('span:contains(Success)').length === 0) {
           if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -51,10 +61,17 @@ const prys = { // eslint-disable-line no-unused-vars
       }
       if (pro.length > 0) {
         Promise.all(pro).finally(() => {
-          this.groups = fuc.unique(this.groups)
-          this.curators = fuc.unique(this.curators)
-          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+          [
+            this.groups,
+            this.curators,
+            this.taskInfo.groups,
+            this.taskInfo.curators
+          ] = [
+            fuc.unique(this.groups),
+            fuc.unique(this.curators),
+            fuc.unique(this.taskInfo.groups),
+            fuc.unique(this.taskInfo.curators)
+          ]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.groups.length > 0 || this.curators.length > 0) {
             this.do_task()
@@ -64,10 +81,17 @@ const prys = { // eslint-disable-line no-unused-vars
           }
         })
       } else {
-        this.groups = fuc.unique(this.groups)
-        this.curators = fuc.unique(this.curators)
-        this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-        this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+        [
+          this.groups,
+          this.curators,
+          this.taskInfo.groups,
+          this.taskInfo.curators
+        ] = [
+          fuc.unique(this.groups),
+          fuc.unique(this.curators),
+          fuc.unique(this.taskInfo.groups),
+          fuc.unique(this.taskInfo.curators)
+        ]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         if (this.groups.length > 0 || this.curators.length > 0) {
           this.do_task()
@@ -123,8 +147,7 @@ const prys = { // eslint-disable-line no-unused-vars
         }
         if (pro.length > 0) {
           Promise.all(pro).finally(() => {
-            this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-            this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+            [this.taskInfo.groups, this.taskInfo.curators] = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
             GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
               this.remove(true)
@@ -133,8 +156,7 @@ const prys = { // eslint-disable-line no-unused-vars
             }
           })
         } else {
-          this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-          this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
+          [this.taskInfo.groups, this.taskInfo.curators] = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
             this.remove(true)
@@ -150,24 +172,9 @@ const prys = { // eslint-disable-line no-unused-vars
     if (debug) console.log(this)
   },
   do_task () {
-    this.updateSteamInfo(() => {
+    this.updateSteamInfo(async () => {
       const pro = []
-      const groups = fuc.unique(this.groups)
-      const curators = fuc.unique(this.curators)
-      if (this.conf.fuck.group) {
-        for (const group of groups) {
-          pro.push(new Promise(resolve => {
-            fuc.joinSteamGroup(resolve, group)
-          }))
-        }
-      }
-      if (this.conf.fuck.curator) {
-        for (const curator of curators) {
-          pro.push(new Promise(resolve => {
-            fuc.followCurator(resolve, curator)
-          }))
-        }
-      }
+      await this.toggleActions('fuck', pro)
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         if (this.conf.fuck.verify) this.verify()
@@ -229,21 +236,8 @@ const prys = { // eslint-disable-line no-unused-vars
   remove (remove = false) {
     const pro = []
     if (remove) {
-      this.updateSteamInfo(() => {
-        if (this.conf.remove.group) {
-          for (const group of fuc.unique(this.taskInfo.groups)) {
-            pro.push(new Promise(resolve => {
-              fuc.leaveSteamGroup(resolve, group)
-            }))
-          }
-        }
-        if (this.conf.remove.curator) {
-          for (const curator of fuc.unique(this.taskInfo.curators)) {
-            pro.push(new Promise(resolve => {
-              fuc.unfollowCurator(resolve, curator)
-            }))
-          }
-        }
+      this.updateSteamInfo(async () => {
+        await this.toggleActions('remove', pro)
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         })
@@ -252,9 +246,37 @@ const prys = { // eslint-disable-line no-unused-vars
       this.get_tasks('remove')
     }
   },
+  toggleActions (action, pro) {
+    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+    const curators = action === 'fuck' ? this.curators : this.taskInfo.curators
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'prys', type: 'group', elements: groups, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'prys', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    /* disable
+    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
+    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'prys', type: 'wishlist', elements: wishlists, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'prys', type: 'game', elements: fGames, resolve, action })
+      }))
+    }
+    */
+  },
   get_giveawayId () {
     const id = window.location.search.match(/id=([\d]+)/)
-    return id ? id[1] : window.location.href
+    return id?.[1] || window.location.href
   },
   updateSteamInfo (callback) {
     new Promise(resolve => {
@@ -298,8 +320,7 @@ const prys = { // eslint-disable-line no-unused-vars
   setting: {
     fuck: true,
     verify: true,
-    join: false,
     remove: true
   },
-  conf: GM_getValue('conf')?.prys?.load ? GM_getValue('conf').prys : (GM_getValue('conf')?.global || defaultConf)
+  conf: config?.prys?.load ? config.prys : globalConf
 }

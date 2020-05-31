@@ -9,8 +9,13 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       this.do_task('remove')
     } else {
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
-      const tasks = $('#actions tr')
+      const [
+        status,
+        tasks
+      ] = [
+        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
+        $('#actions tr')
+      ]
       for (const task of tasks) {
         const taskDes = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
         const taskInfo = this.which_task(taskDes)
@@ -26,9 +31,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     }
   },
   which_task (taskDes) {
-    const taskInfo = []
-    const taskName = taskDes.text().trim()
-    const link = taskDes.attr('href')
+    const [taskInfo, taskName, link] = [[], taskDes.text().trim(), taskDes.attr('href')]
     if (/disable adblock/gim.test(taskName)) {
       return [{ name: 'nonSteam' }]
     } else if (/join.*group/gim.test(taskName)) {
@@ -65,8 +68,8 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
   },
   getFinalUrl (e) {
     // 处理任务链接
-    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
-    const pro = []
+    const [status, pro] = [fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` }), []]
+
     for (const link of this.taskInfo.links) {
       pro.push(new Promise(resolve => {
         if (this.taskInfo.toFinalUrl[link]) {
@@ -83,15 +86,27 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
         }
       }
 
-      this.links = fuc.unique(this.links)
-      this.taskInfo.groups = fuc.unique(this.taskInfo.groups)
-      this.taskInfo.curators = fuc.unique(this.taskInfo.curators)
-      this.taskInfo.publishers = fuc.unique(this.taskInfo.publishers)
-      this.taskInfo.developers = fuc.unique(this.taskInfo.developers)
-      this.taskInfo.fGames = fuc.unique(this.taskInfo.fGames)
-      this.taskInfo.wGames = fuc.unique(this.taskInfo.wGames)
-      this.taskInfo.announcements = fuc.unique(this.taskInfo.announcements)
-      this.taskInfo.links = fuc.unique(this.taskInfo.links)
+      [
+        this.links,
+        this.taskInfo.groups,
+        this.taskInfo.curators,
+        this.taskInfo.publishers,
+        this.taskInfo.developers,
+        this.taskInfo.fGames,
+        this.taskInfo.wGames,
+        this.taskInfo.announcements,
+        this.taskInfo.links
+      ] = [
+        fuc.unique(this.links),
+        fuc.unique(this.taskInfo.groups),
+        fuc.unique(this.taskInfo.curators),
+        fuc.unique(this.taskInfo.publishers),
+        fuc.unique(this.taskInfo.developers),
+        fuc.unique(this.taskInfo.fGames),
+        fuc.unique(this.taskInfo.wGames),
+        fuc.unique(this.taskInfo.announcements),
+        fuc.unique(this.taskInfo.links)
+      ]
       // 任务链接处理完成
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
@@ -127,39 +142,39 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     }).then(s => {
       if (s === 1) {
         const pro = []
-        if (this.conf.fuck.joinSteamGroup && this.taskInfo.groups.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && this.taskInfo.groups.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: this.taskInfo.groups, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: this.taskInfo.groups, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.followCurator && this.taskInfo.curators.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'followCurator' : 'unfollowCurator'] && this.taskInfo.curators.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: this.taskInfo.curators, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: this.taskInfo.curators, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.followPublisher && this.taskInfo.publishers.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'followPublisher' : 'unfollowPublisher'] && this.taskInfo.publishers.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: this.taskInfo.publishers, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: this.taskInfo.publishers, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.followDeveloper && this.taskInfo.developers.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'followDeveloper' : 'unfollowDeveloper'] && this.taskInfo.developers.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: this.taskInfo.developers, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: this.taskInfo.developers, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.followGame && this.taskInfo.fGames.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'followGame' : 'unfollowGame'] && this.taskInfo.fGames.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: this.taskInfo.fGames, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: this.taskInfo.fGames, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.addToWishlist && this.taskInfo.wGames.length > 0) {
+        if (this.conf[act][act === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && this.taskInfo.wGames.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: this.taskInfo.wGames, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: this.taskInfo.wGames, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        if (this.conf.fuck.likeAnnouncement && this.taskInfo.announcements.length > 0) {
+        if (act === 'fuck' && this.conf.fuck.likeAnnouncement && this.taskInfo.announcements.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: this.taskInfo.announcements, resolve: resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+            fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: this.taskInfo.announcements, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
         Promise.all(pro).finally(() => {

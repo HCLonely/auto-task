@@ -1,49 +1,4 @@
-/* global getI18n, vueUi */
-const steamInfo = Object.assign({
-  userName: '',
-  steam64Id: '',
-  communitySessionID: '',
-  storeSessionID: '',
-  updateTime: 0
-}, GM_getValue('steamInfo'))
-const defaultConf = {
-  fuck: {
-    joinSteamGroup: true,
-    followCurator: true,
-    followDeveloper: true,
-    followPublisher: true,
-    likeAnnouncement: true,
-    addToWishlist: true,
-    followGame: true,
-    visitLink: true,
-    verifyTask: true,
-    doTask: true,
-    autoLogin: false
-  },
-  verify: {
-    verifyTask: true
-  },
-  remove: {
-    leaveSteamGroup: true,
-    unfollowCurator: true,
-    unfollowDeveloper: true,
-    unfollowPublisher: true,
-    removeFromWishlist: true,
-    unfollowGame: true
-  },
-  other: {
-    showLogs: true,
-    showDetails: false,
-    checkLogin: true,
-    checkLeft: true,
-    autoOpen: false,
-    reCaptcha: false
-  },
-  announcement: ''
-}
-const config = Object.assign(defaultConf, GM_getValue('conf') || {})
-const globalConf = config.global
-const debug = !!globalConf.other.showDetails
+/* global getI18n, vueUi, debug, steamInfo, defaultConf */
 const fuc = {
   httpRequest (e) {
     e.method = e.method.toUpperCase()
@@ -85,9 +40,15 @@ const fuc = {
                   status.error('Error:' + getI18n('loginSteamCommunity'), true)
                   reject(Error('Not Login'))
                 } else {
-                  const steam64Id = response.responseText.match(/g_steamID = "(.+?)";/)
-                  const communitySessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                  const userName = response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
+                  const [
+                    steam64Id,
+                    communitySessionID,
+                    userName
+                  ] = [
+                    response.responseText.match(/g_steamID = "(.+?)";/),
+                    response.responseText.match(/g_sessionID = "(.+?)";/),
+                    response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
+                  ]
                   if (steam64Id) steamInfo.steam64Id = steam64Id[1]
                   if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
                   if (userName) steamInfo.userName = userName[1]
@@ -167,8 +128,13 @@ const fuc = {
     })
   },
   getGroupID (groupName, callback) {
-    const status = this.echoLog({ type: 'getGroupId', text: groupName })
-    const groupNameToId = GM_getValue('groupNameToId') || {}
+    const [
+      status,
+      groupNameToId
+    ] = [
+      this.echoLog({ type: 'getGroupId', text: groupName }),
+      GM_getValue('groupNameToId') || {}
+    ]
     if (groupNameToId[groupName]) {
       status.success()
       callback(groupName, groupNameToId[groupName])
@@ -259,8 +225,13 @@ const fuc = {
     this.followCurator(r, curatorId, '0')
   },
   getCuratorID (developerName, callback, isPublisher = 0) {
-    const status = this.echoLog({ type: isPublisher ? 'getPublisherId' : 'getDeveloperId', text: developerName })
-    const developerNameToId = GM_getValue('developerNameToId') || {}
+    const [
+      status,
+      developerNameToId
+    ] = [
+      this.echoLog({ type: isPublisher ? 'getPublisherId' : 'getDeveloperId', text: developerName }),
+      GM_getValue('developerNameToId') || {}
+    ]
     if (developerNameToId[developerName]) {
       status.success()
       callback(developerName, developerNameToId[developerName])
@@ -579,7 +550,7 @@ const fuc = {
       console.error(err)
     })
   },
-  checkUpdate (v, s = false) {
+  checkUpdate (v, s = false) { // 修改
     v.icon = 'el-icon-loading'
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
@@ -633,7 +604,7 @@ const fuc = {
       status
     })
   },
-  getAnnouncement (v) {
+  getAnnouncement (v) { // 修改
     v.announcementIcon = 'el-icon-loading'
     const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
     this.httpRequest({
@@ -687,12 +658,11 @@ const fuc = {
     })
   },
   newTabBlock () {
-    const d = new Date()
-    const cookiename = 'haveVisited1'
+    const [d, cookiename] = [new Date(), 'haveVisited1']
     document.cookie = cookiename + '=1; path=/'
     document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
   },
-  echoLog (e) {
+  echoLog (e) { // switch case !!
     let ele = ''
     switch (e.type) {
       case 'updateSteamCommunity':

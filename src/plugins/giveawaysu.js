@@ -43,6 +43,9 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     } else if (/follow.*publisher/gim.test(taskName)) {
       taskInfo.push({ name: 'publisher', link })
       this.store = 1
+    } else if (/follow.*franchise/gim.test(taskName)) {
+      taskInfo.push({ name: 'franchise', link })
+      this.store = 1
     } else if (/follow.*developer/gim.test(taskName)) {
       taskInfo.push({ name: 'developer', link })
       this.store = 1
@@ -92,6 +95,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
         this.taskInfo.curators,
         this.taskInfo.publishers,
         this.taskInfo.developers,
+        this.taskInfo.franchises,
         this.taskInfo.fGames,
         this.taskInfo.wGames,
         this.taskInfo.announcements,
@@ -102,6 +106,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
         fuc.unique(this.taskInfo.curators),
         fuc.unique(this.taskInfo.publishers),
         fuc.unique(this.taskInfo.developers),
+        fuc.unique(this.taskInfo.franchises),
         fuc.unique(this.taskInfo.fGames),
         fuc.unique(this.taskInfo.wGames),
         fuc.unique(this.taskInfo.announcements),
@@ -162,6 +167,11 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
             fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: this.taskInfo.developers, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
+        if (this.conf[act][act === 'fuck' ? 'followFranchise' : 'unfollowFranchise'] && this.taskInfo.franchises.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'giveawaysu', type: 'franchise', elements: this.taskInfo.franchises, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+          }))
+        }
         if (this.conf[act][act === 'fuck' ? 'followGame' : 'unfollowGame'] && this.taskInfo.fGames.length > 0) {
           pro.push(new Promise(resolve => {
             fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: this.taskInfo.fGames, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
@@ -214,6 +224,7 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     curators: [], // 任务需要关注的鉴赏家
     publishers: [], // 任务需要关注的发行商
     developers: [], // 任务需要关注的开发商
+    franchises: [], // 任务需要关注的系列
     fGames: [], // 任务需要关注的游戏
     wGames: [], // 任务需要加愿望单的游戏
     announcements: [], // 任务需要点赞的通知

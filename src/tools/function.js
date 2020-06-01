@@ -224,12 +224,12 @@ const fuc = {
   unfollowCurator (r, curatorId) {
     this.followCurator(r, curatorId, '0')
   },
-  getCuratorID (developerName, callback, isPublisher = 0) {
+  getCuratorID (developerName, callback, type, path) {
     const [
       status,
       developerNameToId
     ] = [
-      this.echoLog({ type: isPublisher ? 'getPublisherId' : 'getDeveloperId', text: developerName }),
+      this.echoLog({ type: 'getCuratorId', text: developerName }),
       GM_getValue('developerNameToId') || {}
     ]
     if (developerNameToId[developerName]) {
@@ -238,7 +238,7 @@ const fuc = {
     } else {
       new Promise(resolve => {
         this.httpRequest({
-          url: `https://store.steampowered.com/${isPublisher ? 'publisher' : 'developer'}/${developerName}`,
+          url: `https://store.steampowered.com/${path}/${developerName}`,
           method: 'GET',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
           onload (response) {
@@ -269,23 +269,29 @@ const fuc = {
       })
     }
   },
-  followDeveloper (r, developerName, isPublisher = 0) {
+  followDeveloper (r, developerName, type = 'followDeveloper', path = 'developer') {
     this.getCuratorID(developerName, (developerName, curatorId) => {
-      const status = this.echoLog({ type: isPublisher ? 'followPublisher' : 'followDeveloper', text: developerName })
+      const status = this.echoLog({ type, text: developerName })
       this.followCurator(r, curatorId, '1', status)
-    }, isPublisher)
+    }, type, path)
   },
-  unfollowDeveloper (r, developerName, isPublisher = 0) {
+  unfollowDeveloper (r, developerName, type = 'unfollowDeveloper', path = 'developer') {
     this.getCuratorID(developerName, (developerName, curatorId) => {
-      const status = this.echoLog({ type: isPublisher ? 'unfollowPublisher' : 'unfollowDeveloper', text: developerName })
+      const status = this.echoLog({ type, text: developerName })
       this.followCurator(r, curatorId, '0', status)
-    }, isPublisher)
+    }, type, path)
   },
   followPublisher (r, publisherName) {
-    this.followDeveloper(r, publisherName, 1)
+    this.followDeveloper(r, publisherName, 'followPublisher', 'publisher')
   },
   unfollowPublisher (r, publisherName) {
-    this.unfollowDeveloper(r, publisherName, 1)
+    this.unfollowDeveloper(r, publisherName, 'unfollowPublisher', 'publisher')
+  },
+  followFranchise (r, franchiseName) {
+    this.followDeveloper(r, franchiseName, 'followFranchise', 'franchise')
+  },
+  unfollowFranchise (r, franchiseName) {
+    this.unfollowDeveloper(r, franchiseName, 'unfollowFranchise', 'franchise')
   },
   addWishlist (r, gameId) {
     const status = this.echoLog({ type: 'addWishlist', text: gameId })
@@ -704,6 +710,15 @@ const fuc = {
       case 'unfollowPublisher':
         ele = $(`<li>${getI18n('unfollowPublisher')}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
+      case 'getFranchiseId':
+        ele = $(`<li>${getI18n('getFranchiseId')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
+      case 'followFranchise':
+        ele = $(`<li>${getI18n('followFranchise')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
+      case 'unfollowFranchise':
+        ele = $(`<li>${getI18n('unfollowFranchise')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
       case 'addWishlist':
         ele = $(`<li>${getI18n('addWishlist')}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
@@ -812,6 +827,9 @@ const fuc = {
           case 'developer':
             elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
             break
+          case 'franchise':
+            elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
+            break
           case 'game':
           case 'wishlist':
             elementName = toFinalUrlElement.match(/app\/([\d]+)/)
@@ -845,6 +863,11 @@ const fuc = {
           case 'developer':
             pro.push(new Promise(resolve => {
               action === 'fuck' ? fuc.followDeveloper(resolve, elementName[1]) : fuc.unfollowDeveloper(resolve, elementName[1])
+            }))
+            break
+          case 'franchise':
+            pro.push(new Promise(resolve => {
+              action === 'fuck' ? fuc.followFranchise(resolve, elementName[1]) : fuc.unfollowFranchise(resolve, elementName[1])
             }))
             break
           case 'wishlist':

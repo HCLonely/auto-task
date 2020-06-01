@@ -204,7 +204,7 @@ const takekey = { // eslint-disable-line no-unused-vars
     if ($('i.fa-sign-in').length > 0) window.open('/auth/steam', '_self')
   },
   checkLeft (ui) {
-    const leftKey = $('span:contains(Осталось ключей)').text().match(/[\d]+/)
+    const leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)
     if (!(leftKey && parseInt(leftKey[0]) > 0)) {
       ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
         confirmButtonText: getI18n('confirm'),

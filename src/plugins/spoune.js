@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const spoune = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('spoune') },
   fuck () { this.get_tasks() },
@@ -119,18 +119,22 @@ const spoune = { // eslint-disable-line no-unused-vars
     }
     fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font>，<font class="warning">${getI18n('finishSelf')}</font></li>` })
   },
-  checkLeft (ui) {
+  checkLeft () {
     const checkLeft = setInterval(() => {
       if ($('#keysAvailable').length > 0) {
         clearInterval(checkLeft)
         if ($('#keysAvailable').text() === '0') {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(() => {
-            window.close()
+            showCancelButton: true
+          }).then((result) => {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       }

@@ -4,7 +4,7 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
   after (website) {
     if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
   },
-  fuck (vue) {
+  fuck () {
     GM_setValue('lottery', 1)
     if ($('a.registration-button').length > 0) {
       if (this.conf.fuck.autoLogin) {
@@ -29,7 +29,11 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
             status
           })
         } else {
-          vue.$message({ type: 'warning', message: getI18n('needLogin') })
+          $('body').overHang({
+            type: 'warn',
+            activity: 'notification',
+            message: getI18n('needLogin')
+          })
           $('a.registration-button')[0].click()
           $('button[value=Login]').click(() => {
             const conf = GM_getValue('conf')
@@ -38,7 +42,11 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
           })
         }
       } else {
-        vue.$message({ type: 'warning', message: getI18n('needLogin') })
+        $('body').overHang({
+          type: 'warn',
+          activity: 'notification',
+          message: getI18n('needLogin')
+        })
         $('a.registration-button')[0].click()
       }
     } else {

@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const prys = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('prys.revadike') },
   fuck () { this.get_tasks('do_task') },
@@ -297,16 +297,20 @@ const prys = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLeft (ui) {
+  checkLeft () {
     const left = $('#header').text().match(/([\d]+).*?prize.*?left/)
     if (!(left.length > 0 && left[1] !== '0')) {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

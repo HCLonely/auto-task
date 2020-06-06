@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug, language */
+/* global getI18n, fuc, globalConf, config, debug, language, Swal */
 const gleam = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('gleam.io') },
   fuck () { this.get_tasks('do_task') },
@@ -286,15 +286,19 @@ const gleam = { // eslint-disable-line no-unused-vars
       console.error(err)
     })
   },
-  checkLeft (ui) {
+  checkLeft () {
     if ($('.massive-message:contains(ended)').is(':visible')) {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

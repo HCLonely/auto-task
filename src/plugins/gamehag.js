@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const gamehag = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('gamehag') },
   before () {
@@ -141,15 +141,19 @@ const gamehag = { // eslint-disable-line no-unused-vars
     const id = window.location.href.match(/\/giveaway\/([\d]+)/)
     return id ? id[1] : window.location.href
   },
-  checkLeft (ui) {
+  checkLeft () {
     if ($('.giveaway-counter:first .strong').text() === '0') {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

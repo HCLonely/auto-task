@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const marvelousga = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot')) },
   before () { fuc.newTabBlock() },
@@ -229,16 +229,20 @@ const marvelousga = { // eslint-disable-line no-unused-vars
   checkLogin () {
     if ($('a[href*=login]').length > 0) window.open('/login', '_self')
   },
-  checkLeft (ui) {
+  checkLeft () {
     if ($('h3.text-danger:contains(this giveaway is closed)').length > 0) {
       $('#link_to_click').remove()
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

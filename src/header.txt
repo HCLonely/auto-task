@@ -39,7 +39,9 @@
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill
-// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/lib/auto-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.js
+// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.css
+// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues

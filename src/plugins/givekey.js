@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const givekey = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('gkey') || window.location.host.includes('givekey')) },
   before (website) {
@@ -12,12 +12,16 @@ const givekey = { // eslint-disable-line no-unused-vars
     }, 500)
   },
   after () { $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled') },
-  fuck (btnArea) {
+  fuck () {
     const transBtn = $('.yt-button__icon.yt-button__icon_type_right')
     if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
     fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('changeLanguage')}</font></li>` })
-    givekey.wssApp.message = btnArea.$message({ message: getI18n('connectWss'), duration: 0 })
-    $(() => givekey.wssApp.init(btnArea))
+    $('body').overHang({
+      type: 'info',
+      activity: 'notification',
+      message: getI18n('connectWss')
+    })
+    $(() => givekey.wssApp.init())
     fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('connectWssWait')}</font></li>` })
     fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('beforeFuck')}</font></li>` })
     fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('gkrobot')}</font></li>` })
@@ -260,14 +264,17 @@ const givekey = { // eslint-disable-line no-unused-vars
       loading: false,
       centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
       uid: $('meta[name="uid"]').attr('content'),
-      init (m) {
+      init () {
         this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
         this.centrifuge.connect()
         this.centrifuge.on('connect', e => {
           if (debug) console.log(getI18n('wssConnected'))
           $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
-          givekey.wssApp.message.close()
-          m.$message({ message: getI18n('wssConnectSuccess'), type: 'success' })
+          $('body').overHang({
+            type: 'success',
+            activity: 'notification',
+            message: getI18n('wssConnectSuccess')
+          })
           for (const a of $('a[id^=task_]')) {
             $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论')
               .replace('Подписаться на разработчика', '订阅开发商')
@@ -285,7 +292,11 @@ const givekey = { // eslint-disable-line no-unused-vars
         this.centrifuge.on('disconnect', e => {
           if (debug) console.log(`${getI18n('wssDisconnected')}\n${e.reason}`)
           $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-          givekey.wssApp.message = m.$message({ message: getI18n('wssReconnect'), type: 'warning', duration: 0 })
+          $('body').overHang({
+            type: 'warning',
+            activity: 'notification',
+            message: getI18n('wssReconnect')
+          })
         })
         if (this.uid) {
           this.centrifuge.subscribe(`usr#${this.uid}`, data => {
@@ -378,15 +389,19 @@ const givekey = { // eslint-disable-line no-unused-vars
   checkLogin () {
     if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
   },
-  checkLeft (ui) {
+  checkLeft () {
     if ($('#keys_count').text() === '0') {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

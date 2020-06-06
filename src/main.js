@@ -1,4 +1,4 @@
-/* global getI18n, fuc, plugins, config, globalConf, defaultConf, getLanguage, language, vueUi, loadSetting, loadAnnouncement */
+/* global getI18n, fuc, plugins, config, globalConf, defaultConf, getLanguage, language, Swal, loadSetting, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
     loadSetting(config)
@@ -17,7 +17,7 @@ if (window.location.host.includes('hclonely')) {
   })
 
   if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
-  if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft(vueUi)
+  if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
 
   $('body').append(`
 <div id="fuck-task-app">
@@ -196,15 +196,21 @@ GM_registerMenuCommand(getI18n('updateSteamInfo'), () => {
   })
 })
 GM_registerMenuCommand('Language', () => {
-  vueUi.$msgbox({
+  Swal.fire({
     title: getI18n('language') + ' : ' + language,
-    message: `<select id="auto-task-language"><option value="auto">${getI18n('auto')}</option><option value="zh-cn">简体中文</option><option value="en">English</option></select>`,
-    dangerouslyUseHTMLString: true,
+    input: 'select',
+    inputOptions: {
+      auto: getI18n('auto'),
+      'zh-cn': '简体中文',
+      en: 'English'
+    },
     confirmButtonText: getI18n('confirm'),
     cancelButtonText: getI18n('cancel'),
     type: 'info'
-  }).then(value => {
-    if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
-    language = getLanguage() // eslint-disable-line no-global-assign
+  }).then((result) => {
+    if (result.value) {
+      GM_setValue('language', result.value)
+      language = getLanguage() // eslint-disable-line no-global-assign
+    }
   })
 })

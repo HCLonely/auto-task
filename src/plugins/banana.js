@@ -1,20 +1,23 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const banana = { // eslint-disable-line no-unused-vars
   test () { return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')) },
-  fuck (vue) {
+  fuck () {
     const [needBanana, needPoints] = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
     let msg = ''
     if (needBanana.length > 0) msg = getI18n('needBanana', needBanana.text().match(/[\d]+/gim)[0])
     if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
     if (needPoints.length > 0 || needBanana.length > 0) {
-      vue.$confirm(msg, getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: msg,
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning'
-      }).then(() => {
-        this.get_tasks('do_task')
-      }).catch(err => {
-        console.error(err)
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          this.get_tasks('do_task')
+        }
       })
     } else {
       this.get_tasks('do_task')
@@ -262,15 +265,19 @@ const banana = { // eslint-disable-line no-unused-vars
   checkLogin () {
     if ($('a.steam[title*=team]').length > 0) window.open('/giveaway/steam/', '_self')
   },
-  checkLeft (ui) {
+  checkLeft () {
     if ($('.left b').text() === '0') {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

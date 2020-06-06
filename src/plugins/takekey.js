@@ -1,4 +1,4 @@
-/* global getI18n, fuc, globalConf, config, debug */
+/* global getI18n, fuc, globalConf, config, debug, Swal */
 const takekey = { // eslint-disable-line no-unused-vars
   test () { return window.location.host.includes('takekey') },
   fuck () { this.get_tasks('do_task') },
@@ -203,16 +203,20 @@ const takekey = { // eslint-disable-line no-unused-vars
   checkLogin () {
     if ($('i.fa-sign-in').length > 0) window.open('/auth/steam', '_self')
   },
-  checkLeft (ui) {
+  checkLeft () {
     const leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)
     if (!(leftKey && parseInt(leftKey[0]) > 0)) {
-      ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+      Swal.fire({
+        icon: 'warning',
+        title: getI18n('notice'),
+        text: getI18n('noKeysLeft'),
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'warning',
-        center: true
-      }).then(() => {
-        window.close()
+        showCancelButton: true
+      }).then((result) => {
+        if (result.value) {
+          window.close()
+        }
       })
     }
   },

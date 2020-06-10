@@ -142,9 +142,12 @@ const spoune = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {
-    fuck: true,
-    verify: false,
-    remove: false
+    verify: {
+      show: false
+    },
+    remove: {
+      show: false
+    }
   },
   conf: config?.spoune?.load ? config.spoune : globalConf
 }

@@ -181,9 +181,12 @@ const indiedb = { // eslint-disable-line no-unused-vars
     if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
   },
   setting: {
-    fuck: true,
-    verify: false,
-    remove: false
+    verify: {
+      show: false
+    },
+    remove: {
+      show: false
+    }
   },
   conf: config?.indiedb?.load ? config.indiedb : globalConf
 }

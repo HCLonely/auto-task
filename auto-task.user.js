@@ -38,8 +38,10 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
-// @require        https://cdn.jsdelivr.net/npm/promise-polyfill
-// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/lib/auto-task.min.css
+// @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.js
+// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.css
+// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/auto-task.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -146,6 +148,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       getPublisherId: '正在获取发行商ID',
       followPublisher: '正在关注发行商',
       unfollowPublisher: '正在取关发行商',
+      getFranchiseId: '正在获取系列ID',
+      followFranchise: '正在关注系列',
+      unfollowFranchise: '正在取关系列',
       addWishlist: '正在添加愿望单',
       removeWishlist: '正在移除愿望单',
       followGame: '正在关注游戏',
@@ -274,6 +279,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       getPublisherId: 'Getting publisher ID',
       followPublisher: 'Following publisher',
       unfollowPublisher: 'Unfollowing publisher',
+      getFranchiseId: 'Getting franchise ID',
+      followFranchise: 'Following franchise',
+      unfollowFranchise: 'Unfollowing franchise',
       addWishlist: 'Adding to wishlist',
       removeWishlist: 'Removing from wishlist',
       followGame: 'Following game',
@@ -925,12 +933,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       unfollowCurator: function unfollowCurator (r, curatorId) {
         this.followCurator(r, curatorId, '0')
       },
-      getCuratorID: function getCuratorID (developerName, callback) {
+      getCuratorID: function getCuratorID (developerName, callback, type, path) {
         var _this4 = this
 
-        var isPublisher = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0
         var _ref3 = [this.echoLog({
-          type: isPublisher ? 'getPublisherId' : 'getDeveloperId',
+          type: 'getCuratorId',
           text: developerName
         }), GM_getValue('developerNameToId') || {}]
         var status = _ref3[0]
@@ -942,7 +949,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         } else {
           new Promise(function (resolve) {
             _this4.httpRequest({
-              url: 'https://store.steampowered.com/'.concat(isPublisher ? 'publisher' : 'developer', '/').concat(developerName),
+              url: 'https://store.steampowered.com/'.concat(path, '/').concat(developerName),
               method: 'GET',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -982,34 +989,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       followDeveloper: function followDeveloper (r, developerName) {
         var _this5 = this
 
-        var isPublisher = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0
+        var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'followDeveloper'
+        var path = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'developer'
         this.getCuratorID(developerName, function (developerName, curatorId) {
           var status = _this5.echoLog({
-            type: isPublisher ? 'followPublisher' : 'followDeveloper',
+            type: type,
             text: developerName
           })
 
           _this5.followCurator(r, curatorId, '1', status)
-        }, isPublisher)
+        }, type, path)
       },
       unfollowDeveloper: function unfollowDeveloper (r, developerName) {
         var _this6 = this
 
-        var isPublisher = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0
+        var type = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'unfollowDeveloper'
+        var path = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'developer'
         this.getCuratorID(developerName, function (developerName, curatorId) {
           var status = _this6.echoLog({
-            type: isPublisher ? 'unfollowPublisher' : 'unfollowDeveloper',
+            type: type,
             text: developerName
           })
 
           _this6.followCurator(r, curatorId, '0', status)
-        }, isPublisher)
+        }, type, path)
       },
       followPublisher: function followPublisher (r, publisherName) {
-        this.followDeveloper(r, publisherName, 1)
+        this.followDeveloper(r, publisherName, 'followPublisher', 'publisher')
       },
       unfollowPublisher: function unfollowPublisher (r, publisherName) {
-        this.unfollowDeveloper(r, publisherName, 1)
+        this.unfollowDeveloper(r, publisherName, 'unfollowPublisher', 'publisher')
+      },
+      followFranchise: function followFranchise (r, franchiseName) {
+        this.followDeveloper(r, franchiseName, 'followFranchise', 'franchise')
+      },
+      unfollowFranchise: function unfollowFranchise (r, franchiseName) {
+        this.unfollowDeveloper(r, franchiseName, 'unfollowFranchise', 'franchise')
       },
       addWishlist: function addWishlist (r, gameId) {
         var _this7 = this
@@ -1710,6 +1725,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             ele = $('<li>'.concat(getI18n('unfollowPublisher'), '<a href="https://store.steampowered.com/publisher/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
 
+          case 'getFranchiseId':
+            ele = $('<li>'.concat(getI18n('getFranchiseId'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+            break
+
+          case 'followFranchise':
+            ele = $('<li>'.concat(getI18n('followFranchise'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+            break
+
+          case 'unfollowFranchise':
+            ele = $('<li>'.concat(getI18n('unfollowFranchise'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+            break
+
           case 'addWishlist':
             ele = $('<li>'.concat(getI18n('addWishlist'), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
@@ -1871,6 +1898,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
                   break
 
+                case 'franchise':
+                  elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
+                  break
+
                 case 'game':
                 case 'wishlist':
                   elementName = toFinalUrlElement.match(/app\/([\d]+)/)
@@ -1910,6 +1941,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 case 'developer':
                   pro.push(new Promise(function (resolve) {
                     action === 'fuck' ? fuc.followDeveloper(resolve, elementName[1]) : fuc.unfollowDeveloper(resolve, elementName[1])
+                  }))
+                  break
+
+                case 'franchise':
+                  pro.push(new Promise(function (resolve) {
+                    action === 'fuck' ? fuc.followFranchise(resolve, elementName[1]) : fuc.unfollowFranchise(resolve, elementName[1])
                   }))
                   break
 
@@ -1954,7 +1991,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       test: function test () {
         return window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')
       },
-      fuck: function fuck (vue) {
+      fuck: function fuck () {
         var _this12 = this
 
         var _ref5 = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
@@ -1965,14 +2002,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
 
         if (needPoints.length > 0 || needBanana.length > 0) {
-          vue.$confirm(msg, getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: msg,
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning'
-          }).then(function () {
-            _this12.get_tasks('do_task')
-          }).catch(function (err) {
-            console.error(err)
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              _this12.get_tasks('do_task')
+            }
           })
         } else {
           this.get_tasks('do_task')
@@ -2378,15 +2418,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkLogin: function checkLogin () {
         if ($('a.steam[title*=team]').length > 0) window.open('/giveaway/steam/', '_self')
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('.left b').text() === '0') {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -2429,7 +2473,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       after: function after (website) {
         if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
       },
-      fuck: function fuck (vue) {
+      fuck: function fuck () {
         GM_setValue('lottery', 1)
 
         if ($('a.registration-button').length > 0) {
@@ -2459,8 +2503,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: status
               })
             } else {
-              vue.$message({
-                type: 'warning',
+              $('body').overHang({
+                type: 'warn',
+                activity: 'notification',
                 message: getI18n('needLogin')
               })
               $('a.registration-button')[0].click()
@@ -2474,8 +2519,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               })
             }
           } else {
-            vue.$message({
-              type: 'warning',
+            $('body').overHang({
+              type: 'warn',
+              activity: 'notification',
               message: getI18n('needLogin')
             })
             $('a.registration-button')[0].click()
@@ -2895,15 +2941,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var id = window.location.href.match(/\/giveaway\/([\d]+)/)
         return id ? id[1] : window.location.href
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('.giveaway-counter:first .strong').text() === '0') {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -3008,6 +3058,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             link: link
           })
           this.store = 1
+        } else if (/follow.*franchise/gim.test(taskName)) {
+          taskInfo.push({
+            name: 'franchise',
+            link: link
+          })
+          this.store = 1
         } else if (/follow.*developer/gim.test(taskName)) {
           taskInfo.push({
             name: 'developer',
@@ -3105,16 +3161,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator10.f()
           }
 
-          var _ref26 = [fuc.unique(_this20.links), fuc.unique(_this20.taskInfo.groups), fuc.unique(_this20.taskInfo.curators), fuc.unique(_this20.taskInfo.publishers), fuc.unique(_this20.taskInfo.developers), fuc.unique(_this20.taskInfo.fGames), fuc.unique(_this20.taskInfo.wGames), fuc.unique(_this20.taskInfo.announcements), fuc.unique(_this20.taskInfo.links)]
+          var _ref26 = [fuc.unique(_this20.links), fuc.unique(_this20.taskInfo.groups), fuc.unique(_this20.taskInfo.curators), fuc.unique(_this20.taskInfo.publishers), fuc.unique(_this20.taskInfo.developers), fuc.unique(_this20.taskInfo.franchises), fuc.unique(_this20.taskInfo.fGames), fuc.unique(_this20.taskInfo.wGames), fuc.unique(_this20.taskInfo.announcements), fuc.unique(_this20.taskInfo.links)]
           _this20.links = _ref26[0]
           _this20.taskInfo.groups = _ref26[1]
           _this20.taskInfo.curators = _ref26[2]
           _this20.taskInfo.publishers = _ref26[3]
           _this20.taskInfo.developers = _ref26[4]
-          _this20.taskInfo.fGames = _ref26[5]
-          _this20.taskInfo.wGames = _ref26[6]
-          _this20.taskInfo.announcements = _ref26[7]
-          _this20.taskInfo.links = _ref26[8]
+          _this20.taskInfo.franchises = _ref26[5]
+          _this20.taskInfo.fGames = _ref26[6]
+          _this20.taskInfo.wGames = _ref26[7]
+          _this20.taskInfo.announcements = _ref26[8]
+          _this20.taskInfo.links = _ref26[9]
           // 任务链接处理完成
           GM_setValue('taskInfo[' + window.location.host + _this20.get_giveawayId() + ']', _this20.taskInfo)
           status.success()
@@ -3198,6 +3255,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }))
             }
 
+            if (_this21.conf[act][act === 'fuck' ? 'followFranchise' : 'unfollowFranchise'] && _this21.taskInfo.franchises.length > 0) {
+              _pro3.push(new Promise(function (resolve) {
+                fuc.toggleActions({
+                  website: 'giveawaysu',
+                  type: 'franchise',
+                  elements: _this21.taskInfo.franchises,
+                  resolve: resolve,
+                  action: act,
+                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                })
+              }))
+            }
+
             if (_this21.conf[act][act === 'fuck' ? 'followGame' : 'unfollowGame'] && _this21.taskInfo.fGames.length > 0) {
               _pro3.push(new Promise(function (resolve) {
                 fuc.toggleActions({
@@ -3266,15 +3336,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkLogin: function checkLogin () {
         if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('.giveaway-ended').length > 0) {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -3291,6 +3365,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         // 任务需要关注的发行商
         developers: [],
         // 任务需要关注的开发商
+        franchises: [],
+        // 任务需要关注的系列
         fGames: [],
         // 任务需要关注的游戏
         wGames: [],
@@ -3326,19 +3402,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       after: function after () {
         $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
       },
-      fuck: function fuck (btnArea) {
+      fuck: function fuck () {
         var transBtn = $('.yt-button__icon.yt-button__icon_type_right')
         if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
         fuc.echoLog({
           type: 'custom',
           text: '<li><font class="error">'.concat(getI18n('changeLanguage'), '</font></li>')
         })
-        givekey.wssApp.message = btnArea.$message({
-          message: getI18n('connectWss'),
-          duration: 0
+        $('body').overHang({
+          type: 'info',
+          activity: 'notification',
+          message: getI18n('connectWss')
         })
         $(function () {
-          return givekey.wssApp.init(btnArea)
+          return givekey.wssApp.init()
         })
         fuc.echoLog({
           type: 'custom',
@@ -3690,16 +3767,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           loading: false,
           centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
           uid: $('meta[name="uid"]').attr('content'),
-          init: function init (m) {
+          init: function init () {
             this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
             this.centrifuge.connect()
             this.centrifuge.on('connect', function (e) {
               if (debug) console.log(getI18n('wssConnected'))
               $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
-              givekey.wssApp.message.close()
-              m.$message({
-                message: getI18n('wssConnectSuccess'),
-                type: 'success'
+              $('body').overHang({
+                type: 'success',
+                activity: 'notification',
+                message: getI18n('wssConnectSuccess')
               })
 
               var _iterator14 = _createForOfIteratorHelper($('a[id^=task_]'))
@@ -3719,10 +3796,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             this.centrifuge.on('disconnect', function (e) {
               if (debug) console.log(''.concat(getI18n('wssDisconnected'), '\n').concat(e.reason))
               $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-              givekey.wssApp.message = m.$message({
-                message: getI18n('wssReconnect'),
+              $('body').overHang({
                 type: 'warning',
-                duration: 0
+                activity: 'notification',
+                message: getI18n('wssReconnect')
               })
             })
 
@@ -3833,15 +3910,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkLogin: function checkLogin () {
         if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('#keys_count').text() === '0') {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -4280,15 +4361,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           console.error(err)
         })
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('.massive-message:contains(ended)').is(':visible')) {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -4960,16 +5045,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkLogin: function checkLogin () {
         if ($('a[href*=login]').length > 0) window.open('/login', '_self')
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         if ($('h3.text-danger:contains(this giveaway is closed)').length > 0) {
           $('#link_to_click').remove()
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -5616,17 +5705,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           console.error(err)
         })
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         var left = $('#header').text().match(/([\d]+).*?prize.*?left/)
 
         if (!(left.length > 0 && left[1] !== '0')) {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -5860,19 +5953,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }, _callee13)
         }))()
       },
-      checkLeft: function checkLeft (ui) {
+      checkLeft: function checkLeft () {
         var checkLeft = setInterval(function () {
           if ($('#keysAvailable').length > 0) {
             clearInterval(checkLeft)
 
             if ($('#keysAvailable').text() === '0') {
-              ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+              Swal.fire({
+                icon: 'warning',
+                title: getI18n('notice'),
+                text: getI18n('noKeysLeft'),
                 confirmButtonText: getI18n('confirm'),
                 cancelButtonText: getI18n('cancel'),
-                type: 'warning',
-                center: true
-              }).then(function () {
-                window.close()
+                showCancelButton: true
+              }).then(function (result) {
+                if (result.value) {
+                  window.close()
+                }
               })
             }
           }
@@ -6176,17 +6273,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkLogin: function checkLogin () {
         if ($('i.fa-sign-in').length > 0) window.open('/auth/steam', '_self')
       },
-      checkLeft: function checkLeft (ui) {
-        var leftKey = $('span:contains(Осталось ключей)').text().match(/[\d]+/)
+      checkLeft: function checkLeft () {
+        var leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)
 
         if (!(leftKey && parseInt(leftKey[0]) > 0)) {
-          ui.$confirm(getI18n('noKeysLeft'), getI18n('notice'), {
+          Swal.fire({
+            icon: 'warning',
+            title: getI18n('notice'),
+            text: getI18n('noKeysLeft'),
             confirmButtonText: getI18n('confirm'),
             cancelButtonText: getI18n('cancel'),
-            type: 'warning',
-            center: true
-          }).then(function () {
-            window.close()
+            showCancelButton: true
+          }).then(function (result) {
+            if (result.value) {
+              window.close()
+            }
           })
         }
       },
@@ -6232,7 +6333,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       })
       if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
-      if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft(vueUi)
+      if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
       $('body').append('\n<div id="fuck-task-app">\n  <div v-cloak id="fuck-task-btn">\n  <el-button :style="style" @click="toggleThisDiv" :icon="icon" :title="title" :show="show"></el-button>\n    <el-button type="primary" v-for="item in buttons" v-if="item.show" @click="item.click" :id="item.id" :title="item.title">{{item.text}}</el-button>\n    <el-button type="primary" @click="toggle" :id="drawerBtn.id" :title="drawerBtn.title">{{drawerBtn.text}}</el-button>\n  </div>\n  <div id="fuck-task-info"></div>\n</div>\n')
       var showLogs = globalConf.other ? globalConf.other.showLogs : defaultConf.other.showLogs
       var btnNum = 1
@@ -6387,8 +6488,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             status.success()
           }
         }
-      })
-      if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
+      }) // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
+
       $('.fuck-task-logs .el-notification__content').show()
 
       if (!showLogs) {
@@ -6417,16 +6518,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
     })
     GM_registerMenuCommand('Language', function () {
-      vueUi.$msgbox({
+      Swal.fire({
         title: getI18n('language') + ' : ' + language,
-        message: '<select id="auto-task-language"><option value="auto">'.concat(getI18n('auto'), '</option><option value="zh-cn">\u7B80\u4F53\u4E2D\u6587</option><option value="en">English</option></select>'),
-        dangerouslyUseHTMLString: true,
+        input: 'select',
+        inputOptions: {
+          auto: getI18n('auto'),
+          'zh-cn': '简体中文',
+          en: 'English'
+        },
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         type: 'info'
-      }).then(function (value) {
-        if (value) GM_setValue('language', $('#auto-task-language option:selected').val())
-        language = getLanguage()
+      }).then(function (result) {
+        if (result.value) {
+          GM_setValue('language', result.value)
+          language = getLanguage()
+        }
       })
     })
   } catch (e) {

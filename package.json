@@ -28,6 +28,7 @@
     "parser": "babel-eslint",
     "globals": [
       "$",
+      "Swal",
       "GM_setValue",
       "GM_getValue",
       "GM_listValues",

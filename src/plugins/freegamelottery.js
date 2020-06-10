@@ -86,9 +86,12 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
     }
   },
   setting: {
-    fuck: true,
-    verify: false,
-    remove: false
+    verify: {
+      show: false
+    },
+    remove: {
+      show: false
+    }
   },
   conf: config?.freegamelottery?.load ? config.freegamelottery : globalConf
 }

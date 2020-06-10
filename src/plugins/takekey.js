@@ -230,10 +230,6 @@ const takekey = { // eslint-disable-line no-unused-vars
     curators: []// 所有任务需要关注的鉴赏家
   },
   tasks: [], // 任务信息
-  setting: {
-    fuck: true,
-    verify: true,
-    remove: true
-  },
+  setting: {},
   conf: config?.takekey?.load ? config.takekey : globalConf
 }

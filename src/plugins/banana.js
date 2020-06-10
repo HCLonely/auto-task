@@ -295,10 +295,6 @@ const banana = { // eslint-disable-line no-unused-vars
     fGames: []// 任务需要关注的的游戏
   },
   tasks: [], // 所有任务ID
-  setting: {
-    fuck: true,
-    verify: true,
-    remove: true
-  },
+  setting: {},
   conf: config?.banana?.load ? config.banana : globalConf
 }

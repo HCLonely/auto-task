@@ -72,13 +72,19 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
   },
   myPoints: 0,
   setting: {
-    fuck: true,
-    fuckText: 'Free',
-    fuckTitle: getI18n('joinFreeLottery'),
-    verify: true,
-    verifyText: 'Point',
-    verifyTitle: getI18n('joinPointLottery'),
-    remove: false
+    fuck: {
+      show: true,
+      text: 'Free',
+      title: getI18n('joinFreeLottery')
+    },
+    verify: {
+      show: true,
+      text: 'Point',
+      title: getI18n('joinPointLottery')
+    },
+    remove: {
+      show: false
+    }
   },
   conf: config?.opiumpulses?.load ? config.opiumpulses : globalConf,
   maxPoint () { return this.conf?.other?.limitPoint || Infinity }

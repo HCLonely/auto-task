@@ -38,7 +38,7 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
-// @require        https://cdn.jsdelivr.net/npm/promise-polyfill
+// @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.js
 // @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.css
 // @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/auto-task.min.css

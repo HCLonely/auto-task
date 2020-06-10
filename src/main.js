@@ -19,22 +19,51 @@ if (window.location.host.includes('hclonely')) {
   if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
   if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
 
-  $('body').append(`
-<div id="fuck-task-app">
-  <div v-cloak id="fuck-task-btn">
-  <el-button :style="style" @click="toggleThisDiv" :icon="icon" :title="title" :show="show"></el-button>
-    <el-button type="primary" v-for="item in buttons" v-if="item.show" @click="item.click" :id="item.id" :title="item.title">{{item.text}}</el-button>
-    <el-button type="primary" @click="toggle" :id="drawerBtn.id" :title="drawerBtn.title">{{drawerBtn.text}}</el-button>
-  </div>
-  <div id="fuck-task-info"></div>
-</div>
-`)
-  const showLogs = globalConf.other ? globalConf.other.showLogs : defaultConf.other.showLogs
-
-  let btnNum = 1
-  for (const boolean of Object.values(website.setting)) {
-    if (boolean === true) btnNum++
+  let buttons = ''
+  const defaultBtn = {
+    fuck: {
+      show: true,
+      title: getI18n('fuckBtnTitle'),
+      text: 'FuckTask'
+    },
+    verify: {
+      show: true,
+      title: getI18n('verifyBtnTitle'),
+      text: 'Verify'
+    },
+    remove: {
+      show: true,
+      title: getI18n('removeBtnTitle'),
+      text: 'Remove'
+    }
   }
+  const showLogs = globalConf?.other?.showLogs
+  for (const [k, v] of Object.entries(website.setting)) {
+    if (v.show) buttons += `<button id="${k}" type="button" class="btn btn-primary" title="${v.title || defaultBtn[k].title}">${v.text || defaultBtn[k].text}</button>`
+  }
+  if (showLogs) buttons += `<button id="show-logs" type="button" class="btn btn-primary" title="${!showLogs ? getI18n('showLog') : getI18n('hideLog')}">${!showLogs ? 'ShowLogs' : 'HideLogs'}</button>`
+
+  const buttonGroup = `<div class="btn-group" role="group" aria-label="button">${buttons}</div>`
+  $('body').append(`<div id="fuck-task-app">${buttonGroup}</div>`)
+
+  for (const [k, v] of Object.keys(website.setting)) {
+    if (v.show) {
+      $('#' + k).click(() => {
+        website[k]()
+      })
+    }
+  }
+  $('#show-logs').click(() => {
+    const btn = $('#show-logs')
+    const taskInfoDiv = $('#fuck-task-info')
+    if (taskInfoDiv.is(':hidden')) {
+      btn.text('HideLogs').attr('title', getI18n('hideLog'))
+      taskInfoDiv.animate({ right: '16px' }, 'fast')
+    } else {
+      btn.text('ShowLogs').attr('title', getI18n('showLog'))
+      taskInfoDiv.animate({ right: '-100%' }, 'fast')
+    }
+  })
 
   const btnArea = new Vue({
     el: '#fuck-task-btn',
@@ -173,11 +202,11 @@ if (window.location.host.includes('hclonely')) {
     }
   })
 
-  if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
+  // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
 
   $('.fuck-task-logs .el-notification__content').show()
   if (!showLogs) {
-    $('.fuck-task-logs').animate({
+    $('#fuck-task-logs').animate({
       right: '-100%',
       display: '-webkit-box',
       display: '-ms-flexbox', // eslint-disable-line no-dupe-keys

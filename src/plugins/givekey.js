@@ -418,13 +418,16 @@ const givekey = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {
-    fuck: true,
-    fuckText: 'Init',
-    fuckTitle: getI18n('initFirst'),
-    verify: true,
-    verifyText: 'Fuck',
-    verifyTitle: getI18n('initPlease'),
-    remove: true
+    fuck: {
+      show: true,
+      text: 'Init',
+      title: getI18n('initFirst')
+    },
+    verify: {
+      show: true,
+      text: 'Fuck',
+      title: getI18n('initPlease')
+    }
   },
   conf: config?.givekey?.load ? config.givekey : globalConf
 }

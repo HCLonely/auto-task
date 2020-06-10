@@ -236,9 +236,9 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     toFinalUrl: {}// 链接转换
   },
   setting: {
-    fuck: true,
-    verify: false,
-    remove: true
+    verify: {
+      show: false
+    }
   },
   conf: config?.giveawaysu?.load ? config.giveawaysu : globalConf
 }

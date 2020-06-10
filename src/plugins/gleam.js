@@ -313,10 +313,6 @@ const gleam = { // eslint-disable-line no-unused-vars
     groups: []// 所有任务需要加的组
   },
   tasks: [], // 任务信息
-  setting: {
-    fuck: true,
-    verify: true,
-    remove: true
-  },
+  setting: {},
   conf: config?.gleam?.load ? config.gleam : globalConf
 }

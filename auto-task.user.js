@@ -36,12 +36,15 @@
 // @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
 
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
+// @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
+// @require        https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.js
 // @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.css
 // @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/auto-task.min.css
+// @resource       css https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -6365,18 +6368,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         $('body').append('<div id="fuck-task-btn">'.concat(buttonGroup, '</div>'))
 
         var _loop18 = function _loop18 () {
-          var _Object$keys$_i = _slicedToArray(_Object$keys[_i4], 2)
-          var k = _Object$keys$_i[0]
-          var v = _Object$keys$_i[1]
+          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2)
+          var k = _Object$entries2$_i[0]
+          var v = _Object$entries2$_i[1]
 
           if (v.show) {
+            console.log(v.show)
+            console.log($('#' + k))
+            console.log(website[k])
             $('#' + k).click(function () {
+              console.log(1)
               website[k]()
             })
           }
         }
 
-        for (var _i4 = 0, _Object$keys = Object.keys(websiteSettings); _i4 < _Object$keys.length; _i4++) {
+        for (var _i4 = 0, _Object$entries2 = Object.entries(websiteSettings); _i4 < _Object$entries2.length; _i4++) {
           _loop18()
         }
 
@@ -6393,7 +6400,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             btn.text('ShowLogs').attr('title', getI18n('showLog'))
             taskInfoDiv.animate({
               right: '-100%'
-            }, 'fast').hide()
+            }, 'fast', function () {
+              taskInfoDiv.hide()
+            })
           }
         })
         /*
@@ -6470,7 +6479,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         */
 
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">Card subtitle</h6>\n    <div class="card-textarea">\n      <li class="card-text">Test.</li>\n    </div>\n  </div>\n</div>'))
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_blank" class="card-link">').concat(getI18n('setting'), '</a>\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n      <li class="card-text">Test.</li>\n    </div>\n  </div>\n</div>'))
+        /*
         new Vue({
           el: '#fuck-task-info'
         }).$notify({
@@ -6483,7 +6493,25 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           dangerouslyUseHTMLString: true,
           message: ''
         })
-        $('.fuck-task-logs .el-notification__title').before('\n<h2 v-cloak id="extraBtn" class="el-notification__title">\n<el-badge is-dot class="item" :hidden="hidden">\n  <el-button :icon="icon" :title="title" @click="checkUpdate" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="settingHidden">\n  <el-button icon="el-icon-setting" title="'.concat(getI18n('setting'), '" @click="setting" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="announcementHidden">\n  <el-button :icon="announcementIcon" title="').concat(getI18n('visitUpdateText'), '" @click="updateText" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-brush" title="').concat(getI18n('cleanCache'), '" @click="clearTemp" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-s-promotion" title="').concat(getI18n('feedback'), '" @click="updateBug" circle></el-button>\n</el-badge>\n</h2>\n'))
+        $('.fuck-task-logs .el-notification__title').before(`
+        <h2 v-cloak id="extraBtn" class="el-notification__title">
+        <el-badge is-dot class="item" :hidden="hidden">
+        <el-button :icon="icon" :title="title" @click="checkUpdate" circle></el-button>
+        </el-badge>
+        <el-badge is-dot class="item" :hidden="settingHidden">
+        <el-button icon="el-icon-setting" title="${getI18n('setting')}" @click="setting" circle></el-button>
+        </el-badge>
+        <el-badge is-dot class="item" :hidden="announcementHidden">
+        <el-button :icon="announcementIcon" title="${getI18n('visitUpdateText')}" @click="updateText" circle></el-button>
+        </el-badge>
+        <el-badge is-dot class="item" :hidden="otherHidden">
+        <el-button icon="el-icon-brush" title="${getI18n('cleanCache')}" @click="clearTemp" circle></el-button>
+        </el-badge>
+        <el-badge is-dot class="item" :hidden="otherHidden">
+        <el-button icon="el-icon-s-promotion" title="${getI18n('feedback')}" @click="updateBug" circle></el-button>
+        </el-badge>
+        </h2>
+        `)
         /*
         const extraBtn = new Vue({
           el: '#extraBtn',

@@ -47,7 +47,7 @@ if (window.location.host.includes('hclonely')) {
   const buttonGroup = `<div class="btn-group-vertical" role="group" aria-label="button">${buttons}</div>`
   $('body').append(`<div id="fuck-task-btn">${buttonGroup}</div>`)
 
-  for (const [k, v] of Object.keys(websiteSettings)) {
+  for (const [k, v] of Object.entries(websiteSettings)) {
     if (v.show) {
       $('#' + k).click(() => {
         website[k]()
@@ -141,7 +141,13 @@ if (window.location.host.includes('hclonely')) {
   $('body').append(`<div id="fuck-task-info" class="card">
   <div class="card-body">
     <h5 class="card-title">${getI18n('taskLog')}</h5>
-    <h6 class="card-subtitle">Card subtitle</h6>
+    <h6 class="card-subtitle">
+      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('checkUpdate')}</a>
+      <a href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_blank" class="card-link">${getI18n('setting')}</a>
+      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('visitUpdateText')}</a>
+      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('cleanCache')}</a>
+      <a href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">${getI18n('feedback')}</a>
+    </h6>
     <div class="card-textarea">
       <li class="card-text">Test.</li>
     </div>
@@ -160,7 +166,6 @@ if (window.location.host.includes('hclonely')) {
     dangerouslyUseHTMLString: true,
     message: ''
   })
-  */
   $('.fuck-task-logs .el-notification__title').before(`
 <h2 v-cloak id="extraBtn" class="el-notification__title">
 <el-badge is-dot class="item" :hidden="hidden">

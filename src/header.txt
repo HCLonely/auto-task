@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name           自动任务预览版
-// @name:en        Auto Task Preview Edition
+// @name           自动任务测试版
+// @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        pre-VERSION
+// @version        test-VERSION
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely

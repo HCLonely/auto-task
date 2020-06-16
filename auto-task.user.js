@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name           自动任务预览版
-// @name:en        Auto Task Preview Edition
+// @name           自动任务测试版
+// @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        pre-3.0.0
+// @version        test-3.0.0
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -2459,11 +2459,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 所有任务ID
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.load) ? config.banana : globalConf
     }
     var freegamelottery = {
@@ -2585,9 +2581,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       setting: {
-        fuck: true,
-        verify: false,
-        remove: false
+        verify: {
+          show: false
+        },
+        remove: {
+          show: false
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.load) ? config.freegamelottery : globalConf
     }
@@ -2965,11 +2964,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.load) ? config.gamehag : globalConf
     }
     var giveawaysu = {
@@ -3379,9 +3374,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       },
       setting: {
-        fuck: true,
-        verify: false,
-        remove: true
+        verify: {
+          show: false
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.load) ? config.giveawaysu : globalConf
     }
@@ -3949,13 +3944,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       tasks: [],
       // 任务信息
       setting: {
-        fuck: true,
-        fuckText: 'Init',
-        fuckTitle: getI18n('initFirst'),
-        verify: true,
-        verifyText: 'Fuck',
-        verifyTitle: getI18n('initPlease'),
-        remove: true
+        fuck: {
+          show: true,
+          text: 'Init',
+          title: getI18n('initFirst')
+        },
+        verify: {
+          show: true,
+          text: 'Fuck',
+          title: getI18n('initPlease')
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$givekey = config.givekey) === null || _config$givekey === void 0 ? void 0 : _config$givekey.load) ? config.givekey : globalConf
     }
@@ -4397,11 +4395,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.load) ? config.gleam : globalConf
     }
     var indiedb = {
@@ -4665,9 +4659,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if ($('a.buttonenter:contains(Register to join)').length > 0) window.open('/members/login', '_self')
       },
       setting: {
-        fuck: true,
-        verify: false,
-        remove: false
+        verify: {
+          show: false
+        },
+        remove: {
+          show: false
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.load) ? config.indiedb : globalConf
     }
@@ -5076,11 +5073,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.load) ? config.marvelousga : globalConf
     }
     var opiumpulses = {
@@ -5235,13 +5228,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       myPoints: 0,
       setting: {
-        fuck: true,
-        fuckText: 'Free',
-        fuckTitle: getI18n('joinFreeLottery'),
-        verify: true,
-        verifyText: 'Point',
-        verifyTitle: getI18n('joinPointLottery'),
-        remove: false
+        fuck: {
+          show: true,
+          text: 'Free',
+          title: getI18n('joinFreeLottery')
+        },
+        verify: {
+          show: true,
+          text: 'Point',
+          title: getI18n('joinPointLottery')
+        },
+        remove: {
+          show: false
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.load) ? config.opiumpulses : globalConf,
       maxPoint: function maxPoint () {
@@ -5735,11 +5734,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.load) ? config.prys : globalConf
     }
     var spoune = {
@@ -5978,9 +5973,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       tasks: [],
       // 任务信息
       setting: {
-        fuck: true,
-        verify: false,
-        remove: false
+        verify: {
+          show: false
+        },
+        remove: {
+          show: false
+        }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$spoune = config.spoune) === null || _config$spoune === void 0 ? void 0 : _config$spoune.load) ? config.spoune : globalConf
     }
@@ -6307,11 +6305,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       tasks: [],
       // 任务信息
-      setting: {
-        fuck: true,
-        verify: true,
-        remove: true
-      },
+      setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.load) ? config.takekey : globalConf
     }
     var plugins = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
@@ -6325,183 +6319,221 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     } else if ((window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot') || window.location.host.includes('gamecode.win')) && !window.location.pathname.includes('giveaway')) {
       fuc.newTabBlock()
     } else {
-      var website = {}
-      plugins.map(function (e, i) {
-        if (e.test()) {
-          website = e
-          if (website.before) website.before(website)
-        }
-      })
-      if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
-      if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
-      $('body').append('\n<div id="fuck-task-app">\n  <div v-cloak id="fuck-task-btn">\n  <el-button :style="style" @click="toggleThisDiv" :icon="icon" :title="title" :show="show"></el-button>\n    <el-button type="primary" v-for="item in buttons" v-if="item.show" @click="item.click" :id="item.id" :title="item.title">{{item.text}}</el-button>\n    <el-button type="primary" @click="toggle" :id="drawerBtn.id" :title="drawerBtn.title">{{drawerBtn.text}}</el-button>\n  </div>\n  <div id="fuck-task-info"></div>\n</div>\n')
-      var showLogs = globalConf.other ? globalConf.other.showLogs : defaultConf.other.showLogs
-      var btnNum = 1
+      (function () {
+        var _globalConf$other
 
-      for (var _i3 = 0, _Object$values2 = Object.values(website.setting); _i3 < _Object$values2.length; _i3++) {
-        var _boolean = _Object$values2[_i3]
-        if (_boolean === true) btnNum++
-      }
-
-      var btnArea = new Vue({
-        el: '#fuck-task-btn',
-        data: {
-          icon: 'el-icon-arrow-right',
-          title: getI18n('hide'),
-          show: true,
-          style: 'position:absolute;left:-20px;width:20px;border:0px;border-top-right-radius:0px;border-bottom-right-radius:0px;padding:0;height:'.concat(btnNum * 40, 'px;opacity:80%;'),
-          buttons: [{
-            id: 'fuck-task',
-            text: website.setting.fuckText || 'FuckTask',
-            title: website.setting.fuckTitle || getI18n('fuckBtnTitle'),
-            show: website.setting.fuck,
-            click: function click () {
-              website.fuck(btnArea)
-            }
-          }, {
-            id: 'verify-task',
-            text: website.setting.verifyText || 'Verify',
-            title: website.setting.verifyTitle || getI18n('verifyBtnTitle'),
-            show: website.setting.verify,
-            click: function click () {
-              website.verify()
-            }
-          }, {
-            id: 'join-task',
-            text: website.setting.joinText || 'Join',
-            title: website.setting.joinDes || getI18n('joinBtnTitle'),
-            show: website.setting.join,
-            click: function click () {
-              website.join()
-            }
-          }, {
-            id: 'remove-task',
-            text: website.setting.removeText || 'Remove',
-            title: website.setting.removeTitle || getI18n('removeBtnTitle'),
-            show: website.setting.remove,
-            click: function click () {
-              website.remove()
-            }
-          }],
-          drawerBtn: {
-            id: 'show-logs',
-            text: !showLogs ? 'ShowLogs' : 'HideLogs',
-            title: !showLogs ? getI18n('showLog') : getI18n('hideLog'),
-            show: !!showLogs
+        var website = {}
+        plugins.map(function (e, i) {
+          if (e.test()) {
+            website = e
+            if (website.before) website.before(website)
           }
-        },
-        methods: {
-          toggleThisDiv: function toggleThisDiv () {
-            if (this.show) {
-              this.icon = 'el-icon-arrow-left'
-              this.title = getI18n('show')
-              $('#fuck-task-btn').animate({
-                width: '0'
-              })
-            } else {
-              this.icon = 'el-icon-arrow-right'
-              this.title = getI18n('hide')
-              $('#fuck-task-btn').animate({
-                width: '110'
-              })
-            }
-
-            this.show = !this.show
+        })
+        if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
+        if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
+        var buttons = ''
+        var defaultBtn = {
+          fuck: {
+            show: true,
+            title: getI18n('fuckBtnTitle'),
+            text: 'FuckTask'
           },
-          toggle: function toggle () {
-            if (this.drawerBtn.show) {
-              this.drawerBtn.text = 'ShowLogs'
-              this.drawerBtn.title = getI18n('showLog')
-              $('.fuck-task-logs').animate({
-                right: '-100%'
-              }, 'fast')
-            } else {
-              this.drawerBtn.text = 'HideLogs'
-              this.drawerBtn.title = getI18n('hideLog')
-              $('.fuck-task-logs').animate({
-                right: '16px'
-              }, 'fast')
-            }
-
-            this.drawerBtn.show = !this.drawerBtn.show
+          verify: {
+            show: true,
+            title: getI18n('verifyBtnTitle'),
+            text: 'Verify'
+          },
+          remove: {
+            show: true,
+            title: getI18n('removeBtnTitle'),
+            text: 'Remove'
           }
         }
-      })
-      new Vue({
-        el: '#fuck-task-info'
-      }).$notify({
-        title: getI18n('taskLog'),
-        iconClass: '',
-        duration: 0,
-        position: 'bottom-right',
-        showClose: false,
-        customClass: 'fuck-task-logs',
-        dangerouslyUseHTMLString: true,
-        message: ''
-      })
-      $('.fuck-task-logs .el-notification__title').before('\n<h2 v-cloak id="extraBtn" class="el-notification__title">\n<el-badge is-dot class="item" :hidden="hidden">\n  <el-button :icon="icon" :title="title" @click="checkUpdate" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="settingHidden">\n  <el-button icon="el-icon-setting" title="'.concat(getI18n('setting'), '" @click="setting" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="announcementHidden">\n  <el-button :icon="announcementIcon" title="').concat(getI18n('visitUpdateText'), '" @click="updateText" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-brush" title="').concat(getI18n('cleanCache'), '" @click="clearTemp" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-s-promotion" title="').concat(getI18n('feedback'), '" @click="updateBug" circle></el-button>\n</el-badge>\n</h2>\n'))
-      var extraBtn = new Vue({
-        el: '#extraBtn',
-        data: {
-          title: getI18n('checkUpdate'),
-          icon: 'el-icon-refresh',
-          hidden: true,
-          settingHidden: !!GM_getValue('conf'),
-          otherHidden: true,
-          announcementHidden: true,
-          announcementIcon: 'el-icon-document'
-        },
-        methods: {
-          setting: function setting () {
-            language === 'en' ? window.open('https://userjs.hclonely.com/setting_en.html', '_blank') : window.open('https://userjs.hclonely.com/setting.html', '_blank')
-          },
-          updateText: function updateText () {
-            fuc.getAnnouncement(this)
-          },
-          updateBug: function updateBug () {
-            window.open('https://github.com/HCLonely/auto-task/issues/new/choose', '_blank')
-          },
-          checkUpdate: function checkUpdate () {
-            fuc.checkUpdate(this, true)
-          },
-          clearTemp: function clearTemp () {
-            var status = fuc.echoLog({
-              type: 'custom',
-              text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
+        var showLogs = globalConf === null || globalConf === void 0 ? void 0 : (_globalConf$other = globalConf.other) === null || _globalConf$other === void 0 ? void 0 : _globalConf$other.showLogs
+        var websiteSettings = Object.assign(defaultBtn, website.setting)
+
+        for (var _i3 = 0, _Object$entries = Object.entries(websiteSettings); _i3 < _Object$entries.length; _i3++) {
+          var _Object$entries$_i = _slicedToArray(_Object$entries[_i3], 2)
+          var k = _Object$entries$_i[0]
+          var v = _Object$entries$_i[1]
+
+          if (v.show) buttons += '<button id="'.concat(k, '" type="button" class="btn btn-primary" title="').concat(v.title, '">').concat(v.text, '</button>')
+        }
+
+        if (showLogs) buttons += '<button id="toggle-logs" type="button" class="btn btn-primary" title="'.concat(!showLogs ? getI18n('showLog') : getI18n('hideLog'), '">').concat(!showLogs ? 'ShowLogs' : 'HideLogs', '</button>')
+        var buttonGroup = '<div class="btn-group-vertical" role="group" aria-label="button">'.concat(buttons, '</div>')
+        $('body').append('<div id="fuck-task-btn">'.concat(buttonGroup, '</div>'))
+
+        var _loop18 = function _loop18 () {
+          var _Object$keys$_i = _slicedToArray(_Object$keys[_i4], 2)
+          var k = _Object$keys$_i[0]
+          var v = _Object$keys$_i[1]
+
+          if (v.show) {
+            $('#' + k).click(function () {
+              website[k]()
             })
-            var listValues = GM_listValues()
+          }
+        }
 
-            var _iterator32 = _createForOfIteratorHelper(listValues)
-            var _step33
+        for (var _i4 = 0, _Object$keys = Object.keys(websiteSettings); _i4 < _Object$keys.length; _i4++) {
+          _loop18()
+        }
 
-            try {
-              for (_iterator32.s(); !(_step33 = _iterator32.n()).done;) {
-                var value = _step33.value
+        $('#toggle-logs').click(function () {
+          var btn = $('#toggle-logs')
+          var taskInfoDiv = $('#fuck-task-info')
+
+          if (taskInfoDiv.is(':hidden')) {
+            btn.text('HideLogs').attr('title', getI18n('hideLog'))
+            taskInfoDiv.show().animate({
+              right: '16px'
+            }, 'fast')
+          } else {
+            btn.text('ShowLogs').attr('title', getI18n('showLog'))
+            taskInfoDiv.animate({
+              right: '-100%'
+            }, 'fast').hide()
+          }
+        })
+        /*
+        const btnArea = new Vue({
+          el: '#fuck-task-btn',
+          data: {
+            icon: 'el-icon-arrow-right',
+            title: getI18n('hide'),
+            show: true,
+            style: `position:absolute;left:-20px;width:20px;border:0px;border-top-right-radius:0px;border-bottom-right-radius:0px;padding:0;height:${btnNum * 40}px;opacity:80%;`,
+            buttons: [
+              {
+                id: 'fuck-task',
+                text: website.setting.fuckText || 'FuckTask',
+                title: website.setting.fuckTitle || getI18n('fuckBtnTitle'),
+                show: website.setting.fuck,
+                click: () => { website.fuck(btnArea) }
+              },
+              {
+                id: 'verify-task',
+                text: website.setting.verifyText || 'Verify',
+                title: website.setting.verifyTitle || getI18n('verifyBtnTitle'),
+                show: website.setting.verify,
+                click: () => { website.verify() }
+              },
+              {
+                id: 'join-task',
+                text: website.setting.joinText || 'Join',
+                title: website.setting.joinDes || getI18n('joinBtnTitle'),
+                show: website.setting.join,
+                click: () => { website.join() }
+              },
+              {
+                id: 'remove-task',
+                text: website.setting.removeText || 'Remove',
+                title: website.setting.removeTitle || getI18n('removeBtnTitle'),
+                show: website.setting.remove,
+                click: () => { website.remove() }
+              }
+            ],
+            drawerBtn: {
+              id: 'show-logs',
+              text: !showLogs ? 'ShowLogs' : 'HideLogs',
+              title: !showLogs ? getI18n('showLog') : getI18n('hideLog'),
+              show: !!showLogs
+            }
+          },
+          methods: {
+            toggleThisDiv () {
+              if (this.show) {
+                this.icon = 'el-icon-arrow-left'
+                this.title = getI18n('show')
+                $('#fuck-task-btn').animate({ width: '0' })
+              } else {
+                this.icon = 'el-icon-arrow-right'
+                this.title = getI18n('hide')
+                $('#fuck-task-btn').animate({ width: '110' })
+              }
+              this.show = !this.show
+            },
+            toggle () {
+              if (this.drawerBtn.show) {
+                this.drawerBtn.text = 'ShowLogs'
+                this.drawerBtn.title = getI18n('showLog')
+                $('.fuck-task-logs').animate({ right: '-100%' }, 'fast')
+              } else {
+                this.drawerBtn.text = 'HideLogs'
+                this.drawerBtn.title = getI18n('hideLog')
+                $('.fuck-task-logs').animate({ right: '16px' }, 'fast')
+              }
+              this.drawerBtn.show = !this.drawerBtn.show
+            }
+          }
+        })
+        */
+
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">Card subtitle</h6>\n    <div class="card-textarea">\n      <li class="card-text">Test.</li>\n    </div>\n  </div>\n</div>'))
+        new Vue({
+          el: '#fuck-task-info'
+        }).$notify({
+          title: getI18n('taskLog'),
+          iconClass: '',
+          duration: 0,
+          position: 'bottom-right',
+          showClose: false,
+          customClass: 'fuck-task-logs',
+          dangerouslyUseHTMLString: true,
+          message: ''
+        })
+        $('.fuck-task-logs .el-notification__title').before('\n<h2 v-cloak id="extraBtn" class="el-notification__title">\n<el-badge is-dot class="item" :hidden="hidden">\n  <el-button :icon="icon" :title="title" @click="checkUpdate" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="settingHidden">\n  <el-button icon="el-icon-setting" title="'.concat(getI18n('setting'), '" @click="setting" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="announcementHidden">\n  <el-button :icon="announcementIcon" title="').concat(getI18n('visitUpdateText'), '" @click="updateText" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-brush" title="').concat(getI18n('cleanCache'), '" @click="clearTemp" circle></el-button>\n</el-badge>\n<el-badge is-dot class="item" :hidden="otherHidden">\n  <el-button icon="el-icon-s-promotion" title="').concat(getI18n('feedback'), '" @click="updateBug" circle></el-button>\n</el-badge>\n</h2>\n'))
+        /*
+        const extraBtn = new Vue({
+          el: '#extraBtn',
+          data: {
+            title: getI18n('checkUpdate'),
+            icon: 'el-icon-refresh',
+            hidden: true,
+            settingHidden: !!GM_getValue('conf'),
+            otherHidden: true,
+            announcementHidden: true,
+            announcementIcon: 'el-icon-document'
+          },
+          methods: {
+            setting () {
+              language === 'en' ? window.open('https://userjs.hclonely.com/setting_en.html', '_blank') : window.open('https://userjs.hclonely.com/setting.html', '_blank')
+            },
+            updateText () {
+              fuc.getAnnouncement(this)
+            },
+            updateBug () {
+              window.open('https://github.com/HCLonely/auto-task/issues/new/choose', '_blank')
+            },
+            checkUpdate () {
+              fuc.checkUpdate(this, true)
+            },
+            clearTemp () {
+              const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
+              const listValues = GM_listValues()
+              for (const value of listValues) {
                 if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
               }
-            } catch (err) {
-              _iterator32.e(err)
-            } finally {
-              _iterator32.f()
+              status.success()
             }
-
-            status.success()
           }
+        })
+        */
+        // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
+        // $('.fuck-task-logs .el-notification__content').show()
+
+        if (!showLogs) {
+          var _$$animate
+
+          $('#fuck-task-logs').animate((_$$animate = {
+            right: '-100%',
+            display: '-webkit-box'
+          }, _defineProperty(_$$animate, 'display', '-ms-flexbox'), _defineProperty(_$$animate, 'display', 'flex'), _$$animate), 0)
         }
-      }) // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
 
-      $('.fuck-task-logs .el-notification__content').show()
-
-      if (!showLogs) {
-        var _$$animate
-
-        $('.fuck-task-logs').animate((_$$animate = {
-          right: '-100%',
-          display: '-webkit-box'
-        }, _defineProperty(_$$animate, 'display', '-ms-flexbox'), _defineProperty(_$$animate, 'display', 'flex'), _$$animate), 0)
-      }
-
-      if (website.after) website.after(website)
+        if (website.after) website.after()
+      })()
     }
 
     GM_registerMenuCommand(getI18n('readme'), function () {
@@ -6536,6 +6568,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       })
     })
+    GM_addStyle('#fuck-task-info{\nposition: fixed;\nbottom: 10px;\nright: 10px;\nbackground-color: #fff;\nborder-radius: 10px;\nwidth: auto;\n    max-width: 50%;\n    max-height: 50%;\n    z-index: 99999999999!important;\n}\n#fuck-task-info .card-title{\n  text-align: center;\n}\n#fuck-task-info .card-textarea{\n    overflow: auto;\n    max-height: 230px;\n}\n#fuck-task-btn{\n  position: fixed;\ntop: 0;\nright: 0;\nz-index: 9999999999;\n}\n')
   } catch (e) {
     setTimeout(function () {
       vueUi.$message({

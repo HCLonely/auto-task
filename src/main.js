@@ -1,4 +1,4 @@
-/* global getI18n, fuc, plugins, config, globalConf, defaultConf, getLanguage, language, Swal, loadSetting, loadAnnouncement */
+/* global getI18n, fuc, plugins, config, globalConf, getLanguage, language, Swal, loadSetting, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
     loadSetting(config)
@@ -38,33 +38,34 @@ if (window.location.host.includes('hclonely')) {
     }
   }
   const showLogs = globalConf?.other?.showLogs
-  for (const [k, v] of Object.entries(website.setting)) {
-    if (v.show) buttons += `<button id="${k}" type="button" class="btn btn-primary" title="${v.title || defaultBtn[k].title}">${v.text || defaultBtn[k].text}</button>`
+  const websiteSettings = Object.assign(defaultBtn, website.setting)
+  for (const [k, v] of Object.entries(websiteSettings)) {
+    if (v.show) buttons += `<button id="${k}" type="button" class="btn btn-primary" title="${v.title}">${v.text}</button>`
   }
-  if (showLogs) buttons += `<button id="show-logs" type="button" class="btn btn-primary" title="${!showLogs ? getI18n('showLog') : getI18n('hideLog')}">${!showLogs ? 'ShowLogs' : 'HideLogs'}</button>`
+  if (showLogs) buttons += `<button id="toggle-logs" type="button" class="btn btn-primary" title="${!showLogs ? getI18n('showLog') : getI18n('hideLog')}">${!showLogs ? 'ShowLogs' : 'HideLogs'}</button>`
 
-  const buttonGroup = `<div class="btn-group" role="group" aria-label="button">${buttons}</div>`
-  $('body').append(`<div id="fuck-task-app">${buttonGroup}</div>`)
+  const buttonGroup = `<div class="btn-group-vertical" role="group" aria-label="button">${buttons}</div>`
+  $('body').append(`<div id="fuck-task-btn">${buttonGroup}</div>`)
 
-  for (const [k, v] of Object.keys(website.setting)) {
+  for (const [k, v] of Object.keys(websiteSettings)) {
     if (v.show) {
       $('#' + k).click(() => {
         website[k]()
       })
     }
   }
-  $('#show-logs').click(() => {
-    const btn = $('#show-logs')
+  $('#toggle-logs').click(() => {
+    const btn = $('#toggle-logs')
     const taskInfoDiv = $('#fuck-task-info')
     if (taskInfoDiv.is(':hidden')) {
       btn.text('HideLogs').attr('title', getI18n('hideLog'))
-      taskInfoDiv.animate({ right: '16px' }, 'fast')
+      taskInfoDiv.show().animate({ right: '16px' }, 'fast')
     } else {
       btn.text('ShowLogs').attr('title', getI18n('showLog'))
-      taskInfoDiv.animate({ right: '-100%' }, 'fast')
+      taskInfoDiv.animate({ right: '-100%' }, 'fast', () => { taskInfoDiv.hide() })
     }
   })
-
+  /*
   const btnArea = new Vue({
     el: '#fuck-task-btn',
     data: {
@@ -136,6 +137,17 @@ if (window.location.host.includes('hclonely')) {
       }
     }
   })
+  */
+  $('body').append(`<div id="fuck-task-info" class="card">
+  <div class="card-body">
+    <h5 class="card-title">${getI18n('taskLog')}</h5>
+    <h6 class="card-subtitle">Card subtitle</h6>
+    <div class="card-textarea">
+      <li class="card-text">Test.</li>
+    </div>
+  </div>
+</div>`)
+  /*
   new Vue({
     el: '#fuck-task-info'
   }).$notify({
@@ -148,6 +160,7 @@ if (window.location.host.includes('hclonely')) {
     dangerouslyUseHTMLString: true,
     message: ''
   })
+  */
   $('.fuck-task-logs .el-notification__title').before(`
 <h2 v-cloak id="extraBtn" class="el-notification__title">
 <el-badge is-dot class="item" :hidden="hidden">
@@ -167,6 +180,7 @@ if (window.location.host.includes('hclonely')) {
 </el-badge>
 </h2>
 `)
+  /*
   const extraBtn = new Vue({
     el: '#extraBtn',
     data: {
@@ -201,10 +215,10 @@ if (window.location.host.includes('hclonely')) {
       }
     }
   })
-
+*/
   // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
 
-  $('.fuck-task-logs .el-notification__content').show()
+  // $('.fuck-task-logs .el-notification__content').show()
   if (!showLogs) {
     $('#fuck-task-logs').animate({
       right: '-100%',
@@ -213,7 +227,7 @@ if (window.location.host.includes('hclonely')) {
       display: 'flex' // eslint-disable-line no-dupe-keys
     }, 0)
   }
-  if (website.after) website.after(website)
+  if (website.after) website.after()
 }
 
 GM_registerMenuCommand(getI18n('readme'), () => { window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank') })
@@ -243,3 +257,28 @@ GM_registerMenuCommand('Language', () => {
     }
   })
 })
+GM_addStyle(`#fuck-task-info{
+position: fixed;
+bottom: 10px;
+right: 10px;
+background-color: #fff;
+border-radius: 10px;
+width: auto;
+    max-width: 50%;
+    max-height: 50%;
+    z-index: 99999999999!important;
+}
+#fuck-task-info .card-title{
+  text-align: center;
+}
+#fuck-task-info .card-textarea{
+    overflow: auto;
+    max-height: 230px;
+}
+#fuck-task-btn{
+  position: fixed;
+top: 0;
+right: 0;
+z-index: 9999999999;
+}
+`)

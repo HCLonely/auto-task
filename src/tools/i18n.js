@@ -1,5 +1,5 @@
 const i18n = {
-  'zh-cn': {
+  'zh-CN': {
     language: '语言',
     auto: '自动',
     needBanana: '此key需要收集 s% 个香蕉, 是否继续?',
@@ -23,7 +23,7 @@ const i18n = {
     checkingUpdate: '正在检测更新...',
     checkUpdate: '检查更新',
     thisIsNew: '当前脚本为最新版本！',
-    updateNow: '立即更新至 ',
+    updateNow: '立即更新',
     newVer: '检测到新版本: ',
     getAnnouncement: '正在获取更新公告...',
     visitHistory: '查看历史更新内容',
@@ -128,7 +128,9 @@ const i18n = {
     processSetting: '正在处理设置...',
     creatUrlFailed: '创建下载链接失败！',
     jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
-    ajaxError: 'Ajax请求出错'
+    ajaxError: 'Ajax请求出错',
+    firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
+    goSetting: '前往设置'
   },
   en: {
     language: 'Language',
@@ -154,7 +156,7 @@ const i18n = {
     checkingUpdate: 'Checking for updates...',
     checkUpdate: 'Check for updates',
     thisIsNew: 'The current script is the latest version!',
-    updateNow: 'Update to ',
+    updateNow: 'Update now',
     newVer: 'New version available: ',
     getAnnouncement: 'Getting update announcement...',
     visitHistory: 'History',
@@ -258,7 +260,9 @@ const i18n = {
     downloadSetting: 'Download the settings file',
     processSetting: 'Processing settings...',
     jsError: 'Script execution error, please see the console for details (red background part)!',
-    ajaxError: 'Ajax request error'
+    ajaxError: 'Ajax request error',
+    firstUpdate: 'The first update to 3.0+ requires re-setting. Do you want to go to the setting?',
+    goSetting: 'Yes'
   }
 }
 let language = getLanguage() // eslint-disable-line prefer-const

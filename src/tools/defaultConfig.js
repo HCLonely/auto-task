@@ -1,4 +1,16 @@
 /* eslint-disable no-unused-vars */
+/* global getI18n */
+if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
+  if (typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean') {
+    Swal.fire({
+      icon: 'warning',
+      text: getI18n('firstUpdate'),
+      confirmButtonText: getI18n('goSetting'),
+      cancelButtonText: getI18n('cancel'),
+      showCancelButton: true
+    })
+  }
+}
 const steamInfo = Object.assign({
   userName: '',
   steam64Id: '',
@@ -175,7 +187,7 @@ const defaultConf = {
       visitLink: true
     },
     remove: {
-      removeFromWishlist: true
+      leaveSteamGroup: true
     },
     enable: false
   },
@@ -186,7 +198,7 @@ const defaultConf = {
       verifyTask: true
     },
     remove: {
-      removeFromWishlist: true
+      leaveSteamGroup: true
     },
     enable: false
   },
@@ -209,6 +221,6 @@ const defaultConf = {
   },
   announcement: ''
 }
-const config = Object.assign(defaultConf, GM_getValue('conf') || {})
+const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 const globalConf = config.global
 const debug = !!globalConf.other.showDetails

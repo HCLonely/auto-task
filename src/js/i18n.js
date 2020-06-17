@@ -92,7 +92,7 @@ var i18n = { // eslint-disable-line no-unused-vars
     notSupport: '当前浏览器不支持直接读取文件，已触发备用方案！',
     copySetting: '请将设置文件里的内容复制到下面！',
     loadSettingText: '正在加载设置...',
-    settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">自定任务脚本</a>设置',
+    settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">自动任务脚本</a>设置',
     currentVersion: '当前版本: <a href="https://github.com/HCLonely/auto-task/tree/%s" target="_blank">V%s</a>',
     latestVersion: '最新版本: <a href="https://github.com/HCLonely/auto-task" target="_blank">V<span id="latestVersion"></span></a>',
     loadVersionFailed: '获取失败'
@@ -189,6 +189,7 @@ var i18n = { // eslint-disable-line no-unused-vars
     notSupport: 'The current browser does not support reading files directly, an alternative has been triggered!',
     copySetting: 'Please copy the contents of the settings file to the following',
     loadSettingText: 'Loading settings...',
+    settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">Auto Task Script</a> Settings',
     currentVersion: 'Current version: <a href="https://github.com/HCLonely/auto-task/tree/%s" target="_blank">V%s</a>, ',
     latestVersion: 'Latest version: <a href="https://github.com/HCLonely/auto-task" target="_blank">V<span id="latestVersion"></span></a>',
     loadVersionFailed: 'Error'

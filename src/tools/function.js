@@ -1,4 +1,4 @@
-/* global getI18n, vueUi, debug, steamInfo, defaultConf */
+/* global getI18n, debug, steamInfo */
 const fuc = {
   httpRequest (e) {
     e.method = e.method.toUpperCase()
@@ -556,8 +556,7 @@ const fuc = {
       console.error(err)
     })
   },
-  checkUpdate (v, s = false) { // 修改
-    v.icon = 'el-icon-loading'
+  checkUpdate (s = false) {
     let status = false
     if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
@@ -567,98 +566,25 @@ const fuc = {
       onload (response) {
         if (debug) console.log(response)
         if (response.response?.version === GM_info.script.version) {
-          v.icon = 'el-icon-refresh'
-          v.title = getI18n('checkUpdate')
           if (s) status.success(getI18n('thisIsNew'))
-          v.hidden = true
         } else if (response.response?.version) {
-          v.icon = 'el-icon-download'
-          v.title = getI18n('updateNow') + response.response.version
-          v.checkUpdate = () => { window.open('https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js', '_blank') }
+          this.echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
           if (s) status.success(getI18n('newVer') + response.response.version)
-          v.hidden = false
         } else {
-          v.icon = 'el-icon-refresh'
-          v.title = getI18n('checkUpdate')
           if (s) status.error('Error:' + (response.statusText || response.status))
-        }
-        const conf = GM_getValue('conf') || defaultConf
-        if (response.response?.time !== conf.announcement) {
-          v.announcementHidden = false
-          conf.announcement = response.response.time
-          GM_setValue('conf', conf)
         }
       },
       ontimeout (response) {
         if (debug) console.log(response)
-        v.icon = 'el-icon-refresh'
-        v.title = getI18n('checkUpdate')
         if (s) status.error('Error:Timeout(0)')
       },
       onabort (response) {
         if (debug) console.log(response)
-        v.icon = 'el-icon-refresh'
-        v.title = getI18n('checkUpdate')
         if (s) status.error('Error:Abort(0)')
       },
       onerror (response) {
         if (debug) console.log(response)
-        v.icon = 'el-icon-refresh'
-        v.title = getI18n('checkUpdate')
         if (s) status.error('Error:Error(0)')
-      },
-      status
-    })
-  },
-  getAnnouncement (v) { // 修改
-    v.announcementIcon = 'el-icon-loading'
-    const status = this.echoLog({ type: 'custom', text: `<li>${getI18n('getAnnouncement')}<font></font></li>` })
-    this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
-      method: 'get',
-      dataType: 'json',
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.responseText && response.response) {
-          status.success()
-          const data = response.response
-          const conf = GM_getValue('conf') || defaultConf
-          conf.announcement = data.time
-          GM_setValue('conf', conf)
-          v.announcementHidden = true
-          const h = vueUi.$createElement
-          const hArr = []
-          for (const index in data.text) {
-            if (/^[\d]+$/.test(index)) hArr.push(h('p', null, `${parseInt(index) + 1}.${data.text[index]}`))
-          }
-          vueUi.$msgbox({
-            title: `pre-${data.version}(${fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time))})`,
-            message: h('div', null, hArr),
-            showCancelButton: true,
-            confirmButtonText: getI18n('visitHistory'),
-            cancelButtonText: getI18n('close')
-          }).then(() => {
-            window.open('https://userjs.hclonely.com/announcement.html', '_blank')
-          }).catch(() => { })
-        } else {
-          status.error('Error:' + (response.statusText || response.status))
-        }
-        v.announcementIcon = 'el-icon-document'
-      },
-      ontimeout (response) {
-        if (debug) console.log(response)
-        v.announcementIcon = 'el-icon-document'
-        status.error('Error:Timeout(0)')
-      },
-      onabort (response) {
-        if (debug) console.log(response)
-        v.announcementIcon = 'el-icon-document'
-        status.error('Error:Abort(0)')
-      },
-      onerror (response) {
-        if (debug) console.log(response)
-        v.announcementIcon = 'el-icon-document'
-        status.error('Error:Error(0)')
       },
       status
     })
@@ -744,7 +670,8 @@ const fuc = {
         ele = $(`<li>${getI18n('unknown')}<font></font></li>`)
         break
     }
-    $('.fuck-task-logs .el-notification__content').append(ele)
+    ele.addClass('card-text')
+    $('#fuck-task-info .card-textarea').append(ele)
     ele[0].scrollIntoView()
     const font = ele.find('font')
     const status = {

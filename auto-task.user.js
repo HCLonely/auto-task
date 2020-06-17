@@ -1,16 +1,17 @@
 // ==UserScript==
-// @name           自动任务测试版
-// @name:en        Auto Task Test
+// @name           自动任务
+// @name:en        Auto Task
 // @namespace      auto-task
-// @version        test-3.0.0
+// @version        3.0.0
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
 // @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@preview/favicon.ico
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/public/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://github.com/HCLonely/auto-task/raw/preview/auto-task.user.js
+// @updateURL      https://github.com/HCLonely/auto-task/raw/test/auto-task.user.js
+
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
 // @include        *://dupedornot.com/*
@@ -32,19 +33,16 @@
 // @include        https://auto-task.hclonely.com/setting.html
 // @include        https://auto-task.hclonely.com/announcement.html
 
-// @require        https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js
-// @require        https://cdn.jsdelivr.net/npm/element-ui@2.12.0/lib/index.min.js
-
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
 // @require        https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.js
-// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@@test/lib/overhang.min.css
-// @resource       autoTaskCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/auto-task.min.css
-// @resource       css https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.js
+// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.css
+// @resource       bootstrapCss https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css
+
 // @grant          GM_setValue
 // @grant          GM_getValue
 // @grant          GM_listValues
@@ -55,6 +53,8 @@
 // @grant          GM_registerMenuCommand
 // @grant          GM_info
 // @grant          GM_openInTab
+// @grant          unsafeWindow
+
 // @connect        auto-task.hclonely.com
 // @connect        cdn.jsdelivr.net
 // @connect        store.steampowered.com
@@ -71,7 +71,7 @@
 // @run-at         document-end
 // ==/UserScript==
 
-/* global loadSetting,loadAnnouncement,$,Vue,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
+/* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init */
 
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
@@ -106,7 +106,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   'use strict'
 
   var i18n = {
-    'zh-cn': {
+    'zh-CN': {
       language: '语言',
       auto: '自动',
       needBanana: '此key需要收集 s% 个香蕉, 是否继续?',
@@ -130,7 +130,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkingUpdate: '正在检测更新...',
       checkUpdate: '检查更新',
       thisIsNew: '当前脚本为最新版本！',
-      updateNow: '立即更新至 ',
+      updateNow: '立即更新',
       newVer: '检测到新版本: ',
       getAnnouncement: '正在获取更新公告...',
       visitHistory: '查看历史更新内容',
@@ -235,7 +235,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       processSetting: '正在处理设置...',
       creatUrlFailed: '创建下载链接失败！',
       jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
-      ajaxError: 'Ajax请求出错'
+      ajaxError: 'Ajax请求出错',
+      firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
+      goSetting: '前往设置'
     },
     en: {
       language: 'Language',
@@ -261,7 +263,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       checkingUpdate: 'Checking for updates...',
       checkUpdate: 'Check for updates',
       thisIsNew: 'The current script is the latest version!',
-      updateNow: 'Update to ',
+      updateNow: 'Update now',
       newVer: 'New version available: ',
       getAnnouncement: 'Getting update announcement...',
       visitHistory: 'History',
@@ -365,7 +367,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       downloadSetting: 'Download the settings file',
       processSetting: 'Processing settings...',
       jsError: 'Script execution error, please see the console for details (red background part)!',
-      ajaxError: 'Ajax request error'
+      ajaxError: 'Ajax request error',
+      firstUpdate: 'The first update to 3.0+ requires re-setting. Do you want to go to the setting?',
+      goSetting: 'Yes'
     }
   }
   var language = getLanguage()
@@ -390,30 +394,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     return value
   }
 
-  GM_addStyle(GM_getResourceText('css'))
-  $('body').append('<div v-cloak id="vue-ui"></div>')
-  var vueUi = new Vue({
-    el: '#vue-ui'
-  })
-
-  Vue.config.errorHandler = function (err, vm, info) {
-    setTimeout(function () {
-      vueUi.$message({
-        type: 'error',
-        duration: 0,
-        message: getI18n('jsError'),
-        showClose: true
-      })
-    }, 500)
-    console.log('%c%s', 'color:white;background:red', 'Info:' + info + '\nError:' + err.stack)
-  }
-
+  GM_addStyle(GM_getResourceText('bootstrapCss'))
+  GM_addStyle(GM_getResourceText('overhangCss'))
   $(document).ajaxError(function (event, xhr, options, exc) {
-    vueUi.$message({
-      type: 'error',
-      duration: 0,
-      message: getI18n('jsError'),
-      showClose: true
+    Swal.fire({
+      icon: 'error',
+      text: getI18n('jsError')
     })
     console.log('%c%s', 'color:white;background:red', getI18n('ajaxError') + '：')
     console.log('Event:', event)
@@ -426,6 +412,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$givekey, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys, _config$spoune, _config$takekey
 
     /* eslint-disable no-unused-vars */
+    if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
+      var _GM_getValue, _GM_getValue$global, _GM_getValue$global$f
+
+      if (typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global = _GM_getValue.global) === null || _GM_getValue$global === void 0 ? void 0 : (_GM_getValue$global$f = _GM_getValue$global.fuck) === null || _GM_getValue$global$f === void 0 ? void 0 : _GM_getValue$global$f.joinSteamGroup) !== 'boolean') {
+        Swal.fire({
+          icon: 'warning',
+          text: getI18n('firstUpdate'),
+          confirmButtonText: getI18n('goSetting'),
+          cancelButtonText: getI18n('cancel'),
+          showCancelButton: true
+        })
+      }
+    }
+
     var steamInfo = Object.assign({
       userName: '',
       steam64Id: '',
@@ -578,7 +578,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           visitLink: true
         },
         remove: {
-          removeFromWishlist: true
+          leaveSteamGroup: true
         },
         enable: false
       },
@@ -589,7 +589,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           verifyTask: true
         },
         remove: {
-          removeFromWishlist: true
+          leaveSteamGroup: true
         },
         enable: false
       },
@@ -612,7 +612,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       announcement: ''
     }
-    var config = Object.assign(defaultConf, GM_getValue('conf') || {})
+    var config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
     var globalConf = config.global
     var debug = !!globalConf.other.showDetails
     var fuc = {
@@ -1534,10 +1534,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           console.error(err)
         })
       },
-      checkUpdate: function checkUpdate (v) {
-        var s = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false
-        // 修改
-        v.icon = 'el-icon-loading'
+      checkUpdate: function checkUpdate () {
+        var s = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var status = false
         if (s) {
           status = this.echoLog({
@@ -1550,117 +1548,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           method: 'get',
           dataType: 'json',
           onload: function onload (response) {
-            var _response$response9, _response$response10, _response$response11
+            var _response$response9, _response$response10
 
             if (debug) console.log(response)
 
             if (((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : _response$response9.version) === GM_info.script.version) {
-              v.icon = 'el-icon-refresh'
-              v.title = getI18n('checkUpdate')
               if (s) status.success(getI18n('thisIsNew'))
-              v.hidden = true
             } else if ((_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : _response$response10.version) {
-              v.icon = 'el-icon-download'
-              v.title = getI18n('updateNow') + response.response.version
-
-              v.checkUpdate = function () {
-                window.open('https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js', '_blank')
-              }
-
+              this.echoLog({
+                type: 'custom',
+                text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
+              })
               if (s) status.success(getI18n('newVer') + response.response.version)
-              v.hidden = false
             } else {
-              v.icon = 'el-icon-refresh'
-              v.title = getI18n('checkUpdate')
               if (s) status.error('Error:' + (response.statusText || response.status))
-            }
-
-            var conf = GM_getValue('conf') || defaultConf
-
-            if (((_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : _response$response11.time) !== conf.announcement) {
-              v.announcementHidden = false
-              conf.announcement = response.response.time
-              GM_setValue('conf', conf)
             }
           },
           ontimeout: function ontimeout (response) {
             if (debug) console.log(response)
-            v.icon = 'el-icon-refresh'
-            v.title = getI18n('checkUpdate')
             if (s) status.error('Error:Timeout(0)')
           },
           onabort: function onabort (response) {
             if (debug) console.log(response)
-            v.icon = 'el-icon-refresh'
-            v.title = getI18n('checkUpdate')
             if (s) status.error('Error:Abort(0)')
           },
           onerror: function onerror (response) {
             if (debug) console.log(response)
-            v.icon = 'el-icon-refresh'
-            v.title = getI18n('checkUpdate')
             if (s) status.error('Error:Error(0)')
-          },
-          status: status
-        })
-      },
-      getAnnouncement: function getAnnouncement (v) {
-        // 修改
-        v.announcementIcon = 'el-icon-loading'
-        var status = this.echoLog({
-          type: 'custom',
-          text: '<li>'.concat(getI18n('getAnnouncement'), '<font></font></li>')
-        })
-        this.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
-          method: 'get',
-          dataType: 'json',
-          onload: function onload (response) {
-            if (debug) console.log(response)
-
-            if (response.responseText && response.response) {
-              status.success()
-              var data = response.response
-              var conf = GM_getValue('conf') || defaultConf
-              conf.announcement = data.time
-              GM_setValue('conf', conf)
-              v.announcementHidden = true
-              var h = vueUi.$createElement
-              var hArr = []
-
-              for (var index in data.text) {
-                if (/^[\d]+$/.test(index)) hArr.push(h('p', null, ''.concat(parseInt(index) + 1, '.').concat(data.text[index])))
-              }
-
-              vueUi.$msgbox({
-                title: 'pre-'.concat(data.version, '(').concat(fuc.dateFormat('YYYY-mm-dd HH:MM', new Date(data.time)), ')'),
-                message: h('div', null, hArr),
-                showCancelButton: true,
-                confirmButtonText: getI18n('visitHistory'),
-                cancelButtonText: getI18n('close')
-              }).then(function () {
-                window.open('https://userjs.hclonely.com/announcement.html', '_blank')
-              }).catch(function () {})
-            } else {
-              status.error('Error:' + (response.statusText || response.status))
-            }
-
-            v.announcementIcon = 'el-icon-document'
-          },
-          ontimeout: function ontimeout (response) {
-            if (debug) console.log(response)
-            v.announcementIcon = 'el-icon-document'
-            status.error('Error:Timeout(0)')
-          },
-          onabort: function onabort (response) {
-            if (debug) console.log(response)
-            v.announcementIcon = 'el-icon-document'
-            status.error('Error:Abort(0)')
-          },
-          onerror: function onerror (response) {
-            if (debug) console.log(response)
-            v.announcementIcon = 'el-icon-document'
-            status.error('Error:Error(0)')
           },
           status: status
         })
@@ -1773,7 +1687,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             break
         }
 
-        $('.fuck-task-logs .el-notification__content').append(ele)
+        ele.addClass('card-text')
+        $('#fuck-task-info .card-textarea').append(ele)
         ele[0].scrollIntoView()
         var font = ele.find('font')
         var status = {
@@ -4434,20 +4349,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               if (debug) console.log(response)
 
               if (response.status === 200) {
-                var _response$response12
+                var _response$response11
 
-                if ((_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : _response$response12.success) {
-                  var _response$response13, _response$response14
+                if ((_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : _response$response11.success) {
+                  var _response$response12, _response$response13
 
                   currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                   $('#giveawaysjoined').slideDown()
                   $('#giveawaysrecommend').slideDown()
-                  status.success('Success' + (((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.text) ? ':' + ((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.text) : ''))
+                  status.success('Success' + (((_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : _response$response12.text) ? ':' + ((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.text) : ''))
                   doTask()
                 } else {
-                  var _response$response15, _response$response16
+                  var _response$response14, _response$response15
 
-                  status.error('Error' + (((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.text) ? ':' + ((_response$response16 = response.response) === null || _response$response16 === void 0 ? void 0 : _response$response16.text) : ''))
+                  status.error('Error' + (((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.text) ? ':' + ((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.text) : ''))
                 }
               } else {
                 status.error('Error:' + (response.statusText || response.status))
@@ -6315,7 +6230,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
-        loadSetting(config)
+        var _GM_getValue2, _GM_getValue2$global, _GM_getValue2$global$
+
+        unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
+
+        unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
+
+        unsafeWindow.language = language
+        typeof ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : (_GM_getValue2$global = _GM_getValue2.global) === null || _GM_getValue2$global === void 0 ? void 0 : (_GM_getValue2$global$ = _GM_getValue2$global.fuck) === null || _GM_getValue2$global$ === void 0 ? void 0 : _GM_getValue2$global$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
       } else if (window.location.pathname.includes('announcement')) {
         loadAnnouncement()
       }
@@ -6373,11 +6295,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var v = _Object$entries2$_i[1]
 
           if (v.show) {
-            console.log(v.show)
-            console.log($('#' + k))
-            console.log(website[k])
             $('#' + k).click(function () {
-              console.log(1)
               website[k]()
             })
           }
@@ -6479,7 +6397,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         */
 
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_blank" class="card-link">').concat(getI18n('setting'), '</a>\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n      <li class="card-text">Test.</li>\n    </div>\n  </div>\n</div>'))
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_blank" class="card-link">').concat(getI18n('setting'), '</a>\n      <a href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+        $('#clean-cache').click(function () {
+          var status = fuc.echoLog({
+            type: 'custom',
+            text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
+          })
+          var listValues = GM_listValues()
+
+          var _iterator32 = _createForOfIteratorHelper(listValues)
+          var _step33
+
+          try {
+            for (_iterator32.s(); !(_step33 = _iterator32.n()).done;) {
+              var value = _step33.value
+              if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
+            }
+          } catch (err) {
+            _iterator32.e(err)
+          } finally {
+            _iterator32.f()
+          }
+
+          status.success()
+        })
+        $('#check-update').click(function () {
+          fuc.checkUpdate(true)
+        })
         /*
         new Vue({
           el: '#fuck-task-info'
@@ -6548,8 +6492,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }
         })
         */
-        // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
-        // $('.fuck-task-logs .el-notification__content').show()
+
+        fuc.checkUpdate() // $('.fuck-task-logs .el-notification__content').show()
 
         if (!showLogs) {
           var _$$animate
@@ -6583,12 +6527,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         input: 'select',
         inputOptions: {
           auto: getI18n('auto'),
-          'zh-cn': '简体中文',
+          'zh-CN': '简体中文',
           en: 'English'
         },
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
-        type: 'info'
+        showCancelButton: true
       }).then(function (result) {
         if (result.value) {
           GM_setValue('language', result.value)
@@ -6598,14 +6542,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
     GM_addStyle('#fuck-task-info{\nposition: fixed;\nbottom: 10px;\nright: 10px;\nbackground-color: #fff;\nborder-radius: 10px;\nwidth: auto;\n    max-width: 50%;\n    max-height: 50%;\n    z-index: 99999999999!important;\n}\n#fuck-task-info .card-title{\n  text-align: center;\n}\n#fuck-task-info .card-textarea{\n    overflow: auto;\n    max-height: 230px;\n}\n#fuck-task-btn{\n  position: fixed;\ntop: 0;\nright: 0;\nz-index: 9999999999;\n}\n')
   } catch (e) {
-    setTimeout(function () {
-      vueUi.$message({
-        type: 'error',
-        duration: 0,
-        message: getI18n('jsError'),
-        showClose: true
-      })
-    }, 500)
+    Swal.fire({
+      icon: 'error',
+      text: getI18n('jsError')
+    })
     console.log('%c%s', 'color:white;background:red', e.stack)
   }
 })()

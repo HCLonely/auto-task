@@ -34,7 +34,7 @@ if (program.html) {
 if (program.js) publicJs()
 
 function packUserJs (test = false) {
-  const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version) // 加载Tampermonkey头部信息
+  const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version).replace(/BRANCH/g, test ? 'test' : 'master') // 加载Tampermonkey头部信息
   const disabledPlugins = ['gamecode.js'] // 禁用的插件
   const i18n = fs.readFileSync('./src/tools/i18n.js', 'utf-8') // 加载i18n相关函数
   const defaultConfig = fs.readFileSync('./src/tools/defaultConfig.js', 'utf-8') // 加载默认设置
@@ -56,24 +56,20 @@ function packUserJs (test = false) {
     'use strict'
 
     ${i18n}
-    GM_addStyle(GM_getResourceText('css'))
-    $('body').append('<div v-cloak id="vue-ui"></div>')
-    const vueUi = new Vue({ el: '#vue-ui' })
-    Vue.config.errorHandler = function (err, vm, info) {
-      setTimeout(() => {
-        vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
-      }, 500)
-      console.log('%c%s', 'color:white;background:red', 'Info:' + info + '\\nError:' + err.stack)
-    }
+    GM_addStyle(GM_getResourceText('bootstrapCss'))
+    GM_addStyle(GM_getResourceText('overhangCss'))
     $(document).ajaxError(function (event, xhr, options, exc) {
-      vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
+      Swal.fire({
+        icon: 'error',
+        text: getI18n('jsError')
+      })
       console.log('%c%s', 'color:white;background:red', getI18n('ajaxError') + '：')
       console.log('Event:', event)
       console.log('XMLHttpRequest :', xhr)
       console.log('Options:', options)
       console.log('JavaScript exception:', exc)
     })
-    
+
     try{
 
 ${defaultConfig}
@@ -85,12 +81,13 @@ const plugins = ${JSON.stringify(plugins).replace(/'|"/g, '')}
 ${main}
 
     }catch(e){
-        setTimeout(() => {
-          vueUi.$message({ type: 'error', duration: 0, message: getI18n('jsError'), showClose: true })
-        }, 500)
-        console.log('%c%s', 'color:white;background:red', e.stack)
+      Swal.fire({
+        icon: 'error',
+        text: getI18n('jsError')
+      })
+      console.log('%c%s', 'color:white;background:red', e.stack)
     }
-    
+
 })()
 `.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign|promise\/param-names|no-new)/g, '').replace(/\/\* disable[\w\W]*?\*\//g, '')
 
@@ -133,6 +130,13 @@ function update () {
     }
 
     console.log('version.json写入成功')
+  })
+  fs.writeFile('./public/version.json', JSON.stringify(newVersion), function (error) {
+    if (error) {
+      return console.error('version.json文件写入public失败: ', error)
+    }
+
+    console.log('version.json写入public成功')
   })
 
   fs.writeFile('./public/announcement.json', JSON.stringify(announcementHistory), function (error) {

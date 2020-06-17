@@ -1,7 +1,10 @@
-/* global getI18n, fuc, plugins, config, globalConf, getLanguage, language, Swal, loadSetting, loadAnnouncement */
+/* global getI18n, fuc, plugins, config, defaultConf, globalConf, getLanguage, language, Swal, loadSettings, loadAnnouncement */
 if (window.location.host.includes('hclonely')) {
   if (window.location.pathname.includes('setting')) {
-    loadSetting(config)
+    unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
+    unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
+    unsafeWindow.language = language
+    typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
   } else if (window.location.pathname.includes('announcement')) {
     loadAnnouncement()
   }
@@ -142,17 +145,27 @@ if (window.location.host.includes('hclonely')) {
   <div class="card-body">
     <h5 class="card-title">${getI18n('taskLog')}</h5>
     <h6 class="card-subtitle">
-      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('checkUpdate')}</a>
+      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('checkUpdate')}</a>
       <a href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_blank" class="card-link">${getI18n('setting')}</a>
-      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('visitUpdateText')}</a>
-      <a href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('cleanCache')}</a>
+      <a href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">${getI18n('visitUpdateText')}</a>
+      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('cleanCache')}</a>
       <a href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">${getI18n('feedback')}</a>
     </h6>
     <div class="card-textarea">
-      <li class="card-text">Test.</li>
     </div>
   </div>
 </div>`)
+  $('#clean-cache').click(() => {
+    const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
+    const listValues = GM_listValues()
+    for (const value of listValues) {
+      if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
+    }
+    status.success()
+  })
+  $('#check-update').click(() => {
+    fuc.checkUpdate(true)
+  })
   /*
   new Vue({
     el: '#fuck-task-info'
@@ -221,7 +234,7 @@ if (window.location.host.includes('hclonely')) {
     }
   })
 */
-  // if (globalConf.other.checkUpdate) fuc.checkUpdate(extraBtn)
+  fuc.checkUpdate()
 
   // $('.fuck-task-logs .el-notification__content').show()
   if (!showLogs) {
@@ -249,12 +262,12 @@ GM_registerMenuCommand('Language', () => {
     input: 'select',
     inputOptions: {
       auto: getI18n('auto'),
-      'zh-cn': '简体中文',
+      'zh-CN': '简体中文',
       en: 'English'
     },
     confirmButtonText: getI18n('confirm'),
     cancelButtonText: getI18n('cancel'),
-    type: 'info'
+    showCancelButton: true
   }).then((result) => {
     if (result.value) {
       GM_setValue('language', result.value)

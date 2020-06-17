@@ -39,7 +39,7 @@
       "GM_registerMenuCommand",
       "GM_info",
       "GM_openInTab",
-      "Vue",
+      "unsafeWindow",
       "File",
       "FileReader",
       "getUrlTwitter",

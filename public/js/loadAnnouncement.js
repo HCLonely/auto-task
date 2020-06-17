@@ -1,4 +1,4 @@
-/* global getI18n */
+/* global getI18n,Vue */
 function loadAnnouncement () { // eslint-disable-line no-unused-vars
   $.get('/public/announcement.json?t=' + new Date().getTime(), function (data, status, xhr) {
   // $.get('/announcement.json?t=' + new Date().getTime(), function (data, status, xhr) {

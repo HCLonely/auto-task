@@ -6,7 +6,7 @@ function loadAnnouncement () { // eslint-disable-line no-unused-vars
         e.time = dateFormat('YYYY-mm-dd HH:MM', new Date(e.time))
         return e
       })
-      new Vue({ // eslint-disable-line no-new
+      new Vue({ // eslint-disable-line
         el: '#app',
         data: { announcements: data }
       })

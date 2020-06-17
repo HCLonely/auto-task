@@ -228,9 +228,12 @@ function creatConfig () {
       for (const [key2, value2] of Object.entries(value1)) {
         if (Object.prototype.toString.call(value2) === '[object Object]') {
           for (const [key3, value3] of Object.entries(value2)) {
+            if (!configRaw[key1]) configRaw[key1] = {}
+            if (!configRaw[key1][key2]) configRaw[key1][key2] = {}
             if (!configRaw[key1][key2][key3]) configRaw[key1][key2][key3] = false
           }
         } else {
+          if (!configRaw[key1]) configRaw[key1] = {}
           if (!configRaw[key1][key2]) configRaw[key1][key2] = false
         }
       }
@@ -265,6 +268,7 @@ function resetSetting () {
     showCancelButton: true
   }).then(e => {
     if (e.value) {
+      $('h2.center').remove()
       if (loadSettings({})) {
         Swal.update({
           icon: 'success',

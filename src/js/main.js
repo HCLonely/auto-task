@@ -35,7 +35,7 @@ function loadSettings (userConfig) {
     <tr>
       <th scope="col" colspan="4" class="table-header">
         ${key === 'global' ? getI18n('globalSetting') : getI18n('websiteSetting', key)}
-        ${value.enable === undefined ? '' : `<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" name="${key + '-enable'}" id="${key + '-enable'}${value.enable ? ' checked="checked"' : ''}"><label class="custom-control-label" for="${key + '-enable'}">${getI18n('enable')}</label></div>`}
+        ${value.enable === undefined ? '' : `<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" name="${key + '-enable'}" id="${key + '-enable'}"${value.enable ? ' checked="checked"' : ''}><label class="custom-control-label" for="${key + '-enable'}">${getI18n('enable')}</label></div>`}
       </th>
     </tr>
     <tr>

@@ -77,7 +77,7 @@ const prys = { // eslint-disable-line no-unused-vars
             this.do_task()
           } else {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-            if (this.conf.fuck.verify) this.verify()
+            if (this.conf.fuck.verifyTask) this.verify()
           }
         })
       } else {
@@ -97,7 +97,7 @@ const prys = { // eslint-disable-line no-unused-vars
           this.do_task()
         } else {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (this.conf.fuck.verify) this.verify()
+          if (this.conf.fuck.verifyTask) this.verify()
         }
       }
     } else if (callback === 'verify') {
@@ -177,7 +177,7 @@ const prys = { // eslint-disable-line no-unused-vars
       await this.toggleActions('fuck', pro)
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verify) this.verify()
+        if (this.conf.fuck.verifyTask) this.verify()
       })
     })
   },

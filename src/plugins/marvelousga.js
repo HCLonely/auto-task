@@ -72,7 +72,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       if (callback === 'do_task') {
         if (this.tasks.length === 0) {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (this.conf.fuck.verify) this.verify()
+          if (this.conf.fuck.verifyTask) this.verify()
         } else {
           this.do_task()
         }
@@ -107,7 +107,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
       }
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verify) this.verify()
+        if (this.conf.fuck.verifyTask) this.verify()
       })
     })
   },

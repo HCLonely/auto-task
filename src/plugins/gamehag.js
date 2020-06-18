@@ -16,32 +16,59 @@ const gamehag = { // eslint-disable-line no-unused-vars
     ]
     if (callback === 'do_task') {
       [this.groups, this.tasks] = [[], []]
+      const pro = []
       const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
       for (const btn of verifyBtns) {
         const [taskId, taskDes] = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
-        if ($(btn).parents('.task-content').next().text().includes('+1')) this.tasks.push({ taskId, taskDes })
+        if ($(btn).parents('.task-content').next().text().includes('+1')) {
+          if (/join.*?steam.*?group/gim.test($(btn).parent().prev().text())) {
+            const groupurl = $(btn).parent().find('a:contains("to do")').attr('href')
+            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+              new Promise(resolve => {
+                fuc.getFinalUrl(resolve, groupurl)
+              }).then(r => {
+                if (r.result === 'success') {
+                  const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
+                  if (groupName) {
+                    this.groups.push(groupName[1])
+                    this.taskInfo.groups.push(groupName[1])
+                  } else {
+                    fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getGroupError', groupurl)}<font></font></li>` })
+                  }
+                } else {
+                  fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getGroupError', groupurl)}<font></font></li>` })
+                }
+                res(1)
+              })
+            }))
+          }
+          this.tasks.push({ taskId, taskDes })
+        }
       }
       if ($('a.giveaway-survey').length > 0) {
         const [taskId, taskDes] = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
         this.tasks.push({ taskId, taskDes })
       }
-      [
-        this.groups,
-        this.taskInfo.groups,
-        this.tasks
-      ] = [
-        fuc.unique(this.groups),
-        fuc.unique(this.taskInfo.groups),
-        fuc.unique(this.tasks)
-      ]
-      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-      if (this.tasks.length > 0) {
-        this.do_task()
-      } else {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verify) this.verify()
-      }
+
+      Promise.all(pro).finally(() => {
+        [
+          this.groups,
+          this.taskInfo.groups,
+          this.tasks
+        ] = [
+          fuc.unique(this.groups),
+          fuc.unique(this.taskInfo.groups),
+          fuc.unique(this.tasks)
+        ]
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+        if (this.tasks.length > 0) {
+          this.do_task()
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+          if (this.conf.fuck.verifyTask) this.verify()
+        }
+      })
     } else if (callback === 'verify') {
       this.tasks = []
       for (const btn of verifyBtns) {
@@ -82,8 +109,14 @@ const gamehag = { // eslint-disable-line no-unused-vars
       })
     }
     Promise.all(pro).finally(() => {
-      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-      if (this.conf.fuck.verify) this.verify()
+      this.updateSteamInfo(async () => {
+        const pro = []
+        await this.toggleActions('fuck', pro)
+        Promise.all(pro).finally(() => {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+          if (this.conf.fuck.verifyTask) this.verify()
+        })
+      })
     })
   },
   async verify (verify = false) {
@@ -135,7 +168,42 @@ const gamehag = { // eslint-disable-line no-unused-vars
     }
   },
   remove (remove = false) {
-    fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
+    if (this.conf.remove.leaveSteamGroup && this.groups.length > 0) {
+      this.updateSteamInfo(async () => {
+        const pro = []
+        await this.toggleActions('remove', pro)
+        Promise.all(pro).finally(() => {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+        })
+      })
+    } else {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
+    }
+  },
+  toggleActions (action, pro) {
+    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
+      }))
+    }
+    /* disable
+    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
+      }))
+    }
+    */
   },
   get_giveawayId () {
     const id = window.location.href.match(/\/giveaway\/([\d]+)/)

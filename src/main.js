@@ -293,6 +293,18 @@ width: auto;
     overflow: auto;
     max-height: 230px;
 }
+#fuck-task-info .success{
+  color: green;
+}
+#fuck-task-info .error{
+  color: red;
+}
+#fuck-task-info .warning{
+  color: blue;
+}
+#fuck-task-info .info{
+  color: yellow;
+}
 #fuck-task-btn{
   position: fixed;
 top: 0;

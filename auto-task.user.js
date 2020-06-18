@@ -237,7 +237,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
       ajaxError: 'Ajax请求出错',
       firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
-      goSetting: '前往设置'
+      goSetting: '前往设置',
+      getGroupError: '获取steam组信息失败 <a href="s%" target="_blank">s%</a>'
     },
     en: {
       language: 'Language',
@@ -369,7 +370,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       jsError: 'Script execution error, please see the console for details (red background part)!',
       ajaxError: 'Ajax request error',
       firstUpdate: 'The first update to 3.0+ requires re-setting. Do you want to go to the setting?',
-      goSetting: 'Yes'
+      goSetting: 'Yes',
+      getGroupError: 'Failed to get steam group information. <a href="s%" target="_blank">s%</a>'
     }
   }
   var language = getLanguage()
@@ -390,7 +392,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   function getI18n (name) {
     var str = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null
     var value = 'null'
-    if (str) value = i18n[language][name] ? i18n[language][name].replace('s%', str) : 'null'; else value = i18n[language][name] || 'null'
+    if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : 'null'; else value = i18n[language][name] || 'null'
     return value
   }
 
@@ -2149,7 +2151,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this14.conf.fuck.verify) _this14.verify()
+                    if (_this14.conf.fuck.verifyTask) _this14.verify()
                   })
 
                 case 5:
@@ -2520,6 +2522,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.get_tasks('do_task')
       },
       get_tasks: function get_tasks () {
+        var _this18 = this
+
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
         var _ref15 = [fuc.echoLog({
           type: 'custom',
@@ -2532,6 +2536,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var _ref16 = [[], []]
           this.groups = _ref16[0]
           this.tasks = _ref16[1]
+          var _pro2 = []
           var taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
 
@@ -2544,7 +2549,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               var _ref19 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
               var _taskId = _ref19[0]
               var _taskDes = _ref19[1]
+
               if ($(btn).parents('.task-content').next().text().includes('+1')) {
+                if (/join.*?steam.*?group/gim.test($(btn).parent().prev().text())) {
+                  (function () {
+                    var groupurl = $(btn).parent().find('a:contains("to do")').attr('href')
+
+                    _pro2.push(new Promise(function (res) {
+                      new Promise(function (resolve) {
+                        fuc.getFinalUrl(resolve, groupurl)
+                      }).then(function (r) {
+                        if (r.result === 'success') {
+                          var groupName = r.finalUrl.match(/groups\/(.+)\/?/)
+
+                          if (groupName) {
+                            _this18.groups.push(groupName[1])
+
+                            _this18.taskInfo.groups.push(groupName[1])
+                          } else {
+                            fuc.echoLog({
+                              type: 'custom',
+                              text: '<li>'.concat(getI18n('getGroupError', groupurl), '<font></font></li>')
+                            })
+                          }
+                        } else {
+                          fuc.echoLog({
+                            type: 'custom',
+                            text: '<li>'.concat(getI18n('getGroupError', groupurl), '<font></font></li>')
+                          })
+                        }
+
+                        res(1)
+                      })
+                    }))
+                  })()
+                }
+
                 this.tasks.push({
                   taskId: _taskId,
                   taskDes: _taskDes
@@ -2567,21 +2607,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             })
           }
 
-          var _ref18 = [fuc.unique(this.groups), fuc.unique(this.taskInfo.groups), fuc.unique(this.tasks)]
-          this.groups = _ref18[0]
-          this.taskInfo.groups = _ref18[1]
-          this.tasks = _ref18[2]
-          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+          Promise.all(_pro2).finally(function () {
+            var _ref18 = [fuc.unique(_this18.groups), fuc.unique(_this18.taskInfo.groups), fuc.unique(_this18.tasks)]
+            _this18.groups = _ref18[0]
+            _this18.taskInfo.groups = _ref18[1]
+            _this18.tasks = _ref18[2]
+            GM_setValue('taskInfo[' + window.location.host + _this18.get_giveawayId() + ']', _this18.taskInfo)
 
-          if (this.tasks.length > 0) {
-            this.do_task()
-          } else {
-            fuc.echoLog({
-              type: 'custom',
-              text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-            })
-            if (this.conf.fuck.verify) this.verify()
-          }
+            if (_this18.tasks.length > 0) {
+              _this18.do_task()
+            } else {
+              fuc.echoLog({
+                type: 'custom',
+                text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+              })
+              if (_this18.conf.fuck.verifyTask) _this18.verify()
+            }
+          })
         } else if (callback === 'verify') {
           this.tasks = []
 
@@ -2633,21 +2675,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (debug) console.log(this)
       },
       do_task: function do_task () {
-        var _this18 = this
+        var _this19 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
           var _ref21, pro, tasks, _loop5, i
 
-          return regeneratorRuntime.wrap(function _callee3$ (_context4) {
+          return regeneratorRuntime.wrap(function _callee4$ (_context5) {
             while (1) {
-              switch (_context4.prev = _context4.next) {
+              switch (_context5.prev = _context5.next) {
                 case 0:
-                  _ref21 = [[], fuc.unique(_this18.tasks)], pro = _ref21[0], tasks = _ref21[1]
+                  _ref21 = [[], fuc.unique(_this19.tasks)], pro = _ref21[0], tasks = _ref21[1]
                   _loop5 = /* #__PURE__ */regeneratorRuntime.mark(function _loop5 (i) {
                     var task
-                    return regeneratorRuntime.wrap(function _loop5$ (_context3) {
+                    return regeneratorRuntime.wrap(function _loop5$ (_context4) {
                       while (1) {
-                        switch (_context3.prev = _context3.next) {
+                        switch (_context4.prev = _context4.next) {
                           case 0:
                             task = tasks[i]
                             pro.push(new Promise(function (resolve) {
@@ -2675,7 +2717,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               }))
                             }
 
-                            _context3.next = 5
+                            _context4.next = 5
                             return new Promise(function (resolve) {
                               setTimeout(function () {
                                 resolve()
@@ -2684,7 +2726,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 5:
                           case 'end':
-                            return _context3.stop()
+                            return _context4.stop()
                         }
                       }
                     }, _loop5)
@@ -2693,58 +2735,79 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 3:
                   if (!(i < tasks.length)) {
-                    _context4.next = 8
+                    _context5.next = 8
                     break
                   }
 
-                  return _context4.delegateYield(_loop5(i), 't0', 5)
+                  return _context5.delegateYield(_loop5(i), 't0', 5)
 
                 case 5:
                   i++
-                  _context4.next = 3
+                  _context5.next = 3
                   break
 
                 case 8:
                   Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
-                    if (_this18.conf.fuck.verify) _this18.verify()
+                    _this19.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
+                      var pro
+                      return regeneratorRuntime.wrap(function _callee3$ (_context3) {
+                        while (1) {
+                          switch (_context3.prev = _context3.next) {
+                            case 0:
+                              pro = []
+                              _context3.next = 3
+                              return _this19.toggleActions('fuck', pro)
+
+                            case 3:
+                              Promise.all(pro).finally(function () {
+                                fuc.echoLog({
+                                  type: 'custom',
+                                  text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                                })
+                                if (_this19.conf.fuck.verifyTask) _this19.verify()
+                              })
+
+                            case 4:
+                            case 'end':
+                              return _context3.stop()
+                          }
+                        }
+                      }, _callee3)
+                    })))
                   })
 
                 case 9:
                 case 'end':
-                  return _context4.stop()
+                  return _context5.stop()
               }
             }
-          }, _callee3)
+          }, _callee4)
         }))()
       },
       verify: function verify () {
         var _arguments = arguments
-        var _this19 = this
+        var _this20 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
-          var verify, _ref22, _pro2, tasks, _loop6, i
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
+          var verify, _ref23, _pro3, tasks, _loop6, i
 
-          return regeneratorRuntime.wrap(function _callee4$ (_context6) {
+          return regeneratorRuntime.wrap(function _callee5$ (_context7) {
             while (1) {
-              switch (_context6.prev = _context6.next) {
+              switch (_context7.prev = _context7.next) {
                 case 0:
                   verify = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : false
 
                   if (!verify) {
-                    _context6.next = 13
+                    _context7.next = 13
                     break
                   }
 
-                  _ref22 = [[], fuc.unique(_this19.tasks)], _pro2 = _ref22[0], tasks = _ref22[1]
+                  _ref23 = [[], fuc.unique(_this20.tasks)], _pro3 = _ref23[0], tasks = _ref23[1]
                   _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 (i) {
                     var task, status
-                    return regeneratorRuntime.wrap(function _loop6$ (_context5) {
+                    return regeneratorRuntime.wrap(function _loop6$ (_context6) {
                       while (1) {
-                        switch (_context5.prev = _context5.next) {
+                        switch (_context6.prev = _context6.next) {
                           case 0:
                             task = tasks[i]
                             status = fuc.echoLog({
@@ -2752,7 +2815,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               text: '<li>'.concat(getI18n('verifyingTask'), '<a href="/giveaway/click/').concat(task.taskId, '" target="_blank">').concat(task.taskDes.trim(), '</a>...<font></font></li>')
                             })
 
-                            _pro2.push(new Promise(function (resolve) {
+                            _pro3.push(new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: '/api/v1/giveaway/sendtask',
                                 method: 'POST',
@@ -2797,7 +2860,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               })
                             }))
 
-                            _context5.next = 5
+                            _context6.next = 5
                             return new Promise(function (resolve) {
                               setTimeout(function () {
                                 resolve()
@@ -2806,7 +2869,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 5:
                           case 'end':
-                            return _context5.stop()
+                            return _context6.stop()
                         }
                       }
                     }, _loop6)
@@ -2815,44 +2878,90 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 5:
                   if (!(i < tasks.length)) {
-                    _context6.next = 10
+                    _context7.next = 10
                     break
                   }
 
-                  return _context6.delegateYield(_loop6(i), 't0', 7)
+                  return _context7.delegateYield(_loop6(i), 't0', 7)
 
                 case 7:
                   i++
-                  _context6.next = 5
+                  _context7.next = 5
                   break
 
                 case 10:
-                  Promise.all(_pro2).finally(function () {
+                  Promise.all(_pro3).finally(function () {
                     fuc.echoLog({
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font></li>')
                     })
                   })
-                  _context6.next = 14
+                  _context7.next = 14
                   break
 
                 case 13:
-                  _this19.get_tasks('verify')
+                  _this20.get_tasks('verify')
 
                 case 14:
                 case 'end':
-                  return _context6.stop()
+                  return _context7.stop()
               }
             }
-          }, _callee4)
+          }, _callee5)
         }))()
       },
       remove: function remove () {
+        var _this21 = this
+
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-        fuc.echoLog({
-          type: 'custom',
-          text: '<li><font class="success">'.concat(getI18n('cannotRemove'), '</font></li>')
-        })
+
+        if (this.conf.remove.leaveSteamGroup && this.groups.length > 0) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
+            var pro
+            return regeneratorRuntime.wrap(function _callee6$ (_context8) {
+              while (1) {
+                switch (_context8.prev = _context8.next) {
+                  case 0:
+                    pro = []
+                    _context8.next = 3
+                    return _this21.toggleActions('remove', pro)
+
+                  case 3:
+                    Promise.all(pro).finally(function () {
+                      fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                      })
+                    })
+
+                  case 4:
+                  case 'end':
+                    return _context8.stop()
+                }
+              }
+            }, _callee6)
+          })))
+        } else {
+          fuc.echoLog({
+            type: 'custom',
+            text: '<li><font class="success">'.concat(getI18n('cannotRemove'), '</font></li>')
+          })
+        }
+      },
+      toggleActions: function toggleActions (action, pro) {
+        var groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+
+        if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'banana',
+              type: 'group',
+              elements: groups,
+              resolve: resolve,
+              action: action
+            })
+          }))
+        }
       },
       get_giveawayId: function get_giveawayId () {
         var id = window.location.href.match(/\/giveaway\/([\d]+)/)
@@ -2898,12 +3007,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.do_task('remove')
         } else {
           if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-          var _ref23 = [fuc.echoLog({
+          var _ref25 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('#actions tr')]
-          var status = _ref23[0]
-          var tasks = _ref23[1]
+          var status = _ref25[0]
+          var tasks = _ref25[1]
 
           var _iterator7 = _createForOfIteratorHelper(tasks)
           var _step7
@@ -2944,10 +3053,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       which_task: function which_task (taskDes) {
-        var _ref24 = [[], taskDes.text().trim(), taskDes.attr('href')]
-        var taskInfo = _ref24[0]
-        var taskName = _ref24[1]
-        var link = _ref24[2]
+        var _ref26 = [[], taskDes.text().trim(), taskDes.attr('href')]
+        var taskInfo = _ref26[0]
+        var taskName = _ref26[1]
+        var link = _ref26[2]
 
         if (/disable adblock/gim.test(taskName)) {
           return [{
@@ -3020,15 +3129,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return taskInfo
       },
       getFinalUrl: function getFinalUrl (e) {
-        var _this20 = this
+        var _this22 = this
 
         // 处理任务链接
-        var _ref25 = [fuc.echoLog({
+        var _ref27 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
         }), []]
-        var status = _ref25[0]
-        var pro = _ref25[1]
+        var status = _ref27[0]
+        var pro = _ref27[1]
 
         var _iterator9 = _createForOfIteratorHelper(this.taskInfo.links)
         var _step9
@@ -3037,7 +3146,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var _loop7 = function _loop7 () {
             var link = _step9.value
             pro.push(new Promise(function (resolve) {
-              if (_this20.taskInfo.toFinalUrl[link]) {
+              if (_this22.taskInfo.toFinalUrl[link]) {
                 resolve({
                   result: 'success'
                 })
@@ -3065,7 +3174,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               var r = _step10.value
 
               if (r.finalUrl) {
-                _this20.taskInfo.toFinalUrl[r.url] = r.finalUrl
+                _this22.taskInfo.toFinalUrl[r.url] = r.finalUrl
               }
             }
           } catch (err) {
@@ -3074,153 +3183,153 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator10.f()
           }
 
-          var _ref26 = [fuc.unique(_this20.links), fuc.unique(_this20.taskInfo.groups), fuc.unique(_this20.taskInfo.curators), fuc.unique(_this20.taskInfo.publishers), fuc.unique(_this20.taskInfo.developers), fuc.unique(_this20.taskInfo.franchises), fuc.unique(_this20.taskInfo.fGames), fuc.unique(_this20.taskInfo.wGames), fuc.unique(_this20.taskInfo.announcements), fuc.unique(_this20.taskInfo.links)]
-          _this20.links = _ref26[0]
-          _this20.taskInfo.groups = _ref26[1]
-          _this20.taskInfo.curators = _ref26[2]
-          _this20.taskInfo.publishers = _ref26[3]
-          _this20.taskInfo.developers = _ref26[4]
-          _this20.taskInfo.franchises = _ref26[5]
-          _this20.taskInfo.fGames = _ref26[6]
-          _this20.taskInfo.wGames = _ref26[7]
-          _this20.taskInfo.announcements = _ref26[8]
-          _this20.taskInfo.links = _ref26[9]
+          var _ref28 = [fuc.unique(_this22.links), fuc.unique(_this22.taskInfo.groups), fuc.unique(_this22.taskInfo.curators), fuc.unique(_this22.taskInfo.publishers), fuc.unique(_this22.taskInfo.developers), fuc.unique(_this22.taskInfo.franchises), fuc.unique(_this22.taskInfo.fGames), fuc.unique(_this22.taskInfo.wGames), fuc.unique(_this22.taskInfo.announcements), fuc.unique(_this22.taskInfo.links)]
+          _this22.links = _ref28[0]
+          _this22.taskInfo.groups = _ref28[1]
+          _this22.taskInfo.curators = _ref28[2]
+          _this22.taskInfo.publishers = _ref28[3]
+          _this22.taskInfo.developers = _ref28[4]
+          _this22.taskInfo.franchises = _ref28[5]
+          _this22.taskInfo.fGames = _ref28[6]
+          _this22.taskInfo.wGames = _ref28[7]
+          _this22.taskInfo.announcements = _ref28[8]
+          _this22.taskInfo.links = _ref28[9]
           // 任务链接处理完成
-          GM_setValue('taskInfo[' + window.location.host + _this20.get_giveawayId() + ']', _this20.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + _this22.get_giveawayId() + ']', _this22.taskInfo)
           status.success()
-          if (debug) console.log(_this20)
-          e === 'doTask' ? _this20.do_task('fuck') : _this20.do_task('remove')
+          if (debug) console.log(_this22)
+          e === 'doTask' ? _this22.do_task('fuck') : _this22.do_task('remove')
         }).catch(function (error) {
           status.error()
           if (debug) console.log(error)
         })
       },
       do_task: function do_task (act) {
-        var _this21 = this
+        var _this23 = this
 
         if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
         if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
         new Promise(function (resolve) {
-          if (_this21.taskInfo.groups.length > 0 || _this21.taskInfo.announcements.length > 0) {
-            if (_this21.taskInfo.curators.length > 0 || _this21.taskInfo.publishers.length > 0 || _this21.taskInfo.developers.length > 0 || _this21.taskInfo.fGames.length > 0 || _this21.taskInfo.wGames.length > 0) {
+          if (_this23.taskInfo.groups.length > 0 || _this23.taskInfo.announcements.length > 0) {
+            if (_this23.taskInfo.curators.length > 0 || _this23.taskInfo.publishers.length > 0 || _this23.taskInfo.developers.length > 0 || _this23.taskInfo.fGames.length > 0 || _this23.taskInfo.wGames.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this21.taskInfo.curators.length > 0 || _this21.taskInfo.publishers.length > 0 || _this21.taskInfo.developers.length > 0 || _this21.taskInfo.fGames.length > 0 || _this21.taskInfo.wGames.length > 0) {
+          } else if (_this23.taskInfo.curators.length > 0 || _this23.taskInfo.publishers.length > 0 || _this23.taskInfo.developers.length > 0 || _this23.taskInfo.fGames.length > 0 || _this23.taskInfo.wGames.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
           }
         }).then(function (s) {
           if (s === 1) {
-            var _pro3 = []
+            var _pro4 = []
 
-            if (_this21.conf[act][act === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && _this21.taskInfo.groups.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && _this23.taskInfo.groups.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'group',
-                  elements: _this21.taskInfo.groups,
+                  elements: _this23.taskInfo.groups,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'followCurator' : 'unfollowCurator'] && _this21.taskInfo.curators.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'followCurator' : 'unfollowCurator'] && _this23.taskInfo.curators.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'curator',
-                  elements: _this21.taskInfo.curators,
+                  elements: _this23.taskInfo.curators,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'followPublisher' : 'unfollowPublisher'] && _this21.taskInfo.publishers.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'followPublisher' : 'unfollowPublisher'] && _this23.taskInfo.publishers.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'publisher',
-                  elements: _this21.taskInfo.publishers,
+                  elements: _this23.taskInfo.publishers,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'followDeveloper' : 'unfollowDeveloper'] && _this21.taskInfo.developers.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'followDeveloper' : 'unfollowDeveloper'] && _this23.taskInfo.developers.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'developer',
-                  elements: _this21.taskInfo.developers,
+                  elements: _this23.taskInfo.developers,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'followFranchise' : 'unfollowFranchise'] && _this21.taskInfo.franchises.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'followFranchise' : 'unfollowFranchise'] && _this23.taskInfo.franchises.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'franchise',
-                  elements: _this21.taskInfo.franchises,
+                  elements: _this23.taskInfo.franchises,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'followGame' : 'unfollowGame'] && _this21.taskInfo.fGames.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'followGame' : 'unfollowGame'] && _this23.taskInfo.fGames.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'game',
-                  elements: _this21.taskInfo.fGames,
+                  elements: _this23.taskInfo.fGames,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (_this21.conf[act][act === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && _this21.taskInfo.wGames.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (_this23.conf[act][act === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && _this23.taskInfo.wGames.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'wishlist',
-                  elements: _this21.taskInfo.wGames,
+                  elements: _this23.taskInfo.wGames,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            if (act === 'fuck' && _this21.conf.fuck.likeAnnouncement && _this21.taskInfo.announcements.length > 0) {
-              _pro3.push(new Promise(function (resolve) {
+            if (act === 'fuck' && _this23.conf.fuck.likeAnnouncement && _this23.taskInfo.announcements.length > 0) {
+              _pro4.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'giveawaysu',
                   type: 'announcement',
-                  elements: _this21.taskInfo.announcements,
+                  elements: _this23.taskInfo.announcements,
                   resolve: resolve,
                   action: act,
-                  toFinalUrl: _this21.taskInfo.toFinalUrl
+                  toFinalUrl: _this23.taskInfo.toFinalUrl
                 })
               }))
             }
 
-            Promise.all(_pro3).finally(function () {
+            Promise.all(_pro4).finally(function () {
               fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
@@ -3345,20 +3454,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         window.open($('a[id^="task_"').attr('href'), '_blank')
       },
       analyze_tasks: function analyze_tasks (tasks) {
-        var _this22 = this
+        var _this24 = this
 
-        var _ref27 = [[], [], [], []]
-        this.groups = _ref27[0]
-        this.wGames = _ref27[1]
-        this.fGames = _ref27[2]
-        this.links = _ref27[3]
-        var _ref28 = [fuc.echoLog({
+        var _ref29 = [[], [], [], []]
+        this.groups = _ref29[0]
+        this.wGames = _ref29[1]
+        this.fGames = _ref29[2]
+        this.links = _ref29[3]
+        var _ref30 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
         }), [], GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')]
-        var status = _ref28[0]
-        var pro = _ref28[1]
-        var taskInfoHistory = _ref28[2]
+        var status = _ref30[0]
+        var pro = _ref30[1]
+        var taskInfoHistory = _ref30[2]
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
         var _iterator11 = _createForOfIteratorHelper(tasks)
@@ -3371,9 +3480,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             var href = task.attr('href')
 
             if (href.includes('vk.com')) {} else if (href.includes('steamcommunity.com/groups')) {
-              _this22.groups.push(href.match(/groups\/(.+)/)[1])
+              _this24.groups.push(href.match(/groups\/(.+)/)[1])
 
-              _this22.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
+              _this24.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
             } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
               pro.push(new Promise(function (r) {
                 new Promise(function (resolve) {
@@ -3383,9 +3492,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     var appId = data.finalUrl.match(/app\/([\d]+)/)
 
                     if (appId) {
-                      _this22.wGames.push(appId[1])
+                      _this24.wGames.push(appId[1])
 
-                      _this22.taskInfo.wGames.push(appId[1])
+                      _this24.taskInfo.wGames.push(appId[1])
 
                       r(1)
                     } else {
@@ -3397,11 +3506,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 })
               }))
             } else if (href.includes('store.steampowered.com/app')) {
-              _this22.fGames.push(href.match(/app\/([\d]+)/)[1])
+              _this24.fGames.push(href.match(/app\/([\d]+)/)[1])
 
-              _this22.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
+              _this24.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
             } else {
-              _this22.links.push(href)
+              _this24.links.push(href)
             }
           }
 
@@ -3415,17 +3524,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         Promise.all(pro).finally(function () {
-          var _ref29 = [fuc.unique(_this22.groups), fuc.unique(_this22.wGames), fuc.unique(_this22.fGames), fuc.unique(_this22.links), fuc.unique(_this22.taskInfo.groups), fuc.unique(_this22.taskInfo.fGames), fuc.unique(_this22.taskInfo.wGames)]
-          _this22.groups = _ref29[0]
-          _this22.wGames = _ref29[1]
-          _this22.fGames = _ref29[2]
-          _this22.links = _ref29[3]
-          _this22.taskInfo.groups = _ref29[4]
-          _this22.taskInfo.fGames = _ref29[5]
-          _this22.taskInfo.wGames = _ref29[6]
+          var _ref31 = [fuc.unique(_this24.groups), fuc.unique(_this24.wGames), fuc.unique(_this24.fGames), fuc.unique(_this24.links), fuc.unique(_this24.taskInfo.groups), fuc.unique(_this24.taskInfo.fGames), fuc.unique(_this24.taskInfo.wGames)]
+          _this24.groups = _ref31[0]
+          _this24.wGames = _ref31[1]
+          _this24.fGames = _ref31[2]
+          _this24.links = _ref31[3]
+          _this24.taskInfo.groups = _ref31[4]
+          _this24.taskInfo.fGames = _ref31[5]
+          _this24.taskInfo.wGames = _ref31[6]
 
-          if (_this22.groups.length > 0 || _this22.fGames.length > 0 || _this22.links.length > 0 || _this22.wGames.length > 0) {
-            _this22.do_task()
+          if (_this24.groups.length > 0 || _this24.fGames.length > 0 || _this24.links.length > 0 || _this24.wGames.length > 0) {
+            _this24.do_task()
           } else {
             fuc.echoLog({
               type: 'custom',
@@ -3433,13 +3542,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             })
           }
 
-          GM_setValue('taskInfo[' + window.location.host + _this22.get_giveawayId() + ']', _this22.taskInfo)
+          GM_setValue('taskInfo[' + window.location.host + _this24.get_giveawayId() + ']', _this24.taskInfo)
           status.success()
-          if (debug) console.log(_this22)
+          if (debug) console.log(_this24)
         })
       },
       get_tasks: function get_tasks () {
-        var _this23 = this
+        var _this25 = this
 
         var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
 
@@ -3447,13 +3556,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.taskInfo = taskInfoHistory
           this.remove(true)
         } else {
-          var _ref30 = [[], fuc.echoLog({
+          var _ref32 = [[], fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('a[id^=task_]')]
-          var _pro4 = _ref30[0]
-          var status = _ref30[1]
-          var tasksContainer = _ref30[2]
+          var _pro5 = _ref32[0]
+          var status = _ref32[1]
+          var tasksContainer = _ref32[2]
 
           var _iterator12 = _createForOfIteratorHelper(tasksContainer)
           var _step12
@@ -3465,9 +3574,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               var href = task.attr('href')
 
               if (href.includes('vk.com')) {} else if (href.includes('steamcommunity.com/groups/')) {
-                _this23.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
+                _this25.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
               } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
-                _pro4.push(new Promise(function (r) {
+                _pro5.push(new Promise(function (r) {
                   new Promise(function (resolve) {
                     fuc.getFinalUrl(resolve, href)
                   }).then(function (data) {
@@ -3475,9 +3584,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       var appId = data.finalUrl.match(/app\/([\d]+)/)
 
                       if (appId) {
-                        _this23.wGames.push(appId[1])
+                        _this25.wGames.push(appId[1])
 
-                        _this23.taskInfo.wGames.push(appId[1])
+                        _this25.taskInfo.wGames.push(appId[1])
 
                         r(1)
                       } else {
@@ -3489,7 +3598,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   })
                 }))
               } else if (href.includes('store.steampowered.com/app/')) {
-                _this23.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
+                _this25.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
               }
             }
 
@@ -3502,17 +3611,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator12.f()
           }
 
-          Promise.all(_pro4).finally(function () {
-            var _ref31 = [fuc.unique(_this23.taskInfo.groups), fuc.unique(_this23.taskInfo.curators), fuc.unique(_this23.taskInfo.wGames)]
-            _this23.taskInfo.groups = _ref31[0]
-            _this23.taskInfo.curators = _ref31[1]
-            _this23.taskInfo.wGames = _ref31[2]
-            GM_setValue('taskInfo[' + window.location.host + _this23.get_giveawayId() + ']', _this23.taskInfo)
+          Promise.all(_pro5).finally(function () {
+            var _ref33 = [fuc.unique(_this25.taskInfo.groups), fuc.unique(_this25.taskInfo.curators), fuc.unique(_this25.taskInfo.wGames)]
+            _this25.taskInfo.groups = _ref33[0]
+            _this25.taskInfo.curators = _ref33[1]
+            _this25.taskInfo.wGames = _ref33[2]
+            GM_setValue('taskInfo[' + window.location.host + _this25.get_giveawayId() + ']', _this25.taskInfo)
             status.success()
-            if (debug) console.log(_this23)
+            if (debug) console.log(_this25)
 
-            if (_this23.taskInfo.groups.length > 0 || _this23.taskInfo.curators.length > 0 || _this23.taskInfo.wGames.length > 0) {
-              _this23.remove(true)
+            if (_this25.taskInfo.groups.length > 0 || _this25.taskInfo.curators.length > 0 || _this25.taskInfo.wGames.length > 0) {
+              _this25.remove(true)
             } else {
               fuc.echoLog({
                 type: 'custom',
@@ -3523,21 +3632,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       do_task: function do_task () {
-        var _this24 = this
+        var _this26 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
-          var _ref33, pro, links, _iterator13, _step13, _loop10
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
+          var _ref35, pro, links, _iterator13, _step13, _loop10
 
-          return regeneratorRuntime.wrap(function _callee5$ (_context7) {
+          return regeneratorRuntime.wrap(function _callee7$ (_context9) {
             while (1) {
-              switch (_context7.prev = _context7.next) {
+              switch (_context9.prev = _context9.next) {
                 case 0:
-                  _ref33 = [[], fuc.unique(_this24.links)], pro = _ref33[0], links = _ref33[1]
-                  _context7.next = 3
-                  return _this24.toggleActions('fuck', pro)
+                  _ref35 = [[], fuc.unique(_this26.links)], pro = _ref35[0], links = _ref35[1]
+                  _context9.next = 3
+                  return _this26.toggleActions('fuck', pro)
 
                 case 3:
-                  if (_this24.conf.fuck.visitLink) {
+                  if (_this26.conf.fuck.visitLink) {
                     _iterator13 = _createForOfIteratorHelper(links)
 
                     try {
@@ -3567,10 +3676,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 5:
                 case 'end':
-                  return _context7.stop()
+                  return _context9.stop()
               }
             }
-          }, _callee5)
+          }, _callee7)
         })))
       },
       verify: function verify () {
@@ -3584,19 +3693,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
       },
       remove: function remove () {
-        var _this25 = this
+        var _this27 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
-            return regeneratorRuntime.wrap(function _callee6$ (_context8) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
+            return regeneratorRuntime.wrap(function _callee8$ (_context10) {
               while (1) {
-                switch (_context8.prev = _context8.next) {
+                switch (_context10.prev = _context10.next) {
                   case 0:
-                    _context8.next = 2
-                    return _this25.toggleActions('remove', pro)
+                    _context10.next = 2
+                    return _this27.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -3608,22 +3717,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                   case 3:
                   case 'end':
-                    return _context8.stop()
+                    return _context10.stop()
                 }
               }
-            }, _callee6)
+            }, _callee8)
           })))
         } else {
           this.get_tasks('remove')
         }
       },
       toggleActions: function toggleActions (action, pro) {
-        var _ref35 = action === 'fuck' ? [this.groups, this.curators, this.wishlists, this.fGames] : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
-        var _ref36 = _slicedToArray(_ref35, 4)
-        var groups = _ref36[0]
-        var curators = _ref36[1]
-        var wishlists = _ref36[2]
-        var fGames = _ref36[3]
+        var _ref37 = action === 'fuck' ? [this.groups, this.curators, this.wishlists, this.fGames] : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
+        var _ref38 = _slicedToArray(_ref37, 4)
+        var groups = _ref38[0]
+        var curators = _ref38[1]
+        var wishlists = _ref38[2]
+        var fGames = _ref38[3]
 
         if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
           pro.push(new Promise(function (resolve) {
@@ -3800,16 +3909,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this26 = this
+        var _this28 = this
 
         new Promise(function (resolve) {
-          if (_this26.taskInfo.groups.length > 0) {
-            if (_this26.taskInfo.curators.length > 0 || _this26.taskInfo.fGames.length > 0 || _this26.taskInfo.wGames.length > 0) {
+          if (_this28.taskInfo.groups.length > 0) {
+            if (_this28.taskInfo.curators.length > 0 || _this28.taskInfo.fGames.length > 0 || _this28.taskInfo.wGames.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this26.taskInfo.curators.length > 0 || _this26.taskInfo.fGames.length > 0 || _this26.taskInfo.wGames.length > 0) {
+          } else if (_this28.taskInfo.curators.length > 0 || _this28.taskInfo.fGames.length > 0 || _this28.taskInfo.wGames.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -3890,20 +3999,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref37 = [[], [], [], [], [], [], []]
-          this.twitters = _ref37[0]
-          this.facebooks = _ref37[1]
-          this.youtubes = _ref37[2]
-          this.discords = _ref37[3]
-          this.others = _ref37[4]
-          this.groups = _ref37[5]
-          this.links = _ref37[6]
-          var _ref38 = [fuc.echoLog({
+          var _ref39 = [[], [], [], [], [], [], []]
+          this.twitters = _ref39[0]
+          this.facebooks = _ref39[1]
+          this.youtubes = _ref39[2]
+          this.discords = _ref39[3]
+          this.others = _ref39[4]
+          this.groups = _ref39[5]
+          this.links = _ref39[6]
+          var _ref40 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('div.entry-content .entry-method')]
-          var status = _ref38[0]
-          var tasksContainer = _ref38[1]
+          var status = _ref40[0]
+          var tasksContainer = _ref40[1]
 
           var _iterator15 = _createForOfIteratorHelper(tasksContainer)
           var _step15
@@ -3979,14 +4088,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator15.f()
           }
 
-          var _ref39 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
-          this.groups = _ref39[0]
-          this.twitters = _ref39[1]
-          this.facebooks = _ref39[2]
-          this.youtubes = _ref39[3]
-          this.discords = _ref39[4]
-          this.others = _ref39[5]
-          this.taskInfo.groups = _ref39[6]
+          var _ref41 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
+          this.groups = _ref41[0]
+          this.twitters = _ref41[1]
+          this.facebooks = _ref41[2]
+          this.youtubes = _ref41[3]
+          this.discords = _ref41[4]
+          this.others = _ref41[5]
+          this.taskInfo.groups = _ref41[6]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
@@ -4004,25 +4113,25 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       do_task: function do_task () {
-        var _this27 = this
+        var _this29 = this
 
         this.updateSteamInfo(function () {
-          var _ref40 = [[], fuc.unique(_this27.twitters), fuc.unique(_this27.discords), fuc.unique(_this27.facebooks), fuc.unique(_this27.youtubes), fuc.unique(_this27.others), fuc.unique(_this27.links)]
-          var pro = _ref40[0]
-          var twitters = _ref40[1]
-          var discords = _ref40[2]
-          var facebooks = _ref40[3]
-          var youtubes = _ref40[4]
-          var others = _ref40[5]
-          var links = _ref40[6]
+          var _ref42 = [[], fuc.unique(_this29.twitters), fuc.unique(_this29.discords), fuc.unique(_this29.facebooks), fuc.unique(_this29.youtubes), fuc.unique(_this29.others), fuc.unique(_this29.links)]
+          var pro = _ref42[0]
+          var twitters = _ref42[1]
+          var discords = _ref42[2]
+          var facebooks = _ref42[3]
+          var youtubes = _ref42[4]
+          var others = _ref42[5]
+          var links = _ref42[6]
           var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
-          if (_this27.conf.fuck.joinSteamGroup && _this27.groups.length > 0) {
+          if (_this29.conf.fuck.joinSteamGroup && _this29.groups.length > 0) {
             pro.push(new Promise(function (resolve) {
               fuc.toggleActions({
                 website: 'gleam',
                 type: 'group',
-                elements: _this27.groups,
+                elements: _this29.groups,
                 resolve: resolve,
                 action: 'fuck'
               })
@@ -4038,13 +4147,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
                   var twitter = _step16.value
                   var title = $(twitter).find('.entry-method-title').text().trim()
-                  var _ref41 = [fuc.echoLog({
+                  var _ref43 = [fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
                   }), $(twitter).find('a.twitter-button:contains(Follow)').attr('href'), $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')]
-                  var status = _ref41[0]
-                  var followButton = _ref41[1]
-                  var retweetButton = _ref41[2]
+                  var status = _ref43[0]
+                  var followButton = _ref43[1]
+                  var retweetButton = _ref43[2]
                   var button = followButton || retweetButton
 
                   if (button) {
@@ -4071,12 +4180,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                   var _title2 = $(task).find('.entry-method-title').text().trim()
 
-                  var _ref42 = [fuc.echoLog({
+                  var _ref44 = [fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('doing'), ':').concat(_title2, '...<font></font></li>')
                   }), $(task).find('a.btn-info:first').attr('href')]
-                  var _status = _ref42[0]
-                  var _button = _ref42[1]
+                  var _status = _ref44[0]
+                  var _button = _ref44[1]
 
                   if (_button) {
                     window.open(_button, '_blank')
@@ -4094,9 +4203,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
 
-          if ((globalConf.other.autoOpen || _this27.conf.fuck.visit) && links.length > 0) {
+          if ((globalConf.other.autoOpen || _this29.conf.fuck.visit) && links.length > 0) {
             pro.push(new Promise(function (resolve) {
-              _this27.visit_link(links, 0, resolve)
+              _this29.visit_link(links, 0, resolve)
             }))
           }
 
@@ -4134,7 +4243,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
             })
-            if (_this27.conf.fuck.verify) _this27.verify(0)
+            if (_this29.conf.fuck.verifyTask) _this29.verify(0)
           })
         })
       },
@@ -4185,19 +4294,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       remove: function remove () {
-        var _this28 = this
+        var _this30 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
           this.updateSteamInfo(function () {
-            if (_this28.conf.remove.leaveSteamGroup && _this28.taskInfo.groups.length > 0) {
+            if (_this30.conf.remove.leaveSteamGroup && _this30.taskInfo.groups.length > 0) {
               pro.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'gleam',
                   type: 'group',
-                  elements: _this28.taskInfo.groups,
+                  elements: _this30.taskInfo.groups,
                   resolve: resolve,
                   action: 'remove'
                 })
@@ -4218,12 +4327,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       visit_link: function visit_link (links, i, r) {
         if (i < links.length) {
           var title = $(links[i]).find('.entry-method-title').text().trim()
-          var _ref43 = [fuc.echoLog({
+          var _ref45 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
           }), $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()]
-          var status = _ref43[0]
-          var taskTime = _ref43[1]
+          var status = _ref45[0]
+          var taskTime = _ref45[1]
 
           if (taskTime) {
             var taskBtn = $(links[i]).find('a.btn-info')
@@ -4263,10 +4372,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return window.location.pathname.replace(/\?.*/, '') || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this29 = this
+        var _this31 = this
 
         new Promise(function (resolve) {
-          if (_this29.taskInfo.groups.length > 0) {
+          if (_this31.taskInfo.groups.length > 0) {
             fuc.updateSteamInfo(resolve, 'community')
           } else {
             resolve(1)
@@ -4330,12 +4439,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var currentoption = $('a.buttonenter.buttongiveaway')
 
         if (/join giveaway/gim.test(currentoption.text())) {
-          var _ref44 = [fuc.echoLog({
+          var _ref46 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
           }), this.do_task]
-          var status = _ref44[0]
-          var doTask = _ref44[1]
+          var status = _ref46[0]
+          var doTask = _ref46[1]
           fuc.httpRequest({
             url: currentoption.attr('href'),
             method: 'POST',
@@ -4386,9 +4495,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
 
         if (id.length === 2) {
-          var _ref45 = [$('#giveawaysjoined a[class*=promo]'), []]
-          var tasks = _ref45[0]
-          var _pro5 = _ref45[1]
+          var _ref47 = [$('#giveawaysjoined a[class*=promo]'), []]
+          var tasks = _ref47[0]
+          var _pro6 = _ref47[1]
 
           var _iterator19 = _createForOfIteratorHelper(tasks)
           var _step19
@@ -4405,7 +4514,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 })
 
                 if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-                  _pro5.push(new Promise(function (resolve) {
+                  _pro6.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo') + '/' + id[0]),
@@ -4440,7 +4549,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (promo.hasClass('emailoptinpromo')) {
-                  _pro5.push(new Promise(function (resolve) {
+                  _pro6.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
@@ -4476,7 +4585,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (promo.hasClass('watchingpromo')) {
-                  _pro5.push(new Promise(function (resolve) {
+                  _pro6.push(new Promise(function (resolve) {
                     var data = fuc.getUrlQuery(promo.attr('href'))
                     data.ajax = 't'
                     $.ajax({
@@ -4511,7 +4620,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }))
                 } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-                  _pro5.push(new Promise(function (resolve) {
+                  _pro6.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath(promo.attr('href')),
@@ -4560,7 +4669,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator19.f()
           }
 
-          Promise.all(_pro5).finally(function () {
+          Promise.all(_pro6).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="warning">'.concat(getI18n('allTasksComplete'), '</font></li>')
@@ -4604,17 +4713,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref46 = [[], [], [], []]
-          this.tasks = _ref46[0]
-          this.groups = _ref46[1]
-          this.curators = _ref46[2]
-          this.links = _ref46[3]
-          var _ref47 = [fuc.echoLog({
+          var _ref48 = [[], [], [], []]
+          this.tasks = _ref48[0]
+          this.groups = _ref48[1]
+          this.curators = _ref48[2]
+          this.links = _ref48[3]
+          var _ref49 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('.container_task')]
-          var status = _ref47[0]
-          var tasksContainer = _ref47[1]
+          var status = _ref49[0]
+          var tasksContainer = _ref49[1]
 
           var _iterator20 = _createForOfIteratorHelper(tasksContainer)
           var _step20
@@ -4623,9 +4732,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
               var task = _step20.value
               // 遍历任务信息
-              var _ref49 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-              var taskDes = _ref49[0]
-              var verifyBtn = _ref49[1]
+              var _ref51 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+              var taskDes = _ref51[0]
+              var verifyBtn = _ref51[1]
 
               if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
                 // 加组任务
@@ -4661,10 +4770,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               if (verifyBtn.length > 0) {
                 // 任务验证信息
                 var ids = verifyBtn.attr('id').split('_')
-                var _ref50 = [ids[1], ids[2], ids[3]]
-                var provider = _ref50[0]
-                var taskRoute = _ref50[1]
-                var taskId = _ref50[2]
+                var _ref52 = [ids[1], ids[2], ids[3]]
+                var provider = _ref52[0]
+                var taskRoute = _ref52[1]
+                var taskId = _ref52[2]
                 this.tasks.push({
                   provider: provider,
                   taskRoute: taskRoute,
@@ -4679,13 +4788,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator20.f()
           }
 
-          var _ref48 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.links), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators), fuc.unique(this.tasks)]
-          this.groups = _ref48[0]
-          this.curators = _ref48[1]
-          this.links = _ref48[2]
-          this.taskInfo.groups = _ref48[3]
-          this.taskInfo.curators = _ref48[4]
-          this.tasks = _ref48[5]
+          var _ref50 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.links), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators), fuc.unique(this.tasks)]
+          this.groups = _ref50[0]
+          this.curators = _ref50[1]
+          this.links = _ref50[2]
+          this.taskInfo.groups = _ref50[3]
+          this.taskInfo.curators = _ref50[4]
+          this.tasks = _ref50[5]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
@@ -4696,7 +4805,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 type: 'custom',
                 text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
               })
-              if (this.conf.fuck.verify) this.verify()
+              if (this.conf.fuck.verifyTask) this.verify()
             } else {
               this.do_task()
             }
@@ -4714,21 +4823,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       do_task: function do_task () {
-        var _this30 = this
+        var _this32 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
-          var _ref52, pro, links, _iterator21, _step21, _loop12
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
+          var _ref54, pro, links, _iterator21, _step21, _loop12
 
-          return regeneratorRuntime.wrap(function _callee7$ (_context9) {
+          return regeneratorRuntime.wrap(function _callee9$ (_context11) {
             while (1) {
-              switch (_context9.prev = _context9.next) {
+              switch (_context11.prev = _context11.next) {
                 case 0:
-                  _ref52 = [[], fuc.unique(_this30.links)], pro = _ref52[0], links = _ref52[1]
-                  _context9.next = 3
-                  return _this30.toggleActions('fuck', pro)
+                  _ref54 = [[], fuc.unique(_this32.links)], pro = _ref54[0], links = _ref54[1]
+                  _context11.next = 3
+                  return _this32.toggleActions('fuck', pro)
 
                 case 3:
-                  if (_this30.conf.fuck.visit) {
+                  if (_this32.conf.fuck.visit) {
                     _iterator21 = _createForOfIteratorHelper(links)
 
                     try {
@@ -4743,7 +4852,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                               'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                             },
                             data: $.param({
-                              giveaway_slug: _this30.get_giveawayId(),
+                              giveaway_slug: _this32.get_giveawayId(),
                               giveaway_task_id: link.taskId
                             })
                           })
@@ -4765,24 +4874,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this30.conf.fuck.verify) _this30.verify()
+                    if (_this32.conf.fuck.verifyTask) _this32.verify()
                   })
 
                 case 5:
                 case 'end':
-                  return _context9.stop()
+                  return _context11.stop()
               }
             }
-          }, _callee7)
+          }, _callee9)
         })))
       },
       verify: function verify () {
-        var _this31 = this
+        var _this33 = this
 
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var _pro6 = []
+          var _pro7 = []
 
           var _iterator22 = _createForOfIteratorHelper(fuc.unique(this.tasks))
           var _step22
@@ -4795,7 +4904,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
 
-              _pro6.push(new Promise(function (resolve) {
+              _pro7.push(new Promise(function (resolve) {
                 fuc.httpRequest({
                   url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                   method: 'POST',
@@ -4805,7 +4914,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                   },
                   data: $.param({
-                    giveaway_slug: _this31.get_giveawayId(),
+                    giveaway_slug: _this33.get_giveawayId(),
                     giveaway_task_id: task.taskId
                   }),
                   onload: function onload (response) {
@@ -4854,7 +4963,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator22.f()
           }
 
-          Promise.all(_pro6).finally(function () {
+          Promise.all(_pro7).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font><font class="warning">').concat(getI18n('doYourself'), '<a class="hclonely-google" href="javascript:void(0)" target="_self">').concat(getI18n('googleVerify'), '</a>').concat(getI18n('getKey'), '!</font></li>')
@@ -4870,19 +4979,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       remove: function remove () {
-        var _this32 = this
+        var _this34 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
-            return regeneratorRuntime.wrap(function _callee8$ (_context10) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
+            return regeneratorRuntime.wrap(function _callee10$ (_context12) {
               while (1) {
-                switch (_context10.prev = _context10.next) {
+                switch (_context12.prev = _context12.next) {
                   case 0:
-                    _context10.next = 2
-                    return _this32.toggleActions('remove', pro)
+                    _context12.next = 2
+                    return _this34.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -4894,20 +5003,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                   case 3:
                   case 'end':
-                    return _context10.stop()
+                    return _context12.stop()
                 }
               }
-            }, _callee8)
+            }, _callee10)
           })))
         } else {
           this.get_tasks('remove')
         }
       },
       toggleActions: function toggleActions (action, pro) {
-        var _ref54 = action === 'fuck' ? [this.groups, this.curators] : [this.taskInfo.groups, this.taskInfo.curators]
-        var _ref55 = _slicedToArray(_ref54, 2)
-        var groups = _ref55[0]
-        var curators = _ref55[1]
+        var _ref56 = action === 'fuck' ? [this.groups, this.curators] : [this.taskInfo.groups, this.taskInfo.curators]
+        var _ref57 = _slicedToArray(_ref56, 2)
+        var groups = _ref57[0]
+        var curators = _ref57[1]
 
         if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
           pro.push(new Promise(function (resolve) {
@@ -4937,16 +5046,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return $('#giveawaySlug').val() || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this33 = this
+        var _this35 = this
 
         new Promise(function (resolve) {
-          if (_this33.taskInfo.groups.length > 0) {
-            if (_this33.taskInfo.curators.length > 0) {
+          if (_this35.taskInfo.groups.length > 0) {
+            if (_this35.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this33.taskInfo.curators.length > 0) {
+          } else if (_this35.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -5003,22 +5112,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       get_tasks: function get_tasks () {
         var _arguments2 = arguments
-        var _this34 = this
+        var _this36 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-          var type, _ref56, items, myPoint, maxPoint, i, item, needPoints
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
+          var type, _ref58, items, myPoint, maxPoint, i, item, needPoints
 
-          return regeneratorRuntime.wrap(function _callee10$ (_context12) {
+          return regeneratorRuntime.wrap(function _callee12$ (_context14) {
             while (1) {
-              switch (_context12.prev = _context12.next) {
+              switch (_context14.prev = _context14.next) {
                 case 0:
                   type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
-                  _ref56 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this34.myPoints, _this34.maxPoint()], items = _ref56[0], myPoint = _ref56[1], maxPoint = _ref56[2]
+                  _ref58 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this36.myPoints, _this36.maxPoint()], items = _ref58[0], myPoint = _ref58[1], maxPoint = _ref58[2]
                   i = 0
 
                 case 3:
                   if (!(i < items.length)) {
-                    _context12.next = 19
+                    _context14.next = 19
                     break
                   }
 
@@ -5026,7 +5135,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                    _context12.next = 10
+                    _context14.next = 10
                     break
                   }
 
@@ -5034,12 +5143,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                   })
-                  _context12.next = 16
+                  _context14.next = 16
                   break
 
                 case 10:
                   if (!(type === 'points' && !needPoints)) {
-                    _context12.next = 14
+                    _context14.next = 14
                     break
                   }
 
@@ -5047,33 +5156,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                   })
-                  _context12.next = 16
+                  _context14.next = 16
                   break
 
                 case 14:
                   if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                    _context12.next = 16
+                    _context14.next = 16
                     break
                   }
 
-                  return _context12.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
-                    var _ref57, status, a, giveawayId
+                  return _context14.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
+                    var _ref59, status, a, giveawayId
 
-                    return regeneratorRuntime.wrap(function _callee9$ (_context11) {
+                    return regeneratorRuntime.wrap(function _callee11$ (_context13) {
                       while (1) {
-                        switch (_context11.prev = _context11.next) {
+                        switch (_context13.prev = _context13.next) {
                           case 0:
-                            _ref57 = [fuc.echoLog({
+                            _ref59 = [fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                            }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref57[0], a = _ref57[1]
+                            }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref59[0], a = _ref59[1]
 
                             if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                               giveawayId = a.attr('onclick').match(/[\d]+/)
                               if (giveawayId) checkUser(giveawayId[0])
                             }
 
-                            _context11.next = 4
+                            _context13.next = 4
                             return new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: a.attr('href'),
@@ -5106,15 +5215,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 4:
                           case 'end':
-                            return _context11.stop()
+                            return _context13.stop()
                         }
                       }
-                    }, _callee9)
+                    }, _callee11)
                   })(), 't0', 16)
 
                 case 16:
                   i++
-                  _context12.next = 3
+                  _context14.next = 3
                   break
 
                 case 19:
@@ -5125,10 +5234,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 20:
                 case 'end':
-                  return _context12.stop()
+                  return _context14.stop()
               }
             }
-          }, _callee10)
+          }, _callee12)
         }))()
       },
       verify: function verify () {
@@ -5175,27 +5284,27 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.get_tasks('do_task')
       },
       get_tasks: function get_tasks () {
-        var _this35 = this
+        var _this37 = this
 
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-        var _ref58 = [fuc.echoLog({
+        var _ref60 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#steps tbody tr')]
-        var status = _ref58[0]
-        var steps = _ref58[1]
+        var status = _ref60[0]
+        var steps = _ref60[1]
 
         for (var i = 0; i < steps.length; i++) {
           if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
         }
 
         if (callback === 'do_task') {
-          var _ref59 = [[], []]
-          this.groups = _ref59[0]
-          this.curators = _ref59[1]
-          var _ref60 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-          var taskInfoHistory = _ref60[0]
-          var _pro7 = _ref60[1]
+          var _ref61 = [[], []]
+          this.groups = _ref61[0]
+          this.curators = _ref61[1]
+          var _ref62 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+          var taskInfoHistory = _ref62[0]
+          var _pro8 = _ref62[1]
           if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
           var _iterator23 = _createForOfIteratorHelper(steps)
@@ -5227,7 +5336,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   (function () {
                     var link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro7.push(new Promise(function (r) {
+                    _pro8.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5235,9 +5344,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                           var _groupName2 = data.finalUrl.match(/groups\/(.+)\/?/)
 
                           if (_groupName2) {
-                            _this35.groups.push(_groupName2[1])
+                            _this37.groups.push(_groupName2[1])
 
-                            _this35.taskInfo.groups.push(_groupName2[1])
+                            _this37.taskInfo.groups.push(_groupName2[1])
                           }
                         }
 
@@ -5254,31 +5363,31 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator23.f()
           }
 
-          if (_pro7.length > 0) {
-            Promise.all(_pro7).finally(function () {
-              var _ref61 = [fuc.unique(_this35.groups), fuc.unique(_this35.curators), fuc.unique(_this35.taskInfo.groups), fuc.unique(_this35.taskInfo.curators)]
-              _this35.groups = _ref61[0]
-              _this35.curators = _ref61[1]
-              _this35.taskInfo.groups = _ref61[2]
-              _this35.taskInfo.curators = _ref61[3]
-              GM_setValue('taskInfo[' + window.location.host + _this35.get_giveawayId() + ']', _this35.taskInfo)
+          if (_pro8.length > 0) {
+            Promise.all(_pro8).finally(function () {
+              var _ref63 = [fuc.unique(_this37.groups), fuc.unique(_this37.curators), fuc.unique(_this37.taskInfo.groups), fuc.unique(_this37.taskInfo.curators)]
+              _this37.groups = _ref63[0]
+              _this37.curators = _ref63[1]
+              _this37.taskInfo.groups = _ref63[2]
+              _this37.taskInfo.curators = _ref63[3]
+              GM_setValue('taskInfo[' + window.location.host + _this37.get_giveawayId() + ']', _this37.taskInfo)
 
-              if (_this35.groups.length > 0 || _this35.curators.length > 0) {
-                _this35.do_task()
+              if (_this37.groups.length > 0 || _this37.curators.length > 0) {
+                _this37.do_task()
               } else {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                 })
-                if (_this35.conf.fuck.verify) _this35.verify()
+                if (_this37.conf.fuck.verifyTask) _this37.verify()
               }
             })
           } else {
-            var _ref62 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
-            this.groups = _ref62[0]
-            this.curators = _ref62[1]
-            this.taskInfo.groups = _ref62[2]
-            this.taskInfo.curators = _ref62[3]
+            var _ref64 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+            this.groups = _ref64[0]
+            this.curators = _ref64[1]
+            this.taskInfo.groups = _ref64[2]
+            this.taskInfo.curators = _ref64[3]
             GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
 
             if (this.groups.length > 0 || this.curators.length > 0) {
@@ -5288,7 +5397,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 type: 'custom',
                 text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
               })
-              if (this.conf.fuck.verify) this.verify()
+              if (this.conf.fuck.verifyTask) this.verify()
             }
           }
         } else if (callback === 'verify') {
@@ -5330,7 +5439,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             this.taskInfo = taskInfo
             this.remove(true)
           } else {
-            var _pro8 = []
+            var _pro9 = []
 
             var _iterator25 = _createForOfIteratorHelper(steps)
             var _step25
@@ -5355,7 +5464,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   (function () {
                     var link = $(_step26).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro8.push(new Promise(function (r) {
+                    _pro9.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5363,7 +5472,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                           var _groupName4 = data.finalUrl.match(/groups\/(.+)\/?/)
 
                           if (_groupName4) {
-                            _this35.taskInfo.groups.push(_groupName4[1])
+                            _this37.taskInfo.groups.push(_groupName4[1])
                           }
                         }
 
@@ -5379,15 +5488,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               _iterator25.f()
             }
 
-            if (_pro8.length > 0) {
-              Promise.all(_pro8).finally(function () {
-                var _ref63 = [fuc.unique(_this35.taskInfo.groups), fuc.unique(_this35.taskInfo.curators)]
-                _this35.taskInfo.groups = _ref63[0]
-                _this35.taskInfo.curators = _ref63[1]
-                GM_setValue('taskInfo[' + window.location.host + _this35.get_giveawayId() + ']', _this35.taskInfo)
+            if (_pro9.length > 0) {
+              Promise.all(_pro9).finally(function () {
+                var _ref65 = [fuc.unique(_this37.taskInfo.groups), fuc.unique(_this37.taskInfo.curators)]
+                _this37.taskInfo.groups = _ref65[0]
+                _this37.taskInfo.curators = _ref65[1]
+                GM_setValue('taskInfo[' + window.location.host + _this37.get_giveawayId() + ']', _this37.taskInfo)
 
-                if (_this35.taskInfo.groups.length > 0 || _this35.taskInfo.curators.length > 0) {
-                  _this35.remove(true)
+                if (_this37.taskInfo.groups.length > 0 || _this37.taskInfo.curators.length > 0) {
+                  _this37.remove(true)
                 } else {
                   fuc.echoLog({
                     type: 'custom',
@@ -5396,9 +5505,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
               })
             } else {
-              var _ref64 = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
-              this.taskInfo.groups = _ref64[0]
-              this.taskInfo.curators = _ref64[1]
+              var _ref66 = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+              this.taskInfo.groups = _ref66[0]
+              this.taskInfo.curators = _ref66[1]
               GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
 
               if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
@@ -5422,17 +5531,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (debug) console.log(this)
       },
       do_task: function do_task () {
-        var _this36 = this
+        var _this38 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 () {
           var pro
-          return regeneratorRuntime.wrap(function _callee11$ (_context13) {
+          return regeneratorRuntime.wrap(function _callee13$ (_context15) {
             while (1) {
-              switch (_context13.prev = _context13.next) {
+              switch (_context15.prev = _context15.next) {
                 case 0:
                   pro = []
-                  _context13.next = 3
-                  return _this36.toggleActions('fuck', pro)
+                  _context15.next = 3
+                  return _this38.toggleActions('fuck', pro)
 
                 case 3:
                   Promise.all(pro).finally(function () {
@@ -5440,24 +5549,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this36.conf.fuck.verify) _this36.verify()
+                    if (_this38.conf.fuck.verifyTask) _this38.verify()
                   })
 
                 case 4:
                 case 'end':
-                  return _context13.stop()
+                  return _context15.stop()
               }
             }
-          }, _callee11)
+          }, _callee13)
         })))
       },
       verify: function verify () {
-        var _this37 = this
+        var _this39 = this
 
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var _pro9 = []
+          var _pro10 = []
 
           var _iterator26 = _createForOfIteratorHelper(fuc.unique(this.tasks))
           var _step27
@@ -5470,8 +5579,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
 
-              _pro9.push(new Promise(function (resolve) {
-                _this37.checkStep(task.id, resolve, status)
+              _pro10.push(new Promise(function (resolve) {
+                _this39.checkStep(task.id, resolve, status)
               }))
             }
 
@@ -5484,7 +5593,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator26.f()
           }
 
-          Promise.all(_pro9).finally(function () {
+          Promise.all(_pro10).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('prysAllTasksComplete'), '</font></li>')
@@ -5536,19 +5645,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
       },
       remove: function remove () {
-        var _this38 = this
+        var _this40 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
-            return regeneratorRuntime.wrap(function _callee12$ (_context14) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
+            return regeneratorRuntime.wrap(function _callee14$ (_context16) {
               while (1) {
-                switch (_context14.prev = _context14.next) {
+                switch (_context16.prev = _context16.next) {
                   case 0:
-                    _context14.next = 2
-                    return _this38.toggleActions('remove', pro)
+                    _context16.next = 2
+                    return _this40.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -5560,10 +5669,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                   case 3:
                   case 'end':
-                    return _context14.stop()
+                    return _context16.stop()
                 }
               }
-            }, _callee12)
+            }, _callee14)
           })))
         } else {
           this.get_tasks('remove')
@@ -5602,16 +5711,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this39 = this
+        var _this41 = this
 
         new Promise(function (resolve) {
-          if (_this39.taskInfo.groups.length > 0) {
-            if (_this39.taskInfo.curators.length > 0) {
+          if (_this41.taskInfo.groups.length > 0) {
+            if (_this41.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this39.taskInfo.curators.length > 0) {
+          } else if (_this41.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -5663,12 +5772,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.get_tasks()
       },
       get_tasks: function get_tasks () {
-        var _ref67 = [fuc.echoLog({
+        var _ref69 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#GiveawayTasks button')]
-        var status = _ref67[0]
-        var giveawayTasks = _ref67[1]
+        var status = _ref69[0]
+        var giveawayTasks = _ref69[1]
 
         var _iterator27 = _createForOfIteratorHelper(giveawayTasks)
         var _step28
@@ -5716,30 +5825,30 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }
       },
-      verify: function verify (_ref68) {
-        var _this40 = this
+      verify: function verify (_ref70) {
+        var _this42 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 () {
           var arr, i, end, tasks, _loop15, _i2
 
-          return regeneratorRuntime.wrap(function _callee13$ (_context16) {
+          return regeneratorRuntime.wrap(function _callee15$ (_context18) {
             while (1) {
-              switch (_context16.prev = _context16.next) {
+              switch (_context18.prev = _context18.next) {
                 case 0:
-                  arr = _ref68.arr, i = _ref68.i, end = _ref68.end
-                  tasks = fuc.unique(_this40.tasks)
+                  arr = _ref70.arr, i = _ref70.i, end = _ref70.end
+                  tasks = fuc.unique(_this42.tasks)
                   _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 (_i2) {
                     var task, status
-                    return regeneratorRuntime.wrap(function _loop15$ (_context15) {
+                    return regeneratorRuntime.wrap(function _loop15$ (_context17) {
                       while (1) {
-                        switch (_context15.prev = _context15.next) {
+                        switch (_context17.prev = _context17.next) {
                           case 0:
                             task = tasks[_i2]
                             status = fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('doing')).concat(task.text, '...<font></font></li>')
                             })
-                            _context15.next = 4
+                            _context17.next = 4
                             return new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: '/controller.php?taskDetail='.concat(task.id, '&show'),
@@ -5832,7 +5941,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                           case 4:
                           case 'end':
-                            return _context15.stop()
+                            return _context17.stop()
                         }
                       }
                     }, _loop15)
@@ -5841,15 +5950,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 4:
                   if (!(_i2 < tasks.length)) {
-                    _context16.next = 9
+                    _context18.next = 9
                     break
                   }
 
-                  return _context16.delegateYield(_loop15(_i2), 't0', 6)
+                  return _context18.delegateYield(_loop15(_i2), 't0', 6)
 
                 case 6:
                   _i2++
-                  _context16.next = 4
+                  _context18.next = 4
                   break
 
                 case 9:
@@ -5860,10 +5969,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 case 10:
                 case 'end':
-                  return _context16.stop()
+                  return _context18.stop()
               }
             }
-          }, _callee13)
+          }, _callee15)
         }))()
       },
       checkLeft: function checkLeft () {
@@ -5908,7 +6017,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.get_tasks('do_task')
       },
       get_tasks: function get_tasks () {
-        var _this41 = this
+        var _this43 = this
 
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
         var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
@@ -5917,18 +6026,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref69 = [[], [], [], []]
-          this.tasks = _ref69[0]
-          this.groups = _ref69[1]
-          this.curators = _ref69[2]
-          this.links = _ref69[3]
-          var _ref70 = [[], fuc.echoLog({
+          var _ref71 = [[], [], [], []]
+          this.tasks = _ref71[0]
+          this.groups = _ref71[1]
+          this.curators = _ref71[2]
+          this.links = _ref71[3]
+          var _ref72 = [[], fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('#usl>div')]
-          var _pro10 = _ref70[0]
-          var status = _ref70[1]
-          var tasksContainer = _ref70[2]
+          var _pro11 = _ref72[0]
+          var status = _ref72[1]
+          var tasksContainer = _ref72[2]
 
           var _iterator28 = _createForOfIteratorHelper(tasksContainer)
           var _step29
@@ -5938,16 +6047,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               var task = _step29.value
 
               // 遍历任务信息
-              _this41.tasks.push(task)
+              _this43.tasks.push(task)
 
-              var _ref72 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-              var icon = _ref72[0]
-              var link = _ref72[1]
-              var id = _ref72[2]
+              var _ref74 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
+              var icon = _ref74[0]
+              var link = _ref74[1]
+              var id = _ref74[2]
 
               if (icon.hasClass('fa-steam')) {
                 if (link && /gid\/[\d]+/.test(link)) {
-                  _pro10.push(new Promise(function (r) {
+                  _pro11.push(new Promise(function (r) {
                     new Promise(function (resolve) {
                       fuc.getFinalUrl(resolve, link)
                     }).then(function (data) {
@@ -5955,9 +6064,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         var groupName = data.finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
 
                         if (groupName) {
-                          _this41.groups.push(groupName)
+                          _this43.groups.push(groupName)
 
-                          _this41.taskInfo.groups.push(groupName)
+                          _this43.taskInfo.groups.push(groupName)
 
                           r(1)
                         } else {
@@ -5972,11 +6081,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
               } else if (icon.hasClass('fa-link')) {
-                _this41.links.push(id)
+                _this43.links.push(id)
               } else if (icon.hasClass('fa-vk')) {
-                _this41.vks.push(link)
+                _this43.vks.push(link)
               } else {
-                _this41.others.push(icon)
+                _this43.others.push(icon)
               }
             }
 
@@ -5989,31 +6098,31 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             _iterator28.f()
           }
 
-          Promise.all(_pro10).finally(function () {
-            var _ref71 = [fuc.unique(_this41.groups), fuc.unique(_this41.curators), fuc.unique(_this41.links), fuc.unique(_this41.others), fuc.unique(_this41.taskInfo.groups), fuc.unique(_this41.taskInfo.curators), fuc.unique(_this41.tasks)]
-            _this41.groups = _ref71[0]
-            _this41.curators = _ref71[1]
-            _this41.links = _ref71[2]
-            _this41.others = _ref71[3]
-            _this41.taskInfo.groups = _ref71[4]
-            _this41.taskInfo.curators = _ref71[5]
-            _this41.tasks = _ref71[6]
-            GM_setValue('taskInfo[' + window.location.host + _this41.get_giveawayId() + ']', _this41.taskInfo)
+          Promise.all(_pro11).finally(function () {
+            var _ref73 = [fuc.unique(_this43.groups), fuc.unique(_this43.curators), fuc.unique(_this43.links), fuc.unique(_this43.others), fuc.unique(_this43.taskInfo.groups), fuc.unique(_this43.taskInfo.curators), fuc.unique(_this43.tasks)]
+            _this43.groups = _ref73[0]
+            _this43.curators = _ref73[1]
+            _this43.links = _ref73[2]
+            _this43.others = _ref73[3]
+            _this43.taskInfo.groups = _ref73[4]
+            _this43.taskInfo.curators = _ref73[5]
+            _this43.tasks = _ref73[6]
+            GM_setValue('taskInfo[' + window.location.host + _this43.get_giveawayId() + ']', _this43.taskInfo)
             status.success()
-            if (debug) console.log(_this41)
+            if (debug) console.log(_this43)
 
             if (callback === 'do_task') {
-              if (_this41.tasks.length === 0) {
+              if (_this43.tasks.length === 0) {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                 })
-                if (_this41.conf.fuck.verify) _this41.verify()
+                if (_this43.conf.fuck.verifyTask) _this43.verify()
               } else {
-                _this41.do_task()
+                _this43.do_task()
               }
             } else {
-              !fuc.isEmptyObjArr(_this41.taskInfo) ? _this41.remove(true) : fuc.echoLog({
+              !fuc.isEmptyObjArr(_this43.taskInfo) ? _this43.remove(true) : fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
               })
@@ -6022,21 +6131,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       },
       do_task: function do_task () {
-        var _this42 = this
+        var _this44 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
-          var _ref74, pro, links, others, vks, _iterator29, _step30, _loop17, _iterator30, _step31, vk, _iterator31, _step32, other
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee16 () {
+          var _ref76, pro, links, others, vks, _iterator29, _step30, _loop17, _iterator30, _step31, vk, _iterator31, _step32, other
 
-          return regeneratorRuntime.wrap(function _callee14$ (_context17) {
+          return regeneratorRuntime.wrap(function _callee16$ (_context19) {
             while (1) {
-              switch (_context17.prev = _context17.next) {
+              switch (_context19.prev = _context19.next) {
                 case 0:
-                  _ref74 = [[], fuc.unique(_this42.links), fuc.unique(_this42.others), fuc.unique(_this42.vks)], pro = _ref74[0], links = _ref74[1], others = _ref74[2], vks = _ref74[3]
-                  _context17.next = 3
-                  return _this42.toggleActions('fuck', pro)
+                  _ref76 = [[], fuc.unique(_this44.links), fuc.unique(_this44.others), fuc.unique(_this44.vks)], pro = _ref76[0], links = _ref76[1], others = _ref76[2], vks = _ref76[3]
+                  _context19.next = 3
+                  return _this44.toggleActions('fuck', pro)
 
                 case 3:
-                  if (_this42.conf.fuck.visit) {
+                  if (_this44.conf.fuck.visit) {
                     _iterator29 = _createForOfIteratorHelper(links)
 
                     try {
@@ -6096,15 +6205,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this42.conf.fuck.verify) _this42.verify()
+                    if (_this44.conf.fuck.verifyTask) _this44.verify()
                   })
 
                 case 8:
                 case 'end':
-                  return _context17.stop()
+                  return _context19.stop()
               }
             }
-          }, _callee14)
+          }, _callee16)
         })))
       },
       verify: function verify () {
@@ -6113,19 +6222,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }, 1000)
       },
       remove: function remove () {
-        var _this43 = this
+        var _this45 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 () {
-            return regeneratorRuntime.wrap(function _callee15$ (_context18) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 () {
+            return regeneratorRuntime.wrap(function _callee17$ (_context20) {
               while (1) {
-                switch (_context18.prev = _context18.next) {
+                switch (_context20.prev = _context20.next) {
                   case 0:
-                    _context18.next = 2
-                    return _this43.toggleActions('remove', pro)
+                    _context20.next = 2
+                    return _this45.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -6137,10 +6246,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                   case 3:
                   case 'end':
-                    return _context18.stop()
+                    return _context20.stop()
                 }
               }
-            }, _callee15)
+            }, _callee17)
           })))
         } else {
           this.get_tasks('remove')
@@ -6166,16 +6275,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this44 = this
+        var _this46 = this
 
         new Promise(function (resolve) {
-          if (_this44.taskInfo.groups.length > 0) {
-            if (_this44.taskInfo.curators.length > 0) {
+          if (_this46.taskInfo.groups.length > 0) {
+            if (_this46.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this44.taskInfo.curators.length > 0) {
+          } else if (_this46.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -6540,7 +6649,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       })
     })
-    GM_addStyle('#fuck-task-info{\nposition: fixed;\nbottom: 10px;\nright: 10px;\nbackground-color: #fff;\nborder-radius: 10px;\nwidth: auto;\n    max-width: 50%;\n    max-height: 50%;\n    z-index: 99999999999!important;\n}\n#fuck-task-info .card-title{\n  text-align: center;\n}\n#fuck-task-info .card-textarea{\n    overflow: auto;\n    max-height: 230px;\n}\n#fuck-task-btn{\n  position: fixed;\ntop: 0;\nright: 0;\nz-index: 9999999999;\n}\n')
+    GM_addStyle('#fuck-task-info{\nposition: fixed;\nbottom: 10px;\nright: 10px;\nbackground-color: #fff;\nborder-radius: 10px;\nwidth: auto;\n    max-width: 50%;\n    max-height: 50%;\n    z-index: 99999999999!important;\n}\n#fuck-task-info .card-title{\n  text-align: center;\n}\n#fuck-task-info .card-textarea{\n    overflow: auto;\n    max-height: 230px;\n}\n#fuck-task-info .success{\n  color: green;\n}\n#fuck-task-info .error{\n  color: red;\n}\n#fuck-task-info .warning{\n  color: blue;\n}\n#fuck-task-info .info{\n  color: yellow;\n}\n#fuck-task-btn{\n  position: fixed;\ntop: 0;\nright: 0;\nz-index: 9999999999;\n}\n')
   } catch (e) {
     Swal.fire({
       icon: 'error',

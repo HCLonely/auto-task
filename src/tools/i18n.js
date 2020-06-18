@@ -130,7 +130,8 @@ const i18n = {
     jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
     ajaxError: 'Ajax请求出错',
     firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
-    goSetting: '前往设置'
+    goSetting: '前往设置',
+    getGroupError: '获取steam组信息失败 <a href="s%" target="_blank">s%</a>'
   },
   en: {
     language: 'Language',
@@ -262,7 +263,8 @@ const i18n = {
     jsError: 'Script execution error, please see the console for details (red background part)!',
     ajaxError: 'Ajax request error',
     firstUpdate: 'The first update to 3.0+ requires re-setting. Do you want to go to the setting?',
-    goSetting: 'Yes'
+    goSetting: 'Yes',
+    getGroupError: 'Failed to get steam group information. <a href="s%" target="_blank">s%</a>'
   }
 }
 let language = getLanguage() // eslint-disable-line prefer-const
@@ -276,7 +278,7 @@ function getLanguage () {
 }
 function getI18n (name, str = null) { // eslint-disable-line no-unused-vars
   let value = 'null'
-  if (str) value = i18n[language][name] ? i18n[language][name].replace('s%', str) : 'null'
+  if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : 'null'
   else value = i18n[language][name] || 'null'
   return value
 }

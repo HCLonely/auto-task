@@ -61,6 +61,7 @@ const gamehag = { // eslint-disable-line no-unused-vars
           fuc.unique(this.taskInfo.groups),
           fuc.unique(this.tasks)
         ]
+        status.success()
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         if (this.tasks.length > 0) {
           this.do_task()
@@ -81,12 +82,14 @@ const gamehag = { // eslint-disable-line no-unused-vars
       } else {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       }
+      status.success()
     } else if (callback === 'remove') {
+      status.success()
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
     } else {
+      status.success()
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
     }
-    status.success()
     if (debug) console.log(this)
   },
   async do_task () {
@@ -204,6 +207,19 @@ const gamehag = { // eslint-disable-line no-unused-vars
       }))
     }
     */
+  },
+  updateSteamInfo (callback) {
+    new Promise(resolve => {
+      if (this.taskInfo.groups.length > 0) {
+        fuc.updateSteamInfo(resolve, 'community')
+      } else {
+        resolve(1)
+      }
+    }).then(s => {
+      if (s === 1) callback()
+    }).catch(err => {
+      console.error(err)
+    })
   },
   get_giveawayId () {
     const id = window.location.href.match(/\/giveaway\/([\d]+)/)

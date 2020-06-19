@@ -147,7 +147,7 @@ if (window.location.host.includes('hclonely')) {
     <h6 class="card-subtitle">
       <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('checkUpdate')}</a>
       <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_self" class="card-link">${getI18n('setting')}</a>
-      <a href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">${getI18n('visitUpdateText')}</a>
+      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">${getI18n('visitUpdateText')}</a>
       <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('cleanCache')}</a>
       <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">${getI18n('feedback')}</a>
     </h6>
@@ -166,7 +166,7 @@ if (window.location.host.includes('hclonely')) {
   $('#check-update').click(() => {
     fuc.checkUpdate(true)
   })
-  $('#auto-task-setting,#auto-task-feedback').click(function () {
+  $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
     window.open($(this).attr('data-href'), '_blank')
   })
   /*

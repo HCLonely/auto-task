@@ -35,13 +35,13 @@
 
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.js
 // @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.css
-// @resource       bootstrapCss https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css
+// @resource       bootstrapCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/bootstrap.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -6525,7 +6525,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         */
 
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_self" class="card-link">').concat(getI18n('setting'), '</a>\n      <a href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_self" class="card-link">').concat(getI18n('setting'), '</a>\n      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
         $('#clean-cache').click(function () {
           var status = fuc.echoLog({
             type: 'custom',
@@ -6552,12 +6552,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         $('#check-update').click(function () {
           fuc.checkUpdate(true)
         })
-        $('#auto-task-setting,#auto-task-feedback').click(function () {
+        $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
           window.open($(this).attr('data-href'), '_blank')
-        })
-        /*
-        $('#auto-task-feedback').click(() => {
-          window.open($('#auto-task-feedback').attr('data-href'), '_blank')
         })
         /*
         new Vue({

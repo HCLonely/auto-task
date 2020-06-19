@@ -1,5 +1,4 @@
 #fuck-task-info {
-  font-size: 20px;
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -50,6 +49,7 @@
 #fuck-task-btn * {
   font-size: 17px !important;
 }
+
 
 .iconfont {
   text-decoration: none !important;

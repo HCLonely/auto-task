@@ -41,11 +41,14 @@
 }
 
 #fuck-task-btn {
-  font-size: 20px !important;
   position: fixed;
   top: 0;
   right: 0;
   z-index: 9999999999;
+}
+
+#fuck-task-btn * {
+  font-size: 17px !important;
 }
 
 .iconfont {

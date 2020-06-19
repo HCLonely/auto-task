@@ -42,6 +42,7 @@
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/overhang.min.js
 // @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/overhang.min.css
 // @resource       bootstrapCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/bootstrap.min.css
+// @resource       iconfontCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/iconfont.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue

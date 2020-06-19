@@ -58,6 +58,7 @@ function packUserJs (test = false) {
     ${i18n}
     GM_addStyle(GM_getResourceText('bootstrapCss'))
     GM_addStyle(GM_getResourceText('overhangCss'))
+    GM_addStyle(GM_getResourceText('iconfontCss'))
     $(document).ajaxError(function (event, xhr, options, exc) {
       Swal.fire({
         icon: 'error',

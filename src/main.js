@@ -15,7 +15,7 @@ if (window.location.host.includes('hclonely')) {
   plugins.map((e, i) => {
     if (e.test()) {
       website = e
-      if (website.before) website.before(website)
+      if (website.before) website.before()
     }
   })
 
@@ -145,11 +145,11 @@ if (window.location.host.includes('hclonely')) {
   <div class="card-body">
     <h5 class="card-title">${getI18n('taskLog')}</h5>
     <h6 class="card-subtitle">
-      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('checkUpdate')}</a>
-      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_self" class="card-link">${getI18n('setting')}</a>
-      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">${getI18n('visitUpdateText')}</a>
-      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">${getI18n('cleanCache')}</a>
-      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">${getI18n('feedback')}</a>
+      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link icon-update_1">${getI18n('checkUpdate')}</a>
+      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_self" class="card-link icon-setting">${getI18n('setting')}</a>
+      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link icon-announcement">${getI18n('visitUpdateText')}</a>
+      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link icon-clean">${getI18n('cleanCache')}</a>
+      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link icon-feedback">${getI18n('feedback')}</a>
     </h6>
     <div class="card-textarea">
     </div>

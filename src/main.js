@@ -143,14 +143,14 @@ if (window.location.host.includes('hclonely')) {
   */
   $('body').append(`<div id="fuck-task-info" class="card">
   <div class="card-body">
-    <h5 class="card-title">${getI18n('taskLog')}</h5>
-    <h6 class="card-subtitle">
-      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link icon-update_1">${getI18n('checkUpdate')}</a>
-      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_self" class="card-link icon-setting">${getI18n('setting')}</a>
-      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link icon-announcement">${getI18n('visitUpdateText')}</a>
-      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link icon-clean">${getI18n('cleanCache')}</a>
-      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link icon-feedback">${getI18n('feedback')}</a>
-    </h6>
+    <h3 class="card-title">${getI18n('taskLog')}</h3>
+    <h4 class="card-subtitle">
+      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
+      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting${language === 'en' ? '_en' : ''}.html" targrt="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
+      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link iconfont icon-announcement" title="${getI18n('visitUpdateText')}"></a>
+      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
+      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
+    </h4>
     <div class="card-textarea">
     </div>
   </div>
@@ -278,40 +278,3 @@ GM_registerMenuCommand('Language', () => {
     }
   })
 })
-GM_addStyle(`#fuck-task-info{
-position: fixed;
-bottom: 10px;
-right: 10px;
-background-color: #fff;
-border-radius: 10px;
-width: auto;
-    max-width: 50%;
-    max-height: 50%;
-    z-index: 99999999999!important;
-}
-#fuck-task-info .card-title{
-  text-align: center;
-}
-#fuck-task-info .card-textarea{
-    overflow: auto;
-    max-height: 230px;
-}
-#fuck-task-info .success{
-  color: green;
-}
-#fuck-task-info .error{
-  color: red;
-}
-#fuck-task-info .warning{
-  color: blue;
-}
-#fuck-task-info .info{
-  color: yellow;
-}
-#fuck-task-btn{
-  position: fixed;
-top: 0;
-right: 0;
-z-index: 9999999999;
-}
-`)

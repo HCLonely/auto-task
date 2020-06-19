@@ -5,6 +5,7 @@ const { program } = require('commander')
 const { minify } = require('html-minifier')
 const babel = require('@babel/core')
 const UglifyJS = require('uglify-js')
+const CleanCSS = require('clean-css')
 
 const version = require('./package.json').version // 加载版本信息
 const announcement = require('./package.json').announcement // 加载版本信息
@@ -17,6 +18,7 @@ program
   .option('-h, --html', '压缩所有html文件')
   .option('-t, --test', '生成auto-task.user.js文件(Test)')
   .option('-j, --js', '生成index.min.js文件')
+  .option('-c, --css', '生成fuck-task.min.css文件')
 
 program.parse(process.argv)
 
@@ -32,6 +34,7 @@ if (program.html) {
   minHtml('time_en.html')
 }
 if (program.js) publicJs()
+if (program.css) minCSS()
 
 function packUserJs (test = false) {
   const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version).replace(/BRANCH/g, test ? 'test' : 'master') // 加载Tampermonkey头部信息
@@ -55,10 +58,8 @@ function packUserJs (test = false) {
   const body = `(function() {
     'use strict'
 
+    GM_addStyle(GM_getResourceText('CSS'))
     ${i18n}
-    GM_addStyle(GM_getResourceText('bootstrapCss'))
-    GM_addStyle(GM_getResourceText('overhangCss'))
-    GM_addStyle(GM_getResourceText('iconfontCss'))
     $(document).ajaxError(function (event, xhr, options, exc) {
       Swal.fire({
         icon: 'error',
@@ -175,4 +176,13 @@ function publicJs () {
       console.log('loadAnnouncement.min.js文件写入成功')
     })
   })
+}
+function minCSS () {
+  const overhangCss = fs.readFileSync('./lib/overhang.min.css', 'utf-8')
+  const bootstrapCss = fs.readFileSync('./lib/bootstrap.min.css', 'utf-8')
+  const iconfontCss = fs.readFileSync('./lib/iconfont.min.css', 'utf-8')
+  const otherCss = fs.readFileSync('./lib/other.css', 'utf-8')
+  const output = new CleanCSS().minify(bootstrapCss + overhangCss + iconfontCss + otherCss)
+  fs.writeFileSync('./lib/fuck-task.min.css', output.styles)
+  console.log('fuck-task.min.css文件写入成功')
 }

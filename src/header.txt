@@ -40,9 +40,7 @@
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/overhang.min.js
-// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/overhang.min.css
-// @resource       bootstrapCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/bootstrap.min.css
-// @resource       iconfontCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/iconfont.min.css
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue

@@ -40,8 +40,7 @@
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.js
-// @resource       overhangCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.css
-// @resource       bootstrapCss https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/bootstrap.min.css
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -105,6 +104,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 (function () {
   'use strict'
 
+  GM_addStyle(GM_getResourceText('CSS'))
   var i18n = {
     'zh-CN': {
       language: '语言',
@@ -396,8 +396,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     return value
   }
 
-  GM_addStyle(GM_getResourceText('bootstrapCss'))
-  GM_addStyle(GM_getResourceText('overhangCss'))
   $(document).ajaxError(function (event, xhr, options, exc) {
     Swal.fire({
       icon: 'error',
@@ -6379,7 +6377,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         plugins.map(function (e, i) {
           if (e.test()) {
             website = e
-            if (website.before) website.before(website)
+            if (website.before) website.before()
           }
         })
         if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
@@ -6525,7 +6523,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         */
 
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h5 class="card-title">'.concat(getI18n('taskLog'), '</h5>\n    <h6 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('checkUpdate'), '</a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_self" class="card-link">').concat(getI18n('setting'), '</a>\n      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link">').concat(getI18n('visitUpdateText'), '</a>\n      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link">').concat(getI18n('cleanCache'), '</a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link">').concat(getI18n('feedback'), '</a>\n    </h6>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting').concat(language === 'en' ? '_en' : '', '.html" targrt="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/announcement.html" targrt="_blank" class="card-link iconfont icon-announcement" title="').concat(getI18n('visitUpdateText'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
         $('#clean-cache').click(function () {
           var status = fuc.echoLog({
             type: 'custom',
@@ -6671,7 +6669,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       })
     })
-    GM_addStyle('#fuck-task-info{\nposition: fixed;\nbottom: 10px;\nright: 10px;\nbackground-color: #fff;\nborder-radius: 10px;\nwidth: auto;\n    max-width: 50%;\n    max-height: 50%;\n    z-index: 99999999999!important;\n}\n#fuck-task-info .card-title{\n  text-align: center;\n}\n#fuck-task-info .card-textarea{\n    overflow: auto;\n    max-height: 230px;\n}\n#fuck-task-info .success{\n  color: green;\n}\n#fuck-task-info .error{\n  color: red;\n}\n#fuck-task-info .warning{\n  color: blue;\n}\n#fuck-task-info .info{\n  color: yellow;\n}\n#fuck-task-btn{\n  position: fixed;\ntop: 0;\nright: 0;\nz-index: 9999999999;\n}\n')
   } catch (e) {
     Swal.fire({
       icon: 'error',

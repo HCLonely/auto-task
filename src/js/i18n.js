@@ -95,7 +95,16 @@ var i18n = { // eslint-disable-line no-unused-vars
     settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">自动任务脚本</a>设置',
     currentVersion: '当前版本: <a href="https://github.com/HCLonely/auto-task/tree/%s" target="_blank">V%s</a>',
     latestVersion: '最新版本: <a href="https://github.com/HCLonely/auto-task" target="_blank">V<span id="latestVersion"></span></a>',
-    loadVersionFailed: '获取失败'
+    loadVersionFailed: '获取失败',
+    hotKeyButton: '快捷键',
+    fuckKey: 'FuckTask',
+    verifyKey: 'Verify',
+    removeKey: 'Remove',
+    toggleLogKey: '显示/隐藏日志',
+    fuckKeyDes: '<code>FuckTask</code>功能快捷键',
+    verifyKeyDes: '<code>Verify</code>功能快捷键',
+    removeKeyDes: '<code>Remove</code>功能快捷键',
+    toggleLogKeyDes: '<code>显示/隐藏日志</code>快捷键'
   },
   en: {
     confirm: 'OK',
@@ -192,7 +201,16 @@ var i18n = { // eslint-disable-line no-unused-vars
     settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">Auto Task Script</a> Settings',
     currentVersion: 'Current version: <a href="https://github.com/HCLonely/auto-task/tree/%s" target="_blank">V%s</a>, ',
     latestVersion: 'Latest version: <a href="https://github.com/HCLonely/auto-task" target="_blank">V<span id="latestVersion"></span></a>',
-    loadVersionFailed: 'Error'
+    loadVersionFailed: 'Error',
+    hotKeyButton: 'Hot keys',
+    fuckKey: 'FuckTask',
+    verifyKey: 'Verify',
+    removeKey: 'Remove',
+    toggleLogKey: 'Show/Hide logs',
+    fuckKeyDes: 'Hot key for <code>FuckTask</code>.',
+    verifyKeyDes: 'Hot key for <code>Verify</code>.',
+    removeKeyDes: 'Hot key for <code>Remove</code>.',
+    toggleLogKeyDes: 'Hot key for <code>Show/Hide logs</code>.'
   }
 }
 function getI18n (e, s = '') { // eslint-disable-line no-unused-vars

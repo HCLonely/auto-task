@@ -31,6 +31,12 @@ var defaultConfig = { // eslint-disable-line no-unused-vars
       checkLeft: true,
       autoOpen: true,
       reCaptcha: false
+    },
+    hotKey: {
+      fuckKey: 'Alt + A',
+      verifyKey: 'Alt + V',
+      removeKey: 'Alt + R',
+      toggleLogKey: 'Alt + L'
     }
   },
   giveawaysu: {
@@ -167,7 +173,7 @@ var defaultConfig = { // eslint-disable-line no-unused-vars
       visitLink: true
     },
     remove: {
-      removeFromWishlist: true
+      leaveSteamGroup: true
     },
     enable: false
   },
@@ -178,7 +184,7 @@ var defaultConfig = { // eslint-disable-line no-unused-vars
       verifyTask: true
     },
     remove: {
-      removeFromWishlist: true
+      leaveSteamGroup: true
     },
     enable: false
   },

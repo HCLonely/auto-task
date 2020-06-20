@@ -73,23 +73,23 @@ if (window.location.host.includes('hclonely')) {
   $(document).keydown(e => {
     const hotKey = globalConf.hotKey || {}
     for (const [k, v] of Object.entries(hotKey)) {
-      hotKey[k] = v.toLowerCase().trim()
-    }
-    const functionKey = hotKey.functionKey ? e[hotKey.functionKey + 'Key'] : true
-    if (functionKey) {
-      switch (e.key) {
-        case hotKey.fuckTask:
-          website.fuck()
-          break
-        case hotKey.verify:
-          website.verify()
-          break
-        case hotKey.remove:
-          website.remove()
-          break
-        case hotKey.toggleLog:
-          fuc.toggleLogs()
-          break
+      const keys = v.split('+')
+      const functionKey = keys.length === 2 ? e[keys[0].toLowerCase().trim() + 'Key'] : true
+      if (functionKey && keys[1].toLowerCase().trim() === e.key) {
+        switch (k) {
+          case 'fuckKey':
+            website.fuck()
+            break
+          case 'verifyKey':
+            website.verify()
+            break
+          case 'removeKey':
+            website.remove()
+            break
+          case 'toggleLogKey':
+            fuc.toggleLogs()
+            break
+        }
       }
     }
   })

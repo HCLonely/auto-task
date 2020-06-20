@@ -53,11 +53,10 @@ const defaultConf = {
       reCaptcha: false
     },
     hotKey: {
-      functionKey: 'Alt',
-      fuckTask: 'A',
-      verify: 'V',
-      remove: 'R',
-      toggleLog: 'L'
+      fuckKey: 'Alt + A',
+      verifyKey: 'Alt + V',
+      removeKey: 'Alt + R',
+      toggleLogKey: 'Alt + L'
     }
   },
   giveawaysu: {

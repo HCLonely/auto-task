@@ -75,14 +75,6 @@
 
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
-function _slicedToArray (arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest() }
-
-function _nonIterableRest () { throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') }
-
-function _iterableToArrayLimit (arr, i) { if (typeof Symbol === 'undefined' || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break } } catch (err) { _d = true; _e = err } finally { try { if (!_n && _i.return != null) _i.return() } finally { if (_d) throw _e } } return _arr }
-
-function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
-
 function asyncGeneratorStep (gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value } catch (error) { reject(error); return } if (info.done) { resolve(value) } else { Promise.resolve(value).then(_next, _throw) } }
 
 function _asyncToGenerator (fn) { return function () { var self = this; var args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next (value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value) } function _throw (err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err) } _next(undefined) }) } }
@@ -93,13 +85,21 @@ function _toConsumableArray (arr) { return _arrayWithoutHoles(arr) || _iterableT
 
 function _nonIterableSpread () { throw new TypeError('Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') }
 
-function _unsupportedIterableToArray (o, minLen) { if (!o) return; if (typeof o === 'string') return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === 'Object' && o.constructor) n = o.constructor.name; if (n === 'Map' || n === 'Set') return Array.from(o); if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen) }
-
 function _iterableToArray (iter) { if (typeof Symbol !== 'undefined' && Symbol.iterator in Object(iter)) return Array.from(iter) }
 
 function _arrayWithoutHoles (arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr) }
 
+function _slicedToArray (arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest() }
+
+function _nonIterableRest () { throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') }
+
+function _unsupportedIterableToArray (o, minLen) { if (!o) return; if (typeof o === 'string') return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === 'Object' && o.constructor) n = o.constructor.name; if (n === 'Map' || n === 'Set') return Array.from(o); if (n === 'Arguments' || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen) }
+
 function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i] } return arr2 }
+
+function _iterableToArrayLimit (arr, i) { if (typeof Symbol === 'undefined' || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break } } catch (err) { _d = true; _e = err } finally { try { if (!_n && _i.return != null) _i.return() } finally { if (_d) throw _e } } return _arr }
+
+function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
 (function () {
   'use strict'
@@ -468,11 +468,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           reCaptcha: false
         },
         hotKey: {
-          functionKey: 'Alt',
-          fuckTask: 'A',
-          verify: 'V',
-          remove: 'R',
-          toggleLog: 'L'
+          fuckKey: 'Alt + A',
+          verifyKey: 'Alt + V',
+          removeKey: 'Alt + R',
+          toggleLogKey: 'Alt + L'
         }
       },
       giveawaysu: {
@@ -620,6 +619,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       announcement: ''
     }
     var config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
+
+    for (var _i = 0, _Object$entries = Object.entries(config); _i < _Object$entries.length; _i++) {
+      var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2)
+      var k = _Object$entries$_i[0]
+      var v = _Object$entries$_i[1]
+
+      var defaultConfig = JSON.parse(JSON.stringify(defaultConf))
+      config[k] = Object.assign(defaultConfig[k], config[k])
+    }
+
     var globalConf = config.global
     var debug = !!globalConf.other.showDetails
     var fuc = {
@@ -1776,19 +1785,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           'S+': date.getSeconds().toString()
         }
 
-        for (var k in opt) {
-          ret = new RegExp('(' + k + ')').exec(fmt)
+        for (var _k in opt) {
+          ret = new RegExp('(' + _k + ')').exec(fmt)
 
           if (ret) {
-            fmt = fmt.replace(ret[1], ret[1].length === 1 ? opt[k] : opt[k].padStart(ret[1].length, '0'))
+            fmt = fmt.replace(ret[1], ret[1].length === 1 ? opt[_k] : opt[_k].padStart(ret[1].length, '0'))
           }
         }
 
         return fmt
       },
       isEmptyObjArr: function isEmptyObjArr (object) {
-        for (var _i = 0, _Object$values = Object.values(object); _i < _Object$values.length; _i++) {
-          var value = _Object$values[_i]
+        for (var _i2 = 0, _Object$values = Object.values(object); _i2 < _Object$values.length; _i2++) {
+          var value = _Object$values[_i2]
 
           if (Object.prototype.toString.call(value) === '[object Array]') {
             if (value.length !== 0) return false
@@ -5871,7 +5880,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var _this43 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 () {
-          var arr, i, end, tasks, _loop15, _i2
+          var arr, i, end, tasks, _loop15, _i3
 
           return regeneratorRuntime.wrap(function _callee15$ (_context18) {
             while (1) {
@@ -5879,13 +5888,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 case 0:
                   arr = _ref70.arr, i = _ref70.i, end = _ref70.end
                   tasks = fuc.unique(_this43.tasks)
-                  _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 (_i2) {
+                  _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 (_i3) {
                     var task, status
                     return regeneratorRuntime.wrap(function _loop15$ (_context17) {
                       while (1) {
                         switch (_context17.prev = _context17.next) {
                           case 0:
-                            task = tasks[_i2]
+                            task = tasks[_i3]
                             status = fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('doing')).concat(task.text, '...<font></font></li>')
@@ -5988,18 +5997,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       }
                     }, _loop15)
                   })
-                  _i2 = 0
+                  _i3 = 0
 
                 case 4:
-                  if (!(_i2 < tasks.length)) {
+                  if (!(_i3 < tasks.length)) {
                     _context18.next = 9
                     break
                   }
 
-                  return _context18.delegateYield(_loop15(_i2), 't0', 6)
+                  return _context18.delegateYield(_loop15(_i3), 't0', 6)
 
                 case 6:
-                  _i2++
+                  _i3++
                   _context18.next = 4
                   break
 
@@ -6428,12 +6437,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var showLogs = globalConf === null || globalConf === void 0 ? void 0 : (_globalConf$other = globalConf.other) === null || _globalConf$other === void 0 ? void 0 : _globalConf$other.showLogs
         var websiteSettings = Object.assign(defaultBtn, website.setting)
 
-        for (var _i3 = 0, _Object$entries = Object.entries(websiteSettings); _i3 < _Object$entries.length; _i3++) {
-          var _Object$entries$_i = _slicedToArray(_Object$entries[_i3], 2)
-          var k = _Object$entries$_i[0]
-          var v = _Object$entries$_i[1]
+        for (var _i4 = 0, _Object$entries2 = Object.entries(websiteSettings); _i4 < _Object$entries2.length; _i4++) {
+          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2)
+          var _k2 = _Object$entries2$_i[0]
+          var _v = _Object$entries2$_i[1]
 
-          if (v.show) buttons += '<button id="'.concat(k, '" type="button" class="btn btn-primary" title="').concat(v.title, '">').concat(v.text, '</button>')
+          if (_v.show) buttons += '<button id="'.concat(_k2, '" type="button" class="btn btn-primary" title="').concat(_v.title, '">').concat(_v.text, '</button>')
         }
 
         if (showLogs) buttons += '<button id="toggle-logs" type="button" class="btn btn-primary" title="'.concat(!showLogs ? getI18n('showLog') : getI18n('hideLog'), '">').concat(!showLogs ? 'ShowLogs' : 'HideLogs', '</button>')
@@ -6441,9 +6450,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         $('body').append('<div id="fuck-task-btn"><button id="toggle-btn-group" type="button" class="btn btn-outline-primary">&gt;</button>'.concat(buttonGroup, '</div>'))
 
         var _loop18 = function _loop18 () {
-          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2)
-          var k = _Object$entries2$_i[0]
-          var v = _Object$entries2$_i[1]
+          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i5], 2)
+          var k = _Object$entries3$_i[0]
+          var v = _Object$entries3$_i[1]
 
           if (v.show) {
             $('#' + k).click(function () {
@@ -6452,7 +6461,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }
         }
 
-        for (var _i4 = 0, _Object$entries2 = Object.entries(websiteSettings); _i4 < _Object$entries2.length; _i4++) {
+        for (var _i5 = 0, _Object$entries3 = Object.entries(websiteSettings); _i5 < _Object$entries3.length; _i5++) {
           _loop18()
         }
 
@@ -6472,33 +6481,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         $(document).keydown(function (e) {
           var hotKey = globalConf.hotKey || {}
 
-          for (var _i5 = 0, _Object$entries3 = Object.entries(hotKey); _i5 < _Object$entries3.length; _i5++) {
-            var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i5], 2)
-            var _k = _Object$entries3$_i[0]
-            var _v = _Object$entries3$_i[1]
+          for (var _i6 = 0, _Object$entries4 = Object.entries(hotKey); _i6 < _Object$entries4.length; _i6++) {
+            var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i6], 2)
+            var _k3 = _Object$entries4$_i[0]
+            var _v2 = _Object$entries4$_i[1]
 
-            hotKey[_k] = _v.toLowerCase().trim()
-          }
+            var keys = _v2.split('+')
 
-          var functionKey = hotKey.functionKey ? e[hotKey.functionKey + 'Key'] : true
+            var functionKey = keys.length === 2 ? e[keys[0].toLowerCase().trim() + 'Key'] : true
 
-          if (functionKey) {
-            switch (e.key) {
-              case hotKey.fuckTask:
-                website.fuck()
-                break
+            if (functionKey && keys[1].toLowerCase().trim() === e.key) {
+              switch (_k3) {
+                case 'fuckKey':
+                  website.fuck()
+                  break
 
-              case hotKey.verify:
-                website.verify()
-                break
+                case 'verifyKey':
+                  website.verify()
+                  break
 
-              case hotKey.remove:
-                website.remove()
-                break
+                case 'removeKey':
+                  website.remove()
+                  break
 
-              case hotKey.toggleLog:
-                fuc.toggleLogs()
-                break
+                case 'toggleLogKey':
+                  fuc.toggleLogs()
+                  break
+              }
             }
           }
         })

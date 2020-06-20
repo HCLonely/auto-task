@@ -695,6 +695,17 @@ const fuc = {
     }
     return status
   },
+  toggleLogs () {
+    const btn = $('#toggle-logs')
+    const taskInfoDiv = $('#fuck-task-info')
+    if (taskInfoDiv.is(':hidden')) {
+      btn.text('HideLogs').attr('title', getI18n('hideLog'))
+      taskInfoDiv.show().animate({ right: '16px' }, 'fast')
+    } else {
+      btn.text('ShowLogs').attr('title', getI18n('showLog'))
+      taskInfoDiv.animate({ right: '-100%' }, 'fast', () => { taskInfoDiv.hide() })
+    }
+  },
   unique: e => [...new Set(e)],
   getUrlQuery (url) {
     const q = {}

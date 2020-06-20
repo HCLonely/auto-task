@@ -19,5 +19,4 @@
 ### To do
 
 * [x] gamehag 加组
-* [ ] keyhub 支持
 * [ ] 快捷键

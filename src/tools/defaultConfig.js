@@ -51,6 +51,13 @@ const defaultConf = {
       checkLeft: true,
       autoOpen: true,
       reCaptcha: false
+    },
+    hotKey: {
+      functionKey: 'Alt',
+      fuckTask: 'A',
+      verify: 'V',
+      remove: 'R',
+      toggleLog: 'L'
     }
   },
   giveawaysu: {

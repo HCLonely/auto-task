@@ -22,7 +22,7 @@ function loadSettings (userConfig) {
   </td>
 </tr>`
         }
-        tbody += tr + (['fuck', 'remove', 'other'].includes(_k) ? `<tr>
+        tbody += tr + (['fuck', 'remove', 'other', 'hotKey'].includes(_k) ? `<tr>
   <td colspan="2"></td>
   <td>
   <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" name="${key + '-' + _k + '-all'}" id="${key + '-' + _k + '-all'}"><label class="custom-control-label" for="${key + '-' + _k + '-all'}">${getI18n('selectAll')}</label></div>
@@ -68,6 +68,19 @@ function loadSettings (userConfig) {
     const type = $(this).attr('name').replace('-all', '')
     const group = $('input[name^="' + type + '"]')
     $(this).is(':checked') ? group.prop('checked', true) : group.prop('checked', false)
+  })
+  $('input[name^="global-hotKey-"]').attr('readonly', 'readonly').unbind('keydown').keydown(function (e) {
+    let functionKey = ''
+    if (e.altKey) {
+      functionKey += 'Alt + '
+    } else if (e.ctrlKey) {
+      functionKey += 'Ctrl + '
+    } else if (e.metaKey) {
+      functionKey += 'Meta + '
+    } else if (e.shiftKey) {
+      functionKey += 'Shift + '
+    }
+    $(this).val(functionKey + (e.key.length === 1 ? e.key.toUpperCase() : ''))
   })
   $('.non-js').hide()
   return true

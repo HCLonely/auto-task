@@ -231,5 +231,5 @@ const takekey = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {},
-  conf: config?.takekey?.load ? config.takekey : globalConf
+  conf: config?.takekey?.enable ? config.takekey : globalConf
 }

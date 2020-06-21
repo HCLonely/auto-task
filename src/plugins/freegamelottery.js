@@ -93,5 +93,5 @@ const freegamelottery = { // eslint-disable-line no-unused-vars
       show: false
     }
   },
-  conf: config?.freegamelottery?.load ? config.freegamelottery : globalConf
+  conf: config?.freegamelottery?.enable ? config.freegamelottery : globalConf
 }

@@ -296,5 +296,5 @@ const banana = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 所有任务ID
   setting: {},
-  conf: config?.banana?.load ? config.banana : globalConf
+  conf: config?.banana?.enable ? config.banana : globalConf
 }

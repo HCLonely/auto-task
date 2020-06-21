@@ -247,5 +247,5 @@ const gamehag = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {},
-  conf: config?.gamehag?.load ? config.gamehag : globalConf
+  conf: config?.gamehag?.enable ? config.gamehag : globalConf
 }

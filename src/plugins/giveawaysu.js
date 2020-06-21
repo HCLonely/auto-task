@@ -240,5 +240,5 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
       show: false
     }
   },
-  conf: config?.giveawaysu?.load ? config.giveawaysu : globalConf
+  conf: config?.giveawaysu?.enable ? config.giveawaysu : globalConf
 }

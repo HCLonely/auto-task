@@ -429,5 +429,5 @@ const givekey = { // eslint-disable-line no-unused-vars
       title: getI18n('initPlease')
     }
   },
-  conf: config?.givekey?.load ? config.givekey : globalConf
+  conf: config?.givekey?.enable ? config.givekey : globalConf
 }

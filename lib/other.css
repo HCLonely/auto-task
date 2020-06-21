@@ -55,6 +55,12 @@
   text-decoration: none !important;
 }
 
-#fuck:hover {
-  cursor: url("https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/fuck,cur"), auto;
+#fuck {
+  cursor: url("https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/lib/fuck.cur"), auto !important;
+}
+
+#toggle-btn-group{
+  width: 35px !important;
+  min-width: 35px !important;
+  max-width: 35px !important;
 }

@@ -5,13 +5,12 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
   async get_tasks (type = 'FREE') {
     const [
       items,
-      myPoint,
       maxPoint
     ] = [
       $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`),
-      this.myPoints,
       this.maxPoint()
     ]
+    let myPoint = this.myPoints
     for (let i = 0; i < items.length; i++) {
       const item = items[i]
       const needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
@@ -42,7 +41,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
                 const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
                 if (type === 'points' && points) {
                   if (debug) console.log(getI18n('pointsLeft') + points[1])
-                  opiumpulses.myPoints = parseInt(points[1])
+                  myPoint = parseInt(points[1])
                 }
               } else {
                 status.error('Error:' + (response.status || response.statusText))
@@ -64,7 +63,7 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
   verify () {
     const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
     if (myPoints) {
-      this.myPoints = myPoints
+      this.myPoints = Number(myPoints[0])
       this.get_tasks('points')
     } else {
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })
@@ -86,6 +85,6 @@ const opiumpulses = { // eslint-disable-line no-unused-vars
       show: false
     }
   },
-  conf: config?.opiumpulses?.load ? config.opiumpulses : globalConf,
-  maxPoint () { return this.conf?.other?.limitPoint || Infinity }
+  conf: config?.opiumpulses?.enable ? config.opiumpulses : globalConf,
+  maxPoint () { return this.conf?.other?.limitPoint ? Number(this.conf.other.limitPoint) : Infinity }
 }

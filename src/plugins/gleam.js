@@ -314,5 +314,5 @@ const gleam = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {},
-  conf: config?.gleam?.load ? config.gleam : globalConf
+  conf: config?.gleam?.enable ? config.gleam : globalConf
 }

@@ -322,5 +322,5 @@ const prys = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {},
-  conf: config?.prys?.load ? config.prys : globalConf
+  conf: config?.prys?.enable ? config.prys : globalConf
 }

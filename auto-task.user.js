@@ -2412,7 +2412,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 所有任务ID
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.load) ? config.banana : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.enable) ? config.banana : globalConf
     }
     var freegamelottery = {
       test: function test () {
@@ -2540,7 +2540,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.load) ? config.freegamelottery : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable) ? config.freegamelottery : globalConf
     }
     var gamehag = {
       test: function test () {
@@ -3043,7 +3043,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 任务信息
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.load) ? config.gamehag : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable) ? config.gamehag : globalConf
     }
     var giveawaysu = {
       test: function test () {
@@ -3456,7 +3456,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.load) ? config.giveawaysu : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable) ? config.giveawaysu : globalConf
     }
     var givekey = {
       test: function test () {
@@ -4033,7 +4033,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           title: getI18n('initPlease')
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$givekey = config.givekey) === null || _config$givekey === void 0 ? void 0 : _config$givekey.load) ? config.givekey : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$givekey = config.givekey) === null || _config$givekey === void 0 ? void 0 : _config$givekey.enable) ? config.givekey : globalConf
     }
     var gleam = {
       test: function test () {
@@ -4474,7 +4474,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 任务信息
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.load) ? config.gleam : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
     }
     var indiedb = {
       test: function test () {
@@ -4744,7 +4744,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.load) ? config.indiedb : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
     }
     var marvelousga = {
       test: function test () {
@@ -5152,7 +5152,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 任务信息
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.load) ? config.marvelousga : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.enable) ? config.marvelousga : globalConf
     }
     var opiumpulses = {
       test: function test () {
@@ -5295,7 +5295,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         var myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
 
         if (myPoints) {
-          this.myPoints = myPoints
+          this.myPoints = Number(myPoints[0])
           this.get_tasks('points')
         } else {
           fuc.echoLog({
@@ -5320,11 +5320,11 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.load) ? config.opiumpulses : globalConf,
+      conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.enable) ? config.opiumpulses : globalConf,
       maxPoint: function maxPoint () {
         var _this$conf, _this$conf$other
 
-        return ((_this$conf = this.conf) === null || _this$conf === void 0 ? void 0 : (_this$conf$other = _this$conf.other) === null || _this$conf$other === void 0 ? void 0 : _this$conf$other.limitPoint) || Infinity
+        return ((_this$conf = this.conf) === null || _this$conf === void 0 ? void 0 : (_this$conf$other = _this$conf.other) === null || _this$conf$other === void 0 ? void 0 : _this$conf$other.limitPoint) ? Number(this.conf.other.limitPoint) : Infinity
       }
     }
     var prys = {
@@ -5813,7 +5813,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 任务信息
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.load) ? config.prys : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
     }
     var spoune = {
       test: function test () {
@@ -6058,7 +6058,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$spoune = config.spoune) === null || _config$spoune === void 0 ? void 0 : _config$spoune.load) ? config.spoune : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$spoune = config.spoune) === null || _config$spoune === void 0 ? void 0 : _config$spoune.enable) ? config.spoune : globalConf
     }
     var takekey = {
       test: function test () {
@@ -6384,7 +6384,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       tasks: [],
       // 任务信息
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.load) ? config.takekey : globalConf
+      conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
     }
     var plugins = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
 

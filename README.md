@@ -15,7 +15,7 @@
 * [ ] [freegamelottery](https://freegamelottery.com/)
 * [ ] [gleam.io](http://gleam.io/)
 * [ ] [spoune](https://www.spoune.com/index.php)
-
+* [x] [opiumpulses](https://www.opiumpulses.com/giveaways)
 ### To do
 
 * [x] gamehag 加组

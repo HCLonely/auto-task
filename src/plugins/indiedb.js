@@ -188,5 +188,5 @@ const indiedb = { // eslint-disable-line no-unused-vars
       show: false
     }
   },
-  conf: config?.indiedb?.load ? config.indiedb : globalConf
+  conf: config?.indiedb?.enable ? config.indiedb : globalConf
 }

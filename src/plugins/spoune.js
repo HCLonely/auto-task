@@ -149,5 +149,5 @@ const spoune = { // eslint-disable-line no-unused-vars
       show: false
     }
   },
-  conf: config?.spoune?.load ? config.spoune : globalConf
+  conf: config?.spoune?.enable ? config.spoune : globalConf
 }

@@ -255,5 +255,5 @@ const marvelousga = { // eslint-disable-line no-unused-vars
   },
   tasks: [], // 任务信息
   setting: {},
-  conf: config?.marvelousga?.load ? config.marvelousga : globalConf
+  conf: config?.marvelousga?.enable ? config.marvelousga : globalConf
 }

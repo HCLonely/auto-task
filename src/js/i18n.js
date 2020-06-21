@@ -94,7 +94,7 @@ var i18n = { // eslint-disable-line no-unused-vars
     loadSettingText: '正在加载设置...',
     settingTitle: '<a href="https://github.com/HCLonely/auto-task" target="_blank">自动任务脚本</a>设置',
     currentVersion: '当前版本: <a href="https://github.com/HCLonely/auto-task/tree/%s" target="_blank">V%s</a>',
-    latestVersion: '最新版本: <a href="https://github.com/HCLonely/auto-task" target="_blank">V<span id="latestVersion"></span></a>',
+    latestVersion: '最新版本: <a href="https://github.com/HCLonely/auto-task/raw/%s/auto-task.user.js" target="_blank">V<span id="latestVersion"></span></a>',
     loadVersionFailed: '获取失败',
     hotKeyButton: '快捷键',
     fuckKey: 'FuckTask',

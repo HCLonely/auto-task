@@ -133,7 +133,7 @@ function update (test) {
   }
   announcementHistory.unshift(newVersion)
   const versionFileName = `version_${test ? 'test' : 'master'}.json`
-  fs.writeFile(versionFileName, JSON.stringify(newVersion), function (error) {
+  fs.writeFile('./public/' + versionFileName, JSON.stringify(newVersion), function (error) {
     if (error) {
       return console.error(versionFileName + '文件写入失败: ', error)
     }

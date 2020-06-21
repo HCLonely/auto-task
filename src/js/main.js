@@ -3,7 +3,7 @@
 function loadSettings (userConfig) {
   const config = Object.assign(defaultConfig, userConfig)
   const form = $('form').html('')
-  form.before(`<h2 class="center">${getI18n('settingTitle')}</h2><p class="center">${getI18n('currentVersion', GM_info.script.version) + getI18n('latestVersion')}</p>`)
+  form.before(`<h2 class="center">${getI18n('settingTitle')}</h2><p class="center">${getI18n('currentVersion', GM_info.script.version) + getI18n('latestVersion', branch)}</p>`)
   loadLatestVersion()
   for (const [key, value] of Object.entries(config)) {
     let tbody = ''

@@ -2,7 +2,10 @@
   "name": "autotask",
   "version": "3.0.0",
   "announcement": [
-    "givekey.ru兼容\"English\"和\"Русский\""
+    "多浏览器兼容",
+    "Gamehag添加加组退组功能",
+    "添加快捷键功能",
+    "框架修改"
   ],
   "description": "key站自动任务脚本",
   "main": "index.js",

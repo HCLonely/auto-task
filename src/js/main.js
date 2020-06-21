@@ -1,4 +1,4 @@
-/* global defaultConfig,getI18n,Swal,GM_info,$ */
+/* global defaultConfig,getI18n,Swal,GM_info,$,branch */
 /* eslint-disable no-unused-vars */
 function loadSettings (userConfig) {
   const config = Object.assign(defaultConfig, userConfig)
@@ -87,7 +87,7 @@ function loadSettings (userConfig) {
 }
 
 function loadLatestVersion () {
-  $.get('/version.json?t=' + new Date().getTime(), function (data, status, xhr) {
+  $.get('https://github.com/HCLonely/auto-task/raw/' + branch + '/version.json?t=' + new Date().getTime(), function (data, status, xhr) {
     if (status === 'success') {
       $('#latestVersion').text(data.version)
     } else {

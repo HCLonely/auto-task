@@ -558,9 +558,10 @@ const fuc = {
   },
   checkUpdate (s = false) {
     let status = false
-    if (s) status = this.echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
+    const echoLog = this.echoLog
+    if (s) status = echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
+      url: 'https://github.com/HCLonely/auto-task/raw/BRANCH/version.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {
@@ -568,7 +569,7 @@ const fuc = {
         if (response.response?.version === GM_info.script.version) {
           if (s) status.success(getI18n('thisIsNew'))
         } else if (response.response?.version) {
-          this.echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
+          echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/BRANCH/auto-task.user.js" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
           if (s) status.success(getI18n('newVer') + response.response.version)
         } else {
           if (s) status.error('Error:' + (response.statusText || response.status))

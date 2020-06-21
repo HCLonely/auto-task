@@ -91,8 +91,14 @@ ${main}
     }
 
 })()
-`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign|promise\/param-names|no-new)/g, '').replace(/\/\* disable[\w\W]*?\*\//g, '')
+`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign|promise\/param-names|no-new)/g, '').replace(/\/\* disable[\w\W]*?\*\//g, '').replace(/BRANCH/g, test ? 'test' : 'master')
 
+  fs.writeFile('./auto-task.raw.user.js', header + '\n' + body, function (error) {
+    if (error) {
+      return console.error('auto-task.raw.user.js文件写入失败: ', error)
+    }
+    console.log('auto-task.raw.user.js文件写入成功')
+  })
   babel.transform(body, {}, function (err, result) {
     if (err) {
       return console.error('babel转换失败: ', err)
@@ -102,7 +108,7 @@ ${main}
         return console.error('auto-task.user.js文件写入失败: ', error)
       }
       console.log('auto-task.user.js文件写入成功')
-      if (!test) update()
+      update(test)
     })
   })
 }
@@ -117,7 +123,7 @@ function minHtml (filename) {
     console.log(filename + '写入成功')
   })
 }
-function update () {
+function update (test) {
   const announcementHistory = JSON.parse(fs.readFileSync('./public/announcement.json', 'utf-8'))
   const time = new Date().getTime()
   const newVersion = {
@@ -133,14 +139,7 @@ function update () {
 
     console.log('version.json写入成功')
   })
-  fs.writeFile('./public/version.json', JSON.stringify(newVersion), function (error) {
-    if (error) {
-      return console.error('version.json文件写入public失败: ', error)
-    }
-
-    console.log('version.json写入public成功')
-  })
-
+  if (test) return
   fs.writeFile('./public/announcement.json', JSON.stringify(announcementHistory), function (error) {
     if (error) {
       return console.error('announcement.json文件写入失败: ', error)

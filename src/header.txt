@@ -64,11 +64,12 @@
 // @connect        instagram.com
 // @connect        vk.com
 // @connect        discordapp.com
-// @connect        github.com
 // @connect        twitch.tv
+// @connect        github.com
+// @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end
 // ==/UserScript==
 
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars */
 /* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init */

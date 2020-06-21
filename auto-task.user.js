@@ -64,14 +64,15 @@
 // @connect        instagram.com
 // @connect        vk.com
 // @connect        discordapp.com
-// @connect        github.com
 // @connect        twitch.tv
+// @connect        github.com
+// @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end
 // ==/UserScript==
 
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars */
 /* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init */
 
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
@@ -1553,14 +1554,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       checkUpdate: function checkUpdate () {
         var s = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var status = false
+        var echoLog = this.echoLog
         if (s) {
-          status = this.echoLog({
+          status = echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('checkingUpdate'), '<font></font></li>')
           })
         }
         this.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/master/version.json?t=' + new Date().getTime(),
+          url: 'https://github.com/HCLonely/auto-task/raw/test/version.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload: function onload (response) {
@@ -1571,9 +1573,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
             if (((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : _response$response9.version) === GM_info.script.version) {
               if (s) status.success(getI18n('thisIsNew'))
             } else if ((_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : _response$response10.version) {
-              this.echoLog({
+              echoLog({
                 type: 'custom',
-                text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
+                text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/test/auto-task.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
               })
               if (s) status.success(getI18n('newVer') + response.response.version)
             } else {
@@ -5166,19 +5168,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         var _this37 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
-          var type, _ref58, items, myPoint, maxPoint, i, item, needPoints
+          var type, _ref58, items, maxPoint, myPoint, i, item, needPoints
 
           return regeneratorRuntime.wrap(function _callee12$ (_context14) {
             while (1) {
               switch (_context14.prev = _context14.next) {
                 case 0:
                   type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
-                  _ref58 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this37.myPoints, _this37.maxPoint()], items = _ref58[0], myPoint = _ref58[1], maxPoint = _ref58[2]
+                  _ref58 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this37.maxPoint()], items = _ref58[0], maxPoint = _ref58[1]
+                  myPoint = _this37.myPoints
                   i = 0
 
-                case 3:
+                case 4:
                   if (!(i < items.length)) {
-                    _context14.next = 19
+                    _context14.next = 20
                     break
                   }
 
@@ -5186,7 +5189,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                    _context14.next = 10
+                    _context14.next = 11
                     break
                   }
 
@@ -5194,12 +5197,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                   })
-                  _context14.next = 16
+                  _context14.next = 17
                   break
 
-                case 10:
+                case 11:
                   if (!(type === 'points' && !needPoints)) {
-                    _context14.next = 14
+                    _context14.next = 15
                     break
                   }
 
@@ -5207,12 +5210,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                   })
-                  _context14.next = 16
+                  _context14.next = 17
                   break
 
-                case 14:
+                case 15:
                   if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                    _context14.next = 16
+                    _context14.next = 17
                     break
                   }
 
@@ -5247,7 +5250,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                                     if (type === 'points' && points) {
                                       if (debug) console.log(getI18n('pointsLeft') + points[1])
-                                      opiumpulses.myPoints = parseInt(points[1])
+                                      myPoint = parseInt(points[1])
                                     }
                                   } else {
                                     status.error('Error:' + (response.status || response.statusText))
@@ -5270,20 +5273,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                         }
                       }
                     }, _callee11)
-                  })(), 't0', 16)
+                  })(), 't0', 17)
 
-                case 16:
+                case 17:
                   i++
-                  _context14.next = 3
+                  _context14.next = 4
                   break
 
-                case 19:
+                case 20:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li>-----END-----</li>'
                   })
 
-                case 20:
+                case 21:
                 case 'end':
                   return _context14.stop()
               }
@@ -6397,6 +6400,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
 
         unsafeWindow.language = language
+        unsafeWindow.branch = 'test'
         typeof ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : (_GM_getValue2$global = _GM_getValue2.global) === null || _GM_getValue2$global === void 0 ? void 0 : (_GM_getValue2$global$ = _GM_getValue2$global.fuck) === null || _GM_getValue2$global$ === void 0 ? void 0 : _GM_getValue2$global$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
       } else if (window.location.pathname.includes('announcement')) {
         loadAnnouncement()

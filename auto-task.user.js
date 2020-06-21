@@ -1562,7 +1562,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           })
         }
         this.httpRequest({
-          url: 'https://github.com/HCLonely/auto-task/raw/test/version.json?t=' + new Date().getTime(),
+          url: 'https://auto-task.hclonely.com//version_test.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload: function onload (response) {

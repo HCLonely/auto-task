@@ -87,7 +87,7 @@ function loadSettings (userConfig) {
 }
 
 function loadLatestVersion () {
-  $.get('https://github.com/HCLonely/auto-task/raw/' + branch + '/version.json?t=' + new Date().getTime(), function (data, status, xhr) {
+  $.get('/version_' + branch + '.json?t=' + new Date().getTime(), function (data, status, xhr) {
     if (status === 'success') {
       $('#latestVersion').text(data.version)
     } else {

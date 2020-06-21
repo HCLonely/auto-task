@@ -132,12 +132,13 @@ function update (test) {
     text: announcement
   }
   announcementHistory.unshift(newVersion)
-  fs.writeFile('version.json', JSON.stringify(newVersion), function (error) {
+  const versionFileName = `version_${test ? 'test' : 'master'}.json`
+  fs.writeFile(versionFileName, JSON.stringify(newVersion), function (error) {
     if (error) {
-      return console.error('version.json文件写入失败: ', error)
+      return console.error(versionFileName + '文件写入失败: ', error)
     }
 
-    console.log('version.json写入成功')
+    console.log(versionFileName + '写入成功')
   })
   if (test) return
   fs.writeFile('./public/announcement.json', JSON.stringify(announcementHistory), function (error) {

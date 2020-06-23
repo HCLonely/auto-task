@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task
 // @namespace      auto-task
-// @version        3.0.0
+// @version        3.0.1
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -34,6 +34,7 @@
 // @include        https://auto-task.hclonely.com/announcement.html
 
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
+// @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
 // @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js

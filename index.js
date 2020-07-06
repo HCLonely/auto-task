@@ -57,7 +57,6 @@ function packUserJs (test = false) {
 // @include        *://giveawayhopper.com/giveaway/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
-// @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
 // @include        https://userjs.hclonely.com/setting.html
 // @include        https://userjs.hclonely.com/setting_en.html
@@ -131,7 +130,7 @@ function packUserJs (test = false) {
       console.log('Options:', options)
       console.log('JavaScript exception:', exc)
     })
-    
+
     try{
 
 ${functionJs}${pluginsData}
@@ -150,7 +149,7 @@ ${main}
         }, 500)
         console.log('%c%s', 'color:white;background:red', e.stack)
     }
-    
+
 })()
 `.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign)/g, '').replace(/ promise\/param-names/g, '')
   const data = header + '\n\n' + body.replace(/\/\* disable[\w\W]*?\*\//g, '')

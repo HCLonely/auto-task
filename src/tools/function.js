@@ -561,7 +561,7 @@ const fuc = {
     const echoLog = this.echoLog
     if (s) status = echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
     this.httpRequest({
-      url: 'https://auto-task.hclonely.com//version_BRANCH.json?t=' + new Date().getTime(),
+      url: 'https://auto-task.hclonely.com/version.json?t=' + new Date().getTime(),
       method: 'get',
       dataType: 'json',
       onload (response) {

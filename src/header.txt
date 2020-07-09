@@ -6,7 +6,7 @@
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
-// @license        MIT
+// @license        Apache-2.0
 // @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@BRANCH/public/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose

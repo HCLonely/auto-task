@@ -6,11 +6,11 @@
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
-// @license        MIT
-// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/public/favicon.ico
+// @license        Apache-2.0
+// @iconURL        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@V3/public/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://github.com/HCLonely/auto-task/raw/test/auto-task.user.js
+// @updateURL      https://github.com/HCLonely/auto-task/raw/V3/auto-task.user.js
 
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
@@ -36,12 +36,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@V3/lib/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@test/lib/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@V3/lib/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@V3/lib/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -1152,7 +1152,7 @@
         const echoLog = this.echoLog
         if (s) status = echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
         this.httpRequest({
-          url: 'https://auto-task.hclonely.com//version_test.json?t=' + new Date().getTime(),
+          url: 'https://auto-task.hclonely.com/version.json?t=' + new Date().getTime(),
           method: 'get',
           dataType: 'json',
           onload (response) {
@@ -1160,7 +1160,7 @@
             if (response.response?.version === GM_info.script.version) {
               if (s) status.success(getI18n('thisIsNew'))
             } else if (response.response?.version) {
-              echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/test/auto-task.user.js" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
+              echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/V3/auto-task.user.js" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
               if (s) status.success(getI18n('newVer') + response.response.version)
             } else {
               if (s) status.error('Error:' + (response.statusText || response.status))
@@ -3285,7 +3285,7 @@
         this.updateSteamInfo(async () => {
           const [pro, links] = [[], fuc.unique(this.links)]
           await this.toggleActions('fuck', pro)
-          if (this.conf.fuck.visit) {
+          if (this.conf.fuck.visitLink) {
             for (const link of links) {
               pro.push(new Promise(resolve => {
                 fuc.visitLink(resolve, link.pageUrl, {
@@ -4219,7 +4219,7 @@
         unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
         unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
         unsafeWindow.language = language
-        unsafeWindow.branch = 'test'
+        unsafeWindow.branch = 'V3'
         typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
       } else if (window.location.pathname.includes('announcement')) {
         loadAnnouncement()

@@ -64,3 +64,7 @@
   min-width: 35px !important;
   max-width: 35px !important;
 }
+
+cloudflare-app{
+  display: none !important;
+}

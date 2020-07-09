@@ -87,7 +87,7 @@ const marvelousga = { // eslint-disable-line no-unused-vars
     this.updateSteamInfo(async () => {
       const [pro, links] = [[], fuc.unique(this.links)]
       await this.toggleActions('fuck', pro)
-      if (this.conf.fuck.visit) {
+      if (this.conf.fuck.visitLink) {
         for (const link of links) {
           pro.push(new Promise(resolve => {
             fuc.visitLink(resolve, link.pageUrl, {

@@ -2,6 +2,10 @@
   "name": "autotask",
   "version": "3.0.1",
   "announcement": [
+    "多浏览器兼容",
+    "Gamehag添加加组退组功能",
+    "添加快捷键功能",
+    "框架修改",
     "添加依赖项"
   ],
   "description": "key站自动任务脚本",

@@ -37,7 +37,7 @@ if (program.js) publicJs()
 if (program.css) minCSS()
 
 function packUserJs (test = false) {
-  const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version).replace(/BRANCH/g, test ? 'test' : 'master') // 加载Tampermonkey头部信息
+  const header = fs.readFileSync('./src/header.txt', 'utf-8').replace(/VERSION/g, version).replace(/BRANCH/g, 'V3') // 加载Tampermonkey头部信息
   const disabledPlugins = ['gamecode.js'] // 禁用的插件
   const i18n = fs.readFileSync('./src/tools/i18n.js', 'utf-8') // 加载i18n相关函数
   const defaultConfig = fs.readFileSync('./src/tools/defaultConfig.js', 'utf-8') // 加载默认设置
@@ -91,7 +91,7 @@ ${main}
     }
 
 })()
-`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign|promise\/param-names|no-new)/g, '').replace(/\/\* disable[\w\W]*?\*\//g, '').replace(/BRANCH/g, test ? 'test' : 'master')
+`.replace(/\/\*[\s]*?global.*?\*\/(\r)?\n/g, '').replace(/ \/\/ eslint-disable-line (no-unused-vars|prefer-const|no-global-assign|promise\/param-names|no-new)/g, '').replace(/\/\* disable[\w\W]*?\*\//g, '').replace(/BRANCH/g, 'V3')
 
   fs.writeFile('./auto-task.raw.user.js', header + '\n' + body, function (error) {
     if (error) {
@@ -132,7 +132,7 @@ function update (test) {
     text: announcement
   }
   announcementHistory.unshift(newVersion)
-  const versionFileName = `version_${test ? 'test' : 'master'}.json`
+  const versionFileName = 'version.json'
   fs.writeFile('./public/' + versionFileName, JSON.stringify(newVersion), function (error) {
     if (error) {
       return console.error(versionFileName + '文件写入失败: ', error)

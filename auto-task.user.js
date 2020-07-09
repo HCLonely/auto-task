@@ -2421,8 +2421,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       test: function test () {
         return window.location.host.includes('freegamelottery')
       },
-      after: function after (website) {
-        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
+      after: function after () {
+        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) this.draw()
       },
       fuck: function fuck () {
         GM_setValue('lottery', 1)
@@ -4985,7 +4985,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                         })
                       } else {
                         status.error('Error:' + (response.response.message || 'error'))
-                        if (globalConf.other.autoOpen) window.open($('<div>'.concat(task.taskDes, '</div>')).find('a').attr('href'), '_blank')
+
+                        if (globalConf.other.autoOpen) {
+                          if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                            $('task_webpage_clickedLink_'.concat(task.taskId)).click()
+                          } else {
+                            window.open($('<div>'.concat(task.taskDes, '</div>')).find('a').attr('href'), '_blank')
+                          }
+                        }
+
                         resolve({
                           result: 'error',
                           statusText: response.statusText,
@@ -4994,7 +5002,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                       }
                     } else {
                       status.error('Error:' + (response.response.message || response.statusText || response.status))
-                      if (globalConf.other.autoOpen) window.open($('<div>'.concat(task.taskDes, '</div>')).find('a').attr('href'), '_blank')
+
+                      if (globalConf.other.autoOpen) {
+                        if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                          $('task_webpage_clickedLink_'.concat(task.taskId)).click()
+                        } else {
+                          window.open($('<div>'.concat(task.taskDes, '</div>')).find('a').attr('href'), '_blank')
+                        }
+                      }
+
                       resolve({
                         result: 'error',
                         statusText: response.statusText,
@@ -5405,6 +5421,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                           }
                         }
 
+                        r(1)
+                      }).catch(function () {
                         r(1)
                       })
                     }))

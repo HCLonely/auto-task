@@ -54,6 +54,8 @@ const prys = { // eslint-disable-line no-unused-vars
                   }
                 }
                 r(1)
+              }).catch(() => {
+                r(1)
               })
             }))
           }

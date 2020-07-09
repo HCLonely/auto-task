@@ -1728,8 +1728,8 @@
 
     const freegamelottery = {
       test () { return window.location.host.includes('freegamelottery') },
-      after (website) {
-        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) website.draw()
+      after () {
+        if (window.location.host === 'd.freegamelottery.com' && GM_getValue('lottery') === 1) this.draw()
       },
       fuck () {
         GM_setValue('lottery', 1)
@@ -3336,12 +3336,24 @@
                       resolve({ result: 'success', statusText: response.statusText, status: response.status })
                     } else {
                       status.error('Error:' + (response.response.message || 'error'))
-                      if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                      if (globalConf.other.autoOpen) {
+                        if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                          $(`task_webpage_clickedLink_${task.taskId}`).click()
+                        } else {
+                          window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                        }
+                      }
                       resolve({ result: 'error', statusText: response.statusText, status: response.status })
                     }
                   } else {
                     status.error('Error:' + (response.response.message || response.statusText || response.status))
-                    if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                    if (globalConf.other.autoOpen) {
+                      if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                        $(`task_webpage_clickedLink_${task.taskId}`).click()
+                      } else {
+                        window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                      }
+                    }
                     resolve({ result: 'error', statusText: response.statusText, status: response.status })
                   }
                 },
@@ -3586,6 +3598,8 @@
                         this.taskInfo.groups.push(groupName[1])
                       }
                     }
+                    r(1)
+                  }).catch(() => {
                     r(1)
                   })
                 }))

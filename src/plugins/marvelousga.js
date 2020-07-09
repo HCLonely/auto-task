@@ -138,12 +138,24 @@ const marvelousga = { // eslint-disable-line no-unused-vars
                   resolve({ result: 'success', statusText: response.statusText, status: response.status })
                 } else {
                   status.error('Error:' + (response.response.message || 'error'))
-                  if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                  if (globalConf.other.autoOpen) {
+                    if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                      $(`task_webpage_clickedLink_${task.taskId}`).click()
+                    } else {
+                      window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                    }
+                  }
                   resolve({ result: 'error', statusText: response.statusText, status: response.status })
                 }
               } else {
                 status.error('Error:' + (response.response.message || response.statusText || response.status))
-                if (globalConf.other.autoOpen) window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                if (globalConf.other.autoOpen) {
+                  if (/Visit[\w\W]*?this[\w\W]*?webpage/gim.test(task.taskDes)) {
+                    $(`task_webpage_clickedLink_${task.taskId}`).click()
+                  } else {
+                    window.open($(`<div>${task.taskDes}</div>`).find('a').attr('href'), '_blank')
+                  }
+                }
                 resolve({ result: 'error', statusText: response.statusText, status: response.status })
               }
             },

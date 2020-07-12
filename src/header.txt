@@ -14,7 +14,6 @@
 
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
-// @include        *://dupedornot.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
 // @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
@@ -22,13 +21,10 @@
 // @include        *://www.indiedb.com/giveaways*
 // @include        *://www.opiumpulses.com/giveaways
 // @include        *://gkey.fun/distribution/*
-// @include        *://givekey.ru/distribution/*
 // @include        *://takekey.ru/distribution/*
-// @include        *://chubkeys.com/giveaway/*
 // @include        *://giveawayhopper.com/giveaway/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
-// @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
 // @include        https://auto-task.hclonely.com/setting.html
 // @include        https://auto-task.hclonely.com/announcement.html

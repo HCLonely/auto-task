@@ -14,7 +14,6 @@
 
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*
-// @include        *://dupedornot.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
 // @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
@@ -22,13 +21,10 @@
 // @include        *://www.indiedb.com/giveaways*
 // @include        *://www.opiumpulses.com/giveaways
 // @include        *://gkey.fun/distribution/*
-// @include        *://givekey.ru/distribution/*
 // @include        *://takekey.ru/distribution/*
-// @include        *://chubkeys.com/giveaway/*
 // @include        *://giveawayhopper.com/giveaway/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
-// @include        *://www.spoune.com/index.php*
 // @exclude        *googleads*
 // @include        https://auto-task.hclonely.com/setting.html
 // @include        https://auto-task.hclonely.com/announcement.html
@@ -81,7 +77,7 @@ function asyncGeneratorStep (gen, resolve, reject, _next, _throw, key, arg) { tr
 
 function _asyncToGenerator (fn) { return function () { var self = this; var args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next (value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value) } function _throw (err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err) } _next(undefined) }) } }
 
-function _createForOfIteratorHelper (o) { if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (o = _unsupportedIterableToArray(o))) { var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e2) { throw _e2 }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var it; var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e3) { didErr = true; err = _e3 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
+function _createForOfIteratorHelper (o, allowArrayLike) { var it; if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === 'number') { if (it) o = it; var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e2) { throw _e2 }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e3) { didErr = true; err = _e3 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
 
 function _toConsumableArray (arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread() }
 
@@ -385,7 +381,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       var _navigator, _navigator2
 
       var browserLanguage = (((_navigator = navigator) === null || _navigator === void 0 ? void 0 : _navigator.browserLanguage) || ((_navigator2 = navigator) === null || _navigator2 === void 0 ? void 0 : _navigator2.language) || '').toLowerCase()
-      lan = browserLanguage.includes('en') ? 'en' : 'zh-cn'
+      lan = browserLanguage.includes('en') ? 'en' : 'zh-CN'
     }
 
     return lan
@@ -411,7 +407,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
   })
 
   try {
-    var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$givekey, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys, _config$spoune, _config$takekey
+    var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys, _config$takekey
 
     /* eslint-disable no-unused-vars */
     if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
@@ -628,7 +624,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       var v = _Object$entries$_i[1]
 
       var defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-      config[k] = Object.assign(defaultConfig[k], config[k])
+      if (defaultConfig[k]) config[k] = Object.assign(defaultConfig[k], config[k])
     }
 
     var globalConf = config.global
@@ -3461,583 +3457,6 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       },
       conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable) ? config.giveawaysu : globalConf
     }
-    var givekey = {
-      test: function test () {
-        return window.location.host.includes('gkey') || window.location.host.includes('givekey')
-      },
-      before: function before (website) {
-        var init = setInterval(function () {
-          try {
-            if (typeof Centrifuge !== 'undefined') {
-              clearInterval(init)
-              website.creat_app()
-            }
-          } catch (e) {}
-        }, 500)
-      },
-      after: function after () {
-        $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-      },
-      fuck: function fuck () {
-        var transBtn = $('.yt-button__icon.yt-button__icon_type_right')
-        if (transBtn.css('background-position') === '-68px 0px') transBtn[0].click()
-        fuc.echoLog({
-          type: 'custom',
-          text: '<li><font class="error">'.concat(getI18n('changeLanguage'), '</font></li>')
-        })
-        $('body').overHang({
-          type: 'info',
-          activity: 'notification',
-          message: getI18n('connectWss')
-        })
-        $(function () {
-          return givekey.wssApp.init()
-        })
-        fuc.echoLog({
-          type: 'custom',
-          text: '<li><font class="warning">'.concat(getI18n('connectWssWait'), '</font></li>')
-        })
-        fuc.echoLog({
-          type: 'custom',
-          text: '<li><font class="warning">'.concat(getI18n('beforeFuck'), '</font></li>')
-        })
-        fuc.echoLog({
-          type: 'custom',
-          text: '<li><font class="error">'.concat(getI18n('gkrobot'), '</font></li>')
-        })
-        window.open($('a[id^="task_"').attr('href'), '_blank')
-      },
-      analyze_tasks: function analyze_tasks (tasks) {
-        var _this25 = this
-
-        var _ref29 = [[], [], [], []]
-        this.groups = _ref29[0]
-        this.wGames = _ref29[1]
-        this.fGames = _ref29[2]
-        this.links = _ref29[3]
-        var _ref30 = [fuc.echoLog({
-          type: 'custom',
-          text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
-        }), [], GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')]
-        var status = _ref30[0]
-        var pro = _ref30[1]
-        var taskInfoHistory = _ref30[2]
-        if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-
-        var _iterator11 = _createForOfIteratorHelper(tasks)
-        var _step11
-
-        try {
-          var _loop8 = function _loop8 () {
-            var id = _step11.value
-            var task = $('#task_' + id)
-            var href = task.attr('href')
-
-            if (href.includes('vk.com')) {} else if (href.includes('steamcommunity.com/groups')) {
-              _this25.groups.push(href.match(/groups\/(.+)/)[1])
-
-              _this25.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-            } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
-              pro.push(new Promise(function (r) {
-                new Promise(function (resolve) {
-                  fuc.getFinalUrl(resolve, href)
-                }).then(function (data) {
-                  if (data.result === 'success') {
-                    var appId = data.finalUrl.match(/app\/([\d]+)/)
-
-                    if (appId) {
-                      _this25.wGames.push(appId[1])
-
-                      _this25.taskInfo.wGames.push(appId[1])
-
-                      r(1)
-                    } else {
-                      r(0)
-                    }
-                  } else {
-                    r(0)
-                  }
-                })
-              }))
-            } else if (href.includes('store.steampowered.com/app')) {
-              _this25.fGames.push(href.match(/app\/([\d]+)/)[1])
-
-              _this25.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
-            } else {
-              _this25.links.push(href)
-            }
-          }
-
-          for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-            _loop8()
-          }
-        } catch (err) {
-          _iterator11.e(err)
-        } finally {
-          _iterator11.f()
-        }
-
-        Promise.all(pro).finally(function () {
-          var _ref31 = [fuc.unique(_this25.groups), fuc.unique(_this25.wGames), fuc.unique(_this25.fGames), fuc.unique(_this25.links), fuc.unique(_this25.taskInfo.groups), fuc.unique(_this25.taskInfo.fGames), fuc.unique(_this25.taskInfo.wGames)]
-          _this25.groups = _ref31[0]
-          _this25.wGames = _ref31[1]
-          _this25.fGames = _ref31[2]
-          _this25.links = _ref31[3]
-          _this25.taskInfo.groups = _ref31[4]
-          _this25.taskInfo.fGames = _ref31[5]
-          _this25.taskInfo.wGames = _ref31[6]
-
-          if (_this25.groups.length > 0 || _this25.fGames.length > 0 || _this25.links.length > 0 || _this25.wGames.length > 0) {
-            _this25.do_task()
-          } else {
-            fuc.echoLog({
-              type: 'custom',
-              text: '<li><font class="warning">'.concat(getI18n('noAutoFinish'), '</font></li>')
-            })
-          }
-
-          GM_setValue('taskInfo[' + window.location.host + _this25.get_giveawayId() + ']', _this25.taskInfo)
-          status.success()
-          if (debug) console.log(_this25)
-        })
-      },
-      get_tasks: function get_tasks () {
-        var _this26 = this
-
-        var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-
-        if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
-          this.taskInfo = taskInfoHistory
-          this.remove(true)
-        } else {
-          var _ref32 = [[], fuc.echoLog({
-            type: 'custom',
-            text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
-          }), $('a[id^=task_]')]
-          var _pro5 = _ref32[0]
-          var status = _ref32[1]
-          var tasksContainer = _ref32[2]
-
-          var _iterator12 = _createForOfIteratorHelper(tasksContainer)
-          var _step12
-
-          try {
-            var _loop9 = function _loop9 () {
-              var task = _step12.value
-              // 遍历任务信息
-              var href = task.attr('href')
-
-              if (href.includes('vk.com')) {} else if (href.includes('steamcommunity.com/groups/')) {
-                _this26.taskInfo.groups.push(href.match(/groups\/(.+)/)[1])
-              } else if (/Add to wishlist|加入愿望单/i.test(task.text())) {
-                _pro5.push(new Promise(function (r) {
-                  new Promise(function (resolve) {
-                    fuc.getFinalUrl(resolve, href)
-                  }).then(function (data) {
-                    if (data.result === 'success') {
-                      var appId = data.finalUrl.match(/app\/([\d]+)/)
-
-                      if (appId) {
-                        _this26.wGames.push(appId[1])
-
-                        _this26.taskInfo.wGames.push(appId[1])
-
-                        r(1)
-                      } else {
-                        r(0)
-                      }
-                    } else {
-                      r(0)
-                    }
-                  })
-                }))
-              } else if (href.includes('store.steampowered.com/app/')) {
-                _this26.taskInfo.fGames.push(href.match(/app\/([\d]+)/)[1])
-              }
-            }
-
-            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-              _loop9()
-            }
-          } catch (err) {
-            _iterator12.e(err)
-          } finally {
-            _iterator12.f()
-          }
-
-          Promise.all(_pro5).finally(function () {
-            var _ref33 = [fuc.unique(_this26.taskInfo.groups), fuc.unique(_this26.taskInfo.curators), fuc.unique(_this26.taskInfo.wGames)]
-            _this26.taskInfo.groups = _ref33[0]
-            _this26.taskInfo.curators = _ref33[1]
-            _this26.taskInfo.wGames = _ref33[2]
-            GM_setValue('taskInfo[' + window.location.host + _this26.get_giveawayId() + ']', _this26.taskInfo)
-            status.success()
-            if (debug) console.log(_this26)
-
-            if (_this26.taskInfo.groups.length > 0 || _this26.taskInfo.curators.length > 0 || _this26.taskInfo.wGames.length > 0) {
-              _this26.remove(true)
-            } else {
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
-              })
-            }
-          })
-        }
-      },
-      do_task: function do_task () {
-        var _this27 = this
-
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
-          var _ref35, pro, links, _iterator13, _step13, _loop10
-
-          return regeneratorRuntime.wrap(function _callee7$ (_context9) {
-            while (1) {
-              switch (_context9.prev = _context9.next) {
-                case 0:
-                  _ref35 = [[], fuc.unique(_this27.links)], pro = _ref35[0], links = _ref35[1]
-                  _context9.next = 3
-                  return _this27.toggleActions('fuck', pro)
-
-                case 3:
-                  if (_this27.conf.fuck.visitLink) {
-                    _iterator13 = _createForOfIteratorHelper(links)
-
-                    try {
-                      _loop10 = function _loop10 () {
-                        var link = _step13.value
-                        pro.push(new Promise(function (resolve) {
-                          fuc.visitLink(resolve, link)
-                        }))
-                      }
-
-                      for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-                        _loop10()
-                      }
-                    } catch (err) {
-                      _iterator13.e(err)
-                    } finally {
-                      _iterator13.f()
-                    }
-                  }
-
-                  Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
-                  })
-
-                case 5:
-                case 'end':
-                  return _context9.stop()
-              }
-            }
-          }, _callee7)
-        })))
-      },
-      verify: function verify () {
-        givekey.wssApp.status = fuc.echoLog({
-          type: 'custom',
-          text: '<li>'.concat(getI18n('getTaskStatus'), '<font></font></li>')
-        })
-        givekey.wssApp.request('/distribution/check', 'post', {
-          id: window.location.href.match(/[\d]+/)[0],
-          g_captcha: $('[name="g-recaptcha-response"]').val()
-        })
-      },
-      remove: function remove () {
-        var _this28 = this
-
-        var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-        var pro = []
-
-        if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
-            return regeneratorRuntime.wrap(function _callee8$ (_context10) {
-              while (1) {
-                switch (_context10.prev = _context10.next) {
-                  case 0:
-                    _context10.next = 2
-                    return _this28.toggleActions('remove', pro)
-
-                  case 2:
-                    Promise.all(pro).finally(function () {
-                      fuc.echoLog({
-                        type: 'custom',
-                        text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                      })
-                    })
-
-                  case 3:
-                  case 'end':
-                    return _context10.stop()
-                }
-              }
-            }, _callee8)
-          })))
-        } else {
-          this.get_tasks('remove')
-        }
-      },
-      toggleActions: function toggleActions (action, pro) {
-        var _ref37 = action === 'fuck' ? [this.groups, this.curators, this.wishlists, this.fGames] : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
-        var _ref38 = _slicedToArray(_ref37, 4)
-        var groups = _ref38[0]
-        var curators = _ref38[1]
-        var wishlists = _ref38[2]
-        var fGames = _ref38[3]
-
-        if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'givekey',
-              type: 'group',
-              elements: groups,
-              resolve: resolve,
-              action: action
-            })
-          }))
-        }
-
-        if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'givekey',
-              type: 'curator',
-              elements: curators,
-              resolve: resolve,
-              action: action
-            })
-          }))
-        }
-
-        if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'givekey',
-              type: 'wishlist',
-              elements: wishlists,
-              resolve: resolve,
-              action: action
-            })
-          }))
-        }
-
-        if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'givekey',
-              type: 'game',
-              elements: fGames,
-              resolve: resolve,
-              action: action
-            })
-          }))
-        }
-      },
-      creat_app: function creat_app () {
-        this.wssApp = {
-          status: {},
-          message: {},
-          loading: false,
-          centrifuge: new Centrifuge(/givekey.ru/.test(window.location.href) ? 'wss://app.givekey.ru/connection/websocket' : 'wss://app.gkey.fun/connection/websocket'),
-          uid: $('meta[name="uid"]').attr('content'),
-          init: function init () {
-            this.centrifuge.setToken($('meta[name="cent_token"]').attr('content'))
-            this.centrifuge.connect()
-            this.centrifuge.on('connect', function (e) {
-              if (debug) console.log(getI18n('wssConnected'))
-              $('#verify-task').removeClass('is-disabled').removeAttr('disabled')
-              $('body').overHang({
-                type: 'success',
-                activity: 'notification',
-                message: getI18n('wssConnectSuccess')
-              })
-
-              var _iterator14 = _createForOfIteratorHelper($('a[id^=task_]'))
-              var _step14
-
-              try {
-                for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-                  var a = _step14.value
-                  $(a).html($(a).html().replace('Посмотреть обзор на игру', '查看游戏评论').replace('Подписаться на разработчика', '订阅开发商').replace('Подписаться на куратора', '订阅鉴赏家').replace('Поставить лайк', '点赞').replace('Подписаться на игру', '关注游戏').replace(/Subscribe|Подписаться/, '订阅/加组').replace('Сделать репост', '转发').replace('Добавить в список желаемого', '加入愿望单').replace('Сделать обзор на игру', '评论').replace('Посетить web-сайт', '访问页面'))
-                }
-              } catch (err) {
-                _iterator14.e(err)
-              } finally {
-                _iterator14.f()
-              }
-            })
-            this.centrifuge.on('disconnect', function (e) {
-              if (debug) console.log(''.concat(getI18n('wssDisconnected'), '\n').concat(e.reason))
-              $('#verify-task').addClass('is-disabled').attr('disabled', 'disabled')
-              $('body').overHang({
-                type: 'warning',
-                activity: 'notification',
-                message: getI18n('wssReconnect')
-              })
-            })
-
-            if (this.uid) {
-              this.centrifuge.subscribe('usr#'.concat(this.uid), function (data) {
-                if (debug) console.log(data)
-                givekey.wssApp.status.success()
-
-                if (data.data.js) {
-                  var taskA = data.data.js.split(';')
-
-                  if (taskA) {
-                    var tasks = []
-                    taskA.map(function (e) {
-                      if (e.includes('btn-danger')) tasks.push(e.match(/[\d]+/)[0])
-                    })
-                    givekey.analyze_tasks(tasks)
-                  }
-                }
-              })
-            }
-          },
-          request: function request (url, type, data, page) {
-            if (url) {
-              data = data || {}
-              type = type || 'post'
-
-              if (type.toLowerCase() === 'get') {
-                if (givekey.wssApp.loading) {
-                  return
-                }
-
-                givekey.wssApp.loading = !0
-              }
-
-              $.ajax({
-                url: url,
-                type: type,
-                data: data,
-                headers: {
-                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function success (data) {
-                  if (debug) console.log(data)
-                  if (data.msg && !data.msg.data.includes('Проверяем! Пожалуйста подождите')) givekey.wssApp.status.error(data.msg.data.replace('Вы уже участвовали в этой раздаче!', '你已经参与了此赠key!'))
-                },
-                error: function error (e) {
-                  if (debug) console.log(e)
-
-                  switch (e.status) {
-                    case 401:
-                      givekey.wssApp.status.error(getI18n('noLogin'))
-                      break
-
-                    case 403:
-                      givekey.wssApp.status.error(getI18n('accessDenied'))
-                      break
-
-                    case 404:
-                      givekey.wssApp.status.error(getI18n('notFound'))
-                      break
-
-                    case 500:
-                      givekey.wssApp.status.error(getI18n('serverError'))
-                      break
-
-                    case 503:
-                      givekey.wssApp.status.error(getI18n('errorRefresh'))
-                      break
-
-                    default:
-                      givekey.wssApp.status.error('Error:' + e.status)
-                      break
-                  }
-
-                  givekey.wssApp.loading = !1
-                }
-              })
-            }
-          }
-        }
-      },
-      get_giveawayId: function get_giveawayId () {
-        var id = window.location.href.match(/distribution\/([\d]+)/)
-        return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
-      },
-      updateSteamInfo: function updateSteamInfo (callback) {
-        var _this29 = this
-
-        new Promise(function (resolve) {
-          if (_this29.taskInfo.groups.length > 0) {
-            if (_this29.taskInfo.curators.length > 0 || _this29.taskInfo.fGames.length > 0 || _this29.taskInfo.wGames.length > 0) {
-              fuc.updateSteamInfo(resolve, 'all')
-            } else {
-              fuc.updateSteamInfo(resolve, 'community')
-            }
-          } else if (_this29.taskInfo.curators.length > 0 || _this29.taskInfo.fGames.length > 0 || _this29.taskInfo.wGames.length > 0) {
-            fuc.updateSteamInfo(resolve, 'store')
-          } else {
-            resolve(1)
-          }
-        }).then(function (s) {
-          if (s === 1) callback()
-        }).catch(function (err) {
-          console.error(err)
-        })
-      },
-      checkLogin: function checkLogin () {
-        if ($("a[href='/auth']").length > 0) window.open('/auth/steam', '_self')
-      },
-      checkLeft: function checkLeft () {
-        if ($('#keys_count').text() === '0') {
-          Swal.fire({
-            icon: 'warning',
-            title: getI18n('notice'),
-            text: getI18n('noKeysLeft'),
-            confirmButtonText: getI18n('confirm'),
-            cancelButtonText: getI18n('cancel'),
-            showCancelButton: true
-          }).then(function (result) {
-            if (result.value) {
-              window.close()
-            }
-          })
-        }
-      },
-      groups: [],
-      // 任务需要加的组
-      curators: [],
-      // 任务需要关注的鉴赏家
-      fGames: [],
-      // 任务需要关注的游戏
-      wGames: [],
-      // 任务需要加愿望单的游戏
-      links: [],
-      // 需要浏览的页面链接
-      taskInfo: {
-        groups: [],
-        // 所有任务需要加的组
-        curators: [],
-        // 所有任务需要关注的鉴赏家
-        fGames: [],
-        // 所有任务需要关注的游戏
-        wGames: [] // 所有任务需要加愿望单的游戏
-
-      },
-      tasks: [],
-      // 任务信息
-      setting: {
-        fuck: {
-          show: true,
-          text: 'Init',
-          title: getI18n('initFirst')
-        },
-        verify: {
-          show: true,
-          text: 'Fuck',
-          title: getI18n('initPlease')
-        }
-      },
-      conf: (config === null || config === void 0 ? void 0 : (_config$givekey = config.givekey) === null || _config$givekey === void 0 ? void 0 : _config$givekey.enable) ? config.givekey : globalConf
-    }
     var gleam = {
       test: function test () {
         return window.location.host.includes('gleam.io')
@@ -4053,27 +3472,27 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref39 = [[], [], [], [], [], [], []]
-          this.twitters = _ref39[0]
-          this.facebooks = _ref39[1]
-          this.youtubes = _ref39[2]
-          this.discords = _ref39[3]
-          this.others = _ref39[4]
-          this.groups = _ref39[5]
-          this.links = _ref39[6]
-          var _ref40 = [fuc.echoLog({
+          var _ref29 = [[], [], [], [], [], [], []]
+          this.twitters = _ref29[0]
+          this.facebooks = _ref29[1]
+          this.youtubes = _ref29[2]
+          this.discords = _ref29[3]
+          this.others = _ref29[4]
+          this.groups = _ref29[5]
+          this.links = _ref29[6]
+          var _ref30 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('div.entry-content .entry-method')]
-          var status = _ref40[0]
-          var tasksContainer = _ref40[1]
+          var status = _ref30[0]
+          var tasksContainer = _ref30[1]
 
-          var _iterator15 = _createForOfIteratorHelper(tasksContainer)
-          var _step15
+          var _iterator11 = _createForOfIteratorHelper(tasksContainer)
+          var _step11
 
           try {
-            for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-              var task = _step15.value
+            for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+              var task = _step11.value
 
               // 遍历任务信息
               if ($(task).find('i.fa-question').length > 0) {
@@ -4137,19 +3556,19 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }
             }
           } catch (err) {
-            _iterator15.e(err)
+            _iterator11.e(err)
           } finally {
-            _iterator15.f()
+            _iterator11.f()
           }
 
-          var _ref41 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
-          this.groups = _ref41[0]
-          this.twitters = _ref41[1]
-          this.facebooks = _ref41[2]
-          this.youtubes = _ref41[3]
-          this.discords = _ref41[4]
-          this.others = _ref41[5]
-          this.taskInfo.groups = _ref41[6]
+          var _ref31 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
+          this.groups = _ref31[0]
+          this.twitters = _ref31[1]
+          this.facebooks = _ref31[2]
+          this.youtubes = _ref31[3]
+          this.discords = _ref31[4]
+          this.others = _ref31[5]
+          this.taskInfo.groups = _ref31[6]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
@@ -4167,25 +3586,25 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }
       },
       do_task: function do_task () {
-        var _this30 = this
+        var _this25 = this
 
         this.updateSteamInfo(function () {
-          var _ref42 = [[], fuc.unique(_this30.twitters), fuc.unique(_this30.discords), fuc.unique(_this30.facebooks), fuc.unique(_this30.youtubes), fuc.unique(_this30.others), fuc.unique(_this30.links)]
-          var pro = _ref42[0]
-          var twitters = _ref42[1]
-          var discords = _ref42[2]
-          var facebooks = _ref42[3]
-          var youtubes = _ref42[4]
-          var others = _ref42[5]
-          var links = _ref42[6]
+          var _ref32 = [[], fuc.unique(_this25.twitters), fuc.unique(_this25.discords), fuc.unique(_this25.facebooks), fuc.unique(_this25.youtubes), fuc.unique(_this25.others), fuc.unique(_this25.links)]
+          var pro = _ref32[0]
+          var twitters = _ref32[1]
+          var discords = _ref32[2]
+          var facebooks = _ref32[3]
+          var youtubes = _ref32[4]
+          var others = _ref32[5]
+          var links = _ref32[6]
           var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
-          if (_this30.conf.fuck.joinSteamGroup && _this30.groups.length > 0) {
+          if (_this25.conf.fuck.joinSteamGroup && _this25.groups.length > 0) {
             pro.push(new Promise(function (resolve) {
               fuc.toggleActions({
                 website: 'gleam',
                 type: 'group',
-                elements: _this30.groups,
+                elements: _this25.groups,
                 resolve: resolve,
                 action: 'fuck'
               })
@@ -4194,20 +3613,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
           if (globalConf.other.autoOpen) {
             if (twitters.length > 0) {
-              var _iterator16 = _createForOfIteratorHelper(twitters)
-              var _step16
+              var _iterator12 = _createForOfIteratorHelper(twitters)
+              var _step12
 
               try {
-                for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-                  var twitter = _step16.value
+                for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+                  var twitter = _step12.value
                   var title = $(twitter).find('.entry-method-title').text().trim()
-                  var _ref43 = [fuc.echoLog({
+                  var _ref33 = [fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
                   }), $(twitter).find('a.twitter-button:contains(Follow)').attr('href'), $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')]
-                  var status = _ref43[0]
-                  var followButton = _ref43[1]
-                  var retweetButton = _ref43[2]
+                  var status = _ref33[0]
+                  var followButton = _ref33[1]
+                  var retweetButton = _ref33[2]
                   var button = followButton || retweetButton
 
                   if (button) {
@@ -4218,28 +3637,28 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   }
                 }
               } catch (err) {
-                _iterator16.e(err)
+                _iterator12.e(err)
               } finally {
-                _iterator16.f()
+                _iterator12.f()
               }
             }
 
             if (socals.length > 0) {
-              var _iterator17 = _createForOfIteratorHelper(socals)
-              var _step17
+              var _iterator13 = _createForOfIteratorHelper(socals)
+              var _step13
 
               try {
-                for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-                  var task = _step17.value
+                for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+                  var task = _step13.value
 
                   var _title2 = $(task).find('.entry-method-title').text().trim()
 
-                  var _ref44 = [fuc.echoLog({
+                  var _ref34 = [fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('doing'), ':').concat(_title2, '...<font></font></li>')
                   }), $(task).find('a.btn-info:first').attr('href')]
-                  var _status = _ref44[0]
-                  var _button = _ref44[1]
+                  var _status = _ref34[0]
+                  var _button = _ref34[1]
 
                   if (_button) {
                     window.open(_button, '_blank')
@@ -4250,25 +3669,25 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   }
                 }
               } catch (err) {
-                _iterator17.e(err)
+                _iterator13.e(err)
               } finally {
-                _iterator17.f()
+                _iterator13.f()
               }
             }
           }
 
-          if ((globalConf.other.autoOpen || _this30.conf.fuck.visit) && links.length > 0) {
+          if ((globalConf.other.autoOpen || _this25.conf.fuck.visit) && links.length > 0) {
             pro.push(new Promise(function (resolve) {
-              _this30.visit_link(links, 0, resolve)
+              _this25.visit_link(links, 0, resolve)
             }))
           }
 
-          var _iterator18 = _createForOfIteratorHelper(others)
-          var _step18
+          var _iterator14 = _createForOfIteratorHelper(others)
+          var _step14
 
           try {
-            for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
-              var other = _step18.value
+            for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+              var other = _step14.value
               var icon = $(other).find('.icon-wrapper i')
 
               if (icon.hasClass('fa-steam')) {
@@ -4287,9 +3706,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }
             }
           } catch (err) {
-            _iterator18.e(err)
+            _iterator14.e(err)
           } finally {
-            _iterator18.f()
+            _iterator14.f()
           }
 
           Promise.all(pro).finally(function () {
@@ -4297,7 +3716,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
             })
-            if (_this30.conf.fuck.verifyTask) _this30.verify(0)
+            if (_this25.conf.fuck.verifyTask) _this25.verify(0)
           })
         })
       },
@@ -4348,19 +3767,19 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }
       },
       remove: function remove () {
-        var _this31 = this
+        var _this26 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
           this.updateSteamInfo(function () {
-            if (_this31.conf.remove.leaveSteamGroup && _this31.taskInfo.groups.length > 0) {
+            if (_this26.conf.remove.leaveSteamGroup && _this26.taskInfo.groups.length > 0) {
               pro.push(new Promise(function (resolve) {
                 fuc.toggleActions({
                   website: 'gleam',
                   type: 'group',
-                  elements: _this31.taskInfo.groups,
+                  elements: _this26.taskInfo.groups,
                   resolve: resolve,
                   action: 'remove'
                 })
@@ -4381,12 +3800,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       visit_link: function visit_link (links, i, r) {
         if (i < links.length) {
           var title = $(links[i]).find('.entry-method-title').text().trim()
-          var _ref45 = [fuc.echoLog({
+          var _ref35 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
           }), $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()]
-          var status = _ref45[0]
-          var taskTime = _ref45[1]
+          var status = _ref35[0]
+          var taskTime = _ref35[1]
 
           if (taskTime) {
             var taskBtn = $(links[i]).find('a.btn-info')
@@ -4426,10 +3845,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         return window.location.pathname.replace(/\?.*/, '') || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this32 = this
+        var _this27 = this
 
         new Promise(function (resolve) {
-          if (_this32.taskInfo.groups.length > 0) {
+          if (_this27.taskInfo.groups.length > 0) {
             fuc.updateSteamInfo(resolve, 'community')
           } else {
             resolve(1)
@@ -4493,12 +3912,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         var currentoption = $('a.buttonenter.buttongiveaway')
 
         if (/join giveaway/gim.test(currentoption.text())) {
-          var _ref46 = [fuc.echoLog({
+          var _ref36 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
           }), this.do_task]
-          var status = _ref46[0]
-          var doTask = _ref46[1]
+          var status = _ref36[0]
+          var doTask = _ref36[1]
           fuc.httpRequest({
             url: currentoption.attr('href'),
             method: 'POST',
@@ -4549,16 +3968,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         })
 
         if (id.length === 2) {
-          var _ref47 = [$('#giveawaysjoined a[class*=promo]'), []]
-          var tasks = _ref47[0]
-          var _pro6 = _ref47[1]
+          var _ref37 = [$('#giveawaysjoined a[class*=promo]'), []]
+          var tasks = _ref37[0]
+          var _pro5 = _ref37[1]
 
-          var _iterator19 = _createForOfIteratorHelper(tasks)
-          var _step19
+          var _iterator15 = _createForOfIteratorHelper(tasks)
+          var _step15
 
           try {
-            var _loop11 = function _loop11 () {
-              var task = _step19.value
+            var _loop8 = function _loop8 () {
+              var task = _step15.value
               var promo = $(task)
 
               if (!promo.hasClass('buttonentered')) {
@@ -4568,7 +3987,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                 })
 
                 if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-                  _pro6.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo') + '/' + id[0]),
@@ -4603,7 +4022,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     })
                   }))
                 } else if (promo.hasClass('emailoptinpromo')) {
-                  _pro6.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
@@ -4639,7 +4058,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     })
                   }))
                 } else if (promo.hasClass('watchingpromo')) {
-                  _pro6.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     var data = fuc.getUrlQuery(promo.attr('href'))
                     data.ajax = 't'
                     $.ajax({
@@ -4674,7 +4093,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     })
                   }))
                 } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-                  _pro6.push(new Promise(function (resolve) {
+                  _pro5.push(new Promise(function (resolve) {
                     $.ajax({
                       type: 'POST',
                       url: urlPath(promo.attr('href')),
@@ -4714,16 +4133,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }
             }
 
-            for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-              _loop11()
+            for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+              _loop8()
             }
           } catch (err) {
-            _iterator19.e(err)
+            _iterator15.e(err)
           } finally {
-            _iterator19.f()
+            _iterator15.f()
           }
 
-          Promise.all(_pro6).finally(function () {
+          Promise.all(_pro5).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="warning">'.concat(getI18n('allTasksComplete'), '</font></li>')
@@ -4767,28 +4186,28 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref48 = [[], [], [], []]
-          this.tasks = _ref48[0]
-          this.groups = _ref48[1]
-          this.curators = _ref48[2]
-          this.links = _ref48[3]
-          var _ref49 = [fuc.echoLog({
+          var _ref38 = [[], [], [], []]
+          this.tasks = _ref38[0]
+          this.groups = _ref38[1]
+          this.curators = _ref38[2]
+          this.links = _ref38[3]
+          var _ref39 = [fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('.container_task')]
-          var status = _ref49[0]
-          var tasksContainer = _ref49[1]
+          var status = _ref39[0]
+          var tasksContainer = _ref39[1]
 
-          var _iterator20 = _createForOfIteratorHelper(tasksContainer)
-          var _step20
+          var _iterator16 = _createForOfIteratorHelper(tasksContainer)
+          var _step16
 
           try {
-            for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-              var task = _step20.value
+            for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+              var task = _step16.value
               // 遍历任务信息
-              var _ref51 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-              var taskDes = _ref51[0]
-              var verifyBtn = _ref51[1]
+              var _ref41 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+              var taskDes = _ref41[0]
+              var verifyBtn = _ref41[1]
 
               if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
                 // 加组任务
@@ -4824,10 +4243,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               if (verifyBtn.length > 0) {
                 // 任务验证信息
                 var ids = verifyBtn.attr('id').split('_')
-                var _ref52 = [ids[1], ids[2], ids[3]]
-                var provider = _ref52[0]
-                var taskRoute = _ref52[1]
-                var taskId = _ref52[2]
+                var _ref42 = [ids[1], ids[2], ids[3]]
+                var provider = _ref42[0]
+                var taskRoute = _ref42[1]
+                var taskId = _ref42[2]
                 this.tasks.push({
                   provider: provider,
                   taskRoute: taskRoute,
@@ -4837,18 +4256,18 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }
             }
           } catch (err) {
-            _iterator20.e(err)
+            _iterator16.e(err)
           } finally {
-            _iterator20.f()
+            _iterator16.f()
           }
 
-          var _ref50 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.links), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators), fuc.unique(this.tasks)]
-          this.groups = _ref50[0]
-          this.curators = _ref50[1]
-          this.links = _ref50[2]
-          this.taskInfo.groups = _ref50[3]
-          this.taskInfo.curators = _ref50[4]
-          this.tasks = _ref50[5]
+          var _ref40 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.links), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators), fuc.unique(this.tasks)]
+          this.groups = _ref40[0]
+          this.curators = _ref40[1]
+          this.links = _ref40[2]
+          this.taskInfo.groups = _ref40[3]
+          this.taskInfo.curators = _ref40[4]
+          this.tasks = _ref40[5]
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
@@ -4877,26 +4296,26 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }
       },
       do_task: function do_task () {
-        var _this33 = this
+        var _this28 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
-          var _ref54, pro, links, _iterator21, _step21, _loop12
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
+          var _ref44, pro, links, _iterator17, _step17, _loop9
 
-          return regeneratorRuntime.wrap(function _callee9$ (_context11) {
+          return regeneratorRuntime.wrap(function _callee7$ (_context9) {
             while (1) {
-              switch (_context11.prev = _context11.next) {
+              switch (_context9.prev = _context9.next) {
                 case 0:
-                  _ref54 = [[], fuc.unique(_this33.links)], pro = _ref54[0], links = _ref54[1]
-                  _context11.next = 3
-                  return _this33.toggleActions('fuck', pro)
+                  _ref44 = [[], fuc.unique(_this28.links)], pro = _ref44[0], links = _ref44[1]
+                  _context9.next = 3
+                  return _this28.toggleActions('fuck', pro)
 
                 case 3:
-                  if (_this33.conf.fuck.visitLink) {
-                    _iterator21 = _createForOfIteratorHelper(links)
+                  if (_this28.conf.fuck.visitLink) {
+                    _iterator17 = _createForOfIteratorHelper(links)
 
                     try {
-                      _loop12 = function _loop12 () {
-                        var link = _step21.value
+                      _loop9 = function _loop9 () {
+                        var link = _step17.value
                         pro.push(new Promise(function (resolve) {
                           fuc.visitLink(resolve, link.pageUrl, {
                             url: '/ajax/verifyTasks/webpage/clickedLink',
@@ -4906,20 +4325,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                               'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                             },
                             data: $.param({
-                              giveaway_slug: _this33.get_giveawayId(),
+                              giveaway_slug: _this28.get_giveawayId(),
                               giveaway_task_id: link.taskId
                             })
                           })
                         }))
                       }
 
-                      for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-                        _loop12()
+                      for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+                        _loop9()
                       }
                     } catch (err) {
-                      _iterator21.e(err)
+                      _iterator17.e(err)
                     } finally {
-                      _iterator21.f()
+                      _iterator17.f()
                     }
                   }
 
@@ -4928,37 +4347,37 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this33.conf.fuck.verifyTask) _this33.verify()
+                    if (_this28.conf.fuck.verifyTask) _this28.verify()
                   })
 
                 case 5:
                 case 'end':
-                  return _context11.stop()
+                  return _context9.stop()
               }
             }
-          }, _callee9)
+          }, _callee7)
         })))
       },
       verify: function verify () {
-        var _this34 = this
+        var _this29 = this
 
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var _pro7 = []
+          var _pro6 = []
 
-          var _iterator22 = _createForOfIteratorHelper(fuc.unique(this.tasks))
-          var _step22
+          var _iterator18 = _createForOfIteratorHelper(fuc.unique(this.tasks))
+          var _step18
 
           try {
-            var _loop13 = function _loop13 () {
-              var task = _step22.value
+            var _loop10 = function _loop10 () {
+              var task = _step18.value
               var status = fuc.echoLog({
                 type: 'custom',
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
 
-              _pro7.push(new Promise(function (resolve) {
+              _pro6.push(new Promise(function (resolve) {
                 fuc.httpRequest({
                   url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                   method: 'POST',
@@ -4968,7 +4387,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                   },
                   data: $.param({
-                    giveaway_slug: _this34.get_giveawayId(),
+                    giveaway_slug: _this29.get_giveawayId(),
                     giveaway_task_id: task.taskId
                   }),
                   onload: function onload (response) {
@@ -5024,16 +4443,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }))
             }
 
-            for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
-              _loop13()
+            for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+              _loop10()
             }
           } catch (err) {
-            _iterator22.e(err)
+            _iterator18.e(err)
           } finally {
-            _iterator22.f()
+            _iterator18.f()
           }
 
-          Promise.all(_pro7).finally(function () {
+          Promise.all(_pro6).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font><font class="warning">').concat(getI18n('doYourself'), '<a class="hclonely-google" href="javascript:void(0)" target="_self">').concat(getI18n('googleVerify'), '</a>').concat(getI18n('getKey'), '!</font></li>')
@@ -5049,19 +4468,19 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }
       },
       remove: function remove () {
-        var _this35 = this
+        var _this30 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-            return regeneratorRuntime.wrap(function _callee10$ (_context12) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
+            return regeneratorRuntime.wrap(function _callee8$ (_context10) {
               while (1) {
-                switch (_context12.prev = _context12.next) {
+                switch (_context10.prev = _context10.next) {
                   case 0:
-                    _context12.next = 2
-                    return _this35.toggleActions('remove', pro)
+                    _context10.next = 2
+                    return _this30.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -5073,20 +4492,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                   case 3:
                   case 'end':
-                    return _context12.stop()
+                    return _context10.stop()
                 }
               }
-            }, _callee10)
+            }, _callee8)
           })))
         } else {
           this.get_tasks('remove')
         }
       },
       toggleActions: function toggleActions (action, pro) {
-        var _ref56 = action === 'fuck' ? [this.groups, this.curators] : [this.taskInfo.groups, this.taskInfo.curators]
-        var _ref57 = _slicedToArray(_ref56, 2)
-        var groups = _ref57[0]
-        var curators = _ref57[1]
+        var _ref46 = action === 'fuck' ? [this.groups, this.curators] : [this.taskInfo.groups, this.taskInfo.curators]
+        var _ref47 = _slicedToArray(_ref46, 2)
+        var groups = _ref47[0]
+        var curators = _ref47[1]
 
         if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
           pro.push(new Promise(function (resolve) {
@@ -5116,16 +4535,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         return $('#giveawaySlug').val() || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this36 = this
+        var _this31 = this
 
         new Promise(function (resolve) {
-          if (_this36.taskInfo.groups.length > 0) {
-            if (_this36.taskInfo.curators.length > 0) {
+          if (_this31.taskInfo.groups.length > 0) {
+            if (_this31.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this36.taskInfo.curators.length > 0) {
+          } else if (_this31.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -5182,23 +4601,23 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       },
       get_tasks: function get_tasks () {
         var _arguments2 = arguments
-        var _this37 = this
+        var _this32 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
-          var type, _ref58, items, maxPoint, myPoint, i, item, needPoints
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
+          var type, _ref48, items, maxPoint, myPoint, i, item, needPoints
 
-          return regeneratorRuntime.wrap(function _callee12$ (_context14) {
+          return regeneratorRuntime.wrap(function _callee10$ (_context12) {
             while (1) {
-              switch (_context14.prev = _context14.next) {
+              switch (_context12.prev = _context12.next) {
                 case 0:
                   type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
-                  _ref58 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this37.maxPoint()], items = _ref58[0], maxPoint = _ref58[1]
-                  myPoint = _this37.myPoints
+                  _ref48 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this32.maxPoint()], items = _ref48[0], maxPoint = _ref48[1]
+                  myPoint = _this32.myPoints
                   i = 0
 
                 case 4:
                   if (!(i < items.length)) {
-                    _context14.next = 20
+                    _context12.next = 20
                     break
                   }
 
@@ -5206,7 +4625,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                    _context14.next = 11
+                    _context12.next = 11
                     break
                   }
 
@@ -5214,12 +4633,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                   })
-                  _context14.next = 17
+                  _context12.next = 17
                   break
 
                 case 11:
                   if (!(type === 'points' && !needPoints)) {
-                    _context14.next = 15
+                    _context12.next = 15
                     break
                   }
 
@@ -5227,33 +4646,33 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                   })
-                  _context14.next = 17
+                  _context12.next = 17
                   break
 
                 case 15:
                   if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                    _context14.next = 17
+                    _context12.next = 17
                     break
                   }
 
-                  return _context14.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
-                    var _ref59, status, a, giveawayId
+                  return _context12.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
+                    var _ref49, status, a, giveawayId
 
-                    return regeneratorRuntime.wrap(function _callee11$ (_context13) {
+                    return regeneratorRuntime.wrap(function _callee9$ (_context11) {
                       while (1) {
-                        switch (_context13.prev = _context13.next) {
+                        switch (_context11.prev = _context11.next) {
                           case 0:
-                            _ref59 = [fuc.echoLog({
+                            _ref49 = [fuc.echoLog({
                               type: 'custom',
                               text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                            }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref59[0], a = _ref59[1]
+                            }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref49[0], a = _ref49[1]
 
                             if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                               giveawayId = a.attr('onclick').match(/[\d]+/)
                               if (giveawayId) checkUser(giveawayId[0])
                             }
 
-                            _context13.next = 4
+                            _context11.next = 4
                             return new Promise(function (resolve) {
                               fuc.httpRequest({
                                 url: a.attr('href'),
@@ -5286,15 +4705,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                           case 4:
                           case 'end':
-                            return _context13.stop()
+                            return _context11.stop()
                         }
                       }
-                    }, _callee11)
+                    }, _callee9)
                   })(), 't0', 17)
 
                 case 17:
                   i++
-                  _context14.next = 4
+                  _context12.next = 4
                   break
 
                 case 20:
@@ -5305,10 +4724,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                 case 21:
                 case 'end':
-                  return _context14.stop()
+                  return _context12.stop()
               }
             }
-          }, _callee12)
+          }, _callee10)
         }))()
       },
       verify: function verify () {
@@ -5355,35 +4774,35 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         this.get_tasks('do_task')
       },
       get_tasks: function get_tasks () {
-        var _this38 = this
+        var _this33 = this
 
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-        var _ref60 = [fuc.echoLog({
+        var _ref50 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#steps tbody tr')]
-        var status = _ref60[0]
-        var steps = _ref60[1]
+        var status = _ref50[0]
+        var steps = _ref50[1]
 
         for (var i = 0; i < steps.length; i++) {
           if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
         }
 
         if (callback === 'do_task') {
-          var _ref61 = [[], []]
-          this.groups = _ref61[0]
-          this.curators = _ref61[1]
-          var _ref62 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-          var taskInfoHistory = _ref62[0]
-          var _pro8 = _ref62[1]
+          var _ref51 = [[], []]
+          this.groups = _ref51[0]
+          this.curators = _ref51[1]
+          var _ref52 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+          var taskInfoHistory = _ref52[0]
+          var _pro7 = _ref52[1]
           if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-          var _iterator23 = _createForOfIteratorHelper(steps)
-          var _step23
+          var _iterator19 = _createForOfIteratorHelper(steps)
+          var _step19
 
           try {
-            for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
-              var step = _step23.value
+            for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+              var step = _step19.value
 
               if ($(step).find('span:contains(Success)').length === 0) {
                 if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -5407,7 +4826,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   (function () {
                     var link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro8.push(new Promise(function (r) {
+                    _pro7.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5415,9 +4834,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                           var _groupName2 = data.finalUrl.match(/groups\/(.+)\/?/)
 
                           if (_groupName2) {
-                            _this38.groups.push(_groupName2[1])
+                            _this33.groups.push(_groupName2[1])
 
-                            _this38.taskInfo.groups.push(_groupName2[1])
+                            _this33.taskInfo.groups.push(_groupName2[1])
                           }
                         }
 
@@ -5431,36 +4850,36 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
               }
             }
           } catch (err) {
-            _iterator23.e(err)
+            _iterator19.e(err)
           } finally {
-            _iterator23.f()
+            _iterator19.f()
           }
 
-          if (_pro8.length > 0) {
-            Promise.all(_pro8).finally(function () {
-              var _ref63 = [fuc.unique(_this38.groups), fuc.unique(_this38.curators), fuc.unique(_this38.taskInfo.groups), fuc.unique(_this38.taskInfo.curators)]
-              _this38.groups = _ref63[0]
-              _this38.curators = _ref63[1]
-              _this38.taskInfo.groups = _ref63[2]
-              _this38.taskInfo.curators = _ref63[3]
-              GM_setValue('taskInfo[' + window.location.host + _this38.get_giveawayId() + ']', _this38.taskInfo)
+          if (_pro7.length > 0) {
+            Promise.all(_pro7).finally(function () {
+              var _ref53 = [fuc.unique(_this33.groups), fuc.unique(_this33.curators), fuc.unique(_this33.taskInfo.groups), fuc.unique(_this33.taskInfo.curators)]
+              _this33.groups = _ref53[0]
+              _this33.curators = _ref53[1]
+              _this33.taskInfo.groups = _ref53[2]
+              _this33.taskInfo.curators = _ref53[3]
+              GM_setValue('taskInfo[' + window.location.host + _this33.get_giveawayId() + ']', _this33.taskInfo)
 
-              if (_this38.groups.length > 0 || _this38.curators.length > 0) {
-                _this38.do_task()
+              if (_this33.groups.length > 0 || _this33.curators.length > 0) {
+                _this33.do_task()
               } else {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                 })
-                if (_this38.conf.fuck.verifyTask) _this38.verify()
+                if (_this33.conf.fuck.verifyTask) _this33.verify()
               }
             })
           } else {
-            var _ref64 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
-            this.groups = _ref64[0]
-            this.curators = _ref64[1]
-            this.taskInfo.groups = _ref64[2]
-            this.taskInfo.curators = _ref64[3]
+            var _ref54 = [fuc.unique(this.groups), fuc.unique(this.curators), fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+            this.groups = _ref54[0]
+            this.curators = _ref54[1]
+            this.taskInfo.groups = _ref54[2]
+            this.taskInfo.curators = _ref54[3]
             GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
 
             if (this.groups.length > 0 || this.curators.length > 0) {
@@ -5478,12 +4897,12 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           var checks = $('#steps tbody a[id^=check]')
 
           if (checks.length > 0) {
-            var _iterator24 = _createForOfIteratorHelper(checks)
-            var _step24
+            var _iterator20 = _createForOfIteratorHelper(checks)
+            var _step20
 
             try {
-              for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-                var check = _step24.value
+              for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+                var check = _step20.value
                 var id = $(check).attr('id').match(/[\d]+/)
                 if (id) {
                   this.tasks.push({
@@ -5493,9 +4912,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                 }
               }
             } catch (err) {
-              _iterator24.e(err)
+              _iterator20.e(err)
             } finally {
-              _iterator24.f()
+              _iterator20.f()
             }
 
             this.verify(true)
@@ -5512,32 +4931,32 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
             this.taskInfo = taskInfo
             this.remove(true)
           } else {
-            var _pro9 = []
+            var _pro8 = []
 
-            var _iterator25 = _createForOfIteratorHelper(steps)
-            var _step25
+            var _iterator21 = _createForOfIteratorHelper(steps)
+            var _step21
 
             try {
-              for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-                var _step26 = _step25.value
+              for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+                var _step22 = _step21.value
 
-                if ($(_step26).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                  var _link2 = $(_step26).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                if ($(_step22).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                  var _link2 = $(_step22).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
                   var _curatorId = _link2.match(/curator\/([\d]+)/)
 
                   if (_curatorId) this.taskInfo.curators.push(_curatorId[1])
-                } else if ($(_step26).find("a[href*='steampowered.com/groups/']").length > 0) {
-                  var _link3 = $(_step26).find("a[href*='steampowered.com/groups/']").attr('href')
+                } else if ($(_step22).find("a[href*='steampowered.com/groups/']").length > 0) {
+                  var _link3 = $(_step22).find("a[href*='steampowered.com/groups/']").attr('href')
 
                   var _groupName3 = _link3.match(/groups\/(.+)\/?/)
 
                   if (_groupName3) this.taskInfo.groups.push(_groupName3[1])
-                } else if ($(_step26).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                } else if ($(_step22).find("a[href*='steamcommunity.com/gid']").length > 0) {
                   (function () {
-                    var link = $(_step26).find("a[href*='steamcommunity.com/gid']").attr('href')
+                    var link = $(_step22).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro9.push(new Promise(function (r) {
+                    _pro8.push(new Promise(function (r) {
                       new Promise(function (resolve) {
                         fuc.getFinalUrl(resolve, link)
                       }).then(function (data) {
@@ -5545,7 +4964,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                           var _groupName4 = data.finalUrl.match(/groups\/(.+)\/?/)
 
                           if (_groupName4) {
-                            _this38.taskInfo.groups.push(_groupName4[1])
+                            _this33.taskInfo.groups.push(_groupName4[1])
                           }
                         }
 
@@ -5556,20 +4975,20 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                 }
               }
             } catch (err) {
-              _iterator25.e(err)
+              _iterator21.e(err)
             } finally {
-              _iterator25.f()
+              _iterator21.f()
             }
 
-            if (_pro9.length > 0) {
-              Promise.all(_pro9).finally(function () {
-                var _ref65 = [fuc.unique(_this38.taskInfo.groups), fuc.unique(_this38.taskInfo.curators)]
-                _this38.taskInfo.groups = _ref65[0]
-                _this38.taskInfo.curators = _ref65[1]
-                GM_setValue('taskInfo[' + window.location.host + _this38.get_giveawayId() + ']', _this38.taskInfo)
+            if (_pro8.length > 0) {
+              Promise.all(_pro8).finally(function () {
+                var _ref55 = [fuc.unique(_this33.taskInfo.groups), fuc.unique(_this33.taskInfo.curators)]
+                _this33.taskInfo.groups = _ref55[0]
+                _this33.taskInfo.curators = _ref55[1]
+                GM_setValue('taskInfo[' + window.location.host + _this33.get_giveawayId() + ']', _this33.taskInfo)
 
-                if (_this38.taskInfo.groups.length > 0 || _this38.taskInfo.curators.length > 0) {
-                  _this38.remove(true)
+                if (_this33.taskInfo.groups.length > 0 || _this33.taskInfo.curators.length > 0) {
+                  _this33.remove(true)
                 } else {
                   fuc.echoLog({
                     type: 'custom',
@@ -5578,9 +4997,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                 }
               })
             } else {
-              var _ref66 = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
-              this.taskInfo.groups = _ref66[0]
-              this.taskInfo.curators = _ref66[1]
+              var _ref56 = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+              this.taskInfo.groups = _ref56[0]
+              this.taskInfo.curators = _ref56[1]
               GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
 
               if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
@@ -5604,17 +5023,17 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         if (debug) console.log(this)
       },
       do_task: function do_task () {
-        var _this39 = this
+        var _this34 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 () {
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
           var pro
-          return regeneratorRuntime.wrap(function _callee13$ (_context15) {
+          return regeneratorRuntime.wrap(function _callee11$ (_context13) {
             while (1) {
-              switch (_context15.prev = _context15.next) {
+              switch (_context13.prev = _context13.next) {
                 case 0:
                   pro = []
-                  _context15.next = 3
-                  return _this39.toggleActions('fuck', pro)
+                  _context13.next = 3
+                  return _this34.toggleActions('fuck', pro)
 
                 case 3:
                   Promise.all(pro).finally(function () {
@@ -5622,51 +5041,51 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this39.conf.fuck.verifyTask) _this39.verify()
+                    if (_this34.conf.fuck.verifyTask) _this34.verify()
                   })
 
                 case 4:
                 case 'end':
-                  return _context15.stop()
+                  return _context13.stop()
               }
             }
-          }, _callee13)
+          }, _callee11)
         })))
       },
       verify: function verify () {
-        var _this40 = this
+        var _this35 = this
 
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
         if (verify) {
-          var _pro10 = []
+          var _pro9 = []
 
-          var _iterator26 = _createForOfIteratorHelper(fuc.unique(this.tasks))
-          var _step27
+          var _iterator22 = _createForOfIteratorHelper(fuc.unique(this.tasks))
+          var _step23
 
           try {
-            var _loop14 = function _loop14 () {
-              var task = _step27.value
+            var _loop11 = function _loop11 () {
+              var task = _step23.value
               var status = fuc.echoLog({
                 type: 'custom',
                 text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
               })
 
-              _pro10.push(new Promise(function (resolve) {
-                _this40.checkStep(task.id, resolve, status)
+              _pro9.push(new Promise(function (resolve) {
+                _this35.checkStep(task.id, resolve, status)
               }))
             }
 
-            for (_iterator26.s(); !(_step27 = _iterator26.n()).done;) {
-              _loop14()
+            for (_iterator22.s(); !(_step23 = _iterator22.n()).done;) {
+              _loop11()
             }
           } catch (err) {
-            _iterator26.e(err)
+            _iterator22.e(err)
           } finally {
-            _iterator26.f()
+            _iterator22.f()
           }
 
-          Promise.all(_pro10).finally(function () {
+          Promise.all(_pro9).finally(function () {
             fuc.echoLog({
               type: 'custom',
               text: '<li><font class="success">'.concat(getI18n('prysAllTasksComplete'), '</font></li>')
@@ -5718,19 +5137,19 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         })
       },
       remove: function remove () {
-        var _this41 = this
+        var _this36 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
-            return regeneratorRuntime.wrap(function _callee14$ (_context16) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
+            return regeneratorRuntime.wrap(function _callee12$ (_context14) {
               while (1) {
-                switch (_context16.prev = _context16.next) {
+                switch (_context14.prev = _context14.next) {
                   case 0:
-                    _context16.next = 2
-                    return _this41.toggleActions('remove', pro)
+                    _context14.next = 2
+                    return _this36.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -5742,10 +5161,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                   case 3:
                   case 'end':
-                    return _context16.stop()
+                    return _context14.stop()
                 }
               }
-            }, _callee14)
+            }, _callee12)
           })))
         } else {
           this.get_tasks('remove')
@@ -5784,16 +5203,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this42 = this
+        var _this37 = this
 
         new Promise(function (resolve) {
-          if (_this42.taskInfo.groups.length > 0) {
-            if (_this42.taskInfo.curators.length > 0) {
+          if (_this37.taskInfo.groups.length > 0) {
+            if (_this37.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this42.taskInfo.curators.length > 0) {
+          } else if (_this37.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -5837,251 +5256,6 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
     }
-    var spoune = {
-      test: function test () {
-        return window.location.host.includes('spoune')
-      },
-      fuck: function fuck () {
-        this.get_tasks()
-      },
-      get_tasks: function get_tasks () {
-        var _ref69 = [fuc.echoLog({
-          type: 'custom',
-          text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
-        }), $('#GiveawayTasks button')]
-        var status = _ref69[0]
-        var giveawayTasks = _ref69[1]
-
-        var _iterator27 = _createForOfIteratorHelper(giveawayTasks)
-        var _step28
-
-        try {
-          for (_iterator27.s(); !(_step28 = _iterator27.n()).done;) {
-            var task = _step28.value
-            var taskClick = $(task).attr('onclick')
-
-            if (taskClick) {
-              var taskId = taskClick.match(/loadTask\(([\d]+)/)
-
-              if (taskId) {
-                this.tasks.push({
-                  id: taskId[1],
-                  text: $(task).text()
-                })
-              } else {
-                fuc.echoLog({
-                  type: 'custom',
-                  text: '<li><font class="error">'.concat(getI18n('getTaskIdFailed', $(task).text()), '</font></li>')
-                })
-              }
-            } else {
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="error">'.concat(getI18n('getTaskIdFailed', $(task).text()), '</font></li>')
-              })
-            }
-          }
-        } catch (err) {
-          _iterator27.e(err)
-        } finally {
-          _iterator27.f()
-        }
-
-        status.warning('Complete')
-
-        if (this.tasks.length > 0) {
-          this.verify()
-        } else {
-          fuc.echoLog({
-            type: 'custom',
-            text: '<li><font class="warning">'.concat(getI18n('noAutoFinish'), '</font></li>')
-          })
-        }
-      },
-      verify: function verify (_ref70) {
-        var _this43 = this
-
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 () {
-          var arr, i, end, tasks, _loop15, _i3
-
-          return regeneratorRuntime.wrap(function _callee15$ (_context18) {
-            while (1) {
-              switch (_context18.prev = _context18.next) {
-                case 0:
-                  arr = _ref70.arr, i = _ref70.i, end = _ref70.end
-                  tasks = fuc.unique(_this43.tasks)
-                  _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 (_i3) {
-                    var task, status
-                    return regeneratorRuntime.wrap(function _loop15$ (_context17) {
-                      while (1) {
-                        switch (_context17.prev = _context17.next) {
-                          case 0:
-                            task = tasks[_i3]
-                            status = fuc.echoLog({
-                              type: 'custom',
-                              text: '<li>'.concat(getI18n('doing')).concat(task.text, '...<font></font></li>')
-                            })
-                            _context17.next = 4
-                            return new Promise(function (resolve) {
-                              fuc.httpRequest({
-                                url: '/controller.php?taskDetail='.concat(task.id, '&show'),
-                                method: 'get',
-                                onload: function onload (response) {
-                                  if (debug) console.log(response)
-
-                                  if (response.status === 200) {
-                                    var src = response.responseText.match(/src="\.([\w\W]*?)">/)
-
-                                    if (src) {
-                                      fuc.httpRequest({
-                                        url: src[1],
-                                        method: 'get',
-                                        onload: function onload (response) {
-                                          if (debug) console.log(response)
-
-                                          if (response.status === 200) {
-                                            var href = response.responseText.match(/href="\.(\/verify[\w\W]*?)"/) || response.responseText.match(/href="\.(\/steamgroup[\w\W]*?)"/)
-
-                                            if (href) {
-                                              fuc.httpRequest({
-                                                url: '/werbung' + href[1],
-                                                method: 'get',
-                                                onload: function onload (response) {
-                                                  if (debug) console.log(response)
-
-                                                  if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
-                                                    status.success()
-                                                    resolve()
-                                                  } else {
-                                                    var _href = response.responseText.match(/href="\.(\/verify[\w\W]*?)"/) || response.responseText.match(/href="\.(\/steamgroup[\w\W]*?)"/)
-
-                                                    if (_href) {
-                                                      fuc.httpRequest({
-                                                        url: '/werbung' + _href[1],
-                                                        method: 'get',
-                                                        onload: function onload (response) {
-                                                          if (debug) console.log(response)
-
-                                                          if (response.status === 200 && /Task.*completed/gim.test(response.responseText)) {
-                                                            status.success()
-                                                          } else {
-                                                            status.error('Error:' + (response.statusText || response.status))
-                                                          }
-
-                                                          resolve()
-                                                        },
-                                                        r: resolve,
-                                                        status: status
-                                                      })
-                                                    } else {
-                                                      status.error('Error:' + (response.statusText || response.status))
-                                                      resolve()
-                                                    }
-                                                  }
-                                                },
-                                                r: resolve,
-                                                status: status
-                                              })
-                                            } else {
-                                              status.error('Error:' + getI18n('getUrlFailed', '2'))
-                                              resolve()
-                                            }
-                                          } else {
-                                            status.error('Error:' + (response.statusText || response.status))
-                                            resolve()
-                                          }
-                                        },
-                                        r: resolve,
-                                        status: status
-                                      })
-                                    } else {
-                                      status.error('Error:' + getI18n('getUrlFailed', '1'))
-                                      resolve()
-                                    }
-                                  } else {
-                                    status.error('Error:' + (response.statusText || response.status))
-                                    resolve()
-                                  }
-                                },
-                                r: resolve,
-                                status: status
-                              })
-                            }).then(function () {
-                              return true
-                            }).catch(function () {
-                              return false
-                            })
-
-                          case 4:
-                          case 'end':
-                            return _context17.stop()
-                        }
-                      }
-                    }, _loop15)
-                  })
-                  _i3 = 0
-
-                case 4:
-                  if (!(_i3 < tasks.length)) {
-                    _context18.next = 9
-                    break
-                  }
-
-                  return _context18.delegateYield(_loop15(_i3), 't0', 6)
-
-                case 6:
-                  _i3++
-                  _context18.next = 4
-                  break
-
-                case 9:
-                  fuc.echoLog({
-                    type: 'custom',
-                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font>\uFF0C<font class="warning">').concat(getI18n('finishSelf'), '</font></li>')
-                  })
-
-                case 10:
-                case 'end':
-                  return _context18.stop()
-              }
-            }
-          }, _callee15)
-        }))()
-      },
-      checkLeft: function checkLeft () {
-        var checkLeft = setInterval(function () {
-          if ($('#keysAvailable').length > 0) {
-            clearInterval(checkLeft)
-
-            if ($('#keysAvailable').text() === '0') {
-              Swal.fire({
-                icon: 'warning',
-                title: getI18n('notice'),
-                text: getI18n('noKeysLeft'),
-                confirmButtonText: getI18n('confirm'),
-                cancelButtonText: getI18n('cancel'),
-                showCancelButton: true
-              }).then(function (result) {
-                if (result.value) {
-                  window.close()
-                }
-              })
-            }
-          }
-        }, 500)
-      },
-      tasks: [],
-      // 任务信息
-      setting: {
-        verify: {
-          show: false
-        },
-        remove: {
-          show: false
-        }
-      },
-      conf: (config === null || config === void 0 ? void 0 : (_config$spoune = config.spoune) === null || _config$spoune === void 0 ? void 0 : _config$spoune.enable) ? config.spoune : globalConf
-    }
     var takekey = {
       test: function test () {
         return window.location.host.includes('takekey')
@@ -6090,7 +5264,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         this.get_tasks('do_task')
       },
       get_tasks: function get_tasks () {
-        var _this44 = this
+        var _this38 = this
 
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
         var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
@@ -6099,37 +5273,37 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
           this.remove(true)
         } else {
-          var _ref71 = [[], [], [], []]
-          this.tasks = _ref71[0]
-          this.groups = _ref71[1]
-          this.curators = _ref71[2]
-          this.links = _ref71[3]
-          var _ref72 = [[], fuc.echoLog({
+          var _ref59 = [[], [], [], []]
+          this.tasks = _ref59[0]
+          this.groups = _ref59[1]
+          this.curators = _ref59[2]
+          this.links = _ref59[3]
+          var _ref60 = [[], fuc.echoLog({
             type: 'custom',
             text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
           }), $('#usl>div')]
-          var _pro11 = _ref72[0]
-          var status = _ref72[1]
-          var tasksContainer = _ref72[2]
+          var _pro10 = _ref60[0]
+          var status = _ref60[1]
+          var tasksContainer = _ref60[2]
 
-          var _iterator28 = _createForOfIteratorHelper(tasksContainer)
-          var _step29
+          var _iterator23 = _createForOfIteratorHelper(tasksContainer)
+          var _step24
 
           try {
-            var _loop16 = function _loop16 () {
-              var task = _step29.value
+            var _loop12 = function _loop12 () {
+              var task = _step24.value
 
               // 遍历任务信息
-              _this44.tasks.push(task)
+              _this38.tasks.push(task)
 
-              var _ref74 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-              var icon = _ref74[0]
-              var link = _ref74[1]
-              var id = _ref74[2]
+              var _ref62 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
+              var icon = _ref62[0]
+              var link = _ref62[1]
+              var id = _ref62[2]
 
               if (icon.hasClass('fa-steam')) {
                 if (link && /gid\/[\d]+/.test(link)) {
-                  _pro11.push(new Promise(function (r) {
+                  _pro10.push(new Promise(function (r) {
                     new Promise(function (resolve) {
                       fuc.getFinalUrl(resolve, link)
                     }).then(function (data) {
@@ -6137,9 +5311,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                         var groupName = data.finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
 
                         if (groupName) {
-                          _this44.groups.push(groupName)
+                          _this38.groups.push(groupName)
 
-                          _this44.taskInfo.groups.push(groupName)
+                          _this38.taskInfo.groups.push(groupName)
 
                           r(1)
                         } else {
@@ -6154,48 +5328,48 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   }))
                 }
               } else if (icon.hasClass('fa-link')) {
-                _this44.links.push(id)
+                _this38.links.push(id)
               } else if (icon.hasClass('fa-vk')) {
-                _this44.vks.push(link)
+                _this38.vks.push(link)
               } else {
-                _this44.others.push(icon)
+                _this38.others.push(icon)
               }
             }
 
-            for (_iterator28.s(); !(_step29 = _iterator28.n()).done;) {
-              _loop16()
+            for (_iterator23.s(); !(_step24 = _iterator23.n()).done;) {
+              _loop12()
             }
           } catch (err) {
-            _iterator28.e(err)
+            _iterator23.e(err)
           } finally {
-            _iterator28.f()
+            _iterator23.f()
           }
 
-          Promise.all(_pro11).finally(function () {
-            var _ref73 = [fuc.unique(_this44.groups), fuc.unique(_this44.curators), fuc.unique(_this44.links), fuc.unique(_this44.others), fuc.unique(_this44.taskInfo.groups), fuc.unique(_this44.taskInfo.curators), fuc.unique(_this44.tasks)]
-            _this44.groups = _ref73[0]
-            _this44.curators = _ref73[1]
-            _this44.links = _ref73[2]
-            _this44.others = _ref73[3]
-            _this44.taskInfo.groups = _ref73[4]
-            _this44.taskInfo.curators = _ref73[5]
-            _this44.tasks = _ref73[6]
-            GM_setValue('taskInfo[' + window.location.host + _this44.get_giveawayId() + ']', _this44.taskInfo)
+          Promise.all(_pro10).finally(function () {
+            var _ref61 = [fuc.unique(_this38.groups), fuc.unique(_this38.curators), fuc.unique(_this38.links), fuc.unique(_this38.others), fuc.unique(_this38.taskInfo.groups), fuc.unique(_this38.taskInfo.curators), fuc.unique(_this38.tasks)]
+            _this38.groups = _ref61[0]
+            _this38.curators = _ref61[1]
+            _this38.links = _ref61[2]
+            _this38.others = _ref61[3]
+            _this38.taskInfo.groups = _ref61[4]
+            _this38.taskInfo.curators = _ref61[5]
+            _this38.tasks = _ref61[6]
+            GM_setValue('taskInfo[' + window.location.host + _this38.get_giveawayId() + ']', _this38.taskInfo)
             status.success()
-            if (debug) console.log(_this44)
+            if (debug) console.log(_this38)
 
             if (callback === 'do_task') {
-              if (_this44.tasks.length === 0) {
+              if (_this38.tasks.length === 0) {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                 })
-                if (_this44.conf.fuck.verifyTask) _this44.verify()
+                if (_this38.conf.fuck.verifyTask) _this38.verify()
               } else {
-                _this44.do_task()
+                _this38.do_task()
               }
             } else {
-              !fuc.isEmptyObjArr(_this44.taskInfo) ? _this44.remove(true) : fuc.echoLog({
+              !fuc.isEmptyObjArr(_this38.taskInfo) ? _this38.remove(true) : fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
               })
@@ -6204,26 +5378,26 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }
       },
       do_task: function do_task () {
-        var _this45 = this
+        var _this39 = this
 
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee16 () {
-          var _ref76, pro, links, others, vks, _iterator29, _step30, _loop17, _iterator30, _step31, vk, _iterator31, _step32, other
+        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 () {
+          var _ref64, pro, links, others, vks, _iterator24, _step25, _loop13, _iterator25, _step26, vk, _iterator26, _step27, other
 
-          return regeneratorRuntime.wrap(function _callee16$ (_context19) {
+          return regeneratorRuntime.wrap(function _callee13$ (_context15) {
             while (1) {
-              switch (_context19.prev = _context19.next) {
+              switch (_context15.prev = _context15.next) {
                 case 0:
-                  _ref76 = [[], fuc.unique(_this45.links), fuc.unique(_this45.others), fuc.unique(_this45.vks)], pro = _ref76[0], links = _ref76[1], others = _ref76[2], vks = _ref76[3]
-                  _context19.next = 3
-                  return _this45.toggleActions('fuck', pro)
+                  _ref64 = [[], fuc.unique(_this39.links), fuc.unique(_this39.others), fuc.unique(_this39.vks)], pro = _ref64[0], links = _ref64[1], others = _ref64[2], vks = _ref64[3]
+                  _context15.next = 3
+                  return _this39.toggleActions('fuck', pro)
 
                 case 3:
-                  if (_this45.conf.fuck.visit) {
-                    _iterator29 = _createForOfIteratorHelper(links)
+                  if (_this39.conf.fuck.visit) {
+                    _iterator24 = _createForOfIteratorHelper(links)
 
                     try {
-                      _loop17 = function _loop17 () {
-                        var link = _step30.value
+                      _loop13 = function _loop13 () {
+                        var link = _step25.value
                         var a = $("a[id='".concat(link, "']")).attr('onclick', 'return false;')
                         a[0].click()
                         a.removeAttr('onclick')
@@ -6232,45 +5406,45 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                         }))
                       }
 
-                      for (_iterator29.s(); !(_step30 = _iterator29.n()).done;) {
-                        _loop17()
+                      for (_iterator24.s(); !(_step25 = _iterator24.n()).done;) {
+                        _loop13()
                       }
                     } catch (err) {
-                      _iterator29.e(err)
+                      _iterator24.e(err)
                     } finally {
-                      _iterator29.f()
+                      _iterator24.f()
                     }
                   }
 
                   if (globalConf.other.autoOpen) {
-                    _iterator30 = _createForOfIteratorHelper(vks)
+                    _iterator25 = _createForOfIteratorHelper(vks)
 
                     try {
-                      for (_iterator30.s(); !(_step31 = _iterator30.n()).done;) {
-                        vk = _step31.value
+                      for (_iterator25.s(); !(_step26 = _iterator25.n()).done;) {
+                        vk = _step26.value
                         window.open(vk, '_blank')
                       }
                     } catch (err) {
-                      _iterator30.e(err)
+                      _iterator25.e(err)
                     } finally {
-                      _iterator30.f()
+                      _iterator25.f()
                     }
                   }
 
-                  _iterator31 = _createForOfIteratorHelper(others)
+                  _iterator26 = _createForOfIteratorHelper(others)
 
                   try {
-                    for (_iterator31.s(); !(_step32 = _iterator31.n()).done;) {
-                      other = _step32.value
+                    for (_iterator26.s(); !(_step27 = _iterator26.n()).done;) {
+                      other = _step27.value
                       fuc.echoLog({
                         type: 'custom',
                         text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat($(other).attr('class'), '</font></li>')
                       })
                     }
                   } catch (err) {
-                    _iterator31.e(err)
+                    _iterator26.e(err)
                   } finally {
-                    _iterator31.f()
+                    _iterator26.f()
                   }
 
                   Promise.all(pro).finally(function () {
@@ -6278,15 +5452,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this45.conf.fuck.verifyTask) _this45.verify()
+                    if (_this39.conf.fuck.verifyTask) _this39.verify()
                   })
 
                 case 8:
                 case 'end':
-                  return _context19.stop()
+                  return _context15.stop()
               }
             }
-          }, _callee16)
+          }, _callee13)
         })))
       },
       verify: function verify () {
@@ -6295,19 +5469,19 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         }, 1000)
       },
       remove: function remove () {
-        var _this46 = this
+        var _this40 = this
 
         var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
         var pro = []
 
         if (remove) {
-          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 () {
-            return regeneratorRuntime.wrap(function _callee17$ (_context20) {
+          this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
+            return regeneratorRuntime.wrap(function _callee14$ (_context16) {
               while (1) {
-                switch (_context20.prev = _context20.next) {
+                switch (_context16.prev = _context16.next) {
                   case 0:
-                    _context20.next = 2
-                    return _this46.toggleActions('remove', pro)
+                    _context16.next = 2
+                    return _this40.toggleActions('remove', pro)
 
                   case 2:
                     Promise.all(pro).finally(function () {
@@ -6319,10 +5493,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                   case 3:
                   case 'end':
-                    return _context20.stop()
+                    return _context16.stop()
                 }
               }
-            }, _callee17)
+            }, _callee14)
           })))
         } else {
           this.get_tasks('remove')
@@ -6348,16 +5522,16 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this47 = this
+        var _this41 = this
 
         new Promise(function (resolve) {
-          if (_this47.taskInfo.groups.length > 0) {
-            if (_this47.taskInfo.curators.length > 0) {
+          if (_this41.taskInfo.groups.length > 0) {
+            if (_this41.taskInfo.curators.length > 0) {
               fuc.updateSteamInfo(resolve, 'all')
             } else {
               fuc.updateSteamInfo(resolve, 'community')
             }
-          } else if (_this47.taskInfo.curators.length > 0) {
+          } else if (_this41.taskInfo.curators.length > 0) {
             fuc.updateSteamInfo(resolve, 'store')
           } else {
             resolve(1)
@@ -6408,7 +5582,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
     }
-    var plugins = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, marvelousga, opiumpulses, prys, spoune, takekey]
+    var plugins = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, marvelousga, opiumpulses, prys, takekey]
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
@@ -6460,8 +5634,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         var showLogs = globalConf === null || globalConf === void 0 ? void 0 : (_globalConf$other = globalConf.other) === null || _globalConf$other === void 0 ? void 0 : _globalConf$other.showLogs
         var websiteSettings = Object.assign(defaultBtn, website.setting)
 
-        for (var _i4 = 0, _Object$entries2 = Object.entries(websiteSettings); _i4 < _Object$entries2.length; _i4++) {
-          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2)
+        for (var _i3 = 0, _Object$entries2 = Object.entries(websiteSettings); _i3 < _Object$entries2.length; _i3++) {
+          var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i3], 2)
           var _k2 = _Object$entries2$_i[0]
           var _v = _Object$entries2$_i[1]
 
@@ -6472,8 +5646,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         var buttonGroup = '<div class="btn-group-vertical" role="group" aria-label="button">'.concat(buttons, '</div>')
         $('body').append('<div id="fuck-task-btn"><button id="toggle-btn-group" type="button" class="btn btn-outline-primary">&gt;</button>'.concat(buttonGroup, '</div>'))
 
-        var _loop18 = function _loop18 () {
-          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i5], 2)
+        var _loop14 = function _loop14 () {
+          var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i4], 2)
           var k = _Object$entries3$_i[0]
           var v = _Object$entries3$_i[1]
 
@@ -6484,8 +5658,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           }
         }
 
-        for (var _i5 = 0, _Object$entries3 = Object.entries(websiteSettings); _i5 < _Object$entries3.length; _i5++) {
-          _loop18()
+        for (var _i4 = 0, _Object$entries3 = Object.entries(websiteSettings); _i4 < _Object$entries3.length; _i4++) {
+          _loop14()
         }
 
         $('#toggle-logs').click(fuc.toggleLogs)
@@ -6504,8 +5678,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         $(document).keydown(function (e) {
           var hotKey = globalConf.hotKey || {}
 
-          for (var _i6 = 0, _Object$entries4 = Object.entries(hotKey); _i6 < _Object$entries4.length; _i6++) {
-            var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i6], 2)
+          for (var _i5 = 0, _Object$entries4 = Object.entries(hotKey); _i5 < _Object$entries4.length; _i5++) {
+            var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i5], 2)
             var _k3 = _Object$entries4$_i[0]
             var _v2 = _Object$entries4$_i[1]
 
@@ -6542,18 +5716,18 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           })
           var listValues = GM_listValues()
 
-          var _iterator32 = _createForOfIteratorHelper(listValues)
-          var _step33
+          var _iterator27 = _createForOfIteratorHelper(listValues)
+          var _step28
 
           try {
-            for (_iterator32.s(); !(_step33 = _iterator32.n()).done;) {
-              var value = _step33.value
+            for (_iterator27.s(); !(_step28 = _iterator27.n()).done;) {
+              var value = _step28.value
               if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
             }
           } catch (err) {
-            _iterator32.e(err)
+            _iterator27.e(err)
           } finally {
-            _iterator32.f()
+            _iterator27.f()
           }
 
           status.success()

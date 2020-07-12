@@ -272,7 +272,7 @@ function getLanguage () {
   let lan = GM_getValue('language') || 'auto'
   if (lan === 'auto') {
     const browserLanguage = (navigator?.browserLanguage || navigator?.language || '').toLowerCase()
-    lan = browserLanguage.includes('en') ? 'en' : 'zh-cn'
+    lan = browserLanguage.includes('en') ? 'en' : 'zh-CN'
   }
   return lan
 }

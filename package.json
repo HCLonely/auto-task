@@ -6,15 +6,16 @@
     "Gamehag添加加组退组功能",
     "添加快捷键功能",
     "框架修改",
-    "添加依赖项"
+    "添加依赖项",
+    "移除无效网站"
   ],
   "description": "key站自动任务脚本",
   "main": "index.js",
   "scripts": {
     "test": "node index.js -t && standard --fix",
     "build": "node index.js -p && standard --fix auto-task.user.js",
-    "push": "node gitpush.js",
-    "start": "node index.js -p && standard --fix && node gitpush.js"
+    "start": "node index.js -p && standard --fix",
+    "css": "node index.js -c"
   },
   "author": "HCLonely",
   "license": "MIT",

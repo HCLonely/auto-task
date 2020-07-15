@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* global getI18n */
 if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
-  if (typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean') {
+  if (typeof GM_getValue('conf').global?.fuck?.joinSteamGroup !== 'boolean') {
     Swal.fire({
       icon: 'warning',
       text: getI18n('firstUpdate'),
@@ -171,6 +171,7 @@ const defaultConf = {
     },
     enable: false
   },
+  /* disable
   givekey: {
     fuck: {
       joinSteamGroup: true,
@@ -187,6 +188,7 @@ const defaultConf = {
     },
     enable: false
   },
+  */
   takekey: {
     fuck: {
       joinSteamGroup: true,

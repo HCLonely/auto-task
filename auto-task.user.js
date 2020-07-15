@@ -411,9 +411,9 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
     /* eslint-disable no-unused-vars */
     if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
-      var _GM_getValue, _GM_getValue$global, _GM_getValue$global$f
+      var _GM_getValue$global, _GM_getValue$global$f
 
-      if (typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global = _GM_getValue.global) === null || _GM_getValue$global === void 0 ? void 0 : (_GM_getValue$global$f = _GM_getValue$global.fuck) === null || _GM_getValue$global$f === void 0 ? void 0 : _GM_getValue$global$f.joinSteamGroup) !== 'boolean') {
+      if (typeof ((_GM_getValue$global = GM_getValue('conf').global) === null || _GM_getValue$global === void 0 ? void 0 : (_GM_getValue$global$f = _GM_getValue$global.fuck) === null || _GM_getValue$global$f === void 0 ? void 0 : _GM_getValue$global$f.joinSteamGroup) !== 'boolean') {
         Swal.fire({
           icon: 'warning',
           text: getI18n('firstUpdate'),
@@ -557,22 +557,6 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
         remove: {
           leaveSteamGroup: true,
           unfollowCurator: true
-        },
-        enable: false
-      },
-      givekey: {
-        fuck: {
-          joinSteamGroup: true,
-          followCurator: true,
-          addToWishlist: true,
-          followGame: true,
-          visitLink: true
-        },
-        remove: {
-          leaveSteamGroup: true,
-          unfollowCurator: true,
-          removeFromWishlist: true,
-          unfollowGame: true
         },
         enable: false
       },
@@ -5586,7 +5570,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
     if (window.location.host.includes('hclonely')) {
       if (window.location.pathname.includes('setting')) {
-        var _GM_getValue2, _GM_getValue2$global, _GM_getValue2$global$
+        var _GM_getValue, _GM_getValue$global2, _GM_getValue$global2$
 
         unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
 
@@ -5594,7 +5578,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
         unsafeWindow.language = language
         unsafeWindow.branch = 'V3'
-        typeof ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : (_GM_getValue2$global = _GM_getValue2.global) === null || _GM_getValue2$global === void 0 ? void 0 : (_GM_getValue2$global$ = _GM_getValue2$global.fuck) === null || _GM_getValue2$global$ === void 0 ? void 0 : _GM_getValue2$global$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
+        typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
       } else if (window.location.pathname.includes('announcement')) {
         loadAnnouncement()
       }

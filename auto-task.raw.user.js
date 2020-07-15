@@ -375,7 +375,7 @@
   try {
     /* eslint-disable no-unused-vars */
     if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
-      if (typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean') {
+      if (typeof GM_getValue('conf').global?.fuck?.joinSteamGroup !== 'boolean') {
         Swal.fire({
           icon: 'warning',
           text: getI18n('firstUpdate'),
@@ -522,22 +522,7 @@
         },
         enable: false
       },
-      givekey: {
-        fuck: {
-          joinSteamGroup: true,
-          followCurator: true,
-          addToWishlist: true,
-          followGame: true,
-          visitLink: true
-        },
-        remove: {
-          leaveSteamGroup: true,
-          unfollowCurator: true,
-          removeFromWishlist: true,
-          unfollowGame: true
-        },
-        enable: false
-      },
+
       takekey: {
         fuck: {
           joinSteamGroup: true,

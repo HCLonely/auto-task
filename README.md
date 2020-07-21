@@ -1,22 +1,15 @@
-
-**接触扩展程序后突然发现 tampermonkey 脚本不香了，3.X 版本可能是最终版本了，之后打算转战扩展程序。**
-
 ### 以下网站已完成测试
 
 * [x] [giveaway.su](https://giveaway.su/)
 * [x] [marvelousga](https://marvelousga.com/)
-* [ ] ~~[dupedornot](https://dupedornot.com/)~~
-* [ ] [grabfreegame](https://www.grabfreegame.com/)
-* [ ] [bananagiveaway](https://www.bananagiveaway.com/)
-* [ ] ~~[gamecode.win](https://gamecode.win/)~~
+* [x] [grabfreegame](https://www.grabfreegame.com/)
+* [x] [bananagiveaway](https://www.bananagiveaway.com/)
 * [x] [gamehag](https://gamehag.com/giveaway)
 * [x] [prys](https://prys.revadike.com/)
 * [x] [indiedb](https://www.indiedb.com/giveaways)
-* [ ] ~~[givekey](https://givekey.ru/)~~
 * [ ] [takekey](https://takekey.ru/)
 * [x] [freegamelottery](https://freegamelottery.com/)
 * [ ] [gleam.io](http://gleam.io/)
-* [ ] ~~[spoune](https://www.spoune.com/index.php)~~
 * [x] [opiumpulses](https://www.opiumpulses.com/giveaways)
 
 ### To do

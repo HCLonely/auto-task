@@ -113,6 +113,7 @@
       joinGroup: '正在加入Steam组',
       getGroupId: '正在获取Steam组ID',
       leaveGroup: '正在退出Steam组',
+      getCuratorId: '正在获取鉴赏家ID',
       followCurator: '正在关注鉴赏家',
       unfollowCurator: '正在取关鉴赏家',
       getDeveloperId: '正在获取开发商ID',
@@ -247,6 +248,7 @@
       joinGroup: 'Joining the Steam group',
       getGroupId: 'Getting Steam group ID',
       leaveGroup: 'Leaving Steam group',
+      getCuratorId: 'Getting curator ID',
       followCurator: 'Following curator',
       unfollowCurator: 'Unfollowing curator',
       getDeveloperId: 'Getting developer ID',
@@ -566,7 +568,7 @@
     const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
     for (const [k, v] of Object.entries(config)) {
       const defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-      if (defaultConfig[k]) config[k] = Object.assign(defaultConfig[k], config[k])
+      config[k] = defaultConfig[k] ? Object.assign(defaultConfig[k], config[k]) : null
     }
     const globalConf = config.global
     const debug = !!globalConf.other.showDetails
@@ -801,7 +803,7 @@
           status,
           developerNameToId
         ] = [
-          this.echoLog({ type: 'getCuratorId', text: developerName }),
+          this.echoLog({ type: 'getCuratorId', text: `${path}/${developerName}` }),
           GM_getValue('developerNameToId') || {}
         ]
         if (developerNameToId[developerName]) {
@@ -1082,14 +1084,29 @@
           console.error(err)
         })
       },
-      likeAnnouncements (r, url, id) {
-        const status = this.echoLog({ type: 'likeAnnouncements', url, id })
+      likeAnnouncements (r, rawMatch) {
+        let [url, status, data] = ['', null, {}]
+        if (rawMatch.length === 5) {
+          status = this.echoLog({ type: 'likeAnnouncements', url: rawMatch[1], id: rawMatch[2] })
+          url = 'https://store.steampowered.com/updated/ajaxrateupdate/' + rawMatch[2]
+          data = {
+            sessionid: steamInfo.storeSessionID,
+            wgauthtoken: rawMatch[3],
+            voteup: 1,
+            clanid: rawMatch[4],
+            ajax: 1
+          }
+        } else {
+          status = this.echoLog({ type: 'likeAnnouncements', url: rawMatch.input, id: rawMatch[1] })
+          url = rawMatch.input.replace('/detail/', '/rate/')
+          data = { sessionid: steamInfo.communitySessionID, voteup: true }
+        }
 
         this.httpRequest({
-          url: url.replace('/detail/', '/rate/'),
+          url: url,
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-          data: $.param({ sessionid: steamInfo.communitySessionID, voteup: true }),
+          data: $.param(data),
           dataType: 'json',
           onload (response) {
             if (debug) console.log(response)
@@ -1191,6 +1208,9 @@
           case 'unfollowCurator':
             ele = $(`<li>${getI18n('unfollowCurator')}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
             break
+          case 'getCuratorId':
+            ele = $(`<li>${getI18n('getCuratorId')}<a href="https://store.steampowered.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+            break
           case 'getDeveloperId':
             ele = $(`<li>${getI18n('getDeveloperId')}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
             break
@@ -1240,7 +1260,7 @@
             ele = $(e.text)
             break
           default:
-            ele = $(`<li>${getI18n('unknown')}<font></font></li>`)
+            ele = $(`<li>${getI18n('unknown')}:${e.type}...<font></font></li>`)
             break
         }
         ele.addClass('card-text')
@@ -1333,10 +1353,8 @@
                 elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
                 break
               case 'publisher':
-                elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/)
-                break
               case 'developer':
-                elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
+                elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : (toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/))
                 break
               case 'franchise':
                 elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
@@ -1345,9 +1363,14 @@
               case 'wishlist':
                 elementName = toFinalUrlElement.match(/app\/([\d]+)/)
                 break
-              case 'announcement':
-                elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+              case 'announcement': {
+                if (toFinalUrlElement.includes('announcements/detail')) {
+                  elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                } else {
+                  elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                }
                 break
+              }
               default:
                 elementName = null
             }
@@ -1393,8 +1416,8 @@
                 break
               case 'announcement':
                 pro.push(new Promise(resolve => {
-                  if (action === 'like') {
-                    fuc.likeAnnouncements(resolve, elementName.input, elementName[1])
+                  if (action === 'fuck') {
+                    fuc.likeAnnouncements(resolve, elementName)
                   }
                 }))
                 break
@@ -2079,16 +2102,16 @@
         } else if (/like.*announcement/gim.test(taskName)) {
           taskInfo.push({ name: 'announcement', link })
           this.community = 1
-        } else if (/follow.*publisher/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*publisher/gim.test(taskName)) {
           taskInfo.push({ name: 'publisher', link })
           this.store = 1
-        } else if (/follow.*franchise/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*franchise/gim.test(taskName)) {
           taskInfo.push({ name: 'franchise', link })
           this.store = 1
-        } else if (/follow.*developer/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*developer/gim.test(taskName)) {
           taskInfo.push({ name: 'developer', link })
           this.store = 1
-        } else if (/follow.*curator|subscribe.*curator/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
           taskInfo.push({ name: 'curator', link })
           this.store = 1
         } else {
@@ -2117,7 +2140,23 @@
             if (this.taskInfo.toFinalUrl[link]) {
               resolve({ result: 'success' })
             } else {
-              fuc.getFinalUrl(resolve, link)
+              fuc.getFinalUrl(resolve, link, {
+                onload (response) {
+                  if (response.finalUrl.includes('newshub/app')) {
+                    const div = response.responseText.match(/<div id="application_config"[\w\W]*?>/)?.[0]
+                    if (!div) {
+                      resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
+                      return
+                    }
+                    const appConfig = $(div)
+                    const { authwgtoken } = JSON.parse(appConfig.attr('data-userinfo'))
+                    const { clanAccountID } = JSON.parse(appConfig.attr('data-groupvanityinfo'))[0]
+                    resolve({ result: 'success', finalUrl: `${response.finalUrl}?authwgtoken=${authwgtoken}&clanid=${clanAccountID}`, url: link })
+                  } else {
+                    resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
+                  }
+                }
+              })
             }
           }))
         }

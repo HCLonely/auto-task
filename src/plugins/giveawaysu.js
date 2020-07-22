@@ -40,16 +40,16 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
     } else if (/like.*announcement/gim.test(taskName)) {
       taskInfo.push({ name: 'announcement', link })
       this.community = 1
-    } else if (/follow.*publisher/gim.test(taskName)) {
+    } else if (/(follow|subscribe).*publisher/gim.test(taskName)) {
       taskInfo.push({ name: 'publisher', link })
       this.store = 1
-    } else if (/follow.*franchise/gim.test(taskName)) {
+    } else if (/(follow|subscribe).*franchise/gim.test(taskName)) {
       taskInfo.push({ name: 'franchise', link })
       this.store = 1
-    } else if (/follow.*developer/gim.test(taskName)) {
+    } else if (/(follow|subscribe).*developer/gim.test(taskName)) {
       taskInfo.push({ name: 'developer', link })
       this.store = 1
-    } else if (/follow.*curator|subscribe.*curator/gim.test(taskName)) {
+    } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
       taskInfo.push({ name: 'curator', link })
       this.store = 1
     } else {
@@ -78,7 +78,23 @@ const giveawaysu = { // eslint-disable-line no-unused-vars
         if (this.taskInfo.toFinalUrl[link]) {
           resolve({ result: 'success' })
         } else {
-          fuc.getFinalUrl(resolve, link)
+          fuc.getFinalUrl(resolve, link, {
+            onload (response) {
+              if (response.finalUrl.includes('newshub/app')) {
+                const div = response.responseText.match(/<div id="application_config"[\w\W]*?>/)?.[0]
+                if (!div) {
+                  resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
+                  return
+                }
+                const appConfig = $(div)
+                const { authwgtoken } = JSON.parse(appConfig.attr('data-userinfo'))
+                const { clanAccountID } = JSON.parse(appConfig.attr('data-groupvanityinfo'))[0]
+                resolve({ result: 'success', finalUrl: `${response.finalUrl}?authwgtoken=${authwgtoken}&clanid=${clanAccountID}`, url: link })
+              } else {
+                resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
+              }
+            }
+          })
         }
       }))
     }

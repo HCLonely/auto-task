@@ -232,7 +232,7 @@ const defaultConf = {
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const [k, v] of Object.entries(config)) {
   const defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-  if (defaultConfig[k]) config[k] = Object.assign(defaultConfig[k], config[k])
+  config[k] = defaultConfig[k] ? Object.assign(defaultConfig[k], config[k]) : null
 }
 const globalConf = config.global
 const debug = !!globalConf.other.showDetails

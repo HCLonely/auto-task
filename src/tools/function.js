@@ -229,7 +229,7 @@ const fuc = {
       status,
       developerNameToId
     ] = [
-      this.echoLog({ type: 'getCuratorId', text: developerName }),
+      this.echoLog({ type: 'getCuratorId', text: `${path}/${developerName}` }),
       GM_getValue('developerNameToId') || {}
     ]
     if (developerNameToId[developerName]) {
@@ -510,14 +510,29 @@ const fuc = {
       console.error(err)
     })
   },
-  likeAnnouncements (r, url, id) {
-    const status = this.echoLog({ type: 'likeAnnouncements', url, id })
+  likeAnnouncements (r, rawMatch) {
+    let [url, status, data] = ['', null, {}]
+    if (rawMatch.length === 5) {
+      status = this.echoLog({ type: 'likeAnnouncements', url: rawMatch[1], id: rawMatch[2] })
+      url = 'https://store.steampowered.com/updated/ajaxrateupdate/' + rawMatch[2]
+      data = {
+        sessionid: steamInfo.storeSessionID,
+        wgauthtoken: rawMatch[3],
+        voteup: 1,
+        clanid: rawMatch[4],
+        ajax: 1
+      }
+    } else {
+      status = this.echoLog({ type: 'likeAnnouncements', url: rawMatch.input, id: rawMatch[1] })
+      url = rawMatch.input.replace('/detail/', '/rate/')
+      data = { sessionid: steamInfo.communitySessionID, voteup: true }
+    }
 
     this.httpRequest({
-      url: url.replace('/detail/', '/rate/'),
+      url: url,
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-      data: $.param({ sessionid: steamInfo.communitySessionID, voteup: true }),
+      data: $.param(data),
       dataType: 'json',
       onload (response) {
         if (debug) console.log(response)
@@ -619,6 +634,9 @@ const fuc = {
       case 'unfollowCurator':
         ele = $(`<li>${getI18n('unfollowCurator')}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
+      case 'getCuratorId':
+        ele = $(`<li>${getI18n('getCuratorId')}<a href="https://store.steampowered.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
       case 'getDeveloperId':
         ele = $(`<li>${getI18n('getDeveloperId')}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
@@ -668,7 +686,7 @@ const fuc = {
         ele = $(e.text)
         break
       default:
-        ele = $(`<li>${getI18n('unknown')}<font></font></li>`)
+        ele = $(`<li>${getI18n('unknown')}:${e.type}...<font></font></li>`)
         break
     }
     ele.addClass('card-text')
@@ -761,10 +779,8 @@ const fuc = {
             elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
             break
           case 'publisher':
-            elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/)
-            break
           case 'developer':
-            elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
+            elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : (toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/))
             break
           case 'franchise':
             elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
@@ -773,9 +789,14 @@ const fuc = {
           case 'wishlist':
             elementName = toFinalUrlElement.match(/app\/([\d]+)/)
             break
-          case 'announcement':
-            elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+          case 'announcement': {
+            if (toFinalUrlElement.includes('announcements/detail')) {
+              elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+            } else {
+              elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+            }
             break
+          }
           default:
             elementName = null
         }
@@ -821,8 +842,8 @@ const fuc = {
             break
           case 'announcement':
             pro.push(new Promise(resolve => {
-              if (action === 'like') {
-                fuc.likeAnnouncements(resolve, elementName.input, elementName[1])
+              if (action === 'fuck') {
+                fuc.likeAnnouncements(resolve, elementName)
               }
             }))
             break

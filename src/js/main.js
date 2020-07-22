@@ -7,7 +7,7 @@ function loadSettings (userConfig) {
   loadLatestVersion()
   for (const [key, value] of Object.entries(config)) {
     let tbody = ''
-    if (!['announcement'].includes(key)) {
+    if (!['announcement'].includes(key) && value !== null) {
       for (const [_k, _v] of Object.entries(value)) {
         let tr = ''
         for (const [k, v] of Object.entries(_v)) {

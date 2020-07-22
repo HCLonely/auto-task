@@ -141,6 +141,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       joinGroup: '正在加入Steam组',
       getGroupId: '正在获取Steam组ID',
       leaveGroup: '正在退出Steam组',
+      getCuratorId: '正在获取鉴赏家ID',
       followCurator: '正在关注鉴赏家',
       unfollowCurator: '正在取关鉴赏家',
       getDeveloperId: '正在获取开发商ID',
@@ -275,6 +276,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       joinGroup: 'Joining the Steam group',
       getGroupId: 'Getting Steam group ID',
       leaveGroup: 'Leaving Steam group',
+      getCuratorId: 'Getting curator ID',
       followCurator: 'Following curator',
       unfollowCurator: 'Unfollowing curator',
       getDeveloperId: 'Getting developer ID',
@@ -608,7 +610,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
       var v = _Object$entries$_i[1]
 
       var defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-      if (defaultConfig[k]) config[k] = Object.assign(defaultConfig[k], config[k])
+      config[k] = defaultConfig[k] ? Object.assign(defaultConfig[k], config[k]) : null
     }
 
     var globalConf = config.global
@@ -939,7 +941,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
         var _ref3 = [this.echoLog({
           type: 'getCuratorId',
-          text: developerName
+          text: ''.concat(path, '/').concat(developerName)
         }), GM_getValue('developerNameToId') || {}]
         var status = _ref3[0]
         var developerNameToId = _ref3[1]
@@ -1454,22 +1456,45 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
           console.error(err)
         })
       },
-      likeAnnouncements: function likeAnnouncements (r, url, id) {
-        var status = this.echoLog({
-          type: 'likeAnnouncements',
-          url: url,
-          id: id
-        })
+      likeAnnouncements: function likeAnnouncements (r, rawMatch) {
+        var url = ''
+        var status = null
+        var data = {}
+
+        if (rawMatch.length === 5) {
+          status = this.echoLog({
+            type: 'likeAnnouncements',
+            url: rawMatch[1],
+            id: rawMatch[2]
+          })
+          url = 'https://store.steampowered.com/updated/ajaxrateupdate/' + rawMatch[2]
+          data = {
+            sessionid: steamInfo.storeSessionID,
+            wgauthtoken: rawMatch[3],
+            voteup: 1,
+            clanid: rawMatch[4],
+            ajax: 1
+          }
+        } else {
+          status = this.echoLog({
+            type: 'likeAnnouncements',
+            url: rawMatch.input,
+            id: rawMatch[1]
+          })
+          url = rawMatch.input.replace('/detail/', '/rate/')
+          data = {
+            sessionid: steamInfo.communitySessionID,
+            voteup: true
+          }
+        }
+
         this.httpRequest({
-          url: url.replace('/detail/', '/rate/'),
+          url: url,
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
-          data: $.param({
-            sessionid: steamInfo.communitySessionID,
-            voteup: true
-          }),
+          data: $.param(data),
           dataType: 'json',
           onload: function onload (response) {
             var _response$response6
@@ -1617,6 +1642,10 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
             ele = $('<li>'.concat(getI18n('unfollowCurator'), '<a href="https://store.steampowered.com/curator/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
 
+          case 'getCuratorId':
+            ele = $('<li>'.concat(getI18n('getCuratorId'), '<a href="https://store.steampowered.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+            break
+
           case 'getDeveloperId':
             ele = $('<li>'.concat(getI18n('getDeveloperId'), '<a href="https://store.steampowered.com/developer/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
@@ -1682,7 +1711,7 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
             break
 
           default:
-            ele = $('<li>'.concat(getI18n('unknown'), '<font></font></li>'))
+            ele = $('<li>'.concat(getI18n('unknown'), ':').concat(e.type, '...<font></font></li>'))
             break
         }
 
@@ -1826,11 +1855,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   break
 
                 case 'publisher':
-                  elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/)
-                  break
-
                 case 'developer':
-                  elementName = toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/dev\/(.+)\/?/)
+                  elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)
                   break
 
                 case 'franchise':
@@ -1843,8 +1869,15 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   break
 
                 case 'announcement':
-                  elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                {
+                  if (toFinalUrlElement.includes('announcements/detail')) {
+                    elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                  } else {
+                    elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                  }
+
                   break
+                }
 
                 default:
                   elementName = null
@@ -1899,8 +1932,8 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
 
                 case 'announcement':
                   pro.push(new Promise(function (resolve) {
-                    if (action === 'like') {
-                      fuc.likeAnnouncements(resolve, elementName.input, elementName[1])
+                    if (action === 'fuck') {
+                      fuc.likeAnnouncements(resolve, elementName)
                     }
                   }))
                   break
@@ -3108,25 +3141,25 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
             link: link
           })
           this.community = 1
-        } else if (/follow.*publisher/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*publisher/gim.test(taskName)) {
           taskInfo.push({
             name: 'publisher',
             link: link
           })
           this.store = 1
-        } else if (/follow.*franchise/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*franchise/gim.test(taskName)) {
           taskInfo.push({
             name: 'franchise',
             link: link
           })
           this.store = 1
-        } else if (/follow.*developer/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*developer/gim.test(taskName)) {
           taskInfo.push({
             name: 'developer',
             link: link
           })
           this.store = 1
-        } else if (/follow.*curator|subscribe.*curator/gim.test(taskName)) {
+        } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
           taskInfo.push({
             name: 'curator',
             link: link
@@ -3185,7 +3218,42 @@ function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
                   result: 'success'
                 })
               } else {
-                fuc.getFinalUrl(resolve, link)
+                fuc.getFinalUrl(resolve, link, {
+                  onload: function onload (response) {
+                    if (response.finalUrl.includes('newshub/app')) {
+                      var _response$responseTex
+
+                      var div = (_response$responseTex = response.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _response$responseTex === void 0 ? void 0 : _response$responseTex[0]
+
+                      if (!div) {
+                        resolve({
+                          result: 'success',
+                          finalUrl: response.finalUrl,
+                          url: link
+                        })
+                        return
+                      }
+
+                      var appConfig = $(div)
+
+                      var _JSON$parse = JSON.parse(appConfig.attr('data-userinfo'))
+                      var authwgtoken = _JSON$parse.authwgtoken
+
+                      var clanAccountID = JSON.parse(appConfig.attr('data-groupvanityinfo'))[0].clanAccountID
+                      resolve({
+                        result: 'success',
+                        finalUrl: ''.concat(response.finalUrl, '?authwgtoken=').concat(authwgtoken, '&clanid=').concat(clanAccountID),
+                        url: link
+                      })
+                    } else {
+                      resolve({
+                        result: 'success',
+                        finalUrl: response.finalUrl,
+                        url: link
+                      })
+                    }
+                  }
+                })
               }
             }))
           }

@@ -24,7 +24,7 @@
     "@babel/preset-env": "^7.9.6",
     "babel-eslint": "^10.1.0",
     "clean-css": "^4.2.3",
-    "commander": "^5.0.0",
+    "commander": "^6.0.0",
     "html-minifier": "^4.0.0",
     "standard": "^14.3.2",
     "uglify-js": "^3.9.3"

@@ -1,2 +1,3 @@
 node_modules/
 src/page/announcement.html
+src/page/js/loadAnnouncement.js

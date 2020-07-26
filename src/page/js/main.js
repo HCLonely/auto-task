@@ -1,4 +1,4 @@
-import { defaultConf as defaultConfig } from '../../scripts/config'
+import { defaultConf as defaultConfig } from '../../scripts/defaultConf'
 import { getI18n } from './i18n'
 /* eslint-disable no-unused-vars */
 function loadSettings (config = defaultConfig) {

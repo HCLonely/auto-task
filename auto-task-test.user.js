@@ -394,27 +394,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     return value
   }
 
-  if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
-    var _GM_getValue$global, _GM_getValue$global$f
-
-    if (typeof ((_GM_getValue$global = GM_getValue('conf').global) === null || _GM_getValue$global === void 0 ? void 0 : (_GM_getValue$global$f = _GM_getValue$global.fuck) === null || _GM_getValue$global$f === void 0 ? void 0 : _GM_getValue$global$f.joinSteamGroup) !== 'boolean') {
-      Swal.fire({
-        icon: 'warning',
-        text: getI18n('firstUpdate'),
-        confirmButtonText: getI18n('goSetting'),
-        cancelButtonText: getI18n('cancel'),
-        showCancelButton: true
-      })
-    }
-  }
-
-  var steamInfo = Object.assign({
-    userName: '',
-    steam64Id: '',
-    communitySessionID: '',
-    storeSessionID: '',
-    updateTime: 0
-  }, GM_getValue('steamInfo'))
   var defaultConf = {
     global: {
       fuck: {
@@ -586,6 +565,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     announcement: ''
   }
+
+  if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
+    var _GM_getValue$global, _GM_getValue$global$f
+
+    if (typeof ((_GM_getValue$global = GM_getValue('conf').global) === null || _GM_getValue$global === void 0 ? void 0 : (_GM_getValue$global$f = _GM_getValue$global.fuck) === null || _GM_getValue$global$f === void 0 ? void 0 : _GM_getValue$global$f.joinSteamGroup) !== 'boolean') {
+      Swal.fire({
+        icon: 'warning',
+        text: getI18n('firstUpdate'),
+        confirmButtonText: getI18n('goSetting'),
+        cancelButtonText: getI18n('cancel'),
+        showCancelButton: true
+      })
+    }
+  }
+
+  var steamInfo = Object.assign({
+    userName: '',
+    steam64Id: '',
+    communitySessionID: '',
+    storeSessionID: '',
+    updateTime: 0
+  }, GM_getValue('steamInfo'))
   var config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 
   for (var _i = 0, _Object$keys = Object.keys(config); _i < _Object$keys.length; _i++) {
@@ -5665,8 +5666,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
 
         unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
-
-        unsafeWindow.GM_getValue = GM_getValue // eslint-disable-line camelcase
 
         unsafeWindow.language = language
         typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)

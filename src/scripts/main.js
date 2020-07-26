@@ -21,7 +21,6 @@ try {
     if (window.location.pathname.includes('setting')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
       unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
-      unsafeWindow.GM_getValue = GM_getValue // eslint-disable-line camelcase
       unsafeWindow.language = language
       typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
     } else if (window.location.pathname.includes('announcement')) {

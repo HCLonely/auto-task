@@ -1,0 +1,70 @@
+#fuck-task-info {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  background-color: #fff;
+  border-radius: 10px;
+  width: auto;
+  max-width: 50%;
+  max-height: 50%;
+  z-index: 99999999999 !important;
+}
+
+#fuck-task-info .card-title {
+  text-align: center;
+}
+
+#fuck-task-info .card-textarea {
+  overflow: auto;
+  max-height: 230px;
+}
+
+#fuck-task-info .success {
+  color: green;
+}
+
+#fuck-task-info .error {
+  color: red;
+}
+
+#fuck-task-info .warning {
+  color: blue;
+}
+
+#fuck-task-info .info {
+  color: yellow;
+}
+
+#fuck-task-info .card-subtitle {
+  text-align: center;
+}
+
+#fuck-task-btn {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9999999999;
+}
+
+#fuck-task-btn * {
+  font-size: 17px !important;
+}
+
+
+.iconfont {
+  text-decoration: none !important;
+}
+
+#fuck {
+  cursor: url("https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/lib/fuck.cur"), pointer !important;
+}
+
+#toggle-btn-group{
+  width: 35px !important;
+  min-width: 35px !important;
+  max-width: 35px !important;
+}
+
+cloudflare-app{
+  display: none !important;
+}

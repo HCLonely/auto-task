@@ -1,0 +1,54 @@
+{
+  "name": "auto-task",
+  "version": "3.0.2",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp dev",
+    "dev": "gulp dev && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix"
+  },
+  "author": "HCLonely",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/plugin-transform-runtime": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-replace": "^2.3.3",
+    "@types/babel__core": "^7.1.9",
+    "babel-eslint": "^10.1.0",
+    "chalk": "^4.1.0",
+    "clean-css": "^4.2.3",
+    "fs-extra": "^9.0.1",
+    "gulp": "^4.0.2",
+    "gulp-htmlclean": "^2.7.22",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-imagemin": "^7.1.0",
+    "rollup": "^2.22.2",
+    "rollup-plugin-analyzer": "^3.3.0",
+    "rollup-plugin-progress": "^1.1.2",
+    "rollup-plugin-uglify": "^6.0.4",
+    "standard": "^14.3.4"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "globals": [
+      "$",
+      "Swal",
+      "GM_setValue",
+      "GM_getValue",
+      "GM_listValues",
+      "GM_deleteValue",
+      "GM_addStyle",
+      "GM_xmlhttpRequest",
+      "GM_getResourceText",
+      "GM_registerMenuCommand",
+      "GM_info",
+      "GM_openInTab",
+      "unsafeWindow",
+      "File",
+      "FileReader"
+    ]
+  }
+}

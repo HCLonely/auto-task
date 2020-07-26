@@ -1,0 +1,12 @@
+__IMPORT__
+let website = null
+
+const websites = [__WEBSITE__]
+for (const e of websites) {
+  if (e.test()) {
+    website = e
+    break
+  }
+}
+
+export { website }

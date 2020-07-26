@@ -305,3 +305,9 @@ function resetSetting () {
     }
   })
 }
+
+window.exportConfig = exportConfig
+window.importConfig = importConfig
+window.loadSettings = loadSettings
+window.resetSetting = resetSetting
+window.saveSetting = saveSetting

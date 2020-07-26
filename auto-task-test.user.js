@@ -6,7 +6,7 @@
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
-// @license        Apache-2.0
+// @license        MIT
 // @iconURL        https://auto-task-test.hclonely.com/img/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
@@ -5665,6 +5665,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
 
         unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
+
+        unsafeWindow.GM_getValue = GM_getValue // eslint-disable-line camelcase
 
         unsafeWindow.language = language
         typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)

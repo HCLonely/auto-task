@@ -93,6 +93,12 @@ async function budilPageJs (file) {
       getBabelOutputPlugin({
         presets: ['@babel/preset-env']
       }),
+      doSomething({
+        addHeader: true,
+        replace: {
+          __FILENAME__: 'auto-task-test.user.js'
+        }
+      }),
       uglify()
     ]
   })

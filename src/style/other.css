@@ -39,6 +39,13 @@
   text-align: center;
 }
 
+#fuck-task-info .card-title {
+  color: #4c4c4c !important;
+}
+
+#fuck-task-info li.card-text{
+  color: #888888 !important;
+}
 #fuck-task-btn {
   position: fixed;
   top: 0;

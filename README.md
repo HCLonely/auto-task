@@ -1,16 +1,16 @@
 ### 以下网站已完成测试
 
 * [x] [giveaway.su](https://giveaway.su/)
-* [ ] [marvelousga](https://marvelousga.com/)
-* [ ] [grabfreegame](https://www.grabfreegame.com/)
-* [ ] [bananagiveaway](https://www.bananagiveaway.com/)
+* [x] [marvelousga](https://marvelousga.com/)
+* [x] [grabfreegame](https://www.grabfreegame.com/)
+* [x] [bananagiveaway](https://www.bananagiveaway.com/)
 * [ ] [gamehag](https://gamehag.com/giveaway)
-* [ ] [prys](https://prys.revadike.com/)
+* [x] [prys](https://prys.revadike.com/)
 * [x] [indiedb](https://www.indiedb.com/giveaways)
 * [ ] [takekey](https://takekey.ru/)
-* [ ] [freegamelottery](https://freegamelottery.com/)
+* [x] [freegamelottery](https://freegamelottery.com/)
 * [ ] [gleam.io](http://gleam.io/)
-* [ ] [opiumpulses](https://www.opiumpulses.com/giveaways)
+* [x] [opiumpulses](https://www.opiumpulses.com/giveaways)
 
 ### To do
 

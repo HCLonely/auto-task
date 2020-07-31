@@ -8,7 +8,7 @@
     "build": "node index.js -p && standard --fix",
     "push": "node gitpush.js",
     "start": "node index.js -p && standard --fix && node gitpush.js",
-    "dev": "echo success"
+    "dev": "node dev.js"
   },
   "author": "HCLonely",
   "license": "MIT",

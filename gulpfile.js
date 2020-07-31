@@ -28,7 +28,7 @@ gulp.task('generate-html-dev', function () {
       minifyCSS: true,
       minifyURLs: true
     }))
-    .pipe(gulp.dest('./test'))
+    .pipe(gulp.dest('./docs'))
 })
 
 gulp.task('generate-js-dev', async function () {
@@ -48,11 +48,11 @@ gulp.task('minify-images-dev', async () => {
       interlaced: false,
       multipass: false
     }))
-    .pipe(gulp.dest('./test/img'))
+    .pipe(gulp.dest('./docs/img'))
 })
 gulp.task('generate-version-json', async () => {
   info('Generate file: version.json')
   const version = fs.readJSONSync('package.json').version
-  await fs.writeJsonSync('./test/version.json', { version: version })
+  await fs.writeJsonSync('./docs/version.json', { version: version })
 })
 gulp.task('dev', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-version-json')))

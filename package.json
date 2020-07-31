@@ -49,6 +49,9 @@
       "unsafeWindow",
       "File",
       "FileReader"
+    ],
+    "ignore": [
+      "/docs/js/main.js"
     ]
   }
 }

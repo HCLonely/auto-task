@@ -34,9 +34,9 @@ function loadWebsites () {
   fs.writeFileSync(path.join(websiteDir, 'main.js'), template)
 }
 async function buildUserJs () {
-  info('Empty directory: test')
-  fs.emptyDirSync('./test')
-  success('Empty directory: test')
+  info('Empty directory: docs')
+  fs.emptyDirSync('./docs')
+  success('Empty directory: docs')
   await loadWebsites()
   info('Package file to:', 'auto-task-test.user.js')
   const bundle = await rollup.rollup({
@@ -87,7 +87,7 @@ async function budilPageJs (file) {
     ]
   })
   await bundle.write({
-    file: './test/js/' + file,
+    file: './docs/js/' + file,
     format: 'cjs',
     plugins: [
       getBabelOutputPlugin({

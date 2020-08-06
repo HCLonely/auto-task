@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -48,7 +48,10 @@
       "GM_openInTab",
       "unsafeWindow",
       "File",
-      "FileReader"
+      "FileReader",
+      "steamInfo",
+      "discordInfo",
+      "discordAuth"
     ],
     "ignore": [
       "/docs/js/main.js"

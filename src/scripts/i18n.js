@@ -132,7 +132,13 @@ const i18n = {
     ajaxError: 'Ajax请求出错',
     firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
     goSetting: '前往设置',
-    getGroupError: '获取steam组信息失败 <a href="s%" target="_blank">s%</a>'
+    getGroupError: '获取steam组信息失败 <a href="s%" target="_blank">s%</a>',
+    verifyDiscordAuth: '正在验证discord凭证',
+    joinDiscordServer: '正在加入discord服务器',
+    leaveDiscordServer: '正在退出discord服务器',
+    updateDiscordAuth: 'Discord凭证失效，请<a href="https://discord.com/app" target="_blank">更新凭证</a>！',
+    getAuthSuccess: '更新凭证成功！',
+    getAuthError: '更新凭证失败！'
   },
   en: {
     language: 'Language',
@@ -266,7 +272,13 @@ const i18n = {
     ajaxError: 'Ajax request error',
     firstUpdate: 'The first update to 3.0+ requires re-setting. Do you want to go to the setting?',
     goSetting: 'Yes',
-    getGroupError: 'Failed to get steam group information. <a href="s%" target="_blank">s%</a>'
+    getGroupError: 'Failed to get steam group information. <a href="s%" target="_blank">s%</a>',
+    verifyDiscordAuth: 'Verifying discord authorization',
+    joinDiscordServer: 'Joining discord server',
+    leaveDiscordServer: 'Leaving discord server',
+    updateDiscordAuth: 'Discord authorization is invalid, please <a href="https://discord.com/app" target="_blank">update the authorization</a>!',
+    getAuthSuccess: 'Successfully updated auth!',
+    getAuthError: 'Failed to update auth!'
   }
 }
 const language = getLanguage()

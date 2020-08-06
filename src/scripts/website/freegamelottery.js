@@ -33,7 +33,7 @@ const freegamelottery = {
             status
           })
         } else {
-          $('body').overHang({
+          $('body').overhang({
             type: 'warn',
             activity: 'notification',
             message: getI18n('needLogin')
@@ -46,7 +46,7 @@ const freegamelottery = {
           })
         }
       } else {
-        $('body').overHang({
+        $('body').overhang({
           type: 'warn',
           activity: 'notification',
           message: getI18n('needLogin')

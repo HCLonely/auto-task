@@ -20,7 +20,9 @@ const giveawaysu = {
         $('#actions tr')
       ]
       for (const task of tasks) {
-        const taskDes = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
+        const colorfulTask = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
+        const colorlessTask = $(task).find('td').eq(2).find('a:not([data-trigger="link"])')
+        const taskDes = colorfulTask.length > 0 ? colorfulTask : colorlessTask
         const taskInfo = this.which_task(taskDes)
         for (const info of taskInfo) {
           if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
@@ -55,8 +57,10 @@ const giveawaysu = {
     } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
       taskInfo.push({ name: 'curator', link })
       this.store = 1
+    } else if (/join.*discord/gim.test(taskName)) {
+      taskInfo.push({ name: 'discord', link })
     } else {
-      if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Join.*Discord.*server)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+      if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
         this.links.push(link)
       } else {
         if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
@@ -118,6 +122,7 @@ const giveawaysu = {
         this.taskInfo.fGames,
         this.taskInfo.wGames,
         this.taskInfo.announcements,
+        this.taskInfo.discords,
         this.taskInfo.links
       ] = [
         fuc.unique(this.links),
@@ -129,6 +134,7 @@ const giveawaysu = {
         fuc.unique(this.taskInfo.fGames),
         fuc.unique(this.taskInfo.wGames),
         fuc.unique(this.taskInfo.announcements),
+        fuc.unique(this.taskInfo.discords),
         fuc.unique(this.taskInfo.links)
       ]
       // 任务链接处理完成
@@ -141,7 +147,7 @@ const giveawaysu = {
       if (debug) console.log(error)
     })
   },
-  do_task (act) {
+  async do_task (act) {
     /* disable
     if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
       for (const link of fuc.unique(this.links)) {
@@ -151,7 +157,8 @@ const giveawaysu = {
     */
     if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
     if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
-    new Promise(resolve => {
+    const pro = []
+    await new Promise(resolve => {
       if (this.taskInfo.groups.length > 0 || this.taskInfo.announcements.length > 0) {
         if (this.taskInfo.curators.length > 0 || this.taskInfo.publishers.length > 0 || this.taskInfo.developers.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wGames.length > 0) {
           fuc.updateSteamInfo(resolve, 'all')
@@ -165,7 +172,6 @@ const giveawaysu = {
       }
     }).then(s => {
       if (s === 1) {
-        const pro = []
         if (this.conf[act][act === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && this.taskInfo.groups.length > 0) {
           pro.push(new Promise(resolve => {
             fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: this.taskInfo.groups, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
@@ -206,11 +212,24 @@ const giveawaysu = {
             fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: this.taskInfo.announcements, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
           }))
         }
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (act === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
-        })
       }
+    })
+    if (this.conf[act][act === 'fuck' ? 'joinDiscordServer' : 'leaveDiscordServer'] && this.taskInfo.discords.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ social: 'discord', website: 'giveawaysu', elements: this.taskInfo.discords, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl, toGuild: this.taskInfo.toGuild })
+      }).then(data => {
+        if (act === 'fuck') {
+          for (const e of data) {
+            const [inviteId, guild] = e.guild || [null, null]
+            this.taskInfo.toGuild[inviteId] = guild
+          }
+          GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+        }
+      }))
+    }
+    Promise.all(pro).finally(() => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (act === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
     })
   },
   fuck () { this.get_tasks('doTask') },
@@ -251,8 +270,10 @@ const giveawaysu = {
     fGames: [], // 任务需要关注的游戏
     wGames: [], // 任务需要加愿望单的游戏
     announcements: [], // 任务需要点赞的通知
+    discords: [], // 任务需要加入的discord服务器
     links: [], // 原始链接
-    toFinalUrl: {}// 链接转换
+    toFinalUrl: {}, // 链接转换
+    toGuild: {}// discord 邀请链接转id
   },
   setting: {
     verify: {

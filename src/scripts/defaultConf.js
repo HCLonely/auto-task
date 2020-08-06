@@ -8,6 +8,7 @@ const defaultConf = {
       likeAnnouncement: true,
       addToWishlist: true,
       followGame: true,
+      joinDiscordServer: true,
       visitLink: true,
       verifyTask: true,
       doTask: true,
@@ -22,7 +23,8 @@ const defaultConf = {
       unfollowDeveloper: true,
       unfollowPublisher: true,
       removeFromWishlist: true,
-      unfollowGame: true
+      unfollowGame: true,
+      leaveDiscordServer: true
     },
     other: {
       showLogs: true,
@@ -48,6 +50,7 @@ const defaultConf = {
       likeAnnouncement: true,
       addToWishlist: true,
       followGame: true,
+      joinDiscordServer: true,
       visitLink: true
     },
     remove: {
@@ -56,7 +59,8 @@ const defaultConf = {
       unfollowDeveloper: true,
       unfollowPublisher: true,
       removeFromWishlist: true,
-      unfollowGame: true
+      unfollowGame: true,
+      leaveDiscordServer: true
     },
     enable: false
   },

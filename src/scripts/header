@@ -23,6 +23,7 @@
 // @include        *://takekey.ru/distribution/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
+// @include        *://discord.com/app
 // @exclude        *googleads*
 // @include        https://__SITEURL__/setting.html
 // @include        https://__SITEURL__/announcement.html
@@ -58,13 +59,15 @@
 // @connect        facebook.com
 // @connect        instagram.com
 // @connect        vk.com
-// @connect        discordapp.com
 // @connect        twitch.tv
 // @connect        github.com
+// @connect        discordapp.com
+// @connect        discord.gg
+// @connect        discord.com
 // @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end
 // ==/UserScript==
 
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars */
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign */
 /* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */

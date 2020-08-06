@@ -26,8 +26,10 @@ try {
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()
     }
-  } else if ((window.location.host.includes('marvelousga') || window.location.host.includes('dupedornot') || window.location.host.includes('gamecode.win')) && (!window.location.pathname.includes('giveaway'))) {
+  } else if (window.location.host.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
     fuc.newTabBlock()
+  } else if (window.location.href.includes('discord.com/app')) {
+    fuc.getDiscordAuth()
   } else {
     if (website.before) website.before()
 
@@ -124,7 +126,7 @@ try {
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
       const listValues = GM_listValues()
       for (const value of listValues) {
-        if (value !== 'conf' && value !== 'language') GM_deleteValue(value)
+        if (!['conf', 'language', 'steamInfo', 'discordInfo'].includes(value)) GM_deleteValue(value)
       }
       status.success()
     })

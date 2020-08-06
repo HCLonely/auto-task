@@ -55,4 +55,9 @@ gulp.task('generate-version-json', async () => {
   const version = fs.readJSONSync('package.json').version
   await fs.writeJsonSync('./docs/version.json', { version: version })
 })
+gulp.task('generate-helper-js', async () => {
+  const version = fs.readJSONSync('package.json').version
+  fs.readFileSync('./src/helper/auto-task-helper.user.js').replace(/__VERSION__/g, version)
+  await fs.writeJsonSync('./docs/version.json', { version: version })
+})
 gulp.task('dev', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-version-json')))

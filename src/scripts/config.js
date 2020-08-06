@@ -12,13 +12,9 @@ if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')
     })
   }
 }
-const steamInfo = Object.assign({
-  userName: '',
-  steam64Id: '',
-  communitySessionID: '',
-  storeSessionID: '',
-  updateTime: 0
-}, GM_getValue('steamInfo'))
+window.steamInfo = getSteamInfo()
+window.discordInfo = getDiscordInfo()
+
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
   const defaultConfig = JSON.parse(JSON.stringify(defaultConf))
@@ -27,4 +23,21 @@ for (const k of Object.keys(config)) {
 const globalConf = config.global
 const debug = !!globalConf.other.showDetails
 
-export { steamInfo, defaultConf, globalConf, debug, config }
+function getSteamInfo () {
+  return Object.assign({
+    userName: '',
+    steam64Id: '',
+    communitySessionID: '',
+    storeSessionID: '',
+    updateTime: 0
+  }, GM_getValue('steamInfo'))
+}
+function getDiscordInfo () {
+  return Object.assign({
+    authorization: '',
+    expired: true,
+    updateTime: 0
+  }, GM_getValue('discordInfo'))
+}
+
+export { defaultConf, globalConf, debug, config }

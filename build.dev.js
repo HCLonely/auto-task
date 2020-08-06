@@ -71,6 +71,7 @@ async function buildUserJs () {
     ]
   })
   success('Write file to: auto-task-test.user.js')
+  await generateHelper()
   await minCSS()
   success('Build user js completed!')
   info('Format file: auto-task-test.user.js')
@@ -104,5 +105,11 @@ async function budilPageJs (file) {
   })
 }
 
+function generateHelper () {
+  info('Generate file: auto-task-helper.user.js')
+  const text = fs.readFileSync('./src/helper/auto-task-helper.user.js').toString().replace(/__VERSION__/g, version).replace(/__SITEURL__/g, 'auto-task-test.hclonely.com').replace(/__FILENAME__/g, 'auto-task-helper.user.js')
+  fs.writeFileSync('./auto-task-helper.user.js', text)
+  success('Write file to: auto-task-helper.user.js')
+}
 exports.buildUserJsDev = buildUserJs
 exports.budilPageJsDev = budilPageJs

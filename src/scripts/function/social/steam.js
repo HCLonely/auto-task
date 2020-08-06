@@ -1,4 +1,4 @@
-import { debug, steamInfo } from '../../config'
+import { debug } from '../../config'
 import { getI18n } from '../../i18n'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
@@ -80,6 +80,7 @@ function updateSteamInfo (r, type = 'all', update = false) {
       r(1)
     }).catch(err => {
       console.error(err)
+      r(0)
     })
   } else {
     r(1)
@@ -529,7 +530,7 @@ function likeAnnouncements (r, rawMatch) {
   })
 }
 
-function toggleActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
+function toggleSteamActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   const pro = []
   for (const element of unique(elements)) {
     let elementName = null
@@ -619,4 +620,4 @@ function toggleActions ({ website, type, elements, resolve, action, toFinalUrl =
   })
 }
 
-export { updateSteamInfo, toggleActions }
+export { updateSteamInfo, toggleSteamActions }

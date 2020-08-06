@@ -2,15 +2,25 @@ import { debug } from '../config'
 import { getI18n } from '../i18n'
 
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
-import { updateSteamInfo, toggleActions } from './social/steam'
+import { updateSteamInfo } from './social/steam'
+import { toggleActions } from './social/toggleActions'
 import { unique, getUrlQuery, dateFormat, isEmptyObjArr } from './tool'
 import { echoLog, toggleLogs } from './log'
+import { getDiscordAuth } from './getAuth'
 
 const fuc = {
   httpRequest,
   updateSteamInfo,
   getFinalUrl,
   visitLink,
+  echoLog,
+  toggleLogs,
+  unique,
+  getUrlQuery,
+  dateFormat,
+  isEmptyObjArr,
+  toggleActions,
+  getDiscordAuth,
   checkUpdate (s = false) {
     let status = false
     const echoLog = this.echoLog
@@ -49,14 +59,7 @@ const fuc = {
     const [d, cookiename] = [new Date(), 'haveVisited1']
     document.cookie = cookiename + '=1; path=/'
     document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
-  },
-  echoLog,
-  toggleLogs,
-  unique,
-  getUrlQuery,
-  dateFormat,
-  isEmptyObjArr,
-  toggleActions
+  }
 }
 
 export { fuc }

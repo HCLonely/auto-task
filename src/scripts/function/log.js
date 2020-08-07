@@ -81,8 +81,17 @@ function echoLog (e) { // switch case !!
     case 'updateDiscordAuth':
       ele = $(`<li style="color:red;">${getI18n('updateDiscordAuth')}</li>`)
       break
+    case 'getInsInfo':
+      ele = $(`<li>${getI18n('getInsInfo')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
+    case 'followIns':
+      ele = $(`<li>${getI18n('followIns')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
+    case 'unfollowIns':
+      ele = $(`<li>${getI18n('unfollowIns')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
     case 'visitLink':
-      ele = $(`<li>${getI18n('visitLink')}...<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n('visitLink')}<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'custom':
       ele = $(e.text)

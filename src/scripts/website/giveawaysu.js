@@ -59,8 +59,10 @@ const giveawaysu = {
       this.store = 1
     } else if (/join.*discord/gim.test(taskName)) {
       taskInfo.push({ name: 'discord', link })
+    } else if (/follow.*instagram/gim.test(taskName)) {
+      taskInfo.push({ name: 'instagram', link })
     } else {
-      if (/(Subscribe.*YouTube)|(Like.*YouTube)|(Follow.*Instagram)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+      if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
         this.links.push(link)
       } else {
         if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
@@ -123,6 +125,7 @@ const giveawaysu = {
         this.taskInfo.wGames,
         this.taskInfo.announcements,
         this.taskInfo.discords,
+        this.taskInfo.instagrams,
         this.taskInfo.links
       ] = [
         fuc.unique(this.links),
@@ -135,6 +138,7 @@ const giveawaysu = {
         fuc.unique(this.taskInfo.wGames),
         fuc.unique(this.taskInfo.announcements),
         fuc.unique(this.taskInfo.discords),
+        fuc.unique(this.taskInfo.instagrams),
         fuc.unique(this.taskInfo.links)
       ]
       // 任务链接处理完成
@@ -227,6 +231,11 @@ const giveawaysu = {
         }
       }))
     }
+    if (this.conf[act][act === 'fuck' ? 'followIns' : 'unfollowIns'] && this.taskInfo.instagrams.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ social: 'ins', website: 'giveawaysu', elements: this.taskInfo.instagrams, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+      }))
+    }
     Promise.all(pro).finally(() => {
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       if (act === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
@@ -271,6 +280,7 @@ const giveawaysu = {
     wGames: [], // 任务需要加愿望单的游戏
     announcements: [], // 任务需要点赞的通知
     discords: [], // 任务需要加入的discord服务器
+    instagrams: [], // 任务需要加入的instagram服务器
     links: [], // 原始链接
     toFinalUrl: {}, // 链接转换
     toGuild: {}// discord 邀请链接转id

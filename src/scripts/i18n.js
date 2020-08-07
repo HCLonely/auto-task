@@ -138,7 +138,11 @@ const i18n = {
     leaveDiscordServer: '正在退出discord服务器',
     updateDiscordAuth: 'Discord凭证失效，请<a href="https://discord.com/app" target="_blank">更新凭证</a>！',
     getAuthSuccess: '更新凭证成功！',
-    getAuthError: '更新凭证失败！'
+    getAuthError: '更新凭证失败！',
+    getInsInfo: '正在获ins用户id',
+    followIns: '正在关注ins用户',
+    unfollowIns: '正在取关ins用户',
+    loginIns: '请先<a href="https://www.instagram.com/accounts/login/" target="_blank">登录ins</a>'
   },
   en: {
     language: 'Language',
@@ -278,7 +282,11 @@ const i18n = {
     leaveDiscordServer: 'Leaving discord server',
     updateDiscordAuth: 'Discord authorization is invalid, please <a href="https://discord.com/app" target="_blank">update the authorization</a>!',
     getAuthSuccess: 'Successfully updated auth!',
-    getAuthError: 'Failed to update auth!'
+    getAuthError: 'Failed to update auth!',
+    getInsInfo: 'Getting ins user id',
+    followIns: 'Following ins user',
+    unfollowIns: 'Unfollowing ins user',
+    loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login ins</a>'
   }
 }
 const language = getLanguage()

@@ -283,7 +283,7 @@ function resetSetting () {
   }).then(e => {
     if (e.value) {
       $('h2.center').remove()
-      if (loadSettings({})) {
+      if (loadSettings()) {
         Swal.update({
           icon: 'success',
           title: getI18n('resetSettingSuccess'),

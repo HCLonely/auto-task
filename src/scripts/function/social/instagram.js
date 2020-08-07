@@ -2,24 +2,31 @@ import { debug } from '../../config'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
 import { unique } from '../tool'
+import { getI18n } from '../../i18n'
 
 function getInsInfo (name) {
   return new Promise(resolve => {
-    const status = echoLog({ type: 'getInsInfo' })
+    const status = echoLog({ type: 'getInsInfo', text: name })
 
     httpRequest({
       url: `https://www.instagram.com/${name}/`,
       method: 'GET',
       onload (response) {
         if (debug) console.log(response)
+        if (response.finalUrl.includes('accounts/login')) {
+          status.error('Error:' + getI18n('loginIns'), true)
+          resolve({ result: 'error', statusText: response.statusText, status: response.status })
+          return
+        }
         if (response.status === 200) {
           const _data = response.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]
           if (_data) {
             const data = JSON.parse(_data)
             // insInfo.updateTime = new Date().getTime()
             insInfo.csrftoken = data?.config?.csrf_token // eslint-disable-line camelcase
-            insInfo.hash = data?.config?.rollout_hash // eslint-disable-line camelcase
+            insInfo.hash = data?.rollout_hash // eslint-disable-line camelcase
             // GM_setValue('insInfo', insInfo)
+            status.success()
             resolve({ result: 'success', statusText: response.statusText, status: response.status, id: data?.entry_data?.ProfilePage?.[0]?.graphql?.user?.id }) // eslint-disable-line camelcase
           } else {
             status.error('Error: Ins data error!')
@@ -46,7 +53,7 @@ async function followIns (r, name) {
     r({ result: 'error', statusText: 'getInsInfo error' })
     return error
   }
-  const status = echoLog({ type: 'followIns', text: [name, id] })
+  const status = echoLog({ type: 'followIns', text: name })
   httpRequest({
     url: `https://www.instagram.com/web/friendships/${id}/follow/`,
     method: 'POST',
@@ -80,7 +87,7 @@ async function unfollowIns (r, name) {
     r({ result: 'error', statusText: 'getInsInfo error' })
     return error
   }
-  const status = echoLog({ type: 'followIns', text: [name, id] })
+  const status = echoLog({ type: 'unfollowIns', text: name })
   httpRequest({
     url: `https://www.instagram.com/web/friendships/${id}/unfollow/`,
     method: 'POST',

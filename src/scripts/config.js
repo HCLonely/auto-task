@@ -14,6 +14,7 @@ if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')
 }
 window.steamInfo = getSteamInfo()
 window.discordInfo = getDiscordInfo()
+window.insInfo = {}
 
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {

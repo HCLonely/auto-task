@@ -63,7 +63,7 @@
 }
 
 #fuck {
-  cursor: url("https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/lib/fuck.cur"), pointer !important;
+  cursor: url("https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/fuck.cur"), pointer !important;
 }
 
 #toggle-btn-group{

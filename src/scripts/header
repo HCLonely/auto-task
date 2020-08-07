@@ -26,7 +26,6 @@
 // @include        *://discord.com/app
 // @exclude        *googleads*
 // @include        https://__SITEURL__/setting.html
-// @include        https://__SITEURL__/announcement.html
 
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js

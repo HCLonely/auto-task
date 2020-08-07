@@ -34,4 +34,4 @@
 
 ## License
 
-MIT
+[MIT](https://github.com/HCLonely/auto-task/blob/master/LICENSE)

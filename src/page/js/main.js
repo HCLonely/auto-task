@@ -4,7 +4,7 @@ import { getI18n } from './i18n'
 function loadSettings (config = defaultConfig) {
   const form = $('form').html('')
   $('.center').remove()
-  form.before(`<h2 class="center">${getI18n('settingTitle')}</h2><p class="center">${getI18n('currentVersion', GM_info.script.version) + getI18n('latestVersion', 'V3')}</p>`)
+  form.before(`<h2 class="center">${getI18n('settingTitle')}</h2><p class="center">${getI18n('currentVersion', GM_info.script.version) + getI18n('latestVersion', 'master')}</p>`)
   loadLatestVersion()
   for (const [key, value] of Object.entries(config)) {
     let tbody = ''

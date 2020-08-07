@@ -51,7 +51,8 @@
       "FileReader",
       "steamInfo",
       "discordInfo",
-      "discordAuth"
+      "discordAuth",
+      "insInfo"
     ],
     "ignore": [
       "/docs/js/main.js"

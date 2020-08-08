@@ -24,9 +24,11 @@
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
 // @include        *://discord.com/app
+// @include        *://www.twitch.tv/*
 // @exclude        *googleads*
 // @include        https://auto-task-test.hclonely.com/setting.html
 
+// @require        https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
@@ -48,6 +50,7 @@
 // @grant          GM_info
 // @grant          GM_openInTab
 // @grant          unsafeWindow
+// @grant          window.close
 
 // @connect        auto-task-test.hclonely.com
 // @connect        cdn.jsdelivr.net
@@ -69,7 +72,7 @@
 // ==/UserScript==
 
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign */
-/* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
+/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
 function _slicedToArray (arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest() }
@@ -613,6 +616,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   window.steamInfo = getSteamInfo()
   window.discordInfo = getDiscordInfo()
   window.insInfo = {}
+  window.twitchInfo = getTwitchInfo()
   var config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 
   for (var _i = 0, _Object$keys = Object.keys(config); _i < _Object$keys.length; _i++) {
@@ -640,6 +644,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       expired: true,
       updateTime: 0
     }, GM_getValue('discordInfo'))
+  }
+
+  function getTwitchInfo () {
+    return Object.assign({
+      authToken: '',
+      isLogin: false,
+      updateTime: 0
+    }, GM_getValue('twitchInfo'))
   }
 
   function echoLog (e) {
@@ -1958,6 +1970,94 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
+  function updateTwitchInfo (notice) {
+    try {
+      var authToken = Cookies.get('auth-token')
+      var isLogin = !!Cookies.get('login')
+
+      if (authToken && isLogin) {
+        var _commonOptions
+
+        twitchInfo.authToken = authToken
+        twitchInfo.isLogin = isLogin
+        twitchInfo.clientId = (_commonOptions = commonOptions) === null || _commonOptions === void 0 ? void 0 : _commonOptions.headers['Client-ID']
+        twitchInfo.updateTime = new Date().getTime()
+        GM_setValue('twitchInfo', twitchInfo)
+
+        if (notice) {
+          Swal.fire({
+            title: getI18n('updateTwitchInfoSuccess'),
+            icon: 'success'
+          })
+        }
+      } else {
+        if (notice) {
+          Swal.fire({
+            title: getI18n('needLogin'),
+            icon: 'warning'
+          })
+        }
+      }
+    } catch (e) {
+      if (debug) console.log(e)
+
+      if (notice) {
+        Swal.fire({
+          title: getI18n('updateTwitchInfoError'),
+          icon: 'error'
+        })
+      }
+    }
+  }
+
+  function checkTwitchInfo () {
+    var status = echoLog({
+      type: 'verifyDiscordAuth'
+    })
+    return new Promise(function (resolve) {
+      httpRequest({
+        url: 'https://gql.twitch.tv/gql',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+          Authorization: 'OAuth ' + twitchInfo.authToken,
+          'Client-Id': twitchInfo.clientId
+        },
+        data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]',
+        onload: function onload (response) {
+          var _response$response9, _response$response9$, _response$response9$$
+
+          if (debug) console.log(response)
+
+          if (response.status === 200 && ((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : (_response$response9$ = _response$response9[0]) === null || _response$response9$ === void 0 ? void 0 : (_response$response9$$ = _response$response9$.data) === null || _response$response9$$ === void 0 ? void 0 : _response$response9$$.currentUser)) {
+            status.success()
+            resolve({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    }).then(function (data) {
+      return (data === null || data === void 0 ? void 0 : data.result) === 'success'
+    }).catch(function (error) {
+      if (debug) console.log(error)
+      return false
+    })
+  }
+
+  unsafeWindow.checkTwitchInfo = checkTwitchInfo
+
   function verifyDiscordAuth (r) {
     var status = echoLog({
       type: 'verifyDiscordAuth'
@@ -2008,14 +2108,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         if (debug) console.log(response)
 
         if (response.status === 200) {
-          var _response$response9, _response$response9$g
+          var _response$response10, _response$response10$
 
           status.success()
           r({
             result: 'success',
             statusText: response.statusText,
             status: response.status,
-            guild: [inviteId, (_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : (_response$response9$g = _response$response9.guild) === null || _response$response9$g === void 0 ? void 0 : _response$response9$g.id]
+            guild: [inviteId, (_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : (_response$response10$ = _response$response10.guild) === null || _response$response10$ === void 0 ? void 0 : _response$response10$.id]
           })
         } else {
           status.error('Error:' + response.statusText + '(' + response.status + ')')
@@ -2291,11 +2391,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-instagram-ajax': insInfo.hash
                 },
                 onload: function onload (response) {
-                  var _response$response17
+                  var _response$response18
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 && ((_response$response17 = response.response) === null || _response$response17 === void 0 ? void 0 : _response$response17.result) === 'following') {
+                  if (response.status === 200 && ((_response$response18 = response.response) === null || _response$response18 === void 0 ? void 0 : _response$response18.result) === 'following') {
                     status.success()
                     r({
                       result: 'success',
@@ -2374,11 +2474,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-instagram-ajax': insInfo.hash
                 },
                 onload: function onload (response) {
-                  var _response$response18
+                  var _response$response19
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 && ((_response$response18 = response.response) === null || _response$response18 === void 0 ? void 0 : _response$response18.status) === 'ok') {
+                  if (response.status === 200 && ((_response$response19 = response.response) === null || _response$response19 === void 0 ? void 0 : _response$response19.status) === 'ok') {
                     status.success()
                     r({
                       result: 'success',
@@ -2519,6 +2619,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     isEmptyObjArr: isEmptyObjArr,
     toggleActions: toggleActions,
     getDiscordAuth: getDiscordAuth,
+    updateTwitchInfo: updateTwitchInfo,
     checkUpdate: function checkUpdate () {
       var s = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
       var status = false
@@ -2534,13 +2635,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         method: 'get',
         dataType: 'json',
         onload: function onload (response) {
-          var _response$response10, _response$response11
+          var _response$response11, _response$response12
 
           if (debug) console.log(response)
 
-          if (((_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : _response$response10.version) === GM_info.script.version) {
+          if (((_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : _response$response11.version) === GM_info.script.version) {
             if (s) status.success(getI18n('thisIsNew'))
-          } else if ((_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : _response$response11.version) {
+          } else if ((_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : _response$response12.version) {
             echoLog({
               type: 'custom',
               text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/V3/auto-task-test.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
@@ -4689,20 +4790,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             if (debug) console.log(response)
 
             if (response.status === 200) {
-              var _response$response12
+              var _response$response13
 
-              if ((_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : _response$response12.success) {
-                var _response$response13, _response$response14
+              if ((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.success) {
+                var _response$response14, _response$response15
 
                 currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                 $('#giveawaysjoined').slideDown()
                 $('#giveawaysrecommend').slideDown()
-                status.success('Success' + (((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.text) ? ':' + ((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.text) : ''))
+                status.success('Success' + (((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.text) ? ':' + ((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.text) : ''))
                 doTask()
               } else {
-                var _response$response15, _response$response16
+                var _response$response16, _response$response17
 
-                status.error('Error' + (((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.text) ? ':' + ((_response$response16 = response.response) === null || _response$response16 === void 0 ? void 0 : _response$response16.text) : ''))
+                status.error('Error' + (((_response$response16 = response.response) === null || _response$response16 === void 0 ? void 0 : _response$response16.text) ? ':' + ((_response$response17 = response.response) === null || _response$response17 === void 0 ? void 0 : _response$response17.text) : ''))
               }
             } else {
               status.error('Error:' + (response.statusText || response.status))
@@ -6385,6 +6486,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       fuc.newTabBlock()
     } else if (window.location.href.includes('discord.com/app')) {
       fuc.getDiscordAuth()
+    } else if (window.location.href.includes('www.twitch.tv')) {
+      if (window.location.href.includes('#updateTwitchInfo')) {
+        fuc.updateTwitchInfo(true)
+      } else if (!window.location.href.includes('/login')) {
+        fuc.updateTwitchInfo(false)
+      }
     } else {
       var _globalConf$other
 

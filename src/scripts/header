@@ -24,9 +24,11 @@
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
 // @include        *://discord.com/app
+// @include        *://www.twitch.tv/*
 // @exclude        *googleads*
 // @include        https://__SITEURL__/setting.html
 
+// @require        https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
@@ -48,6 +50,7 @@
 // @grant          GM_info
 // @grant          GM_openInTab
 // @grant          unsafeWindow
+// @grant          window.close
 
 // @connect        __SITEURL__
 // @connect        cdn.jsdelivr.net
@@ -69,4 +72,4 @@
 // ==/UserScript==
 
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign */
-/* global loadSettings,loadAnnouncement,$,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck */
+/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */

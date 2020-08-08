@@ -15,6 +15,7 @@ if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')
 window.steamInfo = getSteamInfo()
 window.discordInfo = getDiscordInfo()
 window.insInfo = {}
+window.twitchInfo = getTwitchInfo()
 
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
@@ -39,6 +40,13 @@ function getDiscordInfo () {
     expired: true,
     updateTime: 0
   }, GM_getValue('discordInfo'))
+}
+function getTwitchInfo () {
+  return Object.assign({
+    authToken: '',
+    isLogin: false,
+    updateTime: 0
+  }, GM_getValue('twitchInfo'))
 }
 
 export { defaultConf, globalConf, debug, config }

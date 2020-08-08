@@ -36,6 +36,7 @@
     "globals": [
       "$",
       "Swal",
+      "Cookies",
       "GM_setValue",
       "GM_getValue",
       "GM_listValues",
@@ -49,10 +50,12 @@
       "unsafeWindow",
       "File",
       "FileReader",
+      "parent",
       "steamInfo",
       "discordInfo",
       "discordAuth",
-      "insInfo"
+      "insInfo",
+      "twitchInfo"
     ],
     "ignore": [
       "/docs/js/main.js"

@@ -3,6 +3,7 @@ import { getI18n } from '../i18n'
 
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
+import { updateTwitchInfo } from './social/twitch'
 import { toggleActions } from './social/toggleActions'
 import { unique, getUrlQuery, dateFormat, isEmptyObjArr } from './tool'
 import { echoLog, toggleLogs } from './log'
@@ -21,6 +22,7 @@ const fuc = {
   isEmptyObjArr,
   toggleActions,
   getDiscordAuth,
+  updateTwitchInfo,
   checkUpdate (s = false) {
     let status = false
     const echoLog = this.echoLog

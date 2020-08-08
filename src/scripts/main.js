@@ -30,6 +30,12 @@ try {
     fuc.newTabBlock()
   } else if (window.location.href.includes('discord.com/app')) {
     fuc.getDiscordAuth()
+  } else if (window.location.href.includes('www.twitch.tv')) {
+    if (window.location.href.includes('#updateTwitchInfo')) {
+      fuc.updateTwitchInfo(true)
+    } else if (!window.location.href.includes('/login')) {
+      fuc.updateTwitchInfo(false)
+    }
   } else {
     if (website.before) website.before()
 

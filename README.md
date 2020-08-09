@@ -1,3 +1,5 @@
+### 咕一段时间:)
+
 ## 以下网站已完成测试
 
 * [x] [giveaway.su](https://giveaway.su/)
@@ -30,7 +32,7 @@
 - [clean-css](https://github.com/jakubpawlowicz/clean-css)
 - [fs-extra](https://github.com/jprichardson/node-fs-extra)
 - [standard](https://github.com/standard/standard)
-- [[记录]在油猴脚本中获取discord用户凭证](https://www.jysafe.cn/4303.air)
+- [keyjokerScript](https://github.com/jiyeme/keyjokerScript)
 
 ## License
 

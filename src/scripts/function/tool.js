@@ -42,9 +42,45 @@ function isEmptyObjArr (object) {
   return true
 }
 
+function clearArray (arr) {
+  if (Array.isArray(arr[0])) {
+    return arr.map(() => {
+      return []
+    })
+  } else {
+    return []
+  }
+}
+function clearTaskInfo (data) {
+  if (Array.isArray(data)) {
+    return clearArray(data)
+  } else {
+    for (const [k, v] of Object.entries(data)) {
+      if (Array.isArray(v)) data[k] = clearArray(v)
+    }
+  }
+}
+function uniqueTaskInfo (data) {
+  if (Array.isArray(data)) {
+    if (Array.isArray(data[0])) {
+      for (let i = 0; i < data.length; i++) {
+        data[i] = unique(data[i])
+      }
+    } else {
+      data = unique(data)
+    }
+  } else {
+    for (const [k, v] of Object.entries(data)) {
+      if (Array.isArray(v)) data[k] = unique(v)
+    }
+  }
+  return data
+}
 export {
   unique,
   getUrlQuery,
   dateFormat,
-  isEmptyObjArr
+  isEmptyObjArr,
+  clearTaskInfo,
+  uniqueTaskInfo
 }

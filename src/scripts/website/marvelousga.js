@@ -12,8 +12,7 @@ const marvelousga = {
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      [this.tasks, this.groups, this.curators, this.links] = [[], [], [], []]
-
+      this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
       const [
         status,
         tasksContainer
@@ -33,54 +32,41 @@ const marvelousga = {
         if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) { // 加组任务
           const groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
           if (verifyBtn.length > 0) {
-            this.groups.push(groupName)
+            this.currentTaskInfo.groups.push(groupName)
           }
           this.taskInfo.groups.push(groupName)
         }
         if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) { // 关注鉴赏家任务
           const curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
           if (verifyBtn.length > 0) {
-            this.curators.push(curatorName)
+            this.currentTaskInfo.curators.push(curatorName)
           }
           this.taskInfo.curators.push(curatorName)
         }
         if (/visit.*?this.*?page/gim.test(taskDes.text()) && verifyBtn.length > 0) { // 浏览页面任务
           const pageUrl = taskDes.find('a[id^="task_webpage_clickedLink"]').attr('href')
-          this.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
+          this.currentTaskInfo.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
         }
         if (verifyBtn.length > 0) { // 任务验证信息
           const ids = verifyBtn.attr('id').split('_')
-          const [provider, taskRoute, taskId] = [ids[1], ids[2], ids[3]]
-          this.tasks.push({ provider, taskRoute, taskId, taskDes: taskDes.html() })
+          const [, provider, taskRoute, taskId] = ids
+          this.currentTaskInfo.tasks.push({ provider, taskRoute, taskId, taskDes: taskDes.html() })
         }
       }
-      [
-        this.groups,
-        this.curators,
-        this.links,
-        this.taskInfo.groups,
-        this.taskInfo.curators,
-        this.tasks
-      ] = [
-        fuc.unique(this.groups),
-        fuc.unique(this.curators),
-        fuc.unique(this.links),
-        fuc.unique(this.taskInfo.groups),
-        fuc.unique(this.taskInfo.curators),
-        fuc.unique(this.tasks)
-      ]
+      this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+      this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
       if (debug) console.log(this)
       if (callback === 'do_task') {
-        if (this.tasks.length === 0) {
+        if (this.currentTaskInfo.tasks.length === 0) {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
           if (this.conf.fuck.verifyTask) this.verify()
         } else {
           this.do_task()
         }
       } else if (callback === 'verify') {
-        this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
+        this.currentTaskInfo.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       } else {
         !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('cannotRemove')}</font></li>` })
       }
@@ -88,7 +74,7 @@ const marvelousga = {
   },
   do_task () {
     this.updateSteamInfo(async () => {
-      const [pro, links] = [[], fuc.unique(this.links)]
+      const [pro, links] = [[], fuc.unique(this.currentTaskInfo.links)]
       await this.toggleActions('fuck', pro)
       if (this.conf.fuck.visitLink) {
         for (const link of links) {
@@ -117,7 +103,7 @@ const marvelousga = {
   verify (verify = false) {
     if (verify) {
       const pro = []
-      for (const task of fuc.unique(this.tasks)) {
+      for (const task of fuc.unique(this.currentTaskInfo.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
         pro.push(new Promise(resolve => {
           fuc.httpRequest({
@@ -170,8 +156,7 @@ const marvelousga = {
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })
         $('#get_key_container').show()
-        $('.hclonely-google').unbind()
-        $('.hclonely-google').click(() => { $('#get_key_container')[0].scrollIntoView() })
+        $('.hclonely-google').unbind().click(() => { $('#get_key_container')[0].scrollIntoView() })
       })
     } else {
       this.get_tasks('verify')
@@ -191,9 +176,9 @@ const marvelousga = {
     }
   },
   toggleActions (action, pro) {
-    const [groups, curators] = action === 'fuck'
-      ? [this.groups, this.curators]
-      : [this.taskInfo.groups, this.taskInfo.curators]
+    const { groups, curators } = action === 'fuck'
+      ? this.currentTaskInfo
+      : this.taskInfo
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', type: 'group', elements: groups, resolve, action })
@@ -261,14 +246,16 @@ const marvelousga = {
       })
     }
   },
-  groups: [], // 任务需要加的组
-  curators: [], // 任务需要关注的鉴赏家
-  links: [], // 需要浏览的页面链接
+  currentTaskInfo: {
+    groups: [], // 任务需要加的组
+    curators: [], // 任务需要关注的鉴赏家
+    links: [], // 需要浏览的页面链接
+    tasks: [] // 任务信息
+  },
   taskInfo: {
     groups: [], // 所有任务需要加的组
     curators: []// 所有任务需要关注的鉴赏家
   },
-  tasks: [], // 任务信息
   setting: {},
   conf: config?.marvelousga?.enable ? config.marvelousga : globalConf
 }

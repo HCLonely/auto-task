@@ -55,7 +55,8 @@
       "discordInfo",
       "discordAuth",
       "insInfo",
-      "twitchInfo"
+      "twitchInfo",
+      "twitterInfo"
     ],
     "ignore": [
       "/docs/js/main.js"

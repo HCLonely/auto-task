@@ -37,7 +37,7 @@ function updateSteamInfo (r, type = 'all', update = false) {
               }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
-              reject(Error('Request Failed'))
+              reject(new Error('Request Failed'))
             }
           },
           r: resolve,
@@ -57,7 +57,7 @@ function updateSteamInfo (r, type = 'all', update = false) {
             if (response.status === 200) {
               if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
                 status.error('Error:' + getI18n('loginSteamStore'), true)
-                reject(Error('Not Login'))
+                reject(new Error('Not Login'))
               } else {
                 const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
                 if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
@@ -66,7 +66,7 @@ function updateSteamInfo (r, type = 'all', update = false) {
               }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
-              reject(Error('Request Failed'))
+              reject(new Error('Request Failed'))
             }
           },
           r: resolve,

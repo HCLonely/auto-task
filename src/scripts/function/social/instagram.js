@@ -22,10 +22,8 @@ function getInsInfo (name) {
           const _data = response.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]
           if (_data) {
             const data = JSON.parse(_data)
-            // insInfo.updateTime = new Date().getTime()
             insInfo.csrftoken = data?.config?.csrf_token // eslint-disable-line camelcase
             insInfo.hash = data?.rollout_hash // eslint-disable-line camelcase
-            // GM_setValue('insInfo', insInfo)
             status.success()
             resolve({ result: 'success', statusText: response.statusText, status: response.status, id: data?.entry_data?.ProfilePage?.[0]?.graphql?.user?.id }) // eslint-disable-line camelcase
           } else {

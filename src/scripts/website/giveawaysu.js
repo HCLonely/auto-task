@@ -113,34 +113,8 @@ const giveawaysu = {
           this.taskInfo.toFinalUrl[r.url] = r.finalUrl
         }
       }
-
-      [
-        this.links,
-        this.taskInfo.groups,
-        this.taskInfo.curators,
-        this.taskInfo.publishers,
-        this.taskInfo.developers,
-        this.taskInfo.franchises,
-        this.taskInfo.fGames,
-        this.taskInfo.wGames,
-        this.taskInfo.announcements,
-        this.taskInfo.discords,
-        this.taskInfo.instagrams,
-        this.taskInfo.links
-      ] = [
-        fuc.unique(this.links),
-        fuc.unique(this.taskInfo.groups),
-        fuc.unique(this.taskInfo.curators),
-        fuc.unique(this.taskInfo.publishers),
-        fuc.unique(this.taskInfo.developers),
-        fuc.unique(this.taskInfo.franchises),
-        fuc.unique(this.taskInfo.fGames),
-        fuc.unique(this.taskInfo.wGames),
-        fuc.unique(this.taskInfo.announcements),
-        fuc.unique(this.taskInfo.discords),
-        fuc.unique(this.taskInfo.instagrams),
-        fuc.unique(this.taskInfo.links)
-      ]
+      this.links = fuc.unique(this.links)
+      this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
       // 任务链接处理完成
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()

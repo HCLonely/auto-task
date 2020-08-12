@@ -18,7 +18,7 @@ const gamehag = {
       $('button[data-id]')
     ]
     if (callback === 'do_task') {
-      [this.groups, this.tasks] = [[], []]
+      this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
       const pro = []
       const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
@@ -34,7 +34,7 @@ const gamehag = {
                 if (r.result === 'success') {
                   const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
                   if (groupName) {
-                    this.groups.push(groupName[1])
+                    this.currentTaskInfo.groups.push(groupName[1])
                     this.taskInfo.groups.push(groupName[1])
                   } else {
                     fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getGroupError', groupurl)}<font></font></li>` })
@@ -46,27 +46,20 @@ const gamehag = {
               })
             }))
           }
-          this.tasks.push({ taskId, taskDes })
+          this.currentTaskInfo.tasks.push({ taskId, taskDes })
         }
       }
       if ($('a.giveaway-survey').length > 0) {
         const [taskId, taskDes] = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
-        this.tasks.push({ taskId, taskDes })
+        this.currentTaskInfo.tasks.push({ taskId, taskDes })
       }
 
       Promise.all(pro).finally(() => {
-        [
-          this.groups,
-          this.taskInfo.groups,
-          this.tasks
-        ] = [
-          fuc.unique(this.groups),
-          fuc.unique(this.taskInfo.groups),
-          fuc.unique(this.tasks)
-        ]
+        this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+        this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
         status.success()
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-        if (this.tasks.length > 0) {
+        if (this.currentTaskInfo.tasks.length > 0) {
           this.do_task()
         } else {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
@@ -74,13 +67,13 @@ const gamehag = {
         }
       })
     } else if (callback === 'verify') {
-      this.tasks = []
+      this.currentTaskInfo.tasks = []
       for (const btn of verifyBtns) {
         const [taskId, taskDes] = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
-        if ($(btn).parents('.task-content').next().text().includes('+1')) this.tasks.push({ taskId, taskDes })
+        if ($(btn).parents('.task-content').next().text().includes('+1')) this.currentTaskInfo.tasks.push({ taskId, taskDes })
       }
-      this.tasks = fuc.unique(this.tasks)
-      if (this.tasks.length > 0) {
+      this.currentTaskInfo.tasks = fuc.unique(this.currentTaskInfo.tasks)
+      if (this.currentTaskInfo.tasks.length > 0) {
         this.verify(true)
       } else {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
@@ -96,7 +89,7 @@ const gamehag = {
     if (debug) console.log(this)
   },
   async do_task () {
-    const [pro, tasks] = [[], fuc.unique(this.tasks)]
+    const [pro, tasks] = [[], fuc.unique(this.currentTaskInfo.tasks)]
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
       pro.push(new Promise(resolve => {
@@ -127,7 +120,7 @@ const gamehag = {
   },
   async verify (verify = false) {
     if (verify) {
-      const [pro, tasks] = [[], fuc.unique(this.tasks)]
+      const [pro, tasks] = [[], fuc.unique(this.currentTaskInfo.tasks)]
       for (let i = 0; i < tasks.length; i++) {
         const task = tasks[i]
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}<a href="/giveaway/click/${task.taskId}" target="_blank">${task.taskDes.trim()}</a>...<font></font></li>` })
@@ -174,7 +167,7 @@ const gamehag = {
     }
   },
   remove (remove = false) {
-    if (this.conf.remove.leaveSteamGroup && this.groups.length > 0) {
+    if (this.conf.remove.leaveSteamGroup && this.currentTaskInfo.groups.length > 0) {
       this.updateSteamInfo(async () => {
         const pro = []
         await this.toggleActions('remove', pro)
@@ -187,7 +180,7 @@ const gamehag = {
     }
   },
   toggleActions (action, pro) {
-    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
+    const groups = action === 'fuck' ? this.currentTaskInfo.groups : this.taskInfo.groups
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
@@ -244,11 +237,13 @@ const gamehag = {
       })
     }
   },
-  groups: [], // 任务需要加的组
+  currentTaskInfo: {
+    groups: [], // 任务需要加的组
+    tasks: [] // 任务信息
+  },
   taskInfo: {
     groups: []// 所有任务需要加的组
   },
-  tasks: [], // 任务信息
   setting: {},
   conf: config?.gamehag?.enable ? config.gamehag : globalConf
 }

@@ -32,7 +32,7 @@ const banana = {
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      [this.tasks, this.links, this.groups, this.curators, this.wishlists, this.fGames, this.taskIds] = [[], [], [], [], [], [], []]
+      this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
 
       const [
         status,
@@ -48,7 +48,7 @@ const banana = {
         const [taskDes, verifyBtn] = [$(task).find('p'), $(task).find('button:contains(Verify)')]
         const taskId = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : ''
         if (taskId) {
-          this.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
+          this.currentTaskInfo.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
           if (/join.*?steam.*?group/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
@@ -57,13 +57,13 @@ const banana = {
                 if (r.result === 'success') {
                   const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
                   if (groupName) {
-                    this.groups.push(groupName[1])
+                    this.currentTaskInfo.groups.push(groupName[1])
                     this.taskInfo.groups.push(groupName[1])
                   } else {
-                    this.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId[1])
                   }
                 } else {
-                  this.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId[1])
                 }
                 res(1)
               })
@@ -76,13 +76,13 @@ const banana = {
                 if (r.result === 'success') {
                   const curatorId = r.finalUrl.match(/curator\/([\d]+)/)
                   if (curatorId) {
-                    this.curators.push(curatorId[1])
-                    this.taskInfo.curators.push(curatorId[1])
+                    this.currentTaskInfo.curators.push(curatorId[1])
+                    this.currentTaskInfo.taskInfo.curators.push(curatorId[1])
                   } else {
-                    this.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId[1])
                   }
                 } else {
-                  this.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId[1])
                 }
                 res(1)
               })
@@ -95,13 +95,13 @@ const banana = {
                 if (r.result === 'success') {
                   const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)
                   if (appId) {
-                    this.wishlists.push(appId[1])
-                    this.taskInfo.wishlists.push(appId[1])
+                    this.currentTaskInfo.wishlists.push(appId[1])
+                    this.currentTaskInfo.taskInfo.wishlists.push(appId[1])
                   } else {
-                    this.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId[1])
                   }
                 } else {
-                  this.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId[1])
                 }
                 res(1)
               })
@@ -114,46 +114,23 @@ const banana = {
               }
             }
             pro.push(new Promise(resolve => {
-              this.links.push(window.location.origin + window.location.pathname + '?q=' + taskId[1])
-              this.taskIds.push(taskId[1])
+              this.currentTaskInfo.links.push(window.location.origin + window.location.pathname + '?q=' + taskId[1])
+              this.currentTaskInfo.taskIds.push(taskId[1])
               resolve(1)
             }))
           }
         }
       }
       Promise.all(pro).finally(() => {
-        [
-          this.links,
-          this.groups,
-          this.curators,
-          this.wishlists,
-          this.fGames,
-          this.taskInfo.groups,
-          this.taskInfo.curators,
-          this.taskInfo.wishlists,
-          this.taskInfo.fGames,
-          this.taskIds,
-          this.tasks
-        ] = [
-          fuc.unique(this.links),
-          fuc.unique(this.groups),
-          fuc.unique(this.curators),
-          fuc.unique(this.wishlists),
-          fuc.unique(this.fGames),
-          fuc.unique(this.taskInfo.groups),
-          fuc.unique(this.taskInfo.curators),
-          fuc.unique(this.taskInfo.wishlists),
-          fuc.unique(this.taskInfo.fGames),
-          fuc.unique(this.taskIds),
-          fuc.unique(this.tasks)
-        ]
+        this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+        this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
         if (callback === 'do_task') {
           this.do_task()
         } else if (callback === 'verify') {
-          this.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+          this.currentTaskInfo.tasks.length > 0 ? this.verify(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
         } else {
           !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('cannotRemove')}</font></li>` })
         }
@@ -162,7 +139,7 @@ const banana = {
   },
   do_task () {
     this.updateSteamInfo(async () => {
-      const [pro, links] = [[], fuc.unique(this.links)]
+      const [pro, links] = [[], fuc.unique(this.currentTaskInfo.links)]
       await this.toggleActions('fuck', pro)
       if (this.conf.fuck.visitLink) {
         for (const link of links) {
@@ -180,7 +157,7 @@ const banana = {
   verify (verify = false) {
     if (verify) {
       const pro = []
-      for (const task of fuc.unique(this.tasks)) {
+      for (const task of fuc.unique(this.currentTaskInfo.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
         pro.push(new Promise(resolve => {
           fuc.httpRequest({
@@ -218,9 +195,9 @@ const banana = {
     }
   },
   toggleActions (action, pro) {
-    const [groups, curators, wishlists, fGames] = action === 'fuck'
-      ? [this.groups, this.curators, this.wishlists, this.fGames]
-      : [this.taskInfo.groups, this.taskInfo.curators, this.taskInfo.wishlists, this.taskInfo.fGames]
+    const { groups, curators, wishlists, fGames } = action === 'fuck'
+      ? this.currentTaskInfo
+      : this.taskInfo
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
@@ -285,19 +262,21 @@ const banana = {
     }
   },
   verifyBtn: 0,
-  links: [], // 需要浏览的页面链接
-  groups: [], // 所有任务需要加的组
-  curators: [], // 所有任务需要关注的鉴赏家
-  wishlists: [], // 所有务需要添加愿望单的游戏
-  fGames: [], // 所有任务需要关注的的游戏
-  taskIds: [], // 处理失败的任务
+  currentTaskInfo: {
+    links: [], // 需要浏览的页面链接
+    groups: [], // 所有任务需要加的组
+    curators: [], // 所有任务需要关注的鉴赏家
+    wishlists: [], // 所有务需要添加愿望单的游戏
+    fGames: [], // 所有任务需要关注的的游戏
+    taskIds: [], // 处理失败的任务
+    tasks: [] // 所有任务ID
+  },
   taskInfo: {
     groups: [], // 任务需要加的组
     curators: [], // 任务需要关注的鉴赏家
     wishlists: [], // 任务需要添加愿望单的游戏
     fGames: []// 任务需要关注的的游戏
   },
-  tasks: [], // 所有任务ID
   setting: {},
   conf: config?.banana?.enable ? config.banana : globalConf
 }

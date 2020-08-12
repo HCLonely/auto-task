@@ -3,25 +3,27 @@ import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
 import { unique } from '../tool'
 
-function verifyDiscordAuth (r) {
+function verifyDiscordAuth () {
   const status = echoLog({ type: 'verifyDiscordAuth' })
 
-  httpRequest({
-    url: 'https://discord.com/api/v6/users/@me',
-    method: 'HEAD',
-    headers: { authorization: discordInfo.authorization },
-    onload (response) {
-      if (debug) console.log(response)
-      if (response.status === 200) {
-        status.success()
-        r({ result: 'success', statusText: response.statusText, status: response.status })
-      } else {
-        status.error('Error:' + response.statusText + '(' + response.status + ')')
-        r({ result: 'error', statusText: response.statusText, status: response.status })
-      }
-    },
-    r,
-    status
+  return new Promise(resolve => {
+    httpRequest({
+      url: 'https://discord.com/api/v6/users/@me',
+      method: 'HEAD',
+      headers: { authorization: discordInfo.authorization },
+      onload (response) {
+        if (debug) console.log(response)
+        if (response.status === 200) {
+          status.success()
+          resolve({ result: 'success', statusText: response.statusText, status: response.status })
+        } else {
+          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          resolve({ result: 'error', statusText: response.statusText, status: response.status })
+        }
+      },
+      r: resolve,
+      status
+    })
   })
 }
 function joinDiscordServer (r, inviteId) {

@@ -18,7 +18,7 @@ const prys = {
       if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
     }
     if (callback === 'do_task') {
-      [this.groups, this.curators] = [[], []]
+      this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
       const [
         taskInfoHistory,
         pro
@@ -34,14 +34,14 @@ const prys = {
             const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
             const curatorId = link.match(/curator\/([\d]+)/)
             if (curatorId) {
-              this.curators.push(curatorId[1])
+              this.currentTaskInfo.curators.push(curatorId[1])
               this.taskInfo.curators.push(curatorId[1])
             }
           } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
             const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
             const groupName = link.match(/groups\/(.+)\/?/)
             if (groupName) {
-              this.groups.push(groupName[1])
+              this.currentTaskInfo.groups.push(groupName[1])
               this.taskInfo.groups.push(groupName[1])
             }
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
@@ -53,7 +53,7 @@ const prys = {
                 if (data.result === 'success') {
                   const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
                   if (groupName) {
-                    this.groups.push(groupName[1])
+                    this.currentTaskInfo.groups.push(groupName[1])
                     this.taskInfo.groups.push(groupName[1])
                   }
                 }
@@ -67,19 +67,10 @@ const prys = {
       }
       if (pro.length > 0) {
         Promise.all(pro).finally(() => {
-          [
-            this.groups,
-            this.curators,
-            this.taskInfo.groups,
-            this.taskInfo.curators
-          ] = [
-            fuc.unique(this.groups),
-            fuc.unique(this.curators),
-            fuc.unique(this.taskInfo.groups),
-            fuc.unique(this.taskInfo.curators)
-          ]
+          this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+          this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-          if (this.groups.length > 0 || this.curators.length > 0) {
+          if (this.currentTaskInfo.groups.length > 0 || this.currentTaskInfo.curators.length > 0) {
             this.do_task()
           } else {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
@@ -87,19 +78,10 @@ const prys = {
           }
         })
       } else {
-        [
-          this.groups,
-          this.curators,
-          this.taskInfo.groups,
-          this.taskInfo.curators
-        ] = [
-          fuc.unique(this.groups),
-          fuc.unique(this.curators),
-          fuc.unique(this.taskInfo.groups),
-          fuc.unique(this.taskInfo.curators)
-        ]
+        this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+        this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-        if (this.groups.length > 0 || this.curators.length > 0) {
+        if (this.currentTaskInfo.groups.length > 0 || this.currentTaskInfo.curators.length > 0) {
           this.do_task()
         } else {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
@@ -107,12 +89,12 @@ const prys = {
         }
       }
     } else if (callback === 'verify') {
-      this.tasks = []
+      this.currentTaskInfo.tasks = []
       const checks = $('#steps tbody a[id^=check]')
       if (checks.length > 0) {
         for (const check of checks) {
           const id = $(check).attr('id').match(/[\d]+/)
-          if (id) this.tasks.push({ id: id[0], taskDes: $(check).parent().prev().html().trim() })
+          if (id) this.currentTaskInfo.tasks.push({ id: id[0], taskDes: $(check).parent().prev().html().trim() })
         }
         this.verify(true)
       } else {
@@ -153,7 +135,7 @@ const prys = {
         }
         if (pro.length > 0) {
           Promise.all(pro).finally(() => {
-            [this.taskInfo.groups, this.taskInfo.curators] = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+            this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
             GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
             if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
               this.remove(true)
@@ -162,7 +144,7 @@ const prys = {
             }
           })
         } else {
-          [this.taskInfo.groups, this.taskInfo.curators] = [fuc.unique(this.taskInfo.groups), fuc.unique(this.taskInfo.curators)]
+          this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           if (this.taskInfo.groups.length > 0 || this.taskInfo.curators.length > 0) {
             this.remove(true)
@@ -190,7 +172,7 @@ const prys = {
   verify (verify = false) {
     if (verify) {
       const pro = []
-      for (const task of fuc.unique(this.tasks)) {
+      for (const task of fuc.unique(this.currentTaskInfo.tasks)) {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
         pro.push(new Promise(resolve => {
           this.checkStep(task.id, resolve, status)
@@ -253,8 +235,8 @@ const prys = {
     }
   },
   toggleActions (action, pro) {
-    const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
-    const curators = action === 'fuck' ? this.curators : this.taskInfo.curators
+    const groups = action === 'fuck' ? this.currentTaskInfo.groups : this.taskInfo.groups
+    const curators = action === 'fuck' ? this.currentTaskInfo.curators : this.taskInfo.curators
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'prys', type: 'group', elements: groups, resolve, action })
@@ -320,13 +302,15 @@ const prys = {
       })
     }
   },
-  groups: [], // 任务需要加的组
-  curators: [], // 任务需要关注的鉴赏家
+  currentTaskInfo: {
+    groups: [], // 任务需要加的组
+    curators: [], // 任务需要关注的鉴赏家
+    tasks: [] // 任务信息
+  },
   taskInfo: {
     groups: [], // 所有任务需要加的组
     curators: []// 所有任务需要关注的鉴赏家
   },
-  tasks: [], // 任务信息
   setting: {},
   conf: config?.prys?.enable ? config.prys : globalConf
 }

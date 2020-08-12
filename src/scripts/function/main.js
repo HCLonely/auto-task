@@ -5,7 +5,7 @@ import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
 import { updateTwitchInfo } from './social/twitch'
 import { toggleActions } from './social/toggleActions'
-import { unique, getUrlQuery, dateFormat, isEmptyObjArr } from './tool'
+import { unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo } from './tool'
 import { echoLog, toggleLogs } from './log'
 import { getDiscordAuth } from './getAuth'
 
@@ -23,6 +23,8 @@ const fuc = {
   toggleActions,
   getDiscordAuth,
   updateTwitchInfo,
+  clearTaskInfo,
+  uniqueTaskInfo,
   checkUpdate (s = false) {
     let status = false
     const echoLog = this.echoLog

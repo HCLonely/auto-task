@@ -16,6 +16,7 @@ window.steamInfo = getSteamInfo()
 window.discordInfo = getDiscordInfo()
 window.insInfo = {}
 window.twitchInfo = getTwitchInfo()
+window.twitterInfo = getTwitterInfo()
 
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
@@ -47,6 +48,13 @@ function getTwitchInfo () {
     isLogin: false,
     updateTime: 0
   }, GM_getValue('twitchInfo'))
+}
+function getTwitterInfo () {
+  return Object.assign({
+    authorization: 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+    ct0: '',
+    updateTime: 0
+  }, GM_getValue('twitterInfo'))
 }
 
 export { defaultConf, globalConf, debug, config }

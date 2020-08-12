@@ -38,7 +38,7 @@ const fuc = {
         if (response.response?.version === GM_info.script.version) {
           if (s) status.success(getI18n('thisIsNew'))
         } else if (response.response?.version) {
-          echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/V3/__FILENAME__" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
+          echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/master/__FILENAME__" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
           if (s) status.success(getI18n('newVer') + response.response.version)
         } else {
           if (s) status.error('Error:' + (response.statusText || response.status))

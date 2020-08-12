@@ -10,7 +10,7 @@
 // @iconURL        https://auto-task-test.hclonely.com/img/favicon.ico
 // @homepage       https://blog.hclonely.com/posts/777c60d5/
 // @supportURL     https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL      https://github.com/HCLonely/auto-task/raw/V3/auto-task-test.user.js
+// @updateURL      https://github.com/HCLonely/auto-task/raw/master/auto-task-test.user.js
 
 // @include        *://giveaway.su/giveaway/view/*
 // @include        *://marvelousga.com/*

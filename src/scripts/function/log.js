@@ -90,6 +90,24 @@ function echoLog (e) { // switch case !!
     case 'unfollowIns':
       ele = $(`<li>${getI18n('unfollowIns')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
       break
+    case 'updateTwitterInfo':
+      ele = $(`<li>${getI18n('updateTwitterInfo')}...</li>`)
+      break
+    case 'getTwitterUserId':
+      ele = $(`<li>${getI18n('getTwitterUserId')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...</li>`)
+      break
+    case 'followTwitterUser':
+      ele = $(`<li>${getI18n('followTwitterUser')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
+    case 'unfollowTwitterUser':
+      ele = $(`<li>${getI18n('unfollowTwitterUser')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
+    case 'retweet':
+      ele = $(`<li>${getI18n('retweet')}${e.text}...<font></font></li>`)
+      break
+    case 'unretweet':
+      ele = $(`<li>${getI18n('unretweet')}${e.text}...<font></font></li>`)
+      break
     case 'visitLink':
       ele = $(`<li>${getI18n('visitLink')}<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break

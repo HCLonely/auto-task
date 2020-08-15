@@ -10,6 +10,8 @@ const defaultConf = {
       followGame: true,
       joinDiscordServer: true,
       followIns: true,
+      followTwitterUser: true,
+      retweet: true,
       visitLink: true,
       verifyTask: true,
       doTask: true,
@@ -26,7 +28,9 @@ const defaultConf = {
       removeFromWishlist: true,
       unfollowGame: true,
       leaveDiscordServer: true,
-      unfollowIns: true
+      unfollowIns: true,
+      unfollowTwitterUser: true,
+      unretweet: true
     },
     other: {
       showLogs: true,
@@ -77,6 +81,8 @@ const defaultConf = {
       likeAnnouncement: true,
       addToWishlist: true,
       followGame: true,
+      followTwitterUser: true,
+      retweet: true,
       visitLink: true,
       verifyTask: true
     },
@@ -86,7 +92,9 @@ const defaultConf = {
       unfollowDeveloper: true,
       unfollowPublisher: true,
       removeFromWishlist: true,
-      unfollowGame: true
+      unfollowGame: true,
+      unfollowTwitterUser: true,
+      unretweet: true
     },
     enable: false
   },

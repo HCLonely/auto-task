@@ -43,6 +43,15 @@ const marvelousga = {
           }
           this.taskInfo.curators.push(curatorName)
         }
+        if (/follow[\w\W]*?https?:\/\/twitter.com\//gim.test(taskDes.html())) { // 关注twitter
+          const name = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter.com\/([^/]+)/)?.[1]
+          if (name) {
+            if (verifyBtn.length > 0) {
+              this.currentTaskInfo.twitterUsers.push(name)
+            }
+            this.taskInfo.twitterUsers.push(name)
+          }
+        }
         if (/visit.*?this.*?page/gim.test(taskDes.text()) && verifyBtn.length > 0) { // 浏览页面任务
           const pageUrl = taskDes.find('a[id^="task_webpage_clickedLink"]').attr('href')
           this.currentTaskInfo.links.push({ pageUrl: pageUrl, taskId: verifyBtn.attr('id').split('_')[3] })
@@ -176,7 +185,7 @@ const marvelousga = {
     }
   },
   toggleActions (action, pro) {
-    const { groups, curators } = action === 'fuck'
+    const { groups, curators, twitterUsers } = action === 'fuck'
       ? this.currentTaskInfo
       : this.taskInfo
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
@@ -187,6 +196,11 @@ const marvelousga = {
     if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    if (this.conf[action][action === 'fuck' ? 'followTwitterUser' : 'unfollowTwitterUser'] && twitterUsers.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'marvelousga', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action })
       }))
     }
     /* disable
@@ -249,12 +263,14 @@ const marvelousga = {
   currentTaskInfo: {
     groups: [], // 任务需要加的组
     curators: [], // 任务需要关注的鉴赏家
+    twitterUsers: [], // 任务需要关注的twitter
     links: [], // 需要浏览的页面链接
     tasks: [] // 任务信息
   },
   taskInfo: {
     groups: [], // 所有任务需要加的组
-    curators: []// 所有任务需要关注的鉴赏家
+    curators: [], // 所有任务需要关注的鉴赏家
+    twitterUsers: [] // 任务需要关注的twitter
   },
   setting: {},
   conf: config?.marvelousga?.enable ? config.marvelousga : globalConf

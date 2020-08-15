@@ -2,4 +2,3 @@ node_modules/
 src/page/announcement.html
 src/page/js/loadAnnouncement.js
 src/scripts/function/social/twitch.js
-src/scripts/function/social/twitter.js

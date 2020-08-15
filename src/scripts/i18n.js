@@ -142,7 +142,14 @@ const i18n = {
     getInsInfo: '正在获ins用户id',
     followIns: '正在关注ins用户',
     unfollowIns: '正在取关ins用户',
-    loginIns: '请先<a href="https://www.instagram.com/accounts/login/" target="_blank">登录ins</a>'
+    loginIns: '请先<a href="https://www.instagram.com/accounts/login/" target="_blank">登录ins</a>',
+    updateTwitterInfo: '正在更新twitter凭证',
+    loginTwitter: '请先<a href="https://twitter.com/login" target="_blank">登录twitter</a>',
+    followTwitterUser: '正在关注twitter用户',
+    unfollowTwitterUser: '正在取关twitter用户',
+    retweet: '正在转推',
+    unretweet: '正在撤销转推',
+    getTwitterUserId: '正在获取twitter用户id'
   },
   en: {
     language: 'Language',
@@ -286,7 +293,14 @@ const i18n = {
     getInsInfo: 'Getting ins user id',
     followIns: 'Following ins user',
     unfollowIns: 'Unfollowing ins user',
-    loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login ins</a>'
+    loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login ins</a>',
+    updateTwitterInfo: 'Updating twitter auth',
+    loginTwitter: 'Please <a href="https://twitter.com/login" target="_blank">log in to twitter</a>',
+    followTwitterUser: 'Following twitter user',
+    unfollowTwitterUser: 'Unfollowing twitter user',
+    retweet: 'Retweeting',
+    unretweet: 'Unretweeting',
+    getTwitterUserId: 'Getting twitter user id'
   }
 }
 const language = getLanguage()

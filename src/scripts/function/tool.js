@@ -58,6 +58,7 @@ function clearTaskInfo (data) {
     for (const [k, v] of Object.entries(data)) {
       if (Array.isArray(v)) data[k] = clearArray(v)
     }
+    return data
   }
 }
 function uniqueTaskInfo (data) {

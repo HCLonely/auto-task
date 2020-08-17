@@ -10,61 +10,35 @@ function echoLog (e) { // switch case !!
       ele = $(`<li>${getI18n('updateStoreId')}<font></font></li>`)
       break
     case 'joinSteamGroup':
-      ele = $(`<li>${getI18n('joinGroup')}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
-    case 'getGroupId':
-      ele = $(`<li>${getI18n('getGroupId')}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'leaveSteamGroup':
-      ele = $(`<li>${getI18n('leaveGroup')}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+    case 'getGroupId':
+      ele = $(`<li>${getI18n(e.type)}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'followCurator':
-      ele = $(`<li>${getI18n('followCurator')}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowCurator':
-      ele = $(`<li>${getI18n('unfollowCurator')}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'getCuratorId':
-      ele = $(`<li>${getI18n('getCuratorId')}<a href="https://store.steampowered.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'getDeveloperId':
-      ele = $(`<li>${getI18n('getDeveloperId')}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'followDeveloper':
-      ele = $(`<li>${getI18n('followDeveloper')}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowDeveloper':
-      ele = $(`<li>${getI18n('unfollowDeveloper')}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/developer/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'getPublisherId':
-      ele = $(`<li>${getI18n('getPublisherId')}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'followPublisher':
-      ele = $(`<li>${getI18n('followPublisher')}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowPublisher':
-      ele = $(`<li>${getI18n('unfollowPublisher')}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/publisher/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'getFranchiseId':
-      ele = $(`<li>${getI18n('getFranchiseId')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'followFranchise':
-      ele = $(`<li>${getI18n('followFranchise')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowFranchise':
-      ele = $(`<li>${getI18n('unfollowFranchise')}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/franchise/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'addWishlist':
-      ele = $(`<li>${getI18n('addWishlist')}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'removeWishlist':
-      ele = $(`<li>${getI18n('removeWishlist')}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'followGame':
-      ele = $(`<li>${getI18n('followGame')}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowGame':
-      ele = $(`<li>${getI18n('unfollowGame')}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'likeAnnouncements':
       ele = $(`<li>${getI18n('likeAnnouncements')}<a href="${e.url}" target="_blank">${e.id}</a>...<font></font></li>`)
@@ -73,40 +47,45 @@ function echoLog (e) { // switch case !!
       ele = $(`<li>${getI18n('verifyDiscordAuth')}...<font></font></li>`)
       break
     case 'joinDiscordServer':
-      ele = $(`<li>${getI18n('joinDiscordServer')}<a href="https://discord.com/invite/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'leaveDiscordServer':
-      ele = $(`<li>${getI18n('leaveDiscordServer')}<a href="https://discord.com/invite/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://discord.com/invite/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'updateDiscordAuth':
       ele = $(`<li style="color:red;">${getI18n('updateDiscordAuth')}</li>`)
+      break
+    case 'verifyTwitchAuth':
+      ele = $(`<li>${getI18n('verifyTwitchAuth')}...<font></font></li>`)
+      break
+    case 'followTwitchChannel':
+    case 'unfollowTwitchChannel':
+    case 'getTwitchChannelId':
+      ele = $(`<li>${getI18n(e.type)}<a href="https://www.twitch.tv/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'getInsInfo':
       ele = $(`<li>${getI18n('getInsInfo')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'followIns':
-      ele = $(`<li>${getI18n('followIns')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowIns':
-      ele = $(`<li>${getI18n('unfollowIns')}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'updateTwitterInfo':
-      ele = $(`<li>${getI18n('updateTwitterInfo')}...</li>`)
+      ele = $(`<li>${getI18n('updateTwitterInfo')}...<font></font></li>`)
       break
     case 'getTwitterUserId':
-      ele = $(`<li>${getI18n('getTwitterUserId')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...</li>`)
-      break
     case 'followTwitterUser':
-      ele = $(`<li>${getI18n('followTwitterUser')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-      break
     case 'unfollowTwitterUser':
-      ele = $(`<li>${getI18n('unfollowTwitterUser')}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}<a href="https://twitter.com/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'retweet':
-      ele = $(`<li>${getI18n('retweet')}${e.text}...<font></font></li>`)
-      break
     case 'unretweet':
-      ele = $(`<li>${getI18n('unretweet')}${e.text}...<font></font></li>`)
+      ele = $(`<li>${getI18n(e.type)}${e.text}...<font></font></li>`)
+      break
+    case 'updateRedditInfo':
+      ele = $(`<li>${getI18n('updateRedditInfo')}...<font></font></li>`)
+      break
+    case 'joinReddit':
+    case 'leaveReddit':
+      ele = $(`<li>${getI18n(e.type)}<a href="https://www.reddit.com/r/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'visitLink':
       ele = $(`<li>${getI18n('visitLink')}<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)

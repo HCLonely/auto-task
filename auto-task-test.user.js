@@ -66,6 +66,7 @@
 // @connect        discordapp.com
 // @connect        discord.gg
 // @connect        discord.com
+// @connect        www.reddit.com
 // @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end
@@ -257,7 +258,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       unfollowTwitterUser: '正在取关twitter用户',
       retweet: '正在转推',
       unretweet: '正在撤销转推',
-      getTwitterUserId: '正在获取twitter用户id'
+      getTwitterUserId: '正在获取twitter用户id',
+      updateTwitchInfoSuccess: '更新twitch凭证成功',
+      updateTwitchInfoError: '更新twitch凭证失败',
+      verifyTwitchAuth: '正在验证twitch凭证',
+      followTwitchChannel: '正在关注twitch频道',
+      unfollowTwitchChannel: '正在取关twitch频道',
+      getTwitchChannelId: '正在获取twitch频道id',
+      updateRedditInfo: '正在更新reddit凭证',
+      loginReddit: '请先<a href="https://www.reddit.com/login/" target="_blank">登录reddit</a>',
+      joinReddit: '正在加入subreddit',
+      leaveReddit: '正在退出subreddit'
     },
     en: {
       language: 'Language',
@@ -401,14 +412,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       getInsInfo: 'Getting ins user id',
       followIns: 'Following ins user',
       unfollowIns: 'Unfollowing ins user',
-      loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login ins</a>',
+      loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login to ins</a>',
       updateTwitterInfo: 'Updating twitter auth',
-      loginTwitter: 'Please <a href="https://twitter.com/login" target="_blank">log in to twitter</a>',
+      loginTwitter: 'Please <a href="https://twitter.com/login" target="_blank">login to twitter</a>',
       followTwitterUser: 'Following twitter user',
       unfollowTwitterUser: 'Unfollowing twitter user',
       retweet: 'Retweeting',
       unretweet: 'Unretweeting',
-      getTwitterUserId: 'Getting twitter user id'
+      getTwitterUserId: 'Getting twitter user id',
+      updateTwitchInfoSuccess: 'Successfully updated twitch auth',
+      updateTwitchInfoError: 'Failed to update twitch auth',
+      verifyTwitchAuth: 'Verifying twitch authorization',
+      followTwitchChannel: 'Following twitch channel',
+      unfollowTwitchChannel: 'Unfollowing twitch channel',
+      getTwitchChannelId: 'Getting twitch channel id',
+      updateRedditInfo: 'Updating reddit auth',
+      loginReddit: 'Please <a href="https://www.reddit.com/login/" target="_blank">login to reddit</a>',
+      joinReddit: 'Joining subreddit',
+      leaveReddit: 'Leaving subreddit'
     }
   }
   var language = getLanguage()
@@ -429,7 +450,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   function getI18n (name) {
     var str = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null
     var value = 'null'
-    if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : 'null'; else value = i18n[language][name] || 'null'
+    if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : name; else value = i18n[language][name] || name
     return value
   }
 
@@ -447,6 +468,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         followIns: true,
         followTwitterUser: true,
         retweet: true,
+        followTwitchChannel: true,
+        joinReddit: true,
         visitLink: true,
         verifyTask: true,
         doTask: true,
@@ -465,7 +488,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         leaveDiscordServer: true,
         unfollowIns: true,
         unfollowTwitterUser: true,
-        unretweet: true
+        unretweet: true,
+        unfollowTwitchChannel: true,
+        leaveReddit: true
       },
       other: {
         showLogs: true,
@@ -493,6 +518,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         followGame: true,
         joinDiscordServer: true,
         followIns: true,
+        followTwitchChannel: true,
+        joinReddit: true,
         visitLink: true
       },
       remove: {
@@ -503,7 +530,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         removeFromWishlist: true,
         unfollowGame: true,
         leaveDiscordServer: true,
-        unfollowIns: true
+        unfollowIns: true,
+        unfollowTwitchChannel: true,
+        leaveReddit: true
       },
       enable: false
     },
@@ -640,6 +669,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   window.insInfo = {}
   window.twitchInfo = getTwitchInfo()
   window.twitterInfo = getTwitterInfo()
+  window.redditInfo = getRedditInfo()
   var config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 
   for (var _i = 0, _Object$keys = Object.keys(config); _i < _Object$keys.length; _i++) {
@@ -685,6 +715,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     }, GM_getValue('twitterInfo'))
   }
 
+  function getRedditInfo () {
+    return Object.assign({
+      accessToken: '',
+      expiresTime: 0
+    }, GM_getValue('redditInfo'))
+  }
+
   function echoLog (e) {
     // switch case !!
     var ele = ''
@@ -699,79 +736,40 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         break
 
       case 'joinSteamGroup':
-        ele = $('<li>'.concat(getI18n('joinGroup'), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
-      case 'getGroupId':
-        ele = $('<li>'.concat(getI18n('getGroupId'), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'leaveSteamGroup':
-        ele = $('<li>'.concat(getI18n('leaveGroup'), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+      case 'getGroupId':
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'followCurator':
-        ele = $('<li>'.concat(getI18n('followCurator'), '<a href="https://store.steampowered.com/curator/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowCurator':
-        ele = $('<li>'.concat(getI18n('unfollowCurator'), '<a href="https://store.steampowered.com/curator/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'getCuratorId':
-        ele = $('<li>'.concat(getI18n('getCuratorId'), '<a href="https://store.steampowered.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://store.steampowered.com/curator/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'getDeveloperId':
-        ele = $('<li>'.concat(getI18n('getDeveloperId'), '<a href="https://store.steampowered.com/developer/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'followDeveloper':
-        ele = $('<li>'.concat(getI18n('followDeveloper'), '<a href="https://store.steampowered.com/developer/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowDeveloper':
-        ele = $('<li>'.concat(getI18n('unfollowDeveloper'), '<a href="https://store.steampowered.com/developer/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://store.steampowered.com/developer/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'getPublisherId':
-        ele = $('<li>'.concat(getI18n('getPublisherId'), '<a href="https://store.steampowered.com/publisher/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'followPublisher':
-        ele = $('<li>'.concat(getI18n('followPublisher'), '<a href="https://store.steampowered.com/publisher/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowPublisher':
-        ele = $('<li>'.concat(getI18n('unfollowPublisher'), '<a href="https://store.steampowered.com/publisher/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://store.steampowered.com/publisher/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'getFranchiseId':
-        ele = $('<li>'.concat(getI18n('getFranchiseId'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'followFranchise':
-        ele = $('<li>'.concat(getI18n('followFranchise'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowFranchise':
-        ele = $('<li>'.concat(getI18n('unfollowFranchise'), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://store.steampowered.com/franchise/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'addWishlist':
-        ele = $('<li>'.concat(getI18n('addWishlist'), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'removeWishlist':
-        ele = $('<li>'.concat(getI18n('removeWishlist'), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'followGame':
-        ele = $('<li>'.concat(getI18n('followGame'), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowGame':
-        ele = $('<li>'.concat(getI18n('unfollowGame'), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://store.steampowered.com/app/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'likeAnnouncements':
@@ -783,15 +781,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         break
 
       case 'joinDiscordServer':
-        ele = $('<li>'.concat(getI18n('joinDiscordServer'), '<a href="https://discord.com/invite/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'leaveDiscordServer':
-        ele = $('<li>'.concat(getI18n('leaveDiscordServer'), '<a href="https://discord.com/invite/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://discord.com/invite/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'updateDiscordAuth':
         ele = $('<li style="color:red;">'.concat(getI18n('updateDiscordAuth'), '</li>'))
+        break
+
+      case 'verifyTwitchAuth':
+        ele = $('<li>'.concat(getI18n('verifyTwitchAuth'), '...<font></font></li>'))
+        break
+
+      case 'followTwitchChannel':
+      case 'unfollowTwitchChannel':
+      case 'getTwitchChannelId':
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.twitch.tv/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'getInsInfo':
@@ -799,35 +804,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         break
 
       case 'followIns':
-        ele = $('<li>'.concat(getI18n('followIns'), '<a href="https://www.instagram.com/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowIns':
-        ele = $('<li>'.concat(getI18n('unfollowIns'), '<a href="https://www.instagram.com/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.instagram.com/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'updateTwitterInfo':
-        ele = $('<li>'.concat(getI18n('updateTwitterInfo'), '...</li>'))
+        ele = $('<li>'.concat(getI18n('updateTwitterInfo'), '...<font></font></li>'))
         break
 
       case 'getTwitterUserId':
-        ele = $('<li>'.concat(getI18n('getTwitterUserId'), '<a href="https://twitter.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...</li>'))
-        break
-
       case 'followTwitterUser':
-        ele = $('<li>'.concat(getI18n('followTwitterUser'), '<a href="https://twitter.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-        break
-
       case 'unfollowTwitterUser':
-        ele = $('<li>'.concat(getI18n('unfollowTwitterUser'), '<a href="https://twitter.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://twitter.com/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'retweet':
-        ele = $('<li>'.concat(getI18n('retweet')).concat(e.text, '...<font></font></li>'))
+      case 'unretweet':
+        ele = $('<li>'.concat(getI18n(e.type)).concat(e.text, '...<font></font></li>'))
         break
 
-      case 'unretweet':
-        ele = $('<li>'.concat(getI18n('unretweet')).concat(e.text, '...<font></font></li>'))
+      case 'updateRedditInfo':
+        ele = $('<li>'.concat(getI18n('updateRedditInfo'), '...<font></font></li>'))
+        break
+
+      case 'joinReddit':
+      case 'leaveReddit':
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.reddit.com/r/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'visitLink':
@@ -2073,8 +2075,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  /* 未完成任务: i18n */
-
   function updateTwitchInfo (notice) {
     try {
       var authToken = Cookies.get('auth-token')
@@ -2308,7 +2308,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function _toggleTwitchActions () {
     _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 (_ref5) {
-      var website, type, elements, resolve, action, _ref5$toFinalUrl, toFinalUrl, _iterator29, _step30, _loop15
+      var website, type, elements, resolve, action, _ref5$toFinalUrl, toFinalUrl, result, _iterator29, _step30, _loop15
 
       return regeneratorRuntime.wrap(function _callee17$ (_context20) {
         while (1) {
@@ -2316,8 +2316,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             case 0:
               website = _ref5.website, type = _ref5.type, elements = _ref5.elements, resolve = _ref5.resolve, action = _ref5.action, _ref5$toFinalUrl = _ref5.toFinalUrl, toFinalUrl = _ref5$toFinalUrl === void 0 ? {} : _ref5$toFinalUrl
 
-              if (!(new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000)) {
-                _context20.next = 4
+              if (!(new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000)) {
+                _context20.next = 7
                 break
               }
 
@@ -2325,8 +2325,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               return verifyTwitchAuth()
 
             case 4:
+              result = _context20.sent
+
+              if (result) {
+                _context20.next = 7
+                break
+              }
+
+              return _context20.abrupt('return')
+
+            case 7:
               _iterator29 = _createForOfIteratorHelper(unique(elements))
-              _context20.prev = 5
+              _context20.prev = 8
               _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 () {
                 var element, name, _toFinalUrlElement$ma, toFinalUrlElement
 
@@ -2357,44 +2367,44 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator29.s()
 
-            case 8:
+            case 11:
               if ((_step30 = _iterator29.n()).done) {
-                _context20.next = 12
+                _context20.next = 15
                 break
               }
 
-              return _context20.delegateYield(_loop15(), 't0', 10)
+              return _context20.delegateYield(_loop15(), 't0', 13)
 
-            case 10:
-              _context20.next = 8
+            case 13:
+              _context20.next = 11
               break
 
-            case 12:
-              _context20.next = 17
+            case 15:
+              _context20.next = 20
               break
-
-            case 14:
-              _context20.prev = 14
-              _context20.t1 = _context20.catch(5)
-
-              _iterator29.e(_context20.t1)
 
             case 17:
               _context20.prev = 17
+              _context20.t1 = _context20.catch(8)
+
+              _iterator29.e(_context20.t1)
+
+            case 20:
+              _context20.prev = 20
 
               _iterator29.f()
 
-              return _context20.finish(17)
+              return _context20.finish(20)
 
-            case 20:
+            case 23:
               resolve()
 
-            case 21:
+            case 24:
             case 'end':
               return _context20.stop()
           }
         }
-      }, _callee17, null, [[5, 14, 17, 20]])
+      }, _callee17, null, [[8, 17, 20, 23]])
     }))
     return _toggleTwitchActions.apply(this, arguments)
   }
@@ -2940,6 +2950,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             if (ct0) {
               twitterInfo.ct0 = ct0
               twitterInfo.updateTime = new Date().getTime()
+              GM_setValue('twitterInfo', twitterInfo)
               status.success()
               resolve({
                 result: 'success',
@@ -3190,7 +3201,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function _toggleTwitterActions () {
     _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (_ref8) {
-      var website, type, elements, resolve, action, _ref8$toFinalUrl, toFinalUrl, _iterator32, _step33, _loop18
+      var website, type, elements, resolve, action, _ref8$toFinalUrl, toFinalUrl, result, _iterator32, _step33, _loop18
 
       return regeneratorRuntime.wrap(function _callee24$ (_context28) {
         while (1) {
@@ -3199,7 +3210,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               website = _ref8.website, type = _ref8.type, elements = _ref8.elements, resolve = _ref8.resolve, action = _ref8.action, _ref8$toFinalUrl = _ref8.toFinalUrl, toFinalUrl = _ref8$toFinalUrl === void 0 ? {} : _ref8$toFinalUrl
 
               if (!(new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000)) {
-                _context28.next = 4
+                _context28.next = 7
                 break
               }
 
@@ -3207,8 +3218,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               return updateTwitterInfo()
 
             case 4:
+              result = _context28.sent
+
+              if (!(!(result === null || result === void 0 ? void 0 : result.result) === 'success')) {
+                _context28.next = 7
+                break
+              }
+
+              return _context28.abrupt('return')
+
+            case 7:
               _iterator32 = _createForOfIteratorHelper(unique(elements))
-              _context28.prev = 5
+              _context28.prev = 8
               _loop18 = /* #__PURE__ */regeneratorRuntime.mark(function _loop18 () {
                 var _toFinalUrlElement$ma4, _toFinalUrlElement$ma5
 
@@ -3271,46 +3292,255 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator32.s()
 
-            case 8:
+            case 11:
               if ((_step33 = _iterator32.n()).done) {
-                _context28.next = 12
+                _context28.next = 15
                 break
               }
 
-              return _context28.delegateYield(_loop18(), 't0', 10)
+              return _context28.delegateYield(_loop18(), 't0', 13)
 
-            case 10:
-              _context28.next = 8
+            case 13:
+              _context28.next = 11
               break
 
-            case 12:
-              _context28.next = 17
+            case 15:
+              _context28.next = 20
               break
-
-            case 14:
-              _context28.prev = 14
-              _context28.t1 = _context28.catch(5)
-
-              _iterator32.e(_context28.t1)
 
             case 17:
               _context28.prev = 17
+              _context28.t1 = _context28.catch(8)
+
+              _iterator32.e(_context28.t1)
+
+            case 20:
+              _context28.prev = 20
 
               _iterator32.f()
 
-              return _context28.finish(17)
+              return _context28.finish(20)
 
-            case 20:
+            case 23:
               resolve()
 
-            case 21:
+            case 24:
             case 'end':
               return _context28.stop()
           }
         }
-      }, _callee24, null, [[5, 14, 17, 20]])
+      }, _callee24, null, [[8, 17, 20, 23]])
     }))
     return _toggleTwitterActions.apply(this, arguments)
+  }
+
+  function updateRedditInfo () {
+    return new Promise(function (resolve) {
+      var status = echoLog({
+        type: 'updateRedditInfo'
+      })
+      httpRequest({
+        url: 'https://www.reddit.com/',
+        method: 'GET',
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.status === 200) {
+            if (response.responseText.includes('www.reddit.com/login/')) {
+              status.error('Error:' + getI18n('loginReddit'), true)
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+              return
+            }
+
+            var _ref9 = response.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/) || []
+            var _ref10 = _slicedToArray(_ref9, 3)
+            var accessToken = _ref10[1]
+            var expiresTime = _ref10[2]
+
+            if (accessToken) {
+              redditInfo.accessToken = accessToken
+              redditInfo.expiresTime = new Date(expiresTime).getTime()
+              GM_setValue('redditInfo', redditInfo)
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error: Parameter "accessToken" not found!')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    })
+  }
+
+  function toggleReddit (r, name) {
+    var join = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true
+    var status = echoLog({
+      type: join ? 'joinReddit' : 'leaveReddit',
+      text: name
+    })
+    httpRequest({
+      url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer ' + redditInfo.accessToken,
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: $.param({
+        action: join ? 'sub' : 'unsub',
+        sr_name: name,
+        api_type: 'json'
+      }),
+      onload: function onload (response) {
+        if (debug) console.log(response)
+
+        if (response.status === 200) {
+          status.success()
+          r({
+            result: 'success',
+            statusText: response.statusText,
+            status: response.status
+          })
+        } else {
+          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          r({
+            result: 'error',
+            statusText: response.statusText,
+            status: response.status
+          })
+        }
+      },
+      r: r,
+      status: status
+    })
+  }
+
+  function toggleRedditActions (_x15) {
+    return _toggleRedditActions.apply(this, arguments)
+  }
+
+  function _toggleRedditActions () {
+    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (_ref11) {
+      var website, type, elements, resolve, action, _ref11$toFinalUrl, toFinalUrl, result, _iterator33, _step34, _loop19
+
+      return regeneratorRuntime.wrap(function _callee25$ (_context30) {
+        while (1) {
+          switch (_context30.prev = _context30.next) {
+            case 0:
+              website = _ref11.website, type = _ref11.type, elements = _ref11.elements, resolve = _ref11.resolve, action = _ref11.action, _ref11$toFinalUrl = _ref11.toFinalUrl, toFinalUrl = _ref11$toFinalUrl === void 0 ? {} : _ref11$toFinalUrl
+
+              if (!(new Date().getTime() > redditInfo.expiresTime)) {
+                _context30.next = 7
+                break
+              }
+
+              _context30.next = 4
+              return updateRedditInfo()
+
+            case 4:
+              result = _context30.sent
+
+              if (!(!(result === null || result === void 0 ? void 0 : result.result) === 'success')) {
+                _context30.next = 7
+                break
+              }
+
+              return _context30.abrupt('return')
+
+            case 7:
+              _iterator33 = _createForOfIteratorHelper(unique(elements))
+              _context30.prev = 8
+              _loop19 = /* #__PURE__ */regeneratorRuntime.mark(function _loop19 () {
+                var element, name, _toFinalUrlElement$ma6, toFinalUrlElement
+
+                return regeneratorRuntime.wrap(function _loop19$ (_context29) {
+                  while (1) {
+                    switch (_context29.prev = _context29.next) {
+                      case 0:
+                        element = _step34.value
+                        name = element
+
+                        if (website === 'giveawaysu' && toFinalUrl[element]) {
+                          toFinalUrlElement = toFinalUrl[element] || ''
+                          name = (_toFinalUrlElement$ma6 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _toFinalUrlElement$ma6 === void 0 ? void 0 : _toFinalUrlElement$ma6[1]
+                        }
+
+                        _context29.next = 5
+                        return new Promise(function (resolve) {
+                          toggleReddit(resolve, name, action === 'fuck')
+                        })
+
+                      case 5:
+                      case 'end':
+                        return _context29.stop()
+                    }
+                  }
+                }, _loop19)
+              })
+
+              _iterator33.s()
+
+            case 11:
+              if ((_step34 = _iterator33.n()).done) {
+                _context30.next = 15
+                break
+              }
+
+              return _context30.delegateYield(_loop19(), 't0', 13)
+
+            case 13:
+              _context30.next = 11
+              break
+
+            case 15:
+              _context30.next = 20
+              break
+
+            case 17:
+              _context30.prev = 17
+              _context30.t1 = _context30.catch(8)
+
+              _iterator33.e(_context30.t1)
+
+            case 20:
+              _context30.prev = 20
+
+              _iterator33.f()
+
+              return _context30.finish(20)
+
+            case 23:
+              resolve()
+
+            case 24:
+            case 'end':
+              return _context30.stop()
+          }
+        }
+      }, _callee25, null, [[8, 17, 20, 23]])
+    }))
+    return _toggleRedditActions.apply(this, arguments)
   }
 
   function toggleActions (e) {
@@ -3329,6 +3559,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       case 'twitch':
         toggleTwitchActions(e)
+        break
+
+      case 'reddit':
+        toggleRedditActions(e)
         break
 
       default:
@@ -3433,9 +3667,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     fuck: function fuck () {
       var _this = this
 
-      var _ref9 = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
-      var needBanana = _ref9[0]
-      var needPoints = _ref9[1]
+      var _ref12 = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
+      var needBanana = _ref12[0]
+      var needPoints = _ref12[1]
       var msg = ''
       if (needBanana.length > 0) msg = getI18n('needBanana', needBanana.text().match(/[\d]+/gim)[0])
       if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
@@ -3468,13 +3702,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref10 = [fuc.echoLog({
+        var _ref13 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('processTasksInfo'), '<font></font></li>')
         }), $('ul.tasks li:not(:contains(Completed))'), []]
-        var status = _ref10[0]
-        var tasksUl = _ref10[1]
-        var pro = _ref10[2]
+        var status = _ref13[0]
+        var tasksUl = _ref13[1]
+        var pro = _ref13[2]
 
         var _iterator2 = _createForOfIteratorHelper(tasksUl)
         var _step2
@@ -3483,9 +3717,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var _loop2 = function _loop2 () {
             var task = _step2.value
             // 遍历任务信息
-            var _ref11 = [$(task).find('p'), $(task).find('button:contains(Verify)')]
-            var taskDes = _ref11[0]
-            var verifyBtn = _ref11[1]
+            var _ref14 = [$(task).find('p'), $(task).find('button:contains(Verify)')]
+            var taskDes = _ref14[0]
+            var verifyBtn = _ref14[1]
             var taskId = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : ''
 
             if (taskId) {
@@ -3616,13 +3850,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this3 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
-        var _ref13, pro, links, _iterator3, _step3, _loop3
+        var _ref16, pro, links, _iterator3, _step3, _loop3
 
         return regeneratorRuntime.wrap(function _callee$ (_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _ref13 = [[], fuc.unique(_this3.currentTaskInfo.links)], pro = _ref13[0], links = _ref13[1]
+                _ref16 = [[], fuc.unique(_this3.currentTaskInfo.links)], pro = _ref16[0], links = _ref16[1]
                 _context.next = 3
                 return _this3.toggleActions('fuck', pro)
 
@@ -3757,11 +3991,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     toggleActions: function toggleActions (action, pro) {
-      var _ref15 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref15.groups
-      var curators = _ref15.curators
-      var wishlists = _ref15.wishlists
-      var fGames = _ref15.fGames
+      var _ref18 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref18.groups
+      var curators = _ref18.curators
+      var wishlists = _ref18.wishlists
+      var fGames = _ref18.fGames
 
       if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -4029,12 +4263,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this7 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref16 = [fuc.echoLog({
+      var _ref19 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('button[data-id]')]
-      var status = _ref16[0]
-      var verifyBtns = _ref16[1]
+      var status = _ref19[0]
+      var verifyBtns = _ref19[1]
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
@@ -4048,9 +4282,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
             var btn = _step5.value
-            var _ref18 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
-            var _taskId = _ref18[0]
-            var _taskDes = _ref18[1]
+            var _ref21 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
+            var _taskId = _ref21[0]
+            var _taskDes = _ref21[1]
 
             if ($(btn).parents('.task-content').next().text().includes('+1')) {
               if (/join.*?steam.*?group/gim.test($(btn).parent().prev().text())) {
@@ -4100,9 +4334,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         if ($('a.giveaway-survey').length > 0) {
-          var _ref17 = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
-          var taskId = _ref17[0]
-          var taskDes = _ref17[1]
+          var _ref20 = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
+          var taskId = _ref20[0]
+          var taskDes = _ref20[1]
           this.currentTaskInfo.tasks.push({
             taskId: taskId,
             taskDes: taskDes
@@ -4134,9 +4368,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
             var _btn = _step6.value
-            var _ref19 = [$(_btn).attr('data-id'), $(_btn).parent().prev().text()]
-            var _taskId2 = _ref19[0]
-            var _taskDes2 = _ref19[1]
+            var _ref22 = [$(_btn).attr('data-id'), $(_btn).parent().prev().text()]
+            var _taskId2 = _ref22[0]
+            var _taskDes2 = _ref22[1]
             if ($(_btn).parents('.task-content').next().text().includes('+1')) {
               this.currentTaskInfo.tasks.push({
                 taskId: _taskId2,
@@ -4182,13 +4416,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this8 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
-        var _ref20, pro, tasks, _loop5, i
+        var _ref23, pro, tasks, _loop5, i
 
         return regeneratorRuntime.wrap(function _callee4$ (_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _ref20 = [[], fuc.unique(_this8.currentTaskInfo.tasks)], pro = _ref20[0], tasks = _ref20[1]
+                _ref23 = [[], fuc.unique(_this8.currentTaskInfo.tasks)], pro = _ref23[0], tasks = _ref23[1]
                 _loop5 = /* #__PURE__ */regeneratorRuntime.mark(function _loop5 (i) {
                   var task
                   return regeneratorRuntime.wrap(function _loop5$ (_context4) {
@@ -4293,7 +4527,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this9 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
-        var verify, _ref22, _pro3, tasks, _loop6, i
+        var verify, _ref25, _pro3, tasks, _loop6, i
 
         return regeneratorRuntime.wrap(function _callee5$ (_context7) {
           while (1) {
@@ -4306,7 +4540,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   break
                 }
 
-                _ref22 = [[], fuc.unique(_this9.currentTaskInfo.tasks)], _pro3 = _ref22[0], tasks = _ref22[1]
+                _ref25 = [[], fuc.unique(_this9.currentTaskInfo.tasks)], _pro3 = _ref25[0], tasks = _ref25[1]
                 _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 (i) {
                   var task, status
                   return regeneratorRuntime.wrap(function _loop6$ (_context6) {
@@ -4528,12 +4762,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.do_task('remove')
       } else {
         if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-        var _ref24 = [fuc.echoLog({
+        var _ref27 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#actions tr')]
-        var status = _ref24[0]
-        var tasks = _ref24[1]
+        var status = _ref27[0]
+        var tasks = _ref27[1]
 
         var _iterator7 = _createForOfIteratorHelper(tasks)
         var _step7
@@ -4576,10 +4810,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     which_task: function which_task (taskDes) {
-      var _ref25 = [[], taskDes.text().trim(), taskDes.attr('href')]
-      var taskInfo = _ref25[0]
-      var taskName = _ref25[1]
-      var link = _ref25[2]
+      var _ref28 = [[], taskDes.text().trim(), taskDes.attr('href')]
+      var taskInfo = _ref28[0]
+      var taskName = _ref28[1]
+      var link = _ref28[2]
 
       if (/disable adblock/gim.test(taskName)) {
         return [{
@@ -4631,6 +4865,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           name: 'instagram',
           link: link
         })
+      } else if (/follow.*twitch.*channel/gim.test(taskName)) {
+        taskInfo.push({
+          name: 'twitch',
+          link: link
+        })
+      } else if (/subscribe.*subreddit/gim.test(taskName)) {
+        taskInfo.push({
+          name: 'reddit',
+          link: link
+        })
       } else {
         if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
           this.links.push(link)
@@ -4665,12 +4909,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this12 = this
 
       // 处理任务链接
-      var _ref26 = [fuc.echoLog({
+      var _ref29 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
       }), []]
-      var status = _ref26[0]
-      var pro = _ref26[1]
+      var status = _ref29[0]
+      var pro = _ref29[1]
 
       var _iterator9 = _createForOfIteratorHelper(this.taskInfo.links)
       var _step9
@@ -4918,10 +5162,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
                           var e = _step11.value
 
-                          var _ref27 = e.guild || [null, null]
-                          var _ref28 = _slicedToArray(_ref27, 2)
-                          var inviteId = _ref28[0]
-                          var guild = _ref28[1]
+                          var _ref30 = e.guild || [null, null]
+                          var _ref31 = _slicedToArray(_ref30, 2)
+                          var inviteId = _ref31[0]
+                          var guild = _ref31[1]
 
                           _this13.taskInfo.toGuild[inviteId] = guild
                         }
@@ -4949,6 +5193,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
 
+                if (_this13.conf[act][act === 'fuck' ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && _this13.taskInfo.twitchs.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      social: 'twitch',
+                      website: 'giveawaysu',
+                      elements: _this13.taskInfo.twitchs,
+                      resolve: resolve,
+                      action: act,
+                      toFinalUrl: _this13.taskInfo.toFinalUrl
+                    })
+                  }))
+                }
+
+                if (_this13.conf[act][act === 'fuck' ? 'joinReddit' : 'leaveReddit'] && _this13.taskInfo.reddits.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      social: 'reddit',
+                      website: 'giveawaysu',
+                      elements: _this13.taskInfo.reddits,
+                      resolve: resolve,
+                      action: act,
+                      toFinalUrl: _this13.taskInfo.toFinalUrl
+                    })
+                  }))
+                }
+
                 Promise.all(pro).finally(function () {
                   fuc.echoLog({
                     type: 'custom',
@@ -4962,7 +5232,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 })
 
-              case 8:
+              case 10:
               case 'end':
                 return _context9.stop()
             }
@@ -5024,7 +5294,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       discords: [],
       // 任务需要加入的discord服务器
       instagrams: [],
-      // 任务需要加入的instagram服务器
+      // 任务需要关注的instagram用户
+      twitchs: [],
+      // 任务需要关注的twitch频道
+      reddits: [],
+      // 任务需要关注的subreddit
       links: [],
       // 原始链接
       toFinalUrl: {},
@@ -5054,20 +5328,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        var _ref29 = [[], [], [], [], [], [], []]
-        this.twitters = _ref29[0]
-        this.facebooks = _ref29[1]
-        this.youtubes = _ref29[2]
-        this.discords = _ref29[3]
-        this.others = _ref29[4]
-        this.groups = _ref29[5]
-        this.links = _ref29[6]
-        var _ref30 = [fuc.echoLog({
+        var _ref32 = [[], [], [], [], [], [], []]
+        this.twitters = _ref32[0]
+        this.facebooks = _ref32[1]
+        this.youtubes = _ref32[2]
+        this.discords = _ref32[3]
+        this.others = _ref32[4]
+        this.groups = _ref32[5]
+        this.links = _ref32[6]
+        var _ref33 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('div.entry-content .entry-method')]
-        var status = _ref30[0]
-        var tasksContainer = _ref30[1]
+        var status = _ref33[0]
+        var tasksContainer = _ref33[1]
 
         var _iterator12 = _createForOfIteratorHelper(tasksContainer)
         var _step12
@@ -5143,14 +5417,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           _iterator12.f()
         }
 
-        var _ref31 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
-        this.groups = _ref31[0]
-        this.twitters = _ref31[1]
-        this.facebooks = _ref31[2]
-        this.youtubes = _ref31[3]
-        this.discords = _ref31[4]
-        this.others = _ref31[5]
-        this.taskInfo.groups = _ref31[6]
+        var _ref34 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
+        this.groups = _ref34[0]
+        this.twitters = _ref34[1]
+        this.facebooks = _ref34[2]
+        this.youtubes = _ref34[3]
+        this.discords = _ref34[4]
+        this.others = _ref34[5]
+        this.taskInfo.groups = _ref34[6]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -5171,14 +5445,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this14 = this
 
       this.updateSteamInfo(function () {
-        var _ref32 = [[], fuc.unique(_this14.twitters), fuc.unique(_this14.discords), fuc.unique(_this14.facebooks), fuc.unique(_this14.youtubes), fuc.unique(_this14.others), fuc.unique(_this14.links)]
-        var pro = _ref32[0]
-        var twitters = _ref32[1]
-        var discords = _ref32[2]
-        var facebooks = _ref32[3]
-        var youtubes = _ref32[4]
-        var others = _ref32[5]
-        var links = _ref32[6]
+        var _ref35 = [[], fuc.unique(_this14.twitters), fuc.unique(_this14.discords), fuc.unique(_this14.facebooks), fuc.unique(_this14.youtubes), fuc.unique(_this14.others), fuc.unique(_this14.links)]
+        var pro = _ref35[0]
+        var twitters = _ref35[1]
+        var discords = _ref35[2]
+        var facebooks = _ref35[3]
+        var youtubes = _ref35[4]
+        var others = _ref35[5]
+        var links = _ref35[6]
         var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
         if (_this14.conf.fuck.joinSteamGroup && _this14.groups.length > 0) {
@@ -5202,13 +5476,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
                 var twitter = _step13.value
                 var title = $(twitter).find('.entry-method-title').text().trim()
-                var _ref33 = [fuc.echoLog({
+                var _ref36 = [fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
                 }), $(twitter).find('a.twitter-button:contains(Follow)').attr('href'), $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')]
-                var status = _ref33[0]
-                var followButton = _ref33[1]
-                var retweetButton = _ref33[2]
+                var status = _ref36[0]
+                var followButton = _ref36[1]
+                var retweetButton = _ref36[2]
                 var button = followButton || retweetButton
 
                 if (button) {
@@ -5235,12 +5509,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 var _title2 = $(task).find('.entry-method-title').text().trim()
 
-                var _ref34 = [fuc.echoLog({
+                var _ref37 = [fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('doing'), ':').concat(_title2, '...<font></font></li>')
                 }), $(task).find('a.btn-info:first').attr('href')]
-                var _status = _ref34[0]
-                var _button = _ref34[1]
+                var _status = _ref37[0]
+                var _button = _ref37[1]
 
                 if (_button) {
                   window.open(_button, '_blank')
@@ -5382,12 +5656,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     visit_link: function visit_link (links, i, r) {
       if (i < links.length) {
         var title = $(links[i]).find('.entry-method-title').text().trim()
-        var _ref35 = [fuc.echoLog({
+        var _ref38 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
         }), $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()]
-        var status = _ref35[0]
-        var taskTime = _ref35[1]
+        var status = _ref38[0]
+        var taskTime = _ref38[1]
 
         if (taskTime) {
           var taskBtn = $(links[i]).find('a.btn-info')
@@ -5495,12 +5769,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var currentoption = $('a.buttonenter.buttongiveaway')
 
       if (/join giveaway/gim.test(currentoption.text())) {
-        var _ref36 = [fuc.echoLog({
+        var _ref39 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
         }), this.do_task]
-        var status = _ref36[0]
-        var doTask = _ref36[1]
+        var status = _ref39[0]
+        var doTask = _ref39[1]
         fuc.httpRequest({
           url: currentoption.attr('href'),
           method: 'POST',
@@ -5551,9 +5825,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
 
       if (id.length === 2) {
-        var _ref37 = [$('#giveawaysjoined a[class*=promo]'), []]
-        var tasks = _ref37[0]
-        var _pro4 = _ref37[1]
+        var _ref40 = [$('#giveawaysjoined a[class*=promo]'), []]
+        var tasks = _ref40[0]
+        var _pro4 = _ref40[1]
 
         var _iterator16 = _createForOfIteratorHelper(tasks)
         var _step16
@@ -5770,12 +6044,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref38 = [fuc.echoLog({
+        var _ref41 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('.container_task')]
-        var status = _ref38[0]
-        var tasksContainer = _ref38[1]
+        var status = _ref41[0]
+        var tasksContainer = _ref41[1]
 
         var _iterator17 = _createForOfIteratorHelper(tasksContainer)
         var _step17
@@ -5784,9 +6058,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
             var task = _step17.value
             // 遍历任务信息
-            var _ref39 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-            var taskDes = _ref39[0]
-            var verifyBtn = _ref39[1]
+            var _ref42 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+            var taskDes = _ref42[0]
+            var verifyBtn = _ref42[1]
 
             if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
               // 加组任务
@@ -5890,13 +6164,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this17 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
-        var _ref41, pro, links, _iterator18, _step18, _loop9
+        var _ref44, pro, links, _iterator18, _step18, _loop9
 
         return regeneratorRuntime.wrap(function _callee8$ (_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _ref41 = [[], fuc.unique(_this17.currentTaskInfo.links)], pro = _ref41[0], links = _ref41[1]
+                _ref44 = [[], fuc.unique(_this17.currentTaskInfo.links)], pro = _ref44[0], links = _ref44[1]
                 _context10.next = 3
                 return _this17.toggleActions('fuck', pro)
 
@@ -6092,10 +6366,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     toggleActions: function toggleActions (action, pro) {
-      var _ref43 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref43.groups
-      var curators = _ref43.curators
-      var twitterUsers = _ref43.twitterUsers
+      var _ref46 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref46.groups
+      var curators = _ref46.curators
+      var twitterUsers = _ref46.twitterUsers
 
       if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -6214,14 +6488,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this21 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
-        var type, _ref44, items, maxPoint, myPoint, i, item, needPoints
+        var type, _ref47, items, maxPoint, myPoint, i, item, needPoints
 
         return regeneratorRuntime.wrap(function _callee11$ (_context13) {
           while (1) {
             switch (_context13.prev = _context13.next) {
               case 0:
                 type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
-                _ref44 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this21.maxPoint()], items = _ref44[0], maxPoint = _ref44[1]
+                _ref47 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this21.maxPoint()], items = _ref47[0], maxPoint = _ref47[1]
                 myPoint = _this21.myPoints
                 i = 0
 
@@ -6266,16 +6540,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
 
                 return _context13.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-                  var _ref45, status, a, giveawayId
+                  var _ref48, status, a, giveawayId
 
                   return regeneratorRuntime.wrap(function _callee10$ (_context12) {
                     while (1) {
                       switch (_context12.prev = _context12.next) {
                         case 0:
-                          _ref45 = [fuc.echoLog({
+                          _ref48 = [fuc.echoLog({
                             type: 'custom',
                             text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref45[0], a = _ref45[1]
+                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref48[0], a = _ref48[1]
 
                           if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                             giveawayId = a.attr('onclick').match(/[\d]+/)
@@ -6388,12 +6662,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this22 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref46 = [fuc.echoLog({
+      var _ref49 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('#steps tbody tr')]
-      var status = _ref46[0]
-      var steps = _ref46[1]
+      var status = _ref49[0]
+      var steps = _ref49[1]
 
       for (var i = 0; i < steps.length; i++) {
         if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
@@ -6401,9 +6675,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref47 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-        var taskInfoHistory = _ref47[0]
-        var _pro6 = _ref47[1]
+        var _ref50 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+        var taskInfoHistory = _ref50[0]
+        var _pro6 = _ref50[1]
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
         var _iterator20 = _createForOfIteratorHelper(steps)
@@ -6874,18 +7148,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        var _ref50 = [[], [], [], []]
-        this.tasks = _ref50[0]
-        this.groups = _ref50[1]
-        this.curators = _ref50[2]
-        this.links = _ref50[3]
-        var _ref51 = [[], fuc.echoLog({
+        var _ref53 = [[], [], [], []]
+        this.tasks = _ref53[0]
+        this.groups = _ref53[1]
+        this.curators = _ref53[2]
+        this.links = _ref53[3]
+        var _ref54 = [[], fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#usl>div')]
-        var _pro9 = _ref51[0]
-        var status = _ref51[1]
-        var tasksContainer = _ref51[2]
+        var _pro9 = _ref54[0]
+        var status = _ref54[1]
+        var tasksContainer = _ref54[2]
 
         var _iterator24 = _createForOfIteratorHelper(tasksContainer)
         var _step25
@@ -6897,10 +7171,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             // 遍历任务信息
             _this27.tasks.push(task)
 
-            var _ref53 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-            var icon = _ref53[0]
-            var link = _ref53[1]
-            var id = _ref53[2]
+            var _ref56 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
+            var icon = _ref56[0]
+            var link = _ref56[1]
+            var id = _ref56[2]
 
             if (icon.hasClass('fa-steam')) {
               if (link && /gid\/[\d]+/.test(link)) {
@@ -6947,14 +7221,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         Promise.all(_pro9).finally(function () {
-          var _ref52 = [fuc.unique(_this27.groups), fuc.unique(_this27.curators), fuc.unique(_this27.links), fuc.unique(_this27.others), fuc.unique(_this27.taskInfo.groups), fuc.unique(_this27.taskInfo.curators), fuc.unique(_this27.tasks)]
-          _this27.groups = _ref52[0]
-          _this27.curators = _ref52[1]
-          _this27.links = _ref52[2]
-          _this27.others = _ref52[3]
-          _this27.taskInfo.groups = _ref52[4]
-          _this27.taskInfo.curators = _ref52[5]
-          _this27.tasks = _ref52[6]
+          var _ref55 = [fuc.unique(_this27.groups), fuc.unique(_this27.curators), fuc.unique(_this27.links), fuc.unique(_this27.others), fuc.unique(_this27.taskInfo.groups), fuc.unique(_this27.taskInfo.curators), fuc.unique(_this27.tasks)]
+          _this27.groups = _ref55[0]
+          _this27.curators = _ref55[1]
+          _this27.links = _ref55[2]
+          _this27.others = _ref55[3]
+          _this27.taskInfo.groups = _ref55[4]
+          _this27.taskInfo.curators = _ref55[5]
+          _this27.tasks = _ref55[6]
           GM_setValue('taskInfo[' + window.location.host + _this27.get_giveawayId() + ']', _this27.taskInfo)
           status.success()
           if (debug) console.log(_this27)
@@ -6982,13 +7256,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this28 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
-        var _ref55, pro, links, others, vks, _iterator25, _step26, _loop13, _iterator26, _step27, vk, _iterator27, _step28, other
+        var _ref58, pro, links, others, vks, _iterator25, _step26, _loop13, _iterator26, _step27, vk, _iterator27, _step28, other
 
         return regeneratorRuntime.wrap(function _callee14$ (_context16) {
           while (1) {
             switch (_context16.prev = _context16.next) {
               case 0:
-                _ref55 = [[], fuc.unique(_this28.links), fuc.unique(_this28.others), fuc.unique(_this28.vks)], pro = _ref55[0], links = _ref55[1], others = _ref55[2], vks = _ref55[3]
+                _ref58 = [[], fuc.unique(_this28.links), fuc.unique(_this28.others), fuc.unique(_this28.vks)], pro = _ref58[0], links = _ref58[1], others = _ref58[2], vks = _ref58[3]
                 _context16.next = 3
                 return _this28.toggleActions('fuck', pro)
 

@@ -23,6 +23,7 @@ function updateTwitterInfo () {
           if (ct0) {
             twitterInfo.ct0 = ct0
             twitterInfo.updateTime = new Date().getTime()
+            GM_setValue('twitterInfo', twitterInfo)
             status.success()
             resolve({ result: 'success', statusText: response.statusText, status: response.status })
           } else {
@@ -125,7 +126,8 @@ function getTwitterUserId (name) {
 
 async function toggleTwitterActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   if (new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000) {
-    await updateTwitterInfo()
+    const result = await updateTwitterInfo()
+    if (!result?.result === 'success') return
   }
   for (const element of unique(elements)) {
     let id = element

@@ -149,7 +149,17 @@ const i18n = {
     unfollowTwitterUser: '正在取关twitter用户',
     retweet: '正在转推',
     unretweet: '正在撤销转推',
-    getTwitterUserId: '正在获取twitter用户id'
+    getTwitterUserId: '正在获取twitter用户id',
+    updateTwitchInfoSuccess: '更新twitch凭证成功',
+    updateTwitchInfoError: '更新twitch凭证失败',
+    verifyTwitchAuth: '正在验证twitch凭证',
+    followTwitchChannel: '正在关注twitch频道',
+    unfollowTwitchChannel: '正在取关twitch频道',
+    getTwitchChannelId: '正在获取twitch频道id',
+    updateRedditInfo: '正在更新reddit凭证',
+    loginReddit: '请先<a href="https://www.reddit.com/login/" target="_blank">登录reddit</a>',
+    joinReddit: '正在加入subreddit',
+    leaveReddit: '正在退出subreddit'
   },
   en: {
     language: 'Language',
@@ -293,14 +303,24 @@ const i18n = {
     getInsInfo: 'Getting ins user id',
     followIns: 'Following ins user',
     unfollowIns: 'Unfollowing ins user',
-    loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login ins</a>',
+    loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">login to ins</a>',
     updateTwitterInfo: 'Updating twitter auth',
-    loginTwitter: 'Please <a href="https://twitter.com/login" target="_blank">log in to twitter</a>',
+    loginTwitter: 'Please <a href="https://twitter.com/login" target="_blank">login to twitter</a>',
     followTwitterUser: 'Following twitter user',
     unfollowTwitterUser: 'Unfollowing twitter user',
     retweet: 'Retweeting',
     unretweet: 'Unretweeting',
-    getTwitterUserId: 'Getting twitter user id'
+    getTwitterUserId: 'Getting twitter user id',
+    updateTwitchInfoSuccess: 'Successfully updated twitch auth',
+    updateTwitchInfoError: 'Failed to update twitch auth',
+    verifyTwitchAuth: 'Verifying twitch authorization',
+    followTwitchChannel: 'Following twitch channel',
+    unfollowTwitchChannel: 'Unfollowing twitch channel',
+    getTwitchChannelId: 'Getting twitch channel id',
+    updateRedditInfo: 'Updating reddit auth',
+    loginReddit: 'Please <a href="https://www.reddit.com/login/" target="_blank">login to reddit</a>',
+    joinReddit: 'Joining subreddit',
+    leaveReddit: 'Leaving subreddit'
   }
 }
 const language = getLanguage()
@@ -314,8 +334,8 @@ function getLanguage () {
 }
 function getI18n (name, str = null) {
   let value = 'null'
-  if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : 'null'
-  else value = i18n[language][name] || 'null'
+  if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : name
+  else value = i18n[language][name] || name
   return value
 }
 

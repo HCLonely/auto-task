@@ -12,6 +12,8 @@ const defaultConf = {
       followIns: true,
       followTwitterUser: true,
       retweet: true,
+      followTwitchChannel: true,
+      joinReddit: true,
       visitLink: true,
       verifyTask: true,
       doTask: true,
@@ -30,7 +32,9 @@ const defaultConf = {
       leaveDiscordServer: true,
       unfollowIns: true,
       unfollowTwitterUser: true,
-      unretweet: true
+      unretweet: true,
+      unfollowTwitchChannel: true,
+      leaveReddit: true
     },
     other: {
       showLogs: true,
@@ -58,6 +62,8 @@ const defaultConf = {
       followGame: true,
       joinDiscordServer: true,
       followIns: true,
+      followTwitchChannel: true,
+      joinReddit: true,
       visitLink: true
     },
     remove: {
@@ -68,7 +74,9 @@ const defaultConf = {
       removeFromWishlist: true,
       unfollowGame: true,
       leaveDiscordServer: true,
-      unfollowIns: true
+      unfollowIns: true,
+      unfollowTwitchChannel: true,
+      leaveReddit: true
     },
     enable: false
   },

@@ -17,6 +17,7 @@ window.discordInfo = getDiscordInfo()
 window.insInfo = {}
 window.twitchInfo = getTwitchInfo()
 window.twitterInfo = getTwitterInfo()
+window.redditInfo = getRedditInfo()
 
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
@@ -55,6 +56,12 @@ function getTwitterInfo () {
     ct0: '',
     updateTime: 0
   }, GM_getValue('twitterInfo'))
+}
+function getRedditInfo () {
+  return Object.assign({
+    accessToken: '',
+    expiresTime: 0
+  }, GM_getValue('redditInfo'))
 }
 
 export { defaultConf, globalConf, debug, config }

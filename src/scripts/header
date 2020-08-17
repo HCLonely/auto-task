@@ -66,6 +66,7 @@
 // @connect        discordapp.com
 // @connect        discord.gg
 // @connect        discord.com
+// @connect        www.reddit.com
 // @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end

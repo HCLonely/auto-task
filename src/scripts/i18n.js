@@ -33,9 +33,9 @@ const i18n = {
     updateStoreId: '正在更新Steam商店SessionID(用于添加愿望单、关注游戏、关注鉴赏家等)...',
     loginSteamCommunity: '请先登录<a href="https://steamcommunity.com/login/home" target="_blank">Steam社区</a>',
     loginSteamStore: '请先登录<a href="https://store.steampowered.com/login" target="_blank">Steam商店</a>',
-    joinGroup: '正在加入Steam组',
-    getGroupId: '正在获取Steam组ID',
-    leaveGroup: '正在退出Steam组',
+    joinSteamGroup: '正在加入Steam组',
+    getSteamGroupId: '正在获取Steam组ID',
+    leaveSteamGroup: '正在退出Steam组',
     getCuratorId: '正在获取鉴赏家ID',
     followCurator: '正在关注鉴赏家',
     unfollowCurator: '正在取关鉴赏家',
@@ -152,6 +152,7 @@ const i18n = {
     getTwitterUserId: '正在获取twitter用户id',
     updateTwitchInfoSuccess: '更新twitch凭证成功',
     updateTwitchInfoError: '更新twitch凭证失败',
+    updateTwitchAuth: '请<a href="https://www.twitch.tv/#updateTwitchInfo" target="_blank">更新凭证</a>',
     verifyTwitchAuth: '正在验证twitch凭证',
     followTwitchChannel: '正在关注twitch频道',
     unfollowTwitchChannel: '正在取关twitch频道',
@@ -159,7 +160,14 @@ const i18n = {
     updateRedditInfo: '正在更新reddit凭证',
     loginReddit: '请先<a href="https://www.reddit.com/login/" target="_blank">登录reddit</a>',
     joinReddit: '正在加入subreddit',
-    leaveReddit: '正在退出subreddit'
+    leaveReddit: '正在退出subreddit',
+    verifyVkLogin: '正在检测vk是否登录',
+    loginVk: '请先<a href="https://vk.com/login" target="_blank">登录vk</a>',
+    joinVkGroup: '正在加入vk群',
+    leaveVkGroup: '正在退出vk群',
+    joinVkPublic: '正在加入vk社区',
+    leaveVkPublic: '正在退出vk社区',
+    getVkId: '正在获取vk群/社区id'
   },
   en: {
     language: 'Language',
@@ -195,9 +203,9 @@ const i18n = {
     updateStoreId: 'Updating Steam Store SessionID (for adding to wishlist, following game, following curator, etc.)...',
     loginSteamCommunity: 'Please log in to the <a href="https://steamcommunity.com/login/home" target="_blank">Steam Community</a>.',
     loginSteamStore: 'Please log in to the <a href="https://store.steampowered.com/login" target="_blank">Steam Store</a>.',
-    joinGroup: 'Joining the Steam group',
-    getGroupId: 'Getting Steam group ID',
-    leaveGroup: 'Leaving Steam group',
+    joinSteamGroup: 'Joining the Steam group',
+    getSteamGroupId: 'Getting Steam group ID',
+    leaveSteamGroup: 'Leaving Steam group',
     getCuratorId: 'Getting curator ID',
     followCurator: 'Following curator',
     unfollowCurator: 'Unfollowing curator',
@@ -313,6 +321,7 @@ const i18n = {
     getTwitterUserId: 'Getting twitter user id',
     updateTwitchInfoSuccess: 'Successfully updated twitch auth',
     updateTwitchInfoError: 'Failed to update twitch auth',
+    updateTwitchAuth: 'Please <a href="https://www.twitch.tv/#updateTwitchInfo" target="_blank">update auth</a>',
     verifyTwitchAuth: 'Verifying twitch authorization',
     followTwitchChannel: 'Following twitch channel',
     unfollowTwitchChannel: 'Unfollowing twitch channel',
@@ -320,7 +329,14 @@ const i18n = {
     updateRedditInfo: 'Updating reddit auth',
     loginReddit: 'Please <a href="https://www.reddit.com/login/" target="_blank">login to reddit</a>',
     joinReddit: 'Joining subreddit',
-    leaveReddit: 'Leaving subreddit'
+    leaveReddit: 'Leaving subreddit',
+    verifyVkLogin: 'Checking whether vk is logged in',
+    loginVk: 'Please <a href="https://vk.com/login" target="_blank">login to vk</a>',
+    joinVkGroup: 'Joining vk group',
+    leaveVkGroup: 'Leaving vk group',
+    joinVkPublic: 'Joining vk public',
+    leaveVkPublic: 'Leaving vk public',
+    getVkId: 'Getting vk group/public id'
   }
 }
 const language = getLanguage()

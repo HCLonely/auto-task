@@ -4,6 +4,7 @@ import { toggleInsActions } from './instagram'
 import { toggleTwitterActions } from './twitter'
 import { toggleTwitchActions } from './twitch'
 import { toggleRedditActions } from './reddit'
+import { toggleVkActions } from './vk'
 
 function toggleActions (e) {
   switch (e.social) {
@@ -21,6 +22,9 @@ function toggleActions (e) {
       break
     case 'reddit':
       toggleRedditActions(e)
+      break
+    case 'vk':
+      toggleVkActions(e)
       break
     default:
       toggleSteamActions(e)

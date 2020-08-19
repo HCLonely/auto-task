@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.8
+// @version        3.0.9
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.8/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.8/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.8/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -62,6 +62,7 @@
 // @connect        instagram.com
 // @connect        vk.com
 // @connect        twitch.tv
+// @connect        www.twitch.tv
 // @connect        github.com
 // @connect        discordapp.com
 // @connect        discord.gg
@@ -142,9 +143,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       updateStoreId: '正在更新Steam商店SessionID(用于添加愿望单、关注游戏、关注鉴赏家等)...',
       loginSteamCommunity: '请先登录<a href="https://steamcommunity.com/login/home" target="_blank">Steam社区</a>',
       loginSteamStore: '请先登录<a href="https://store.steampowered.com/login" target="_blank">Steam商店</a>',
-      joinGroup: '正在加入Steam组',
-      getGroupId: '正在获取Steam组ID',
-      leaveGroup: '正在退出Steam组',
+      joinSteamGroup: '正在加入Steam组',
+      getSteamGroupId: '正在获取Steam组ID',
+      leaveSteamGroup: '正在退出Steam组',
       getCuratorId: '正在获取鉴赏家ID',
       followCurator: '正在关注鉴赏家',
       unfollowCurator: '正在取关鉴赏家',
@@ -261,6 +262,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       getTwitterUserId: '正在获取twitter用户id',
       updateTwitchInfoSuccess: '更新twitch凭证成功',
       updateTwitchInfoError: '更新twitch凭证失败',
+      updateTwitchAuth: '请<a href="https://www.twitch.tv/#updateTwitchInfo" target="_blank">更新凭证</a>',
       verifyTwitchAuth: '正在验证twitch凭证',
       followTwitchChannel: '正在关注twitch频道',
       unfollowTwitchChannel: '正在取关twitch频道',
@@ -268,7 +270,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       updateRedditInfo: '正在更新reddit凭证',
       loginReddit: '请先<a href="https://www.reddit.com/login/" target="_blank">登录reddit</a>',
       joinReddit: '正在加入subreddit',
-      leaveReddit: '正在退出subreddit'
+      leaveReddit: '正在退出subreddit',
+      verifyVkLogin: '正在检测vk是否登录',
+      loginVk: '请先<a href="https://vk.com/login" target="_blank">登录vk</a>',
+      joinVkGroup: '正在加入vk群',
+      leaveVkGroup: '正在退出vk群',
+      joinVkPublic: '正在加入vk社区',
+      leaveVkPublic: '正在退出vk社区',
+      getVkId: '正在获取vk群/社区id'
     },
     en: {
       language: 'Language',
@@ -304,9 +313,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       updateStoreId: 'Updating Steam Store SessionID (for adding to wishlist, following game, following curator, etc.)...',
       loginSteamCommunity: 'Please log in to the <a href="https://steamcommunity.com/login/home" target="_blank">Steam Community</a>.',
       loginSteamStore: 'Please log in to the <a href="https://store.steampowered.com/login" target="_blank">Steam Store</a>.',
-      joinGroup: 'Joining the Steam group',
-      getGroupId: 'Getting Steam group ID',
-      leaveGroup: 'Leaving Steam group',
+      joinSteamGroup: 'Joining the Steam group',
+      getSteamGroupId: 'Getting Steam group ID',
+      leaveSteamGroup: 'Leaving Steam group',
       getCuratorId: 'Getting curator ID',
       followCurator: 'Following curator',
       unfollowCurator: 'Unfollowing curator',
@@ -422,6 +431,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       getTwitterUserId: 'Getting twitter user id',
       updateTwitchInfoSuccess: 'Successfully updated twitch auth',
       updateTwitchInfoError: 'Failed to update twitch auth',
+      updateTwitchAuth: 'Please <a href="https://www.twitch.tv/#updateTwitchInfo" target="_blank">update auth</a>',
       verifyTwitchAuth: 'Verifying twitch authorization',
       followTwitchChannel: 'Following twitch channel',
       unfollowTwitchChannel: 'Unfollowing twitch channel',
@@ -429,7 +439,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       updateRedditInfo: 'Updating reddit auth',
       loginReddit: 'Please <a href="https://www.reddit.com/login/" target="_blank">login to reddit</a>',
       joinReddit: 'Joining subreddit',
-      leaveReddit: 'Leaving subreddit'
+      leaveReddit: 'Leaving subreddit',
+      verifyVkLogin: 'Checking whether vk is logged in',
+      loginVk: 'Please <a href="https://vk.com/login" target="_blank">login to vk</a>',
+      joinVkGroup: 'Joining vk group',
+      leaveVkGroup: 'Leaving vk group',
+      joinVkPublic: 'Joining vk public',
+      leaveVkPublic: 'Leaving vk public',
+      getVkId: 'Getting vk group/public id'
     }
   }
   var language = getLanguage()
@@ -470,6 +487,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         retweet: true,
         followTwitchChannel: true,
         joinReddit: true,
+        joinVk: true,
         visitLink: true,
         verifyTask: true,
         doTask: true,
@@ -490,7 +508,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         unfollowTwitterUser: true,
         unretweet: true,
         unfollowTwitchChannel: true,
-        leaveReddit: true
+        leaveReddit: true,
+        leaveVk: true
       },
       other: {
         showLogs: true,
@@ -520,6 +539,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         followIns: true,
         followTwitchChannel: true,
         joinReddit: true,
+        joinVk: true,
         visitLink: true
       },
       remove: {
@@ -532,7 +552,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         leaveDiscordServer: true,
         unfollowIns: true,
         unfollowTwitchChannel: true,
-        leaveReddit: true
+        leaveReddit: true,
+        leaveVk: true
       },
       enable: false
     },
@@ -723,7 +744,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function echoLog (e) {
-    // switch case !!
     var ele = ''
 
     switch (e.type) {
@@ -737,7 +757,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       case 'joinSteamGroup':
       case 'leaveSteamGroup':
-      case 'getGroupId':
+      case 'getSteamGroupId':
         ele = $('<li>'.concat(getI18n(e.type), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
@@ -830,6 +850,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       case 'joinReddit':
       case 'leaveReddit':
         ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.reddit.com/r/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        break
+
+      case 'verifyVkLogin':
+        ele = $('<li>'.concat(getI18n('verifyVkLogin'), '...<font></font></li>'))
+        break
+
+      case 'getVkId':
+      case 'joinVkGroup':
+      case 'leaveVkGroup':
+      case 'joinVkPublic':
+      case 'leaveVkPublic':
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://vk.com/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'visitLink':
@@ -1216,7 +1248,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function getGroupID (groupName, callback) {
     var _ref2 = [echoLog({
-      type: 'getGroupId',
+      type: 'getSteamGroupId',
       text: groupName
     }), GM_getValue('groupNameToId') || {}]
     var status = _ref2[0]
@@ -2142,7 +2174,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               status: response.status
             })
           } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            status.error('Error:' + getI18n('updateTwitchAuth', true))
             resolve({
               result: 'error',
               statusText: response.statusText,
@@ -2294,9 +2326,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         r: resolve,
         status: status
       })
-    }).then(function (data) {
-      var channelId = data.result === 'success' ? data === null || data === void 0 ? void 0 : data.channelId : null
-      return channelId || false
+    }).then(function (_ref5) {
+      var result = _ref5.result
+      return result === 'success'
     }).catch(function () {
       return false
     })
@@ -2307,14 +2339,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function _toggleTwitchActions () {
-    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 (_ref5) {
-      var website, type, elements, resolve, action, _ref5$toFinalUrl, toFinalUrl, result, _iterator29, _step30, _loop15
+    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 (_ref6) {
+      var website, type, elements, resolve, action, _ref6$toFinalUrl, toFinalUrl, result, _iterator29, _step30, _loop15
 
       return regeneratorRuntime.wrap(function _callee17$ (_context20) {
         while (1) {
           switch (_context20.prev = _context20.next) {
             case 0:
-              website = _ref5.website, type = _ref5.type, elements = _ref5.elements, resolve = _ref5.resolve, action = _ref5.action, _ref5$toFinalUrl = _ref5.toFinalUrl, toFinalUrl = _ref5$toFinalUrl === void 0 ? {} : _ref5$toFinalUrl
+              website = _ref6.website, type = _ref6.type, elements = _ref6.elements, resolve = _ref6.resolve, action = _ref6.action, _ref6$toFinalUrl = _ref6.toFinalUrl, toFinalUrl = _ref6$toFinalUrl === void 0 ? {} : _ref6$toFinalUrl
 
               if (!(new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000)) {
                 _context20.next = 7
@@ -2352,12 +2384,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                           name = (_toFinalUrlElement$ma = toFinalUrlElement.match(/https:\/\/www.twitch.tv\/(.+)/)) === null || _toFinalUrlElement$ma === void 0 ? void 0 : _toFinalUrlElement$ma[1]
                         }
 
-                        _context19.next = 5
+                        if (!name) {
+                          _context19.next = 6
+                          break
+                        }
+
+                        _context19.next = 6
                         return new Promise(function (resolve) {
                           toggleTwitchChannel(resolve, name, action === 'fuck')
                         })
 
-                      case 5:
+                      case 6:
                       case 'end':
                         return _context19.stop()
                     }
@@ -2524,14 +2561,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function _toggleDiscordActions () {
-    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee18 (_ref6) {
-      var website, elements, resolve, action, _ref6$toFinalUrl, toFinalUrl, _ref6$toGuild, toGuild, verifyResult, pro, _iterator30, _step31, _loop16
+    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee18 (_ref7) {
+      var website, elements, resolve, action, _ref7$toFinalUrl, toFinalUrl, _ref7$toGuild, toGuild, verifyResult, pro, _iterator30, _step31, _loop16
 
       return regeneratorRuntime.wrap(function _callee18$ (_context21) {
         while (1) {
           switch (_context21.prev = _context21.next) {
             case 0:
-              website = _ref6.website, elements = _ref6.elements, resolve = _ref6.resolve, action = _ref6.action, _ref6$toFinalUrl = _ref6.toFinalUrl, toFinalUrl = _ref6$toFinalUrl === void 0 ? {} : _ref6$toFinalUrl, _ref6$toGuild = _ref6.toGuild, toGuild = _ref6$toGuild === void 0 ? {} : _ref6$toGuild
+              website = _ref7.website, elements = _ref7.elements, resolve = _ref7.resolve, action = _ref7.action, _ref7$toFinalUrl = _ref7.toFinalUrl, toFinalUrl = _ref7$toFinalUrl === void 0 ? {} : _ref7$toFinalUrl, _ref7$toGuild = _ref7.toGuild, toGuild = _ref7$toGuild === void 0 ? {} : _ref7$toGuild
 
               if (!(new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired)) {
                 _context21.next = 14
@@ -2569,27 +2606,27 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               try {
                 _loop16 = function _loop16 () {
                   var element = _step31.value
-                  var inviteId = null
+                  var inviteId = element
 
                   if (website === 'giveawaysu' && toFinalUrl[element]) {
                     var _toFinalUrlElement$ma2
 
                     var toFinalUrlElement = toFinalUrl[element] || ''
                     inviteId = (_toFinalUrlElement$ma2 = toFinalUrlElement.match(/invite\/(.+)/)) === null || _toFinalUrlElement$ma2 === void 0 ? void 0 : _toFinalUrlElement$ma2[1]
+                  }
 
-                    if (inviteId) {
-                      pro.push(new Promise(function (resolve) {
-                        var guild = toGuild[inviteId]
+                  if (inviteId) {
+                    pro.push(new Promise(function (resolve) {
+                      var guild = toGuild[inviteId]
 
-                        if (action === 'fuck') {
-                          joinDiscordServer(resolve, inviteId)
-                        } else if (guild) {
-                          leaveDiscordServer(resolve, inviteId, guild)
-                        } else {
-                          resolve({})
-                        }
-                      }))
-                    }
+                      if (action === 'fuck') {
+                        joinDiscordServer(resolve, inviteId)
+                      } else if (guild) {
+                        leaveDiscordServer(resolve, inviteId, guild)
+                      } else {
+                        resolve({})
+                      }
+                    }))
                   }
                 }
 
@@ -2680,10 +2717,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         r: resolve,
         status: status
       })
-    }).then(function (data) {
+    }).then(function (_ref8) {
+      var id = _ref8.id
       return {
-        id: data === null || data === void 0 ? void 0 : data.id,
-        error: !(data === null || data === void 0 ? void 0 : data.id)
+        id: id,
+        error: !id
       }
     }).catch(function (error) {
       return {
@@ -2864,37 +2902,37 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function _toggleInsActions () {
-    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (_ref7) {
-      var website, elements, resolve, action, _ref7$toFinalUrl, toFinalUrl, pro, _iterator31, _step32, _loop17
+    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (_ref9) {
+      var website, elements, resolve, action, _ref9$toFinalUrl, toFinalUrl, pro, _iterator31, _step32, _loop17
 
       return regeneratorRuntime.wrap(function _callee21$ (_context24) {
         while (1) {
           switch (_context24.prev = _context24.next) {
             case 0:
-              website = _ref7.website, elements = _ref7.elements, resolve = _ref7.resolve, action = _ref7.action, _ref7$toFinalUrl = _ref7.toFinalUrl, toFinalUrl = _ref7$toFinalUrl === void 0 ? {} : _ref7$toFinalUrl
+              website = _ref9.website, elements = _ref9.elements, resolve = _ref9.resolve, action = _ref9.action, _ref9$toFinalUrl = _ref9.toFinalUrl, toFinalUrl = _ref9$toFinalUrl === void 0 ? {} : _ref9$toFinalUrl
               pro = []
               _iterator31 = _createForOfIteratorHelper(unique(elements))
 
               try {
                 _loop17 = function _loop17 () {
                   var element = _step32.value
-                  var name = null
+                  var name = element
 
                   if (website === 'giveawaysu' && toFinalUrl[element]) {
                     var _toFinalUrlElement$ma3
 
                     var toFinalUrlElement = toFinalUrl[element] || ''
                     name = (_toFinalUrlElement$ma3 = toFinalUrlElement.match(/https:\/\/www.instagram.com\/(.+)?\//)) === null || _toFinalUrlElement$ma3 === void 0 ? void 0 : _toFinalUrlElement$ma3[1]
+                  }
 
-                    if (name) {
-                      pro.push(new Promise(function (resolve) {
-                        if (action === 'fuck') {
-                          followIns(resolve, name)
-                        } else {
-                          unfollowIns(resolve, name)
-                        }
-                      }))
-                    }
+                  if (name) {
+                    pro.push(new Promise(function (resolve) {
+                      if (action === 'fuck') {
+                        followIns(resolve, name)
+                      } else {
+                        unfollowIns(resolve, name)
+                      }
+                    }))
                   }
                 }
 
@@ -3187,9 +3225,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         r: resolve,
         status: status
       })
-    }).then(function (data) {
-      var userId = data.result === 'success' ? data === null || data === void 0 ? void 0 : data.userId : null
-      return userId || false
+    }).then(function (_ref10) {
+      var result = _ref10.result
+      return result === 'success'
     }).catch(function () {
       return false
     })
@@ -3200,14 +3238,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function _toggleTwitterActions () {
-    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (_ref8) {
-      var website, type, elements, resolve, action, _ref8$toFinalUrl, toFinalUrl, result, _iterator32, _step33, _loop18
+    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (_ref11) {
+      var website, type, elements, resolve, action, _ref11$toFinalUrl, toFinalUrl, result, _iterator32, _step33, _loop18
 
       return regeneratorRuntime.wrap(function _callee24$ (_context28) {
         while (1) {
           switch (_context28.prev = _context28.next) {
             case 0:
-              website = _ref8.website, type = _ref8.type, elements = _ref8.elements, resolve = _ref8.resolve, action = _ref8.action, _ref8$toFinalUrl = _ref8.toFinalUrl, toFinalUrl = _ref8$toFinalUrl === void 0 ? {} : _ref8$toFinalUrl
+              website = _ref11.website, type = _ref11.type, elements = _ref11.elements, resolve = _ref11.resolve, action = _ref11.action, _ref11$toFinalUrl = _ref11.toFinalUrl, toFinalUrl = _ref11$toFinalUrl === void 0 ? {} : _ref11$toFinalUrl
 
               if (!(new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000)) {
                 _context28.next = 7
@@ -3260,29 +3298,34 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         return _context27.abrupt('break', 11)
 
                       case 11:
+                        if (!id) {
+                          _context27.next = 21
+                          break
+                        }
+
                         _context27.t1 = type
-                        _context27.next = _context27.t1 === 'follow' ? 14 : _context27.t1 === 'retweet' ? 17 : 20
+                        _context27.next = _context27.t1 === 'follow' ? 15 : _context27.t1 === 'retweet' ? 18 : 21
                         break
 
-                      case 14:
-                        _context27.next = 16
+                      case 15:
+                        _context27.next = 17
                         return new Promise(function (resolve) {
                           toggleTwitterUser(resolve, id, action === 'fuck')
                         })
 
-                      case 16:
-                        return _context27.abrupt('break', 20)
-
                       case 17:
-                        _context27.next = 19
+                        return _context27.abrupt('break', 21)
+
+                      case 18:
+                        _context27.next = 20
                         return new Promise(function (resolve) {
                           toggleRetweet(resolve, id, action === 'fuck')
                         })
 
-                      case 19:
-                        return _context27.abrupt('break', 20)
-
                       case 20:
+                        return _context27.abrupt('break', 21)
+
+                      case 21:
                       case 'end':
                         return _context27.stop()
                     }
@@ -3356,10 +3399,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               return
             }
 
-            var _ref9 = response.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/) || []
-            var _ref10 = _slicedToArray(_ref9, 3)
-            var accessToken = _ref10[1]
-            var expiresTime = _ref10[2]
+            var _ref12 = response.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/) || []
+            var _ref13 = _slicedToArray(_ref12, 3)
+            var accessToken = _ref13[1]
+            var expiresTime = _ref13[2]
 
             if (accessToken) {
               redditInfo.accessToken = accessToken
@@ -3441,14 +3484,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function _toggleRedditActions () {
-    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (_ref11) {
-      var website, type, elements, resolve, action, _ref11$toFinalUrl, toFinalUrl, result, _iterator33, _step34, _loop19
+    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (_ref14) {
+      var website, type, elements, resolve, action, _ref14$toFinalUrl, toFinalUrl, result, _iterator33, _step34, _loop19
 
       return regeneratorRuntime.wrap(function _callee25$ (_context30) {
         while (1) {
           switch (_context30.prev = _context30.next) {
             case 0:
-              website = _ref11.website, type = _ref11.type, elements = _ref11.elements, resolve = _ref11.resolve, action = _ref11.action, _ref11$toFinalUrl = _ref11.toFinalUrl, toFinalUrl = _ref11$toFinalUrl === void 0 ? {} : _ref11$toFinalUrl
+              website = _ref14.website, type = _ref14.type, elements = _ref14.elements, resolve = _ref14.resolve, action = _ref14.action, _ref14$toFinalUrl = _ref14.toFinalUrl, toFinalUrl = _ref14$toFinalUrl === void 0 ? {} : _ref14$toFinalUrl
 
               if (!(new Date().getTime() > redditInfo.expiresTime)) {
                 _context30.next = 7
@@ -3486,12 +3529,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                           name = (_toFinalUrlElement$ma6 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _toFinalUrlElement$ma6 === void 0 ? void 0 : _toFinalUrlElement$ma6[1]
                         }
 
-                        _context29.next = 5
+                        if (!name) {
+                          _context29.next = 6
+                          break
+                        }
+
+                        _context29.next = 6
                         return new Promise(function (resolve) {
                           toggleReddit(resolve, name, action === 'fuck')
                         })
 
-                      case 5:
+                      case 6:
                       case 'end':
                         return _context29.stop()
                     }
@@ -3543,6 +3591,393 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     return _toggleRedditActions.apply(this, arguments)
   }
 
+  function verifyVkLogin () {
+    return new Promise(function (resolve) {
+      var status = echoLog({
+        type: 'verifyVkLogin'
+      })
+      httpRequest({
+        url: 'https://vk.com/im',
+        method: 'HEAD',
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.toFinalUrl.includes('vk.com/login')) {
+            status.error('Error:' + getI18n('loginVk'), true)
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else if (response.status === 200) {
+            status.success()
+            resolve({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    }).then(function (_ref15) {
+      var result = _ref15.result
+      return result === 'success'
+    }).catch(function () {
+      return false
+    })
+  }
+
+  function toggleVk (_x16, _x17) {
+    return _toggleVk.apply(this, arguments)
+  }
+
+  function _toggleVk () {
+    _toggleVk = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee26 (r, name) {
+      var join
+      var _yield$getVkId
+      var data
+      var _args31 = arguments
+
+      return regeneratorRuntime.wrap(function _callee26$ (_context31) {
+        while (1) {
+          switch (_context31.prev = _context31.next) {
+            case 0:
+              join = _args31.length > 2 && _args31[2] !== undefined ? _args31[2] : true
+              _context31.next = 3
+              return getVkId(name)
+
+            case 3:
+              _yield$getVkId = _context31.sent
+              data = _yield$getVkId.data
+
+              if (data) {
+                _context31.next = 7
+                break
+              }
+
+              return _context31.abrupt('return')
+
+            case 7:
+              _context31.t0 = data.type
+              _context31.next = _context31.t0 === 'group' ? 10 : _context31.t0 === 'public' ? 12 : 13
+              break
+
+            case 10:
+              toggleVkGroup(r, name, data, join)
+              return _context31.abrupt('break', 13)
+
+            case 12:
+              toggleVkPublic(r, name, data, join)
+
+            case 13:
+            case 'end':
+              return _context31.stop()
+          }
+        }
+      }, _callee26)
+    }))
+    return _toggleVk.apply(this, arguments)
+  }
+
+  function toggleVkGroup (r, name, data) {
+    var join = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true
+    var status = echoLog({
+      type: join ? 'joinVkGroup' : 'leaveVkGroup',
+      text: name
+    })
+
+    if (data.groupAct === 'enter' && !join || data.groupAct === 'leave' && join) {
+      status.success()
+      r({
+        result: 'success'
+      })
+    }
+
+    var reqData = {
+      act: join ? 'enter' : 'leave',
+      al: 1,
+      gid: data.groupId,
+      hash: data.groupHash
+    }
+    if (join) reqData.context = '_'
+    httpRequest({
+      url: 'https://vk.com/al_groups.php',
+      method: 'POST',
+      headers: {
+        origin: 'https://vk.com',
+        referer: 'https://vk.com/' + name,
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: $.param(reqData),
+      onload: function onload (response) {
+        if (debug) console.log(response)
+
+        if (response.status === 200) {
+          status.success()
+          r({
+            result: 'success',
+            statusText: response.statusText,
+            status: response.status
+          })
+        } else {
+          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          r({
+            result: 'error',
+            statusText: response.statusText,
+            status: response.status
+          })
+        }
+      },
+      r: r,
+      status: status
+    })
+  }
+
+  function toggleVkPublic (r, name, data) {
+    var join = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true
+    var status = echoLog({
+      type: join ? 'joinVkPublic' : 'leaveVkPublic',
+      text: name
+    })
+
+    if (data.publicJoined && join || !data.publicJoined && !join) {
+      status.success()
+      r({
+        result: 'success'
+      })
+    }
+
+    httpRequest({
+      url: 'https://vk.com/al_public.php',
+      method: 'POST',
+      headers: {
+        origin: 'https://vk.com',
+        referer: 'https://vk.com/' + name,
+        'content-type': 'application/x-www-form-urlencoded'
+      },
+      data: $.param({
+        act: join ? 'a_enter' : 'a_leave',
+        al: 1,
+        pid: data.publicPid,
+        hash: data.publicHash
+      }),
+      onload: function onload (response) {
+        if (debug) console.log(response)
+
+        if (response.status === 200) {
+          status.success()
+          r({
+            result: 'success',
+            statusText: response.statusText,
+            status: response.status
+          })
+        } else {
+          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          r({
+            result: 'error',
+            statusText: response.statusText,
+            status: response.status
+          })
+        }
+      },
+      r: r,
+      status: status
+    })
+  }
+
+  function getVkId (name) {
+    return new Promise(function (resolve) {
+      var status = echoLog({
+        type: 'getVkId',
+        text: name
+      })
+      httpRequest({
+        url: 'https://vk.com/' + name,
+        method: 'GET',
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.status === 200) {
+            var _ref16 = response.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || []
+            var _ref17 = _slicedToArray(_ref16, 4)
+            var groupAct = _ref17[1]
+            var groupId = _ref17[2]
+            var groupHash = _ref17[3]
+
+            var _ref18 = response.responseText.match(/"enterHash":"(.*?)"/) || []
+            var _ref19 = _slicedToArray(_ref18, 2)
+            var publicHash = _ref19[1]
+
+            var _ref20 = response.responseText.match(/"public_id":([\d]+?),/) || []
+            var _ref21 = _slicedToArray(_ref20, 2)
+            var publicPid = _ref21[1]
+
+            var publicJoined = !response.responseText.includes('Public.subscribe')
+
+            if (groupAct && groupId && groupHash) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status,
+                data: {
+                  groupAct: groupAct,
+                  groupId: groupId,
+                  groupHash: groupHash,
+                  type: 'group'
+                }
+              })
+            } else if (publicHash && publicPid) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status,
+                data: {
+                  publicHash: publicHash,
+                  publicPid: publicPid,
+                  publicJoined: publicJoined,
+                  type: 'public'
+                }
+              })
+            } else {
+              status.error('Error: Parameter "id" not found!')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    })
+  }
+
+  function toggleVkActions (_x18) {
+    return _toggleVkActions.apply(this, arguments)
+  }
+
+  function _toggleVkActions () {
+    _toggleVkActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee27 (_ref22) {
+      var website, type, elements, resolve, action, _ref22$toFinalUrl, toFinalUrl, isLogin, _iterator34, _step35, _loop20
+
+      return regeneratorRuntime.wrap(function _callee27$ (_context33) {
+        while (1) {
+          switch (_context33.prev = _context33.next) {
+            case 0:
+              website = _ref22.website, type = _ref22.type, elements = _ref22.elements, resolve = _ref22.resolve, action = _ref22.action, _ref22$toFinalUrl = _ref22.toFinalUrl, toFinalUrl = _ref22$toFinalUrl === void 0 ? {} : _ref22$toFinalUrl
+              _context33.next = 3
+              return verifyVkLogin()
+
+            case 3:
+              isLogin = _context33.sent
+
+              if (isLogin) {
+                _context33.next = 6
+                break
+              }
+
+              return _context33.abrupt('return', resolve())
+
+            case 6:
+              _iterator34 = _createForOfIteratorHelper(unique(elements))
+              _context33.prev = 7
+              _loop20 = /* #__PURE__ */regeneratorRuntime.mark(function _loop20 () {
+                var element, name, _toFinalUrlElement$ma7, toFinalUrlElement
+
+                return regeneratorRuntime.wrap(function _loop20$ (_context32) {
+                  while (1) {
+                    switch (_context32.prev = _context32.next) {
+                      case 0:
+                        element = _step35.value
+                        name = element
+
+                        if (website === 'giveawaysu' && toFinalUrl[element]) {
+                          toFinalUrlElement = toFinalUrl[element] || ''
+                          name = (_toFinalUrlElement$ma7 = toFinalUrlElement.match(/https:\/\/vk.com\/([^/]+)/)) === null || _toFinalUrlElement$ma7 === void 0 ? void 0 : _toFinalUrlElement$ma7[1]
+                        }
+
+                        if (!name) {
+                          _context32.next = 6
+                          break
+                        }
+
+                        _context32.next = 6
+                        return new Promise(function (resolve) {
+                          toggleVk(resolve, name, action === 'fuck')
+                        })
+
+                      case 6:
+                      case 'end':
+                        return _context32.stop()
+                    }
+                  }
+                }, _loop20)
+              })
+
+              _iterator34.s()
+
+            case 10:
+              if ((_step35 = _iterator34.n()).done) {
+                _context33.next = 14
+                break
+              }
+
+              return _context33.delegateYield(_loop20(), 't0', 12)
+
+            case 12:
+              _context33.next = 10
+              break
+
+            case 14:
+              _context33.next = 19
+              break
+
+            case 16:
+              _context33.prev = 16
+              _context33.t1 = _context33.catch(7)
+
+              _iterator34.e(_context33.t1)
+
+            case 19:
+              _context33.prev = 19
+
+              _iterator34.f()
+
+              return _context33.finish(19)
+
+            case 22:
+              resolve()
+
+            case 23:
+            case 'end':
+              return _context33.stop()
+          }
+        }
+      }, _callee27, null, [[7, 16, 19, 22]])
+    }))
+    return _toggleVkActions.apply(this, arguments)
+  }
+
   function toggleActions (e) {
     switch (e.social) {
       case 'discord':
@@ -3563,6 +3998,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       case 'reddit':
         toggleRedditActions(e)
+        break
+
+      case 'vk':
+        toggleVkActions(e)
         break
 
       default:
@@ -3667,9 +4106,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     fuck: function fuck () {
       var _this = this
 
-      var _ref12 = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
-      var needBanana = _ref12[0]
-      var needPoints = _ref12[1]
+      var _ref23 = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
+      var needBanana = _ref23[0]
+      var needPoints = _ref23[1]
       var msg = ''
       if (needBanana.length > 0) msg = getI18n('needBanana', needBanana.text().match(/[\d]+/gim)[0])
       if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
@@ -3702,13 +4141,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref13 = [fuc.echoLog({
+        var _ref24 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('processTasksInfo'), '<font></font></li>')
         }), $('ul.tasks li:not(:contains(Completed))'), []]
-        var status = _ref13[0]
-        var tasksUl = _ref13[1]
-        var pro = _ref13[2]
+        var status = _ref24[0]
+        var tasksUl = _ref24[1]
+        var pro = _ref24[2]
 
         var _iterator2 = _createForOfIteratorHelper(tasksUl)
         var _step2
@@ -3716,10 +4155,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           var _loop2 = function _loop2 () {
             var task = _step2.value
-            // 遍历任务信息
-            var _ref14 = [$(task).find('p'), $(task).find('button:contains(Verify)')]
-            var taskDes = _ref14[0]
-            var verifyBtn = _ref14[1]
+
+            var _ref25 = [$(task).find('p'), $(task).find('button:contains(Verify)')]
+            var taskDes = _ref25[0]
+            var verifyBtn = _ref25[1]
             var taskId = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : ''
 
             if (taskId) {
@@ -3850,13 +4289,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this3 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
-        var _ref16, pro, links, _iterator3, _step3, _loop3
+        var _ref27, pro, links, _iterator3, _step3, _loop3
 
         return regeneratorRuntime.wrap(function _callee$ (_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _ref16 = [[], fuc.unique(_this3.currentTaskInfo.links)], pro = _ref16[0], links = _ref16[1]
+                _ref27 = [[], fuc.unique(_this3.currentTaskInfo.links)], pro = _ref27[0], links = _ref27[1]
                 _context.next = 3
                 return _this3.toggleActions('fuck', pro)
 
@@ -3991,11 +4430,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     toggleActions: function toggleActions (action, pro) {
-      var _ref18 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref18.groups
-      var curators = _ref18.curators
-      var wishlists = _ref18.wishlists
-      var fGames = _ref18.fGames
+      var _ref29 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref29.groups
+      var curators = _ref29.curators
+      var wishlists = _ref29.wishlists
+      var fGames = _ref29.fGames
 
       if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -4092,28 +4531,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     verifyBtn: 0,
     currentTaskInfo: {
       links: [],
-      // 需要浏览的页面链接
+
       groups: [],
-      // 所有任务需要加的组
+
       curators: [],
-      // 所有任务需要关注的鉴赏家
+
       wishlists: [],
-      // 所有务需要添加愿望单的游戏
+
       fGames: [],
-      // 所有任务需要关注的的游戏
+
       taskIds: [],
-      // 处理失败的任务
-      tasks: [] // 所有任务ID
+
+      tasks: []
 
     },
     taskInfo: {
       groups: [],
-      // 任务需要加的组
+
       curators: [],
-      // 任务需要关注的鉴赏家
+
       wishlists: [],
-      // 任务需要添加愿望单的游戏
-      fGames: [] // 任务需要关注的的游戏
+
+      fGames: []
 
     },
     setting: {},
@@ -4263,12 +4702,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this7 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref19 = [fuc.echoLog({
+      var _ref30 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('button[data-id]')]
-      var status = _ref19[0]
-      var verifyBtns = _ref19[1]
+      var status = _ref30[0]
+      var verifyBtns = _ref30[1]
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
@@ -4282,9 +4721,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
             var btn = _step5.value
-            var _ref21 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
-            var _taskId = _ref21[0]
-            var _taskDes = _ref21[1]
+            var _ref32 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
+            var _taskId = _ref32[0]
+            var _taskDes = _ref32[1]
 
             if ($(btn).parents('.task-content').next().text().includes('+1')) {
               if (/join.*?steam.*?group/gim.test($(btn).parent().prev().text())) {
@@ -4334,9 +4773,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         if ($('a.giveaway-survey').length > 0) {
-          var _ref20 = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
-          var taskId = _ref20[0]
-          var taskDes = _ref20[1]
+          var _ref31 = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
+          var taskId = _ref31[0]
+          var taskDes = _ref31[1]
           this.currentTaskInfo.tasks.push({
             taskId: taskId,
             taskDes: taskDes
@@ -4368,9 +4807,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
             var _btn = _step6.value
-            var _ref22 = [$(_btn).attr('data-id'), $(_btn).parent().prev().text()]
-            var _taskId2 = _ref22[0]
-            var _taskDes2 = _ref22[1]
+            var _ref33 = [$(_btn).attr('data-id'), $(_btn).parent().prev().text()]
+            var _taskId2 = _ref33[0]
+            var _taskDes2 = _ref33[1]
             if ($(_btn).parents('.task-content').next().text().includes('+1')) {
               this.currentTaskInfo.tasks.push({
                 taskId: _taskId2,
@@ -4416,13 +4855,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this8 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
-        var _ref23, pro, tasks, _loop5, i
+        var _ref34, pro, tasks, _loop5, i
 
         return regeneratorRuntime.wrap(function _callee4$ (_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                _ref23 = [[], fuc.unique(_this8.currentTaskInfo.tasks)], pro = _ref23[0], tasks = _ref23[1]
+                _ref34 = [[], fuc.unique(_this8.currentTaskInfo.tasks)], pro = _ref34[0], tasks = _ref34[1]
                 _loop5 = /* #__PURE__ */regeneratorRuntime.mark(function _loop5 (i) {
                   var task
                   return regeneratorRuntime.wrap(function _loop5$ (_context4) {
@@ -4527,7 +4966,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this9 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
-        var verify, _ref25, _pro3, tasks, _loop6, i
+        var verify, _ref36, _pro3, tasks, _loop6, i
 
         return regeneratorRuntime.wrap(function _callee5$ (_context7) {
           while (1) {
@@ -4540,7 +4979,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   break
                 }
 
-                _ref25 = [[], fuc.unique(_this9.currentTaskInfo.tasks)], _pro3 = _ref25[0], tasks = _ref25[1]
+                _ref36 = [[], fuc.unique(_this9.currentTaskInfo.tasks)], _pro3 = _ref36[0], tasks = _ref36[1]
                 _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 (i) {
                   var task, status
                   return regeneratorRuntime.wrap(function _loop6$ (_context6) {
@@ -4738,12 +5177,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     currentTaskInfo: {
       groups: [],
-      // 任务需要加的组
-      tasks: [] // 任务信息
+
+      tasks: []
 
     },
     taskInfo: {
-      groups: [] // 所有任务需要加的组
+      groups: []
 
     },
     setting: {},
@@ -4754,7 +5193,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       return window.location.host.includes('giveaway.su')
     },
     get_tasks: function get_tasks (e) {
-      // 获取任务信息
       var taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
 
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {
@@ -4762,12 +5200,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.do_task('remove')
       } else {
         if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-        var _ref27 = [fuc.echoLog({
+        var _ref38 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#actions tr')]
-        var status = _ref27[0]
-        var tasks = _ref27[1]
+        var status = _ref38[0]
+        var tasks = _ref38[1]
 
         var _iterator7 = _createForOfIteratorHelper(tasks)
         var _step7
@@ -4810,16 +5248,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     which_task: function which_task (taskDes) {
-      var _ref28 = [[], taskDes.text().trim(), taskDes.attr('href')]
-      var taskInfo = _ref28[0]
-      var taskName = _ref28[1]
-      var link = _ref28[2]
+      var _ref39 = [[], taskDes.text().trim(), taskDes.attr('href')]
+      var taskInfo = _ref39[0]
+      var taskName = _ref39[1]
+      var link = _ref39[2]
 
       if (/disable adblock/gim.test(taskName)) {
         return [{
           name: 'nonSteam'
         }]
-      } else if (/join.*group/gim.test(taskName)) {
+      } else if (/join.*steam.*group/gim.test(taskName)) {
         taskInfo.push({
           name: 'group',
           link: link
@@ -4875,6 +5313,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           name: 'reddit',
           link: link
         })
+      } else if (/join.*vk.*group/gim.test(taskName)) {
+        taskInfo.push({
+          name: 'vk',
+          link: link
+        })
       } else {
         if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
           this.links.push(link)
@@ -4908,13 +5351,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     getFinalUrl: function getFinalUrl (e) {
       var _this12 = this
 
-      // 处理任务链接
-      var _ref29 = [fuc.echoLog({
+      var _ref40 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
       }), []]
-      var status = _ref29[0]
-      var pro = _ref29[1]
+      var status = _ref40[0]
+      var pro = _ref40[1]
 
       var _iterator9 = _createForOfIteratorHelper(this.taskInfo.links)
       var _step9
@@ -4996,7 +5438,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         _this12.links = fuc.unique(_this12.links)
-        _this12.taskInfo = fuc.uniqueTaskInfo(_this12.taskInfo) // 任务链接处理完成
+        _this12.taskInfo = fuc.uniqueTaskInfo(_this12.taskInfo)
 
         GM_setValue('taskInfo[' + window.location.host + _this12.get_giveawayId() + ']', _this12.taskInfo)
         status.success()
@@ -5139,7 +5581,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       }))
                     }
                   }
-                })
+                }).catch(function () {})
 
               case 5:
                 if (_this13.conf[act][act === 'fuck' ? 'joinDiscordServer' : 'leaveDiscordServer'] && _this13.taskInfo.discords.length > 0) {
@@ -5162,10 +5604,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
                           var e = _step11.value
 
-                          var _ref30 = e.guild || [null, null]
-                          var _ref31 = _slicedToArray(_ref30, 2)
-                          var inviteId = _ref31[0]
-                          var guild = _ref31[1]
+                          var _ref41 = e.guild || [null, null]
+                          var _ref42 = _slicedToArray(_ref41, 2)
+                          var inviteId = _ref42[0]
+                          var guild = _ref42[1]
 
                           _this13.taskInfo.toGuild[inviteId] = guild
                         }
@@ -5219,6 +5661,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
 
+                if (_this13.conf[act][act === 'fuck' ? 'joinVk' : 'leaveVk'] && _this13.taskInfo.vks.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      social: 'vk',
+                      website: 'giveawaysu',
+                      elements: _this13.taskInfo.vks,
+                      resolve: resolve,
+                      action: act,
+                      toFinalUrl: _this13.taskInfo.toFinalUrl
+                    })
+                  }))
+                }
+
                 Promise.all(pro).finally(function () {
                   fuc.echoLog({
                     type: 'custom',
@@ -5232,7 +5687,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 })
 
-              case 10:
+              case 11:
               case 'end':
                 return _context9.stop()
             }
@@ -5273,37 +5728,39 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     community: 0,
     store: 0,
     links: [],
-    // 非steam任务
+
     taskInfo: {
       groups: [],
-      // 任务需要加的组
+
       curators: [],
-      // 任务需要关注的鉴赏家
+
       publishers: [],
-      // 任务需要关注的发行商
+
       developers: [],
-      // 任务需要关注的开发商
+
       franchises: [],
-      // 任务需要关注的系列
+
       fGames: [],
-      // 任务需要关注的游戏
+
       wGames: [],
-      // 任务需要加愿望单的游戏
+
       announcements: [],
-      // 任务需要点赞的通知
+
       discords: [],
-      // 任务需要加入的discord服务器
+
       instagrams: [],
-      // 任务需要关注的instagram用户
+
       twitchs: [],
-      // 任务需要关注的twitch频道
+
       reddits: [],
-      // 任务需要关注的subreddit
+
+      vks: [],
+
       links: [],
-      // 原始链接
+
       toFinalUrl: {},
-      // 链接转换
-      toGuild: {} // discord 邀请链接转id
+
+      toGuild: {}
 
     },
     setting: {
@@ -5328,20 +5785,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        var _ref32 = [[], [], [], [], [], [], []]
-        this.twitters = _ref32[0]
-        this.facebooks = _ref32[1]
-        this.youtubes = _ref32[2]
-        this.discords = _ref32[3]
-        this.others = _ref32[4]
-        this.groups = _ref32[5]
-        this.links = _ref32[6]
-        var _ref33 = [fuc.echoLog({
+        var _ref43 = [[], [], [], [], [], [], []]
+        this.twitters = _ref43[0]
+        this.facebooks = _ref43[1]
+        this.youtubes = _ref43[2]
+        this.discords = _ref43[3]
+        this.others = _ref43[4]
+        this.groups = _ref43[5]
+        this.links = _ref43[6]
+        var _ref44 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('div.entry-content .entry-method')]
-        var status = _ref33[0]
-        var tasksContainer = _ref33[1]
+        var status = _ref44[0]
+        var tasksContainer = _ref44[1]
 
         var _iterator12 = _createForOfIteratorHelper(tasksContainer)
         var _step12
@@ -5350,7 +5807,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
             var task = _step12.value
 
-            // 遍历任务信息
             if ($(task).find('i.fa-question').length > 0) {
               if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
                 this.links.push(task)
@@ -5417,14 +5873,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           _iterator12.f()
         }
 
-        var _ref34 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
-        this.groups = _ref34[0]
-        this.twitters = _ref34[1]
-        this.facebooks = _ref34[2]
-        this.youtubes = _ref34[3]
-        this.discords = _ref34[4]
-        this.others = _ref34[5]
-        this.taskInfo.groups = _ref34[6]
+        var _ref45 = [fuc.unique(this.groups), fuc.unique(this.twitters), fuc.unique(this.facebooks), fuc.unique(this.youtubes), fuc.unique(this.discords), fuc.unique(this.others), fuc.unique(this.taskInfo.groups)]
+        this.groups = _ref45[0]
+        this.twitters = _ref45[1]
+        this.facebooks = _ref45[2]
+        this.youtubes = _ref45[3]
+        this.discords = _ref45[4]
+        this.others = _ref45[5]
+        this.taskInfo.groups = _ref45[6]
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -5445,14 +5901,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this14 = this
 
       this.updateSteamInfo(function () {
-        var _ref35 = [[], fuc.unique(_this14.twitters), fuc.unique(_this14.discords), fuc.unique(_this14.facebooks), fuc.unique(_this14.youtubes), fuc.unique(_this14.others), fuc.unique(_this14.links)]
-        var pro = _ref35[0]
-        var twitters = _ref35[1]
-        var discords = _ref35[2]
-        var facebooks = _ref35[3]
-        var youtubes = _ref35[4]
-        var others = _ref35[5]
-        var links = _ref35[6]
+        var _ref46 = [[], fuc.unique(_this14.twitters), fuc.unique(_this14.discords), fuc.unique(_this14.facebooks), fuc.unique(_this14.youtubes), fuc.unique(_this14.others), fuc.unique(_this14.links)]
+        var pro = _ref46[0]
+        var twitters = _ref46[1]
+        var discords = _ref46[2]
+        var facebooks = _ref46[3]
+        var youtubes = _ref46[4]
+        var others = _ref46[5]
+        var links = _ref46[6]
         var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
         if (_this14.conf.fuck.joinSteamGroup && _this14.groups.length > 0) {
@@ -5476,13 +5932,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
                 var twitter = _step13.value
                 var title = $(twitter).find('.entry-method-title').text().trim()
-                var _ref36 = [fuc.echoLog({
+                var _ref47 = [fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
                 }), $(twitter).find('a.twitter-button:contains(Follow)').attr('href'), $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')]
-                var status = _ref36[0]
-                var followButton = _ref36[1]
-                var retweetButton = _ref36[2]
+                var status = _ref47[0]
+                var followButton = _ref47[1]
+                var retweetButton = _ref47[2]
                 var button = followButton || retweetButton
 
                 if (button) {
@@ -5509,12 +5965,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 var _title2 = $(task).find('.entry-method-title').text().trim()
 
-                var _ref37 = [fuc.echoLog({
+                var _ref48 = [fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('doing'), ':').concat(_title2, '...<font></font></li>')
                 }), $(task).find('a.btn-info:first').attr('href')]
-                var _status = _ref37[0]
-                var _button = _ref37[1]
+                var _status = _ref48[0]
+                var _button = _ref48[1]
 
                 if (_button) {
                   window.open(_button, '_blank')
@@ -5656,12 +6112,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     visit_link: function visit_link (links, i, r) {
       if (i < links.length) {
         var title = $(links[i]).find('.entry-method-title').text().trim()
-        var _ref38 = [fuc.echoLog({
+        var _ref49 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
         }), $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()]
-        var status = _ref38[0]
-        var taskTime = _ref38[1]
+        var status = _ref49[0]
+        var taskTime = _ref49[1]
 
         if (taskTime) {
           var taskBtn = $(links[i]).find('a.btn-info')
@@ -5732,25 +6188,25 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     groups: [],
-    // 任务需要加的组
+
     links: [],
-    // 需要浏览的页面链接
+
     twitters: [],
-    // twitter任务
+
     discords: [],
-    // discord任务
+
     facebooks: [],
-    // facebook任务
+
     youtubes: [],
-    // youtube任务
+
     others: [],
-    // 位置类型任务
+
     taskInfo: {
-      groups: [] // 所有任务需要加的组
+      groups: []
 
     },
     tasks: [],
-    // 任务信息
+
     setting: {},
     conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
   }
@@ -5769,12 +6225,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var currentoption = $('a.buttonenter.buttongiveaway')
 
       if (/join giveaway/gim.test(currentoption.text())) {
-        var _ref39 = [fuc.echoLog({
+        var _ref50 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
         }), this.do_task]
-        var status = _ref39[0]
-        var doTask = _ref39[1]
+        var status = _ref50[0]
+        var doTask = _ref50[1]
         fuc.httpRequest({
           url: currentoption.attr('href'),
           method: 'POST',
@@ -5825,9 +6281,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
 
       if (id.length === 2) {
-        var _ref40 = [$('#giveawaysjoined a[class*=promo]'), []]
-        var tasks = _ref40[0]
-        var _pro4 = _ref40[1]
+        var _ref51 = [$('#giveawaysjoined a[class*=promo]'), []]
+        var tasks = _ref51[0]
+        var _pro4 = _ref51[1]
 
         var _iterator16 = _createForOfIteratorHelper(tasks)
         var _step16
@@ -6044,12 +6500,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref41 = [fuc.echoLog({
+        var _ref52 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('.container_task')]
-        var status = _ref41[0]
-        var tasksContainer = _ref41[1]
+        var status = _ref52[0]
+        var tasksContainer = _ref52[1]
 
         var _iterator17 = _createForOfIteratorHelper(tasksContainer)
         var _step17
@@ -6057,13 +6513,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
             var task = _step17.value
-            // 遍历任务信息
-            var _ref42 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-            var taskDes = _ref42[0]
-            var verifyBtn = _ref42[1]
+
+            var _ref53 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+            var taskDes = _ref53[0]
+            var verifyBtn = _ref53[1]
 
             if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
-              // 加组任务
               var groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
 
               if (verifyBtn.length > 0) {
@@ -6074,7 +6529,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
 
             if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) {
-              // 关注鉴赏家任务
               var curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
 
               if (verifyBtn.length > 0) {
@@ -6087,7 +6541,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             if (/follow[\w\W]*?https?:\/\/twitter.com\//gim.test(taskDes.html())) {
               var _taskDes$find$attr$ma
 
-              // 关注twitter
               var name = (_taskDes$find$attr$ma = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter.com\/([^/]+)/)) === null || _taskDes$find$attr$ma === void 0 ? void 0 : _taskDes$find$attr$ma[1]
 
               if (name) {
@@ -6099,8 +6552,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
+            if (/follow[\w\W]*?https?:\/\/twitch.tv\//gim.test(taskDes.html())) {
+              var _taskDes$find$attr$ma2
+
+              var _name = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
+
+              if (_name) {
+                if (verifyBtn.length > 0) {
+                  this.currentTaskInfo.twitchChannels.push(_name)
+                }
+
+                this.taskInfo.twitchChannels.push(_name)
+              }
+            }
+
             if (/visit.*?this.*?page/gim.test(taskDes.text()) && verifyBtn.length > 0) {
-              // 浏览页面任务
               var pageUrl = taskDes.find('a[id^="task_webpage_clickedLink"]').attr('href')
               this.currentTaskInfo.links.push({
                 pageUrl: pageUrl,
@@ -6109,7 +6575,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
 
             if (verifyBtn.length > 0) {
-              // 任务验证信息
               var ids = verifyBtn.attr('id').split('_')
 
               var _ids = _slicedToArray(ids, 4)
@@ -6164,13 +6629,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this17 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
-        var _ref44, pro, links, _iterator18, _step18, _loop9
+        var _ref55, pro, links, _iterator18, _step18, _loop9
 
         return regeneratorRuntime.wrap(function _callee8$ (_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _ref44 = [[], fuc.unique(_this17.currentTaskInfo.links)], pro = _ref44[0], links = _ref44[1]
+                _ref55 = [[], fuc.unique(_this17.currentTaskInfo.links)], pro = _ref55[0], links = _ref55[1]
                 _context10.next = 3
                 return _this17.toggleActions('fuck', pro)
 
@@ -6366,10 +6831,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     toggleActions: function toggleActions (action, pro) {
-      var _ref46 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref46.groups
-      var curators = _ref46.curators
-      var twitterUsers = _ref46.twitterUsers
+      var _ref57 = action === 'fuck' ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref57.groups
+      var curators = _ref57.curators
+      var twitterUsers = _ref57.twitterUsers
+      var twitchChannels = _ref57.twitchChannels
 
       if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -6402,6 +6868,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             social: 'twitter',
             type: 'follow',
             elements: twitterUsers,
+            resolve: resolve,
+            action: action
+          })
+        }))
+      }
+
+      if (this.conf[action][action === 'fuck' ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchChannels.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'marvelousga',
+            social: 'twitch',
+            elements: twitchChannels,
             resolve: resolve,
             action: action
           })
@@ -6454,22 +6932,26 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     currentTaskInfo: {
       groups: [],
-      // 任务需要加的组
+
       curators: [],
-      // 任务需要关注的鉴赏家
+
       twitterUsers: [],
-      // 任务需要关注的twitter
+
+      twitchChannels: [],
+
       links: [],
-      // 需要浏览的页面链接
-      tasks: [] // 任务信息
+
+      tasks: []
 
     },
     taskInfo: {
       groups: [],
-      // 所有任务需要加的组
+
       curators: [],
-      // 所有任务需要关注的鉴赏家
-      twitterUsers: [] // 任务需要关注的twitter
+
+      twitterUsers: [],
+
+      twitchChannels: []
 
     },
     setting: {},
@@ -6488,14 +6970,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this21 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
-        var type, _ref47, items, maxPoint, myPoint, i, item, needPoints
+        var type, _ref58, items, maxPoint, myPoint, i, item, needPoints
 
         return regeneratorRuntime.wrap(function _callee11$ (_context13) {
           while (1) {
             switch (_context13.prev = _context13.next) {
               case 0:
                 type = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : 'FREE'
-                _ref47 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this21.maxPoint()], items = _ref47[0], maxPoint = _ref47[1]
+                _ref58 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this21.maxPoint()], items = _ref58[0], maxPoint = _ref58[1]
                 myPoint = _this21.myPoints
                 i = 0
 
@@ -6540,16 +7022,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
 
                 return _context13.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-                  var _ref48, status, a, giveawayId
+                  var _ref59, status, a, giveawayId
 
                   return regeneratorRuntime.wrap(function _callee10$ (_context12) {
                     while (1) {
                       switch (_context12.prev = _context12.next) {
                         case 0:
-                          _ref48 = [fuc.echoLog({
+                          _ref59 = [fuc.echoLog({
                             type: 'custom',
                             text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref48[0], a = _ref48[1]
+                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref59[0], a = _ref59[1]
 
                           if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                             giveawayId = a.attr('onclick').match(/[\d]+/)
@@ -6662,12 +7144,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this22 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref49 = [fuc.echoLog({
+      var _ref60 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('#steps tbody tr')]
-      var status = _ref49[0]
-      var steps = _ref49[1]
+      var status = _ref60[0]
+      var steps = _ref60[1]
 
       for (var i = 0; i < steps.length; i++) {
         if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
@@ -6675,9 +7157,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref50 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-        var taskInfoHistory = _ref50[0]
-        var _pro6 = _ref50[1]
+        var _ref61 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+        var taskInfoHistory = _ref61[0]
+        var _pro6 = _ref61[1]
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
         var _iterator20 = _createForOfIteratorHelper(steps)
@@ -7116,16 +7598,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     currentTaskInfo: {
       groups: [],
-      // 任务需要加的组
+
       curators: [],
-      // 任务需要关注的鉴赏家
-      tasks: [] // 任务信息
+
+      tasks: []
 
     },
     taskInfo: {
       groups: [],
-      // 所有任务需要加的组
-      curators: [] // 所有任务需要关注的鉴赏家
+
+      curators: []
 
     },
     setting: {},
@@ -7148,18 +7630,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        var _ref53 = [[], [], [], []]
-        this.tasks = _ref53[0]
-        this.groups = _ref53[1]
-        this.curators = _ref53[2]
-        this.links = _ref53[3]
-        var _ref54 = [[], fuc.echoLog({
+        var _ref64 = [[], [], [], []]
+        this.tasks = _ref64[0]
+        this.groups = _ref64[1]
+        this.curators = _ref64[2]
+        this.links = _ref64[3]
+        var _ref65 = [[], fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#usl>div')]
-        var _pro9 = _ref54[0]
-        var status = _ref54[1]
-        var tasksContainer = _ref54[2]
+        var _pro9 = _ref65[0]
+        var status = _ref65[1]
+        var tasksContainer = _ref65[2]
 
         var _iterator24 = _createForOfIteratorHelper(tasksContainer)
         var _step25
@@ -7168,13 +7650,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           var _loop12 = function _loop12 () {
             var task = _step25.value
 
-            // 遍历任务信息
             _this27.tasks.push(task)
 
-            var _ref56 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-            var icon = _ref56[0]
-            var link = _ref56[1]
-            var id = _ref56[2]
+            var _ref67 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
+            var icon = _ref67[0]
+            var link = _ref67[1]
+            var id = _ref67[2]
 
             if (icon.hasClass('fa-steam')) {
               if (link && /gid\/[\d]+/.test(link)) {
@@ -7221,14 +7702,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         Promise.all(_pro9).finally(function () {
-          var _ref55 = [fuc.unique(_this27.groups), fuc.unique(_this27.curators), fuc.unique(_this27.links), fuc.unique(_this27.others), fuc.unique(_this27.taskInfo.groups), fuc.unique(_this27.taskInfo.curators), fuc.unique(_this27.tasks)]
-          _this27.groups = _ref55[0]
-          _this27.curators = _ref55[1]
-          _this27.links = _ref55[2]
-          _this27.others = _ref55[3]
-          _this27.taskInfo.groups = _ref55[4]
-          _this27.taskInfo.curators = _ref55[5]
-          _this27.tasks = _ref55[6]
+          var _ref66 = [fuc.unique(_this27.groups), fuc.unique(_this27.curators), fuc.unique(_this27.links), fuc.unique(_this27.others), fuc.unique(_this27.taskInfo.groups), fuc.unique(_this27.taskInfo.curators), fuc.unique(_this27.tasks)]
+          _this27.groups = _ref66[0]
+          _this27.curators = _ref66[1]
+          _this27.links = _ref66[2]
+          _this27.others = _ref66[3]
+          _this27.taskInfo.groups = _ref66[4]
+          _this27.taskInfo.curators = _ref66[5]
+          _this27.tasks = _ref66[6]
           GM_setValue('taskInfo[' + window.location.host + _this27.get_giveawayId() + ']', _this27.taskInfo)
           status.success()
           if (debug) console.log(_this27)
@@ -7256,13 +7737,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this28 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 () {
-        var _ref58, pro, links, others, vks, _iterator25, _step26, _loop13, _iterator26, _step27, vk, _iterator27, _step28, other
+        var _ref69, pro, links, others, vks, _iterator25, _step26, _loop13, _iterator26, _step27, vk, _iterator27, _step28, other
 
         return regeneratorRuntime.wrap(function _callee14$ (_context16) {
           while (1) {
             switch (_context16.prev = _context16.next) {
               case 0:
-                _ref58 = [[], fuc.unique(_this28.links), fuc.unique(_this28.others), fuc.unique(_this28.vks)], pro = _ref58[0], links = _ref58[1], others = _ref58[2], vks = _ref58[3]
+                _ref69 = [[], fuc.unique(_this28.links), fuc.unique(_this28.others), fuc.unique(_this28.vks)], pro = _ref69[0], links = _ref69[1], others = _ref69[2], vks = _ref69[3]
                 _context16.next = 3
                 return _this28.toggleActions('fuck', pro)
 
@@ -7439,21 +7920,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     groups: [],
-    // 任务需要加的组
+
     curators: [],
-    // 任务需要关注的鉴赏家
+
     links: [],
-    // 需要浏览的页面链接
+
     others: [],
     vks: [],
     taskInfo: {
       groups: [],
-      // 所有任务需要加的组
-      curators: [] // 所有任务需要关注的鉴赏家
+
+      curators: []
 
     },
     tasks: [],
-    // 任务信息
+
     setting: {},
     conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
   }
@@ -7468,6 +7949,177 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       break
     }
   }
+
+  function toggleYtbChannel (_x19, _x20) {
+    return _toggleYtbChannel.apply(this, arguments)
+  }
+
+  function _toggleYtbChannel () {
+    _toggleYtbChannel = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee28 (r, id) {
+      var follow
+      var _yield$getYtbToken
+      var data
+      var _ref75
+      var apiKey
+      var client
+      var request
+      var status
+      var _args34 = arguments
+
+      return regeneratorRuntime.wrap(function _callee28$ (_context34) {
+        while (1) {
+          switch (_context34.prev = _context34.next) {
+            case 0:
+              follow = _args34.length > 2 && _args34[2] !== undefined ? _args34[2] : true
+              _context34.next = 3
+              return getYtbToken(id)
+
+            case 3:
+              _yield$getYtbToken = _context34.sent
+              data = _yield$getYtbToken.data
+              _ref75 = data || {}, apiKey = _ref75.apiKey, client = _ref75.client, request = _ref75.request
+
+              if (apiKey) {
+                _context34.next = 8
+                break
+              }
+
+              return _context34.abrupt('return', r({
+                result: 'error',
+                statusText: '"getYtbToken" failed',
+                status: 0
+              }))
+
+            case 8:
+              status = echoLog({
+                type: follow ? 'followYtbChannel' : 'unfollowYtbChannel',
+                text: id
+              })
+              httpRequest({
+                url: 'https://www.youtube.com/youtubei/v1/subscription/subscribe?key=' + apiKey,
+                method: 'POST',
+                headers: {
+                  origin: 'https://www.youtube.com',
+                  referer: 'https://www.youtube.com/channel/' + id,
+                  'content-type': 'application/json'
+                },
+                data: JSON.stringify({
+                  context: {
+                    client: client,
+                    request: {
+                      sessionId: request.sessionId,
+                      internalExperimentFlags: [],
+                      consistencyTokenJars: []
+                    },
+                    user: {},
+
+                    clickTracking: {
+                      clickTrackingParams: follow ? 'CB0QmysiEwi45-2Ht6TrAhWGQfUFHeypDeIyCWNoYW5uZWxzNA==' : 'CCAQ8FsiEwiBuajP0KTrAhXKx0wCHTX7ABYyCWNoYW5uZWxzNA=='
+                    }
+                  },
+                  channelIds: [id],
+                  params: follow ? 'EgIIAhgA' : 'CgIIAhgA'
+                }),
+                onload: function onload (response) {
+                  if (debug) console.log(response)
+
+                  if (response.status === 200) {
+                    status.success()
+                    r({
+                      result: 'success',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  } else {
+                    status.error('Error:' + response.statusText + '(' + response.status + ')')
+                    r({
+                      result: 'error',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  }
+                },
+                r: r,
+                status: status
+              })
+
+            case 10:
+            case 'end':
+              return _context34.stop()
+          }
+        }
+      }, _callee28)
+    }))
+    return _toggleYtbChannel.apply(this, arguments)
+  }
+
+  function getYtbToken (id) {
+    return new Promise(function (resolve) {
+      var status = echoLog({
+        type: 'getYtbToken'
+      })
+      httpRequest({
+        url: 'https://www.youtube.com/channel/' + id,
+        method: 'GET',
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.status === 200) {
+            /*
+            if (response.responseText.includes('login.vk.com/?act=login')) {
+              status.error('Error:' + getI18n('loginVk'), true)
+              resolve({ result: 'error', statusText: response.statusText, status: response.status })
+              return
+            }
+            */
+            var _ref71 = response.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/) || []
+            var _ref72 = _slicedToArray(_ref71, 2)
+            var apiKey = _ref72[1]
+
+            var _ref73 = response.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || [null, '{}']
+            var _ref74 = _slicedToArray(_ref73, 2)
+            var context = _ref74[1]
+
+            var _JSON$parse2 = JSON.parse(context)
+            var client = _JSON$parse2.client
+            var request = _JSON$parse2.request
+
+            if (apiKey && client && request) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status,
+                data: {
+                  apiKey: apiKey,
+                  client: client,
+                  request: request
+                }
+              })
+            } else {
+              status.error('Error: Parameter "apiKey" not found!')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    })
+  }
+
+  unsafeWindow.toggleYtbChannel = toggleYtbChannel
 
   try {
     GM_addStyle(GM_getResourceText('CSS'))
@@ -7572,7 +8224,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           btnGroup.css('width', '0')
           $('#toggle-btn-group').attr('title', getI18n('show')).text('<')
         }
-      }) // 快捷键功能
+      })
 
       $(document).keydown(function (e) {
         var hotKey = globalConf.hotKey || {}
@@ -7637,7 +8289,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
         window.open($(this).attr('data-href'), '_blank')
       })
-      fuc.checkUpdate() // $('.fuck-task-logs .el-notification__content').show()
+      fuc.checkUpdate()
 
       if (!showLogs) {
         var _$$animate

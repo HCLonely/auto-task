@@ -38,8 +38,8 @@ function getInsInfo (name) {
       r: resolve,
       status
     })
-  }).then(data => {
-    return { id: data?.id, error: !data?.id }
+  }).then(({ id }) => {
+    return { id, error: !id }
   }).catch(error => {
     return { id: null, error }
   })
@@ -116,19 +116,19 @@ async function unfollowIns (r, name) {
 async function toggleInsActions ({ website, elements, resolve, action, toFinalUrl = {} }) {
   const pro = []
   for (const element of unique(elements)) {
-    let name = null
+    let name = element
     if (website === 'giveawaysu' && toFinalUrl[element]) {
       const toFinalUrlElement = toFinalUrl[element] || ''
       name = toFinalUrlElement.match(/https:\/\/www.instagram.com\/(.+)?\//)?.[1]
-      if (name) {
-        pro.push(new Promise(resolve => {
-          if (action === 'fuck') {
-            followIns(resolve, name)
-          } else {
-            unfollowIns(resolve, name)
-          }
-        }))
-      }
+    }
+    if (name) {
+      pro.push(new Promise(resolve => {
+        if (action === 'fuck') {
+          followIns(resolve, name)
+        } else {
+          unfollowIns(resolve, name)
+        }
+      }))
     }
   }
   Promise.all(pro).finally(() => {

@@ -39,7 +39,7 @@ const giveawaysu = {
     const [taskInfo, taskName, link] = [[], taskDes.text().trim(), taskDes.attr('href')]
     if (/disable adblock/gim.test(taskName)) {
       return [{ name: 'nonSteam' }]
-    } else if (/join.*group/gim.test(taskName)) {
+    } else if (/join.*steam.*group/gim.test(taskName)) {
       taskInfo.push({ name: 'group', link })
       this.community = 1
     } else if (/like.*announcement/gim.test(taskName)) {
@@ -65,6 +65,8 @@ const giveawaysu = {
       taskInfo.push({ name: 'twitch', link })
     } else if (/subscribe.*subreddit/gim.test(taskName)) {
       taskInfo.push({ name: 'reddit', link })
+    } else if (/join.*vk.*group/gim.test(taskName)) {
+      taskInfo.push({ name: 'vk', link })
     } else {
       if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
         this.links.push(link)
@@ -195,7 +197,7 @@ const giveawaysu = {
           }))
         }
       }
-    })
+    }).catch(() => {})
     if (this.conf[act][act === 'fuck' ? 'joinDiscordServer' : 'leaveDiscordServer'] && this.taskInfo.discords.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ social: 'discord', website: 'giveawaysu', elements: this.taskInfo.discords, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl, toGuild: this.taskInfo.toGuild })
@@ -222,6 +224,11 @@ const giveawaysu = {
     if (this.conf[act][act === 'fuck' ? 'joinReddit' : 'leaveReddit'] && this.taskInfo.reddits.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ social: 'reddit', website: 'giveawaysu', elements: this.taskInfo.reddits, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
+      }))
+    }
+    if (this.conf[act][act === 'fuck' ? 'joinVk' : 'leaveVk'] && this.taskInfo.vks.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ social: 'vk', website: 'giveawaysu', elements: this.taskInfo.vks, resolve, action: act, toFinalUrl: this.taskInfo.toFinalUrl })
       }))
     }
     Promise.all(pro).finally(() => {
@@ -271,6 +278,7 @@ const giveawaysu = {
     instagrams: [], // 任务需要关注的instagram用户
     twitchs: [], // 任务需要关注的twitch频道
     reddits: [], // 任务需要关注的subreddit
+    vks: [], // 任务需要加入的vk组
     links: [], // 原始链接
     toFinalUrl: {}, // 链接转换
     toGuild: {}// discord 邀请链接转id

@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.0.8",
+  "version": "3.0.9",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -61,6 +61,9 @@
     ],
     "ignore": [
       "/docs/js/main.js"
+    ],
+    "disable":[
+      "no-sparse-arrays"
     ]
   }
 }

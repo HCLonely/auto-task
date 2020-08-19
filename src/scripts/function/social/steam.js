@@ -113,7 +113,7 @@ function getGroupID (groupName, callback) {
     status,
     groupNameToId
   ] = [
-    echoLog({ type: 'getGroupId', text: groupName }),
+    echoLog({ type: 'getSteamGroupId', text: groupName }),
     GM_getValue('groupNameToId') || {}
   ]
   if (groupNameToId[groupName]) {

@@ -11,7 +11,7 @@ function echoLog (e) { // switch case !!
       break
     case 'joinSteamGroup':
     case 'leaveSteamGroup':
-    case 'getGroupId':
+    case 'getSteamGroupId':
       ele = $(`<li>${getI18n(e.type)}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'followCurator':
@@ -86,6 +86,16 @@ function echoLog (e) { // switch case !!
     case 'joinReddit':
     case 'leaveReddit':
       ele = $(`<li>${getI18n(e.type)}<a href="https://www.reddit.com/r/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
+    case 'verifyVkLogin':
+      ele = $(`<li>${getI18n('verifyVkLogin')}...<font></font></li>`)
+      break
+    case 'getVkId':
+    case 'joinVkGroup':
+    case 'leaveVkGroup':
+    case 'joinVkPublic':
+    case 'leaveVkPublic':
+      ele = $(`<li>${getI18n(e.type)}<a href="https://vk.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
       break
     case 'visitLink':
       ele = $(`<li>${getI18n('visitLink')}<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)

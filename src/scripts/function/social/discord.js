@@ -85,22 +85,22 @@ async function toggleDiscordActions ({ website, elements, resolve, action, toFin
   }
   const pro = []
   for (const element of unique(elements)) {
-    let inviteId = null
+    let inviteId = element
     if (website === 'giveawaysu' && toFinalUrl[element]) {
       const toFinalUrlElement = toFinalUrl[element] || ''
       inviteId = toFinalUrlElement.match(/invite\/(.+)/)?.[1]
-      if (inviteId) {
-        pro.push(new Promise(resolve => {
-          const guild = toGuild[inviteId]
-          if (action === 'fuck') {
-            joinDiscordServer(resolve, inviteId)
-          } else if (guild) {
-            leaveDiscordServer(resolve, inviteId, guild)
-          } else {
-            resolve({})
-          }
-        }))
-      }
+    }
+    if (inviteId) {
+      pro.push(new Promise(resolve => {
+        const guild = toGuild[inviteId]
+        if (action === 'fuck') {
+          joinDiscordServer(resolve, inviteId)
+        } else if (guild) {
+          leaveDiscordServer(resolve, inviteId, guild)
+        } else {
+          resolve({})
+        }
+      }))
     }
   }
   Promise.all(pro).then(data => {

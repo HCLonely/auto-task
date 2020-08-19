@@ -79,9 +79,11 @@ async function toggleRedditActions ({ website, type, elements, resolve, action, 
       const toFinalUrlElement = toFinalUrl[element] || ''
       name = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)?.[1]
     }
-    await new Promise(resolve => {
-      toggleReddit(resolve, name, action === 'fuck')
-    })
+    if (name) {
+      await new Promise(resolve => {
+        toggleReddit(resolve, name, action === 'fuck')
+      })
+    }
   }
   resolve()
 }

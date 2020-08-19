@@ -116,9 +116,8 @@ function getTwitterUserId (name) {
       r: resolve,
       status
     })
-  }).then(data => {
-    const userId = data.result === 'success' ? data?.userId : null
-    return userId || false
+  }).then(({ result }) => {
+    return result === 'success'
   }).catch(() => {
     return false
   })
@@ -142,17 +141,19 @@ async function toggleTwitterActions ({ website, type, elements, resolve, action,
           break
       }
     }
-    switch (type) {
-      case 'follow':
-        await new Promise(resolve => {
-          toggleTwitterUser(resolve, id, action === 'fuck')
-        })
-        break
-      case 'retweet':
-        await new Promise(resolve => {
-          toggleRetweet(resolve, id, action === 'fuck')
-        })
-        break
+    if (id) {
+      switch (type) {
+        case 'follow':
+          await new Promise(resolve => {
+            toggleTwitterUser(resolve, id, action === 'fuck')
+          })
+          break
+        case 'retweet':
+          await new Promise(resolve => {
+            toggleRetweet(resolve, id, action === 'fuck')
+          })
+          break
+      }
     }
   }
   resolve()

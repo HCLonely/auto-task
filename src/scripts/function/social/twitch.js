@@ -57,7 +57,7 @@ function verifyTwitchAuth () {
           status.success()
           resolve({ result: 'success', statusText: response.statusText, status: response.status })
         } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          status.error('Error:' + getI18n('updateTwitchAuth', true))
           resolve({ result: 'error', statusText: response.statusText, status: response.status })
         }
       },
@@ -129,9 +129,8 @@ function getTwitchChannelId (name) {
       r: resolve,
       status
     })
-  }).then(data => {
-    const channelId = data.result === 'success' ? data?.channelId : null
-    return channelId || false
+  }).then(({ result }) => {
+    return result === 'success'
   }).catch(() => {
     return false
   })
@@ -148,9 +147,11 @@ async function toggleTwitchActions ({ website, type, elements, resolve, action, 
       const toFinalUrlElement = toFinalUrl[element] || ''
       name = toFinalUrlElement.match(/https:\/\/www.twitch.tv\/(.+)/)?.[1]
     }
-    await new Promise(resolve => {
-      toggleTwitchChannel(resolve, name, action === 'fuck')
-    })
+    if (name) {
+      await new Promise(resolve => {
+        toggleTwitchChannel(resolve, name, action === 'fuck')
+      })
+    }
   }
   resolve()
 }

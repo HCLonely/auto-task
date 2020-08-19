@@ -4,8 +4,8 @@ import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 
-import { toggleYtbChannel } from './function/social/youtube'
-unsafeWindow.toggleYtbChannel = toggleYtbChannel
+// import { toggleYtbChannel } from './function/social/youtube'
+// unsafeWindow.toggleYtbChannel = toggleYtbChannel
 
 try {
   GM_addStyle(GM_getResourceText('CSS'))

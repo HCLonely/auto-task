@@ -22,7 +22,15 @@ window.redditInfo = getRedditInfo()
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
   const defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-  config[k] = defaultConfig[k] ? Object.assign(defaultConfig[k], config[k]) : null
+  if (defaultConfig[k]) {
+    if (Object.prototype.toString.call(defaultConfig[k]) === '[object Object]') {
+      for (const k1 of Object.keys(defaultConfig[k])) {
+        config[k][k1] = Object.assign(defaultConfig[k][k1], config[k][k1])
+      }
+    } else {
+      config[k] = config[k] || defaultConfig[k]
+    }
+  }
 }
 const globalConf = config.global
 const debug = !!globalConf.other.showDetails

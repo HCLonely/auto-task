@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.9
+// @version        3.0.10
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.9/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -696,7 +696,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   for (var _i = 0, _Object$keys = Object.keys(config); _i < _Object$keys.length; _i++) {
     var k = _Object$keys[_i]
     var defaultConfig = JSON.parse(JSON.stringify(defaultConf))
-    config[k] = defaultConfig[k] ? Object.assign(defaultConfig[k], config[k]) : null
+
+    if (defaultConfig[k]) {
+      if (Object.prototype.toString.call(defaultConfig[k]) === '[object Object]') {
+        for (var _i2 = 0, _Object$keys2 = Object.keys(defaultConfig[k]); _i2 < _Object$keys2.length; _i2++) {
+          var k1 = _Object$keys2[_i2]
+          config[k][k1] = Object.assign(defaultConfig[k][k1], config[k][k1])
+        }
+      } else {
+        config[k] = config[k] || defaultConfig[k]
+      }
+    }
   }
 
   var globalConf = config.global
@@ -1055,8 +1065,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function isEmptyObjArr (object) {
-    for (var _i2 = 0, _Object$values = Object.values(object); _i2 < _Object$values.length; _i2++) {
-      var value = _Object$values[_i2]
+    for (var _i3 = 0, _Object$values = Object.values(object); _i3 < _Object$values.length; _i3++) {
+      var value = _Object$values[_i3]
 
       if (Object.prototype.toString.call(value) === '[object Array]') {
         if (value.length !== 0) return false
@@ -1084,8 +1094,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     if (Array.isArray(data)) {
       return clearArray(data)
     } else {
-      for (var _i3 = 0, _Object$entries = Object.entries(data); _i3 < _Object$entries.length; _i3++) {
-        var _Object$entries$_i = _slicedToArray(_Object$entries[_i3], 2)
+      for (var _i4 = 0, _Object$entries = Object.entries(data); _i4 < _Object$entries.length; _i4++) {
+        var _Object$entries$_i = _slicedToArray(_Object$entries[_i4], 2)
         var _k2 = _Object$entries$_i[0]
         var v = _Object$entries$_i[1]
 
@@ -1106,8 +1116,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         data = unique(data)
       }
     } else {
-      for (var _i4 = 0, _Object$entries2 = Object.entries(data); _i4 < _Object$entries2.length; _i4++) {
-        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i4], 2)
+      for (var _i5 = 0, _Object$entries2 = Object.entries(data); _i5 < _Object$entries2.length; _i5++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i5], 2)
         var _k3 = _Object$entries2$_i[0]
         var v = _Object$entries2$_i[1]
 
@@ -7941,8 +7951,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   var website = null
   var websites = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, marvelousga, opiumpulses, prys, takekey]
 
-  for (var _i5 = 0, _websites = websites; _i5 < _websites.length; _i5++) {
-    var e = _websites[_i5]
+  for (var _i6 = 0, _websites = websites; _i6 < _websites.length; _i6++) {
+    var e = _websites[_i6]
 
     if (e.test()) {
       website = e
@@ -8014,8 +8024,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var showLogs = globalConf === null || globalConf === void 0 ? void 0 : (_globalConf$other = globalConf.other) === null || _globalConf$other === void 0 ? void 0 : _globalConf$other.showLogs
       var websiteSettings = Object.assign(defaultBtn, website.setting)
 
-      for (var _i6 = 0, _Object$entries3 = Object.entries(websiteSettings); _i6 < _Object$entries3.length; _i6++) {
-        var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i6], 2)
+      for (var _i7 = 0, _Object$entries3 = Object.entries(websiteSettings); _i7 < _Object$entries3.length; _i7++) {
+        var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i7], 2)
         var _k4 = _Object$entries3$_i[0]
         var v = _Object$entries3$_i[1]
 
@@ -8027,7 +8037,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       $('body').append('<div id="fuck-task-btn"><button id="toggle-btn-group" type="button" class="btn btn-outline-primary">&gt;</button>'.concat(buttonGroup, '</div>'))
 
       var _loop14 = function _loop14 () {
-        var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i7], 2)
+        var _Object$entries4$_i = _slicedToArray(_Object$entries4[_i8], 2)
         var k = _Object$entries4$_i[0]
         var v = _Object$entries4$_i[1]
 
@@ -8038,7 +8048,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       }
 
-      for (var _i7 = 0, _Object$entries4 = Object.entries(websiteSettings); _i7 < _Object$entries4.length; _i7++) {
+      for (var _i8 = 0, _Object$entries4 = Object.entries(websiteSettings); _i8 < _Object$entries4.length; _i8++) {
         _loop14()
       }
 
@@ -8058,8 +8068,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       $(document).keydown(function (e) {
         var hotKey = globalConf.hotKey || {}
 
-        for (var _i8 = 0, _Object$entries5 = Object.entries(hotKey); _i8 < _Object$entries5.length; _i8++) {
-          var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i8], 2)
+        for (var _i9 = 0, _Object$entries5 = Object.entries(hotKey); _i9 < _Object$entries5.length; _i9++) {
+          var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i9], 2)
           var _k5 = _Object$entries5$_i[0]
           var _v = _Object$entries5$_i[1]
 

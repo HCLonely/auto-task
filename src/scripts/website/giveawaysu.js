@@ -20,10 +20,12 @@ const giveawaysu = {
         $('#actions tr')
       ]
       for (const task of tasks) {
-        const colorfulTask = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
-        const colorlessTask = $(task).find('td').eq(2).find('a:not([data-trigger="link"])')
+        const td = $(task).find('td')
+        const colorfulTask = td.eq(1).find('a:not([data-trigger="link"])')
+        const colorlessTask = td.eq(2).find('a:not([data-trigger="link"])')
         const taskDes = colorfulTask.length > 0 ? colorfulTask : colorlessTask
-        const taskInfo = this.which_task(taskDes)
+        const taskIcon = td.eq(0).find('i').attr('class')
+        const taskInfo = this.which_task(taskDes, taskIcon)
         for (const info of taskInfo) {
           if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
             this.taskInfo[info.name + 's'].push(info.link)
@@ -35,37 +37,31 @@ const giveawaysu = {
       this.getFinalUrl(e)
     }
   },
-  which_task (taskDes) {
+  which_task (taskDes, taskIcon) {
     const [taskInfo, taskName, link] = [[], taskDes.text().trim(), taskDes.attr('href')]
-    if (/disable adblock/gim.test(taskName)) {
+    if (taskIcon.includes('ban') || /disable adblock/gim.test(taskName)) {
       return [{ name: 'nonSteam' }]
     } else if (/join.*steam.*group/gim.test(taskName)) {
       taskInfo.push({ name: 'group', link })
-      this.community = 1
     } else if (/like.*announcement/gim.test(taskName)) {
       taskInfo.push({ name: 'announcement', link })
-      this.community = 1
     } else if (/(follow|subscribe).*publisher/gim.test(taskName)) {
       taskInfo.push({ name: 'publisher', link })
-      this.store = 1
     } else if (/(follow|subscribe).*franchise/gim.test(taskName)) {
       taskInfo.push({ name: 'franchise', link })
-      this.store = 1
     } else if (/(follow|subscribe).*developer/gim.test(taskName)) {
       taskInfo.push({ name: 'developer', link })
-      this.store = 1
     } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
       taskInfo.push({ name: 'curator', link })
-      this.store = 1
-    } else if (/join.*discord/gim.test(taskName)) {
+    } else if (taskIcon.includes('discord') || /join.*discord/gim.test(taskName)) {
       taskInfo.push({ name: 'discord', link })
-    } else if (/follow.*instagram/gim.test(taskName)) {
+    } else if (taskIcon.includes('instagram') || /follow.*instagram/gim.test(taskName)) {
       taskInfo.push({ name: 'instagram', link })
-    } else if (/follow.*twitch.*channel/gim.test(taskName)) {
+    } else if (taskIcon.includes('twitch') || /follow.*twitch.*channel/gim.test(taskName)) {
       taskInfo.push({ name: 'twitch', link })
-    } else if (/subscribe.*subreddit/gim.test(taskName)) {
+    } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName)) {
       taskInfo.push({ name: 'reddit', link })
-    } else if (/join.*vk.*group/gim.test(taskName)) {
+    } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
       taskInfo.push({ name: 'vk', link })
     } else {
       if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
@@ -73,11 +69,9 @@ const giveawaysu = {
       } else {
         if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
           taskInfo.push({ name: 'wGame', link })
-          this.store = 1
         }
         if (/follow.*button/gim.test(taskName)) {
           taskInfo.push({ name: 'fGame', link })
-          this.store = 1
         }
       }
       if (taskInfo.length === 0) return [{ name: 'nonSteam' }]
@@ -262,8 +256,6 @@ const giveawaysu = {
       })
     }
   },
-  community: 0,
-  store: 0,
   links: [], // 非steam任务
   taskInfo: {
     groups: [], // 任务需要加的组

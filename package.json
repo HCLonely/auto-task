@@ -1,11 +1,12 @@
 {
   "name": "auto-task",
-  "version": "3.0.10",
+  "version": "3.0.11",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "gulp dev",
-    "dev": "gulp dev && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix"
+    "test": "standard",
+    "dev": "gulp development && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix",
+    "build": "gulp production && echo [info] Format file: auto-task.user.js && standard auto-task.user.js --fix"
   },
   "author": "HCLonely",
   "license": "MIT",

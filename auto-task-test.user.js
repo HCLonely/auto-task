@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.10
+// @version        3.0.11
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.11/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.10/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.11/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.11/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -5223,11 +5223,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         try {
           for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
             var task = _step7.value
-            var colorfulTask = $(task).find('td').eq(1).find('a:not([data-trigger="link"])')
-            var colorlessTask = $(task).find('td').eq(2).find('a:not([data-trigger="link"])')
+            var td = $(task).find('td')
+            var colorfulTask = td.eq(1).find('a:not([data-trigger="link"])')
+            var colorlessTask = td.eq(2).find('a:not([data-trigger="link"])')
             var taskDes = colorfulTask.length > 0 ? colorfulTask : colorlessTask
+            var taskIcon = td.eq(0).find('i').attr('class')
 
-            var _taskInfo = this.which_task(taskDes)
+            var _taskInfo = this.which_task(taskDes, taskIcon)
 
             var _iterator8 = _createForOfIteratorHelper(_taskInfo)
             var _step8
@@ -5257,13 +5259,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.getFinalUrl(e)
       }
     },
-    which_task: function which_task (taskDes) {
+    which_task: function which_task (taskDes, taskIcon) {
       var _ref39 = [[], taskDes.text().trim(), taskDes.attr('href')]
       var taskInfo = _ref39[0]
       var taskName = _ref39[1]
       var link = _ref39[2]
 
-      if (/disable adblock/gim.test(taskName)) {
+      if (taskIcon.includes('ban') || /disable adblock/gim.test(taskName)) {
         return [{
           name: 'nonSteam'
         }]
@@ -5272,58 +5274,52 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           name: 'group',
           link: link
         })
-        this.community = 1
       } else if (/like.*announcement/gim.test(taskName)) {
         taskInfo.push({
           name: 'announcement',
           link: link
         })
-        this.community = 1
       } else if (/(follow|subscribe).*publisher/gim.test(taskName)) {
         taskInfo.push({
           name: 'publisher',
           link: link
         })
-        this.store = 1
       } else if (/(follow|subscribe).*franchise/gim.test(taskName)) {
         taskInfo.push({
           name: 'franchise',
           link: link
         })
-        this.store = 1
       } else if (/(follow|subscribe).*developer/gim.test(taskName)) {
         taskInfo.push({
           name: 'developer',
           link: link
         })
-        this.store = 1
       } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
         taskInfo.push({
           name: 'curator',
           link: link
         })
-        this.store = 1
-      } else if (/join.*discord/gim.test(taskName)) {
+      } else if (taskIcon.includes('discord') || /join.*discord/gim.test(taskName)) {
         taskInfo.push({
           name: 'discord',
           link: link
         })
-      } else if (/follow.*instagram/gim.test(taskName)) {
+      } else if (taskIcon.includes('instagram') || /follow.*instagram/gim.test(taskName)) {
         taskInfo.push({
           name: 'instagram',
           link: link
         })
-      } else if (/follow.*twitch.*channel/gim.test(taskName)) {
+      } else if (taskIcon.includes('twitch') || /follow.*twitch.*channel/gim.test(taskName)) {
         taskInfo.push({
           name: 'twitch',
           link: link
         })
-      } else if (/subscribe.*subreddit/gim.test(taskName)) {
+      } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName)) {
         taskInfo.push({
           name: 'reddit',
           link: link
         })
-      } else if (/join.*vk.*group/gim.test(taskName)) {
+      } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         taskInfo.push({
           name: 'vk',
           link: link
@@ -5337,7 +5333,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               name: 'wGame',
               link: link
             })
-            this.store = 1
           }
 
           if (/follow.*button/gim.test(taskName)) {
@@ -5345,7 +5340,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               name: 'fGame',
               link: link
             })
-            this.store = 1
           }
         }
 
@@ -5735,8 +5729,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
       }
     },
-    community: 0,
-    store: 0,
     links: [],
 
     taskInfo: {

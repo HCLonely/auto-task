@@ -97,5 +97,5 @@ function generateHelper () {
   fs.writeFileSync('./auto-task-helper.user.js', text)
   success('Write file to: auto-task-helper.user.js')
 }
-exports.buildUserJsDev = buildUserJs
-exports.budilPageJsDev = budilPageJs
+exports.buildUserJs = buildUserJs
+exports.budilPageJs = budilPageJs

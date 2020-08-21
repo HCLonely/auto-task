@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: 提交BUG
-title: "[BUG]"
+title: ''
 labels: bug
 assignees: ''
 
@@ -10,6 +10,7 @@ assignees: ''
 <!-- 请确认问题可以复现 | Please confirm that the problem can be reproduced -->
 <!-- 提交问题前请确认已进行以下操作，确认请在`[]`中打`x`-->
 <!-- Please confirm the following before submitting a question, if confirmed, enter `x` in `[]` -->
+
 - [] 我已经将脚本更新到了[最新版](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js) | I have updated this script to the [latest version](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js).
 - [] 我已经查看了[常见问题解决办法](https://github.com/HCLonely/auto-task/wiki/FAQ-zh-CN)但没有解决 | I have seen [FAQ](https://github.com/HCLonely/auto-task/wiki/FAQ) but not solved.
 - [] 我已经查看了[issues](https://github.com/HCLonely/auto-task/issues)但没有解决 | I have seen [issues](https://github.com/HCLonely/auto-task/issues) but not solved.

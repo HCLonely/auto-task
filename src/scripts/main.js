@@ -132,7 +132,7 @@ try {
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
       const listValues = GM_listValues()
       for (const value of listValues) {
-        if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo'].includes(value)) GM_deleteValue(value)
+        if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo'].includes(value)) GM_deleteValue(value)
       }
       status.success()
     })

@@ -32,17 +32,17 @@ const prys = {
         if ($(step).find('span:contains(Success)').length === 0) {
           if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
             const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-            const curatorId = link.match(/curator\/([\d]+)/)
+            const curatorId = link.match(/curator\/([\d]+)/)?.[1]
             if (curatorId) {
-              this.currentTaskInfo.curators.push(curatorId[1])
-              this.taskInfo.curators.push(curatorId[1])
+              this.currentTaskInfo.curators.push(curatorId)
+              this.taskInfo.curators.push(curatorId)
             }
           } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
             const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
-            const groupName = link.match(/groups\/(.+)\/?/)
+            const groupName = link.match(/groups\/(.+)\/?/)?.[1]
             if (groupName) {
-              this.currentTaskInfo.groups.push(groupName[1])
-              this.taskInfo.groups.push(groupName[1])
+              this.currentTaskInfo.groups.push(groupName)
+              this.taskInfo.groups.push(groupName)
             }
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
@@ -51,10 +51,10 @@ const prys = {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {
                 if (data.result === 'success') {
-                  const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
+                  const groupName = data.finalUrl.match(/groups\/(.+)\/?/)?.[1]
                   if (groupName) {
-                    this.currentTaskInfo.groups.push(groupName[1])
-                    this.taskInfo.groups.push(groupName[1])
+                    this.currentTaskInfo.groups.push(groupName)
+                    this.taskInfo.groups.push(groupName)
                   }
                 }
                 r(1)
@@ -93,8 +93,8 @@ const prys = {
       const checks = $('#steps tbody a[id^=check]')
       if (checks.length > 0) {
         for (const check of checks) {
-          const id = $(check).attr('id').match(/[\d]+/)
-          if (id) this.currentTaskInfo.tasks.push({ id: id[0], taskDes: $(check).parent().prev().html().trim() })
+          const id = $(check).attr('id').match(/[\d]+/)?.[0]
+          if (id) this.currentTaskInfo.tasks.push({ id, taskDes: $(check).parent().prev().html().trim() })
         }
         this.verify(true)
       } else {
@@ -110,12 +110,12 @@ const prys = {
         for (const step of steps) {
           if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
             const link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-            const curatorId = link.match(/curator\/([\d]+)/)
-            if (curatorId) this.taskInfo.curators.push(curatorId[1])
+            const curatorId = link.match(/curator\/([\d]+)/)?.[1]
+            if (curatorId) this.taskInfo.curators.push(curatorId)
           } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
             const link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
-            const groupName = link.match(/groups\/(.+)\/?/)
-            if (groupName) this.taskInfo.groups.push(groupName[1])
+            const groupName = link.match(/groups\/(.+)\/?/)?.[1]
+            if (groupName) this.taskInfo.groups.push(groupName)
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
             pro.push(new Promise(r => { // eslint-disable-line promise/param-names
@@ -123,9 +123,9 @@ const prys = {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {
                 if (data.result === 'success') {
-                  const groupName = data.finalUrl.match(/groups\/(.+)\/?/)
+                  const groupName = data.finalUrl.match(/groups\/(.+)\/?/)?.[1]
                   if (groupName) {
-                    this.taskInfo.groups.push(groupName[1])
+                    this.taskInfo.groups.push(groupName)
                   }
                 }
                 r(1)
@@ -263,8 +263,7 @@ const prys = {
     */
   },
   get_giveawayId () {
-    const id = window.location.search.match(/id=([\d]+)/)
-    return id?.[1] || window.location.href
+    return window.location.search.match(/id=([\d]+)/)?.[1] || window.location.href
   },
   updateSteamInfo (callback) {
     new Promise(resolve => {

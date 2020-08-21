@@ -11,7 +11,7 @@ const gleam = {
     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
       this.remove(true)
     } else {
-      [this.twitters, this.facebooks, this.youtubes, this.discords, this.others, this.groups, this.links] = [[], [], [], [], [], [], []]
+      this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
 
       const [
         status,
@@ -24,24 +24,37 @@ const gleam = {
       for (const task of tasksContainer) { // 遍历任务信息
         if ($(task).find('i.fa-question').length > 0) {
           if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
-            this.links.push(task)
+            this.currentTaskInfo.links.push(task)
           } else {
             const icon = $(task).find('.icon-wrapper i')
             if (icon.hasClass('fa-twitter')) {
-              this.twitters.push(task)
+              const twitterTaskInfo = $(task).find('.user-links')
+              if (/follow/gim.test(twitterTaskInfo.text())) {
+                const name = twitterTaskInfo.find('a[href^="https://twitter.com/"]').attr('href')?.match(/https:\/\/twitter.com\/(.+)/)?.[1]
+                if (name) {
+                  this.currentTaskInfo.twitterUsers.push(name)
+                  this.taskInfo.twitterUsers.push(name)
+                }
+              } else if (/retweet/gim.test(twitterTaskInfo.text())) {
+                const id = twitterTaskInfo.find('a[href^="https://twitter.com/"]').attr('href')?.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)?.[1]
+                if (id) {
+                  this.currentTaskInfo.retweets.push(id)
+                  this.taskInfo.retweets.push(id)
+                }
+              }
             } else if (icon.hasClass('fa-facebook')) {
-              this.facebooks.push(task)
+              this.currentTaskInfo.facebooks.push(task)
             } else if (icon.hasClass('fa-youtube')) {
-              this.youtubes.push(task)
+              this.currentTaskInfo.youtubes.push(task)
             } else if (icon.hasClass('fa-discord')) {
-              this.discords.push(task)
+              this.currentTaskInfo.discords.push(task)
             } else if (icon.hasClass('fa-steam') || icon.hasClass('fa-steam-symbol')) {
               const title = $(task).find('.entry-method-title')
               if (/join.*group/gim.test(title.text())) {
                 const groupA = $(task).find("a[href*='steamcommunity.com/groups']:first").attr('href')
                 if (groupA) {
                   const groupName = groupA.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
-                  this.groups.push(groupName)
+                  this.currentTaskInfo.groups.push(groupName)
                   this.taskInfo.groups.push(groupName)
                 } else {
                   fuc.echoLog({
@@ -50,10 +63,10 @@ const gleam = {
                   })
                 }
               } else {
-                this.others.push(task)
+                this.currentTaskInfo.others.push(task)
               }
             } else {
-              this.others.push(task)
+              this.currentTaskInfo.others.push(task)
             }
           }
         } else if (callback === 'remove') {
@@ -75,23 +88,9 @@ const gleam = {
           }
         }
       }
-      [
-        this.groups,
-        this.twitters,
-        this.facebooks,
-        this.youtubes,
-        this.discords,
-        this.others,
-        this.taskInfo.groups
-      ] = [
-        fuc.unique(this.groups),
-        fuc.unique(this.twitters),
-        fuc.unique(this.facebooks),
-        fuc.unique(this.youtubes),
-        fuc.unique(this.discords),
-        fuc.unique(this.others),
-        fuc.unique(this.taskInfo.groups)
-      ]
+
+      this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+      this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
 
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       status.success()
@@ -107,51 +106,25 @@ const gleam = {
   },
   do_task () {
     this.updateSteamInfo(() => {
-      const [
-        pro,
-        twitters,
-        discords,
-        facebooks,
-        youtubes,
-        others,
-        links
-      ] = [
-        [],
-        fuc.unique(this.twitters),
-        fuc.unique(this.discords),
-        fuc.unique(this.facebooks),
-        fuc.unique(this.youtubes),
-        fuc.unique(this.others),
-        fuc.unique(this.links)
-      ]
+      const pro = []
+      const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
       const socals = [...discords, ...facebooks, ...youtubes]
-      if (this.conf.fuck.joinSteamGroup && this.groups.length > 0) {
+      if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
         pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', type: 'group', elements: this.groups, resolve, action: 'fuck' })
+          fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'fuck' })
+        }))
+      }
+      if (this.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'fuck' })
+        }))
+      }
+      if (this.conf.fuck.retweet && retweets.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'fuck' })
         }))
       }
       if (globalConf.other.autoOpen) {
-        if (twitters.length > 0) {
-          for (const twitter of twitters) {
-            const title = $(twitter).find('.entry-method-title').text().trim()
-            const [
-              status,
-              followButton,
-              retweetButton
-            ] = [
-              fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
-              $(twitter).find('a.twitter-button:contains(Follow)').attr('href'),
-              $(twitter).find('a.twitter-button:contains(Retweet)').attr('href')
-            ]
-            const button = followButton || retweetButton
-            if (button) {
-              window.open(button, '_blank')
-              status.warning(getI18n('openPage'))
-            } else {
-              status.error(getI18n('getTaskUrlFailed'))
-            }
-          }
-        }
         if (socals.length > 0) {
           for (const task of socals) {
             const title = $(task).find('.entry-method-title').text().trim()
@@ -227,6 +200,16 @@ const gleam = {
         if (this.conf.remove.leaveSteamGroup && this.taskInfo.groups.length > 0) {
           pro.push(new Promise(resolve => {
             fuc.toggleActions({ website: 'gleam', type: 'group', elements: this.taskInfo.groups, resolve, action: 'remove' })
+          }))
+        }
+        if (this.conf.remove.unfollowTwitterUser && this.taskInfo.twitterUsers.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: this.taskInfo.twitterUsers, resolve, action: 'remove' })
+          }))
+        }
+        if (this.conf.remove.unretweet && this.taskInfo.retweets.length > 0) {
+          pro.push(new Promise(resolve => {
+            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: this.taskInfo.retweets, resolve, action: 'remove' })
           }))
         }
         Promise.all(pro).finally(() => {
@@ -305,17 +288,23 @@ const gleam = {
       })
     }
   },
-  groups: [], // 任务需要加的组
-  links: [], // 需要浏览的页面链接
-  twitters: [], // twitter任务
-  discords: [], // discord任务
-  facebooks: [], // facebook任务
-  youtubes: [], // youtube任务
-  others: [], // 位置类型任务
-  taskInfo: {
-    groups: []// 所有任务需要加的组
+  currentTaskInfo: {
+    groups: [], // 任务需要加的组
+    links: [], // 需要浏览的页面链接
+    twitterUsers: [], // twitter任务
+    retweets: [], // twitter任务
+    discords: [], // discord任务
+    facebooks: [], // facebook任务
+    youtubes: [], // youtube任务
+    others: [], // 未知类型任务
+    tasks: [] // 任务信息
   },
-  tasks: [], // 任务信息
+  taskInfo: {
+    groups: [], // 所有任务需要加的组
+    twitterUsers: [], // twitter任务
+    retweets: [], // twitter任务
+    discords: [] // discord任务
+  },
   setting: {},
   conf: config?.gleam?.enable ? config.gleam : globalConf
 }

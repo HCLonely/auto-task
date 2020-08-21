@@ -93,7 +93,7 @@ function getTwitterUserId (name) {
     const status = echoLog({ type: 'getTwitterUserId', text: name })
     httpRequest({
       url: 'https://api.twitter.com/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=%7B%22screen_name%22%3A%22' + name + '%22%2C%22withHighlightedLabel%22%3Atrue%7D',
-      method: 'POST',
+      method: 'GET',
       headers: { authorization: 'Bearer ' + twitterInfo.authorization, 'content-type': 'application/json' },
       responseType: 'json',
       anonymous: true,
@@ -116,8 +116,8 @@ function getTwitterUserId (name) {
       r: resolve,
       status
     })
-  }).then(({ result }) => {
-    return result === 'success'
+  }).then(({ userId }) => {
+    return userId
   }).catch(() => {
     return false
   })

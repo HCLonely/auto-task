@@ -42,10 +42,10 @@ const opiumpulses = {
               if (debug) console.log(response)
               if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
                 status.success()
-                const points = response.responseText.match(/Points:[\s]*?([\d]+)/)
+                const points = response.responseText.match(/Points:[\s]*?([\d]+)/)?.[1]
                 if (type === 'points' && points) {
-                  if (debug) console.log(getI18n('pointsLeft') + points[1])
-                  myPoint = parseInt(points[1])
+                  if (debug) console.log(getI18n('pointsLeft') + points)
+                  myPoint = parseInt(points)
                 }
               } else {
                 status.error('Error:' + (response.status || response.statusText))

@@ -234,8 +234,7 @@ const giveawaysu = {
   verify () { },
   remove () { this.get_tasks('remove') },
   get_giveawayId () {
-    const id = window.location.href.match(/view\/([\d]+)/)
-    return id?.[1] || window.location.href
+    return window.location.href.match(/view\/([\d]+)/)?.[1] || window.location.href
   },
   checkLogin () {
     if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')

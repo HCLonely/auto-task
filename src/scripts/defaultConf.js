@@ -119,6 +119,7 @@ const defaultConf = {
       likeAnnouncement: true,
       addToWishlist: true,
       followGame: true,
+      retweet: true,
       visitLink: true,
       verifyTask: true
     },
@@ -128,7 +129,8 @@ const defaultConf = {
       unfollowDeveloper: true,
       unfollowPublisher: true,
       removeFromWishlist: true,
-      unfollowGame: true
+      unfollowGame: true,
+      unretweet: true
     },
     enable: false
   },
@@ -210,11 +212,15 @@ const defaultConf = {
   gleam: {
     fuck: {
       joinSteamGroup: true,
+      followTwitterUser: true,
+      retweet: true,
       visitLink: true,
       verifyTask: true
     },
     remove: {
-      leaveSteamGroup: true
+      leaveSteamGroup: true,
+      unfollowTwitterUser: true,
+      unretweet: true
     },
     enable: false
   },

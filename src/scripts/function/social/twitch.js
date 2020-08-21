@@ -64,8 +64,8 @@ function verifyTwitchAuth () {
       r: resolve,
       status
     })
-  }).then(data => {
-    return data?.result === 'success'
+  }).then(({ result }) => {
+    return result === 'success'
   }).catch(error => {
     if (debug) console.log(error)
     return false
@@ -129,8 +129,8 @@ function getTwitchChannelId (name) {
       r: resolve,
       status
     })
-  }).then(({ result }) => {
-    return result === 'success'
+  }).then(({ channelId }) => {
+    return channelId
   }).catch(() => {
     return false
   })

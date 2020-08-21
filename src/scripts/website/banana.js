@@ -46,24 +46,24 @@ const banana = {
 
       for (const task of tasksUl) { // 遍历任务信息
         const [taskDes, verifyBtn] = [$(task).find('p'), $(task).find('button:contains(Verify)')]
-        const taskId = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : ''
+        const [, taskId] = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : []
         if (taskId) {
-          this.currentTaskInfo.tasks.push({ taskId: taskId[1], taskDes: taskDes.text() })
+          this.currentTaskInfo.tasks.push({ taskId, taskDes: taskDes.text() })
           if (/join.*?steam.*?group/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
               }).then(r => {
                 if (r.result === 'success') {
-                  const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
+                  const groupName = r.finalUrl.match(/groups\/(.+)\/?/)?.[1]
                   if (groupName) {
-                    this.currentTaskInfo.groups.push(groupName[1])
-                    this.taskInfo.groups.push(groupName[1])
+                    this.currentTaskInfo.groups.push(groupName)
+                    this.taskInfo.groups.push(groupName)
                   } else {
-                    this.currentTaskInfo.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId)
                   }
                 } else {
-                  this.currentTaskInfo.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId)
                 }
                 res(1)
               })
@@ -71,18 +71,18 @@ const banana = {
           } else if (/follow.*?curator/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
               }).then(r => {
                 if (r.result === 'success') {
-                  const curatorId = r.finalUrl.match(/curator\/([\d]+)/)
+                  const curatorId = r.finalUrl.match(/curator\/([\d]+)/)?.[1]
                   if (curatorId) {
-                    this.currentTaskInfo.curators.push(curatorId[1])
-                    this.currentTaskInfo.taskInfo.curators.push(curatorId[1])
+                    this.currentTaskInfo.curators.push(curatorId)
+                    this.currentTaskInfo.taskInfo.curators.push(curatorId)
                   } else {
-                    this.currentTaskInfo.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId)
                   }
                 } else {
-                  this.currentTaskInfo.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId)
                 }
                 res(1)
               })
@@ -90,32 +90,51 @@ const banana = {
           } else if (/wishlist/gim.test(taskDes.text())) {
             pro.push(new Promise(res => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId[1])
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
               }).then(r => {
                 if (r.result === 'success') {
-                  const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)
+                  const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
                   if (appId) {
-                    this.currentTaskInfo.wishlists.push(appId[1])
-                    this.currentTaskInfo.taskInfo.wishlists.push(appId[1])
+                    this.currentTaskInfo.wishlists.push(appId)
+                    this.currentTaskInfo.taskInfo.wishlists.push(appId)
                   } else {
-                    this.currentTaskInfo.taskIds.push(taskId[1])
+                    this.currentTaskInfo.taskIds.push(taskId)
                   }
                 } else {
-                  this.currentTaskInfo.taskIds.push(taskId[1])
+                  this.currentTaskInfo.taskIds.push(taskId)
+                }
+                res(1)
+              })
+            }))
+          } else if (/Retweet/gim.test(taskDes.text())) {
+            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+              new Promise(resolve => {
+                fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
+              }).then(r => {
+                if (r.result === 'success') {
+                  const appId = r.finalUrl.match(/status\/([\d]+)/)?.[1]
+                  if (appId) {
+                    this.currentTaskInfo.retweets.push(appId)
+                    this.currentTaskInfo.taskInfo.retweets.push(appId)
+                  } else {
+                    this.currentTaskInfo.taskIds.push(taskId)
+                  }
+                } else {
+                  this.currentTaskInfo.taskIds.push(taskId)
                 }
                 res(1)
               })
             }))
           } else {
-            if (/(Subscribe.*channel)|(Retweet)|(Twitter)/gim.test(taskDes.text())) {
+            if (/(Subscribe.*channel)|(Twitter)/gim.test(taskDes.text())) {
               if (!this.verifyBtn) this.verifyBtn = taskDes.parent().find('button:contains(Verify)')
               if (callback === 'do_task' && globalConf.other.autoOpen) {
                 taskDes.parent().find('button')[0].click()
               }
             }
             pro.push(new Promise(resolve => {
-              this.currentTaskInfo.links.push(window.location.origin + window.location.pathname + '?q=' + taskId[1])
-              this.currentTaskInfo.taskIds.push(taskId[1])
+              this.currentTaskInfo.links.push(window.location.origin + window.location.pathname + '?q=' + taskId)
+              this.currentTaskInfo.taskIds.push(taskId)
               resolve(1)
             }))
           }
@@ -195,7 +214,7 @@ const banana = {
     }
   },
   toggleActions (action, pro) {
-    const { groups, curators, wishlists, fGames } = action === 'fuck'
+    const { groups, curators, wishlists, fGames, retweets } = action === 'fuck'
       ? this.currentTaskInfo
       : this.taskInfo
     if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
@@ -218,10 +237,14 @@ const banana = {
         fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
       }))
     }
+    if (this.conf[action][action === 'fuck' ? 'retweet' : 'unretweet'] && retweets.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'banana', social: 'twitter', type: 'retweet', elements: retweets, resolve, action })
+      }))
+    }
   },
   get_giveawayId () {
-    const id = window.location.href.match(/\/giveaway\/([\w\d-]+)/)
-    return id?.[1] || window.location.href
+    return window.location.href.match(/\/giveaway\/([\w\d-]+)/)?.[1] || window.location.href
   },
   updateSteamInfo (callback) {
     new Promise(resolve => {
@@ -268,6 +291,7 @@ const banana = {
     curators: [], // 所有任务需要关注的鉴赏家
     wishlists: [], // 所有务需要添加愿望单的游戏
     fGames: [], // 所有任务需要关注的的游戏
+    retweets: [], // 所有任务需要转推的推文
     taskIds: [], // 处理失败的任务
     tasks: [] // 所有任务ID
   },
@@ -275,7 +299,8 @@ const banana = {
     groups: [], // 任务需要加的组
     curators: [], // 任务需要关注的鉴赏家
     wishlists: [], // 任务需要添加愿望单的游戏
-    fGames: []// 任务需要关注的的游戏
+    fGames: [], // 任务需要关注的的游戏
+    retweets: [] // 任务需要转推的推文
   },
   setting: {},
   conf: config?.banana?.enable ? config.banana : globalConf

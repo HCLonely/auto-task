@@ -194,25 +194,26 @@ const marvelousga = {
     }
   },
   toggleActions (action, pro) {
-    const { groups, curators, twitterUsers, twitchChannels } = action === 'fuck'
+    const fuck = action === 'fuck'
+    const { groups, curators, twitterUsers, twitchChannels } = fuck
       ? this.currentTaskInfo
       : this.taskInfo
-    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+    if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', type: 'group', elements: groups, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+    if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', type: 'curator', elements: curators, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followTwitterUser' : 'unfollowTwitterUser'] && twitterUsers.length > 0) {
+    if (this.conf[action][fuck ? 'followTwitterUser' : 'unfollowTwitterUser'] && twitterUsers.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchChannels.length > 0) {
+    if (this.conf[action][fuck ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchChannels.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', social: 'twitch', elements: twitchChannels, resolve, action })
       }))
@@ -267,26 +268,26 @@ const marvelousga = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           window.close()
         }
       })
     }
   },
   currentTaskInfo: {
-    groups: [], // 任务需要加的组
-    curators: [], // 任务需要关注的鉴赏家
-    twitterUsers: [], // 任务需要关注的twitter
-    twitchChannels: [], // 任务需要关注的twitch channel
-    links: [], // 需要浏览的页面链接
-    tasks: [] // 任务信息
+    groups: [],
+    curators: [],
+    twitterUsers: [],
+    twitchChannels: [],
+    links: [],
+    tasks: []
   },
   taskInfo: {
-    groups: [], // 所有任务需要加的组
-    curators: [], // 所有任务需要关注的鉴赏家
-    twitterUsers: [], // 任务需要关注的twitter
-    twitchChannels: [] // 任务需要关注的twitch channel
+    groups: [],
+    curators: [],
+    twitterUsers: [],
+    twitchChannels: []
   },
   setting: {},
   conf: config?.marvelousga?.enable ? config.marvelousga : globalConf

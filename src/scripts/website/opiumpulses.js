@@ -31,8 +31,8 @@ const opiumpulses = {
           $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")
         ]
         if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
-          const giveawayId = a.attr('onclick').match(/[\d]+/)
-          if (giveawayId) checkUser(giveawayId[0])
+          const giveawayId = a.attr('onclick').match(/[\d]+/)?.[0]
+          if (giveawayId) checkUser(giveawayId)
         }
         await new Promise(resolve => {
           fuc.httpRequest({
@@ -65,9 +65,9 @@ const opiumpulses = {
     fuc.echoLog({ type: 'custom', text: '<li>-----END-----</li>' })
   },
   verify () {
-    const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)
+    const myPoints = $('.page-header__nav-func-user-nav-items.points-items').text().match(/[\d]+/gim)?.[0]
     if (myPoints) {
-      this.myPoints = Number(myPoints[0])
+      this.myPoints = Number(myPoints)
       this.get_tasks('points')
     } else {
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('getPointsFailed')}</font></li>` })

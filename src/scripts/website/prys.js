@@ -46,7 +46,7 @@ const prys = {
             }
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {
@@ -57,9 +57,9 @@ const prys = {
                     this.taskInfo.groups.push(groupName)
                   }
                 }
-                r(1)
+                resolve(1)
               }).catch(() => {
-                r(1)
+                resolve(1)
               })
             }))
           }
@@ -118,7 +118,7 @@ const prys = {
             if (groupName) this.taskInfo.groups.push(groupName)
           } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
             const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-            pro.push(new Promise(r => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => { // eslint-disable-line promise/param-names
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, link)
               }).then(data => {
@@ -128,7 +128,10 @@ const prys = {
                     this.taskInfo.groups.push(groupName)
                   }
                 }
-                r(1)
+                resolve(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+                resolve(0)
               })
             }))
           }
@@ -235,14 +238,14 @@ const prys = {
     }
   },
   toggleActions (action, pro) {
-    const groups = action === 'fuck' ? this.currentTaskInfo.groups : this.taskInfo.groups
-    const curators = action === 'fuck' ? this.currentTaskInfo.curators : this.taskInfo.curators
-    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+    const fuck = action === 'fuck'
+    const { groups, curators } = fuck ? this.currentTaskInfo : this.taskInfo
+    if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'prys', type: 'group', elements: groups, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+    if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'prys', type: 'curator', elements: curators, resolve, action })
       }))
@@ -294,21 +297,21 @@ const prys = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           window.close()
         }
       })
     }
   },
   currentTaskInfo: {
-    groups: [], // 任务需要加的组
-    curators: [], // 任务需要关注的鉴赏家
-    tasks: [] // 任务信息
+    groups: [],
+    curators: [],
+    tasks: []
   },
   taskInfo: {
-    groups: [], // 所有任务需要加的组
-    curators: []// 所有任务需要关注的鉴赏家
+    groups: [],
+    curators: []
   },
   setting: {},
   conf: config?.prys?.enable ? config.prys : globalConf

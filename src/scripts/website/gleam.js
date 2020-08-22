@@ -196,20 +196,21 @@ const gleam = {
   remove (remove = false) {
     const pro = []
     if (remove) {
+      const { groups, twitterUsers, retweets } = this.taskInfo
       this.updateSteamInfo(() => {
-        if (this.conf.remove.leaveSteamGroup && this.taskInfo.groups.length > 0) {
+        if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', type: 'group', elements: this.taskInfo.groups, resolve, action: 'remove' })
+            fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'remove' })
           }))
         }
-        if (this.conf.remove.unfollowTwitterUser && this.taskInfo.twitterUsers.length > 0) {
+        if (this.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: this.taskInfo.twitterUsers, resolve, action: 'remove' })
+            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'remove' })
           }))
         }
-        if (this.conf.remove.unretweet && this.taskInfo.retweets.length > 0) {
+        if (this.conf.remove.unretweet && retweets.length > 0) {
           pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: this.taskInfo.retweets, resolve, action: 'remove' })
+            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'remove' })
           }))
         }
         Promise.all(pro).finally(() => {
@@ -281,29 +282,29 @@ const gleam = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           window.close()
         }
       })
     }
   },
   currentTaskInfo: {
-    groups: [], // 任务需要加的组
-    links: [], // 需要浏览的页面链接
-    twitterUsers: [], // twitter任务
-    retweets: [], // twitter任务
-    discords: [], // discord任务
-    facebooks: [], // facebook任务
-    youtubes: [], // youtube任务
-    others: [], // 未知类型任务
-    tasks: [] // 任务信息
+    groups: [],
+    links: [],
+    twitterUsers: [],
+    retweets: [],
+    discords: [],
+    facebooks: [],
+    youtubes: [],
+    others: [],
+    tasks: []
   },
   taskInfo: {
-    groups: [], // 所有任务需要加的组
-    twitterUsers: [], // twitter任务
-    retweets: [], // twitter任务
-    discords: [] // discord任务
+    groups: [],
+    twitterUsers: [],
+    retweets: [],
+    discords: []
   },
   setting: {},
   conf: config?.gleam?.enable ? config.gleam : globalConf

@@ -125,8 +125,8 @@ function getTwitterUserId (name) {
 
 async function toggleTwitterActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   if (new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000) {
-    const result = await updateTwitterInfo()
-    if (!result?.result === 'success') return
+    const { result } = await updateTwitterInfo()
+    if (result !== 'success') return
   }
   for (const element of unique(elements)) {
     let id = element

@@ -128,15 +128,15 @@ function getGroupID (groupName, callback) {
         onload (response) {
           if (debug) console.log(response)
           if (response.status === 200) {
-            const groupId = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)
-            if (groupId === null) {
+            const groupId = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)?.[1]
+            if (groupId) {
+              status.success()
+              groupNameToId[groupName] = groupId
+              GM_setValue('groupNameToId', groupNameToId)
+              resolve(groupId)
+            } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve(false)
-            } else {
-              status.success()
-              groupNameToId[groupName] = groupId[1]
-              GM_setValue('groupNameToId', groupNameToId)
-              resolve(groupId[1])
             }
           } else {
             status.error('Error:' + response.statusText + '(' + response.status + ')')
@@ -149,7 +149,7 @@ function getGroupID (groupName, callback) {
         }
       })
     }).then(groupId => {
-      if (groupId !== false && callback) callback(groupName, groupId)
+      if (groupId && callback) callback(groupName, groupId)
     }).catch(err => {
       console.error(err)
     })
@@ -190,7 +190,7 @@ function followCurator (r, curatorId, follow = '1', status = '') {
     dataType: 'json',
     onload (response) {
       if (debug) console.log(response)
-      if (response.status === 200 && response?.response?.success?.success === 1) {
+      if (response.status === 200 && response.response?.success?.success === 1) {
         status.success()
         r({ result: 'success', statusText: response.statusText, status: response.status })
       } else {
@@ -225,15 +225,15 @@ function getCuratorID (developerName, callback, type, path) {
         onload (response) {
           if (debug) console.log(response)
           if (response.status === 200) {
-            const developerId = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)
-            if (developerId === null) {
+            const developerId = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)?.[1]
+            if (developerId) {
+              status.success()
+              developerNameToId[developerName] = developerId
+              GM_setValue('developerNameToId', developerNameToId)
+              resolve(developerId)
+            } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve(false)
-            } else {
-              status.success()
-              developerNameToId[developerName] = developerId[1]
-              GM_setValue('developerNameToId', developerNameToId)
-              resolve(developerId[1])
             }
           } else {
             status.error('Error:' + response.statusText + '(' + response.status + ')')
@@ -244,7 +244,7 @@ function getCuratorID (developerName, callback, type, path) {
         r () { resolve(false) }
       })
     }).then(curatorId => {
-      if (curatorId !== false && callback) callback(developerName, curatorId)
+      if (curatorId && callback) callback(developerName, curatorId)
     }).catch(err => {
       console.error(err)
     })
@@ -533,7 +533,7 @@ function likeAnnouncements (r, rawMatch) {
 function toggleSteamActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   const pro = []
   for (const element of unique(elements)) {
-    let elementName = null
+    let elementName = [null, element]
     if (website === 'giveawaysu' && toFinalUrl[element]) {
       const toFinalUrlElement = toFinalUrl[element] || ''
       switch (type) {
@@ -562,11 +562,7 @@ function toggleSteamActions ({ website, type, elements, resolve, action, toFinal
           }
           break
         }
-        default:
-          elementName = null
       }
-    } else {
-      elementName = [null, element]
     }
     if (elementName?.[1]) {
       switch (type) {

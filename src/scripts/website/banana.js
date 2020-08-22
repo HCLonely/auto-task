@@ -17,8 +17,8 @@ const banana = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           this.get_tasks('do_task')
         }
       })
@@ -46,16 +46,16 @@ const banana = {
 
       for (const task of tasksUl) { // 遍历任务信息
         const [taskDes, verifyBtn] = [$(task).find('p'), $(task).find('button:contains(Verify)')]
-        const [, taskId] = verifyBtn.length > 0 ? verifyBtn.attr('onclick').match(/\?verify=([\d]+)/) : []
+        const taskId = verifyBtn.attr('onclick')?.match(/\?verify=([\d]+)/)?.[1]
         if (taskId) {
           this.currentTaskInfo.tasks.push({ taskId, taskDes: taskDes.text() })
           if (/join.*?steam.*?group/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-              }).then(r => {
-                if (r.result === 'success') {
-                  const groupName = r.finalUrl.match(/groups\/(.+)\/?/)?.[1]
+              }).then(({ result, finalUrl }) => {
+                if (result === 'success') {
+                  const groupName = finalUrl.match(/groups\/(.+)\/?/)?.[1]
                   if (groupName) {
                     this.currentTaskInfo.groups.push(groupName)
                     this.taskInfo.groups.push(groupName)
@@ -65,16 +65,19 @@ const banana = {
                 } else {
                   this.currentTaskInfo.taskIds.push(taskId)
                 }
-                res(1)
+                resolve(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+                resolve(0)
               })
             }))
           } else if (/follow.*?curator/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-              }).then(r => {
-                if (r.result === 'success') {
-                  const curatorId = r.finalUrl.match(/curator\/([\d]+)/)?.[1]
+              }).then(({ result, finalUrl }) => {
+                if (result === 'success') {
+                  const curatorId = finalUrl.match(/curator\/([\d]+)/)?.[1]
                   if (curatorId) {
                     this.currentTaskInfo.curators.push(curatorId)
                     this.currentTaskInfo.taskInfo.curators.push(curatorId)
@@ -84,16 +87,19 @@ const banana = {
                 } else {
                   this.currentTaskInfo.taskIds.push(taskId)
                 }
-                res(1)
+                resolve(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+                resolve(0)
               })
             }))
           } else if (/wishlist/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-              }).then(r => {
-                if (r.result === 'success') {
-                  const appId = r.finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
+              }).then(({ result, finalUrl }) => {
+                if (result === 'success') {
+                  const appId = finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
                   if (appId) {
                     this.currentTaskInfo.wishlists.push(appId)
                     this.currentTaskInfo.taskInfo.wishlists.push(appId)
@@ -103,16 +109,19 @@ const banana = {
                 } else {
                   this.currentTaskInfo.taskIds.push(taskId)
                 }
-                res(1)
+                resolve(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+                resolve(0)
               })
             }))
           } else if (/Retweet/gim.test(taskDes.text())) {
-            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
                 fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-              }).then(r => {
-                if (r.result === 'success') {
-                  const appId = r.finalUrl.match(/status\/([\d]+)/)?.[1]
+              }).then(({ result, finalUrl }) => {
+                if (result === 'success') {
+                  const appId = finalUrl.match(/status\/([\d]+)/)?.[1]
                   if (appId) {
                     this.currentTaskInfo.retweets.push(appId)
                     this.currentTaskInfo.taskInfo.retweets.push(appId)
@@ -122,7 +131,10 @@ const banana = {
                 } else {
                   this.currentTaskInfo.taskIds.push(taskId)
                 }
-                res(1)
+                resolve(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+                resolve(0)
               })
             }))
           } else {
@@ -214,30 +226,31 @@ const banana = {
     }
   },
   toggleActions (action, pro) {
-    const { groups, curators, wishlists, fGames, retweets } = action === 'fuck'
+    const fuck = action === 'fuck'
+    const { groups, curators, wishlists, fGames, retweets } = fuck
       ? this.currentTaskInfo
       : this.taskInfo
-    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+    if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+    if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+    if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+    if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'retweet' : 'unretweet'] && retweets.length > 0) {
+    if (this.conf[action][fuck ? 'retweet' : 'unretweet'] && retweets.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', social: 'twitter', type: 'retweet', elements: retweets, resolve, action })
       }))
@@ -277,8 +290,8 @@ const banana = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           window.close()
         }
       })
@@ -286,21 +299,21 @@ const banana = {
   },
   verifyBtn: 0,
   currentTaskInfo: {
-    links: [], // 需要浏览的页面链接
-    groups: [], // 所有任务需要加的组
-    curators: [], // 所有任务需要关注的鉴赏家
-    wishlists: [], // 所有务需要添加愿望单的游戏
-    fGames: [], // 所有任务需要关注的的游戏
-    retweets: [], // 所有任务需要转推的推文
-    taskIds: [], // 处理失败的任务
-    tasks: [] // 所有任务ID
+    links: [],
+    groups: [],
+    curators: [],
+    wishlists: [],
+    fGames: [],
+    retweets: [],
+    taskIds: [],
+    tasks: []
   },
   taskInfo: {
-    groups: [], // 任务需要加的组
-    curators: [], // 任务需要关注的鉴赏家
-    wishlists: [], // 任务需要添加愿望单的游戏
-    fGames: [], // 任务需要关注的的游戏
-    retweets: [] // 任务需要转推的推文
+    groups: [],
+    curators: [],
+    wishlists: [],
+    fGames: [],
+    retweets: []
   },
   setting: {},
   conf: config?.banana?.enable ? config.banana : globalConf

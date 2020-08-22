@@ -127,8 +127,8 @@ function getVkId (name) {
         if (debug) console.log(response)
         if (response.status === 200) {
           const [, groupAct, groupId, groupHash] = response.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || []
-          const [, publicHash] = response.responseText.match(/"enterHash":"(.*?)"/) || []
-          const [, publicPid] = response.responseText.match(/"public_id":([\d]+?),/) || []
+          const publicHash = response.responseText.match(/"enterHash":"(.*?)"/)?.[1]
+          const publicPid = response.responseText.match(/"public_id":([\d]+?),/)?.[1]
           const publicJoined = !response.responseText.includes('Public.subscribe')
           if (groupAct && groupId && groupHash) {
             status.success()

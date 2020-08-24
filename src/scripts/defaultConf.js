@@ -43,8 +43,8 @@ const defaultConf = {
       showDetails: true,
       checkLogin: true,
       checkLeft: true,
-      autoOpen: true,
-      reCaptcha: false
+      autoOpen: true
+      // reCaptcha: false
     },
     hotKey: {
       fuckKey: 'Alt + A',

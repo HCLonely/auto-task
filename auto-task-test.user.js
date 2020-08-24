@@ -516,8 +516,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         showDetails: true,
         checkLogin: true,
         checkLeft: true,
-        autoOpen: true,
-        reCaptcha: false
+        autoOpen: true
+
       },
       hotKey: {
         fuckKey: 'Alt + A',

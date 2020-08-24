@@ -1,18 +1,17 @@
 const rollup = require('rollup')
 const fs = require('fs-extra')
 const path = require('path')
-
 const { info, success } = require('./lib/log')
-
 const { getBabelOutputPlugin } = require('@rollup/plugin-babel')
 const progress = require('rollup-plugin-progress')
 const analyze = require('rollup-plugin-analyzer')
+const visualizer = require('rollup-plugin-visualizer')
 const { doSomething } = require('./lib/doSomething')
 const { uglify } = require('rollup-plugin-uglify')
-
 const minCSS = require('./lib/minCss')
 
 const version = fs.readJSONSync('package.json').version
+const disableWebsites = ['gamehag']
 
 function loadWebsites () {
   const websiteDir = 'src/scripts/website/'
@@ -26,8 +25,10 @@ function loadWebsites () {
   for (const e of websiteDirFiles) {
     if (/\.js$/.test(e)) {
       const functionName = e.replace(/\.js$/, '')
-      websites.push(functionName)
-      importLine += 'import { ' + functionName + ' } from \'./' + functionName + '\'\n'
+      if (!disableWebsites.includes(functionName)) {
+        websites.push(functionName)
+        importLine += 'import { ' + functionName + ' } from \'./' + functionName + '\'\n'
+      }
     }
   }
   template = template.replace('__IMPORT__', importLine).replace('__WEBSITE__', websites.join(', '))
@@ -45,7 +46,8 @@ async function buildUserJs () {
       progress({
         clearLine: false
       }),
-      analyze()
+      analyze(),
+      visualizer()
     ]
   })
 

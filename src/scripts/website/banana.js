@@ -80,7 +80,7 @@ const banana = {
                   const curatorId = finalUrl.match(/curator\/([\d]+)/)?.[1]
                   if (curatorId) {
                     this.currentTaskInfo.curators.push(curatorId)
-                    this.currentTaskInfo.taskInfo.curators.push(curatorId)
+                    this.taskInfo.curators.push(curatorId)
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
@@ -102,7 +102,7 @@ const banana = {
                   const appId = finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
                   if (appId) {
                     this.currentTaskInfo.wishlists.push(appId)
-                    this.currentTaskInfo.taskInfo.wishlists.push(appId)
+                    this.taskInfo.wishlists.push(appId)
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
@@ -124,7 +124,7 @@ const banana = {
                   const appId = finalUrl.match(/status\/([\d]+)/)?.[1]
                   if (appId) {
                     this.currentTaskInfo.retweets.push(appId)
-                    this.currentTaskInfo.taskInfo.retweets.push(appId)
+                    this.taskInfo.retweets.push(appId)
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
@@ -138,7 +138,7 @@ const banana = {
               })
             }))
           } else {
-            if (/(Subscribe.*channel)|(Twitter)/gim.test(taskDes.text())) {
+            if (/(Subscribe.*channel)|(Twitter)|(Retweet)/gim.test(taskDes.text())) {
               if (!this.verifyBtn) this.verifyBtn = taskDes.parent().find('button:contains(Verify)')
               if (callback === 'do_task' && globalConf.other.autoOpen) {
                 taskDes.parent().find('button')[0].click()

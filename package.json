@@ -1,8 +1,8 @@
 {
   "name": "auto-task",
-  "version": "3.0.13",
-  "description": "",
-  "main": "index.js",
+  "version": "3.0.14",
+  "description": "Automatically complete giveaway tasks",
+  "main": "auto-task-test.user.js",
   "scripts": {
     "test": "standard",
     "dev": "gulp development && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix",
@@ -30,6 +30,7 @@
     "rollup-plugin-analyzer": "^3.3.0",
     "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-uglify": "^6.0.4",
+    "rollup-plugin-visualizer": "^4.1.0",
     "standard": "^14.3.4"
   },
   "standard": {
@@ -63,7 +64,7 @@
     "ignore": [
       "/docs/js/main.js"
     ],
-    "disable":[
+    "disable": [
       "no-sparse-arrays"
     ]
   }

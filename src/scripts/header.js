@@ -16,7 +16,7 @@
 // @include        *://marvelousga.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
-// @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
+// @exclude        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
 // @include        *://prys.revadike.com/giveaway/?id=*
 // @include        *://www.indiedb.com/giveaways*
 // @include        *://www.opiumpulses.com/giveaways

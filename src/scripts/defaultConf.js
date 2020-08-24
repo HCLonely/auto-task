@@ -135,29 +135,28 @@ const defaultConf = {
     enable: false
   },
   /* disable
-    gamecode: {
-      fuck: {
-        joinSteamGroup: true,
-        followCurator: true,
-        followDeveloper: true,
-        followPublisher: true,
-        likeAnnouncement: true,
-        addToWishlist: true,
-        followGame: true,
-        visitLink: true,
-        verifyTask: true
-      },
-      remove: {
-        leaveSteamGroup: true,
-        unfollowCurator: true,
-        unfollowDeveloper: true,
-        unfollowPublisher: true,
-        removeFromWishlist: true,
-        unfollowGame: true
-      },
-      enable: false
+  gamecode: {
+    fuck: {
+      joinSteamGroup: true,
+      followCurator: true,
+      followDeveloper: true,
+      followPublisher: true,
+      likeAnnouncement: true,
+      addToWishlist: true,
+      followGame: true,
+      visitLink: true,
+      verifyTask: true
     },
-    */
+    remove: {
+      leaveSteamGroup: true,
+      unfollowCurator: true,
+      unfollowDeveloper: true,
+      unfollowPublisher: true,
+      removeFromWishlist: true,
+      unfollowGame: true
+    },
+    enable: false
+  },
   gamehag: {
     fuck: {
       joinSteamGroup: true,
@@ -169,6 +168,7 @@ const defaultConf = {
     },
     enable: false
   },
+    */
   prys: {
     fuck: {
       joinSteamGroup: true,

@@ -1,9 +1,10 @@
 
 ![Test](https://github.com/HCLonely/auto-task/workflows/Test/badge.svg)
+![OSSAR](https://github.com/HCLonely/auto-task/workflows/OSSAR/badge.svg)
 
 ## To do
 
-* [ ] 制作 wiki
+* [ ] 完善 wiki
 
 ## Reference
 

@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const { info, success } = require('./lib/log')
 const { getBabelOutputPlugin } = require('@rollup/plugin-babel')
+const json = require('@rollup/plugin-json')
 const progress = require('rollup-plugin-progress')
 const analyze = require('rollup-plugin-analyzer')
 const visualizer = require('rollup-plugin-visualizer')
@@ -47,7 +48,8 @@ async function buildUserJs () {
         clearLine: false
       }),
       analyze(),
-      visualizer()
+      visualizer(),
+      json({ namedExports: false })
     ]
   })
 
@@ -86,7 +88,8 @@ async function budilPageJs (file) {
       progress({
         clearLine: false
       }),
-      analyze()
+      analyze(),
+      json({ namedExports: false })
     ]
   })
   await bundle.write({

@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const { info, success } = require('./lib/log')
 const { getBabelOutputPlugin } = require('@rollup/plugin-babel')
+const json = require('@rollup/plugin-json')
 const { doSomething } = require('./lib/doSomething')
 const { uglify } = require('rollup-plugin-uglify')
 const minCSS = require('./lib/minCss')
@@ -38,7 +39,10 @@ async function buildUserJs () {
   await loadWebsites()
   info('Package file to:', 'auto-task.user.js')
   const bundle = await rollup.rollup({
-    input: 'src/scripts/main.js'
+    input: 'src/scripts/main.js',
+    plugins: [
+      json({ namedExports: false })
+    ]
   })
 
   await bundle.write({
@@ -71,7 +75,10 @@ async function buildUserJs () {
 
 async function budilPageJs (file) {
   const bundle = await rollup.rollup({
-    input: 'src/page/js/' + file
+    input: 'src/page/js/' + file,
+    plugins: [
+      json({ namedExports: false })
+    ]
   })
   await bundle.write({
     file: './public/js/' + file,

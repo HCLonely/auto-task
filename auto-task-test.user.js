@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.15
+// @version        3.0.16
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.15/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.15/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.15/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -57,17 +57,20 @@
 // @connect        store.steampowered.com
 // @connect        steamcommunity.com
 // @connect        twitter.com
+// @connect        api.twitter.com
 // @connect        youtube.com
 // @connect        facebook.com
 // @connect        instagram.com
 // @connect        vk.com
 // @connect        twitch.tv
 // @connect        www.twitch.tv
+// @connect        gql.twitch.tv
 // @connect        github.com
 // @connect        discordapp.com
 // @connect        discord.gg
 // @connect        discord.com
 // @connect        www.reddit.com
+// @connect        oauth.reddit.com
 // @connect        raw.githubusercontent.com
 // @connect        *
 // @run-at         document-end
@@ -3393,6 +3396,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       httpRequest({
         url: 'https://www.reddit.com/',
         method: 'GET',
+        nochche: true,
         onload: function onload (response) {
           if (debug) console.log(response)
 

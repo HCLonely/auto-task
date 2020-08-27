@@ -11,6 +11,7 @@ function updateRedditInfo () {
     httpRequest({
       url: 'https://www.reddit.com/',
       method: 'GET',
+      nochche: true,
       onload (response) {
         if (debug) console.log(response)
         if (response.status === 200) {

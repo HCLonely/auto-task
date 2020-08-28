@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.16
+// @version        3.0.17
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.16/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -5733,7 +5733,22 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
         } else {
-          status.error(getI18n('getVisitTimeFailed'))
+          var _taskBtn = $(links[i]).find('a.btn-info')
+
+          var _href = _taskBtn.attr('href')
+
+          _taskBtn.removeAttr('href')[0].click()
+
+          GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', {
+            active: 1,
+            setParent: 1
+          }).onclose = function () {
+            status.warning('Complete')
+
+            _taskBtn.attr('target', '_blank').attr('href', _href)
+
+            gleam.visit_link(links, ++i, r)
+          }
         }
       } else {
         r(1)

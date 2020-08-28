@@ -231,7 +231,7 @@ const gleam = {
         fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
         $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
       ]
-      if (taskTime) {
+      if (taskTime) { // 需要优化
         const taskBtn = $(links[i]).find('a.btn-info')
         const href = taskBtn.attr('href')
         taskBtn.removeAttr('href')[0].click()
@@ -251,7 +251,14 @@ const gleam = {
           }
         }
       } else {
-        status.error(getI18n('getVisitTimeFailed'))
+        const taskBtn = $(links[i]).find('a.btn-info')
+        const href = taskBtn.attr('href')
+        taskBtn.removeAttr('href')[0].click()
+        GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
+          status.warning('Complete')
+          taskBtn.attr('target', '_blank').attr('href', href)
+          gleam.visit_link(links, ++i, r)
+        }
       }
     } else {
       r(1)

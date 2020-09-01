@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.17
+// @version        3.0.18
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -32,12 +32,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.17/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -2790,11 +2790,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-instagram-ajax': insInfo.hash
                 },
                 onload: function onload (response) {
-                  var _response$response20
+                  var _response$response19
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 && ((_response$response20 = response.response) === null || _response$response20 === void 0 ? void 0 : _response$response20.result) === 'following') {
+                  if (response.status === 200 && ((_response$response19 = response.response) === null || _response$response19 === void 0 ? void 0 : _response$response19.result) === 'following') {
                     status.success()
                     r({
                       result: 'success',
@@ -2873,11 +2873,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-instagram-ajax': insInfo.hash
                 },
                 onload: function onload (response) {
-                  var _response$response21
+                  var _response$response20
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : _response$response21.status) === 'ok') {
+                  if (response.status === 200 && ((_response$response20 = response.response) === null || _response$response20 === void 0 ? void 0 : _response$response20.status) === 'ok') {
                     status.success()
                     r({
                       result: 'success',
@@ -3150,11 +3150,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }),
                 responseType: 'json',
                 onload: function onload (response) {
-                  var _response$response22, _response$response22$, _response$response22$2
+                  var _response$response21, _response$response21$, _response$response21$2
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 || response.status === 403 && ((_response$response22 = response.response) === null || _response$response22 === void 0 ? void 0 : (_response$response22$ = _response$response22.errors) === null || _response$response22$ === void 0 ? void 0 : (_response$response22$2 = _response$response22$[0]) === null || _response$response22$2 === void 0 ? void 0 : _response$response22$2.code) === 327) {
+                  if (response.status === 200 || response.status === 403 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : (_response$response21$ = _response$response21.errors) === null || _response$response21$ === void 0 ? void 0 : (_response$response21$2 = _response$response21$[0]) === null || _response$response21$2 === void 0 ? void 0 : _response$response21$2.code) === 327) {
                     status.success()
                     r({
                       result: 'success',
@@ -4069,18 +4069,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         method: 'get',
         dataType: 'json',
         onload: function onload (response) {
-          var _response$response13, _response$response14
+          var _response$response13
 
           if (debug) console.log(response)
 
-          if (((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.version) === GM_info.script.version) {
-            if (s) status.success(getI18n('thisIsNew'))
-          } else if ((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.version) {
-            echoLog({
-              type: 'custom',
-              text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task-test.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
-            })
-            if (s) status.success(getI18n('newVer') + response.response.version)
+          var _GM_info$script$versi = GM_info.script.version.split('.')
+          var _GM_info$script$versi2 = _slicedToArray(_GM_info$script$versi, 3)
+          var ov1 = _GM_info$script$versi2[0]
+          var ov2 = _GM_info$script$versi2[1]
+          var ov3 = _GM_info$script$versi2[2]
+
+          if ((_response$response13 = response.response) === null || _response$response13 === void 0 ? void 0 : _response$response13.version) {
+            var _response$response$ve = response.response.version.split('.')
+            var _response$response$ve2 = _slicedToArray(_response$response$ve, 3)
+            var nv1 = _response$response$ve2[0]
+            var nv2 = _response$response$ve2[1]
+            var nv3 = _response$response$ve2[2]
+
+            if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
+              echoLog({
+                type: 'custom',
+                text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task-test.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
+              })
+              if (s) status.success(getI18n('newVer') + response.response.version)
+            } else {
+              if (s) status.success(getI18n('thisIsNew'))
+            }
           } else {
             if (s) status.error('Error:' + (response.statusText || response.status))
           }
@@ -4824,7 +4838,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.getFinalUrl(e)
       }
     },
-    which_task: function which_task (taskDes, taskIcon) {
+    which_task: function which_task (taskDes) {
+      var taskIcon = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ''
       var _ref34 = [[], taskDes.text().trim(), taskDes.attr('href')]
       var taskInfo = _ref34[0]
       var taskName = _ref34[1]
@@ -5698,57 +5713,31 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     visit_link: function visit_link (links, i, r) {
       if (i < links.length) {
         var title = $(links[i]).find('.entry-method-title').text().trim()
-        var _ref41 = [fuc.echoLog({
+        var status = fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
-        }), $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()]
-        var status = _ref41[0]
-        var taskTime = _ref41[1]
+        })
+        var taskTime = $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
+        var url = language === 'en' ? 'https://auto-task-test.hclonely.com/time_en.html?time=' : 'https://auto-task-test.hclonely.com/time.html?time='
+        var timer = null
 
         if (taskTime) {
-          var taskBtn = $(links[i]).find('a.btn-info')
-          var href = taskBtn.attr('href')
-          taskBtn.removeAttr('href')[0].click()
-          var time = taskTime.match(/[\d]+/)
+          var _taskTime$match
 
-          if (time) {
-            var url = language === 'en' ? 'https://userjs.hclonely.com/time_en.html?time=' : 'https://userjs.hclonely.com/time.html?time='
+          timer = (_taskTime$match = taskTime.match(/[\d]+/)) === null || _taskTime$match === void 0 ? void 0 : _taskTime$match[0]
+        }
 
-            GM_openInTab(url + time[0], {
-              active: 1,
-              setParent: 1
-            }).onclose = function () {
-              status.warning('Complete')
-              taskBtn.attr('target', '_blank').attr('href', href)
-              gleam.visit_link(links, ++i, r)
-            }
-          } else {
-            GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', {
-              active: 1,
-              setParent: 1
-            }).onclose = function () {
-              status.warning('Complete')
-              taskBtn.attr('target', '_blank').attr('href', href)
-              gleam.visit_link(links, ++i, r)
-            }
-          }
-        } else {
-          var _taskBtn = $(links[i]).find('a.btn-info')
+        var taskBtn = $(links[i]).find('a.btn-info')
+        var href = taskBtn.attr('href')
+        taskBtn.removeAttr('href')[0].click()
 
-          var _href = _taskBtn.attr('href')
-
-          _taskBtn.removeAttr('href')[0].click()
-
-          GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', {
-            active: 1,
-            setParent: 1
-          }).onclose = function () {
-            status.warning('Complete')
-
-            _taskBtn.attr('target', '_blank').attr('href', _href)
-
-            gleam.visit_link(links, ++i, r)
-          }
+        GM_openInTab(timer ? url + timer : 'javascript:setTimeout(()=>{window.close()},1000)', {
+          active: 1,
+          setParent: 1
+        }).onclose = function () {
+          status.warning('Complete')
+          taskBtn.attr('target', '_blank').attr('href', href)
+          gleam.visit_link(links, ++i, r)
         }
       } else {
         r(1)
@@ -5781,8 +5770,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref42) {
-          var value = _ref42.value
+        }).then(function (_ref41) {
+          var value = _ref41.value
 
           if (value) {
             window.close()
@@ -5825,12 +5814,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var currentoption = $('a.buttonenter.buttongiveaway')
 
       if (/join giveaway/gim.test(currentoption.text())) {
-        var _ref43 = [fuc.echoLog({
+        var _ref42 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
         }), this.do_task]
-        var status = _ref43[0]
-        var doTask = _ref43[1]
+        var status = _ref42[0]
+        var doTask = _ref42[1]
         fuc.httpRequest({
           url: currentoption.attr('href'),
           method: 'POST',
@@ -5844,20 +5833,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             if (debug) console.log(response)
 
             if (response.status === 200) {
-              var _response$response15
+              var _response$response14
 
-              if ((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.success) {
-                var _response$response16, _response$response17
+              if ((_response$response14 = response.response) === null || _response$response14 === void 0 ? void 0 : _response$response14.success) {
+                var _response$response15, _response$response16
 
                 currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                 $('#giveawaysjoined').slideDown()
                 $('#giveawaysrecommend').slideDown()
-                status.success('Success' + (((_response$response16 = response.response) === null || _response$response16 === void 0 ? void 0 : _response$response16.text) ? ':' + ((_response$response17 = response.response) === null || _response$response17 === void 0 ? void 0 : _response$response17.text) : ''))
+                status.success('Success' + (((_response$response15 = response.response) === null || _response$response15 === void 0 ? void 0 : _response$response15.text) ? ':' + ((_response$response16 = response.response) === null || _response$response16 === void 0 ? void 0 : _response$response16.text) : ''))
                 doTask()
               } else {
-                var _response$response18, _response$response19
+                var _response$response17, _response$response18
 
-                status.error('Error' + (((_response$response18 = response.response) === null || _response$response18 === void 0 ? void 0 : _response$response18.text) ? ':' + ((_response$response19 = response.response) === null || _response$response19 === void 0 ? void 0 : _response$response19.text) : ''))
+                status.error('Error' + (((_response$response17 = response.response) === null || _response$response17 === void 0 ? void 0 : _response$response17.text) ? ':' + ((_response$response18 = response.response) === null || _response$response18 === void 0 ? void 0 : _response$response18.text) : ''))
               }
             } else {
               status.error('Error:' + (response.statusText || response.status))
@@ -5881,9 +5870,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
 
       if (id.length === 2) {
-        var _ref44 = [$('#giveawaysjoined a[class*=promo]'), []]
-        var tasks = _ref44[0]
-        var _pro2 = _ref44[1]
+        var _ref43 = [$('#giveawaysjoined a[class*=promo]'), []]
+        var tasks = _ref43[0]
+        var _pro2 = _ref43[1]
 
         var _iterator13 = _createForOfIteratorHelper(tasks)
         var _step13
@@ -6100,12 +6089,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref45 = [fuc.echoLog({
+        var _ref44 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('.container_task')]
-        var status = _ref45[0]
-        var tasksContainer = _ref45[1]
+        var status = _ref44[0]
+        var tasksContainer = _ref44[1]
 
         var _iterator14 = _createForOfIteratorHelper(tasksContainer)
         var _step14
@@ -6114,9 +6103,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
             var task = _step14.value
 
-            var _ref46 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-            var taskDes = _ref46[0]
-            var verifyBtn = _ref46[1]
+            var _ref45 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+            var taskDes = _ref45[0]
+            var verifyBtn = _ref45[1]
 
             if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
               var groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
@@ -6229,13 +6218,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this12 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
-        var _ref48, pro, links, _iterator15, _step15, _loop7
+        var _ref47, pro, links, _iterator15, _step15, _loop7
 
         return regeneratorRuntime.wrap(function _callee4$ (_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _ref48 = [[], fuc.unique(_this12.currentTaskInfo.links)], pro = _ref48[0], links = _ref48[1]
+                _ref47 = [[], fuc.unique(_this12.currentTaskInfo.links)], pro = _ref47[0], links = _ref47[1]
                 _context4.next = 3
                 return _this12.toggleActions('fuck', pro)
 
@@ -6433,11 +6422,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     toggleActions: function toggleActions (action, pro) {
       var fuck = action === 'fuck'
 
-      var _ref50 = fuck ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref50.groups
-      var curators = _ref50.curators
-      var twitterUsers = _ref50.twitterUsers
-      var twitchChannels = _ref50.twitchChannels
+      var _ref49 = fuck ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref49.groups
+      var curators = _ref49.curators
+      var twitterUsers = _ref49.twitterUsers
+      var twitchChannels = _ref49.twitchChannels
 
       if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -6525,8 +6514,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref51) {
-          var value = _ref51.value
+        }).then(function (_ref50) {
+          var value = _ref50.value
 
           if (value) {
             window.close()
@@ -6564,14 +6553,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this16 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
-        var type, _ref52, items, maxPoint, myPoint, i, item, needPoints
+        var type, _ref51, items, maxPoint, myPoint, i, item, needPoints
 
         return regeneratorRuntime.wrap(function _callee7$ (_context7) {
           while (1) {
             switch (_context7.prev = _context7.next) {
               case 0:
                 type = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'FREE'
-                _ref52 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this16.maxPoint()], items = _ref52[0], maxPoint = _ref52[1]
+                _ref51 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this16.maxPoint()], items = _ref51[0], maxPoint = _ref51[1]
                 myPoint = _this16.myPoints
                 i = 0
 
@@ -6616,16 +6605,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
 
                 return _context7.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
-                  var _ref53, status, a, _a$attr$match, giveawayId
+                  var _ref52, status, a, _a$attr$match, giveawayId
 
                   return regeneratorRuntime.wrap(function _callee6$ (_context6) {
                     while (1) {
                       switch (_context6.prev = _context6.next) {
                         case 0:
-                          _ref53 = [fuc.echoLog({
+                          _ref52 = [fuc.echoLog({
                             type: 'custom',
                             text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref53[0], a = _ref53[1]
+                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref52[0], a = _ref52[1]
 
                           if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                             giveawayId = (_a$attr$match = a.attr('onclick').match(/[\d]+/)) === null || _a$attr$match === void 0 ? void 0 : _a$attr$match[0]
@@ -6742,12 +6731,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this17 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref54 = [fuc.echoLog({
+      var _ref53 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('#steps tbody tr')]
-      var status = _ref54[0]
-      var steps = _ref54[1]
+      var status = _ref53[0]
+      var steps = _ref53[1]
 
       for (var i = 0; i < steps.length; i++) {
         if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
@@ -6755,9 +6744,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref55 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-        var taskInfoHistory = _ref55[0]
-        var _pro4 = _ref55[1]
+        var _ref54 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+        var taskInfoHistory = _ref54[0]
+        var _pro4 = _ref54[1]
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
         var _iterator17 = _createForOfIteratorHelper(steps)
@@ -7143,9 +7132,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     toggleActions: function toggleActions (action, pro) {
       var fuck = action === 'fuck'
 
-      var _ref58 = fuck ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref58.groups
-      var curators = _ref58.curators
+      var _ref57 = fuck ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref57.groups
+      var curators = _ref57.curators
 
       if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -7208,8 +7197,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref59) {
-          var value = _ref59.value
+        }).then(function (_ref58) {
+          var value = _ref58.value
 
           if (value) {
             window.close()
@@ -7246,18 +7235,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        var _ref60 = [[], [], [], []]
-        this.tasks = _ref60[0]
-        this.groups = _ref60[1]
-        this.curators = _ref60[2]
-        this.links = _ref60[3]
-        var _ref61 = [[], fuc.echoLog({
+        var _ref59 = [[], [], [], []]
+        this.tasks = _ref59[0]
+        this.groups = _ref59[1]
+        this.curators = _ref59[2]
+        this.links = _ref59[3]
+        var _ref60 = [[], fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#usl>div')]
-        var _pro7 = _ref61[0]
-        var status = _ref61[1]
-        var tasksContainer = _ref61[2]
+        var _pro7 = _ref60[0]
+        var status = _ref60[1]
+        var tasksContainer = _ref60[2]
 
         var _iterator21 = _createForOfIteratorHelper(tasksContainer)
         var _step22
@@ -7268,10 +7257,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             _this22.tasks.push(task)
 
-            var _ref63 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-            var icon = _ref63[0]
-            var link = _ref63[1]
-            var id = _ref63[2]
+            var _ref62 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
+            var icon = _ref62[0]
+            var link = _ref62[1]
+            var id = _ref62[2]
 
             if (icon.hasClass('fa-steam')) {
               if (link && /gid\/[\d]+/.test(link)) {
@@ -7318,14 +7307,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
 
         Promise.all(_pro7).finally(function () {
-          var _ref62 = [fuc.unique(_this22.groups), fuc.unique(_this22.curators), fuc.unique(_this22.links), fuc.unique(_this22.others), fuc.unique(_this22.taskInfo.groups), fuc.unique(_this22.taskInfo.curators), fuc.unique(_this22.tasks)]
-          _this22.groups = _ref62[0]
-          _this22.curators = _ref62[1]
-          _this22.links = _ref62[2]
-          _this22.others = _ref62[3]
-          _this22.taskInfo.groups = _ref62[4]
-          _this22.taskInfo.curators = _ref62[5]
-          _this22.tasks = _ref62[6]
+          var _ref61 = [fuc.unique(_this22.groups), fuc.unique(_this22.curators), fuc.unique(_this22.links), fuc.unique(_this22.others), fuc.unique(_this22.taskInfo.groups), fuc.unique(_this22.taskInfo.curators), fuc.unique(_this22.tasks)]
+          _this22.groups = _ref61[0]
+          _this22.curators = _ref61[1]
+          _this22.links = _ref61[2]
+          _this22.others = _ref61[3]
+          _this22.taskInfo.groups = _ref61[4]
+          _this22.taskInfo.curators = _ref61[5]
+          _this22.tasks = _ref61[6]
           GM_setValue('taskInfo[' + window.location.host + _this22.get_giveawayId() + ']', _this22.taskInfo)
           status.success()
           if (debug) console.log(_this22)
@@ -7353,13 +7342,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this23 = this
 
       this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-        var _ref65, pro, links, others, vks, _iterator22, _step23, _loop11, _iterator23, _step24, vk, _iterator24, _step25, other
+        var _ref64, pro, links, others, vks, _iterator22, _step23, _loop11, _iterator23, _step24, vk, _iterator24, _step25, other
 
         return regeneratorRuntime.wrap(function _callee10$ (_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _ref65 = [[], fuc.unique(_this23.links), fuc.unique(_this23.others), fuc.unique(_this23.vks)], pro = _ref65[0], links = _ref65[1], others = _ref65[2], vks = _ref65[3]
+                _ref64 = [[], fuc.unique(_this23.links), fuc.unique(_this23.others), fuc.unique(_this23.vks)], pro = _ref64[0], links = _ref64[1], others = _ref64[2], vks = _ref64[3]
                 _context10.next = 3
                 return _this23.toggleActions('fuck', pro)
 

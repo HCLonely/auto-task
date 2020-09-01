@@ -35,11 +35,15 @@ const fuc = {
       dataType: 'json',
       onload (response) {
         if (debug) console.log(response)
-        if (response.response?.version === GM_info.script.version) {
-          if (s) status.success(getI18n('thisIsNew'))
-        } else if (response.response?.version) {
-          echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/master/__FILENAME__" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
-          if (s) status.success(getI18n('newVer') + response.response.version)
+        const [ov1, ov2, ov3] = GM_info.script.version.split('.')
+        if (response.response?.version) {
+          const [nv1, nv2, nv3] = response.response.version.split('.')
+          if (nv1 > ov1 || (nv1 === ov1 && nv2 > ov2) || (nv1 === ov1 && nv2 === ov2 && nv3 > ov3)) {
+            echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://github.com/HCLonely/auto-task/raw/master/__FILENAME__" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
+            if (s) status.success(getI18n('newVer') + response.response.version)
+          } else {
+            if (s) status.success(getI18n('thisIsNew'))
+          }
         } else {
           if (s) status.error('Error:' + (response.statusText || response.status))
         }

@@ -36,7 +36,7 @@ const giveawaysu = {
       this.getFinalUrl(e)
     }
   },
-  which_task (taskDes, taskIcon) {
+  which_task (taskDes, taskIcon = '') {
     const [taskInfo, taskName, link] = [[], taskDes.text().trim(), taskDes.attr('href')]
     if (taskIcon.includes('ban') || /disable adblock/gim.test(taskName)) {
       return [{ name: 'nonSteam' }]

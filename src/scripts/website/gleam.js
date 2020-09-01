@@ -224,41 +224,21 @@ const gleam = {
   visit_link (links, i, r) {
     if (i < links.length) {
       const title = $(links[i]).find('.entry-method-title').text().trim()
-      const [
-        status,
-        taskTime
-      ] = [
-        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
-        $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
-      ]
-      if (taskTime) { // 需要优化
-        const taskBtn = $(links[i]).find('a.btn-info')
-        const href = taskBtn.attr('href')
-        taskBtn.removeAttr('href')[0].click()
-        const time = taskTime.match(/[\d]+/)
-        if (time) {
-          const url = language === 'en' ? 'https://userjs.hclonely.com/time_en.html?time=' : 'https://userjs.hclonely.com/time.html?time='
-          GM_openInTab(url + time[0], { active: 1, setParent: 1 }).onclose = () => {
-            status.warning('Complete')
-            taskBtn.attr('target', '_blank').attr('href', href)
-            gleam.visit_link(links, ++i, r)
-          }
-        } else {
-          GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
-            status.warning('Complete')
-            taskBtn.attr('target', '_blank').attr('href', href)
-            gleam.visit_link(links, ++i, r)
-          }
-        }
-      } else {
-        const taskBtn = $(links[i]).find('a.btn-info')
-        const href = taskBtn.attr('href')
-        taskBtn.removeAttr('href')[0].click()
-        GM_openInTab('javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
-          status.warning('Complete')
-          taskBtn.attr('target', '_blank').attr('href', href)
-          gleam.visit_link(links, ++i, r)
-        }
+      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
+      const taskTime = $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
+      const url = language === 'en' ? 'https://__SITEURL__/time_en.html?time=' : 'https://__SITEURL__/time.html?time='
+      let timer = null
+
+      if (taskTime) {
+        timer = taskTime.match(/[\d]+/)?.[0]
+      }
+      const taskBtn = $(links[i]).find('a.btn-info')
+      const href = taskBtn.attr('href')
+      taskBtn.removeAttr('href')[0].click()
+      GM_openInTab(timer ? (url + timer) : 'javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
+        status.warning('Complete')
+        taskBtn.attr('target', '_blank').attr('href', href)
+        gleam.visit_link(links, ++i, r)
       }
     } else {
       r(1)

@@ -188,12 +188,12 @@ const marvelousga = {
       this.get_tasks('remove')
     }
   },
-  toggleActions (action) {
+  async toggleActions (action) {
     const pro = []
     const fuck = action === 'fuck'
-    const { groups, curators, twitterUsers, twitchChannels } = fuck
-      ? this.currentTaskInfo
-      : this.taskInfo
+    const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
+    await fuc.updateInfo(taskInfo)
+    const { groups, curators, twitterUsers, twitchChannels } = taskInfo
     if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'marvelousga', type: 'group', elements: groups, resolve, action })

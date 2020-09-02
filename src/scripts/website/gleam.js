@@ -104,8 +104,9 @@ const gleam = {
       }
     }
   },
-  do_task () {
+  async do_task () {
     const pro = []
+    await fuc.updateInfo(this.currentTaskInfo)
     const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
     const socals = [...discords, ...facebooks, ...youtubes]
     if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
@@ -191,9 +192,10 @@ const gleam = {
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font><font class="warning">${getI18n('finishSelf')}</font></li>` })
     }
   },
-  remove (remove = false) {
+  async remove (remove = false) {
     const pro = []
     if (remove) {
+      await fuc.updateInfo(this.taskInfo)
       const { groups, twitterUsers, retweets } = this.taskInfo
       if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
         pro.push(new Promise(resolve => {

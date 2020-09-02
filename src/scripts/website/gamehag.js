@@ -17,11 +17,14 @@ const gamehag = {
       fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
       $('button[data-id]')
     ]
-    if (callback === 'do_task') {
+    const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+    if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
+    if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
+      status.success()
+      this.remove(true)
+    } else if (callback === 'do_task') {
       this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
       const pro = []
-      const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-      if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
       for (const btn of verifyBtns) {
         const [taskId, taskDes, taskIcon, taskUrl] = [$(btn).attr('data-id'), $(btn).parent().prev().text(), $(btn).parent().parent().prev().find('use').attr('xlink:href') || '', $(btn).parent().find('a:contains("to do")').attr('href')]
         if ($(btn).parents('.task-content').next().text().includes('+1')) {
@@ -88,9 +91,6 @@ const gamehag = {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
       }
       status.success()
-    } else if (callback === 'remove') {
-      status.success()
-      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
     } else {
       status.success()
       fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
@@ -173,19 +173,21 @@ const gamehag = {
     }
   },
   async remove (remove = false) {
-    if (this.conf.remove.leaveSteamGroup && this.currentTaskInfo.groups.length > 0) {
+    if (remove) {
       const pro = await this.toggleActions('remove')
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
-      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
+      this.get_tasks('remove')
     }
   },
-  toggleActions (action) {
+  async toggleActions (action) {
     const pro = []
     const fuck = action === 'fuck'
-    const { groups, curators, twitterUsers, retweets } = fuck ? this.currentTaskInfo.groups : this.taskInfo.groups
+    const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
+    await fuc.updateInfo(taskInfo)
+    const { groups, curators, twitterUsers, retweets } = taskInfo
     if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'gamehag', type: 'group', elements: groups, resolve, action })

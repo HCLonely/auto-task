@@ -9,7 +9,7 @@ import { marvelousga } from './marvelousga'
 import { opiumpulses } from './opiumpulses'
 import { prys } from './prys'
 
-let website = {}
+let website = null
 
 const websites = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, keylol, marvelousga, opiumpulses, prys]
 for (const e of websites) {

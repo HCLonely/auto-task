@@ -5,7 +5,6 @@ import { globalConf } from '../config'
 const keylol = {
   test () { return window.location.host.includes('keylol.com') && !window.location.href.includes('mod=forumdisplay') && $('.subforum_left_title_left_up a').eq(3).attr('href')?.includes('319') },
   after () {
-    GM_addStyle('.auto-task-keylol{margin-left:10px}')
     unsafeWindow.toggleDiscord = (action, inviteId) => {
       const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']') || {}
       const toGuild = taskInfo.toGuild || {}

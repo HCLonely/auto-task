@@ -4,40 +4,38 @@ import { httpRequest } from '../httpRequest'
 import { unique } from '../tool'
 import { getI18n } from '../../i18n'
 
-function updateTwitterInfo () {
-  return new Promise(resolve => {
-    const status = echoLog({ type: 'updateTwitterInfo' })
+function updateTwitterInfo (resolve) {
+  const status = echoLog({ type: 'updateTwitterInfo' })
 
-    httpRequest({
-      url: 'https://twitter.com/settings/account?k',
-      method: 'HEAD',
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.finalUrl.includes('twitter.com/login')) {
-          status.error('Error:' + getI18n('loginTwitter'), true)
-          resolve({ result: 'error', statusText: response.statusText, status: response.status })
-          return
-        }
-        if (response.status === 200) {
-          const ct0 = response.responseHeaders.match(/ct0=(.+?);/)?.[1]
-          if (ct0) {
-            twitterInfo.ct0 = ct0
-            twitterInfo.updateTime = new Date().getTime()
-            GM_setValue('twitterInfo', twitterInfo)
-            status.success()
-            resolve({ result: 'success', statusText: response.statusText, status: response.status })
-          } else {
-            status.error('Error: Parameter "ct0" not found!')
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
-          }
+  httpRequest({
+    url: 'https://twitter.com/settings/account?k',
+    method: 'HEAD',
+    onload (response) {
+      if (debug) console.log(response)
+      if (response.finalUrl.includes('twitter.com/login')) {
+        status.error('Error:' + getI18n('loginTwitter'), true)
+        resolve({ result: 'error', statusText: response.statusText, status: response.status })
+        return
+      }
+      if (response.status === 200) {
+        const ct0 = response.responseHeaders.match(/ct0=(.+?);/)?.[1]
+        if (ct0) {
+          twitterInfo.ct0 = ct0
+          twitterInfo.updateTime = new Date().getTime()
+          GM_setValue('twitterInfo', twitterInfo)
+          status.success()
+          resolve({ result: 'success', statusText: response.statusText, status: response.status })
         } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          status.error('Error: Parameter "ct0" not found!')
           resolve({ result: 'error', statusText: response.statusText, status: response.status })
         }
-      },
-      r: resolve,
-      status
-    })
+      } else {
+        status.error('Error:' + response.statusText + '(' + response.status + ')')
+        resolve({ result: 'error', statusText: response.statusText, status: response.status })
+      }
+    },
+    r: resolve,
+    status
   })
 }
 async function toggleTwitterUser (r, name, follow = true) {
@@ -124,10 +122,12 @@ function getTwitterUserId (name) {
 }
 
 async function toggleTwitterActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
+  /*
   if (new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000) {
     const { result } = await updateTwitterInfo()
     if (result !== 'success') return
   }
+  */
   for (const element of unique(elements)) {
     let id = element
     if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -158,4 +158,4 @@ async function toggleTwitterActions ({ website, type, elements, resolve, action,
   }
   resolve()
 }
-export { toggleTwitterActions }
+export { toggleTwitterActions, updateTwitterInfo }

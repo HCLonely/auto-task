@@ -231,10 +231,12 @@ const prys = {
       this.get_tasks('remove')
     }
   },
-  toggleActions (action) {
+  async toggleActions (action) {
     const pro = []
     const fuck = action === 'fuck'
-    const { groups, curators } = fuck ? this.currentTaskInfo : this.taskInfo
+    const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
+    await fuc.updateInfo(taskInfo)
+    const { groups, curators } = taskInfo
     if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'prys', type: 'group', elements: groups, resolve, action })

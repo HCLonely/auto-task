@@ -72,6 +72,10 @@
   max-width: 35px !important;
 }
 
+.auto-task-keylol {
+  margin-left: 10px
+}
+
 cloudflare-app{
   display: none !important;
 }

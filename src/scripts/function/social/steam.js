@@ -530,10 +530,10 @@ function likeAnnouncements (r, rawMatch) {
   })
 }
 
-function toggleSteamActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
+async function toggleSteamActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   const pro = []
   for (const element of unique(elements)) {
-    let elementName = [null, element]
+    let elementName = Array.isArray(element) ? [null, ...element] : [null, element]
     if (website === 'giveawaysu' && toFinalUrl[element]) {
       const toFinalUrlElement = toFinalUrl[element] || ''
       switch (type) {
@@ -567,41 +567,65 @@ function toggleSteamActions ({ website, type, elements, resolve, action, toFinal
     if (elementName?.[1]) {
       switch (type) {
         case 'group':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'community')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
           }))
           break
         case 'curator':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? followCurator(resolve, elementName[1]) : unfollowCurator(resolve, elementName[1])
           }))
           break
         case 'publisher':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? followPublisher(resolve, elementName[1]) : unfollowPublisher(resolve, elementName[1])
           }))
           break
         case 'developer':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? followDeveloper(resolve, elementName[1]) : unfollowDeveloper(resolve, elementName[1])
           }))
           break
         case 'franchise':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? followFranchise(resolve, elementName[1]) : unfollowFranchise(resolve, elementName[1])
           }))
           break
         case 'wishlist':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? addWishlist(resolve, elementName[1]) : removeWishlist(resolve, elementName[1])
           }))
           break
         case 'game':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'store')
+          })
           pro.push(new Promise(resolve => {
             action === 'fuck' ? followGame(resolve, elementName[1]) : unfollowGame(resolve, elementName[1])
           }))
           break
         case 'announcement':
+          await new Promise(resolve => {
+            updateSteamInfo(resolve, 'all')
+          })
           pro.push(new Promise(resolve => {
             if (action === 'fuck') {
               likeAnnouncements(resolve, elementName)

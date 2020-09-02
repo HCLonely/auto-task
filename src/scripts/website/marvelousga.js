@@ -90,32 +90,30 @@ const marvelousga = {
       }
     }
   },
-  do_task () {
-    this.updateSteamInfo(async () => {
-      const [pro, links] = [[], fuc.unique(this.currentTaskInfo.links)]
-      await this.toggleActions('fuck', pro)
-      if (this.conf.fuck.visitLink) {
-        for (const link of links) {
-          pro.push(new Promise(resolve => {
-            fuc.visitLink(resolve, link.pageUrl, {
-              url: '/ajax/verifyTasks/webpage/clickedLink',
-              method: 'POST',
-              headers: {
-                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
-              },
-              data: $.param({
-                giveaway_slug: this.get_giveawayId(),
-                giveaway_task_id: link.taskId
-              })
+  async do_task () {
+    const pro = await this.toggleActions('fuck')
+    const links = fuc.unique(this.currentTaskInfo.links)
+    if (this.conf.fuck.visitLink) {
+      for (const link of links) {
+        pro.push(new Promise(resolve => {
+          fuc.visitLink(resolve, link.pageUrl, {
+            url: '/ajax/verifyTasks/webpage/clickedLink',
+            method: 'POST',
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: $.param({
+              giveaway_slug: this.get_giveawayId(),
+              giveaway_task_id: link.taskId
             })
-          }))
-        }
+          })
+        }))
       }
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify()
-      })
+    }
+    Promise.all(pro).finally(() => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify()
     })
   },
   verify (verify = false) {
@@ -180,20 +178,18 @@ const marvelousga = {
       this.get_tasks('verify')
     }
   },
-  remove (remove = false) {
-    const pro = []
+  async remove (remove = false) {
     if (remove) {
-      this.updateSteamInfo(async () => {
-        await this.toggleActions('remove', pro)
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+      const pro = await this.toggleActions('remove')
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
       this.get_tasks('remove')
     }
   },
-  toggleActions (action, pro) {
+  toggleActions (action) {
+    const pro = []
     const fuck = action === 'fuck'
     const { groups, curators, twitterUsers, twitchChannels } = fuck
       ? this.currentTaskInfo
@@ -218,6 +214,7 @@ const marvelousga = {
         fuc.toggleActions({ website: 'marvelousga', social: 'twitch', elements: twitchChannels, resolve, action })
       }))
     }
+    return pro
     /* disable
     const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
     const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
@@ -235,25 +232,6 @@ const marvelousga = {
   },
   get_giveawayId () {
     return $('#giveawaySlug').val() || window.location.href
-  },
-  updateSteamInfo (callback) {
-    new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        if (this.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'all')
-        } else {
-          fuc.updateSteamInfo(resolve, 'community')
-        }
-      } else if (this.taskInfo.curators.length > 0) {
-        fuc.updateSteamInfo(resolve, 'store')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) callback()
-    }).catch(err => {
-      console.error(err)
-    })
   },
   checkLogin () {
     if ($('a[href*=login]').length > 0) window.open('/login', '_self')

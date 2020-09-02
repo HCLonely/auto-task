@@ -152,70 +152,54 @@ const giveawaysu = {
     } = this.taskInfo
     const pro = []
     const fuck = action === 'fuck'
-    await new Promise(resolve => {
-      if (groups.length > 0 || announcements.length > 0) {
-        if (curators.length > 0 || publishers.length > 0 || developers.length > 0 || fGames.length > 0 || wGames.length > 0) {
-          fuc.updateSteamInfo(resolve, 'all')
-        } else {
-          fuc.updateSteamInfo(resolve, 'community')
-        }
-      } else if (curators.length > 0 || publishers.length > 0 || developers.length > 0 || fGames.length > 0 || wGames.length > 0) {
-        fuc.updateSteamInfo(resolve, 'store')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) {
-        if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: groups, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: curators, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'followPublisher' : 'unfollowPublisher'] && publishers.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: publishers, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'followDeveloper' : 'unfollowDeveloper'] && developers.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: developers, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'followFranchise' : 'unfollowFranchise'] && franchises.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'franchise', elements: franchises, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: fGames, resolve, action, toFinalUrl })
-          }))
-        }
-        if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wGames.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: wGames, resolve, action, toFinalUrl })
-          }))
-        }
-        if (fuck && this.conf.fuck.likeAnnouncement && announcements.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: announcements, resolve, action, toFinalUrl })
-          }))
-        }
-      }
-    }).catch(() => {})
+    if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: groups, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: curators, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followPublisher' : 'unfollowPublisher'] && publishers.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: publishers, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followDeveloper' : 'unfollowDeveloper'] && developers.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: developers, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followFranchise' : 'unfollowFranchise'] && franchises.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'franchise', elements: franchises, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: fGames, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wGames.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: wGames, resolve, action, toFinalUrl })
+      }))
+    }
+    if (fuck && this.conf.fuck.likeAnnouncement && announcements.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: announcements, resolve, action, toFinalUrl })
+      }))
+    }
     if (this.conf[action][fuck ? 'joinDiscordServer' : 'leaveDiscordServer'] && discords.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ social: 'discord', website: 'giveawaysu', elements: discords, resolve, action, toFinalUrl, toGuild })
       }).then(data => {
         if (fuck) {
           for (const e of data) {
-            const [inviteId, guild] = e.guild || [null, null]
-            toGuild[inviteId] = guild
+            const [inviteId, guild] = e.guild || []
+            if (inviteId && guild) toGuild[inviteId] = guild
           }
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         }

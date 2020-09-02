@@ -162,14 +162,11 @@ const prys = {
     status.success()
     if (debug) console.log(this)
   },
-  do_task () {
-    this.updateSteamInfo(async () => {
-      const pro = []
-      await this.toggleActions('fuck', pro)
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify()
-      })
+  async do_task () {
+    const pro = await this.toggleActions('fuck')
+    Promise.all(pro).finally(() => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify()
     })
   },
   verify (verify = false) {
@@ -224,20 +221,18 @@ const prys = {
       status.error('Error:0')
     })
   },
-  remove (remove = false) {
-    const pro = []
+  async remove (remove = false) {
     if (remove) {
-      this.updateSteamInfo(async () => {
-        await this.toggleActions('remove', pro)
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+      const pro = await this.toggleActions('remove')
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
       this.get_tasks('remove')
     }
   },
-  toggleActions (action, pro) {
+  toggleActions (action) {
+    const pro = []
     const fuck = action === 'fuck'
     const { groups, curators } = fuck ? this.currentTaskInfo : this.taskInfo
     if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
@@ -250,6 +245,7 @@ const prys = {
         fuc.toggleActions({ website: 'prys', type: 'curator', elements: curators, resolve, action })
       }))
     }
+    return pro
     /* disable
     const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
     const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
@@ -267,25 +263,6 @@ const prys = {
   },
   get_giveawayId () {
     return window.location.search.match(/id=([\d]+)/)?.[1] || window.location.href
-  },
-  updateSteamInfo (callback) {
-    new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        if (this.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'all')
-        } else {
-          fuc.updateSteamInfo(resolve, 'community')
-        }
-      } else if (this.taskInfo.curators.length > 0) {
-        fuc.updateSteamInfo(resolve, 'store')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) callback()
-    }).catch(err => {
-      console.error(err)
-    })
   },
   checkLeft () {
     const left = $('#header').text().match(/([\d]+).*?prize.*?left/)

@@ -23,26 +23,35 @@ const gamehag = {
       const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
       for (const btn of verifyBtns) {
-        const [taskId, taskDes] = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
+        const [taskId, taskDes, taskIcon, taskUrl] = [$(btn).attr('data-id'), $(btn).parent().prev().text(), $(btn).parent().parent().prev().find('use').attr('xlink:href') || '', $(btn).parent().find('a:contains("to do")').attr('href')]
         if ($(btn).parents('.task-content').next().text().includes('+1')) {
-          if (/join.*?steam.*?group/gim.test($(btn).parent().prev().text())) {
-            const groupurl = $(btn).parent().find('a:contains("to do")').attr('href')
-            pro.push(new Promise(res => { // eslint-disable-line promise/param-names
+          const isSteamGroup = taskIcon.includes('steam') && /join.*?steam.*?group/gim.test(taskDes)
+          const isTwitterUser = taskIcon.includes('twitter') && /follow/gim.test(taskDes)
+          const isRetweet = taskIcon.includes('twitter') && /retweet/gim.test(taskDes)
+          if (isSteamGroup || isTwitterUser || isRetweet) {
+            pro.push(new Promise(resolve => {
               new Promise(resolve => {
-                fuc.getFinalUrl(resolve, groupurl)
-              }).then(r => {
-                if (r.result === 'success') {
-                  const groupName = r.finalUrl.match(/groups\/(.+)\/?/)
-                  if (groupName) {
-                    this.currentTaskInfo.groups.push(groupName[1])
-                    this.taskInfo.groups.push(groupName[1])
-                  } else {
-                    fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getGroupError', groupurl)}<font></font></li>` })
+                fuc.getFinalUrl(resolve, taskUrl)
+              }).then(({ result, finalUrl }) => {
+                if (result === 'success') {
+                  const groupName = finalUrl?.match(/groups\/(.+)\/?/)?.[1]
+                  const userName = finalUrl?.match(/https:\/\/twitter.com\/(.+)/)?.[1]
+                  const tweetId = finalUrl?.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)?.[1]
+                  if (isSteamGroup && groupName) {
+                    this.currentTaskInfo.groups.push(groupName)
+                    this.taskInfo.groups.push(groupName)
+                  } else if (isTwitterUser && userName) {
+                    this.currentTaskInfo.twitterUsers.push(userName)
+                    this.taskInfo.twitterUsers.push(userName)
+                  } else if (isRetweet && tweetId) {
+                    this.currentTaskInfo.retweets.push(tweetId)
+                    this.taskInfo.retweets.push(tweetId)
                   }
-                } else {
-                  fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getGroupError', groupurl)}<font></font></li>` })
                 }
-                res(1)
+              }).catch(error => {
+                if (debug) console.error(error)
+              }).finally(() => {
+                resolve(1)
               })
             }))
           }
@@ -107,14 +116,11 @@ const gamehag = {
         setTimeout(() => { resolve() }, 1000)
       })
     }
-    Promise.all(pro).finally(() => {
-      this.updateSteamInfo(async () => {
-        const pro = []
-        await this.toggleActions('fuck', pro)
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (this.conf.fuck.verifyTask) this.verify()
-        })
+    Promise.all(pro).finally(async () => {
+      const pro = await this.toggleActions('fuck')
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+        if (this.conf.fuck.verifyTask) this.verify()
       })
     })
   },
@@ -166,60 +172,56 @@ const gamehag = {
       this.get_tasks('verify')
     }
   },
-  remove (remove = false) {
+  async remove (remove = false) {
     if (this.conf.remove.leaveSteamGroup && this.currentTaskInfo.groups.length > 0) {
-      this.updateSteamInfo(async () => {
-        const pro = []
-        await this.toggleActions('remove', pro)
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+      const pro = await this.toggleActions('remove')
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('cannotRemove')}</font></li>` })
     }
   },
-  toggleActions (action, pro) {
-    const groups = action === 'fuck' ? this.currentTaskInfo.groups : this.taskInfo.groups
-    if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+  toggleActions (action) {
+    const pro = []
+    const fuck = action === 'fuck'
+    const { groups, curators, twitterUsers, retweets } = fuck ? this.currentTaskInfo.groups : this.taskInfo.groups
+    if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
+        fuc.toggleActions({ website: 'gamehag', type: 'group', elements: groups, resolve, action })
       }))
     }
+    if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gamehag', type: 'curator', elements: curators, resolve, action })
+      }))
+    }
+    if (this.conf[action][fuck ? 'followTwitterUser' : 'unfollowTwitterUser'] && twitterUsers.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gamehag', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action })
+      }))
+    }
+    if (this.conf[action][fuck ? 'retweet' : 'unretweet'] && retweets.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gamehag', social: 'twitter', type: 'retweet', elements: retweets, resolve, action })
+      }))
+    }
+    return pro
     /* disable
-    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve, action })
-      }))
-    }
-    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
+    if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve, action })
       }))
     }
-    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+    if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
       }))
     }
     */
   },
-  updateSteamInfo (callback) {
-    new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        fuc.updateSteamInfo(resolve, 'community')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) callback()
-    }).catch(err => {
-      console.error(err)
-    })
-  },
   get_giveawayId () {
-    const id = window.location.href.match(/\/giveaway\/([\d]+)/)
-    return id ? id[1] : window.location.href
+    return window.location.href.match(/\/giveaway\/([\d]+)/)?.[1] || window.location.href
   },
   checkLeft () {
     if ($('.giveaway-counter:first .strong').text() === '0') {
@@ -230,19 +232,25 @@ const gamehag = {
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true
-      }).then((result) => {
-        if (result.value) {
+      }).then(({ value }) => {
+        if (value) {
           window.close()
         }
       })
     }
   },
   currentTaskInfo: {
-    groups: [], // 任务需要加的组
-    tasks: [] // 任务信息
+    groups: [],
+    curators: [],
+    twitterUsers: [],
+    retweets: [],
+    tasks: []
   },
   taskInfo: {
-    groups: []// 所有任务需要加的组
+    groups: [],
+    curators: [],
+    twitterUsers: [],
+    retweets: []
   },
   setting: {},
   conf: config?.gamehag?.enable ? config.gamehag : globalConf

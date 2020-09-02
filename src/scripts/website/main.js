@@ -1,16 +1,17 @@
 import { banana } from './banana'
 import { freegamelottery } from './freegamelottery'
+import { gamehag } from './gamehag'
 import { giveawaysu } from './giveawaysu'
 import { gleam } from './gleam'
 import { indiedb } from './indiedb'
+import { keylol } from './keylol'
 import { marvelousga } from './marvelousga'
 import { opiumpulses } from './opiumpulses'
 import { prys } from './prys'
-import { takekey } from './takekey'
 
-let website = null
+let website = {}
 
-const websites = [banana, freegamelottery, giveawaysu, gleam, indiedb, marvelousga, opiumpulses, prys, takekey]
+const websites = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, keylol, marvelousga, opiumpulses, prys]
 for (const e of websites) {
   if (e.test()) {
     website = e

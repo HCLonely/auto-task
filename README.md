@@ -4,6 +4,7 @@
 
 ## To do
 
+* [ ] steam信息更新（删除）
 * [ ] 完善 wiki
 
 ## Reference

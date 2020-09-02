@@ -168,21 +168,19 @@ const banana = {
       })
     }
   },
-  do_task () {
-    this.updateSteamInfo(async () => {
-      const [pro, links] = [[], fuc.unique(this.currentTaskInfo.links)]
-      await this.toggleActions('fuck', pro)
-      if (this.conf.fuck.visitLink) {
-        for (const link of links) {
-          pro.push(new Promise(resolve => {
-            fuc.visitLink(resolve, link)
-          }))
-        }
+  async do_task () {
+    const pro = await this.toggleActions('fuck')
+    const links = fuc.unique(this.currentTaskInfo.links)
+    if (this.conf.fuck.visitLink) {
+      for (const link of links) {
+        pro.push(new Promise(resolve => {
+          fuc.visitLink(resolve, link)
+        }))
       }
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify()
-      })
+    }
+    Promise.all(pro).finally(() => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify()
     })
   },
   verify (verify = false) {
@@ -212,20 +210,18 @@ const banana = {
       this.get_tasks('verify')
     }
   },
-  remove (remove = false) {
-    const pro = []
+  async remove (remove = false) {
     if (remove) {
-      this.updateSteamInfo(async () => {
-        await this.toggleActions('remove', pro)
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+      const pro = await this.toggleActions('remove')
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
       this.get_tasks('remove')
     }
   },
-  toggleActions (action, pro) {
+  toggleActions (action) {
+    const pro = []
     const fuck = action === 'fuck'
     const { groups, curators, wishlists, fGames, retweets } = fuck
       ? this.currentTaskInfo
@@ -255,28 +251,10 @@ const banana = {
         fuc.toggleActions({ website: 'banana', social: 'twitter', type: 'retweet', elements: retweets, resolve, action })
       }))
     }
+    return pro
   },
   get_giveawayId () {
     return window.location.href.match(/\/giveaway\/([\w\d-]+)/)?.[1] || window.location.href
-  },
-  updateSteamInfo (callback) {
-    new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
-          fuc.updateSteamInfo(resolve, 'all')
-        } else {
-          fuc.updateSteamInfo(resolve, 'community')
-        }
-      } else if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
-        fuc.updateSteamInfo(resolve, 'store')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) callback()
-    }).catch(err => {
-      console.error(err)
-    })
   },
   checkLogin () {
     if ($('a.steam[title*=team]').length > 0) window.open('/giveaway/steam/', '_self')

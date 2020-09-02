@@ -43,8 +43,8 @@ const defaultConf = {
       showDetails: true,
       checkLogin: true,
       checkLeft: true,
-      autoOpen: true
-      // reCaptcha: false
+      autoOpen: true,
+      reCaptcha: false
     },
     hotKey: {
       fuckKey: 'Alt + A',
@@ -157,18 +157,24 @@ const defaultConf = {
     },
     enable: false
   },
+  */
   gamehag: {
     fuck: {
       joinSteamGroup: true,
+      followCurator: true,
+      followTwitterUser: true,
+      retweet: true,
       visitLink: true,
       verifyTask: true
     },
     remove: {
-      leaveSteamGroup: true
+      leaveSteamGroup: true,
+      unfollowCurator: true,
+      unfollowTwitterUser: true,
+      unretweet: true
     },
     enable: false
   },
-    */
   prys: {
     fuck: {
       joinSteamGroup: true,
@@ -198,7 +204,6 @@ const defaultConf = {
     },
     enable: false
   },
-  */
   takekey: {
     fuck: {
       joinSteamGroup: true,
@@ -209,6 +214,7 @@ const defaultConf = {
     },
     enable: false
   },
+  */
   gleam: {
     fuck: {
       joinSteamGroup: true,

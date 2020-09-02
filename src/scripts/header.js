@@ -16,13 +16,14 @@
 // @include        *://marvelousga.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
-// @exclude        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
+// @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
 // @include        *://prys.revadike.com/giveaway/?id=*
 // @include        *://www.indiedb.com/giveaways*
 // @include        *://www.opiumpulses.com/giveaways
-// @include        *://takekey.ru/distribution/*
+// @exclude        *://takekey.ru/distribution/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
+// @include        *://keylol.com/*
 // @include        *://discord.com/app
 // @include        *://www.twitch.tv/*
 // @exclude        *googleads*

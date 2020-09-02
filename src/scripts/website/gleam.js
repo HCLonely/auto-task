@@ -105,64 +105,62 @@ const gleam = {
     }
   },
   do_task () {
-    this.updateSteamInfo(() => {
-      const pro = []
-      const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
-      const socals = [...discords, ...facebooks, ...youtubes]
-      if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'fuck' })
-        }))
-      }
-      if (this.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'fuck' })
-        }))
-      }
-      if (this.conf.fuck.retweet && retweets.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'fuck' })
-        }))
-      }
-      if (globalConf.other.autoOpen) {
-        if (socals.length > 0) {
-          for (const task of socals) {
-            const title = $(task).find('.entry-method-title').text().trim()
-            const [
-              status,
-              button
-            ] = [
-              fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
-              $(task).find('a.btn-info:first').attr('href')
-            ]
-            if (button) {
-              window.open(button, '_blank')
-              status.warning(getI18n('openPage'))
-            } else {
-              status.error(getI18n('getTaskUrlFailed'))
-            }
+    const pro = []
+    const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
+    const socals = [...discords, ...facebooks, ...youtubes]
+    if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'fuck' })
+      }))
+    }
+    if (this.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'fuck' })
+      }))
+    }
+    if (this.conf.fuck.retweet && retweets.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'fuck' })
+      }))
+    }
+    if (globalConf.other.autoOpen) {
+      if (socals.length > 0) {
+        for (const task of socals) {
+          const title = $(task).find('.entry-method-title').text().trim()
+          const [
+            status,
+            button
+          ] = [
+            fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
+            $(task).find('a.btn-info:first').attr('href')
+          ]
+          if (button) {
+            window.open(button, '_blank')
+            status.warning(getI18n('openPage'))
+          } else {
+            status.error(getI18n('getTaskUrlFailed'))
           }
         }
       }
-      if ((globalConf.other.autoOpen || this.conf.fuck.visit) && links.length > 0) {
-        pro.push(new Promise(resolve => {
-          this.visit_link(links, 0, resolve)
-        }))
+    }
+    if ((globalConf.other.autoOpen || this.conf.fuck.visit) && links.length > 0) {
+      pro.push(new Promise(resolve => {
+        this.visit_link(links, 0, resolve)
+      }))
+    }
+    for (const other of others) {
+      const icon = $(other).find('.icon-wrapper i')
+      if (icon.hasClass('fa-steam')) {
+        const title = $(other).find('.entry-method-title').text().trim()
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${title}</font></li>` })
+      } else {
+        const taskType = icon.attr('class').match(/fa-([\w]+)/) ? icon.attr('class').match(/fa-([\w]+)/)[1] : icon.attr('class')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${taskType}</font></li>` })
       }
-      for (const other of others) {
-        const icon = $(other).find('.icon-wrapper i')
-        if (icon.hasClass('fa-steam')) {
-          const title = $(other).find('.entry-method-title').text().trim()
-          fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${title}</font></li>` })
-        } else {
-          const taskType = icon.attr('class').match(/fa-([\w]+)/) ? icon.attr('class').match(/fa-([\w]+)/)[1] : icon.attr('class')
-          fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${taskType}</font></li>` })
-        }
-      }
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify(0)
-      })
+    }
+    Promise.all(pro).finally(() => {
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify(0)
     })
   },
   verify (i = 0) {
@@ -197,25 +195,23 @@ const gleam = {
     const pro = []
     if (remove) {
       const { groups, twitterUsers, retweets } = this.taskInfo
-      this.updateSteamInfo(() => {
-        if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'remove' })
-          }))
-        }
-        if (this.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'remove' })
-          }))
-        }
-        if (this.conf.remove.unretweet && retweets.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'remove' })
-          }))
-        }
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+      if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'remove' })
+        }))
+      }
+      if (this.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'remove' })
+        }))
+      }
+      if (this.conf.remove.unretweet && retweets.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'remove' })
+        }))
+      }
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       })
     } else {
       this.get_tasks('remove')
@@ -246,19 +242,6 @@ const gleam = {
   },
   get_giveawayId () {
     return window.location.pathname.replace(/\?.*/, '') || window.location.href
-  },
-  updateSteamInfo (callback) {
-    new Promise(resolve => {
-      if (this.taskInfo.groups.length > 0) {
-        fuc.updateSteamInfo(resolve, 'community')
-      } else {
-        resolve(1)
-      }
-    }).then(s => {
-      if (s === 1) callback()
-    }).catch(err => {
-      console.error(err)
-    })
   },
   checkLeft () {
     if ($('.massive-message:contains(ended)').is(':visible')) {

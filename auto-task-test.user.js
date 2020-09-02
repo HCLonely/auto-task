@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.18
+// @version        3.0.19
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -16,13 +16,14 @@
 // @include        *://marvelousga.com/*
 // @include        *://www.grabfreegame.com/giveaway/*
 // @include        *://www.bananagiveaway.com/giveaway/*
-// @exclude        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
+// @include        /https?:\/\/gamehag.com\/.*?giveaway\/.*/
 // @include        *://prys.revadike.com/giveaway/?id=*
 // @include        *://www.indiedb.com/giveaways*
 // @include        *://www.opiumpulses.com/giveaways
-// @include        *://takekey.ru/distribution/*
+// @exclude        *://takekey.ru/distribution/*
 // @include        *://*freegamelottery.com*
 // @include        *://gleam.io/*
+// @include        *://keylol.com/*
 // @include        *://discord.com/app
 // @include        *://www.twitch.tv/*
 // @exclude        *googleads*
@@ -32,12 +33,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.19/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.18/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.19/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.19/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -80,11 +81,11 @@
 /* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
+function _createForOfIteratorHelper (o, allowArrayLike) { var it; if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === 'number') { if (it) o = it; var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e2) { throw _e2 }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e3) { didErr = true; err = _e3 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
+
 function asyncGeneratorStep (gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value } catch (error) { reject(error); return } if (info.done) { resolve(value) } else { Promise.resolve(value).then(_next, _throw) } }
 
 function _asyncToGenerator (fn) { return function () { var self = this; var args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next (value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'next', value) } function _throw (err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, 'throw', err) } _next(undefined) }) } }
-
-function _createForOfIteratorHelper (o, allowArrayLike) { var it; if (typeof Symbol === 'undefined' || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === 'number') { if (it) o = it; var i = 0; var F = function F () {}; return { s: F, n: function n () { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] } }, e: function e (_e2) { throw _e2 }, f: F } } throw new TypeError('Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.') } var normalCompletion = true; var didErr = false; var err; return { s: function s () { it = o[Symbol.iterator]() }, n: function n () { var step = it.next(); normalCompletion = step.done; return step }, e: function e (_e3) { didErr = true; err = _e3 }, f: function f () { try { if (!normalCompletion && it.return != null) it.return() } finally { if (didErr) throw err } } } }
 
 function _slicedToArray (arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest() }
 
@@ -109,7 +110,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 (function () {
   'use strict'
 
-  var _config$banana, _config$freegamelotte, _config$giveawaysu, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys, _config$takekey
+  var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys
 
   var zh_CN = {
     language: '语言',
@@ -521,8 +522,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         showDetails: true,
         checkLogin: true,
         checkLeft: true,
-        autoOpen: true
-
+        autoOpen: true,
+        reCaptcha: false
       },
       hotKey: {
         fuckKey: 'Alt + A',
@@ -613,6 +614,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       enable: false
     },
 
+    gamehag: {
+      fuck: {
+        joinSteamGroup: true,
+        followCurator: true,
+        followTwitterUser: true,
+        retweet: true,
+        visitLink: true,
+        verifyTask: true
+      },
+      remove: {
+        leaveSteamGroup: true,
+        unfollowCurator: true,
+        unfollowTwitterUser: true,
+        unretweet: true
+      },
+      enable: false
+    },
     prys: {
       fuck: {
         joinSteamGroup: true,
@@ -626,16 +644,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       enable: false
     },
 
-    takekey: {
-      fuck: {
-        joinSteamGroup: true,
-        visitLink: true
-      },
-      remove: {
-        leaveSteamGroup: true
-      },
-      enable: false
-    },
     gleam: {
       fuck: {
         joinSteamGroup: true,
@@ -1988,132 +1996,232 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleSteamActions (_ref4) {
-    var website = _ref4.website
-    var type = _ref4.type
-    var elements = _ref4.elements
-    var resolve = _ref4.resolve
-    var action = _ref4.action
-    var _ref4$toFinalUrl = _ref4.toFinalUrl
-    var toFinalUrl = _ref4$toFinalUrl === void 0 ? {} : _ref4$toFinalUrl
-    var pro = []
+  function toggleSteamActions (_x) {
+    return _toggleSteamActions.apply(this, arguments)
+  }
 
-    var _iterator = _createForOfIteratorHelper(unique(elements))
-    var _step
+  function _toggleSteamActions () {
+    _toggleSteamActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 (_ref4) {
+      var website, type, elements, resolve, action, _ref4$toFinalUrl, toFinalUrl, pro, _iterator31, _step32, _loop13
 
-    try {
-      var _loop = function _loop () {
-        var _elementName
+      return regeneratorRuntime.wrap(function _callee14$ (_context17) {
+        while (1) {
+          switch (_context17.prev = _context17.next) {
+            case 0:
+              website = _ref4.website, type = _ref4.type, elements = _ref4.elements, resolve = _ref4.resolve, action = _ref4.action, _ref4$toFinalUrl = _ref4.toFinalUrl, toFinalUrl = _ref4$toFinalUrl === void 0 ? {} : _ref4$toFinalUrl
+              pro = []
+              _iterator31 = _createForOfIteratorHelper(unique(elements))
+              _context17.prev = 3
+              _loop13 = /* #__PURE__ */regeneratorRuntime.mark(function _loop13 () {
+                var _elementName
 
-        var element = _step.value
-        var elementName = [null, element]
+                var element, elementName, toFinalUrlElement
+                return regeneratorRuntime.wrap(function _loop13$ (_context16) {
+                  while (1) {
+                    switch (_context16.prev = _context16.next) {
+                      case 0:
+                        element = _step32.value
+                        elementName = Array.isArray(element) ? [null].concat(_toConsumableArray(element)) : [null, element]
 
-        if (website === 'giveawaysu' && toFinalUrl[element]) {
-          var toFinalUrlElement = toFinalUrl[element] || ''
+                        if (!(website === 'giveawaysu' && toFinalUrl[element])) {
+                          _context16.next = 19
+                          break
+                        }
 
-          switch (type) {
-            case 'group':
-              elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
-              break
+                        toFinalUrlElement = toFinalUrl[element] || ''
+                        _context16.t0 = type
+                        _context16.next = _context16.t0 === 'group' ? 7 : _context16.t0 === 'curator' ? 9 : _context16.t0 === 'publisher' ? 11 : _context16.t0 === 'developer' ? 11 : _context16.t0 === 'franchise' ? 13 : _context16.t0 === 'game' ? 15 : _context16.t0 === 'wishlist' ? 15 : _context16.t0 === 'announcement' ? 17 : 19
+                        break
 
-            case 'curator':
-              elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
-              break
+                      case 7:
+                        elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
+                        return _context16.abrupt('break', 19)
 
-            case 'publisher':
-            case 'developer':
-              elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)
-              break
+                      case 9:
+                        elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
+                        return _context16.abrupt('break', 19)
 
-            case 'franchise':
-              elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
-              break
+                      case 11:
+                        elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)
+                        return _context16.abrupt('break', 19)
 
-            case 'game':
-            case 'wishlist':
-              elementName = toFinalUrlElement.match(/app\/([\d]+)/)
-              break
+                      case 13:
+                        elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
+                        return _context16.abrupt('break', 19)
 
-            case 'announcement':
-            {
-              if (toFinalUrlElement.includes('announcements/detail')) {
-                elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
-              } else {
-                elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                      case 15:
+                        elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+                        return _context16.abrupt('break', 19)
+
+                      case 17:
+                        if (toFinalUrlElement.includes('announcements/detail')) {
+                          elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                        } else {
+                          elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                        }
+
+                        return _context16.abrupt('break', 19)
+
+                      case 19:
+                        if (!((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1])) {
+                          _context16.next = 55
+                          break
+                        }
+
+                        _context16.t1 = type
+                        _context16.next = _context16.t1 === 'group' ? 23 : _context16.t1 === 'curator' ? 27 : _context16.t1 === 'publisher' ? 31 : _context16.t1 === 'developer' ? 35 : _context16.t1 === 'franchise' ? 39 : _context16.t1 === 'wishlist' ? 43 : _context16.t1 === 'game' ? 47 : _context16.t1 === 'announcement' ? 51 : 55
+                        break
+
+                      case 23:
+                        _context16.next = 25
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'community')
+                        })
+
+                      case 25:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 27:
+                        _context16.next = 29
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 29:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? followCurator(resolve, elementName[1]) : unfollowCurator(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 31:
+                        _context16.next = 33
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 33:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? followPublisher(resolve, elementName[1]) : unfollowPublisher(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 35:
+                        _context16.next = 37
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 37:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? followDeveloper(resolve, elementName[1]) : unfollowDeveloper(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 39:
+                        _context16.next = 41
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 41:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? followFranchise(resolve, elementName[1]) : unfollowFranchise(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 43:
+                        _context16.next = 45
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 45:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? addWishlist(resolve, elementName[1]) : removeWishlist(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 47:
+                        _context16.next = 49
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'store')
+                        })
+
+                      case 49:
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? followGame(resolve, elementName[1]) : unfollowGame(resolve, elementName[1])
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 51:
+                        _context16.next = 53
+                        return new Promise(function (resolve) {
+                          updateSteamInfo(resolve, 'all')
+                        })
+
+                      case 53:
+                        pro.push(new Promise(function (resolve) {
+                          if (action === 'fuck') {
+                            likeAnnouncements(resolve, elementName)
+                          }
+                        }))
+                        return _context16.abrupt('break', 55)
+
+                      case 55:
+                      case 'end':
+                        return _context16.stop()
+                    }
+                  }
+                }, _loop13)
+              })
+
+              _iterator31.s()
+
+            case 6:
+              if ((_step32 = _iterator31.n()).done) {
+                _context17.next = 10
+                break
               }
 
+              return _context17.delegateYield(_loop13(), 't0', 8)
+
+            case 8:
+              _context17.next = 6
               break
-            }
+
+            case 10:
+              _context17.next = 15
+              break
+
+            case 12:
+              _context17.prev = 12
+              _context17.t1 = _context17.catch(3)
+
+              _iterator31.e(_context17.t1)
+
+            case 15:
+              _context17.prev = 15
+
+              _iterator31.f()
+
+              return _context17.finish(15)
+
+            case 18:
+              Promise.all(pro).finally(function () {
+                resolve()
+              })
+
+            case 19:
+            case 'end':
+              return _context17.stop()
           }
         }
-
-        if ((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1]) {
-          switch (type) {
-            case 'group':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
-              }))
-              break
-
-            case 'curator':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? followCurator(resolve, elementName[1]) : unfollowCurator(resolve, elementName[1])
-              }))
-              break
-
-            case 'publisher':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? followPublisher(resolve, elementName[1]) : unfollowPublisher(resolve, elementName[1])
-              }))
-              break
-
-            case 'developer':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? followDeveloper(resolve, elementName[1]) : unfollowDeveloper(resolve, elementName[1])
-              }))
-              break
-
-            case 'franchise':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? followFranchise(resolve, elementName[1]) : unfollowFranchise(resolve, elementName[1])
-              }))
-              break
-
-            case 'wishlist':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? addWishlist(resolve, elementName[1]) : removeWishlist(resolve, elementName[1])
-              }))
-              break
-
-            case 'game':
-              pro.push(new Promise(function (resolve) {
-                action === 'fuck' ? followGame(resolve, elementName[1]) : unfollowGame(resolve, elementName[1])
-              }))
-              break
-
-            case 'announcement':
-              pro.push(new Promise(function (resolve) {
-                if (action === 'fuck') {
-                  likeAnnouncements(resolve, elementName)
-                }
-              }))
-              break
-          }
-        }
-      }
-
-      for (_iterator.s(); !(_step = _iterator.n()).done;) {
-        _loop()
-      }
-    } catch (err) {
-      _iterator.e(err)
-    } finally {
-      _iterator.f()
-    }
-
-    Promise.all(pro).finally(function () {
-      resolve()
-    })
+      }, _callee14, null, [[3, 12, 15, 18]])
+    }))
+    return _toggleSteamActions.apply(this, arguments)
   }
 
   function updateTwitchInfo (notice) {
@@ -2203,35 +2311,35 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitchChannel (_x, _x2) {
+  function toggleTwitchChannel (_x2, _x3) {
     return _toggleTwitchChannel.apply(this, arguments)
   }
 
   function _toggleTwitchChannel () {
-    _toggleTwitchChannel = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 (resolve, name) {
+    _toggleTwitchChannel = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 (resolve, name) {
       var follow
       var channelId
       var status
       var followData
       var unfollowData
-      var _args12 = arguments
-      return regeneratorRuntime.wrap(function _callee12$ (_context12) {
+      var _args18 = arguments
+      return regeneratorRuntime.wrap(function _callee15$ (_context18) {
         while (1) {
-          switch (_context12.prev = _context12.next) {
+          switch (_context18.prev = _context18.next) {
             case 0:
-              follow = _args12.length > 2 && _args12[2] !== undefined ? _args12[2] : true
-              _context12.next = 3
+              follow = _args18.length > 2 && _args18[2] !== undefined ? _args18[2] : true
+              _context18.next = 3
               return getTwitchChannelId(name)
 
             case 3:
-              channelId = _context12.sent
+              channelId = _context18.sent
 
               if (channelId) {
-                _context12.next = 6
+                _context18.next = 6
                 break
               }
 
-              return _context12.abrupt('return', resolve({
+              return _context18.abrupt('return', resolve({
                 result: 'error',
                 statusText: '"getTwitchChannelId" failed',
                 status: 0
@@ -2277,10 +2385,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 10:
             case 'end':
-              return _context12.stop()
+              return _context18.stop()
           }
         }
-      }, _callee12)
+      }, _callee15)
     }))
     return _toggleTwitchChannel.apply(this, arguments)
   }
@@ -2344,49 +2452,49 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitchActions (_x3) {
+  function toggleTwitchActions (_x4) {
     return _toggleTwitchActions.apply(this, arguments)
   }
 
   function _toggleTwitchActions () {
-    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 (_ref7) {
-      var website, type, elements, resolve, action, _ref7$toFinalUrl, toFinalUrl, result, _iterator26, _step27, _loop13
+    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee16 (_ref7) {
+      var website, type, elements, resolve, action, _ref7$toFinalUrl, toFinalUrl, result, _iterator32, _step33, _loop14
 
-      return regeneratorRuntime.wrap(function _callee13$ (_context14) {
+      return regeneratorRuntime.wrap(function _callee16$ (_context20) {
         while (1) {
-          switch (_context14.prev = _context14.next) {
+          switch (_context20.prev = _context20.next) {
             case 0:
               website = _ref7.website, type = _ref7.type, elements = _ref7.elements, resolve = _ref7.resolve, action = _ref7.action, _ref7$toFinalUrl = _ref7.toFinalUrl, toFinalUrl = _ref7$toFinalUrl === void 0 ? {} : _ref7$toFinalUrl
 
               if (!(new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000)) {
-                _context14.next = 7
+                _context20.next = 7
                 break
               }
 
-              _context14.next = 4
+              _context20.next = 4
               return verifyTwitchAuth()
 
             case 4:
-              result = _context14.sent
+              result = _context20.sent
 
               if (result) {
-                _context14.next = 7
+                _context20.next = 7
                 break
               }
 
-              return _context14.abrupt('return')
+              return _context20.abrupt('return')
 
             case 7:
-              _iterator26 = _createForOfIteratorHelper(unique(elements))
-              _context14.prev = 8
-              _loop13 = /* #__PURE__ */regeneratorRuntime.mark(function _loop13 () {
+              _iterator32 = _createForOfIteratorHelper(unique(elements))
+              _context20.prev = 8
+              _loop14 = /* #__PURE__ */regeneratorRuntime.mark(function _loop14 () {
                 var element, name, _toFinalUrlElement$ma, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop13$ (_context13) {
+                return regeneratorRuntime.wrap(function _loop14$ (_context19) {
                   while (1) {
-                    switch (_context13.prev = _context13.next) {
+                    switch (_context19.prev = _context19.next) {
                       case 0:
-                        element = _step27.value
+                        element = _step33.value
                         name = element
 
                         if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -2395,63 +2503,63 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context13.next = 6
+                          _context19.next = 6
                           break
                         }
 
-                        _context13.next = 6
+                        _context19.next = 6
                         return new Promise(function (resolve) {
                           toggleTwitchChannel(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context13.stop()
+                        return _context19.stop()
                     }
                   }
-                }, _loop13)
+                }, _loop14)
               })
 
-              _iterator26.s()
+              _iterator32.s()
 
             case 11:
-              if ((_step27 = _iterator26.n()).done) {
-                _context14.next = 15
+              if ((_step33 = _iterator32.n()).done) {
+                _context20.next = 15
                 break
               }
 
-              return _context14.delegateYield(_loop13(), 't0', 13)
+              return _context20.delegateYield(_loop14(), 't0', 13)
 
             case 13:
-              _context14.next = 11
+              _context20.next = 11
               break
 
             case 15:
-              _context14.next = 20
+              _context20.next = 20
               break
 
             case 17:
-              _context14.prev = 17
-              _context14.t1 = _context14.catch(8)
+              _context20.prev = 17
+              _context20.t1 = _context20.catch(8)
 
-              _iterator26.e(_context14.t1)
+              _iterator32.e(_context20.t1)
 
             case 20:
-              _context14.prev = 20
+              _context20.prev = 20
 
-              _iterator26.f()
+              _iterator32.f()
 
-              return _context14.finish(20)
+              return _context20.finish(20)
 
             case 23:
               resolve()
 
             case 24:
             case 'end':
-              return _context14.stop()
+              return _context20.stop()
           }
         }
-      }, _callee13, null, [[8, 17, 20, 23]])
+      }, _callee16, null, [[8, 17, 20, 23]])
     }))
     return _toggleTwitchActions.apply(this, arguments)
   }
@@ -2566,40 +2674,40 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleDiscordActions (_x4) {
+  function toggleDiscordActions (_x5) {
     return _toggleDiscordActions.apply(this, arguments)
   }
 
   function _toggleDiscordActions () {
-    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee14 (_ref8) {
-      var website, elements, resolve, action, _ref8$toFinalUrl, toFinalUrl, _ref8$toGuild, toGuild, verifyResult, pro, _iterator27, _step28, _loop14
+    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 (_ref8) {
+      var website, elements, resolve, action, _ref8$toFinalUrl, toFinalUrl, _ref8$toGuild, toGuild, verifyResult, pro, _iterator33, _step34, _loop15
 
-      return regeneratorRuntime.wrap(function _callee14$ (_context15) {
+      return regeneratorRuntime.wrap(function _callee17$ (_context21) {
         while (1) {
-          switch (_context15.prev = _context15.next) {
+          switch (_context21.prev = _context21.next) {
             case 0:
               website = _ref8.website, elements = _ref8.elements, resolve = _ref8.resolve, action = _ref8.action, _ref8$toFinalUrl = _ref8.toFinalUrl, toFinalUrl = _ref8$toFinalUrl === void 0 ? {} : _ref8$toFinalUrl, _ref8$toGuild = _ref8.toGuild, toGuild = _ref8$toGuild === void 0 ? {} : _ref8$toGuild
 
               if (!(new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired)) {
-                _context15.next = 14
+                _context21.next = 14
                 break
               }
 
-              _context15.next = 4
+              _context21.next = 4
               return verifyDiscordAuth()
 
             case 4:
-              verifyResult = _context15.sent
+              verifyResult = _context21.sent
 
               if (!verifyResult) {
-                _context15.next = 11
+                _context21.next = 11
                 break
               }
 
               discordInfo.updateTime = new Date().getTime()
               discordInfo.expired = false
               GM_setValue('discordInfo', discordInfo)
-              _context15.next = 14
+              _context21.next = 14
               break
 
             case 11:
@@ -2607,15 +2715,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 type: 'updateDiscordAuth'
               })
               resolve({})
-              return _context15.abrupt('return')
+              return _context21.abrupt('return')
 
             case 14:
               pro = []
-              _iterator27 = _createForOfIteratorHelper(unique(elements))
+              _iterator33 = _createForOfIteratorHelper(unique(elements))
 
               try {
-                _loop14 = function _loop14 () {
-                  var element = _step28.value
+                _loop15 = function _loop15 () {
+                  var element = _step34.value
                   var inviteId = element
 
                   if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -2640,13 +2748,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 }
 
-                for (_iterator27.s(); !(_step28 = _iterator27.n()).done;) {
-                  _loop14()
+                for (_iterator33.s(); !(_step34 = _iterator33.n()).done;) {
+                  _loop15()
                 }
               } catch (err) {
-                _iterator27.e(err)
+                _iterator33.e(err)
               } finally {
-                _iterator27.f()
+                _iterator33.f()
               }
 
               Promise.all(pro).then(function (data) {
@@ -2657,10 +2765,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 18:
             case 'end':
-              return _context15.stop()
+              return _context21.stop()
           }
         }
-      }, _callee14)
+      }, _callee17)
     }))
     return _toggleDiscordActions.apply(this, arguments)
   }
@@ -2741,28 +2849,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function followIns (_x5, _x6) {
+  function followIns (_x6, _x7) {
     return _followIns.apply(this, arguments)
   }
 
   function _followIns () {
-    _followIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 (r, name) {
+    _followIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee18 (r, name) {
       var _yield$getInsInfo, id, error, status
 
-      return regeneratorRuntime.wrap(function _callee15$ (_context16) {
+      return regeneratorRuntime.wrap(function _callee18$ (_context22) {
         while (1) {
-          switch (_context16.prev = _context16.next) {
+          switch (_context22.prev = _context22.next) {
             case 0:
-              _context16.next = 2
+              _context22.next = 2
               return getInsInfo(name)
 
             case 2:
-              _yield$getInsInfo = _context16.sent
+              _yield$getInsInfo = _context22.sent
               id = _yield$getInsInfo.id
               error = _yield$getInsInfo.error
 
               if (!error) {
-                _context16.next = 8
+                _context22.next = 8
                 break
               }
 
@@ -2770,7 +2878,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 result: 'error',
                 statusText: 'getInsInfo error'
               })
-              return _context16.abrupt('return', error)
+              return _context22.abrupt('return', error)
 
             case 8:
               status = echoLog({
@@ -2816,36 +2924,36 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 10:
             case 'end':
-              return _context16.stop()
+              return _context22.stop()
           }
         }
-      }, _callee15)
+      }, _callee18)
     }))
     return _followIns.apply(this, arguments)
   }
 
-  function unfollowIns (_x7, _x8) {
+  function unfollowIns (_x8, _x9) {
     return _unfollowIns.apply(this, arguments)
   }
 
   function _unfollowIns () {
-    _unfollowIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee16 (r, name) {
+    _unfollowIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee19 (r, name) {
       var _yield$getInsInfo2, id, error, status
 
-      return regeneratorRuntime.wrap(function _callee16$ (_context17) {
+      return regeneratorRuntime.wrap(function _callee19$ (_context23) {
         while (1) {
-          switch (_context17.prev = _context17.next) {
+          switch (_context23.prev = _context23.next) {
             case 0:
-              _context17.next = 2
+              _context23.next = 2
               return getInsInfo(name)
 
             case 2:
-              _yield$getInsInfo2 = _context17.sent
+              _yield$getInsInfo2 = _context23.sent
               id = _yield$getInsInfo2.id
               error = _yield$getInsInfo2.error
 
               if (!error) {
-                _context17.next = 8
+                _context23.next = 8
                 break
               }
 
@@ -2853,7 +2961,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 result: 'error',
                 statusText: 'getInsInfo error'
               })
-              return _context17.abrupt('return', error)
+              return _context23.abrupt('return', error)
 
             case 8:
               status = echoLog({
@@ -2899,33 +3007,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 10:
             case 'end':
-              return _context17.stop()
+              return _context23.stop()
           }
         }
-      }, _callee16)
+      }, _callee19)
     }))
     return _unfollowIns.apply(this, arguments)
   }
 
-  function toggleInsActions (_x9) {
+  function toggleInsActions (_x10) {
     return _toggleInsActions.apply(this, arguments)
   }
 
   function _toggleInsActions () {
-    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee17 (_ref10) {
-      var website, elements, resolve, action, _ref10$toFinalUrl, toFinalUrl, pro, _iterator28, _step29, _loop15
+    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee20 (_ref10) {
+      var website, elements, resolve, action, _ref10$toFinalUrl, toFinalUrl, pro, _iterator34, _step35, _loop16
 
-      return regeneratorRuntime.wrap(function _callee17$ (_context18) {
+      return regeneratorRuntime.wrap(function _callee20$ (_context24) {
         while (1) {
-          switch (_context18.prev = _context18.next) {
+          switch (_context24.prev = _context24.next) {
             case 0:
               website = _ref10.website, elements = _ref10.elements, resolve = _ref10.resolve, action = _ref10.action, _ref10$toFinalUrl = _ref10.toFinalUrl, toFinalUrl = _ref10$toFinalUrl === void 0 ? {} : _ref10$toFinalUrl
               pro = []
-              _iterator28 = _createForOfIteratorHelper(unique(elements))
+              _iterator34 = _createForOfIteratorHelper(unique(elements))
 
               try {
-                _loop15 = function _loop15 () {
-                  var element = _step29.value
+                _loop16 = function _loop16 () {
+                  var element = _step35.value
                   var name = element
 
                   if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -2946,13 +3054,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 }
 
-                for (_iterator28.s(); !(_step29 = _iterator28.n()).done;) {
-                  _loop15()
+                for (_iterator34.s(); !(_step35 = _iterator34.n()).done;) {
+                  _loop16()
                 }
               } catch (err) {
-                _iterator28.e(err)
+                _iterator34.e(err)
               } finally {
-                _iterator28.f()
+                _iterator34.f()
               }
 
               Promise.all(pro).finally(function () {
@@ -2961,10 +3069,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 5:
             case 'end':
-              return _context18.stop()
+              return _context24.stop()
           }
         }
-      }, _callee17)
+      }, _callee20)
     }))
     return _toggleInsActions.apply(this, arguments)
   }
@@ -3028,33 +3136,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitterUser (_x10, _x11) {
+  function toggleTwitterUser (_x11, _x12) {
     return _toggleTwitterUser.apply(this, arguments)
   }
 
   function _toggleTwitterUser () {
-    _toggleTwitterUser = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee18 (r, name) {
+    _toggleTwitterUser = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (r, name) {
       var follow
       var userId
       var status
-      var _args19 = arguments
-      return regeneratorRuntime.wrap(function _callee18$ (_context19) {
+      var _args25 = arguments
+      return regeneratorRuntime.wrap(function _callee21$ (_context25) {
         while (1) {
-          switch (_context19.prev = _context19.next) {
+          switch (_context25.prev = _context25.next) {
             case 0:
-              follow = _args19.length > 2 && _args19[2] !== undefined ? _args19[2] : true
-              _context19.next = 3
+              follow = _args25.length > 2 && _args25[2] !== undefined ? _args25[2] : true
+              _context25.next = 3
               return getTwitterUserId(name)
 
             case 3:
-              userId = _context19.sent
+              userId = _context25.sent
 
               if (userId) {
-                _context19.next = 6
+                _context25.next = 6
                 break
               }
 
-              return _context19.abrupt('return', r({
+              return _context25.abrupt('return', r({
                 result: 'error',
                 statusText: '"getTwitterUserId" failed',
                 status: 0
@@ -3110,28 +3218,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 8:
             case 'end':
-              return _context19.stop()
+              return _context25.stop()
           }
         }
-      }, _callee18)
+      }, _callee21)
     }))
     return _toggleTwitterUser.apply(this, arguments)
   }
 
-  function toggleRetweet (_x12, _x13) {
+  function toggleRetweet (_x13, _x14) {
     return _toggleRetweet.apply(this, arguments)
   }
 
   function _toggleRetweet () {
-    _toggleRetweet = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee19 (r, retweetId) {
+    _toggleRetweet = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee22 (r, retweetId) {
       var retweet
       var status
-      var _args20 = arguments
-      return regeneratorRuntime.wrap(function _callee19$ (_context20) {
+      var _args26 = arguments
+      return regeneratorRuntime.wrap(function _callee22$ (_context26) {
         while (1) {
-          switch (_context20.prev = _context20.next) {
+          switch (_context26.prev = _context26.next) {
             case 0:
-              retweet = _args20.length > 2 && _args20[2] !== undefined ? _args20[2] : true
+              retweet = _args26.length > 2 && _args26[2] !== undefined ? _args26[2] : true
               status = echoLog({
                 type: ''.concat(retweet ? '' : 'un', 'retweet'),
                 text: retweetId
@@ -3176,10 +3284,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 3:
             case 'end':
-              return _context20.stop()
+              return _context26.stop()
           }
         }
-      }, _callee19)
+      }, _callee22)
     }))
     return _toggleRetweet.apply(this, arguments)
   }
@@ -3243,147 +3351,147 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitterActions (_x14) {
+  function toggleTwitterActions (_x15) {
     return _toggleTwitterActions.apply(this, arguments)
   }
 
   function _toggleTwitterActions () {
-    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee20 (_ref12) {
-      var website, type, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, _yield$updateTwitterI, result, _iterator29, _step30, _loop16
+    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee23 (_ref12) {
+      var website, type, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, _yield$updateTwitterI, result, _iterator35, _step36, _loop17
 
-      return regeneratorRuntime.wrap(function _callee20$ (_context22) {
+      return regeneratorRuntime.wrap(function _callee23$ (_context28) {
         while (1) {
-          switch (_context22.prev = _context22.next) {
+          switch (_context28.prev = _context28.next) {
             case 0:
               website = _ref12.website, type = _ref12.type, elements = _ref12.elements, resolve = _ref12.resolve, action = _ref12.action, _ref12$toFinalUrl = _ref12.toFinalUrl, toFinalUrl = _ref12$toFinalUrl === void 0 ? {} : _ref12$toFinalUrl
 
               if (!(new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000)) {
-                _context22.next = 8
+                _context28.next = 8
                 break
               }
 
-              _context22.next = 4
+              _context28.next = 4
               return updateTwitterInfo()
 
             case 4:
-              _yield$updateTwitterI = _context22.sent
+              _yield$updateTwitterI = _context28.sent
               result = _yield$updateTwitterI.result
 
               if (!(result !== 'success')) {
-                _context22.next = 8
+                _context28.next = 8
                 break
               }
 
-              return _context22.abrupt('return')
+              return _context28.abrupt('return')
 
             case 8:
-              _iterator29 = _createForOfIteratorHelper(unique(elements))
-              _context22.prev = 9
-              _loop16 = /* #__PURE__ */regeneratorRuntime.mark(function _loop16 () {
+              _iterator35 = _createForOfIteratorHelper(unique(elements))
+              _context28.prev = 9
+              _loop17 = /* #__PURE__ */regeneratorRuntime.mark(function _loop17 () {
                 var _toFinalUrlElement$ma4, _toFinalUrlElement$ma5
 
                 var element, id, toFinalUrlElement
-                return regeneratorRuntime.wrap(function _loop16$ (_context21) {
+                return regeneratorRuntime.wrap(function _loop17$ (_context27) {
                   while (1) {
-                    switch (_context21.prev = _context21.next) {
+                    switch (_context27.prev = _context27.next) {
                       case 0:
-                        element = _step30.value
+                        element = _step36.value
                         id = element
 
                         if (!(website === 'giveawaysu' && toFinalUrl[element])) {
-                          _context21.next = 11
+                          _context27.next = 11
                           break
                         }
 
                         toFinalUrlElement = toFinalUrl[element] || ''
-                        _context21.t0 = type
-                        _context21.next = _context21.t0 === 'follow' ? 7 : _context21.t0 === 'retweet' ? 9 : 11
+                        _context27.t0 = type
+                        _context27.next = _context27.t0 === 'follow' ? 7 : _context27.t0 === 'retweet' ? 9 : 11
                         break
 
                       case 7:
                         id = (_toFinalUrlElement$ma4 = toFinalUrlElement.match(/https:\/\/twitter.com\/(.+)/)) === null || _toFinalUrlElement$ma4 === void 0 ? void 0 : _toFinalUrlElement$ma4[1]
-                        return _context21.abrupt('break', 11)
+                        return _context27.abrupt('break', 11)
 
                       case 9:
                         id = (_toFinalUrlElement$ma5 = toFinalUrlElement.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _toFinalUrlElement$ma5 === void 0 ? void 0 : _toFinalUrlElement$ma5[1]
-                        return _context21.abrupt('break', 11)
+                        return _context27.abrupt('break', 11)
 
                       case 11:
                         if (!id) {
-                          _context21.next = 21
+                          _context27.next = 21
                           break
                         }
 
-                        _context21.t1 = type
-                        _context21.next = _context21.t1 === 'follow' ? 15 : _context21.t1 === 'retweet' ? 18 : 21
+                        _context27.t1 = type
+                        _context27.next = _context27.t1 === 'follow' ? 15 : _context27.t1 === 'retweet' ? 18 : 21
                         break
 
                       case 15:
-                        _context21.next = 17
+                        _context27.next = 17
                         return new Promise(function (resolve) {
                           toggleTwitterUser(resolve, id, action === 'fuck')
                         })
 
                       case 17:
-                        return _context21.abrupt('break', 21)
+                        return _context27.abrupt('break', 21)
 
                       case 18:
-                        _context21.next = 20
+                        _context27.next = 20
                         return new Promise(function (resolve) {
                           toggleRetweet(resolve, id, action === 'fuck')
                         })
 
                       case 20:
-                        return _context21.abrupt('break', 21)
+                        return _context27.abrupt('break', 21)
 
                       case 21:
                       case 'end':
-                        return _context21.stop()
+                        return _context27.stop()
                     }
                   }
-                }, _loop16)
+                }, _loop17)
               })
 
-              _iterator29.s()
+              _iterator35.s()
 
             case 12:
-              if ((_step30 = _iterator29.n()).done) {
-                _context22.next = 16
+              if ((_step36 = _iterator35.n()).done) {
+                _context28.next = 16
                 break
               }
 
-              return _context22.delegateYield(_loop16(), 't0', 14)
+              return _context28.delegateYield(_loop17(), 't0', 14)
 
             case 14:
-              _context22.next = 12
+              _context28.next = 12
               break
 
             case 16:
-              _context22.next = 21
+              _context28.next = 21
               break
 
             case 18:
-              _context22.prev = 18
-              _context22.t1 = _context22.catch(9)
+              _context28.prev = 18
+              _context28.t1 = _context28.catch(9)
 
-              _iterator29.e(_context22.t1)
+              _iterator35.e(_context28.t1)
 
             case 21:
-              _context22.prev = 21
+              _context28.prev = 21
 
-              _iterator29.f()
+              _iterator35.f()
 
-              return _context22.finish(21)
+              return _context28.finish(21)
 
             case 24:
               resolve()
 
             case 25:
             case 'end':
-              return _context22.stop()
+              return _context28.stop()
           }
         }
-      }, _callee20, null, [[9, 18, 21, 24]])
+      }, _callee23, null, [[9, 18, 21, 24]])
     }))
     return _toggleTwitterActions.apply(this, arguments)
   }
@@ -3491,49 +3599,49 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleRedditActions (_x15) {
+  function toggleRedditActions (_x16) {
     return _toggleRedditActions.apply(this, arguments)
   }
 
   function _toggleRedditActions () {
-    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (_ref15) {
-      var website, type, elements, resolve, action, _ref15$toFinalUrl, toFinalUrl, result, _iterator30, _step31, _loop17
+    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (_ref15) {
+      var website, type, elements, resolve, action, _ref15$toFinalUrl, toFinalUrl, result, _iterator36, _step37, _loop18
 
-      return regeneratorRuntime.wrap(function _callee21$ (_context24) {
+      return regeneratorRuntime.wrap(function _callee24$ (_context30) {
         while (1) {
-          switch (_context24.prev = _context24.next) {
+          switch (_context30.prev = _context30.next) {
             case 0:
               website = _ref15.website, type = _ref15.type, elements = _ref15.elements, resolve = _ref15.resolve, action = _ref15.action, _ref15$toFinalUrl = _ref15.toFinalUrl, toFinalUrl = _ref15$toFinalUrl === void 0 ? {} : _ref15$toFinalUrl
 
               if (!(new Date().getTime() > redditInfo.expiresTime)) {
-                _context24.next = 7
+                _context30.next = 7
                 break
               }
 
-              _context24.next = 4
+              _context30.next = 4
               return updateRedditInfo()
 
             case 4:
-              result = _context24.sent
+              result = _context30.sent
 
               if (!(!(result === null || result === void 0 ? void 0 : result.result) === 'success')) {
-                _context24.next = 7
+                _context30.next = 7
                 break
               }
 
-              return _context24.abrupt('return')
+              return _context30.abrupt('return')
 
             case 7:
-              _iterator30 = _createForOfIteratorHelper(unique(elements))
-              _context24.prev = 8
-              _loop17 = /* #__PURE__ */regeneratorRuntime.mark(function _loop17 () {
+              _iterator36 = _createForOfIteratorHelper(unique(elements))
+              _context30.prev = 8
+              _loop18 = /* #__PURE__ */regeneratorRuntime.mark(function _loop18 () {
                 var element, name, _toFinalUrlElement$ma6, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop17$ (_context23) {
+                return regeneratorRuntime.wrap(function _loop18$ (_context29) {
                   while (1) {
-                    switch (_context23.prev = _context23.next) {
+                    switch (_context29.prev = _context29.next) {
                       case 0:
-                        element = _step31.value
+                        element = _step37.value
                         name = element
 
                         if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -3542,63 +3650,63 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context23.next = 6
+                          _context29.next = 6
                           break
                         }
 
-                        _context23.next = 6
+                        _context29.next = 6
                         return new Promise(function (resolve) {
                           toggleReddit(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context23.stop()
+                        return _context29.stop()
                     }
                   }
-                }, _loop17)
+                }, _loop18)
               })
 
-              _iterator30.s()
+              _iterator36.s()
 
             case 11:
-              if ((_step31 = _iterator30.n()).done) {
-                _context24.next = 15
+              if ((_step37 = _iterator36.n()).done) {
+                _context30.next = 15
                 break
               }
 
-              return _context24.delegateYield(_loop17(), 't0', 13)
+              return _context30.delegateYield(_loop18(), 't0', 13)
 
             case 13:
-              _context24.next = 11
+              _context30.next = 11
               break
 
             case 15:
-              _context24.next = 20
+              _context30.next = 20
               break
 
             case 17:
-              _context24.prev = 17
-              _context24.t1 = _context24.catch(8)
+              _context30.prev = 17
+              _context30.t1 = _context30.catch(8)
 
-              _iterator30.e(_context24.t1)
+              _iterator36.e(_context30.t1)
 
             case 20:
-              _context24.prev = 20
+              _context30.prev = 20
 
-              _iterator30.f()
+              _iterator36.f()
 
-              return _context24.finish(20)
+              return _context30.finish(20)
 
             case 23:
               resolve()
 
             case 24:
             case 'end':
-              return _context24.stop()
+              return _context30.stop()
           }
         }
-      }, _callee21, null, [[8, 17, 20, 23]])
+      }, _callee24, null, [[8, 17, 20, 23]])
     }))
     return _toggleRedditActions.apply(this, arguments)
   }
@@ -3648,54 +3756,54 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleVk (_x16, _x17) {
+  function toggleVk (_x17, _x18) {
     return _toggleVk.apply(this, arguments)
   }
 
   function _toggleVk () {
-    _toggleVk = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee22 (r, name) {
+    _toggleVk = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (r, name) {
       var join
       var _yield$getVkId
       var data
-      var _args25 = arguments
+      var _args31 = arguments
 
-      return regeneratorRuntime.wrap(function _callee22$ (_context25) {
+      return regeneratorRuntime.wrap(function _callee25$ (_context31) {
         while (1) {
-          switch (_context25.prev = _context25.next) {
+          switch (_context31.prev = _context31.next) {
             case 0:
-              join = _args25.length > 2 && _args25[2] !== undefined ? _args25[2] : true
-              _context25.next = 3
+              join = _args31.length > 2 && _args31[2] !== undefined ? _args31[2] : true
+              _context31.next = 3
               return getVkId(name)
 
             case 3:
-              _yield$getVkId = _context25.sent
+              _yield$getVkId = _context31.sent
               data = _yield$getVkId.data
 
               if (data) {
-                _context25.next = 7
+                _context31.next = 7
                 break
               }
 
-              return _context25.abrupt('return')
+              return _context31.abrupt('return')
 
             case 7:
-              _context25.t0 = data.type
-              _context25.next = _context25.t0 === 'group' ? 10 : _context25.t0 === 'public' ? 12 : 13
+              _context31.t0 = data.type
+              _context31.next = _context31.t0 === 'group' ? 10 : _context31.t0 === 'public' ? 12 : 13
               break
 
             case 10:
               toggleVkGroup(r, name, data, join)
-              return _context25.abrupt('break', 13)
+              return _context31.abrupt('break', 13)
 
             case 12:
               toggleVkPublic(r, name, data, join)
 
             case 13:
             case 'end':
-              return _context25.stop()
+              return _context31.stop()
           }
         }
-      }, _callee22)
+      }, _callee25)
     }))
     return _toggleVk.apply(this, arguments)
   }
@@ -3880,43 +3988,43 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleVkActions (_x18) {
+  function toggleVkActions (_x19) {
     return _toggleVkActions.apply(this, arguments)
   }
 
   function _toggleVkActions () {
-    _toggleVkActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee23 (_ref19) {
-      var website, type, elements, resolve, action, _ref19$toFinalUrl, toFinalUrl, isLogin, _iterator31, _step32, _loop18
+    _toggleVkActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee26 (_ref19) {
+      var website, type, elements, resolve, action, _ref19$toFinalUrl, toFinalUrl, isLogin, _iterator37, _step38, _loop19
 
-      return regeneratorRuntime.wrap(function _callee23$ (_context27) {
+      return regeneratorRuntime.wrap(function _callee26$ (_context33) {
         while (1) {
-          switch (_context27.prev = _context27.next) {
+          switch (_context33.prev = _context33.next) {
             case 0:
               website = _ref19.website, type = _ref19.type, elements = _ref19.elements, resolve = _ref19.resolve, action = _ref19.action, _ref19$toFinalUrl = _ref19.toFinalUrl, toFinalUrl = _ref19$toFinalUrl === void 0 ? {} : _ref19$toFinalUrl
-              _context27.next = 3
+              _context33.next = 3
               return verifyVkLogin()
 
             case 3:
-              isLogin = _context27.sent
+              isLogin = _context33.sent
 
               if (isLogin) {
-                _context27.next = 6
+                _context33.next = 6
                 break
               }
 
-              return _context27.abrupt('return', resolve())
+              return _context33.abrupt('return', resolve())
 
             case 6:
-              _iterator31 = _createForOfIteratorHelper(unique(elements))
-              _context27.prev = 7
-              _loop18 = /* #__PURE__ */regeneratorRuntime.mark(function _loop18 () {
+              _iterator37 = _createForOfIteratorHelper(unique(elements))
+              _context33.prev = 7
+              _loop19 = /* #__PURE__ */regeneratorRuntime.mark(function _loop19 () {
                 var element, name, _toFinalUrlElement$ma7, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop18$ (_context26) {
+                return regeneratorRuntime.wrap(function _loop19$ (_context32) {
                   while (1) {
-                    switch (_context26.prev = _context26.next) {
+                    switch (_context32.prev = _context32.next) {
                       case 0:
-                        element = _step32.value
+                        element = _step38.value
                         name = element
 
                         if (website === 'giveawaysu' && toFinalUrl[element]) {
@@ -3925,63 +4033,63 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context26.next = 6
+                          _context32.next = 6
                           break
                         }
 
-                        _context26.next = 6
+                        _context32.next = 6
                         return new Promise(function (resolve) {
                           toggleVk(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context26.stop()
+                        return _context32.stop()
                     }
                   }
-                }, _loop18)
+                }, _loop19)
               })
 
-              _iterator31.s()
+              _iterator37.s()
 
             case 10:
-              if ((_step32 = _iterator31.n()).done) {
-                _context27.next = 14
+              if ((_step38 = _iterator37.n()).done) {
+                _context33.next = 14
                 break
               }
 
-              return _context27.delegateYield(_loop18(), 't0', 12)
+              return _context33.delegateYield(_loop19(), 't0', 12)
 
             case 12:
-              _context27.next = 10
+              _context33.next = 10
               break
 
             case 14:
-              _context27.next = 19
+              _context33.next = 19
               break
 
             case 16:
-              _context27.prev = 16
-              _context27.t1 = _context27.catch(7)
+              _context33.prev = 16
+              _context33.t1 = _context33.catch(7)
 
-              _iterator31.e(_context27.t1)
+              _iterator37.e(_context33.t1)
 
             case 19:
-              _context27.prev = 19
+              _context33.prev = 19
 
-              _iterator31.f()
+              _iterator37.f()
 
-              return _context27.finish(19)
+              return _context33.finish(19)
 
             case 22:
               resolve()
 
             case 23:
             case 'end':
-              return _context27.stop()
+              return _context33.stop()
           }
         }
-      }, _callee23, null, [[7, 16, 19, 22]])
+      }, _callee26, null, [[7, 16, 19, 22]])
     }))
     return _toggleVkActions.apply(this, arguments)
   }
@@ -4173,14 +4281,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var tasksUl = _ref22[1]
         var pro = _ref22[2]
 
-        var _iterator2 = _createForOfIteratorHelper(tasksUl)
-        var _step2
+        var _iterator = _createForOfIteratorHelper(tasksUl)
+        var _step
 
         try {
-          var _loop2 = function _loop2 () {
+          var _loop = function _loop () {
             var _verifyBtn$attr, _verifyBtn$attr$match
 
-            var task = _step2.value
+            var task = _step.value
 
             var _ref23 = [$(task).find('p'), $(task).find('button:contains(Verify)')]
             var taskDes = _ref23[0]
@@ -4333,13 +4441,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
 
-          for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
-            _loop2()
+          for (_iterator.s(); !(_step = _iterator.n()).done;) {
+            _loop()
           }
         } catch (err) {
-          _iterator2.e(err)
+          _iterator.e(err)
         } finally {
-          _iterator2.f()
+          _iterator.f()
         }
 
         Promise.all(pro).finally(function () {
@@ -4368,36 +4476,38 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     do_task: function do_task () {
       var _this3 = this
 
-      this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
-        var _ref29, pro, links, _iterator3, _step3, _loop3
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee () {
+        var pro, links, _iterator2, _step2, _loop2
 
         return regeneratorRuntime.wrap(function _callee$ (_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _ref29 = [[], fuc.unique(_this3.currentTaskInfo.links)], pro = _ref29[0], links = _ref29[1]
-                _context.next = 3
-                return _this3.toggleActions('fuck', pro)
+                _context.next = 2
+                return _this3.toggleActions('fuck')
 
-              case 3:
+              case 2:
+                pro = _context.sent
+                links = fuc.unique(_this3.currentTaskInfo.links)
+
                 if (_this3.conf.fuck.visitLink) {
-                  _iterator3 = _createForOfIteratorHelper(links)
+                  _iterator2 = _createForOfIteratorHelper(links)
 
                   try {
-                    _loop3 = function _loop3 () {
-                      var link = _step3.value
+                    _loop2 = function _loop2 () {
+                      var link = _step2.value
                       pro.push(new Promise(function (resolve) {
                         fuc.visitLink(resolve, link)
                       }))
                     }
 
-                    for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
-                      _loop3()
+                    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+                      _loop2()
                     }
                   } catch (err) {
-                    _iterator3.e(err)
+                    _iterator2.e(err)
                   } finally {
-                    _iterator3.f()
+                    _iterator2.f()
                   }
                 }
 
@@ -4409,13 +4519,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   if (_this3.conf.fuck.verifyTask) _this3.verify()
                 })
 
-              case 5:
+              case 6:
               case 'end':
                 return _context.stop()
             }
           }
         }, _callee)
-      })))
+      }))()
     },
     verify: function verify () {
       var _this4 = this
@@ -4425,12 +4535,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (verify) {
         var _pro = []
 
-        var _iterator4 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-        var _step4
+        var _iterator3 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+        var _step3
 
         try {
-          var _loop4 = function _loop4 () {
-            var task = _step4.value
+          var _loop3 = function _loop3 () {
+            var task = _step3.value
             var status = fuc.echoLog({
               type: 'custom',
               text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
@@ -4455,13 +4565,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }))
           }
 
-          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
-            _loop4()
+          for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+            _loop3()
           }
         } catch (err) {
-          _iterator4.e(err)
+          _iterator3.e(err)
         } finally {
-          _iterator4.f()
+          _iterator3.f()
         }
 
         Promise.all(_pro).finally(function () {
@@ -4476,48 +4586,58 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     remove: function remove () {
+      var _arguments = arguments
       var _this5 = this
 
-      var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-      var pro = []
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee2 () {
+        var remove, _pro2
 
-      if (remove) {
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee2 () {
-          return regeneratorRuntime.wrap(function _callee2$ (_context2) {
-            while (1) {
-              switch (_context2.prev = _context2.next) {
-                case 0:
-                  _context2.next = 2
-                  return _this5.toggleActions('remove', pro)
+        return regeneratorRuntime.wrap(function _callee2$ (_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                remove = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : false
 
-                case 2:
-                  Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
+                if (!remove) {
+                  _context2.next = 8
+                  break
+                }
+
+                _context2.next = 4
+                return _this5.toggleActions('remove')
+
+              case 4:
+                _pro2 = _context2.sent
+                Promise.all(_pro2).finally(function () {
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
+                })
+                _context2.next = 9
+                break
 
-                case 3:
-                case 'end':
-                  return _context2.stop()
-              }
+              case 8:
+                _this5.get_tasks('remove')
+
+              case 9:
+              case 'end':
+                return _context2.stop()
             }
-          }, _callee2)
-        })))
-      } else {
-        this.get_tasks('remove')
-      }
+          }
+        }, _callee2)
+      }))()
     },
-    toggleActions: function toggleActions (action, pro) {
+    toggleActions: function toggleActions (action) {
+      var pro = []
       var fuck = action === 'fuck'
 
-      var _ref31 = fuck ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref31.groups
-      var curators = _ref31.curators
-      var wishlists = _ref31.wishlists
-      var fGames = _ref31.fGames
-      var retweets = _ref31.retweets
+      var _ref28 = fuck ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref28.groups
+      var curators = _ref28.curators
+      var wishlists = _ref28.wishlists
+      var fGames = _ref28.fGames
+      var retweets = _ref28.retweets
 
       if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -4579,32 +4699,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }))
       }
+
+      return pro
     },
     get_giveawayId: function get_giveawayId () {
       var _window$location$href
 
       return ((_window$location$href = window.location.href.match(/\/giveaway\/([\w\d-]+)/)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1]) || window.location.href
-    },
-    updateSteamInfo: function updateSteamInfo (callback) {
-      var _this6 = this
-
-      new Promise(function (resolve) {
-        if (_this6.taskInfo.groups.length > 0) {
-          if (_this6.taskInfo.curators.length > 0 || _this6.taskInfo.fGames.length > 0 || _this6.taskInfo.wishlists.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (_this6.taskInfo.curators.length > 0 || _this6.taskInfo.fGames.length > 0 || _this6.taskInfo.wishlists.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
-        } else {
-          resolve(1)
-        }
-      }).then(function (s) {
-        if (s === 1) callback()
-      }).catch(function (err) {
-        console.error(err)
-      })
     },
     checkLogin: function checkLogin () {
       if ($('a.steam[title*=team]').length > 0) window.open('/giveaway/steam/', '_self')
@@ -4618,8 +4719,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref32) {
-          var value = _ref32.value
+        }).then(function (_ref29) {
+          var value = _ref29.value
 
           if (value) {
             window.close()
@@ -4777,6 +4878,564 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable) ? config.freegamelottery : globalConf
   }
+  var gamehag = {
+    test: function test () {
+      return window.location.host.includes('gamehag')
+    },
+    before: function before () {
+      $('#getkey').removeAttr('disabled')
+      if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+    },
+    fuck: function fuck () {
+      this.get_tasks('do_task')
+    },
+    get_tasks: function get_tasks () {
+      var _this6 = this
+
+      var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
+      var _ref30 = [fuc.echoLog({
+        type: 'custom',
+        text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
+      }), $('button[data-id]')]
+      var status = _ref30[0]
+      var verifyBtns = _ref30[1]
+
+      if (callback === 'do_task') {
+        this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
+        var _pro3 = []
+        var taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
+        if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
+
+        var _iterator4 = _createForOfIteratorHelper(verifyBtns)
+        var _step4
+
+        try {
+          var _loop4 = function _loop4 () {
+            var btn = _step4.value
+            var _ref32 = [$(btn).attr('data-id'), $(btn).parent().prev().text(), $(btn).parent().parent().prev().find('use').attr('xlink:href') || '', $(btn).parent().find('a:contains("to do")').attr('href')]
+            var taskId = _ref32[0]
+            var taskDes = _ref32[1]
+            var taskIcon = _ref32[2]
+            var taskUrl = _ref32[3]
+
+            if ($(btn).parents('.task-content').next().text().includes('+1')) {
+              var isSteamGroup = taskIcon.includes('steam') && /join.*?steam.*?group/gim.test(taskDes)
+              var isTwitterUser = taskIcon.includes('twitter') && /follow/gim.test(taskDes)
+              var isRetweet = taskIcon.includes('twitter') && /retweet/gim.test(taskDes)
+
+              if (isSteamGroup || isTwitterUser || isRetweet) {
+                _pro3.push(new Promise(function (resolve) {
+                  new Promise(function (resolve) {
+                    fuc.getFinalUrl(resolve, taskUrl)
+                  }).then(function (_ref33) {
+                    var result = _ref33.result
+                    var finalUrl = _ref33.finalUrl
+
+                    if (result === 'success') {
+                      var _finalUrl$match5, _finalUrl$match6, _finalUrl$match7
+
+                      var groupName = finalUrl === null || finalUrl === void 0 ? void 0 : (_finalUrl$match5 = finalUrl.match(/groups\/(.+)\/?/)) === null || _finalUrl$match5 === void 0 ? void 0 : _finalUrl$match5[1]
+                      var userName = finalUrl === null || finalUrl === void 0 ? void 0 : (_finalUrl$match6 = finalUrl.match(/https:\/\/twitter.com\/(.+)/)) === null || _finalUrl$match6 === void 0 ? void 0 : _finalUrl$match6[1]
+                      var tweetId = finalUrl === null || finalUrl === void 0 ? void 0 : (_finalUrl$match7 = finalUrl.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _finalUrl$match7 === void 0 ? void 0 : _finalUrl$match7[1]
+
+                      if (isSteamGroup && groupName) {
+                        _this6.currentTaskInfo.groups.push(groupName)
+
+                        _this6.taskInfo.groups.push(groupName)
+                      } else if (isTwitterUser && userName) {
+                        _this6.currentTaskInfo.twitterUsers.push(userName)
+
+                        _this6.taskInfo.twitterUsers.push(userName)
+                      } else if (isRetweet && tweetId) {
+                        _this6.currentTaskInfo.retweets.push(tweetId)
+
+                        _this6.taskInfo.retweets.push(tweetId)
+                      }
+                    }
+                  }).catch(function (error) {
+                    if (debug) console.error(error)
+                  }).finally(function () {
+                    resolve(1)
+                  })
+                }))
+              }
+
+              _this6.currentTaskInfo.tasks.push({
+                taskId: taskId,
+                taskDes: taskDes
+              })
+            }
+          }
+
+          for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+            _loop4()
+          }
+        } catch (err) {
+          _iterator4.e(err)
+        } finally {
+          _iterator4.f()
+        }
+
+        if ($('a.giveaway-survey').length > 0) {
+          var _ref31 = [$('a.giveaway-survey').attr('data-task_id'), 'Complete the survey']
+          var taskId = _ref31[0]
+          var taskDes = _ref31[1]
+          this.currentTaskInfo.tasks.push({
+            taskId: taskId,
+            taskDes: taskDes
+          })
+        }
+
+        Promise.all(_pro3).finally(function () {
+          _this6.currentTaskInfo = fuc.uniqueTaskInfo(_this6.currentTaskInfo)
+          _this6.taskInfo = fuc.uniqueTaskInfo(_this6.taskInfo)
+          status.success()
+          GM_setValue('taskInfo[' + window.location.host + _this6.get_giveawayId() + ']', _this6.taskInfo)
+
+          if (_this6.currentTaskInfo.tasks.length > 0) {
+            _this6.do_task()
+          } else {
+            fuc.echoLog({
+              type: 'custom',
+              text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+            })
+            if (_this6.conf.fuck.verifyTask) _this6.verify()
+          }
+        })
+      } else if (callback === 'verify') {
+        this.currentTaskInfo.tasks = []
+
+        var _iterator5 = _createForOfIteratorHelper(verifyBtns)
+        var _step5
+
+        try {
+          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
+            var btn = _step5.value
+            var _ref34 = [$(btn).attr('data-id'), $(btn).parent().prev().text()]
+            var _taskId = _ref34[0]
+            var _taskDes = _ref34[1]
+            if ($(btn).parents('.task-content').next().text().includes('+1')) {
+              this.currentTaskInfo.tasks.push({
+                taskId: _taskId,
+                taskDes: _taskDes
+              })
+            }
+          }
+        } catch (err) {
+          _iterator5.e(err)
+        } finally {
+          _iterator5.f()
+        }
+
+        this.currentTaskInfo.tasks = fuc.unique(this.currentTaskInfo.tasks)
+
+        if (this.currentTaskInfo.tasks.length > 0) {
+          this.verify(true)
+        } else {
+          fuc.echoLog({
+            type: 'custom',
+            text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font></li>')
+          })
+        }
+
+        status.success()
+      } else if (callback === 'remove') {
+        status.success()
+        fuc.echoLog({
+          type: 'custom',
+          text: '<li><font class="success">'.concat(getI18n('cannotRemove'), '</font></li>')
+        })
+      } else {
+        status.success()
+        fuc.echoLog({
+          type: 'custom',
+          text: '<li><font class="error">'.concat(getI18n('unknown'), '\uFF01</font></li>')
+        })
+      }
+
+      if (debug) console.log(this)
+    },
+    do_task: function do_task () {
+      var _this7 = this
+
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
+        var _ref35, pro, tasks, _loop5, i
+
+        return regeneratorRuntime.wrap(function _callee4$ (_context5) {
+          while (1) {
+            switch (_context5.prev = _context5.next) {
+              case 0:
+                _ref35 = [[], fuc.unique(_this7.currentTaskInfo.tasks)], pro = _ref35[0], tasks = _ref35[1]
+                _loop5 = /* #__PURE__ */regeneratorRuntime.mark(function _loop5 (i) {
+                  var task
+                  return regeneratorRuntime.wrap(function _loop5$ (_context4) {
+                    while (1) {
+                      switch (_context4.prev = _context4.next) {
+                        case 0:
+                          task = tasks[i]
+                          pro.push(new Promise(function (resolve) {
+                            fuc.visitLink(resolve, '/giveaway/click/' + task.taskId, {
+                              headers: {
+                                'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                              }
+                            })
+                          }))
+
+                          if (/play.*?games/gim.test(task.taskDes)) {
+                            pro.push(new Promise(function (resolve) {
+                              fuc.visitLink(resolve, '/games', {
+                                headers: {
+                                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                                }
+                              })
+                            }))
+                            pro.push(new Promise(function (resolve) {
+                              fuc.visitLink(resolve, '/games/war-thunder/play', {
+                                headers: {
+                                  'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                                }
+                              })
+                            }))
+                          }
+
+                          _context4.next = 5
+                          return new Promise(function (resolve) {
+                            setTimeout(function () {
+                              resolve()
+                            }, 1000)
+                          })
+
+                        case 5:
+                        case 'end':
+                          return _context4.stop()
+                      }
+                    }
+                  }, _loop5)
+                })
+                i = 0
+
+              case 3:
+                if (!(i < tasks.length)) {
+                  _context5.next = 8
+                  break
+                }
+
+                return _context5.delegateYield(_loop5(i), 't0', 5)
+
+              case 5:
+                i++
+                _context5.next = 3
+                break
+
+              case 8:
+                Promise.all(pro).finally(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
+                  var pro
+                  return regeneratorRuntime.wrap(function _callee3$ (_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          _context3.next = 2
+                          return _this7.toggleActions('fuck')
+
+                        case 2:
+                          pro = _context3.sent
+                          Promise.all(pro).finally(function () {
+                            fuc.echoLog({
+                              type: 'custom',
+                              text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                            })
+                            if (_this7.conf.fuck.verifyTask) _this7.verify()
+                          })
+
+                        case 4:
+                        case 'end':
+                          return _context3.stop()
+                      }
+                    }
+                  }, _callee3)
+                })))
+
+              case 9:
+              case 'end':
+                return _context5.stop()
+            }
+          }
+        }, _callee4)
+      }))()
+    },
+    verify: function verify () {
+      var _arguments2 = arguments
+      var _this8 = this
+
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
+        var verify, _ref37, _pro4, tasks, _loop6, i
+
+        return regeneratorRuntime.wrap(function _callee5$ (_context7) {
+          while (1) {
+            switch (_context7.prev = _context7.next) {
+              case 0:
+                verify = _arguments2.length > 0 && _arguments2[0] !== undefined ? _arguments2[0] : false
+
+                if (!verify) {
+                  _context7.next = 13
+                  break
+                }
+
+                _ref37 = [[], fuc.unique(_this8.currentTaskInfo.tasks)], _pro4 = _ref37[0], tasks = _ref37[1]
+                _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 (i) {
+                  var task, status
+                  return regeneratorRuntime.wrap(function _loop6$ (_context6) {
+                    while (1) {
+                      switch (_context6.prev = _context6.next) {
+                        case 0:
+                          task = tasks[i]
+                          status = fuc.echoLog({
+                            type: 'custom',
+                            text: '<li>'.concat(getI18n('verifyingTask'), '<a href="/giveaway/click/').concat(task.taskId, '" target="_blank">').concat(task.taskDes.trim(), '</a>...<font></font></li>')
+                          })
+
+                          _pro4.push(new Promise(function (resolve) {
+                            fuc.httpRequest({
+                              url: '/api/v1/giveaway/sendtask',
+                              method: 'POST',
+                              dataType: 'json',
+                              headers: {
+                                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                                'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                              },
+                              data: 'task_id=' + task.taskId,
+                              onload: function onload (response) {
+                                if (debug) console.log(response)
+
+                                if (response.response) {
+                                  if (response.response.status === 'success') {
+                                    status.success()
+                                    $('div.task-reward[href="#task-'.concat(task.taskId, '-collapse"]')).html('<svg class="nc-icon nc-align-to-text grid-24 glyph"><use xlink:href="/icons/nci-fill.svg#nc-icon-check-simple" /></svg>')
+                                    resolve({
+                                      result: 'success',
+                                      statusText: response.statusText,
+                                      status: response.status
+                                    })
+                                  } else {
+                                    status.error('Error:' + (response.response.message || response.statusText || response.status || 'error'))
+                                    if (globalConf.other.autoOpen) window.open('/giveaway/click/'.concat(task.taskId), '_blank')
+                                    resolve({
+                                      result: 'error',
+                                      statusText: response.statusText,
+                                      status: response.status
+                                    })
+                                  }
+                                } else {
+                                  status.error('Error:' + response.statusText)
+                                  resolve({
+                                    result: 'error',
+                                    statusText: response.statusText,
+                                    status: response.status
+                                  })
+                                }
+                              },
+                              r: resolve,
+                              status: status
+                            })
+                          }))
+
+                          _context6.next = 5
+                          return new Promise(function (resolve) {
+                            setTimeout(function () {
+                              resolve()
+                            }, 1000)
+                          })
+
+                        case 5:
+                        case 'end':
+                          return _context6.stop()
+                      }
+                    }
+                  }, _loop6)
+                })
+                i = 0
+
+              case 5:
+                if (!(i < tasks.length)) {
+                  _context7.next = 10
+                  break
+                }
+
+                return _context7.delegateYield(_loop6(i), 't0', 7)
+
+              case 7:
+                i++
+                _context7.next = 5
+                break
+
+              case 10:
+                Promise.all(_pro4).finally(function () {
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font></li>')
+                  })
+                })
+                _context7.next = 14
+                break
+
+              case 13:
+                _this8.get_tasks('verify')
+
+              case 14:
+              case 'end':
+                return _context7.stop()
+            }
+          }
+        }, _callee5)
+      }))()
+    },
+    remove: function remove () {
+      var _arguments3 = arguments
+      var _this9 = this
+
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
+        var remove, _pro5
+
+        return regeneratorRuntime.wrap(function _callee6$ (_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                remove = _arguments3.length > 0 && _arguments3[0] !== undefined ? _arguments3[0] : false
+
+                if (!(_this9.conf.remove.leaveSteamGroup && _this9.currentTaskInfo.groups.length > 0)) {
+                  _context8.next = 8
+                  break
+                }
+
+                _context8.next = 4
+                return _this9.toggleActions('remove')
+
+              case 4:
+                _pro5 = _context8.sent
+                Promise.all(_pro5).finally(function () {
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                  })
+                })
+                _context8.next = 9
+                break
+
+              case 8:
+                fuc.echoLog({
+                  type: 'custom',
+                  text: '<li><font class="success">'.concat(getI18n('cannotRemove'), '</font></li>')
+                })
+
+              case 9:
+              case 'end':
+                return _context8.stop()
+            }
+          }
+        }, _callee6)
+      }))()
+    },
+    toggleActions: function toggleActions (action) {
+      var pro = []
+      var fuck = action === 'fuck'
+
+      var _ref38 = fuck ? this.currentTaskInfo.groups : this.taskInfo.groups
+      var groups = _ref38.groups
+      var curators = _ref38.curators
+      var twitterUsers = _ref38.twitterUsers
+      var retweets = _ref38.retweets
+
+      if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gamehag',
+            type: 'group',
+            elements: groups,
+            resolve: resolve,
+            action: action
+          })
+        }))
+      }
+
+      if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gamehag',
+            type: 'curator',
+            elements: curators,
+            resolve: resolve,
+            action: action
+          })
+        }))
+      }
+
+      if (this.conf[action][fuck ? 'followTwitterUser' : 'unfollowTwitterUser'] && twitterUsers.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gamehag',
+            social: 'twitter',
+            type: 'follow',
+            elements: twitterUsers,
+            resolve: resolve,
+            action: action
+          })
+        }))
+      }
+
+      if (this.conf[action][fuck ? 'retweet' : 'unretweet'] && retweets.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gamehag',
+            social: 'twitter',
+            type: 'retweet',
+            elements: retweets,
+            resolve: resolve,
+            action: action
+          })
+        }))
+      }
+
+      return pro
+    },
+    get_giveawayId: function get_giveawayId () {
+      var _window$location$href2
+
+      return ((_window$location$href2 = window.location.href.match(/\/giveaway\/([\d]+)/)) === null || _window$location$href2 === void 0 ? void 0 : _window$location$href2[1]) || window.location.href
+    },
+    checkLeft: function checkLeft () {
+      if ($('.giveaway-counter:first .strong').text() === '0') {
+        Swal.fire({
+          icon: 'warning',
+          title: getI18n('notice'),
+          text: getI18n('noKeysLeft'),
+          confirmButtonText: getI18n('confirm'),
+          cancelButtonText: getI18n('cancel'),
+          showCancelButton: true
+        }).then(function (_ref39) {
+          var value = _ref39.value
+
+          if (value) {
+            window.close()
+          }
+        })
+      }
+    },
+    currentTaskInfo: {
+      groups: [],
+      curators: [],
+      twitterUsers: [],
+      retweets: [],
+      tasks: []
+    },
+    taskInfo: {
+      groups: [],
+      curators: [],
+      twitterUsers: [],
+      retweets: []
+    },
+    setting: {},
+    conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable) ? config.gamehag : globalConf
+  }
   var giveawaysu = {
     test: function test () {
       return window.location.host.includes('giveaway.su')
@@ -4789,19 +5448,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.do_task('remove')
       } else {
         if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-        var _ref33 = [fuc.echoLog({
+        var _ref40 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('#actions tr')]
-        var status = _ref33[0]
-        var tasks = _ref33[1]
+        var status = _ref40[0]
+        var tasks = _ref40[1]
 
-        var _iterator5 = _createForOfIteratorHelper(tasks)
-        var _step5
+        var _iterator6 = _createForOfIteratorHelper(tasks)
+        var _step6
 
         try {
-          for (_iterator5.s(); !(_step5 = _iterator5.n()).done;) {
-            var task = _step5.value
+          for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
+            var task = _step6.value
             var td = $(task).find('td:not(".hidden")')
             var colorfulTask = td.eq(1).find('a:not([data-trigger="link"])')
             var colorlessTask = td.eq(2).find('a:not([data-trigger="link"])')
@@ -4810,12 +5469,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _taskInfo = this.which_task(taskDes, taskIcon)
 
-            var _iterator6 = _createForOfIteratorHelper(_taskInfo)
-            var _step6
+            var _iterator7 = _createForOfIteratorHelper(_taskInfo)
+            var _step7
 
             try {
-              for (_iterator6.s(); !(_step6 = _iterator6.n()).done;) {
-                var info = _step6.value
+              for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
+                var info = _step7.value
 
                 if (info.name !== 'nonSteam' && this.taskInfo[info.name + 's']) {
                   this.taskInfo[info.name + 's'].push(info.link)
@@ -4823,15 +5482,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }
               }
             } catch (err) {
-              _iterator6.e(err)
+              _iterator7.e(err)
             } finally {
-              _iterator6.f()
+              _iterator7.f()
             }
           }
         } catch (err) {
-          _iterator5.e(err)
+          _iterator6.e(err)
         } finally {
-          _iterator5.f()
+          _iterator6.f()
         }
 
         status.success()
@@ -4840,10 +5499,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     which_task: function which_task (taskDes) {
       var taskIcon = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : ''
-      var _ref34 = [[], taskDes.text().trim(), taskDes.attr('href')]
-      var taskInfo = _ref34[0]
-      var taskName = _ref34[1]
-      var link = _ref34[2]
+      var _ref41 = [[], taskDes.text().trim(), taskDes.attr('href')]
+      var taskInfo = _ref41[0]
+      var taskName = _ref41[1]
+      var link = _ref41[2]
 
       if (taskIcon.includes('ban') || /disable adblock/gim.test(taskName)) {
         return [{
@@ -4933,23 +5592,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       return taskInfo
     },
     getFinalUrl: function getFinalUrl (e) {
-      var _this7 = this
+      var _this10 = this
 
-      var _ref35 = [fuc.echoLog({
+      var _ref42 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('processTasksUrl'), '<font></font></li>')
       }), []]
-      var status = _ref35[0]
-      var pro = _ref35[1]
+      var status = _ref42[0]
+      var pro = _ref42[1]
 
-      var _iterator7 = _createForOfIteratorHelper(this.taskInfo.links)
-      var _step7
+      var _iterator8 = _createForOfIteratorHelper(this.taskInfo.links)
+      var _step8
 
       try {
-        var _loop5 = function _loop5 () {
-          var link = _step7.value
+        var _loop7 = function _loop7 () {
+          var link = _step8.value
           pro.push(new Promise(function (resolve) {
-            if (_this7.taskInfo.toFinalUrl[link]) {
+            if (_this10.taskInfo.toFinalUrl[link]) {
               resolve({
                 result: 'success'
               })
@@ -4994,184 +5653,167 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           }))
         }
 
-        for (_iterator7.s(); !(_step7 = _iterator7.n()).done;) {
-          _loop5()
+        for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
+          _loop7()
         }
       } catch (err) {
-        _iterator7.e(err)
+        _iterator8.e(err)
       } finally {
-        _iterator7.f()
+        _iterator8.f()
       }
 
       Promise.all(pro).then(function (data) {
-        var _iterator8 = _createForOfIteratorHelper(data)
-        var _step8
+        var _iterator9 = _createForOfIteratorHelper(data)
+        var _step9
 
         try {
-          for (_iterator8.s(); !(_step8 = _iterator8.n()).done;) {
-            var r = _step8.value
+          for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+            var r = _step9.value
 
             if (r.finalUrl) {
-              _this7.taskInfo.toFinalUrl[r.url] = r.finalUrl
+              _this10.taskInfo.toFinalUrl[r.url] = r.finalUrl
             }
           }
         } catch (err) {
-          _iterator8.e(err)
+          _iterator9.e(err)
         } finally {
-          _iterator8.f()
+          _iterator9.f()
         }
 
-        _this7.links = fuc.unique(_this7.links)
-        _this7.taskInfo = fuc.uniqueTaskInfo(_this7.taskInfo)
+        _this10.links = fuc.unique(_this10.links)
+        _this10.taskInfo = fuc.uniqueTaskInfo(_this10.taskInfo)
 
-        GM_setValue('taskInfo[' + window.location.host + _this7.get_giveawayId() + ']', _this7.taskInfo)
+        GM_setValue('taskInfo[' + window.location.host + _this10.get_giveawayId() + ']', _this10.taskInfo)
         status.success()
-        if (debug) console.log(_this7)
-        e === 'doTask' ? _this7.do_task('fuck') : _this7.do_task('remove')
+        if (debug) console.log(_this10)
+        e === 'doTask' ? _this10.do_task('fuck') : _this10.do_task('remove')
       }).catch(function (error) {
         status.error()
         if (debug) console.log(error)
       })
     },
     do_task: function do_task (action) {
-      var _this8 = this
+      var _this11 = this
 
-      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee3 () {
-        var _this8$taskInfo, groups, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, toFinalUrl, toGuild, pro, fuck
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
+        var _this11$taskInfo, groups, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, toFinalUrl, toGuild, pro, fuck
 
-        return regeneratorRuntime.wrap(function _callee3$ (_context3) {
+        return regeneratorRuntime.wrap(function _callee7$ (_context9) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
 
                 if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
                 if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
-                _this8$taskInfo = _this8.taskInfo, groups = _this8$taskInfo.groups, curators = _this8$taskInfo.curators, publishers = _this8$taskInfo.publishers, developers = _this8$taskInfo.developers, franchises = _this8$taskInfo.franchises, fGames = _this8$taskInfo.fGames, wGames = _this8$taskInfo.wGames, announcements = _this8$taskInfo.announcements, discords = _this8$taskInfo.discords, instagrams = _this8$taskInfo.instagrams, twitchs = _this8$taskInfo.twitchs, reddits = _this8$taskInfo.reddits, vks = _this8$taskInfo.vks, toFinalUrl = _this8$taskInfo.toFinalUrl, toGuild = _this8$taskInfo.toGuild
+                _this11$taskInfo = _this11.taskInfo, groups = _this11$taskInfo.groups, curators = _this11$taskInfo.curators, publishers = _this11$taskInfo.publishers, developers = _this11$taskInfo.developers, franchises = _this11$taskInfo.franchises, fGames = _this11$taskInfo.fGames, wGames = _this11$taskInfo.wGames, announcements = _this11$taskInfo.announcements, discords = _this11$taskInfo.discords, instagrams = _this11$taskInfo.instagrams, twitchs = _this11$taskInfo.twitchs, reddits = _this11$taskInfo.reddits, vks = _this11$taskInfo.vks, toFinalUrl = _this11$taskInfo.toFinalUrl, toGuild = _this11$taskInfo.toGuild
                 pro = []
                 fuck = action === 'fuck'
-                _context3.next = 7
-                return new Promise(function (resolve) {
-                  if (groups.length > 0 || announcements.length > 0) {
-                    if (curators.length > 0 || publishers.length > 0 || developers.length > 0 || fGames.length > 0 || wGames.length > 0) {
-                      fuc.updateSteamInfo(resolve, 'all')
-                    } else {
-                      fuc.updateSteamInfo(resolve, 'community')
-                    }
-                  } else if (curators.length > 0 || publishers.length > 0 || developers.length > 0 || fGames.length > 0 || wGames.length > 0) {
-                    fuc.updateSteamInfo(resolve, 'store')
-                  } else {
-                    resolve(1)
-                  }
-                }).then(function (s) {
-                  if (s === 1) {
-                    if (_this8.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'group',
-                          elements: groups,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
 
-                    if (_this8.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'curator',
-                          elements: curators,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'group',
+                      elements: groups,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (_this8.conf[action][fuck ? 'followPublisher' : 'unfollowPublisher'] && publishers.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'publisher',
-                          elements: publishers,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'curator',
+                      elements: curators,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (_this8.conf[action][fuck ? 'followDeveloper' : 'unfollowDeveloper'] && developers.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'developer',
-                          elements: developers,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'followPublisher' : 'unfollowPublisher'] && publishers.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'publisher',
+                      elements: publishers,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (_this8.conf[action][fuck ? 'followFranchise' : 'unfollowFranchise'] && franchises.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'franchise',
-                          elements: franchises,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'followDeveloper' : 'unfollowDeveloper'] && developers.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'developer',
+                      elements: developers,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (_this8.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'game',
-                          elements: fGames,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'followFranchise' : 'unfollowFranchise'] && franchises.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'franchise',
+                      elements: franchises,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (_this8.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wGames.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'wishlist',
-                          elements: wGames,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
+                if (_this11.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'game',
+                      elements: fGames,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-                    if (fuck && _this8.conf.fuck.likeAnnouncement && announcements.length > 0) {
-                      pro.push(new Promise(function (resolve) {
-                        fuc.toggleActions({
-                          website: 'giveawaysu',
-                          type: 'announcement',
-                          elements: announcements,
-                          resolve: resolve,
-                          action: action,
-                          toFinalUrl: toFinalUrl
-                        })
-                      }))
-                    }
-                  }
-                }).catch(function () {})
+                if (_this11.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wGames.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'wishlist',
+                      elements: wGames,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
 
-              case 7:
-                if (_this8.conf[action][fuck ? 'joinDiscordServer' : 'leaveDiscordServer'] && discords.length > 0) {
+                if (fuck && _this11.conf.fuck.likeAnnouncement && announcements.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'announcement',
+                      elements: announcements,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
+
+                if (_this11.conf[action][fuck ? 'joinDiscordServer' : 'leaveDiscordServer'] && discords.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       social: 'discord',
@@ -5184,32 +5826,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     })
                   }).then(function (data) {
                     if (fuck) {
-                      var _iterator9 = _createForOfIteratorHelper(data)
-                      var _step9
+                      var _iterator10 = _createForOfIteratorHelper(data)
+                      var _step10
 
                       try {
-                        for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
-                          var e = _step9.value
+                        for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
+                          var e = _step10.value
 
-                          var _ref36 = e.guild || [null, null]
-                          var _ref37 = _slicedToArray(_ref36, 2)
-                          var inviteId = _ref37[0]
-                          var guild = _ref37[1]
+                          var _ref43 = e.guild || []
+                          var _ref44 = _slicedToArray(_ref43, 2)
+                          var inviteId = _ref44[0]
+                          var guild = _ref44[1]
 
-                          toGuild[inviteId] = guild
+                          if (inviteId && guild) toGuild[inviteId] = guild
                         }
                       } catch (err) {
-                        _iterator9.e(err)
+                        _iterator10.e(err)
                       } finally {
-                        _iterator9.f()
+                        _iterator10.f()
                       }
 
-                      GM_setValue('taskInfo[' + window.location.host + _this8.get_giveawayId() + ']', _this8.taskInfo)
+                      GM_setValue('taskInfo[' + window.location.host + _this11.get_giveawayId() + ']', _this11.taskInfo)
                     }
                   }))
                 }
 
-                if (_this8.conf[action][fuck ? 'followIns' : 'unfollowIns'] && instagrams.length > 0) {
+                if (_this11.conf[action][fuck ? 'followIns' : 'unfollowIns'] && instagrams.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       social: 'ins',
@@ -5222,7 +5864,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
 
-                if (_this8.conf[action][fuck ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchs.length > 0) {
+                if (_this11.conf[action][fuck ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchs.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       social: 'twitch',
@@ -5235,7 +5877,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
 
-                if (_this8.conf[action][fuck ? 'joinReddit' : 'leaveReddit'] && reddits.length > 0) {
+                if (_this11.conf[action][fuck ? 'joinReddit' : 'leaveReddit'] && reddits.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       social: 'reddit',
@@ -5248,7 +5890,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }))
                 }
 
-                if (_this8.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
+                if (_this11.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       social: 'vk',
@@ -5274,12 +5916,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 })
 
-              case 13:
+              case 19:
               case 'end':
-                return _context3.stop()
+                return _context9.stop()
             }
           }
-        }, _callee3)
+        }, _callee7)
       }))()
     },
     fuck: function fuck () {
@@ -5290,9 +5932,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       this.get_tasks('remove')
     },
     get_giveawayId: function get_giveawayId () {
-      var _window$location$href2
+      var _window$location$href3
 
-      return ((_window$location$href2 = window.location.href.match(/view\/([\d]+)/)) === null || _window$location$href2 === void 0 ? void 0 : _window$location$href2[1]) || window.location.href
+      return ((_window$location$href3 = window.location.href.match(/view\/([\d]+)/)) === null || _window$location$href3 === void 0 ? void 0 : _window$location$href3[1]) || window.location.href
     },
     checkLogin: function checkLogin () {
       if ($('a.steam-login').length > 0) window.open('/steam/redirect', '_self')
@@ -5306,8 +5948,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref38) {
-          var value = _ref38.value
+        }).then(function (_ref45) {
+          var value = _ref45.value
 
           if (value) {
             window.close()
@@ -5356,19 +5998,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref39 = [fuc.echoLog({
+        var _ref46 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('div.entry-content .entry-method')]
-        var status = _ref39[0]
-        var tasksContainer = _ref39[1]
+        var status = _ref46[0]
+        var tasksContainer = _ref46[1]
 
-        var _iterator10 = _createForOfIteratorHelper(tasksContainer)
-        var _step10
+        var _iterator11 = _createForOfIteratorHelper(tasksContainer)
+        var _step11
 
         try {
-          for (_iterator10.s(); !(_step10 = _iterator10.n()).done;) {
-            var task = _step10.value
+          for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
+            var task = _step11.value
 
             if ($(task).find('i.fa-question').length > 0) {
               if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
@@ -5451,9 +6093,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
         } catch (err) {
-          _iterator10.e(err)
+          _iterator11.e(err)
         } finally {
-          _iterator10.f()
+          _iterator11.f()
         }
 
         this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -5475,132 +6117,130 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     do_task: function do_task () {
-      var _this9 = this
+      var _this12 = this
 
-      this.updateSteamInfo(function () {
-        var pro = []
-        var _this9$currentTaskInf = _this9.currentTaskInfo
-        var groups = _this9$currentTaskInf.groups
-        var twitterUsers = _this9$currentTaskInf.twitterUsers
-        var retweets = _this9$currentTaskInf.retweets
-        var discords = _this9$currentTaskInf.discords
-        var facebooks = _this9$currentTaskInf.facebooks
-        var youtubes = _this9$currentTaskInf.youtubes
-        var others = _this9$currentTaskInf.others
-        var links = _this9$currentTaskInf.links
-        var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
+      var pro = []
+      var _this$currentTaskInfo = this.currentTaskInfo
+      var groups = _this$currentTaskInfo.groups
+      var twitterUsers = _this$currentTaskInfo.twitterUsers
+      var retweets = _this$currentTaskInfo.retweets
+      var discords = _this$currentTaskInfo.discords
+      var facebooks = _this$currentTaskInfo.facebooks
+      var youtubes = _this$currentTaskInfo.youtubes
+      var others = _this$currentTaskInfo.others
+      var links = _this$currentTaskInfo.links
+      var socals = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
-        if (_this9.conf.fuck.joinSteamGroup && groups.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'gleam',
-              type: 'group',
-              elements: groups,
-              resolve: resolve,
-              action: 'fuck'
-            })
-          }))
-        }
-
-        if (_this9.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'gleam',
-              social: 'twitter',
-              type: 'follow',
-              elements: twitterUsers,
-              resolve: resolve,
-              action: 'fuck'
-            })
-          }))
-        }
-
-        if (_this9.conf.fuck.retweet && retweets.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            fuc.toggleActions({
-              website: 'gleam',
-              social: 'twitter',
-              type: 'retweet',
-              elements: retweets,
-              resolve: resolve,
-              action: 'fuck'
-            })
-          }))
-        }
-
-        if (globalConf.other.autoOpen) {
-          if (socals.length > 0) {
-            var _iterator11 = _createForOfIteratorHelper(socals)
-            var _step11
-
-            try {
-              for (_iterator11.s(); !(_step11 = _iterator11.n()).done;) {
-                var task = _step11.value
-                var title = $(task).find('.entry-method-title').text().trim()
-                var _ref40 = [fuc.echoLog({
-                  type: 'custom',
-                  text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
-                }), $(task).find('a.btn-info:first').attr('href')]
-                var status = _ref40[0]
-                var button = _ref40[1]
-
-                if (button) {
-                  window.open(button, '_blank')
-                  status.warning(getI18n('openPage'))
-                } else {
-                  status.error(getI18n('getTaskUrlFailed'))
-                }
-              }
-            } catch (err) {
-              _iterator11.e(err)
-            } finally {
-              _iterator11.f()
-            }
-          }
-        }
-
-        if ((globalConf.other.autoOpen || _this9.conf.fuck.visit) && links.length > 0) {
-          pro.push(new Promise(function (resolve) {
-            _this9.visit_link(links, 0, resolve)
-          }))
-        }
-
-        var _iterator12 = _createForOfIteratorHelper(others)
-        var _step12
-
-        try {
-          for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
-            var other = _step12.value
-            var icon = $(other).find('.icon-wrapper i')
-
-            if (icon.hasClass('fa-steam')) {
-              var _title2 = $(other).find('.entry-method-title').text().trim()
-
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat(_title2, '</font></li>')
-              })
-            } else {
-              var taskType = icon.attr('class').match(/fa-([\w]+)/) ? icon.attr('class').match(/fa-([\w]+)/)[1] : icon.attr('class')
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat(taskType, '</font></li>')
-              })
-            }
-          }
-        } catch (err) {
-          _iterator12.e(err)
-        } finally {
-          _iterator12.f()
-        }
-
-        Promise.all(pro).finally(function () {
-          fuc.echoLog({
-            type: 'custom',
-            text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+      if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gleam',
+            type: 'group',
+            elements: groups,
+            resolve: resolve,
+            action: 'fuck'
           })
-          if (_this9.conf.fuck.verifyTask) _this9.verify(0)
+        }))
+      }
+
+      if (this.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gleam',
+            social: 'twitter',
+            type: 'follow',
+            elements: twitterUsers,
+            resolve: resolve,
+            action: 'fuck'
+          })
+        }))
+      }
+
+      if (this.conf.fuck.retweet && retweets.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          fuc.toggleActions({
+            website: 'gleam',
+            social: 'twitter',
+            type: 'retweet',
+            elements: retweets,
+            resolve: resolve,
+            action: 'fuck'
+          })
+        }))
+      }
+
+      if (globalConf.other.autoOpen) {
+        if (socals.length > 0) {
+          var _iterator12 = _createForOfIteratorHelper(socals)
+          var _step12
+
+          try {
+            for (_iterator12.s(); !(_step12 = _iterator12.n()).done;) {
+              var task = _step12.value
+              var title = $(task).find('.entry-method-title').text().trim()
+              var _ref47 = [fuc.echoLog({
+                type: 'custom',
+                text: '<li>'.concat(getI18n('doing'), ':').concat(title, '...<font></font></li>')
+              }), $(task).find('a.btn-info:first').attr('href')]
+              var status = _ref47[0]
+              var button = _ref47[1]
+
+              if (button) {
+                window.open(button, '_blank')
+                status.warning(getI18n('openPage'))
+              } else {
+                status.error(getI18n('getTaskUrlFailed'))
+              }
+            }
+          } catch (err) {
+            _iterator12.e(err)
+          } finally {
+            _iterator12.f()
+          }
+        }
+      }
+
+      if ((globalConf.other.autoOpen || this.conf.fuck.visit) && links.length > 0) {
+        pro.push(new Promise(function (resolve) {
+          _this12.visit_link(links, 0, resolve)
+        }))
+      }
+
+      var _iterator13 = _createForOfIteratorHelper(others)
+      var _step13
+
+      try {
+        for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
+          var other = _step13.value
+          var icon = $(other).find('.icon-wrapper i')
+
+          if (icon.hasClass('fa-steam')) {
+            var _title2 = $(other).find('.entry-method-title').text().trim()
+
+            fuc.echoLog({
+              type: 'custom',
+              text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat(_title2, '</font></li>')
+            })
+          } else {
+            var taskType = icon.attr('class').match(/fa-([\w]+)/) ? icon.attr('class').match(/fa-([\w]+)/)[1] : icon.attr('class')
+            fuc.echoLog({
+              type: 'custom',
+              text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat(taskType, '</font></li>')
+            })
+          }
+        }
+      } catch (err) {
+        _iterator13.e(err)
+      } finally {
+        _iterator13.f()
+      }
+
+      Promise.all(pro).finally(function () {
+        fuc.echoLog({
+          type: 'custom',
+          text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
         })
+        if (_this12.conf.fuck.verifyTask) _this12.verify(0)
       })
     },
     verify: function verify () {
@@ -5650,8 +6290,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     remove: function remove () {
-      var _this10 = this
-
       var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
       var pro = []
 
@@ -5660,50 +6298,49 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var groups = _this$taskInfo.groups
         var twitterUsers = _this$taskInfo.twitterUsers
         var retweets = _this$taskInfo.retweets
-        this.updateSteamInfo(function () {
-          if (_this10.conf.remove.leaveSteamGroup && groups.length > 0) {
-            pro.push(new Promise(function (resolve) {
-              fuc.toggleActions({
-                website: 'gleam',
-                type: 'group',
-                elements: groups,
-                resolve: resolve,
-                action: 'remove'
-              })
-            }))
-          }
 
-          if (_this10.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
-            pro.push(new Promise(function (resolve) {
-              fuc.toggleActions({
-                website: 'gleam',
-                social: 'twitter',
-                type: 'follow',
-                elements: twitterUsers,
-                resolve: resolve,
-                action: 'remove'
-              })
-            }))
-          }
-
-          if (_this10.conf.remove.unretweet && retweets.length > 0) {
-            pro.push(new Promise(function (resolve) {
-              fuc.toggleActions({
-                website: 'gleam',
-                social: 'twitter',
-                type: 'retweet',
-                elements: retweets,
-                resolve: resolve,
-                action: 'remove'
-              })
-            }))
-          }
-
-          Promise.all(pro).finally(function () {
-            fuc.echoLog({
-              type: 'custom',
-              text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+        if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'gleam',
+              type: 'group',
+              elements: groups,
+              resolve: resolve,
+              action: 'remove'
             })
+          }))
+        }
+
+        if (this.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'gleam',
+              social: 'twitter',
+              type: 'follow',
+              elements: twitterUsers,
+              resolve: resolve,
+              action: 'remove'
+            })
+          }))
+        }
+
+        if (this.conf.remove.unretweet && retweets.length > 0) {
+          pro.push(new Promise(function (resolve) {
+            fuc.toggleActions({
+              website: 'gleam',
+              social: 'twitter',
+              type: 'retweet',
+              elements: retweets,
+              resolve: resolve,
+              action: 'remove'
+            })
+          }))
+        }
+
+        Promise.all(pro).finally(function () {
+          fuc.echoLog({
+            type: 'custom',
+            text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
           })
         })
       } else {
@@ -5746,21 +6383,6 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     get_giveawayId: function get_giveawayId () {
       return window.location.pathname.replace(/\?.*/, '') || window.location.href
     },
-    updateSteamInfo: function updateSteamInfo (callback) {
-      var _this11 = this
-
-      new Promise(function (resolve) {
-        if (_this11.taskInfo.groups.length > 0) {
-          fuc.updateSteamInfo(resolve, 'community')
-        } else {
-          resolve(1)
-        }
-      }).then(function (s) {
-        if (s === 1) callback()
-      }).catch(function (err) {
-        console.error(err)
-      })
-    },
     checkLeft: function checkLeft () {
       if ($('.massive-message:contains(ended)').is(':visible')) {
         Swal.fire({
@@ -5770,8 +6392,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref41) {
-          var value = _ref41.value
+        }).then(function (_ref48) {
+          var value = _ref48.value
 
           if (value) {
             window.close()
@@ -5814,12 +6436,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var currentoption = $('a.buttonenter.buttongiveaway')
 
       if (/join giveaway/gim.test(currentoption.text())) {
-        var _ref42 = [fuc.echoLog({
+        var _ref49 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('joinGiveaway'), '<font></font></li>')
         }), this.do_task]
-        var status = _ref42[0]
-        var doTask = _ref42[1]
+        var status = _ref49[0]
+        var doTask = _ref49[1]
         fuc.httpRequest({
           url: currentoption.attr('href'),
           method: 'POST',
@@ -5870,16 +6492,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
 
       if (id.length === 2) {
-        var _ref43 = [$('#giveawaysjoined a[class*=promo]'), []]
-        var tasks = _ref43[0]
-        var _pro2 = _ref43[1]
+        var _ref50 = [$('#giveawaysjoined a[class*=promo]'), []]
+        var tasks = _ref50[0]
+        var _pro6 = _ref50[1]
 
-        var _iterator13 = _createForOfIteratorHelper(tasks)
-        var _step13
+        var _iterator14 = _createForOfIteratorHelper(tasks)
+        var _step14
 
         try {
-          var _loop6 = function _loop6 () {
-            var task = _step13.value
+          var _loop8 = function _loop8 () {
+            var task = _step14.value
             var promo = $(task)
 
             if (!promo.hasClass('buttonentered')) {
@@ -5889,7 +6511,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               })
 
               if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-                _pro2.push(new Promise(function (resolve) {
+                _pro6.push(new Promise(function (resolve) {
                   $.ajax({
                     type: 'POST',
                     url: urlPath('/giveaways/ajax/' + (promo.hasClass('facebookpromo') ? 'facebookpromo' : promo.hasClass('twitterpromo') ? 'twitterpromo' : 'visitpromo') + '/' + id[0]),
@@ -5924,7 +6546,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   })
                 }))
               } else if (promo.hasClass('emailoptinpromo')) {
-                _pro2.push(new Promise(function (resolve) {
+                _pro6.push(new Promise(function (resolve) {
                   $.ajax({
                     type: 'POST',
                     url: urlPath('/newsletter/ajax/subscribeprofile/optin/' + id[1]),
@@ -5960,7 +6582,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   })
                 }))
               } else if (promo.hasClass('watchingpromo')) {
-                _pro2.push(new Promise(function (resolve) {
+                _pro6.push(new Promise(function (resolve) {
                   var data = fuc.getUrlQuery(promo.attr('href'))
                   data.ajax = 't'
                   $.ajax({
@@ -5995,7 +6617,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   })
                 }))
               } else if (!/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-                _pro2.push(new Promise(function (resolve) {
+                _pro6.push(new Promise(function (resolve) {
                   $.ajax({
                     type: 'POST',
                     url: urlPath(promo.attr('href')),
@@ -6035,16 +6657,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
 
-          for (_iterator13.s(); !(_step13 = _iterator13.n()).done;) {
-            _loop6()
+          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
+            _loop8()
           }
         } catch (err) {
-          _iterator13.e(err)
+          _iterator14.e(err)
         } finally {
-          _iterator13.f()
+          _iterator14.f()
         }
 
-        Promise.all(_pro2).finally(function () {
+        Promise.all(_pro6).finally(function () {
           fuc.echoLog({
             type: 'custom',
             text: '<li><font class="warning">'.concat(getI18n('allTasksComplete'), '</font></li>')
@@ -6070,6 +6692,414 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
   }
+
+  var keylol = {
+    test: function test () {
+      var _$$eq$attr
+
+      return window.location.host.includes('keylol.com') && !window.location.href.includes('mod=forumdisplay') && ((_$$eq$attr = $('.subforum_left_title_left_up a').eq(3).attr('href')) === null || _$$eq$attr === void 0 ? void 0 : _$$eq$attr.includes('319'))
+    },
+    after: function after () {
+      var _this13 = this
+
+      GM_addStyle('.auto-task-keylol{margin-left:10px}')
+
+      unsafeWindow.toggleDiscord = function (action, inviteId) {
+        var taskInfo = GM_getValue('taskInfo[' + window.location.host + _this13.get_giveawayId() + ']') || {}
+        var toGuild = taskInfo.toGuild || {}
+        new Promise(function (resolve) {
+          fuc.toggleActions({
+            social: 'discord',
+            website: 'keylol',
+            elements: [inviteId],
+            resolve: resolve,
+            action: action,
+            toGuild: toGuild
+          })
+        }).then(function (data) {
+          if (action === 'fuck') {
+            var _data$
+
+            var _ref51 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
+            var _ref52 = _slicedToArray(_ref51, 2)
+            var _inviteId = _ref52[0]
+            var guild = _ref52[1]
+
+            if (_inviteId && guild) {
+              toGuild[_inviteId] = guild
+              taskInfo.toGuild = toGuild
+              GM_setValue('taskInfo[' + window.location.host + _this13.get_giveawayId() + ']', taskInfo)
+            }
+          }
+        })
+      }
+
+      unsafeWindow.toggleReddit = function (action, name) {
+        fuc.toggleActions({
+          social: 'reddit',
+          website: 'keylol',
+          elements: [name],
+          resolve: console.log,
+          action: action
+        })
+      }
+
+      unsafeWindow.toggleIns = function (action, name) {
+        fuc.toggleActions({
+          social: 'ins',
+          website: 'keylol',
+          elements: [name],
+          resolve: console.log,
+          action: action
+        })
+      }
+
+      unsafeWindow.toggleTwitter = function (action, name, type) {
+        fuc.toggleActions({
+          social: 'twitter',
+          website: 'keylol',
+          elements: [name],
+          resolve: console.log,
+          type: type,
+          action: action
+        })
+      }
+
+      unsafeWindow.toggleTwitch = function (action, name) {
+        fuc.toggleActions({
+          social: 'twitch',
+          website: 'keylol',
+          elements: [name],
+          resolve: console.log,
+          action: action
+        })
+      }
+
+      unsafeWindow.toggleVk = function (action, name) {
+        fuc.toggleActions({
+          social: 'vk',
+          website: 'keylol',
+          elements: [name],
+          resolve: console.log,
+          action: action
+        })
+      }
+
+      unsafeWindow.toggleSteam = function (action, name, type) {
+        var elements = [name]
+
+        for (var _len = arguments.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+          args[_key - 3] = arguments[_key]
+        }
+
+        if (args) {
+          if (args.length === 3) {
+            elements = [[args[0], name, args[1], args[2]]]
+          } else if (args.length === 1) {
+            elements = {
+              1: name,
+              input: args[0]
+            }
+          }
+        }
+
+        fuc.toggleActions({
+          social: 'steam',
+          website: 'keylol',
+          elements: elements,
+          resolve: console.log,
+          action: action,
+          type: type
+        })
+      }
+
+      var mainPost = $('#postlist>div[id^="post_"]:first')
+      var discordLinks = mainPost.find('a[href*="discord.com"]')
+      var redditLinks = mainPost.find('a[href*="reddit.com"]')
+      var insLinks = mainPost.find('a[href*="instagram.com"]')
+      var twitterLinks = mainPost.find('a[href*="twitter.com"]')
+      var twitchLinks = mainPost.find('a[href*="twitch.tv"]')
+      var vkLinks = mainPost.find('a[href*="vk.com"]')
+      var steamStoreLinks = mainPost.find('a[href*="store.steampowered.com"]')
+      var steamCommunityLinks = mainPost.find('a[href*="steamcommunity.com"]')
+
+      if (discordLinks.length > 0) {
+        var _iterator15 = _createForOfIteratorHelper(discordLinks)
+        var _step15
+
+        try {
+          for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
+            var _link$match
+
+            var discordLink = _step15.value
+            var link = $(discordLink).attr('href')
+            var inviteId = link === null || link === void 0 ? void 0 : (_link$match = link.match(/invite\/(.+)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+
+            if (inviteId) {
+              this.addBtn(discordLink, 'toggleDiscord', inviteId, '', ['加入', '退出'])
+            }
+          }
+        } catch (err) {
+          _iterator15.e(err)
+        } finally {
+          _iterator15.f()
+        }
+      }
+
+      if (redditLinks.length > 0) {
+        var _iterator16 = _createForOfIteratorHelper(redditLinks)
+        var _step16
+
+        try {
+          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
+            var _link$match2
+
+            var redditLink = _step16.value
+
+            var _link = $(redditLink).attr('href')
+
+            var name = _link === null || _link === void 0 ? void 0 : (_link$match2 = _link.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+
+            if (name) {
+              this.addBtn(redditLink, 'toggleReddit', name, '', ['加入', '退出'])
+            }
+          }
+        } catch (err) {
+          _iterator16.e(err)
+        } finally {
+          _iterator16.f()
+        }
+      }
+
+      if (insLinks.length > 0) {
+        var _iterator17 = _createForOfIteratorHelper(insLinks)
+        var _step17
+
+        try {
+          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
+            var _link2$match
+
+            var insLink = _step17.value
+
+            var _link2 = $(insLink).attr('href')
+
+            var _name = _link2 === null || _link2 === void 0 ? void 0 : (_link2$match = _link2.match(/https:\/\/www.instagram.com\/(.+)?\//)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
+
+            if (_name) {
+              this.addBtn(insLink, 'toggleIns', _name, '', ['关注', '取关'])
+            }
+          }
+        } catch (err) {
+          _iterator17.e(err)
+        } finally {
+          _iterator17.f()
+        }
+      }
+
+      if (twitterLinks.length > 0) {
+        var _iterator18 = _createForOfIteratorHelper(twitterLinks)
+        var _step18
+
+        try {
+          for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+            var _link3$match, _link3$match2
+
+            var twitterLink = _step18.value
+
+            var _link3 = $(twitterLink).attr('href')
+
+            var userId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match = _link3.match(/https:\/\/twitter.com\/(.+)/)) === null || _link3$match === void 0 ? void 0 : _link3$match[1]
+            var tweetId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match2 = _link3.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _link3$match2 === void 0 ? void 0 : _link3$match2[1]
+
+            if (tweetId) {
+              this.addBtn(twitterLink, 'toggleTwitter', tweetId, 'retweet', ['转推', '撤销转推'])
+            } else {
+              this.addBtn(twitterLink, 'toggleTwitter', userId, 'follow', ['关注', '取关'])
+            }
+          }
+        } catch (err) {
+          _iterator18.e(err)
+        } finally {
+          _iterator18.f()
+        }
+      }
+
+      if (twitchLinks.length > 0) {
+        var _iterator19 = _createForOfIteratorHelper(twitchLinks)
+        var _step19
+
+        try {
+          for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
+            var _link4$match
+
+            var twitchLink = _step19.value
+
+            var _link4 = $(twitchLink).attr('href')
+
+            var _name2 = _link4 === null || _link4 === void 0 ? void 0 : (_link4$match = _link4.match(/https:\/\/www.twitch.tv\/(.+)/)) === null || _link4$match === void 0 ? void 0 : _link4$match[1]
+
+            if (_name2) {
+              this.addBtn(twitchLink, 'toggleTwitch', _name2, '', ['关注', '取关'])
+            }
+          }
+        } catch (err) {
+          _iterator19.e(err)
+        } finally {
+          _iterator19.f()
+        }
+      }
+
+      if (vkLinks.length > 0) {
+        var _iterator20 = _createForOfIteratorHelper(vkLinks)
+        var _step20
+
+        try {
+          for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
+            var _link5$match
+
+            var vkLink = _step20.value
+
+            var _link5 = $(vkLink).attr('href')
+
+            var _name3 = _link5 === null || _link5 === void 0 ? void 0 : (_link5$match = _link5.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link5$match === void 0 ? void 0 : _link5$match[1]
+
+            if (_name3) {
+              this.addBtn(vkLink, 'toggleVk', _name3, '', ['加入', '退出'])
+            }
+          }
+        } catch (err) {
+          _iterator20.e(err)
+        } finally {
+          _iterator20.f()
+        }
+      }
+
+      if (steamStoreLinks.length > 0) {
+        var _iterator21 = _createForOfIteratorHelper(steamStoreLinks)
+        var _step21
+
+        try {
+          for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+            var _link6$match, _link6$match2, _link6$match3, _link6$match4, _link6$match5, _link6$match6, _link6$match7
+
+            var steamStoreLink = _step21.value
+
+            var _link6 = $(steamStoreLink).attr('href')
+
+            var gameId = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match = _link6.match(/app\/([\d]+)/)) === null || _link6$match === void 0 ? void 0 : _link6$match[1]
+            var curatorId = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match2 = _link6.match(/curator\/([\d]+)/)) === null || _link6$match2 === void 0 ? void 0 : _link6$match2[1]
+            var publisherName = (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match3 = _link6.match(/publisher\/(.+)\/?/)) === null || _link6$match3 === void 0 ? void 0 : _link6$match3[1]) || (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match4 = _link6.match(/pub\/(.+)\/?/)) === null || _link6$match4 === void 0 ? void 0 : _link6$match4[1])
+            var developerName = (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match5 = _link6.match(/developer\/(.+)\/?/)) === null || _link6$match5 === void 0 ? void 0 : _link6$match5[1]) || (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match6 = _link6.match(/dev\/(.+)\/?/)) === null || _link6$match6 === void 0 ? void 0 : _link6$match6[1])
+            var franchiseName = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match7 = _link6.match(/franchise\/(.+)\/?/)) === null || _link6$match7 === void 0 ? void 0 : _link6$match7[1]
+
+            var _ref53 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
+            var _ref54 = _slicedToArray(_ref53, 5)
+            var url = _ref54[1]
+            var announcementId = _ref54[2]
+            var wgauthtoken = _ref54[3]
+            var clanid = _ref54[4]
+
+            if (gameId) {
+              this.addBtn(steamStoreLink, 'toggleSteam', gameId, 'game', ['关注', '取关'])
+              this.addBtn(steamStoreLink, 'toggleSteam', gameId, 'wishlist', ['加入愿望单', '移出愿望单'])
+            } else if (curatorId) {
+              this.addBtn(steamStoreLink, 'toggleSteam', curatorId, 'curator', ['关注', '取关'])
+            } else if (publisherName) {
+              this.addBtn(steamStoreLink, 'toggleSteam', publisherName, 'publisher', ['关注', '取关'])
+            } else if (developerName) {
+              this.addBtn(steamStoreLink, 'toggleSteam', developerName, 'developer', ['关注', '取关'])
+            } else if (franchiseName) {
+              this.addBtn(steamStoreLink, 'toggleSteam', franchiseName, 'franchise', ['关注', '取关'])
+            } else if (announcementId) {
+              this.addBtn(steamStoreLink, 'toggleSteam', announcementId, 'announcement', ['点赞'], url, wgauthtoken, clanid)
+            }
+          }
+        } catch (err) {
+          _iterator21.e(err)
+        } finally {
+          _iterator21.f()
+        }
+      }
+
+      if (steamCommunityLinks.length > 0) {
+        var _iterator22 = _createForOfIteratorHelper(steamCommunityLinks)
+        var _step22
+
+        try {
+          for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+            var _link7$match
+
+            var steamCommunityLink = _step22.value
+
+            var _link7 = $(steamCommunityLink).attr('href')
+
+            var groupId = _link7 === null || _link7 === void 0 ? void 0 : (_link7$match = _link7.match(/groups\/(.+)\/?/)) === null || _link7$match === void 0 ? void 0 : _link7$match[1]
+            var announcement = _link7 === null || _link7 === void 0 ? void 0 : _link7.match(/announcements\/detail\/([\d]+)/)
+
+            if (groupId) {
+              this.addBtn(steamCommunityLink, 'toggleSteam', groupId, 'group', ['加入', '退出'])
+            } else if (announcement) {
+              this.addBtn(steamCommunityLink, 'toggleSteam', announcement[1], 'announcement', ['点赞'], announcement.input)
+            }
+          }
+        } catch (err) {
+          _iterator22.e(err)
+        } finally {
+          _iterator22.f()
+        }
+      }
+    },
+    fuck: function fuck () {},
+    verify: function verify () {},
+    remove: function remove () {},
+    get_giveawayId: function get_giveawayId () {
+      var _window$location$href4, _window$location$href5
+
+      return ((_window$location$href4 = window.location.href.match(/t([\d]+?)-/)) === null || _window$location$href4 === void 0 ? void 0 : _window$location$href4[1]) || ((_window$location$href5 = window.location.href.match(/tid=([\d]+)/)) === null || _window$location$href5 === void 0 ? void 0 : _window$location$href5[1]) || window.location.href
+    },
+    addBtn: function addBtn (before, func, name, type, text) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 5 ? _len2 - 5 : 0), _key2 = 5; _key2 < _len2; _key2++) {
+        args[_key2 - 5] = arguments[_key2]
+      }
+
+      var joinBtn = text[0] ? $('<a href="javascript:void(0);" class="auto-task-keylol" onclick="'.concat(func, "('fuck','").concat(name, "'").concat(type ? ",'".concat(type, "'") : '').concat(args && args.length === 3 ? ",'".concat(args[0], "','").concat(args[1], "','").concat(args[2], "'") : '').concat(args && args.length === 1 ? ",'".concat(args[0], "'") : '', ')" target="_self">').concat(text[0], '</a>')) : ''
+      var leaveBtn = text[1] ? $('<a href="javascript:void(0);" class="auto-task-keylol" onclick="'.concat(func, "('remove','").concat(name, "','").concat(type, "')\" target=\"_self\">").concat(text[1], '</a>')) : ''
+      $(before).after(leaveBtn).after(joinBtn)
+    },
+    updateSteamInfo: function updateSteamInfo (callback) {
+      var _this14 = this
+
+      new Promise(function (resolve) {
+        if (_this14.taskInfo.groups.length > 0) {
+          if (_this14.taskInfo.curators.length > 0 || _this14.taskInfo.fGames.length > 0 || _this14.taskInfo.wishlists.length > 0) {
+            fuc.updateSteamInfo(resolve, 'all')
+          } else {
+            fuc.updateSteamInfo(resolve, 'community')
+          }
+        } else if (_this14.taskInfo.curators.length > 0 || _this14.taskInfo.fGames.length > 0 || _this14.taskInfo.wishlists.length > 0) {
+          fuc.updateSteamInfo(resolve, 'store')
+        } else {
+          resolve(1)
+        }
+      }).then(function (s) {
+        if (s === 1) callback()
+      }).catch(function (err) {
+        console.error(err)
+      })
+    },
+    setting: {
+      fuck: {
+        show: false
+      },
+      verify: {
+        show: false
+      },
+      remove: {
+        show: false
+      }
+    },
+    conf: globalConf
+  }
   var marvelousga = {
     test: function test () {
       return window.location.host.includes('marvelousga')
@@ -6089,23 +7119,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref44 = [fuc.echoLog({
+        var _ref55 = [fuc.echoLog({
           type: 'custom',
           text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
         }), $('.container_task')]
-        var status = _ref44[0]
-        var tasksContainer = _ref44[1]
+        var status = _ref55[0]
+        var tasksContainer = _ref55[1]
 
-        var _iterator14 = _createForOfIteratorHelper(tasksContainer)
-        var _step14
+        var _iterator23 = _createForOfIteratorHelper(tasksContainer)
+        var _step23
 
         try {
-          for (_iterator14.s(); !(_step14 = _iterator14.n()).done;) {
-            var task = _step14.value
+          for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
+            var task = _step23.value
 
-            var _ref45 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
-            var taskDes = _ref45[0]
-            var verifyBtn = _ref45[1]
+            var _ref56 = [$(task).find('.card-body p.card-text.monospace'), $(task).find('button[id^=task_]:not(:contains(VERIFIED))')]
+            var taskDes = _ref56[0]
+            var verifyBtn = _ref56[1]
 
             if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
               var groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
@@ -6144,14 +7174,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             if (/follow[\w\W]*?https?:\/\/twitch.tv\//gim.test(taskDes.html())) {
               var _taskDes$find$attr$ma2
 
-              var _name = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
+              var _name4 = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
 
-              if (_name) {
+              if (_name4) {
                 if (verifyBtn.length > 0) {
-                  this.currentTaskInfo.twitchChannels.push(_name)
+                  this.currentTaskInfo.twitchChannels.push(_name4)
                 }
 
-                this.taskInfo.twitchChannels.push(_name)
+                this.taskInfo.twitchChannels.push(_name4)
               }
             }
 
@@ -6180,9 +7210,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
         } catch (err) {
-          _iterator14.e(err)
+          _iterator23.e(err)
         } finally {
-          _iterator14.f()
+          _iterator23.f()
         }
 
         this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -6215,26 +7245,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     do_task: function do_task () {
-      var _this12 = this
+      var _this15 = this
 
-      this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee4 () {
-        var _ref47, pro, links, _iterator15, _step15, _loop7
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
+        var pro, links, _iterator24, _step24, _loop9
 
-        return regeneratorRuntime.wrap(function _callee4$ (_context4) {
+        return regeneratorRuntime.wrap(function _callee8$ (_context10) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context10.prev = _context10.next) {
               case 0:
-                _ref47 = [[], fuc.unique(_this12.currentTaskInfo.links)], pro = _ref47[0], links = _ref47[1]
-                _context4.next = 3
-                return _this12.toggleActions('fuck', pro)
+                _context10.next = 2
+                return _this15.toggleActions('fuck')
 
-              case 3:
-                if (_this12.conf.fuck.visitLink) {
-                  _iterator15 = _createForOfIteratorHelper(links)
+              case 2:
+                pro = _context10.sent
+                links = fuc.unique(_this15.currentTaskInfo.links)
+
+                if (_this15.conf.fuck.visitLink) {
+                  _iterator24 = _createForOfIteratorHelper(links)
 
                   try {
-                    _loop7 = function _loop7 () {
-                      var link = _step15.value
+                    _loop9 = function _loop9 () {
+                      var link = _step24.value
                       pro.push(new Promise(function (resolve) {
                         fuc.visitLink(resolve, link.pageUrl, {
                           url: '/ajax/verifyTasks/webpage/clickedLink',
@@ -6244,20 +7276,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                             'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                           },
                           data: $.param({
-                            giveaway_slug: _this12.get_giveawayId(),
+                            giveaway_slug: _this15.get_giveawayId(),
                             giveaway_task_id: link.taskId
                           })
                         })
                       }))
                     }
 
-                    for (_iterator15.s(); !(_step15 = _iterator15.n()).done;) {
-                      _loop7()
+                    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+                      _loop9()
                     }
                   } catch (err) {
-                    _iterator15.e(err)
+                    _iterator24.e(err)
                   } finally {
-                    _iterator15.f()
+                    _iterator24.f()
                   }
                 }
 
@@ -6266,37 +7298,37 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  if (_this12.conf.fuck.verifyTask) _this12.verify()
+                  if (_this15.conf.fuck.verifyTask) _this15.verify()
                 })
 
-              case 5:
+              case 6:
               case 'end':
-                return _context4.stop()
+                return _context10.stop()
             }
           }
-        }, _callee4)
-      })))
+        }, _callee8)
+      }))()
     },
     verify: function verify () {
-      var _this13 = this
+      var _this16 = this
 
       var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
       if (verify) {
-        var _pro3 = []
+        var _pro7 = []
 
-        var _iterator16 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-        var _step16
+        var _iterator25 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+        var _step25
 
         try {
-          var _loop8 = function _loop8 () {
-            var task = _step16.value
+          var _loop10 = function _loop10 () {
+            var task = _step25.value
             var status = fuc.echoLog({
               type: 'custom',
               text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
             })
 
-            _pro3.push(new Promise(function (resolve) {
+            _pro7.push(new Promise(function (resolve) {
               fuc.httpRequest({
                 url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                 method: 'POST',
@@ -6306,7 +7338,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: $.param({
-                  giveaway_slug: _this13.get_giveawayId(),
+                  giveaway_slug: _this16.get_giveawayId(),
                   giveaway_task_id: task.taskId
                 }),
                 onload: function onload (response) {
@@ -6362,16 +7394,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }))
           }
 
-          for (_iterator16.s(); !(_step16 = _iterator16.n()).done;) {
-            _loop8()
+          for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+            _loop10()
           }
         } catch (err) {
-          _iterator16.e(err)
+          _iterator25.e(err)
         } finally {
-          _iterator16.f()
+          _iterator25.f()
         }
 
-        Promise.all(_pro3).finally(function () {
+        Promise.all(_pro7).finally(function () {
           fuc.echoLog({
             type: 'custom',
             text: '<li><font class="success">'.concat(getI18n('verifyTasksComplete'), '</font><font class="warning">').concat(getI18n('doYourself'), '<a class="hclonely-google" href="javascript:void(0)" target="_self">').concat(getI18n('googleVerify'), '</a>').concat(getI18n('getKey'), '!</font></li>')
@@ -6386,47 +7418,57 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       }
     },
     remove: function remove () {
-      var _this14 = this
+      var _arguments4 = arguments
+      var _this17 = this
 
-      var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-      var pro = []
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
+        var remove, _pro8
 
-      if (remove) {
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee5 () {
-          return regeneratorRuntime.wrap(function _callee5$ (_context5) {
-            while (1) {
-              switch (_context5.prev = _context5.next) {
-                case 0:
-                  _context5.next = 2
-                  return _this14.toggleActions('remove', pro)
+        return regeneratorRuntime.wrap(function _callee9$ (_context11) {
+          while (1) {
+            switch (_context11.prev = _context11.next) {
+              case 0:
+                remove = _arguments4.length > 0 && _arguments4[0] !== undefined ? _arguments4[0] : false
 
-                case 2:
-                  Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
+                if (!remove) {
+                  _context11.next = 8
+                  break
+                }
+
+                _context11.next = 4
+                return _this17.toggleActions('remove')
+
+              case 4:
+                _pro8 = _context11.sent
+                Promise.all(_pro8).finally(function () {
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
+                })
+                _context11.next = 9
+                break
 
-                case 3:
-                case 'end':
-                  return _context5.stop()
-              }
+              case 8:
+                _this17.get_tasks('remove')
+
+              case 9:
+              case 'end':
+                return _context11.stop()
             }
-          }, _callee5)
-        })))
-      } else {
-        this.get_tasks('remove')
-      }
+          }
+        }, _callee9)
+      }))()
     },
-    toggleActions: function toggleActions (action, pro) {
+    toggleActions: function toggleActions (action) {
+      var pro = []
       var fuck = action === 'fuck'
 
-      var _ref49 = fuck ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref49.groups
-      var curators = _ref49.curators
-      var twitterUsers = _ref49.twitterUsers
-      var twitchChannels = _ref49.twitchChannels
+      var _ref57 = fuck ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref57.groups
+      var curators = _ref57.curators
+      var twitterUsers = _ref57.twitterUsers
+      var twitchChannels = _ref57.twitchChannels
 
       if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -6476,30 +7518,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }))
       }
+
+      return pro
     },
     get_giveawayId: function get_giveawayId () {
       return $('#giveawaySlug').val() || window.location.href
-    },
-    updateSteamInfo: function updateSteamInfo (callback) {
-      var _this15 = this
-
-      new Promise(function (resolve) {
-        if (_this15.taskInfo.groups.length > 0) {
-          if (_this15.taskInfo.curators.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (_this15.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
-        } else {
-          resolve(1)
-        }
-      }).then(function (s) {
-        if (s === 1) callback()
-      }).catch(function (err) {
-        console.error(err)
-      })
     },
     checkLogin: function checkLogin () {
       if ($('a[href*=login]').length > 0) window.open('/login', '_self')
@@ -6514,8 +7537,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref50) {
-          var value = _ref50.value
+        }).then(function (_ref58) {
+          var value = _ref58.value
 
           if (value) {
             window.close()
@@ -6549,24 +7572,24 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       this.get_tasks('FREE')
     },
     get_tasks: function get_tasks () {
-      var _arguments = arguments
-      var _this16 = this
+      var _arguments5 = arguments
+      var _this18 = this
 
-      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee7 () {
-        var type, _ref51, items, maxPoint, myPoint, i, item, needPoints
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
+        var type, _ref59, items, maxPoint, myPoint, i, item, needPoints
 
-        return regeneratorRuntime.wrap(function _callee7$ (_context7) {
+        return regeneratorRuntime.wrap(function _callee11$ (_context13) {
           while (1) {
-            switch (_context7.prev = _context7.next) {
+            switch (_context13.prev = _context13.next) {
               case 0:
-                type = _arguments.length > 0 && _arguments[0] !== undefined ? _arguments[0] : 'FREE'
-                _ref51 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this16.maxPoint()], items = _ref51[0], maxPoint = _ref51[1]
-                myPoint = _this16.myPoints
+                type = _arguments5.length > 0 && _arguments5[0] !== undefined ? _arguments5[0] : 'FREE'
+                _ref59 = [$(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))")), _this18.maxPoint()], items = _ref59[0], maxPoint = _ref59[1]
+                myPoint = _this18.myPoints
                 i = 0
 
               case 4:
                 if (!(i < items.length)) {
-                  _context7.next = 20
+                  _context13.next = 20
                   break
                 }
 
@@ -6574,7 +7597,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                 if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                  _context7.next = 11
+                  _context13.next = 11
                   break
                 }
 
@@ -6582,12 +7605,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   type: 'custom',
                   text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                 })
-                _context7.next = 17
+                _context13.next = 17
                 break
 
               case 11:
                 if (!(type === 'points' && !needPoints)) {
-                  _context7.next = 15
+                  _context13.next = 15
                   break
                 }
 
@@ -6595,33 +7618,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   type: 'custom',
                   text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                 })
-                _context7.next = 17
+                _context13.next = 17
                 break
 
               case 15:
                 if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                  _context7.next = 17
+                  _context13.next = 17
                   break
                 }
 
-                return _context7.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
-                  var _ref52, status, a, _a$attr$match, giveawayId
+                return _context13.delegateYield(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
+                  var _ref60, status, a, _a$attr$match, giveawayId
 
-                  return regeneratorRuntime.wrap(function _callee6$ (_context6) {
+                  return regeneratorRuntime.wrap(function _callee10$ (_context12) {
                     while (1) {
-                      switch (_context6.prev = _context6.next) {
+                      switch (_context12.prev = _context12.next) {
                         case 0:
-                          _ref52 = [fuc.echoLog({
+                          _ref60 = [fuc.echoLog({
                             type: 'custom',
                             text: '<li>'.concat(getI18n('joinLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat($(item).find('.giveaways-page-item-footer-name').text().trim(), '</a>...<font></font></li>')
-                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref52[0], a = _ref52[1]
+                          }), $(item).find("a.giveaways-page-item-img-btn-enter:contains('enter')")], status = _ref60[0], a = _ref60[1]
 
                           if (a.attr('onclick') && a.attr('onclick').includes('checkUser')) {
                             giveawayId = (_a$attr$match = a.attr('onclick').match(/[\d]+/)) === null || _a$attr$match === void 0 ? void 0 : _a$attr$match[0]
                             if (giveawayId) checkUser(giveawayId)
                           }
 
-                          _context6.next = 4
+                          _context12.next = 4
                           return new Promise(function (resolve) {
                             fuc.httpRequest({
                               url: a.attr('href'),
@@ -6656,15 +7679,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                         case 4:
                         case 'end':
-                          return _context6.stop()
+                          return _context12.stop()
                       }
                     }
-                  }, _callee6)
+                  }, _callee10)
                 })(), 't0', 17)
 
               case 17:
                 i++
-                _context7.next = 4
+                _context13.next = 4
                 break
 
               case 20:
@@ -6675,10 +7698,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               case 21:
               case 'end':
-                return _context7.stop()
+                return _context13.stop()
             }
           }
-        }, _callee7)
+        }, _callee11)
       }))()
     },
     verify: function verify () {
@@ -6728,15 +7751,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       this.get_tasks('do_task')
     },
     get_tasks: function get_tasks () {
-      var _this17 = this
+      var _this19 = this
 
       var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var _ref53 = [fuc.echoLog({
+      var _ref61 = [fuc.echoLog({
         type: 'custom',
         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
       }), $('#steps tbody tr')]
-      var status = _ref53[0]
-      var steps = _ref53[1]
+      var status = _ref61[0]
+      var steps = _ref61[1]
 
       for (var i = 0; i < steps.length; i++) {
         if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
@@ -6744,35 +7767,35 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        var _ref54 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
-        var taskInfoHistory = _ref54[0]
-        var _pro4 = _ref54[1]
+        var _ref62 = [GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'), []]
+        var taskInfoHistory = _ref62[0]
+        var _pro9 = _ref62[1]
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-        var _iterator17 = _createForOfIteratorHelper(steps)
-        var _step17
+        var _iterator26 = _createForOfIteratorHelper(steps)
+        var _step26
 
         try {
-          for (_iterator17.s(); !(_step17 = _iterator17.n()).done;) {
-            var step = _step17.value
+          for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+            var step = _step26.value
 
             if ($(step).find('span:contains(Success)').length === 0) {
               if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                var _link$match
+                var _link$match3
 
                 var link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-                var curatorId = (_link$match = link.match(/curator\/([\d]+)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+                var curatorId = (_link$match3 = link.match(/curator\/([\d]+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
 
                 if (curatorId) {
                   this.currentTaskInfo.curators.push(curatorId)
                   this.taskInfo.curators.push(curatorId)
                 }
               } else if ($(step).find("a[href*='steampowered.com/groups/']").length > 0) {
-                var _link$match2
+                var _link8$match
 
-                var _link = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
+                var _link8 = $(step).find("a[href*='steampowered.com/groups/']").attr('href')
 
-                var groupName = (_link$match2 = _link.match(/groups\/(.+)\/?/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+                var groupName = (_link8$match = _link8.match(/groups\/(.+)\/?/)) === null || _link8$match === void 0 ? void 0 : _link8$match[1]
 
                 if (groupName) {
                   this.currentTaskInfo.groups.push(groupName)
@@ -6782,7 +7805,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 (function () {
                   var link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                  _pro4.push(new Promise(function (resolve) {
+                  _pro9.push(new Promise(function (resolve) {
                     new Promise(function (resolve) {
                       fuc.getFinalUrl(resolve, link)
                     }).then(function (data) {
@@ -6792,9 +7815,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         var _groupName2 = (_data$finalUrl$match = data.finalUrl.match(/groups\/(.+)\/?/)) === null || _data$finalUrl$match === void 0 ? void 0 : _data$finalUrl$match[1]
 
                         if (_groupName2) {
-                          _this17.currentTaskInfo.groups.push(_groupName2)
+                          _this19.currentTaskInfo.groups.push(_groupName2)
 
-                          _this17.taskInfo.groups.push(_groupName2)
+                          _this19.taskInfo.groups.push(_groupName2)
                         }
                       }
 
@@ -6808,25 +7831,25 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             }
           }
         } catch (err) {
-          _iterator17.e(err)
+          _iterator26.e(err)
         } finally {
-          _iterator17.f()
+          _iterator26.f()
         }
 
-        if (_pro4.length > 0) {
-          Promise.all(_pro4).finally(function () {
-            _this17.currentTaskInfo = fuc.uniqueTaskInfo(_this17.currentTaskInfo)
-            _this17.taskInfo = fuc.uniqueTaskInfo(_this17.taskInfo)
-            GM_setValue('taskInfo[' + window.location.host + _this17.get_giveawayId() + ']', _this17.taskInfo)
+        if (_pro9.length > 0) {
+          Promise.all(_pro9).finally(function () {
+            _this19.currentTaskInfo = fuc.uniqueTaskInfo(_this19.currentTaskInfo)
+            _this19.taskInfo = fuc.uniqueTaskInfo(_this19.taskInfo)
+            GM_setValue('taskInfo[' + window.location.host + _this19.get_giveawayId() + ']', _this19.taskInfo)
 
-            if (_this17.currentTaskInfo.groups.length > 0 || _this17.currentTaskInfo.curators.length > 0) {
-              _this17.do_task()
+            if (_this19.currentTaskInfo.groups.length > 0 || _this19.currentTaskInfo.curators.length > 0) {
+              _this19.do_task()
             } else {
               fuc.echoLog({
                 type: 'custom',
                 text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
               })
-              if (_this17.conf.fuck.verifyTask) _this17.verify()
+              if (_this19.conf.fuck.verifyTask) _this19.verify()
             }
           })
         } else {
@@ -6849,14 +7872,14 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         var checks = $('#steps tbody a[id^=check]')
 
         if (checks.length > 0) {
-          var _iterator18 = _createForOfIteratorHelper(checks)
-          var _step18
+          var _iterator27 = _createForOfIteratorHelper(checks)
+          var _step27
 
           try {
-            for (_iterator18.s(); !(_step18 = _iterator18.n()).done;) {
+            for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
               var _$$attr$match
 
-              var check = _step18.value
+              var check = _step27.value
               var id = (_$$attr$match = $(check).attr('id').match(/[\d]+/)) === null || _$$attr$match === void 0 ? void 0 : _$$attr$match[0]
               if (id) {
                 this.currentTaskInfo.tasks.push({
@@ -6866,9 +7889,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator18.e(err)
+            _iterator27.e(err)
           } finally {
-            _iterator18.f()
+            _iterator27.f()
           }
 
           this.verify(true)
@@ -6885,36 +7908,36 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           this.taskInfo = taskInfo
           this.remove(true)
         } else {
-          var _pro5 = []
+          var _pro10 = []
 
-          var _iterator19 = _createForOfIteratorHelper(steps)
-          var _step19
+          var _iterator28 = _createForOfIteratorHelper(steps)
+          var _step28
 
           try {
-            for (_iterator19.s(); !(_step19 = _iterator19.n()).done;) {
-              var _step20 = _step19.value
+            for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+              var _step29 = _step28.value
 
-              if ($(_step20).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                var _link2$match
+              if ($(_step29).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                var _link9$match
 
-                var _link2 = $(_step20).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                var _link9 = $(_step29).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
-                var _curatorId = (_link2$match = _link2.match(/curator\/([\d]+)/)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
+                var _curatorId = (_link9$match = _link9.match(/curator\/([\d]+)/)) === null || _link9$match === void 0 ? void 0 : _link9$match[1]
 
                 if (_curatorId) this.taskInfo.curators.push(_curatorId)
-              } else if ($(_step20).find("a[href*='steampowered.com/groups/']").length > 0) {
-                var _link3$match
+              } else if ($(_step29).find("a[href*='steampowered.com/groups/']").length > 0) {
+                var _link10$match
 
-                var _link3 = $(_step20).find("a[href*='steampowered.com/groups/']").attr('href')
+                var _link10 = $(_step29).find("a[href*='steampowered.com/groups/']").attr('href')
 
-                var _groupName3 = (_link3$match = _link3.match(/groups\/(.+)\/?/)) === null || _link3$match === void 0 ? void 0 : _link3$match[1]
+                var _groupName3 = (_link10$match = _link10.match(/groups\/(.+)\/?/)) === null || _link10$match === void 0 ? void 0 : _link10$match[1]
 
                 if (_groupName3) this.taskInfo.groups.push(_groupName3)
-              } else if ($(_step20).find("a[href*='steamcommunity.com/gid']").length > 0) {
+              } else if ($(_step29).find("a[href*='steamcommunity.com/gid']").length > 0) {
                 (function () {
-                  var link = $(_step20).find("a[href*='steamcommunity.com/gid']").attr('href')
+                  var link = $(_step29).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                  _pro5.push(new Promise(function (resolve) {
+                  _pro10.push(new Promise(function (resolve) {
                     new Promise(function (resolve) {
                       fuc.getFinalUrl(resolve, link)
                     }).then(function (data) {
@@ -6924,7 +7947,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         var _groupName4 = (_data$finalUrl$match2 = data.finalUrl.match(/groups\/(.+)\/?/)) === null || _data$finalUrl$match2 === void 0 ? void 0 : _data$finalUrl$match2[1]
 
                         if (_groupName4) {
-                          _this17.taskInfo.groups.push(_groupName4)
+                          _this19.taskInfo.groups.push(_groupName4)
                         }
                       }
 
@@ -6938,18 +7961,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
           } catch (err) {
-            _iterator19.e(err)
+            _iterator28.e(err)
           } finally {
-            _iterator19.f()
+            _iterator28.f()
           }
 
-          if (_pro5.length > 0) {
-            Promise.all(_pro5).finally(function () {
-              _this17.taskInfo = fuc.uniqueTaskInfo(_this17.taskInfo)
-              GM_setValue('taskInfo[' + window.location.host + _this17.get_giveawayId() + ']', _this17.taskInfo)
+          if (_pro10.length > 0) {
+            Promise.all(_pro10).finally(function () {
+              _this19.taskInfo = fuc.uniqueTaskInfo(_this19.taskInfo)
+              GM_setValue('taskInfo[' + window.location.host + _this19.get_giveawayId() + ']', _this19.taskInfo)
 
-              if (_this17.taskInfo.groups.length > 0 || _this17.taskInfo.curators.length > 0) {
-                _this17.remove(true)
+              if (_this19.taskInfo.groups.length > 0 || _this19.taskInfo.curators.length > 0) {
+                _this19.remove(true)
               } else {
                 fuc.echoLog({
                   type: 'custom',
@@ -6982,69 +8005,69 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       if (debug) console.log(this)
     },
     do_task: function do_task () {
-      var _this18 = this
+      var _this20 = this
 
-      this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee8 () {
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 () {
         var pro
-        return regeneratorRuntime.wrap(function _callee8$ (_context8) {
+        return regeneratorRuntime.wrap(function _callee12$ (_context14) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context14.prev = _context14.next) {
               case 0:
-                pro = []
-                _context8.next = 3
-                return _this18.toggleActions('fuck', pro)
+                _context14.next = 2
+                return _this20.toggleActions('fuck')
 
-              case 3:
+              case 2:
+                pro = _context14.sent
                 Promise.all(pro).finally(function () {
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  if (_this18.conf.fuck.verifyTask) _this18.verify()
+                  if (_this20.conf.fuck.verifyTask) _this20.verify()
                 })
 
               case 4:
               case 'end':
-                return _context8.stop()
+                return _context14.stop()
             }
           }
-        }, _callee8)
-      })))
+        }, _callee12)
+      }))()
     },
     verify: function verify () {
-      var _this19 = this
+      var _this21 = this
 
       var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
       if (verify) {
-        var _pro6 = []
+        var _pro11 = []
 
-        var _iterator20 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-        var _step21
+        var _iterator29 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+        var _step30
 
         try {
-          var _loop9 = function _loop9 () {
-            var task = _step21.value
+          var _loop11 = function _loop11 () {
+            var task = _step30.value
             var status = fuc.echoLog({
               type: 'custom',
               text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
             })
 
-            _pro6.push(new Promise(function (resolve) {
-              _this19.checkStep(task.id, resolve, status)
+            _pro11.push(new Promise(function (resolve) {
+              _this21.checkStep(task.id, resolve, status)
             }))
           }
 
-          for (_iterator20.s(); !(_step21 = _iterator20.n()).done;) {
-            _loop9()
+          for (_iterator29.s(); !(_step30 = _iterator29.n()).done;) {
+            _loop11()
           }
         } catch (err) {
-          _iterator20.e(err)
+          _iterator29.e(err)
         } finally {
-          _iterator20.f()
+          _iterator29.f()
         }
 
-        Promise.all(_pro6).finally(function () {
+        Promise.all(_pro11).finally(function () {
           fuc.echoLog({
             type: 'custom',
             text: '<li><font class="success">'.concat(getI18n('prysAllTasksComplete'), '</font></li>')
@@ -7096,45 +8119,55 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       })
     },
     remove: function remove () {
-      var _this20 = this
+      var _arguments6 = arguments
+      var _this22 = this
 
-      var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-      var pro = []
+      return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee13 () {
+        var remove, _pro12
 
-      if (remove) {
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
-          return regeneratorRuntime.wrap(function _callee9$ (_context9) {
-            while (1) {
-              switch (_context9.prev = _context9.next) {
-                case 0:
-                  _context9.next = 2
-                  return _this20.toggleActions('remove', pro)
+        return regeneratorRuntime.wrap(function _callee13$ (_context15) {
+          while (1) {
+            switch (_context15.prev = _context15.next) {
+              case 0:
+                remove = _arguments6.length > 0 && _arguments6[0] !== undefined ? _arguments6[0] : false
 
-                case 2:
-                  Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
+                if (!remove) {
+                  _context15.next = 8
+                  break
+                }
+
+                _context15.next = 4
+                return _this22.toggleActions('remove')
+
+              case 4:
+                _pro12 = _context15.sent
+                Promise.all(_pro12).finally(function () {
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
+                })
+                _context15.next = 9
+                break
 
-                case 3:
-                case 'end':
-                  return _context9.stop()
-              }
+              case 8:
+                _this22.get_tasks('remove')
+
+              case 9:
+              case 'end':
+                return _context15.stop()
             }
-          }, _callee9)
-        })))
-      } else {
-        this.get_tasks('remove')
-      }
+          }
+        }, _callee13)
+      }))()
     },
-    toggleActions: function toggleActions (action, pro) {
+    toggleActions: function toggleActions (action) {
+      var pro = []
       var fuck = action === 'fuck'
 
-      var _ref57 = fuck ? this.currentTaskInfo : this.taskInfo
-      var groups = _ref57.groups
-      var curators = _ref57.curators
+      var _ref63 = fuck ? this.currentTaskInfo : this.taskInfo
+      var groups = _ref63.groups
+      var curators = _ref63.curators
 
       if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
         pro.push(new Promise(function (resolve) {
@@ -7159,32 +8192,13 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           })
         }))
       }
+
+      return pro
     },
     get_giveawayId: function get_giveawayId () {
       var _window$location$sear
 
       return ((_window$location$sear = window.location.search.match(/id=([\d]+)/)) === null || _window$location$sear === void 0 ? void 0 : _window$location$sear[1]) || window.location.href
-    },
-    updateSteamInfo: function updateSteamInfo (callback) {
-      var _this21 = this
-
-      new Promise(function (resolve) {
-        if (_this21.taskInfo.groups.length > 0) {
-          if (_this21.taskInfo.curators.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (_this21.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
-        } else {
-          resolve(1)
-        }
-      }).then(function (s) {
-        if (s === 1) callback()
-      }).catch(function (err) {
-        console.error(err)
-      })
     },
     checkLeft: function checkLeft () {
       var left = $('#header').text().match(/([\d]+).*?prize.*?left/)
@@ -7197,8 +8211,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then(function (_ref58) {
-          var value = _ref58.value
+        }).then(function (_ref64) {
+          var value = _ref64.value
 
           if (value) {
             window.close()
@@ -7218,333 +8232,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     setting: {},
     conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
   }
-  var takekey = {
-    test: function test () {
-      return window.location.host.includes('takekey')
-    },
-    fuck: function fuck () {
-      this.get_tasks('do_task')
-    },
-    get_tasks: function get_tasks () {
-      var _this22 = this
-
-      var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
-      var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
-      if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-
-      if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
-        this.remove(true)
-      } else {
-        var _ref59 = [[], [], [], []]
-        this.tasks = _ref59[0]
-        this.groups = _ref59[1]
-        this.curators = _ref59[2]
-        this.links = _ref59[3]
-        var _ref60 = [[], fuc.echoLog({
-          type: 'custom',
-          text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
-        }), $('#usl>div')]
-        var _pro7 = _ref60[0]
-        var status = _ref60[1]
-        var tasksContainer = _ref60[2]
-
-        var _iterator21 = _createForOfIteratorHelper(tasksContainer)
-        var _step22
-
-        try {
-          var _loop10 = function _loop10 () {
-            var task = _step22.value
-
-            _this22.tasks.push(task)
-
-            var _ref62 = [$(task).find('i'), $(task).children('a[id]').attr('href'), $(task).children('a[id]').attr('id')]
-            var icon = _ref62[0]
-            var link = _ref62[1]
-            var id = _ref62[2]
-
-            if (icon.hasClass('fa-steam')) {
-              if (link && /gid\/[\d]+/.test(link)) {
-                _pro7.push(new Promise(function (r) {
-                  new Promise(function (resolve) {
-                    fuc.getFinalUrl(resolve, link)
-                  }).then(function (data) {
-                    if (data.result === 'success') {
-                      var groupName = data.finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
-
-                      if (groupName) {
-                        _this22.groups.push(groupName)
-
-                        _this22.taskInfo.groups.push(groupName)
-
-                        r(1)
-                      } else {
-                        r(0)
-                      }
-                    } else {
-                      r(0)
-                    }
-                  }).catch(function () {
-                    r(0)
-                  })
-                }))
-              }
-            } else if (icon.hasClass('fa-link')) {
-              _this22.links.push(id)
-            } else if (icon.hasClass('fa-vk')) {
-              _this22.vks.push(link)
-            } else {
-              _this22.others.push(icon)
-            }
-          }
-
-          for (_iterator21.s(); !(_step22 = _iterator21.n()).done;) {
-            _loop10()
-          }
-        } catch (err) {
-          _iterator21.e(err)
-        } finally {
-          _iterator21.f()
-        }
-
-        Promise.all(_pro7).finally(function () {
-          var _ref61 = [fuc.unique(_this22.groups), fuc.unique(_this22.curators), fuc.unique(_this22.links), fuc.unique(_this22.others), fuc.unique(_this22.taskInfo.groups), fuc.unique(_this22.taskInfo.curators), fuc.unique(_this22.tasks)]
-          _this22.groups = _ref61[0]
-          _this22.curators = _ref61[1]
-          _this22.links = _ref61[2]
-          _this22.others = _ref61[3]
-          _this22.taskInfo.groups = _ref61[4]
-          _this22.taskInfo.curators = _ref61[5]
-          _this22.tasks = _ref61[6]
-          GM_setValue('taskInfo[' + window.location.host + _this22.get_giveawayId() + ']', _this22.taskInfo)
-          status.success()
-          if (debug) console.log(_this22)
-
-          if (callback === 'do_task') {
-            if (_this22.tasks.length === 0) {
-              fuc.echoLog({
-                type: 'custom',
-                text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-              })
-              if (_this22.conf.fuck.verifyTask) _this22.verify()
-            } else {
-              _this22.do_task()
-            }
-          } else {
-            !fuc.isEmptyObjArr(_this22.taskInfo) ? _this22.remove(true) : fuc.echoLog({
-              type: 'custom',
-              text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
-            })
-          }
-        })
-      }
-    },
-    do_task: function do_task () {
-      var _this23 = this
-
-      this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee10 () {
-        var _ref64, pro, links, others, vks, _iterator22, _step23, _loop11, _iterator23, _step24, vk, _iterator24, _step25, other
-
-        return regeneratorRuntime.wrap(function _callee10$ (_context10) {
-          while (1) {
-            switch (_context10.prev = _context10.next) {
-              case 0:
-                _ref64 = [[], fuc.unique(_this23.links), fuc.unique(_this23.others), fuc.unique(_this23.vks)], pro = _ref64[0], links = _ref64[1], others = _ref64[2], vks = _ref64[3]
-                _context10.next = 3
-                return _this23.toggleActions('fuck', pro)
-
-              case 3:
-                if (_this23.conf.fuck.visit) {
-                  _iterator22 = _createForOfIteratorHelper(links)
-
-                  try {
-                    _loop11 = function _loop11 () {
-                      var link = _step23.value
-                      var a = $("a[id='".concat(link, "']")).attr('onclick', 'return false;')
-                      a[0].click()
-                      a.removeAttr('onclick')
-                      pro.push(new Promise(function (resolve) {
-                        fuc.visitLink(resolve, $("a[id='".concat(link, "']")).attr('href'))
-                      }))
-                    }
-
-                    for (_iterator22.s(); !(_step23 = _iterator22.n()).done;) {
-                      _loop11()
-                    }
-                  } catch (err) {
-                    _iterator22.e(err)
-                  } finally {
-                    _iterator22.f()
-                  }
-                }
-
-                if (globalConf.other.autoOpen) {
-                  _iterator23 = _createForOfIteratorHelper(vks)
-
-                  try {
-                    for (_iterator23.s(); !(_step24 = _iterator23.n()).done;) {
-                      vk = _step24.value
-                      window.open(vk, '_blank')
-                    }
-                  } catch (err) {
-                    _iterator23.e(err)
-                  } finally {
-                    _iterator23.f()
-                  }
-                }
-
-                _iterator24 = _createForOfIteratorHelper(others)
-
-                try {
-                  for (_iterator24.s(); !(_step25 = _iterator24.n()).done;) {
-                    other = _step25.value
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="warning">'.concat(getI18n('unknowntype'), ':').concat($(other).attr('class'), '</font></li>')
-                    })
-                  }
-                } catch (err) {
-                  _iterator24.e(err)
-                } finally {
-                  _iterator24.f()
-                }
-
-                Promise.all(pro).finally(function () {
-                  fuc.echoLog({
-                    type: 'custom',
-                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                  })
-                  if (_this23.conf.fuck.verifyTask) _this23.verify()
-                })
-
-              case 8:
-              case 'end':
-                return _context10.stop()
-            }
-          }
-        }, _callee10)
-      })))
-    },
-    verify: function verify () {
-      setTimeout(function () {
-        $('.fa-check').click()
-      }, 1000)
-    },
-    remove: function remove () {
-      var _this24 = this
-
-      var remove = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
-      var pro = []
-
-      if (remove) {
-        this.updateSteamInfo(/* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee11 () {
-          return regeneratorRuntime.wrap(function _callee11$ (_context11) {
-            while (1) {
-              switch (_context11.prev = _context11.next) {
-                case 0:
-                  _context11.next = 2
-                  return _this24.toggleActions('remove', pro)
-
-                case 2:
-                  Promise.all(pro).finally(function () {
-                    fuc.echoLog({
-                      type: 'custom',
-                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
-                    })
-                  })
-
-                case 3:
-                case 'end':
-                  return _context11.stop()
-              }
-            }
-          }, _callee11)
-        })))
-      } else {
-        this.get_tasks('remove')
-      }
-    },
-    toggleActions: function toggleActions (action, pro) {
-      var groups = action === 'fuck' ? this.groups : this.taskInfo.groups
-
-      if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(function (resolve) {
-          fuc.toggleActions({
-            website: 'takekey',
-            type: 'group',
-            elements: groups,
-            resolve: resolve,
-            action: action
-          })
-        }))
-      }
-    },
-    get_giveawayId: function get_giveawayId () {
-      var id = window.location.href.match(/distribution\/([\d]+)/)
-      return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
-    },
-    updateSteamInfo: function updateSteamInfo (callback) {
-      var _this25 = this
-
-      new Promise(function (resolve) {
-        if (_this25.taskInfo.groups.length > 0) {
-          if (_this25.taskInfo.curators.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (_this25.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
-        } else {
-          resolve(1)
-        }
-      }).then(function (s) {
-        if (s === 1) callback()
-      }).catch(function (err) {
-        console.error(err)
-      })
-    },
-    checkLogin: function checkLogin () {
-      if ($('i.fa-sign-in').length > 0) window.open('/auth/steam', '_self')
-    },
-    checkLeft: function checkLeft () {
-      var leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)
-
-      if (!(leftKey && parseInt(leftKey[0]) > 0)) {
-        Swal.fire({
-          icon: 'warning',
-          title: getI18n('notice'),
-          text: getI18n('noKeysLeft'),
-          confirmButtonText: getI18n('confirm'),
-          cancelButtonText: getI18n('cancel'),
-          showCancelButton: true
-        }).then(function (result) {
-          if (result.value) {
-            window.close()
-          }
-        })
-      }
-    },
-    groups: [],
-
-    curators: [],
-
-    links: [],
-
-    others: [],
-    vks: [],
-    taskInfo: {
-      groups: [],
-
-      curators: []
-
-    },
-    tasks: [],
-
-    setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
-  }
-  var website = null
-  var websites = [banana, freegamelottery, giveawaysu, gleam, indiedb, marvelousga, opiumpulses, prys, takekey]
+  var website = {}
+  var websites = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, keylol, marvelousga, opiumpulses, prys]
 
   for (var _i6 = 0, _websites = websites; _i6 < _websites.length; _i6++) {
     var e = _websites[_i6]
@@ -7701,18 +8390,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         })
         var listValues = GM_listValues()
 
-        var _iterator25 = _createForOfIteratorHelper(listValues)
-        var _step26
+        var _iterator30 = _createForOfIteratorHelper(listValues)
+        var _step31
 
         try {
-          for (_iterator25.s(); !(_step26 = _iterator25.n()).done;) {
-            var value = _step26.value
+          for (_iterator30.s(); !(_step31 = _iterator30.n()).done;) {
+            var value = _step31.value
             if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo'].includes(value)) GM_deleteValue(value)
           }
         } catch (err) {
-          _iterator25.e(err)
+          _iterator30.e(err)
         } finally {
-          _iterator25.f()
+          _iterator30.f()
         }
 
         status.success()

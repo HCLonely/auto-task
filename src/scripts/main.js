@@ -4,7 +4,7 @@ import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 
-if (website) {
+if (website || window.location.host.includes('hclonely')) {
   try {
     GM_addStyle(GM_getResourceText('CSS'))
     $(document).ajaxError(function (event, xhr, options, exc) {

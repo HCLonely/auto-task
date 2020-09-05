@@ -255,7 +255,7 @@ const gamehag = {
     retweets: []
   },
   setting: {},
-  conf: config?.gamehag?.enable ? config.gamehag : globalConf
+  conf: config?.gamehag?.enable.valueOf() ? config.gamehag : globalConf
 }
 
 export { gamehag }

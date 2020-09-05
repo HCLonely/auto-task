@@ -530,6 +530,62 @@ function likeAnnouncements (r, rawMatch) {
   })
 }
 
+async function subscribeForum (r, gameId, subscribe = true) {
+  const { forumId } = await getForumId(gameId)
+  if (!forumId) {
+    return r({ result: 'error', statusText: 'GetForumIdError', status: 0 })
+  }
+  const status = echoLog({ type: `${subscribe ? '' : 'un'}subscribeForum`, text: gameId })
+
+  httpRequest({
+    url: `https://steamcommunity.com/forum/${forumId}/General/${subscribe ? '' : 'un'}subscribe/0/`,
+    method: 'POST',
+    responseType: 'json',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+    data: $.param({ sessionid: steamInfo.communitySessionID }),
+    onload (response) {
+      if (debug) console.log(response)
+      if (response.status === 200 && (response.response?.success === 1 || response.response?.success === 29)) {
+        status.success()
+        r({ result: 'success', statusText: response.statusText, status: response.status })
+      } else {
+        status.error('Error:' + response.statusText + '(' + response.status + ')')
+        r({ result: 'error', statusText: response.statusText, status: response.status })
+      }
+    },
+    r,
+    status
+  })
+}
+
+function getForumId (gameId) {
+  const status = echoLog({ type: 'getForumId', text: gameId })
+
+  return new Promise(resolve => {
+    httpRequest({
+      url: 'https://steamcommunity.com/app/' + gameId + '/discussions/',
+      method: 'GET',
+      onload (response) {
+        if (debug) console.log(response)
+        if (response.status === 200) {
+          const forumId = response.responseText?.match(/General_([\d]+)/)?.[1]
+          if (forumId) {
+            status.success()
+            resolve({ result: 'success', statusText: response.statusText, status: response.status, forumId })
+          } else {
+            status.error('Error')
+            resolve({ result: 'error', statusText: 'GetForumIdError', status: response.status })
+          }
+        } else {
+          status.error('Error:' + response.statusText + '(' + response.status + ')')
+          resolve({ result: 'error', statusText: response.statusText, status: response.status })
+        }
+      },
+      r: resolve,
+      status
+    })
+  })
+}
 async function toggleSteamActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
   const pro = []
   for (const element of unique(elements)) {
@@ -540,15 +596,18 @@ async function toggleSteamActions ({ website, type, elements, resolve, action, t
         case 'group':
           elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
           break
+        case 'forum':
+          elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+          break
         case 'curator':
           elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
           break
         case 'publisher':
         case 'developer':
-          elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : (toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/))
+          elementName = (toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : (toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/))) || toFinalUrlElement.match(/curator\/([\d]+)/)
           break
         case 'franchise':
-          elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
+          elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/) || toFinalUrlElement.match(/curator\/([\d]+)/)
           break
         case 'game':
         case 'wishlist':
@@ -569,6 +628,11 @@ async function toggleSteamActions ({ website, type, elements, resolve, action, t
         case 'group':
           pro.push(new Promise(resolve => {
             action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
+          }))
+          break
+        case 'forum':
+          pro.push(new Promise(resolve => {
+            action === 'fuck' ? subscribeForum(resolve, elementName[1]) : subscribeForum(resolve, elementName[1], false)
           }))
           break
         case 'curator':

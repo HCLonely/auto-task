@@ -52,6 +52,8 @@ const giveawaysu = {
       taskInfo.push({ name: 'developer', link })
     } else if (/(follow|subscribe).*curator/gim.test(taskName)) {
       taskInfo.push({ name: 'curator', link })
+    } else if (/subscribe.*steam.*forum/gim.test(taskName)) {
+      taskInfo.push({ name: 'forum', link })
     } else if (taskIcon.includes('discord') || /join.*discord/gim.test(taskName)) {
       taskInfo.push({ name: 'discord', link })
     } else if (taskIcon.includes('instagram') || /follow.*instagram/gim.test(taskName)) {
@@ -135,6 +137,7 @@ const giveawaysu = {
     if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
     const {
       groups,
+      forums,
       curators,
       publishers,
       developers,
@@ -152,9 +155,15 @@ const giveawaysu = {
     } = this.taskInfo
     const pro = []
     const fuck = action === 'fuck'
+    await fuc.updateInfo(this.taskInfo)
     if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
       pro.push(new Promise(resolve => {
         fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: groups, resolve, action, toFinalUrl })
+      }))
+    }
+    if (this.conf[action][fuck ? 'subscribeSteamForum' : 'unsubscribeSteamForum'] && forums.length > 0) {
+      pro.push(new Promise(resolve => {
+        fuc.toggleActions({ website: 'giveawaysu', type: 'forum', elements: forums, resolve, action, toFinalUrl })
       }))
     }
     if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
@@ -257,6 +266,7 @@ const giveawaysu = {
   },
   taskInfo: {
     groups: [],
+    forums: [],
     curators: [],
     publishers: [],
     developers: [],
@@ -278,7 +288,7 @@ const giveawaysu = {
       show: false
     }
   },
-  conf: config?.giveawaysu?.enable ? config.giveawaysu : globalConf
+  conf: config?.giveawaysu?.enable.valueOf() ? config.giveawaysu : globalConf
 }
 
 export { giveawaysu }

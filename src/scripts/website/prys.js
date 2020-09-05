@@ -293,7 +293,7 @@ const prys = {
     curators: []
   },
   setting: {},
-  conf: config?.prys?.enable ? config.prys : globalConf
+  conf: config?.prys?.enable.valueOf() ? config.prys : globalConf
 }
 
 export { prys }

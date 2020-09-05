@@ -268,7 +268,7 @@ const marvelousga = {
     twitchChannels: []
   },
   setting: {},
-  conf: config?.marvelousga?.enable ? config.marvelousga : globalConf
+  conf: config?.marvelousga?.enable.valueOf() ? config.marvelousga : globalConf
 }
 
 export { marvelousga }

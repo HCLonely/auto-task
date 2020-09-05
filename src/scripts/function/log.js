@@ -14,6 +14,11 @@ function echoLog (e) { // switch case !!
     case 'getSteamGroupId':
       ele = $(`<li>${getI18n(e.type)}<a href="https://steamcommunity.com/groups/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
       break
+    case 'subscribeForum':
+    case 'unsubscribeForum':
+    case 'getForumId':
+      ele = $(`<li>${getI18n(e.type)}<a href="https://steamcommunity.com/app/${e.text}/discussions/" target="_blank">${e.text}</a>...<font></font></li>`)
+      break
     case 'followCurator':
     case 'unfollowCurator':
     case 'getCuratorId':

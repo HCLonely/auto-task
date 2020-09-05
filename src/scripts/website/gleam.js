@@ -279,7 +279,7 @@ const gleam = {
     discords: []
   },
   setting: {},
-  conf: config?.gleam?.enable ? config.gleam : globalConf
+  conf: config?.gleam?.enable.valueOf() ? config.gleam : globalConf
 }
 
 export { gleam }

@@ -35,7 +35,10 @@
   "joinSteamGroup": "Joining the Steam group",
   "getSteamGroupId": "Getting Steam group ID",
   "leaveSteamGroup": "Leaving Steam group",
-  "getCuratorId": "Getting curator ID",
+  "getCuratorId": "Getting Curator ID",
+  "subscribeForum": "Subscribing Steam Forum",
+  "unsubscribeForum": "Unsubscribing Steam Forum",
+  "getForumId": "Getting Steam Forum Id",
   "followCurator": "Following curator",
   "unfollowCurator": "Unfollowing curator",
   "getDeveloperId": "Getting developer ID",
@@ -165,5 +168,6 @@
   "leaveVkGroup": "Leaving vk group",
   "joinVkPublic": "Joining vk public",
   "leaveVkPublic": "Leaving vk public",
-  "getVkId": "Getting vk group/public id"
+  "getVkId": "Getting vk group/public id",
+  "insBanned": "Your Instagram account has been banned"
 }

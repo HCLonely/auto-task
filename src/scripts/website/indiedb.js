@@ -192,7 +192,7 @@ const indiedb = {
       show: false
     }
   },
-  conf: config?.indiedb?.enable ? config.indiedb : globalConf
+  conf: config?.indiedb?.enable.valueOf() ? config.indiedb : globalConf
 }
 
 export { indiedb }

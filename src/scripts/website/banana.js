@@ -294,7 +294,7 @@ const banana = {
     retweets: []
   },
   setting: {},
-  conf: config?.banana?.enable ? config.banana : globalConf
+  conf: config?.banana?.enable.valueOf() ? config.banana : globalConf
 }
 
 export { banana }

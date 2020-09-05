@@ -97,7 +97,7 @@ const freegamelottery = {
       show: false
     }
   },
-  conf: config?.freegamelottery?.enable ? config.freegamelottery : globalConf
+  conf: config?.freegamelottery?.enable.valueOf() ? config.freegamelottery : globalConf
 }
 
 export { freegamelottery }

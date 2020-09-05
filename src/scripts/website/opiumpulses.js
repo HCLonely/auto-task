@@ -89,7 +89,7 @@ const opiumpulses = {
       show: false
     }
   },
-  conf: config?.opiumpulses?.enable ? config.opiumpulses : globalConf,
+  conf: config?.opiumpulses?.enable.valueOf() ? config.opiumpulses : globalConf,
   maxPoint () { return this.conf?.other?.limitPoint ? Number(this.conf.other.limitPoint) : Infinity }
 }
 

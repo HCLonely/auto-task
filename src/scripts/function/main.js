@@ -75,6 +75,7 @@ function checkUpdate (s = false) {
 function updateInfo (data = {}) {
   const defaultData = {
     groups: [],
+    forums: [],
     curators: [],
     publishers: [],
     developers: [],
@@ -92,6 +93,7 @@ function updateInfo (data = {}) {
   }
   const {
     groups,
+    forums,
     curators,
     publishers,
     developers,
@@ -110,7 +112,7 @@ function updateInfo (data = {}) {
     retweets
   } = Object.assign(defaultData, data)
   const steamStore = [...curators, ...publishers, ...developers, ...franchises, ...fGames, ...wGames, ...announcements].length > 0
-  const steamCommunity = [...groups, ...announcements].length > 0
+  const steamCommunity = [...groups, ...forums, ...announcements].length > 0
   const twitter = [...twitterUsers, ...retweets].length > 0
   const pro = []
   if (steamStore && steamCommunity) {

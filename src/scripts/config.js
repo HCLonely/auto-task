@@ -33,7 +33,7 @@ for (const k of Object.keys(config)) {
   }
 }
 const globalConf = config.global
-const debug = !!globalConf.other.showDetails
+const debug = globalConf.other.showDetails
 
 function getSteamInfo () {
   return Object.assign({

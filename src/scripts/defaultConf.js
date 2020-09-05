@@ -2,6 +2,7 @@ const defaultConf = {
   global: {
     fuck: {
       joinSteamGroup: true,
+      subscribeSteamForum: true,
       followCurator: true,
       followDeveloper: true,
       followPublisher: true,
@@ -25,6 +26,7 @@ const defaultConf = {
     },
     remove: {
       leaveSteamGroup: true,
+      unsubscribeSteamForum: true,
       unfollowCurator: true,
       unfollowDeveloper: true,
       unfollowPublisher: true,
@@ -56,6 +58,7 @@ const defaultConf = {
   giveawaysu: {
     fuck: {
       joinSteamGroup: true,
+      subscribeSteamForum: true,
       followCurator: true,
       followDeveloper: true,
       followPublisher: true,
@@ -71,6 +74,7 @@ const defaultConf = {
     },
     remove: {
       leaveSteamGroup: true,
+      unsubscribeSteamForum: true,
       unfollowCurator: true,
       unfollowDeveloper: true,
       unfollowPublisher: true,

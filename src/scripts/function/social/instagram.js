@@ -17,6 +17,10 @@ function getInsInfo (name) {
           status.error('Error:' + getI18n('loginIns'), true)
           resolve({ result: 'error', statusText: response.statusText, status: response.status })
           return
+        } else if (response.finalUrl.includes('www.instagram.com/challenge')) {
+          status.error('Error:' + getI18n('insBanned'))
+          resolve({ result: 'error', statusText: response.statusText, status: response.status })
+          return
         }
         if (response.status === 200) {
           const _data = response.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]

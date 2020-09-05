@@ -35,6 +35,9 @@
   "joinSteamGroup": "正在加入Steam组",
   "getSteamGroupId": "正在获取Steam组ID",
   "leaveSteamGroup": "正在退出Steam组",
+  "subscribeForum": "正在订阅Steam论坛",
+  "getForumId": "正在获取Steam论坛ID",
+  "unsubscribeForum": "正在取消订阅Steam论坛",
   "getCuratorId": "正在获取鉴赏家ID",
   "followCurator": "正在关注鉴赏家",
   "unfollowCurator": "正在取关鉴赏家",
@@ -166,5 +169,6 @@
   "leaveVkGroup": "正在退出vk群",
   "joinVkPublic": "正在加入vk社区",
   "leaveVkPublic": "正在退出vk社区",
-  "getVkId": "正在获取vk群/社区id"
+  "getVkId": "正在获取vk群/社区id",
+  "insBanned": "你的Ins账户已被封禁"
 }

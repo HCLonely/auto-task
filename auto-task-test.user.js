@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.21
+// @version        3.0.22
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -33,12 +33,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.21/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.21/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.21/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -149,6 +149,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     joinSteamGroup: '正在加入Steam组',
     getSteamGroupId: '正在获取Steam组ID',
     leaveSteamGroup: '正在退出Steam组',
+    subscribeForum: '正在订阅Steam论坛',
+    getForumId: '正在获取Steam论坛ID',
+    unsubscribeForum: '正在取消订阅Steam论坛',
     getCuratorId: '正在获取鉴赏家ID',
     followCurator: '正在关注鉴赏家',
     unfollowCurator: '正在取关鉴赏家',
@@ -280,7 +283,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     leaveVkGroup: '正在退出vk群',
     joinVkPublic: '正在加入vk社区',
     leaveVkPublic: '正在退出vk社区',
-    getVkId: '正在获取vk群/社区id'
+    getVkId: '正在获取vk群/社区id',
+    insBanned: '你的Ins账户已被封禁'
   }
   var en_US = {
     language: 'Language',
@@ -319,7 +323,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     joinSteamGroup: 'Joining the Steam group',
     getSteamGroupId: 'Getting Steam group ID',
     leaveSteamGroup: 'Leaving Steam group',
-    getCuratorId: 'Getting curator ID',
+    getCuratorId: 'Getting Curator ID',
+    subscribeForum: 'Subscribing Steam Forum',
+    unsubscribeForum: 'Unsubscribing Steam Forum',
+    getForumId: 'Getting Steam Forum Id',
     followCurator: 'Following curator',
     unfollowCurator: 'Unfollowing curator',
     getDeveloperId: 'Getting developer ID',
@@ -449,7 +456,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     leaveVkGroup: 'Leaving vk group',
     joinVkPublic: 'Joining vk public',
     leaveVkPublic: 'Leaving vk public',
-    getVkId: 'Getting vk group/public id'
+    getVkId: 'Getting vk group/public id',
+    insBanned: 'Your Instagram account has been banned'
   }
   var i18n = {
     'zh-CN': zh_CN,
@@ -481,6 +489,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     global: {
       fuck: {
         joinSteamGroup: true,
+        subscribeSteamForum: true,
         followCurator: true,
         followDeveloper: true,
         followPublisher: true,
@@ -504,6 +513,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       remove: {
         leaveSteamGroup: true,
+        unsubscribeSteamForum: true,
         unfollowCurator: true,
         unfollowDeveloper: true,
         unfollowPublisher: true,
@@ -535,6 +545,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     giveawaysu: {
       fuck: {
         joinSteamGroup: true,
+        subscribeSteamForum: true,
         followCurator: true,
         followDeveloper: true,
         followPublisher: true,
@@ -550,6 +561,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       },
       remove: {
         leaveSteamGroup: true,
+        unsubscribeSteamForum: true,
         unfollowCurator: true,
         unfollowDeveloper: true,
         unfollowPublisher: true,
@@ -718,7 +730,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   var globalConf = config.global
-  var debug = !!globalConf.other.showDetails
+  var debug = globalConf.other.showDetails
 
   function getSteamInfo () {
     return Object.assign({
@@ -777,6 +789,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       case 'leaveSteamGroup':
       case 'getSteamGroupId':
         ele = $('<li>'.concat(getI18n(e.type), '<a href="https://steamcommunity.com/groups/').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
+        break
+
+      case 'subscribeForum':
+      case 'unsubscribeForum':
+      case 'getForumId':
+        ele = $('<li>'.concat(getI18n(e.type), '<a href="https://steamcommunity.com/app/').concat(e.text, '/discussions/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
         break
 
       case 'followCurator':
@@ -1996,17 +2014,150 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleSteamActions (_x) {
-    return _toggleSteamActions.apply(this, arguments)
+  function subscribeForum (_x, _x2) {
+    return _subscribeForum.apply(this, arguments)
   }
 
-  function _toggleSteamActions () {
-    _toggleSteamActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee20 (_ref4) {
-      var website, type, elements, resolve, action, _ref4$toFinalUrl, toFinalUrl, pro, _iterator31, _step32, _loop13
+  function _subscribeForum () {
+    _subscribeForum = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee20 (r, gameId) {
+      var subscribe
+      var _yield$getForumId
+      var forumId
+      var status
+      var _args22 = arguments
 
       return regeneratorRuntime.wrap(function _callee20$ (_context22) {
         while (1) {
           switch (_context22.prev = _context22.next) {
+            case 0:
+              subscribe = _args22.length > 2 && _args22[2] !== undefined ? _args22[2] : true
+              _context22.next = 3
+              return getForumId(gameId)
+
+            case 3:
+              _yield$getForumId = _context22.sent
+              forumId = _yield$getForumId.forumId
+
+              if (forumId) {
+                _context22.next = 7
+                break
+              }
+
+              return _context22.abrupt('return', r({
+                result: 'error',
+                statusText: 'GetForumIdError',
+                status: 0
+              }))
+
+            case 7:
+              status = echoLog({
+                type: ''.concat(subscribe ? '' : 'un', 'subscribeForum'),
+                text: gameId
+              })
+              httpRequest({
+                url: 'https://steamcommunity.com/forum/'.concat(forumId, '/General/').concat(subscribe ? '' : 'un', 'subscribe/0/'),
+                method: 'POST',
+                responseType: 'json',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+                },
+                data: $.param({
+                  sessionid: steamInfo.communitySessionID
+                }),
+                onload: function onload (response) {
+                  var _response$response19, _response$response20
+
+                  if (debug) console.log(response)
+
+                  if (response.status === 200 && (((_response$response19 = response.response) === null || _response$response19 === void 0 ? void 0 : _response$response19.success) === 1 || ((_response$response20 = response.response) === null || _response$response20 === void 0 ? void 0 : _response$response20.success) === 29)) {
+                    status.success()
+                    r({
+                      result: 'success',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  } else {
+                    status.error('Error:' + response.statusText + '(' + response.status + ')')
+                    r({
+                      result: 'error',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  }
+                },
+                r: r,
+                status: status
+              })
+
+            case 9:
+            case 'end':
+              return _context22.stop()
+          }
+        }
+      }, _callee20)
+    }))
+    return _subscribeForum.apply(this, arguments)
+  }
+
+  function getForumId (gameId) {
+    var status = echoLog({
+      type: 'getForumId',
+      text: gameId
+    })
+    return new Promise(function (resolve) {
+      httpRequest({
+        url: 'https://steamcommunity.com/app/' + gameId + '/discussions/',
+        method: 'GET',
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.status === 200) {
+            var _response$responseTex3, _response$responseTex4
+
+            var forumId = (_response$responseTex3 = response.responseText) === null || _response$responseTex3 === void 0 ? void 0 : (_response$responseTex4 = _response$responseTex3.match(/General_([\d]+)/)) === null || _response$responseTex4 === void 0 ? void 0 : _response$responseTex4[1]
+
+            if (forumId) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status,
+                forumId: forumId
+              })
+            } else {
+              status.error('Error')
+              resolve({
+                result: 'error',
+                statusText: 'GetForumIdError',
+                status: response.status
+              })
+            }
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: resolve,
+        status: status
+      })
+    })
+  }
+
+  function toggleSteamActions (_x3) {
+    return _toggleSteamActions.apply(this, arguments)
+  }
+
+  function _toggleSteamActions () {
+    _toggleSteamActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (_ref4) {
+      var website, type, elements, resolve, action, _ref4$toFinalUrl, toFinalUrl, pro, _iterator31, _step32, _loop13
+
+      return regeneratorRuntime.wrap(function _callee21$ (_context23) {
+        while (1) {
+          switch (_context23.prev = _context23.next) {
             case 0:
               website = _ref4.website, type = _ref4.type, elements = _ref4.elements, resolve = _ref4.resolve, action = _ref4.action, _ref4$toFinalUrl = _ref4.toFinalUrl, toFinalUrl = _ref4$toFinalUrl === void 0 ? {} : _ref4$toFinalUrl
               pro = []
@@ -2027,17 +2178,21 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
                         break
 
+                      case 'forum':
+                        elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+                        break
+
                       case 'curator':
                         elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
                         break
 
                       case 'publisher':
                       case 'developer':
-                        elementName = toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)
+                        elementName = (toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)) || toFinalUrlElement.match(/curator\/([\d]+)/)
                         break
 
                       case 'franchise':
-                        elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
+                        elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/) || toFinalUrlElement.match(/curator\/([\d]+)/)
                         break
 
                       case 'game':
@@ -2063,6 +2218,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                       case 'group':
                         pro.push(new Promise(function (resolve) {
                           action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
+                        }))
+                        break
+
+                      case 'forum':
+                        pro.push(new Promise(function (resolve) {
+                          action === 'fuck' ? subscribeForum(resolve, elementName[1]) : subscribeForum(resolve, elementName[1], false)
                         }))
                         break
 
@@ -2128,10 +2289,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 5:
             case 'end':
-              return _context22.stop()
+              return _context23.stop()
           }
         }
-      }, _callee20)
+      }, _callee21)
     }))
     return _toggleSteamActions.apply(this, arguments)
   }
@@ -2223,35 +2384,35 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitchChannel (_x2, _x3) {
+  function toggleTwitchChannel (_x4, _x5) {
     return _toggleTwitchChannel.apply(this, arguments)
   }
 
   function _toggleTwitchChannel () {
-    _toggleTwitchChannel = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee21 (resolve, name) {
+    _toggleTwitchChannel = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee22 (resolve, name) {
       var follow
       var channelId
       var status
       var followData
       var unfollowData
-      var _args23 = arguments
-      return regeneratorRuntime.wrap(function _callee21$ (_context23) {
+      var _args24 = arguments
+      return regeneratorRuntime.wrap(function _callee22$ (_context24) {
         while (1) {
-          switch (_context23.prev = _context23.next) {
+          switch (_context24.prev = _context24.next) {
             case 0:
-              follow = _args23.length > 2 && _args23[2] !== undefined ? _args23[2] : true
-              _context23.next = 3
+              follow = _args24.length > 2 && _args24[2] !== undefined ? _args24[2] : true
+              _context24.next = 3
               return getTwitchChannelId(name)
 
             case 3:
-              channelId = _context23.sent
+              channelId = _context24.sent
 
               if (channelId) {
-                _context23.next = 6
+                _context24.next = 6
                 break
               }
 
-              return _context23.abrupt('return', resolve({
+              return _context24.abrupt('return', resolve({
                 result: 'error',
                 statusText: '"getTwitchChannelId" failed',
                 status: 0
@@ -2297,10 +2458,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 10:
             case 'end':
-              return _context23.stop()
+              return _context24.stop()
           }
         }
-      }, _callee21)
+      }, _callee22)
     }))
     return _toggleTwitchChannel.apply(this, arguments)
   }
@@ -2364,47 +2525,47 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitchActions (_x4) {
+  function toggleTwitchActions (_x6) {
     return _toggleTwitchActions.apply(this, arguments)
   }
 
   function _toggleTwitchActions () {
-    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee22 (_ref7) {
+    _toggleTwitchActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee23 (_ref7) {
       var website, type, elements, resolve, action, _ref7$toFinalUrl, toFinalUrl, result, _iterator32, _step33, _loop14
 
-      return regeneratorRuntime.wrap(function _callee22$ (_context25) {
+      return regeneratorRuntime.wrap(function _callee23$ (_context26) {
         while (1) {
-          switch (_context25.prev = _context25.next) {
+          switch (_context26.prev = _context26.next) {
             case 0:
               website = _ref7.website, type = _ref7.type, elements = _ref7.elements, resolve = _ref7.resolve, action = _ref7.action, _ref7$toFinalUrl = _ref7.toFinalUrl, toFinalUrl = _ref7$toFinalUrl === void 0 ? {} : _ref7$toFinalUrl
 
               if (!(new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000)) {
-                _context25.next = 7
+                _context26.next = 7
                 break
               }
 
-              _context25.next = 4
+              _context26.next = 4
               return verifyTwitchAuth()
 
             case 4:
-              result = _context25.sent
+              result = _context26.sent
 
               if (result) {
-                _context25.next = 7
+                _context26.next = 7
                 break
               }
 
-              return _context25.abrupt('return')
+              return _context26.abrupt('return')
 
             case 7:
               _iterator32 = _createForOfIteratorHelper(unique(elements))
-              _context25.prev = 8
+              _context26.prev = 8
               _loop14 = /* #__PURE__ */regeneratorRuntime.mark(function _loop14 () {
                 var element, name, _toFinalUrlElement$ma, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop14$ (_context24) {
+                return regeneratorRuntime.wrap(function _loop14$ (_context25) {
                   while (1) {
-                    switch (_context24.prev = _context24.next) {
+                    switch (_context25.prev = _context25.next) {
                       case 0:
                         element = _step33.value
                         name = element
@@ -2415,18 +2576,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context24.next = 6
+                          _context25.next = 6
                           break
                         }
 
-                        _context24.next = 6
+                        _context25.next = 6
                         return new Promise(function (resolve) {
                           toggleTwitchChannel(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context24.stop()
+                        return _context25.stop()
                     }
                   }
                 }, _loop14)
@@ -2436,42 +2597,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 11:
               if ((_step33 = _iterator32.n()).done) {
-                _context25.next = 15
+                _context26.next = 15
                 break
               }
 
-              return _context25.delegateYield(_loop14(), 't0', 13)
+              return _context26.delegateYield(_loop14(), 't0', 13)
 
             case 13:
-              _context25.next = 11
+              _context26.next = 11
               break
 
             case 15:
-              _context25.next = 20
+              _context26.next = 20
               break
 
             case 17:
-              _context25.prev = 17
-              _context25.t1 = _context25.catch(8)
+              _context26.prev = 17
+              _context26.t1 = _context26.catch(8)
 
-              _iterator32.e(_context25.t1)
+              _iterator32.e(_context26.t1)
 
             case 20:
-              _context25.prev = 20
+              _context26.prev = 20
 
               _iterator32.f()
 
-              return _context25.finish(20)
+              return _context26.finish(20)
 
             case 23:
               resolve()
 
             case 24:
             case 'end':
-              return _context25.stop()
+              return _context26.stop()
           }
         }
-      }, _callee22, null, [[8, 17, 20, 23]])
+      }, _callee23, null, [[8, 17, 20, 23]])
     }))
     return _toggleTwitchActions.apply(this, arguments)
   }
@@ -2533,33 +2694,33 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitterUser (_x5, _x6) {
+  function toggleTwitterUser (_x7, _x8) {
     return _toggleTwitterUser.apply(this, arguments)
   }
 
   function _toggleTwitterUser () {
-    _toggleTwitterUser = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee23 (r, name) {
+    _toggleTwitterUser = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (r, name) {
       var follow
       var userId
       var status
-      var _args26 = arguments
-      return regeneratorRuntime.wrap(function _callee23$ (_context26) {
+      var _args27 = arguments
+      return regeneratorRuntime.wrap(function _callee24$ (_context27) {
         while (1) {
-          switch (_context26.prev = _context26.next) {
+          switch (_context27.prev = _context27.next) {
             case 0:
-              follow = _args26.length > 2 && _args26[2] !== undefined ? _args26[2] : true
-              _context26.next = 3
+              follow = _args27.length > 2 && _args27[2] !== undefined ? _args27[2] : true
+              _context27.next = 3
               return getTwitterUserId(name)
 
             case 3:
-              userId = _context26.sent
+              userId = _context27.sent
 
               if (userId) {
-                _context26.next = 6
+                _context27.next = 6
                 break
               }
 
-              return _context26.abrupt('return', r({
+              return _context27.abrupt('return', r({
                 result: 'error',
                 statusText: '"getTwitterUserId" failed',
                 status: 0
@@ -2615,28 +2776,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 8:
             case 'end':
-              return _context26.stop()
+              return _context27.stop()
           }
         }
-      }, _callee23)
+      }, _callee24)
     }))
     return _toggleTwitterUser.apply(this, arguments)
   }
 
-  function toggleRetweet (_x7, _x8) {
+  function toggleRetweet (_x9, _x10) {
     return _toggleRetweet.apply(this, arguments)
   }
 
   function _toggleRetweet () {
-    _toggleRetweet = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (r, retweetId) {
+    _toggleRetweet = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (r, retweetId) {
       var retweet
       var status
-      var _args27 = arguments
-      return regeneratorRuntime.wrap(function _callee24$ (_context27) {
+      var _args28 = arguments
+      return regeneratorRuntime.wrap(function _callee25$ (_context28) {
         while (1) {
-          switch (_context27.prev = _context27.next) {
+          switch (_context28.prev = _context28.next) {
             case 0:
-              retweet = _args27.length > 2 && _args27[2] !== undefined ? _args27[2] : true
+              retweet = _args28.length > 2 && _args28[2] !== undefined ? _args28[2] : true
               status = echoLog({
                 type: ''.concat(retweet ? '' : 'un', 'retweet'),
                 text: retweetId
@@ -2655,11 +2816,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 }),
                 responseType: 'json',
                 onload: function onload (response) {
-                  var _response$response19, _response$response19$, _response$response19$2
+                  var _response$response21, _response$response21$, _response$response21$2
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 || response.status === 403 && ((_response$response19 = response.response) === null || _response$response19 === void 0 ? void 0 : (_response$response19$ = _response$response19.errors) === null || _response$response19$ === void 0 ? void 0 : (_response$response19$2 = _response$response19$[0]) === null || _response$response19$2 === void 0 ? void 0 : _response$response19$2.code) === 327) {
+                  if (response.status === 200 || response.status === 403 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : (_response$response21$ = _response$response21.errors) === null || _response$response21$ === void 0 ? void 0 : (_response$response21$2 = _response$response21$[0]) === null || _response$response21$2 === void 0 ? void 0 : _response$response21$2.code) === 327) {
                     status.success()
                     r({
                       result: 'success',
@@ -2681,10 +2842,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 3:
             case 'end':
-              return _context27.stop()
+              return _context28.stop()
           }
         }
-      }, _callee24)
+      }, _callee25)
     }))
     return _toggleRetweet.apply(this, arguments)
   }
@@ -2748,17 +2909,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleTwitterActions (_x9) {
+  function toggleTwitterActions (_x11) {
     return _toggleTwitterActions.apply(this, arguments)
   }
 
   function _toggleTwitterActions () {
-    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee25 (_ref9) {
+    _toggleTwitterActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee26 (_ref9) {
       var website, type, elements, resolve, action, _ref9$toFinalUrl, toFinalUrl, _iterator33, _step34, _loop15
 
-      return regeneratorRuntime.wrap(function _callee25$ (_context29) {
+      return regeneratorRuntime.wrap(function _callee26$ (_context30) {
         while (1) {
-          switch (_context29.prev = _context29.next) {
+          switch (_context30.prev = _context30.next) {
             case 0:
               website = _ref9.website, type = _ref9.type, elements = _ref9.elements, resolve = _ref9.resolve, action = _ref9.action, _ref9$toFinalUrl = _ref9.toFinalUrl, toFinalUrl = _ref9$toFinalUrl === void 0 ? {} : _ref9$toFinalUrl
 
@@ -2769,67 +2930,67 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
               */
               _iterator33 = _createForOfIteratorHelper(unique(elements))
-              _context29.prev = 2
+              _context30.prev = 2
               _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 () {
                 var _toFinalUrlElement$ma2, _toFinalUrlElement$ma3
 
                 var element, id, toFinalUrlElement
-                return regeneratorRuntime.wrap(function _loop15$ (_context28) {
+                return regeneratorRuntime.wrap(function _loop15$ (_context29) {
                   while (1) {
-                    switch (_context28.prev = _context28.next) {
+                    switch (_context29.prev = _context29.next) {
                       case 0:
                         element = _step34.value
                         id = element
 
                         if (!(website === 'giveawaysu' && toFinalUrl[element])) {
-                          _context28.next = 11
+                          _context29.next = 11
                           break
                         }
 
                         toFinalUrlElement = toFinalUrl[element] || ''
-                        _context28.t0 = type
-                        _context28.next = _context28.t0 === 'follow' ? 7 : _context28.t0 === 'retweet' ? 9 : 11
+                        _context29.t0 = type
+                        _context29.next = _context29.t0 === 'follow' ? 7 : _context29.t0 === 'retweet' ? 9 : 11
                         break
 
                       case 7:
                         id = (_toFinalUrlElement$ma2 = toFinalUrlElement.match(/https:\/\/twitter.com\/(.+)/)) === null || _toFinalUrlElement$ma2 === void 0 ? void 0 : _toFinalUrlElement$ma2[1]
-                        return _context28.abrupt('break', 11)
+                        return _context29.abrupt('break', 11)
 
                       case 9:
                         id = (_toFinalUrlElement$ma3 = toFinalUrlElement.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _toFinalUrlElement$ma3 === void 0 ? void 0 : _toFinalUrlElement$ma3[1]
-                        return _context28.abrupt('break', 11)
+                        return _context29.abrupt('break', 11)
 
                       case 11:
                         if (!id) {
-                          _context28.next = 21
+                          _context29.next = 21
                           break
                         }
 
-                        _context28.t1 = type
-                        _context28.next = _context28.t1 === 'follow' ? 15 : _context28.t1 === 'retweet' ? 18 : 21
+                        _context29.t1 = type
+                        _context29.next = _context29.t1 === 'follow' ? 15 : _context29.t1 === 'retweet' ? 18 : 21
                         break
 
                       case 15:
-                        _context28.next = 17
+                        _context29.next = 17
                         return new Promise(function (resolve) {
                           toggleTwitterUser(resolve, id, action === 'fuck')
                         })
 
                       case 17:
-                        return _context28.abrupt('break', 21)
+                        return _context29.abrupt('break', 21)
 
                       case 18:
-                        _context28.next = 20
+                        _context29.next = 20
                         return new Promise(function (resolve) {
                           toggleRetweet(resolve, id, action === 'fuck')
                         })
 
                       case 20:
-                        return _context28.abrupt('break', 21)
+                        return _context29.abrupt('break', 21)
 
                       case 21:
                       case 'end':
-                        return _context28.stop()
+                        return _context29.stop()
                     }
                   }
                 }, _loop15)
@@ -2839,42 +3000,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 5:
               if ((_step34 = _iterator33.n()).done) {
-                _context29.next = 9
+                _context30.next = 9
                 break
               }
 
-              return _context29.delegateYield(_loop15(), 't0', 7)
+              return _context30.delegateYield(_loop15(), 't0', 7)
 
             case 7:
-              _context29.next = 5
+              _context30.next = 5
               break
 
             case 9:
-              _context29.next = 14
+              _context30.next = 14
               break
 
             case 11:
-              _context29.prev = 11
-              _context29.t1 = _context29.catch(2)
+              _context30.prev = 11
+              _context30.t1 = _context30.catch(2)
 
-              _iterator33.e(_context29.t1)
+              _iterator33.e(_context30.t1)
 
             case 14:
-              _context29.prev = 14
+              _context30.prev = 14
 
               _iterator33.f()
 
-              return _context29.finish(14)
+              return _context30.finish(14)
 
             case 17:
               resolve()
 
             case 18:
             case 'end':
-              return _context29.stop()
+              return _context30.stop()
           }
         }
-      }, _callee25, null, [[2, 11, 14, 17]])
+      }, _callee26, null, [[2, 11, 14, 17]])
     }))
     return _toggleTwitterActions.apply(this, arguments)
   }
@@ -2989,40 +3150,40 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleDiscordActions (_x10) {
+  function toggleDiscordActions (_x12) {
     return _toggleDiscordActions.apply(this, arguments)
   }
 
   function _toggleDiscordActions () {
-    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee26 (_ref10) {
+    _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee27 (_ref10) {
       var website, elements, resolve, action, _ref10$toFinalUrl, toFinalUrl, _ref10$toGuild, toGuild, verifyResult, pro, _iterator34, _step35, _loop16
 
-      return regeneratorRuntime.wrap(function _callee26$ (_context30) {
+      return regeneratorRuntime.wrap(function _callee27$ (_context31) {
         while (1) {
-          switch (_context30.prev = _context30.next) {
+          switch (_context31.prev = _context31.next) {
             case 0:
               website = _ref10.website, elements = _ref10.elements, resolve = _ref10.resolve, action = _ref10.action, _ref10$toFinalUrl = _ref10.toFinalUrl, toFinalUrl = _ref10$toFinalUrl === void 0 ? {} : _ref10$toFinalUrl, _ref10$toGuild = _ref10.toGuild, toGuild = _ref10$toGuild === void 0 ? {} : _ref10$toGuild
 
               if (!(new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired)) {
-                _context30.next = 14
+                _context31.next = 14
                 break
               }
 
-              _context30.next = 4
+              _context31.next = 4
               return verifyDiscordAuth()
 
             case 4:
-              verifyResult = _context30.sent
+              verifyResult = _context31.sent
 
               if (!verifyResult) {
-                _context30.next = 11
+                _context31.next = 11
                 break
               }
 
               discordInfo.updateTime = new Date().getTime()
               discordInfo.expired = false
               GM_setValue('discordInfo', discordInfo)
-              _context30.next = 14
+              _context31.next = 14
               break
 
             case 11:
@@ -3030,7 +3191,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 type: 'updateDiscordAuth'
               })
               resolve({})
-              return _context30.abrupt('return')
+              return _context31.abrupt('return')
 
             case 14:
               pro = []
@@ -3080,10 +3241,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 18:
             case 'end':
-              return _context30.stop()
+              return _context31.stop()
           }
         }
-      }, _callee26)
+      }, _callee27)
     }))
     return _toggleDiscordActions.apply(this, arguments)
   }
@@ -3108,12 +3269,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               status: response.status
             })
             return
+          } else if (response.finalUrl.includes('www.instagram.com/challenge')) {
+            status.error('Error:' + getI18n('insBanned'))
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+            return
           }
 
           if (response.status === 200) {
-            var _response$responseTex3, _response$responseTex4
+            var _response$responseTex5, _response$responseTex6
 
-            var _data = (_response$responseTex3 = response.responseText) === null || _response$responseTex3 === void 0 ? void 0 : (_response$responseTex4 = _response$responseTex3.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)) === null || _response$responseTex4 === void 0 ? void 0 : _response$responseTex4[1]
+            var _data = (_response$responseTex5 = response.responseText) === null || _response$responseTex5 === void 0 ? void 0 : (_response$responseTex6 = _response$responseTex5.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)) === null || _response$responseTex6 === void 0 ? void 0 : _response$responseTex6[1]
 
             if (_data) {
               var _data$config, _data$entry_data, _data$entry_data$Prof, _data$entry_data$Prof2, _data$entry_data$Prof3, _data$entry_data$Prof4
@@ -3164,28 +3333,28 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function followIns (_x11, _x12) {
+  function followIns (_x13, _x14) {
     return _followIns.apply(this, arguments)
   }
 
   function _followIns () {
-    _followIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee27 (r, name) {
+    _followIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee28 (r, name) {
       var _yield$getInsInfo, id, error, status
 
-      return regeneratorRuntime.wrap(function _callee27$ (_context31) {
+      return regeneratorRuntime.wrap(function _callee28$ (_context32) {
         while (1) {
-          switch (_context31.prev = _context31.next) {
+          switch (_context32.prev = _context32.next) {
             case 0:
-              _context31.next = 2
+              _context32.next = 2
               return getInsInfo(name)
 
             case 2:
-              _yield$getInsInfo = _context31.sent
+              _yield$getInsInfo = _context32.sent
               id = _yield$getInsInfo.id
               error = _yield$getInsInfo.error
 
               if (!error) {
-                _context31.next = 8
+                _context32.next = 8
                 break
               }
 
@@ -3193,7 +3362,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 result: 'error',
                 statusText: 'getInsInfo error'
               })
-              return _context31.abrupt('return', error)
+              return _context32.abrupt('return', error)
 
             case 8:
               status = echoLog({
@@ -3213,94 +3382,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   'x-instagram-ajax': insInfo.hash
                 },
                 onload: function onload (response) {
-                  var _response$response20
+                  var _response$response22
 
                   if (debug) console.log(response)
 
-                  if (response.status === 200 && ((_response$response20 = response.response) === null || _response$response20 === void 0 ? void 0 : _response$response20.result) === 'following') {
-                    status.success()
-                    r({
-                      result: 'success',
-                      statusText: response.statusText,
-                      status: response.status
-                    })
-                  } else {
-                    status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    r({
-                      result: 'error',
-                      statusText: response.statusText,
-                      status: response.status
-                    })
-                  }
-                },
-                r: r,
-                status: status
-              })
-
-            case 10:
-            case 'end':
-              return _context31.stop()
-          }
-        }
-      }, _callee27)
-    }))
-    return _followIns.apply(this, arguments)
-  }
-
-  function unfollowIns (_x13, _x14) {
-    return _unfollowIns.apply(this, arguments)
-  }
-
-  function _unfollowIns () {
-    _unfollowIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee28 (r, name) {
-      var _yield$getInsInfo2, id, error, status
-
-      return regeneratorRuntime.wrap(function _callee28$ (_context32) {
-        while (1) {
-          switch (_context32.prev = _context32.next) {
-            case 0:
-              _context32.next = 2
-              return getInsInfo(name)
-
-            case 2:
-              _yield$getInsInfo2 = _context32.sent
-              id = _yield$getInsInfo2.id
-              error = _yield$getInsInfo2.error
-
-              if (!error) {
-                _context32.next = 8
-                break
-              }
-
-              r({
-                result: 'error',
-                statusText: 'getInsInfo error'
-              })
-              return _context32.abrupt('return', error)
-
-            case 8:
-              status = echoLog({
-                type: 'unfollowIns',
-                text: name
-              })
-              httpRequest({
-                url: 'https://www.instagram.com/web/friendships/'.concat(id, '/unfollow/'),
-                method: 'POST',
-                dataType: 'json',
-                headers: {
-                  'x-csrftoken': insInfo.csrftoken,
-                  origin: 'https://www.instagram.com',
-                  referer: 'https://www.instagram.com/'.concat(name, '/'),
-                  'content-type': 'application/x-www-form-urlencoded',
-                  'sec-fetch-site': 'same-origin',
-                  'x-instagram-ajax': insInfo.hash
-                },
-                onload: function onload (response) {
-                  var _response$response21
-
-                  if (debug) console.log(response)
-
-                  if (response.status === 200 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : _response$response21.status) === 'ok') {
+                  if (response.status === 200 && ((_response$response22 = response.response) === null || _response$response22 === void 0 ? void 0 : _response$response22.result) === 'following') {
                     status.success()
                     r({
                       result: 'success',
@@ -3327,20 +3413,103 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         }
       }, _callee28)
     }))
+    return _followIns.apply(this, arguments)
+  }
+
+  function unfollowIns (_x15, _x16) {
     return _unfollowIns.apply(this, arguments)
   }
 
-  function toggleInsActions (_x15) {
-    return _toggleInsActions.apply(this, arguments)
-  }
-
-  function _toggleInsActions () {
-    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee29 (_ref12) {
-      var website, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, pro, _iterator35, _step36, _loop17
+  function _unfollowIns () {
+    _unfollowIns = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee29 (r, name) {
+      var _yield$getInsInfo2, id, error, status
 
       return regeneratorRuntime.wrap(function _callee29$ (_context33) {
         while (1) {
           switch (_context33.prev = _context33.next) {
+            case 0:
+              _context33.next = 2
+              return getInsInfo(name)
+
+            case 2:
+              _yield$getInsInfo2 = _context33.sent
+              id = _yield$getInsInfo2.id
+              error = _yield$getInsInfo2.error
+
+              if (!error) {
+                _context33.next = 8
+                break
+              }
+
+              r({
+                result: 'error',
+                statusText: 'getInsInfo error'
+              })
+              return _context33.abrupt('return', error)
+
+            case 8:
+              status = echoLog({
+                type: 'unfollowIns',
+                text: name
+              })
+              httpRequest({
+                url: 'https://www.instagram.com/web/friendships/'.concat(id, '/unfollow/'),
+                method: 'POST',
+                dataType: 'json',
+                headers: {
+                  'x-csrftoken': insInfo.csrftoken,
+                  origin: 'https://www.instagram.com',
+                  referer: 'https://www.instagram.com/'.concat(name, '/'),
+                  'content-type': 'application/x-www-form-urlencoded',
+                  'sec-fetch-site': 'same-origin',
+                  'x-instagram-ajax': insInfo.hash
+                },
+                onload: function onload (response) {
+                  var _response$response23
+
+                  if (debug) console.log(response)
+
+                  if (response.status === 200 && ((_response$response23 = response.response) === null || _response$response23 === void 0 ? void 0 : _response$response23.status) === 'ok') {
+                    status.success()
+                    r({
+                      result: 'success',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  } else {
+                    status.error('Error:' + response.statusText + '(' + response.status + ')')
+                    r({
+                      result: 'error',
+                      statusText: response.statusText,
+                      status: response.status
+                    })
+                  }
+                },
+                r: r,
+                status: status
+              })
+
+            case 10:
+            case 'end':
+              return _context33.stop()
+          }
+        }
+      }, _callee29)
+    }))
+    return _unfollowIns.apply(this, arguments)
+  }
+
+  function toggleInsActions (_x17) {
+    return _toggleInsActions.apply(this, arguments)
+  }
+
+  function _toggleInsActions () {
+    _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee30 (_ref12) {
+      var website, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, pro, _iterator35, _step36, _loop17
+
+      return regeneratorRuntime.wrap(function _callee30$ (_context34) {
+        while (1) {
+          switch (_context34.prev = _context34.next) {
             case 0:
               website = _ref12.website, elements = _ref12.elements, resolve = _ref12.resolve, action = _ref12.action, _ref12$toFinalUrl = _ref12.toFinalUrl, toFinalUrl = _ref12$toFinalUrl === void 0 ? {} : _ref12$toFinalUrl
               pro = []
@@ -3384,10 +3553,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 5:
             case 'end':
-              return _context33.stop()
+              return _context34.stop()
           }
         }
-      }, _callee29)
+      }, _callee30)
     }))
     return _toggleInsActions.apply(this, arguments)
   }
@@ -3495,47 +3664,47 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleRedditActions (_x16) {
+  function toggleRedditActions (_x18) {
     return _toggleRedditActions.apply(this, arguments)
   }
 
   function _toggleRedditActions () {
-    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee30 (_ref15) {
+    _toggleRedditActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee31 (_ref15) {
       var website, type, elements, resolve, action, _ref15$toFinalUrl, toFinalUrl, result, _iterator36, _step37, _loop18
 
-      return regeneratorRuntime.wrap(function _callee30$ (_context35) {
+      return regeneratorRuntime.wrap(function _callee31$ (_context36) {
         while (1) {
-          switch (_context35.prev = _context35.next) {
+          switch (_context36.prev = _context36.next) {
             case 0:
               website = _ref15.website, type = _ref15.type, elements = _ref15.elements, resolve = _ref15.resolve, action = _ref15.action, _ref15$toFinalUrl = _ref15.toFinalUrl, toFinalUrl = _ref15$toFinalUrl === void 0 ? {} : _ref15$toFinalUrl
 
               if (!(new Date().getTime() > redditInfo.expiresTime)) {
-                _context35.next = 7
+                _context36.next = 7
                 break
               }
 
-              _context35.next = 4
+              _context36.next = 4
               return updateRedditInfo()
 
             case 4:
-              result = _context35.sent
+              result = _context36.sent
 
               if (!(!(result === null || result === void 0 ? void 0 : result.result) === 'success')) {
-                _context35.next = 7
+                _context36.next = 7
                 break
               }
 
-              return _context35.abrupt('return')
+              return _context36.abrupt('return')
 
             case 7:
               _iterator36 = _createForOfIteratorHelper(unique(elements))
-              _context35.prev = 8
+              _context36.prev = 8
               _loop18 = /* #__PURE__ */regeneratorRuntime.mark(function _loop18 () {
                 var element, name, _toFinalUrlElement$ma6, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop18$ (_context34) {
+                return regeneratorRuntime.wrap(function _loop18$ (_context35) {
                   while (1) {
-                    switch (_context34.prev = _context34.next) {
+                    switch (_context35.prev = _context35.next) {
                       case 0:
                         element = _step37.value
                         name = element
@@ -3546,18 +3715,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context34.next = 6
+                          _context35.next = 6
                           break
                         }
 
-                        _context34.next = 6
+                        _context35.next = 6
                         return new Promise(function (resolve) {
                           toggleReddit(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context34.stop()
+                        return _context35.stop()
                     }
                   }
                 }, _loop18)
@@ -3567,42 +3736,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 11:
               if ((_step37 = _iterator36.n()).done) {
-                _context35.next = 15
+                _context36.next = 15
                 break
               }
 
-              return _context35.delegateYield(_loop18(), 't0', 13)
+              return _context36.delegateYield(_loop18(), 't0', 13)
 
             case 13:
-              _context35.next = 11
+              _context36.next = 11
               break
 
             case 15:
-              _context35.next = 20
+              _context36.next = 20
               break
 
             case 17:
-              _context35.prev = 17
-              _context35.t1 = _context35.catch(8)
+              _context36.prev = 17
+              _context36.t1 = _context36.catch(8)
 
-              _iterator36.e(_context35.t1)
+              _iterator36.e(_context36.t1)
 
             case 20:
-              _context35.prev = 20
+              _context36.prev = 20
 
               _iterator36.f()
 
-              return _context35.finish(20)
+              return _context36.finish(20)
 
             case 23:
               resolve()
 
             case 24:
             case 'end':
-              return _context35.stop()
+              return _context36.stop()
           }
         }
-      }, _callee30, null, [[8, 17, 20, 23]])
+      }, _callee31, null, [[8, 17, 20, 23]])
     }))
     return _toggleRedditActions.apply(this, arguments)
   }
@@ -3652,54 +3821,54 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleVk (_x17, _x18) {
+  function toggleVk (_x19, _x20) {
     return _toggleVk.apply(this, arguments)
   }
 
   function _toggleVk () {
-    _toggleVk = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee31 (r, name) {
+    _toggleVk = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee32 (r, name) {
       var join
       var _yield$getVkId
       var data
-      var _args36 = arguments
+      var _args37 = arguments
 
-      return regeneratorRuntime.wrap(function _callee31$ (_context36) {
+      return regeneratorRuntime.wrap(function _callee32$ (_context37) {
         while (1) {
-          switch (_context36.prev = _context36.next) {
+          switch (_context37.prev = _context37.next) {
             case 0:
-              join = _args36.length > 2 && _args36[2] !== undefined ? _args36[2] : true
-              _context36.next = 3
+              join = _args37.length > 2 && _args37[2] !== undefined ? _args37[2] : true
+              _context37.next = 3
               return getVkId(name)
 
             case 3:
-              _yield$getVkId = _context36.sent
+              _yield$getVkId = _context37.sent
               data = _yield$getVkId.data
 
               if (data) {
-                _context36.next = 7
+                _context37.next = 7
                 break
               }
 
-              return _context36.abrupt('return')
+              return _context37.abrupt('return')
 
             case 7:
-              _context36.t0 = data.type
-              _context36.next = _context36.t0 === 'group' ? 10 : _context36.t0 === 'public' ? 12 : 13
+              _context37.t0 = data.type
+              _context37.next = _context37.t0 === 'group' ? 10 : _context37.t0 === 'public' ? 12 : 13
               break
 
             case 10:
               toggleVkGroup(r, name, data, join)
-              return _context36.abrupt('break', 13)
+              return _context37.abrupt('break', 13)
 
             case 12:
               toggleVkPublic(r, name, data, join)
 
             case 13:
             case 'end':
-              return _context36.stop()
+              return _context37.stop()
           }
         }
-      }, _callee31)
+      }, _callee32)
     }))
     return _toggleVk.apply(this, arguments)
   }
@@ -3823,7 +3992,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           if (debug) console.log(response)
 
           if (response.status === 200) {
-            var _response$responseTex5, _response$responseTex6
+            var _response$responseTex7, _response$responseTex8
 
             var _ref17 = response.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || []
             var _ref18 = _slicedToArray(_ref17, 4)
@@ -3831,8 +4000,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             var groupId = _ref18[2]
             var groupHash = _ref18[3]
 
-            var publicHash = (_response$responseTex5 = response.responseText.match(/"enterHash":"(.*?)"/)) === null || _response$responseTex5 === void 0 ? void 0 : _response$responseTex5[1]
-            var publicPid = (_response$responseTex6 = response.responseText.match(/"public_id":([\d]+?),/)) === null || _response$responseTex6 === void 0 ? void 0 : _response$responseTex6[1]
+            var publicHash = (_response$responseTex7 = response.responseText.match(/"enterHash":"(.*?)"/)) === null || _response$responseTex7 === void 0 ? void 0 : _response$responseTex7[1]
+            var publicPid = (_response$responseTex8 = response.responseText.match(/"public_id":([\d]+?),/)) === null || _response$responseTex8 === void 0 ? void 0 : _response$responseTex8[1]
             var publicJoined = !response.responseText.includes('Public.subscribe')
 
             if (groupAct && groupId && groupHash) {
@@ -3884,41 +4053,41 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     })
   }
 
-  function toggleVkActions (_x19) {
+  function toggleVkActions (_x21) {
     return _toggleVkActions.apply(this, arguments)
   }
 
   function _toggleVkActions () {
-    _toggleVkActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee32 (_ref19) {
+    _toggleVkActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee33 (_ref19) {
       var website, type, elements, resolve, action, _ref19$toFinalUrl, toFinalUrl, isLogin, _iterator37, _step38, _loop19
 
-      return regeneratorRuntime.wrap(function _callee32$ (_context38) {
+      return regeneratorRuntime.wrap(function _callee33$ (_context39) {
         while (1) {
-          switch (_context38.prev = _context38.next) {
+          switch (_context39.prev = _context39.next) {
             case 0:
               website = _ref19.website, type = _ref19.type, elements = _ref19.elements, resolve = _ref19.resolve, action = _ref19.action, _ref19$toFinalUrl = _ref19.toFinalUrl, toFinalUrl = _ref19$toFinalUrl === void 0 ? {} : _ref19$toFinalUrl
-              _context38.next = 3
+              _context39.next = 3
               return verifyVkLogin()
 
             case 3:
-              isLogin = _context38.sent
+              isLogin = _context39.sent
 
               if (isLogin) {
-                _context38.next = 6
+                _context39.next = 6
                 break
               }
 
-              return _context38.abrupt('return', resolve())
+              return _context39.abrupt('return', resolve())
 
             case 6:
               _iterator37 = _createForOfIteratorHelper(unique(elements))
-              _context38.prev = 7
+              _context39.prev = 7
               _loop19 = /* #__PURE__ */regeneratorRuntime.mark(function _loop19 () {
                 var element, name, _toFinalUrlElement$ma7, toFinalUrlElement
 
-                return regeneratorRuntime.wrap(function _loop19$ (_context37) {
+                return regeneratorRuntime.wrap(function _loop19$ (_context38) {
                   while (1) {
-                    switch (_context37.prev = _context37.next) {
+                    switch (_context38.prev = _context38.next) {
                       case 0:
                         element = _step38.value
                         name = element
@@ -3929,18 +4098,18 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                         }
 
                         if (!name) {
-                          _context37.next = 6
+                          _context38.next = 6
                           break
                         }
 
-                        _context37.next = 6
+                        _context38.next = 6
                         return new Promise(function (resolve) {
                           toggleVk(resolve, name, action === 'fuck')
                         })
 
                       case 6:
                       case 'end':
-                        return _context37.stop()
+                        return _context38.stop()
                     }
                   }
                 }, _loop19)
@@ -3950,42 +4119,42 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             case 10:
               if ((_step38 = _iterator37.n()).done) {
-                _context38.next = 14
+                _context39.next = 14
                 break
               }
 
-              return _context38.delegateYield(_loop19(), 't0', 12)
+              return _context39.delegateYield(_loop19(), 't0', 12)
 
             case 12:
-              _context38.next = 10
+              _context39.next = 10
               break
 
             case 14:
-              _context38.next = 19
+              _context39.next = 19
               break
 
             case 16:
-              _context38.prev = 16
-              _context38.t1 = _context38.catch(7)
+              _context39.prev = 16
+              _context39.t1 = _context39.catch(7)
 
-              _iterator37.e(_context38.t1)
+              _iterator37.e(_context39.t1)
 
             case 19:
-              _context38.prev = 19
+              _context39.prev = 19
 
               _iterator37.f()
 
-              return _context38.finish(19)
+              return _context39.finish(19)
 
             case 22:
               resolve()
 
             case 23:
             case 'end':
-              return _context38.stop()
+              return _context39.stop()
           }
         }
-      }, _callee32, null, [[7, 16, 19, 22]])
+      }, _callee33, null, [[7, 16, 19, 22]])
     }))
     return _toggleVkActions.apply(this, arguments)
   }
@@ -4134,6 +4303,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {}
     var defaultData = {
       groups: [],
+      forums: [],
       curators: [],
       publishers: [],
       developers: [],
@@ -4152,6 +4322,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
     var _Object$assign = Object.assign(defaultData, data)
     var groups = _Object$assign.groups
+    var forums = _Object$assign.forums
     var curators = _Object$assign.curators
     var publishers = _Object$assign.publishers
     var developers = _Object$assign.developers
@@ -4163,7 +4334,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     var retweets = _Object$assign.retweets
 
     var steamStore = [].concat(_toConsumableArray(curators), _toConsumableArray(publishers), _toConsumableArray(developers), _toConsumableArray(franchises), _toConsumableArray(fGames), _toConsumableArray(wGames), _toConsumableArray(announcements)).length > 0
-    var steamCommunity = [].concat(_toConsumableArray(groups), _toConsumableArray(announcements)).length > 0
+    var steamCommunity = [].concat(_toConsumableArray(groups), _toConsumableArray(forums), _toConsumableArray(announcements)).length > 0
     var twitter = [].concat(_toConsumableArray(twitterUsers), _toConsumableArray(retweets)).length > 0
     var pro = []
 
@@ -4727,7 +4898,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       retweets: []
     },
     setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.enable) ? config.banana : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.enable.valueOf()) ? config.banana : globalConf
   }
 
   var freegamelottery = {
@@ -4856,7 +5027,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         show: false
       }
     },
-    conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable) ? config.freegamelottery : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable.valueOf()) ? config.freegamelottery : globalConf
   }
   var gamehag = {
     test: function test () {
@@ -5424,7 +5595,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       retweets: []
     },
     setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable) ? config.gamehag : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable.valueOf()) ? config.gamehag : globalConf
   }
   var giveawaysu = {
     test: function test () {
@@ -5528,6 +5699,11 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           name: 'curator',
           link: link
         })
+      } else if (/subscribe.*steam.*forum/gim.test(taskName)) {
+        taskInfo.push({
+          name: 'forum',
+          link: link
+        })
       } else if (taskIcon.includes('discord') || /join.*discord/gim.test(taskName)) {
         taskInfo.push({
           name: 'discord',
@@ -5606,9 +5782,9 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               fuc.getFinalUrl(resolve, link, {
                 onload: function onload (response) {
                   if (response.finalUrl.includes('newshub/app')) {
-                    var _response$responseTex7
+                    var _response$responseTex9
 
-                    var div = (_response$responseTex7 = response.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _response$responseTex7 === void 0 ? void 0 : _response$responseTex7[0]
+                    var div = (_response$responseTex9 = response.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _response$responseTex9 === void 0 ? void 0 : _response$responseTex9[0]
 
                     if (!div) {
                       resolve({
@@ -5686,7 +5862,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       var _this13 = this
 
       return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 () {
-        var _this13$taskInfo, groups, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, toFinalUrl, toGuild, pro, fuck
+        var _this13$taskInfo, groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, toFinalUrl, toGuild, pro, fuck
 
         return regeneratorRuntime.wrap(function _callee9$ (_context11) {
           while (1) {
@@ -5695,16 +5871,32 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
                 if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
                 if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
-                _this13$taskInfo = _this13.taskInfo, groups = _this13$taskInfo.groups, curators = _this13$taskInfo.curators, publishers = _this13$taskInfo.publishers, developers = _this13$taskInfo.developers, franchises = _this13$taskInfo.franchises, fGames = _this13$taskInfo.fGames, wGames = _this13$taskInfo.wGames, announcements = _this13$taskInfo.announcements, discords = _this13$taskInfo.discords, instagrams = _this13$taskInfo.instagrams, twitchs = _this13$taskInfo.twitchs, reddits = _this13$taskInfo.reddits, vks = _this13$taskInfo.vks, toFinalUrl = _this13$taskInfo.toFinalUrl, toGuild = _this13$taskInfo.toGuild
+                _this13$taskInfo = _this13.taskInfo, groups = _this13$taskInfo.groups, forums = _this13$taskInfo.forums, curators = _this13$taskInfo.curators, publishers = _this13$taskInfo.publishers, developers = _this13$taskInfo.developers, franchises = _this13$taskInfo.franchises, fGames = _this13$taskInfo.fGames, wGames = _this13$taskInfo.wGames, announcements = _this13$taskInfo.announcements, discords = _this13$taskInfo.discords, instagrams = _this13$taskInfo.instagrams, twitchs = _this13$taskInfo.twitchs, reddits = _this13$taskInfo.reddits, vks = _this13$taskInfo.vks, toFinalUrl = _this13$taskInfo.toFinalUrl, toGuild = _this13$taskInfo.toGuild
                 pro = []
                 fuck = action === 'fuck'
+                _context11.next = 7
+                return fuc.updateInfo(_this13.taskInfo)
 
+              case 7:
                 if (_this13.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
                   pro.push(new Promise(function (resolve) {
                     fuc.toggleActions({
                       website: 'giveawaysu',
                       type: 'group',
                       elements: groups,
+                      resolve: resolve,
+                      action: action,
+                      toFinalUrl: toFinalUrl
+                    })
+                  }))
+                }
+
+                if (_this13.conf[action][fuck ? 'subscribeSteamForum' : 'unsubscribeSteamForum'] && forums.length > 0) {
+                  pro.push(new Promise(function (resolve) {
+                    fuc.toggleActions({
+                      website: 'giveawaysu',
+                      type: 'forum',
+                      elements: forums,
                       resolve: resolve,
                       action: action,
                       toFinalUrl: toFinalUrl
@@ -5906,7 +6098,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
                 })
 
-              case 19:
+              case 22:
               case 'end':
                 return _context11.stop()
             }
@@ -5949,6 +6141,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     },
     taskInfo: {
       groups: [],
+      forums: [],
       curators: [],
       publishers: [],
       developers: [],
@@ -5970,7 +6163,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         show: false
       }
     },
-    conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable) ? config.giveawaysu : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable.valueOf()) ? config.giveawaysu : globalConf
   }
   var gleam = {
     test: function test () {
@@ -6440,7 +6633,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       discords: []
     },
     setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable.valueOf()) ? config.gleam : globalConf
   }
 
   var indiedb = {
@@ -6711,7 +6904,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         show: false
       }
     },
-    conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable.valueOf()) ? config.indiedb : globalConf
   }
 
   var keylol = {
@@ -7596,7 +7789,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       twitchChannels: []
     },
     setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.enable) ? config.marvelousga : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.enable.valueOf()) ? config.marvelousga : globalConf
   }
 
   var opiumpulses = {
@@ -7688,10 +7881,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                                 if (debug) console.log(response)
 
                                 if (response.responseText && /You've entered this giveaway/gim.test(response.responseText)) {
-                                  var _response$responseTex8
+                                  var _response$responseTex10
 
                                   status.success()
-                                  var points = (_response$responseTex8 = response.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _response$responseTex8 === void 0 ? void 0 : _response$responseTex8[1]
+                                  var points = (_response$responseTex10 = response.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _response$responseTex10 === void 0 ? void 0 : _response$responseTex10[1]
 
                                   if (type === 'points' && points) {
                                     if (debug) console.log(getI18n('pointsLeft') + points)
@@ -7770,7 +7963,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         show: false
       }
     },
-    conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.enable) ? config.opiumpulses : globalConf,
+    conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.enable.valueOf()) ? config.opiumpulses : globalConf,
     maxPoint: function maxPoint () {
       var _this$conf, _this$conf$other
 
@@ -8283,7 +8476,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
       curators: []
     },
     setting: {},
-    conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
+    conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable.valueOf()) ? config.prys : globalConf
   }
   var website = null
   var websites = [banana, freegamelottery, gamehag, giveawaysu, gleam, indiedb, keylol, marvelousga, opiumpulses, prys]

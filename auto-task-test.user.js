@@ -2,7 +2,7 @@
 // @name           自动任务
 // @name:en        Auto Task Test
 // @namespace      auto-task
-// @version        3.0.22
+// @version        3.0.23
 // @description    自动完成赠key站任务
 // @description:en Automatically complete giveaway tasks
 // @author         HCLonely
@@ -33,12 +33,12 @@
 // @require        https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
 // @require        https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
 // @require        https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/bootstrap.min.js
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.23/require/bootstrap.min.js
 // @require        https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
 // @require        https://cdn.jsdelivr.net/npm/sweetalert2@9
 // @require        https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/overhang.min.js
-// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.22/require/fuck-task.min.css
+// @require        https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.23/require/overhang.min.js
+// @resource       CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.23/require/fuck-task.min.css
 
 // @grant          GM_setValue
 // @grant          GM_getValue
@@ -284,7 +284,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     joinVkPublic: '正在加入vk社区',
     leaveVkPublic: '正在退出vk社区',
     getVkId: '正在获取vk群/社区id',
-    insBanned: '你的Ins账户已被封禁'
+    insBanned: '你的Ins账户已被封禁',
+    gsNotice: '为避免得到"0000-0000-0000"key, 已自动屏蔽"Grab Key"按钮，获取key时请关闭脚本！'
   }
   var en_US = {
     language: 'Language',
@@ -457,7 +458,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     joinVkPublic: 'Joining vk public',
     leaveVkPublic: 'Leaving vk public',
     getVkId: 'Getting vk group/public id',
-    insBanned: 'Your Instagram account has been banned'
+    insBanned: 'Your Instagram account has been banned',
+    gsNotice: 'In order to avoid getting the "0000-0000-0000"key, the "Grab Key" button has been hidden, please close the script when obtaining the key!'
   }
   var i18n = {
     'zh-CN': zh_CN,
@@ -5600,6 +5602,12 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   var giveawaysu = {
     test: function test () {
       return window.location.host.includes('giveaway.su')
+    },
+    after: function after () {
+      fuc.echoLog({
+        type: 'custom',
+        text: '<li style="color:blue;">'.concat(getI18n('gsNotice'), '<font></font></li>')
+      })
     },
     get_tasks: function get_tasks (e) {
       var taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')

@@ -76,6 +76,10 @@
   margin-left: 10px
 }
 
+/* 屏蔽giveaway.su获取key按钮 */
+#getKey {
+  display: none !important;
+}
 cloudflare-app{
   display: none !important;
 }

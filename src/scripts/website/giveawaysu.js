@@ -4,6 +4,9 @@ import { config, globalConf, debug } from '../config'
 
 const giveawaysu = {
   test () { return window.location.host.includes('giveaway.su') },
+  after () {
+    fuc.echoLog({ type: 'custom', text: `<li style="color:blue;">${getI18n('gsNotice')}<font></font></li>` })
+  },
   get_tasks (e) { // 获取任务信息
     const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
     if (taskInfo && !fuc.isEmptyObjArr(taskInfo) && e === 'remove') {

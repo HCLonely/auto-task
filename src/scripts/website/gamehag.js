@@ -6,7 +6,7 @@ const gamehag = {
   test () { return window.location.host.includes('gamehag') },
   before () {
     $('#getkey').removeAttr('disabled')
-    if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";</script>')
+    if (globalConf.other.reCaptcha) $('body').append('<script>window.bannedCountries = ["en"];window.geo ="en";window.respCaptch="";window.isSolveMediaCaptcha =false;</script>')
   },
   fuck () { this.get_tasks('do_task') },
   get_tasks (callback = 'do_task') {

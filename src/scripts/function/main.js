@@ -72,7 +72,7 @@ function checkUpdate (s = false) {
     status
   })
 }
-function updateInfo (data = {}) {
+function updateInfo (data = {}, { steamStore = false, steamCommunity = false, twitter = false }) {
   const defaultData = {
     groups: [],
     forums: [],
@@ -111,9 +111,9 @@ function updateInfo (data = {}) {
     twitterUsers,
     retweets
   } = Object.assign(defaultData, data)
-  const steamStore = [...curators, ...publishers, ...developers, ...franchises, ...fGames, ...wGames, ...announcements].length > 0
-  const steamCommunity = [...groups, ...forums, ...announcements].length > 0
-  const twitter = [...twitterUsers, ...retweets].length > 0
+  steamStore = steamStore ?? [...curators, ...publishers, ...developers, ...franchises, ...fGames, ...wGames, ...announcements].length > 0
+  steamCommunity = steamCommunity ?? [...groups, ...forums, ...announcements].length > 0
+  twitter = twitter ?? [...twitterUsers, ...retweets].length > 0
   const pro = []
   if (steamStore && steamCommunity) {
     pro.push(new Promise(resolve => {

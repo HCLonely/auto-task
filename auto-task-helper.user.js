@@ -2,7 +2,7 @@
 // @name           自动任务辅助
 // @name:en        Auto Task Helper
 // @namespace      auto-task-helper
-// @version        3.0.26
+// @version        3.0.27
 // @description    自动任务脚本的辅助脚本，用于获取discord auth
 // @description:en Auxiliary script of automatic task script, used to obtain discord auth
 // @author         HCLonely

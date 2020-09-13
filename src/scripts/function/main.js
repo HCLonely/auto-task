@@ -72,7 +72,8 @@ function checkUpdate (s = false) {
     status
   })
 }
-function updateInfo (data = {}, { steamStore = false, steamCommunity = false, twitter = false }) {
+function updateInfo (data = {}, args = {}) {
+  let { steamStore, steamCommunity, twitter } = args
   const defaultData = {
     groups: [],
     forums: [],

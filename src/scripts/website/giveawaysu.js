@@ -5,6 +5,7 @@ import { config, globalConf, debug } from '../config'
 const giveawaysu = {
   test () { return window.location.host.includes('giveaway.su') },
   after () {
+    GM_addStyle('#getKey{display:none!important;}')
     fuc.echoLog({ type: 'custom', text: `<li style="color:blue !important;">${getI18n('gsNotice')}<font></font></li>` })
   },
   get_tasks (e) { // 获取任务信息

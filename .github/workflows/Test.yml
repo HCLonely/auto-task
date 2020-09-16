@@ -24,3 +24,8 @@ jobs:
     - run: npm test
       env:
         CI: true
+    - uses: actions/upload-artifact@v1
+      with:
+        name: Artifact
+        path: auto-task-.*?\.user\.js
+        if-no-files-found: error

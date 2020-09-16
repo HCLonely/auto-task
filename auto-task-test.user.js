@@ -245,6 +245,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     processSetting: '正在处理设置...',
     creatUrlFailed: '创建下载链接失败！',
     jsError: '脚本执行出错，详细信息请查看控制台(红色背景部分)！',
+    functionError: 's%函数执行出错，详细信息请查看控制台(红色背景部分)！',
     ajaxError: 'Ajax请求出错',
     firstUpdate: '首次更新到3.0+需要重新设置，是否前往设置？',
     goSetting: '前往设置',
@@ -1156,209 +1157,127 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
     return data
   }
 
+  function throwError (e, name) {
+    Swal.fire({
+      icon: 'error',
+      text: getI18n('functionError', name)
+    })
+    console.log('%c%s', 'color:white;background:red', name + '\n' + e.stack)
+  }
+
   function updateSteamInfo (r) {
     var type = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'all'
     var update = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false
 
-    if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
-      var pro = []
+    try {
+      if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
+        var pro = []
 
-      if (type === 'community' || type === 'all') {
-        pro.push(new Promise(function (resolve, reject) {
-          var status = echoLog({
-            type: 'updateSteamCommunity'
-          })
-          httpRequest({
-            url: 'https://steamcommunity.com/my',
-            method: 'GET',
-            onload: function onload (response) {
-              if (debug) console.log(response)
+        if (type === 'community' || type === 'all') {
+          pro.push(new Promise(function (resolve, reject) {
+            var status = echoLog({
+              type: 'updateSteamCommunity'
+            })
+            httpRequest({
+              url: 'https://steamcommunity.com/my',
+              method: 'GET',
+              onload: function onload (response) {
+                if (debug) console.log(response)
 
-              if (response.status === 200) {
-                if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
-                  status.error('Error:' + getI18n('loginSteamCommunity'), true)
-                  reject(Error('Not Login'))
+                if (response.status === 200) {
+                  if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
+                    status.error('Error:' + getI18n('loginSteamCommunity'), true)
+                    reject(Error('Not Login'))
+                  } else {
+                    var _ref = [response.responseText.match(/g_steamID = "(.+?)";/), response.responseText.match(/g_sessionID = "(.+?)";/), response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)]
+                    var steam64Id = _ref[0]
+                    var communitySessionID = _ref[1]
+                    var userName = _ref[2]
+                    if (steam64Id) steamInfo.steam64Id = steam64Id[1]
+                    if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
+                    if (userName) steamInfo.userName = userName[1]
+                    status.success()
+                    resolve()
+                  }
                 } else {
-                  var _ref = [response.responseText.match(/g_steamID = "(.+?)";/), response.responseText.match(/g_sessionID = "(.+?)";/), response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)]
-                  var steam64Id = _ref[0]
-                  var communitySessionID = _ref[1]
-                  var userName = _ref[2]
-                  if (steam64Id) steamInfo.steam64Id = steam64Id[1]
-                  if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
-                  if (userName) steamInfo.userName = userName[1]
-                  status.success()
-                  resolve()
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  reject(new Error('Request Failed'))
                 }
-              } else {
-                status.error('Error:' + response.statusText + '(' + response.status + ')')
-                reject(new Error('Request Failed'))
-              }
-            },
-            r: resolve,
-            status: status
-          })
-        }))
-      }
+              },
+              r: resolve,
+              status: status
+            })
+          }))
+        }
 
-      if (type === 'store' || type === 'all') {
-        pro.push(new Promise(function (resolve, reject) {
-          var status = echoLog({
-            type: 'updateSteamStore'
-          })
-          httpRequest({
-            url: 'https://store.steampowered.com/stats/',
-            method: 'GET',
-            onload: function onload (response) {
-              if (debug) console.log(response)
+        if (type === 'store' || type === 'all') {
+          pro.push(new Promise(function (resolve, reject) {
+            var status = echoLog({
+              type: 'updateSteamStore'
+            })
+            httpRequest({
+              url: 'https://store.steampowered.com/stats/',
+              method: 'GET',
+              onload: function onload (response) {
+                if (debug) console.log(response)
 
-              if (response.status === 200) {
-                if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
-                  status.error('Error:' + getI18n('loginSteamStore'), true)
-                  reject(new Error('Not Login'))
+                if (response.status === 200) {
+                  if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
+                    status.error('Error:' + getI18n('loginSteamStore'), true)
+                    reject(new Error('Not Login'))
+                  } else {
+                    var storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                    if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
+                    status.success()
+                    resolve()
+                  }
                 } else {
-                  var storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                  if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
-                  status.success()
-                  resolve()
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  reject(new Error('Request Failed'))
                 }
-              } else {
-                status.error('Error:' + response.statusText + '(' + response.status + ')')
-                reject(new Error('Request Failed'))
-              }
-            },
-            r: resolve,
-            status: status
-          })
-        }))
-      }
+              },
+              r: resolve,
+              status: status
+            })
+          }))
+        }
 
-      Promise.all(pro).then(function () {
-        steamInfo.updateTime = new Date().getTime()
-        GM_setValue('steamInfo', steamInfo)
+        Promise.all(pro).then(function () {
+          steamInfo.updateTime = new Date().getTime()
+          GM_setValue('steamInfo', steamInfo)
+          r(1)
+        }).catch(function (err) {
+          console.error(err)
+          r(0)
+        })
+      } else {
         r(1)
-      }).catch(function (err) {
-        console.error(err)
-        r(0)
-      })
-    } else {
-      r(1)
+      }
+    } catch (e) {
+      throwError(e, 'updateSteamInfo')
     }
   }
 
   function joinSteamGroup (r, group) {
-    var status = echoLog({
-      type: 'joinSteamGroup',
-      text: group
-    })
-    httpRequest({
-      url: 'https://steamcommunity.com/groups/' + group,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      },
-      data: $.param({
-        action: 'join',
-        sessionID: steamInfo.communitySessionID
-      }),
-      onload: function onload (response) {
-        if (debug) console.log(response)
-
-        if (response.status === 200 && !response.responseText.includes('grouppage_join_area')) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
-  }
-
-  function getGroupID (groupName, callback) {
-    var _ref2 = [echoLog({
-      type: 'getSteamGroupId',
-      text: groupName
-    }), GM_getValue('groupNameToId') || {}]
-    var status = _ref2[0]
-    var groupNameToId = _ref2[1]
-
-    if (groupNameToId[groupName]) {
-      status.success()
-      callback(groupName, groupNameToId[groupName])
-    } else {
-      new Promise(function (resolve) {
-        httpRequest({
-          url: 'https://steamcommunity.com/groups/' + groupName,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          onload: function onload (response) {
-            if (debug) console.log(response)
-
-            if (response.status === 200) {
-              var _response$responseTex
-
-              var groupId = (_response$responseTex = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _response$responseTex === void 0 ? void 0 : _response$responseTex[1]
-
-              if (groupId) {
-                status.success()
-                groupNameToId[groupName] = groupId
-                GM_setValue('groupNameToId', groupNameToId)
-                resolve(groupId)
-              } else {
-                status.error('Error:' + response.statusText + '(' + response.status + ')')
-                resolve(false)
-              }
-            } else {
-              status.error('Error:' + response.statusText + '(' + response.status + ')')
-              resolve(false)
-            }
-          },
-          status: status,
-          r: function r () {
-            resolve(false)
-          }
-        })
-      }).then(function (groupId) {
-        if (groupId && callback) callback(groupName, groupId)
-      }).catch(function (err) {
-        console.error(err)
-      })
-    }
-  }
-
-  function leaveSteamGroup (r, groupName) {
-    getGroupID(groupName, function (groupName, groupId) {
+    try {
       var status = echoLog({
-        type: 'leaveSteamGroup',
-        text: groupName
+        type: 'joinSteamGroup',
+        text: group
       })
       httpRequest({
-        url: 'https://steamcommunity.com/id/' + steamInfo.userName + '/home_process',
+        url: 'https://steamcommunity.com/groups/' + group,
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
         data: $.param({
-          sessionID: steamInfo.communitySessionID,
-          action: 'leaveGroup',
-          groupId: groupId
+          action: 'join',
+          sessionID: steamInfo.communitySessionID
         }),
         onload: function onload (response) {
           if (debug) console.log(response)
 
-          if (response.status === 200 && response.finalUrl.includes('groups') && $(response.responseText.toLowerCase()).find("a[href='https://steamcommunity.com/groups/".concat(groupName.toLowerCase(), "']")).length === 0) {
+          if (response.status === 200 && !response.responseText.includes('grouppage_join_area')) {
             status.success()
             r({
               result: 'success',
@@ -1377,54 +1296,165 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         r: r,
         status: status
       })
-    })
+    } catch (e) {
+      throwError(e, 'joinSteamGroup')
+    }
+  }
+
+  function getGroupID (groupName, callback) {
+    try {
+      var _ref2 = [echoLog({
+        type: 'getSteamGroupId',
+        text: groupName
+      }), GM_getValue('groupNameToId') || {}]
+      var status = _ref2[0]
+      var groupNameToId = _ref2[1]
+
+      if (groupNameToId[groupName]) {
+        status.success()
+        callback(groupName, groupNameToId[groupName])
+      } else {
+        new Promise(function (resolve) {
+          httpRequest({
+            url: 'https://steamcommunity.com/groups/' + groupName,
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            onload: function onload (response) {
+              if (debug) console.log(response)
+
+              if (response.status === 200) {
+                var _response$responseTex
+
+                var groupId = (_response$responseTex = response.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _response$responseTex === void 0 ? void 0 : _response$responseTex[1]
+
+                if (groupId) {
+                  status.success()
+                  groupNameToId[groupName] = groupId
+                  GM_setValue('groupNameToId', groupNameToId)
+                  resolve(groupId)
+                } else {
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  resolve(false)
+                }
+              } else {
+                status.error('Error:' + response.statusText + '(' + response.status + ')')
+                resolve(false)
+              }
+            },
+            status: status,
+            r: function r () {
+              resolve(false)
+            }
+          })
+        }).then(function (groupId) {
+          if (groupId && callback) callback(groupName, groupId)
+        }).catch(function (err) {
+          console.error(err)
+        })
+      }
+    } catch (e) {
+      throwError(e, 'getGroupID')
+    }
+  }
+
+  function leaveSteamGroup (r, groupName) {
+    try {
+      getGroupID(groupName, function (groupName, groupId) {
+        var status = echoLog({
+          type: 'leaveSteamGroup',
+          text: groupName
+        })
+        httpRequest({
+          url: 'https://steamcommunity.com/id/' + steamInfo.userName + '/home_process',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: $.param({
+            sessionID: steamInfo.communitySessionID,
+            action: 'leaveGroup',
+            groupId: groupId
+          }),
+          onload: function onload (response) {
+            if (debug) console.log(response)
+
+            if (response.status === 200 && response.finalUrl.includes('groups') && $(response.responseText.toLowerCase()).find("a[href='https://steamcommunity.com/groups/".concat(groupName.toLowerCase(), "']")).length === 0) {
+              status.success()
+              r({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              r({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: r,
+          status: status
+        })
+      })
+    } catch (e) {
+      throwError(e, 'leaveSteamGroup')
+    }
   }
 
   function followCurator (r, curatorId) {
     var follow = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '1'
     var status = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : ''
-    status = status || echoLog({
-      type: follow === '1' ? 'followCurator' : 'unfollowCurator',
-      text: curatorId
-    })
-    httpRequest({
-      url: 'https://store.steampowered.com/curators/ajaxfollow',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      },
-      data: $.param({
-        clanid: curatorId,
-        sessionid: steamInfo.storeSessionID,
-        follow: follow
-      }),
-      dataType: 'json',
-      onload: function onload (response) {
-        var _response$response, _response$response$su
 
-        if (debug) console.log(response)
+    try {
+      status = status || echoLog({
+        type: follow === '1' ? 'followCurator' : 'unfollowCurator',
+        text: curatorId
+      })
+      httpRequest({
+        url: 'https://store.steampowered.com/curators/ajaxfollow',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: $.param({
+          clanid: curatorId,
+          sessionid: steamInfo.storeSessionID,
+          follow: follow
+        }),
+        dataType: 'json',
+        onload: function onload (response) {
+          var _response$response, _response$response$su
 
-        if (response.status === 200 && ((_response$response = response.response) === null || _response$response === void 0 ? void 0 : (_response$response$su = _response$response.success) === null || _response$response$su === void 0 ? void 0 : _response$response$su.success) === 1) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          var _response$response2, _response$response3
+          if (debug) console.log(response)
 
-          status.error('Error:'.concat(((_response$response2 = response.response) === null || _response$response2 === void 0 ? void 0 : _response$response2.msg) || response.statusText, '(').concat(((_response$response3 = response.response) === null || _response$response3 === void 0 ? void 0 : _response$response3.success) || response.status, ')'))
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
+          if (response.status === 200 && ((_response$response = response.response) === null || _response$response === void 0 ? void 0 : (_response$response$su = _response$response.success) === null || _response$response$su === void 0 ? void 0 : _response$response$su.success) === 1) {
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            var _response$response2, _response$response3
+
+            status.error('Error:'.concat(((_response$response2 = response.response) === null || _response$response2 === void 0 ? void 0 : _response$response2.msg) || response.statusText, '(').concat(((_response$response3 = response.response) === null || _response$response3 === void 0 ? void 0 : _response$response3.success) || response.status, ')'))
+            r({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: r,
+        status: status
+      })
+    } catch (e) {
+      throwError(e, 'followCurator')
+    }
   }
 
   function unfollowCurator (r, curatorId) {
@@ -1432,56 +1462,60 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function getCuratorID (developerName, callback, type, path) {
-    var _ref3 = [echoLog({
-      type: 'getCuratorId',
-      text: ''.concat(path, '/').concat(developerName)
-    }), GM_getValue('developerNameToId') || {}]
-    var status = _ref3[0]
-    var developerNameToId = _ref3[1]
+    try {
+      var _ref3 = [echoLog({
+        type: 'getCuratorId',
+        text: ''.concat(path, '/').concat(developerName)
+      }), GM_getValue('developerNameToId') || {}]
+      var status = _ref3[0]
+      var developerNameToId = _ref3[1]
 
-    if (developerNameToId[developerName]) {
-      status.success()
-      callback(developerName, developerNameToId[developerName])
-    } else {
-      new Promise(function (resolve) {
-        httpRequest({
-          url: 'https://store.steampowered.com/'.concat(path, '/').concat(developerName),
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          onload: function onload (response) {
-            if (debug) console.log(response)
+      if (developerNameToId[developerName]) {
+        status.success()
+        callback(developerName, developerNameToId[developerName])
+      } else {
+        new Promise(function (resolve) {
+          httpRequest({
+            url: 'https://store.steampowered.com/'.concat(path, '/').concat(developerName),
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            },
+            onload: function onload (response) {
+              if (debug) console.log(response)
 
-            if (response.status === 200) {
-              var _response$responseTex2
+              if (response.status === 200) {
+                var _response$responseTex2
 
-              var developerId = (_response$responseTex2 = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)) === null || _response$responseTex2 === void 0 ? void 0 : _response$responseTex2[1]
+                var developerId = (_response$responseTex2 = response.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)) === null || _response$responseTex2 === void 0 ? void 0 : _response$responseTex2[1]
 
-              if (developerId) {
-                status.success()
-                developerNameToId[developerName] = developerId
-                GM_setValue('developerNameToId', developerNameToId)
-                resolve(developerId)
+                if (developerId) {
+                  status.success()
+                  developerNameToId[developerName] = developerId
+                  GM_setValue('developerNameToId', developerNameToId)
+                  resolve(developerId)
+                } else {
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  resolve(false)
+                }
               } else {
                 status.error('Error:' + response.statusText + '(' + response.status + ')')
                 resolve(false)
               }
-            } else {
-              status.error('Error:' + response.statusText + '(' + response.status + ')')
+            },
+            status: status,
+            r: function r () {
               resolve(false)
             }
-          },
-          status: status,
-          r: function r () {
-            resolve(false)
-          }
+          })
+        }).then(function (curatorId) {
+          if (curatorId && callback) callback(developerName, curatorId)
+        }).catch(function (err) {
+          console.error(err)
         })
-      }).then(function (curatorId) {
-        if (curatorId && callback) callback(developerName, curatorId)
-      }).catch(function (err) {
-        console.error(err)
-      })
+      }
+    } catch (e) {
+      throwError(e, 'getCuratorID')
     }
   }
 
@@ -1526,197 +1560,210 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function addWishlist (r, gameId) {
-    var status = echoLog({
-      type: 'addWishlist',
-      text: gameId
-    })
-    new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://store.steampowered.com/api/addtowishlist',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: $.param({
-          sessionid: steamInfo.storeSessionID,
-          appid: gameId
-        }),
-        dataType: 'json',
-        onload: function onload (response) {
-          var _response$response4
-
-          if (debug) console.log(response)
-
-          if (response.status === 200 && ((_response$response4 = response.response) === null || _response$response4 === void 0 ? void 0 : _response$response4.success) === true) {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        onabort: function onabort (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        onerror: function onerror (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        ontimeout: function ontimeout (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        r: resolve,
-        status: status
+    try {
+      var status = echoLog({
+        type: 'addWishlist',
+        text: gameId
       })
-    }).then(function (result) {
-      if (result.result === 'success') {
-        r(result)
-      } else {
+      new Promise(function (resolve) {
         httpRequest({
-          url: 'https://store.steampowered.com/app/' + gameId,
-          method: 'GET',
+          url: 'https://store.steampowered.com/api/addtowishlist',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: $.param({
+            sessionid: steamInfo.storeSessionID,
+            appid: gameId
+          }),
+          dataType: 'json',
           onload: function onload (response) {
+            var _response$response4
+
             if (debug) console.log(response)
 
-            if (response.status === 200) {
-              if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('已在库中')) {
-                status.success()
-                r({
-                  result: 'success',
-                  statusText: response.statusText,
-                  status: response.status,
-                  own: true
-                })
-              } else if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('添加至您的愿望单') || !response.responseText.includes('class="queue_actions_ctn"')) {
-                status.error('Error:' + result.statusText + '(' + result.status + ')')
-                r({
-                  result: 'error',
-                  statusText: response.statusText,
-                  status: response.status
-                })
-              } else {
-                status.success()
-                r({
-                  result: 'success',
-                  statusText: response.statusText,
-                  status: response.status
-                })
-              }
+            if (response.status === 200 && ((_response$response4 = response.response) === null || _response$response4 === void 0 ? void 0 : _response$response4.success) === true) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
             } else {
-              status.error('Error:' + result.statusText + '(' + result.status + ')')
-              r({
+              resolve({
                 result: 'error',
                 statusText: response.statusText,
                 status: response.status
               })
             }
           },
-          r: r,
+          onabort: function onabort (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          onerror: function onerror (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          ontimeout: function ontimeout (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          r: resolve,
           status: status
         })
-      }
-    }).catch(function (err) {
-      console.error(err)
-    })
+      }).then(function (result) {
+        if (result.result === 'success') {
+          r(result)
+        } else {
+          httpRequest({
+            url: 'https://store.steampowered.com/app/' + gameId,
+            method: 'GET',
+            onload: function onload (response) {
+              if (debug) console.log(response)
+
+              if (response.status === 200) {
+                if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('已在库中')) {
+                  status.success()
+                  r({
+                    result: 'success',
+                    statusText: response.statusText,
+                    status: response.status,
+                    own: true
+                  })
+                } else if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('添加至您的愿望单') || !response.responseText.includes('class="queue_actions_ctn"')) {
+                  status.error('Error:' + result.statusText + '(' + result.status + ')')
+                  r({
+                    result: 'error',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                } else {
+                  status.success()
+                  r({
+                    result: 'success',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                }
+              } else {
+                status.error('Error:' + result.statusText + '(' + result.status + ')')
+                r({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
+            },
+            r: r,
+            status: status
+          })
+        }
+      }).catch(function (err) {
+        console.error(err)
+      })
+    } catch (e) {
+      throwError(e, 'addWishlist')
+    }
   }
 
   function removeWishlist (r, gameId) {
-    var status = echoLog({
-      type: 'removeWishlist',
-      text: gameId
-    })
-    new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://store.steampowered.com/api/removefromwishlist',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: $.param({
-          sessionid: steamInfo.storeSessionID,
-          appid: gameId
-        }),
-        dataType: 'json',
-        onload: function onload (response) {
-          var _response$response5
+    try {
+      var status = echoLog({
+        type: 'removeWishlist',
+        text: gameId
+      })
+      new Promise(function (resolve) {
+        httpRequest({
+          url: 'https://store.steampowered.com/api/removefromwishlist',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: $.param({
+            sessionid: steamInfo.storeSessionID,
+            appid: gameId
+          }),
+          dataType: 'json',
+          onload: function onload (response) {
+            var _response$response5
 
-          if (debug) console.log(response)
+            if (debug) console.log(response)
 
-          if (response.status === 200 && ((_response$response5 = response.response) === null || _response$response5 === void 0 ? void 0 : _response$response5.success) === true) {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
+            if (response.status === 200 && ((_response$response5 = response.response) === null || _response$response5 === void 0 ? void 0 : _response$response5.success) === true) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          onabort: function onabort (response) {
             resolve({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
-          }
-        },
-        onabort: function onabort (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        onerror: function onerror (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        ontimeout: function ontimeout (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        r: resolve,
-        status: status
-      })
-    }).then(function (result) {
-      if (result.result === 'success') {
-        r(result)
-      } else {
-        httpRequest({
-          url: 'https://store.steampowered.com/app/' + gameId,
-          method: 'GET',
-          onload: function onload (response) {
-            if (debug) console.log(response)
+          },
+          onerror: function onerror (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          ontimeout: function ontimeout (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (result) {
+        if (result.result === 'success') {
+          r(result)
+        } else {
+          httpRequest({
+            url: 'https://store.steampowered.com/app/' + gameId,
+            method: 'GET',
+            onload: function onload (response) {
+              if (debug) console.log(response)
 
-            if (response.status === 200) {
-              if (response.responseText.includes('class="queue_actions_ctn"') && (response.responseText.includes('已在库中') || response.responseText.includes('添加至您的愿望单'))) {
-                status.success()
-                r({
-                  result: 'success',
-                  statusText: response.statusText,
-                  status: response.status
-                })
+              if (response.status === 200) {
+                if (response.responseText.includes('class="queue_actions_ctn"') && (response.responseText.includes('已在库中') || response.responseText.includes('添加至您的愿望单'))) {
+                  status.success()
+                  r({
+                    result: 'success',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                } else {
+                  status.error('Error:' + result.statusText + '(' + result.status + ')')
+                  r({
+                    result: 'error',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                }
               } else {
                 status.error('Error:' + result.statusText + '(' + result.status + ')')
                 r({
@@ -1725,100 +1772,104 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   status: response.status
                 })
               }
-            } else {
-              status.error('Error:' + result.statusText + '(' + result.status + ')')
-              r({
-                result: 'error',
-                statusText: response.statusText,
-                status: response.status
-              })
-            }
-          },
-          r: r,
-          status: status
-        })
-      }
-    }).catch(function (err) {
-      console.error(err)
-    })
+            },
+            r: r,
+            status: status
+          })
+        }
+      }).catch(function (err) {
+        console.error(err)
+      })
+    } catch (e) {
+      throwError(e, 'removeWishlist')
+    }
   }
 
   function followGame (r, gameId) {
-    var status = echoLog({
-      type: 'followGame',
-      text: gameId
-    })
-    new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://store.steampowered.com/explore/followgame/',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: $.param({
-          sessionid: steamInfo.storeSessionID,
-          appid: gameId
-        }),
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      var status = echoLog({
+        type: 'followGame',
+        text: gameId
+      })
+      new Promise(function (resolve) {
+        httpRequest({
+          url: 'https://store.steampowered.com/explore/followgame/',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: $.param({
+            sessionid: steamInfo.storeSessionID,
+            appid: gameId
+          }),
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.status === 200 && response.responseText === 'true') {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
+            if (response.status === 200 && response.responseText === 'true') {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          onabort: function onabort (response) {
             resolve({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
-          }
-        },
-        onabort: function onabort (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        onerror: function onerror (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        ontimeout: function ontimeout (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        r: resolve,
-        status: status
-      })
-    }).then(function (result) {
-      if (result.result === 'success') {
-        r(result)
-      } else {
-        httpRequest({
-          url: 'https://store.steampowered.com/app/' + gameId,
-          method: 'GET',
-          onload: function onload (response) {
-            if (debug) console.log(response)
+          },
+          onerror: function onerror (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          ontimeout: function ontimeout (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (result) {
+        if (result.result === 'success') {
+          r(result)
+        } else {
+          httpRequest({
+            url: 'https://store.steampowered.com/app/' + gameId,
+            method: 'GET',
+            onload: function onload (response) {
+              if (debug) console.log(response)
 
-            if (response.status === 200) {
-              if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
-                status.success()
-                r({
-                  result: 'success',
-                  statusText: response.statusText,
-                  status: response.status
-                })
+              if (response.status === 200) {
+                if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
+                  status.success()
+                  r({
+                    result: 'success',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                } else {
+                  status.error('Error:' + result.statusText + '(' + result.status + ')')
+                  r({
+                    result: 'error',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                }
               } else {
                 status.error('Error:' + result.statusText + '(' + result.status + ')')
                 r({
@@ -1827,193 +1878,196 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   status: response.status
                 })
               }
-            } else {
-              status.error('Error:' + result.statusText + '(' + result.status + ')')
-              r({
-                result: 'error',
-                statusText: response.statusText,
-                status: response.status
-              })
-            }
-          },
-          r: r,
-          status: status
-        })
-      }
-    }).catch(function (err) {
-      console.error(err)
-    })
+            },
+            r: r,
+            status: status
+          })
+        }
+      }).catch(function (err) {
+        console.error(err)
+      })
+    } catch (e) {
+      throwError(e, 'followGame')
+    }
   }
 
   function unfollowGame (r, gameId) {
-    var status = echoLog({
-      type: 'unfollowGame',
-      text: gameId
-    })
-    new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://store.steampowered.com/explore/followgame/',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: $.param({
-          sessionid: steamInfo.storeSessionID,
-          appid: gameId,
-          unfollow: '1'
-        }),
-        onload: function onload (response) {
-          if (debug) console.log(response)
-
-          if (response.status === 200 && response.responseText === 'true') {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        onabort: function onabort (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        onerror: function onerror (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        ontimeout: function ontimeout (response) {
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        },
-        r: resolve,
-        status: status
+    try {
+      var status = echoLog({
+        type: 'unfollowGame',
+        text: gameId
       })
-    }).then(function (result) {
-      if (result.result === 'success') {
-        r(result)
-      } else {
+      new Promise(function (resolve) {
         httpRequest({
-          url: 'https://store.steampowered.com/app/' + gameId,
-          method: 'GET',
+          url: 'https://store.steampowered.com/explore/followgame/',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: $.param({
+            sessionid: steamInfo.storeSessionID,
+            appid: gameId,
+            unfollow: '1'
+          }),
           onload: function onload (response) {
             if (debug) console.log(response)
 
-            if (response.status === 200) {
-              if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
-                status.error('Error:' + result.statusText + '(' + result.status + ')')
-                r({
-                  result: 'error',
-                  statusText: response.statusText,
-                  status: response.status
-                })
-              } else {
-                status.success()
-                r({
-                  result: 'success',
-                  statusText: response.statusText,
-                  status: response.status
-                })
-              }
+            if (response.status === 200 && response.responseText === 'true') {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
             } else {
-              status.error('Error:' + result.statusText + '(' + result.status + ')')
-              r({
+              resolve({
                 result: 'error',
                 statusText: response.statusText,
                 status: response.status
               })
             }
           },
-          r: r,
+          onabort: function onabort (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          onerror: function onerror (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          ontimeout: function ontimeout (response) {
+            resolve({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          },
+          r: resolve,
           status: status
         })
-      }
-    }).catch(function (err) {
-      console.error(err)
-    })
+      }).then(function (result) {
+        if (result.result === 'success') {
+          r(result)
+        } else {
+          httpRequest({
+            url: 'https://store.steampowered.com/app/' + gameId,
+            method: 'GET',
+            onload: function onload (response) {
+              if (debug) console.log(response)
+
+              if (response.status === 200) {
+                if (response.responseText.includes('class="queue_actions_ctn"') && response.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) {
+                  status.error('Error:' + result.statusText + '(' + result.status + ')')
+                  r({
+                    result: 'error',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                } else {
+                  status.success()
+                  r({
+                    result: 'success',
+                    statusText: response.statusText,
+                    status: response.status
+                  })
+                }
+              } else {
+                status.error('Error:' + result.statusText + '(' + result.status + ')')
+                r({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
+            },
+            r: r,
+            status: status
+          })
+        }
+      }).catch(function (err) {
+        console.error(err)
+      })
+    } catch (e) {
+      throwError(e, 'unfollowGame')
+    }
   }
 
   function likeAnnouncements (r, rawMatch) {
-    var url = ''
-    var status = null
-    var data = {}
+    try {
+      var url = ''
+      var status = null
+      var data = {}
 
-    if (rawMatch.length === 5) {
-      status = echoLog({
-        type: 'likeAnnouncements',
-        url: rawMatch[1],
-        id: rawMatch[2]
-      })
-      url = 'https://store.steampowered.com/updated/ajaxrateupdate/' + rawMatch[2]
-      data = {
-        sessionid: steamInfo.storeSessionID,
-        wgauthtoken: rawMatch[3],
-        voteup: 1,
-        clanid: rawMatch[4],
-        ajax: 1
-      }
-    } else {
-      status = echoLog({
-        type: 'likeAnnouncements',
-        url: rawMatch.input,
-        id: rawMatch[1]
-      })
-      url = rawMatch.input.replace('/detail/', '/rate/')
-      data = {
-        sessionid: steamInfo.communitySessionID,
-        voteup: true
-      }
-    }
-
-    httpRequest({
-      url: url,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-      },
-      data: $.param(data),
-      dataType: 'json',
-      onload: function onload (response) {
-        var _response$response6
-
-        if (debug) console.log(response)
-
-        if (response.status === 200 && ((_response$response6 = response.response) === null || _response$response6 === void 0 ? void 0 : _response$response6.success) === 1) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          var _response$response7, _response$response8
-
-          status.error('Error:'.concat(((_response$response7 = response.response) === null || _response$response7 === void 0 ? void 0 : _response$response7.msg) || response.statusText, '(').concat(((_response$response8 = response.response) === null || _response$response8 === void 0 ? void 0 : _response$response8.success) || response.status, ')'))
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
+      if (rawMatch.length === 5) {
+        status = echoLog({
+          type: 'likeAnnouncements',
+          url: rawMatch[1],
+          id: rawMatch[2]
+        })
+        url = 'https://store.steampowered.com/updated/ajaxrateupdate/' + rawMatch[2]
+        data = {
+          sessionid: steamInfo.storeSessionID,
+          wgauthtoken: rawMatch[3],
+          voteup: 1,
+          clanid: rawMatch[4],
+          ajax: 1
         }
-      },
-      r: r,
-      status: status
-    })
+      } else {
+        status = echoLog({
+          type: 'likeAnnouncements',
+          url: rawMatch.input,
+          id: rawMatch[1]
+        })
+        url = rawMatch.input.replace('/detail/', '/rate/')
+        data = {
+          sessionid: steamInfo.communitySessionID,
+          voteup: true
+        }
+      }
+
+      httpRequest({
+        url: url,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: $.param(data),
+        dataType: 'json',
+        onload: function onload (response) {
+          var _response$response6
+
+          if (debug) console.log(response)
+
+          if (response.status === 200 && ((_response$response6 = response.response) === null || _response$response6 === void 0 ? void 0 : _response$response6.success) === 1) {
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            var _response$response7, _response$response8
+
+            status.error('Error:'.concat(((_response$response7 = response.response) === null || _response$response7 === void 0 ? void 0 : _response$response7.msg) || response.statusText, '(').concat(((_response$response8 = response.response) === null || _response$response8 === void 0 ? void 0 : _response$response8.success) || response.status, ')'))
+            r({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: r,
+        status: status
+      })
+    } catch (e) {
+      throwError(e, 'likeAnnouncements')
+    }
   }
 
   function subscribeForum (_x, _x2) {
@@ -2033,15 +2087,16 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context25.prev = _context25.next) {
             case 0:
               subscribe = _args25.length > 2 && _args25[2] !== undefined ? _args25[2] : true
-              _context25.next = 3
+              _context25.prev = 1
+              _context25.next = 4
               return getForumId(gameId)
 
-            case 3:
+            case 4:
               _yield$getForumId = _context25.sent
               forumId = _yield$getForumId.forumId
 
               if (forumId) {
-                _context25.next = 7
+                _context25.next = 8
                 break
               }
 
@@ -2051,7 +2106,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: 0
               }))
 
-            case 7:
+            case 8:
               status = echoLog({
                 type: ''.concat(subscribe ? '' : 'un', 'subscribeForum'),
                 text: gameId
@@ -2090,63 +2145,74 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 r: r,
                 status: status
               })
+              _context25.next = 15
+              break
 
-            case 9:
+            case 12:
+              _context25.prev = 12
+              _context25.t0 = _context25.catch(1)
+              throwError(_context25.t0, 'subscribeForum')
+
+            case 15:
             case 'end':
               return _context25.stop()
           }
         }
-      }, _callee23)
+      }, _callee23, null, [[1, 12]])
     }))
     return _subscribeForum.apply(this, arguments)
   }
 
   function getForumId (gameId) {
-    var status = echoLog({
-      type: 'getForumId',
-      text: gameId
-    })
-    return new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://steamcommunity.com/app/' + gameId + '/discussions/',
-        method: 'GET',
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      var status = echoLog({
+        type: 'getForumId',
+        text: gameId
+      })
+      return new Promise(function (resolve) {
+        httpRequest({
+          url: 'https://steamcommunity.com/app/' + gameId + '/discussions/',
+          method: 'GET',
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.status === 200) {
-            var _response$responseTex3, _response$responseTex4
+            if (response.status === 200) {
+              var _response$responseTex3, _response$responseTex4
 
-            var forumId = (_response$responseTex3 = response.responseText) === null || _response$responseTex3 === void 0 ? void 0 : (_response$responseTex4 = _response$responseTex3.match(/General_([\d]+)/)) === null || _response$responseTex4 === void 0 ? void 0 : _response$responseTex4[1]
+              var forumId = (_response$responseTex3 = response.responseText) === null || _response$responseTex3 === void 0 ? void 0 : (_response$responseTex4 = _response$responseTex3.match(/General_([\d]+)/)) === null || _response$responseTex4 === void 0 ? void 0 : _response$responseTex4[1]
 
-            if (forumId) {
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status,
-                forumId: forumId
-              })
+              if (forumId) {
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  forumId: forumId
+                })
+              } else {
+                status.error('Error')
+                resolve({
+                  result: 'error',
+                  statusText: 'GetForumIdError',
+                  status: response.status
+                })
+              }
             } else {
-              status.error('Error')
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve({
                 result: 'error',
-                statusText: 'GetForumIdError',
+                statusText: response.statusText,
                 status: response.status
               })
             }
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+          },
+          r: resolve,
+          status: status
+        })
       })
-    })
+    } catch (e) {
+      throwError(e, 'getForumId')
+    }
   }
 
   function toggleSteamActions (_x3) {
@@ -2155,141 +2221,155 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function _toggleSteamActions () {
     _toggleSteamActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (_ref4) {
-      var website, type, elements, resolve, action, _ref4$toFinalUrl, toFinalUrl, pro, _iterator32, _step33, _loop13
+      var website, type, elements, resolve, action, _ref4$toFinalUrl, toFinalUrl, _pro13, _iterator32, _step33, _loop13
 
       return regeneratorRuntime.wrap(function _callee24$ (_context26) {
         while (1) {
           switch (_context26.prev = _context26.next) {
             case 0:
               website = _ref4.website, type = _ref4.type, elements = _ref4.elements, resolve = _ref4.resolve, action = _ref4.action, _ref4$toFinalUrl = _ref4.toFinalUrl, toFinalUrl = _ref4$toFinalUrl === void 0 ? {} : _ref4$toFinalUrl
-              pro = []
-              _iterator32 = _createForOfIteratorHelper(unique(elements))
 
               try {
-                _loop13 = function _loop13 () {
-                  var _elementName
+                _pro13 = []
+                _iterator32 = _createForOfIteratorHelper(unique(elements))
 
-                  var element = _step33.value
-                  var elementName = Array.isArray(element) ? [null].concat(_toConsumableArray(element)) : [null, element]
+                try {
+                  _loop13 = function _loop13 () {
+                    var _elementName
 
-                  if (website === 'giveawaysu' && toFinalUrl[element]) {
-                    var toFinalUrlElement = toFinalUrl[element] || ''
+                    var element = _step33.value
+                    var elementName = Array.isArray(element) ? [null].concat(_toConsumableArray(element)) : [null, element]
 
-                    switch (type) {
-                      case 'group':
-                        elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
-                        break
+                    if (website === 'giveawaysu' && toFinalUrl[element]) {
+                      var toFinalUrlElement = toFinalUrl[element] || ''
 
-                      case 'forum':
-                        elementName = toFinalUrlElement.match(/app\/([\d]+)/)
-                        break
+                      switch (type) {
+                        case 'group':
+                          elementName = toFinalUrlElement.match(/groups\/(.+)\/?/)
+                          break
 
-                      case 'curator':
-                        elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
-                        break
+                        case 'forum':
+                          elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+                          break
 
-                      case 'publisher':
-                      case 'developer':
-                        elementName = (toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)) || toFinalUrlElement.match(/curator\/([\d]+)/)
-                        break
+                        case 'curator':
+                          elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
+                          break
 
-                      case 'franchise':
-                        elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/) || toFinalUrlElement.match(/curator\/([\d]+)/)
-                        break
+                        case 'publisher':
+                        case 'developer':
+                          elementName = (toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/)) || toFinalUrlElement.match(/curator\/([\d]+)/)
+                          break
 
-                      case 'game':
-                      case 'wishlist':
-                        elementName = toFinalUrlElement.match(/app\/([\d]+)/)
-                        break
+                        case 'franchise':
+                          elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/) || toFinalUrlElement.match(/curator\/([\d]+)/)
+                          break
 
-                      case 'announcement':
-                      {
-                        if (toFinalUrlElement.includes('announcements/detail')) {
-                          elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
-                        } else {
-                          elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                        case 'game':
+                        case 'wishlist':
+                          elementName = toFinalUrlElement.match(/app\/([\d]+)/)
+                          break
+
+                        case 'announcement':
+                        {
+                          if (toFinalUrlElement.includes('announcements/detail')) {
+                            elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
+                          } else {
+                            elementName = toFinalUrlElement.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)
+                          }
+
+                          break
                         }
+                      }
+                    }
 
-                        break
+                    if ((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1]) {
+                      switch (type) {
+                        case 'group':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'forum':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? subscribeForum(resolve, elementName[1]) : subscribeForum(resolve, elementName[1], false)
+                          }))
+
+                          break
+
+                        case 'curator':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? followCurator(resolve, elementName[1]) : unfollowCurator(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'publisher':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? followPublisher(resolve, elementName[1]) : unfollowPublisher(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'developer':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? followDeveloper(resolve, elementName[1]) : unfollowDeveloper(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'franchise':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? followFranchise(resolve, elementName[1]) : unfollowFranchise(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'wishlist':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? addWishlist(resolve, elementName[1]) : removeWishlist(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'game':
+                          _pro13.push(new Promise(function (resolve) {
+                            action === 'fuck' ? followGame(resolve, elementName[1]) : unfollowGame(resolve, elementName[1])
+                          }))
+
+                          break
+
+                        case 'announcement':
+                          _pro13.push(new Promise(function (resolve) {
+                            if (action === 'fuck') {
+                              likeAnnouncements(resolve, elementName)
+                            }
+                          }))
+
+                          break
                       }
                     }
                   }
 
-                  if ((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1]) {
-                    switch (type) {
-                      case 'group':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? joinSteamGroup(resolve, elementName[1]) : leaveSteamGroup(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'forum':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? subscribeForum(resolve, elementName[1]) : subscribeForum(resolve, elementName[1], false)
-                        }))
-                        break
-
-                      case 'curator':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? followCurator(resolve, elementName[1]) : unfollowCurator(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'publisher':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? followPublisher(resolve, elementName[1]) : unfollowPublisher(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'developer':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? followDeveloper(resolve, elementName[1]) : unfollowDeveloper(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'franchise':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? followFranchise(resolve, elementName[1]) : unfollowFranchise(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'wishlist':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? addWishlist(resolve, elementName[1]) : removeWishlist(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'game':
-                        pro.push(new Promise(function (resolve) {
-                          action === 'fuck' ? followGame(resolve, elementName[1]) : unfollowGame(resolve, elementName[1])
-                        }))
-                        break
-
-                      case 'announcement':
-                        pro.push(new Promise(function (resolve) {
-                          if (action === 'fuck') {
-                            likeAnnouncements(resolve, elementName)
-                          }
-                        }))
-                        break
-                    }
+                  for (_iterator32.s(); !(_step33 = _iterator32.n()).done;) {
+                    _loop13()
                   }
+                } catch (err) {
+                  _iterator32.e(err)
+                } finally {
+                  _iterator32.f()
                 }
 
-                for (_iterator32.s(); !(_step33 = _iterator32.n()).done;) {
-                  _loop13()
-                }
-              } catch (err) {
-                _iterator32.e(err)
-              } finally {
-                _iterator32.f()
+                Promise.all(_pro13).finally(function () {
+                  resolve()
+                })
+              } catch (e) {
+                throwError(e, 'toggleSteamActions')
               }
 
-              Promise.all(pro).finally(function () {
-                resolve()
-              })
-
-            case 5:
+            case 2:
             case 'end':
               return _context26.stop()
           }
@@ -2340,50 +2420,54 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function verifyTwitchAuth () {
-    var status = echoLog({
-      type: 'verifyTwitchAuth'
-    })
-    return new Promise(function (resolve) {
-      httpRequest({
-        url: 'https://gql.twitch.tv/gql',
-        method: 'POST',
-        dataType: 'json',
-        headers: {
-          Authorization: 'OAuth ' + twitchInfo.authToken,
-          'Client-Id': twitchInfo.clientId
-        },
-        data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]',
-        onload: function onload (response) {
-          var _response$response9, _response$response9$, _response$response9$$
-
-          if (debug) console.log(response)
-
-          if (response.status === 200 && ((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : (_response$response9$ = _response$response9[0]) === null || _response$response9$ === void 0 ? void 0 : (_response$response9$$ = _response$response9$.data) === null || _response$response9$$ === void 0 ? void 0 : _response$response9$$.currentUser)) {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
-            status.error('Error:' + getI18n('updateTwitchAuth', true))
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+    try {
+      var status = echoLog({
+        type: 'verifyTwitchAuth'
       })
-    }).then(function (_ref5) {
-      var result = _ref5.result
-      return result === 'success'
-    }).catch(function (error) {
-      if (debug) console.log(error)
-      return false
-    })
+      return new Promise(function (resolve) {
+        httpRequest({
+          url: 'https://gql.twitch.tv/gql',
+          method: 'POST',
+          dataType: 'json',
+          headers: {
+            Authorization: 'OAuth ' + twitchInfo.authToken,
+            'Client-Id': twitchInfo.clientId
+          },
+          data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]',
+          onload: function onload (response) {
+            var _response$response9, _response$response9$, _response$response9$$
+
+            if (debug) console.log(response)
+
+            if (response.status === 200 && ((_response$response9 = response.response) === null || _response$response9 === void 0 ? void 0 : (_response$response9$ = _response$response9[0]) === null || _response$response9$ === void 0 ? void 0 : (_response$response9$$ = _response$response9$.data) === null || _response$response9$$ === void 0 ? void 0 : _response$response9$$.currentUser)) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error:' + getI18n('updateTwitchAuth', true))
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (_ref5) {
+        var result = _ref5.result
+        return result === 'success'
+      }).catch(function (error) {
+        if (debug) console.log(error)
+        return false
+      })
+    } catch (e) {
+      throwError(e, 'verifyTwitchAuth')
+    }
   }
 
   function toggleTwitchChannel (_x4, _x5) {
@@ -2403,14 +2487,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context27.prev = _context27.next) {
             case 0:
               follow = _args27.length > 2 && _args27[2] !== undefined ? _args27[2] : true
-              _context27.next = 3
+              _context27.prev = 1
+              _context27.next = 4
               return getTwitchChannelId(name)
 
-            case 3:
+            case 4:
               channelId = _context27.sent
 
               if (channelId) {
-                _context27.next = 6
+                _context27.next = 7
                 break
               }
 
@@ -2420,7 +2505,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: 0
               }))
 
-            case 6:
+            case 7:
               status = echoLog({
                 type: ''.concat(follow ? '' : 'un', 'followTwitchChannel'),
                 text: name
@@ -2457,48 +2542,64 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 r: resolve,
                 status: status
               })
+              _context27.next = 16
+              break
 
-            case 10:
+            case 13:
+              _context27.prev = 13
+              _context27.t0 = _context27.catch(1)
+              throwError(_context27.t0, 'toggleTwitchChannel')
+
+            case 16:
             case 'end':
               return _context27.stop()
           }
         }
-      }, _callee25)
+      }, _callee25, null, [[1, 13]])
     }))
     return _toggleTwitchChannel.apply(this, arguments)
   }
 
   function getTwitchChannelId (name) {
-    return new Promise(function (resolve) {
-      var status = echoLog({
-        type: 'getTwitchChannelId',
-        text: name
-      })
-      httpRequest({
-        url: 'https://gql.twitch.tv/gql',
-        method: 'POST',
-        headers: {
-          Authorization: 'OAuth ' + twitchInfo.authToken,
-          'Client-Id': twitchInfo.clientId
-        },
-        responseType: 'json',
-        data: '[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"' + name + '"},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]',
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'getTwitchChannelId',
+          text: name
+        })
+        httpRequest({
+          url: 'https://gql.twitch.tv/gql',
+          method: 'POST',
+          headers: {
+            Authorization: 'OAuth ' + twitchInfo.authToken,
+            'Client-Id': twitchInfo.clientId
+          },
+          responseType: 'json',
+          data: '[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"' + name + '"},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]',
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.status === 200) {
-            var _response$response10, _response$response10$, _response$response10$2, _response$response10$3
+            if (response.status === 200) {
+              var _response$response10, _response$response10$, _response$response10$2, _response$response10$3
 
-            var channelId = (_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : (_response$response10$ = _response$response10[0]) === null || _response$response10$ === void 0 ? void 0 : (_response$response10$2 = _response$response10$.data) === null || _response$response10$2 === void 0 ? void 0 : (_response$response10$3 = _response$response10$2.user) === null || _response$response10$3 === void 0 ? void 0 : _response$response10$3.id
+              var channelId = (_response$response10 = response.response) === null || _response$response10 === void 0 ? void 0 : (_response$response10$ = _response$response10[0]) === null || _response$response10$ === void 0 ? void 0 : (_response$response10$2 = _response$response10$.data) === null || _response$response10$2 === void 0 ? void 0 : (_response$response10$3 = _response$response10$2.user) === null || _response$response10$3 === void 0 ? void 0 : _response$response10$3.id
 
-            if (channelId) {
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status,
-                channelId: channelId
-              })
+              if (channelId) {
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  channelId: channelId
+                })
+              } else {
+                status.error('Error:' + response.statusText + '(' + response.status + ')')
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve({
@@ -2507,24 +2608,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: response.status
               })
             }
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (_ref6) {
+        var channelId = _ref6.channelId
+        return channelId
+      }).catch(function () {
+        return false
       })
-    }).then(function (_ref6) {
-      var channelId = _ref6.channelId
-      return channelId
-    }).catch(function () {
-      return false
-    })
+    } catch (e) {
+      throwError(e, 'getTwitchChannelId')
+    }
   }
 
   function toggleTwitchActions (_x6) {
@@ -2540,28 +2636,29 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context29.prev = _context29.next) {
             case 0:
               website = _ref7.website, type = _ref7.type, elements = _ref7.elements, resolve = _ref7.resolve, action = _ref7.action, _ref7$toFinalUrl = _ref7.toFinalUrl, toFinalUrl = _ref7$toFinalUrl === void 0 ? {} : _ref7$toFinalUrl
+              _context29.prev = 1
 
               if (!(new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000)) {
-                _context29.next = 7
+                _context29.next = 8
                 break
               }
 
-              _context29.next = 4
+              _context29.next = 5
               return verifyTwitchAuth()
 
-            case 4:
+            case 5:
               result = _context29.sent
 
               if (result) {
-                _context29.next = 7
+                _context29.next = 8
                 break
               }
 
               return _context29.abrupt('return')
 
-            case 7:
+            case 8:
               _iterator33 = _createForOfIteratorHelper(unique(elements))
-              _context29.prev = 8
+              _context29.prev = 9
               _loop14 = /* #__PURE__ */regeneratorRuntime.mark(function _loop14 () {
                 var element, name, _toFinalUrlElement$ma, toFinalUrlElement
 
@@ -2597,103 +2694,114 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator33.s()
 
-            case 11:
+            case 12:
               if ((_step34 = _iterator33.n()).done) {
-                _context29.next = 15
+                _context29.next = 16
                 break
               }
 
-              return _context29.delegateYield(_loop14(), 't0', 13)
+              return _context29.delegateYield(_loop14(), 't0', 14)
 
-            case 13:
-              _context29.next = 11
+            case 14:
+              _context29.next = 12
               break
 
-            case 15:
-              _context29.next = 20
+            case 16:
+              _context29.next = 21
               break
 
-            case 17:
-              _context29.prev = 17
-              _context29.t1 = _context29.catch(8)
+            case 18:
+              _context29.prev = 18
+              _context29.t1 = _context29.catch(9)
 
               _iterator33.e(_context29.t1)
 
-            case 20:
-              _context29.prev = 20
+            case 21:
+              _context29.prev = 21
 
               _iterator33.f()
 
-              return _context29.finish(20)
-
-            case 23:
-              resolve()
+              return _context29.finish(21)
 
             case 24:
+              resolve()
+              _context29.next = 30
+              break
+
+            case 27:
+              _context29.prev = 27
+              _context29.t2 = _context29.catch(1)
+              throwError(_context29.t2, 'toggleTwitchActions')
+
+            case 30:
             case 'end':
               return _context29.stop()
           }
         }
-      }, _callee26, null, [[8, 17, 20, 23]])
+      }, _callee26, null, [[1, 27], [9, 18, 21, 24]])
     }))
     return _toggleTwitchActions.apply(this, arguments)
   }
 
   function updateTwitterInfo (resolve) {
-    var status = echoLog({
-      type: 'updateTwitterInfo'
-    })
-    httpRequest({
-      url: 'https://twitter.com/settings/account?k',
-      method: 'HEAD',
-      onload: function onload (response) {
-        if (debug) console.log(response)
+    try {
+      var status = echoLog({
+        type: 'updateTwitterInfo'
+      })
+      httpRequest({
+        url: 'https://twitter.com/settings/account?k',
+        method: 'HEAD',
+        onload: function onload (response) {
+          if (debug) console.log(response)
 
-        if (response.finalUrl.includes('twitter.com/login')) {
-          status.error('Error:' + getI18n('loginTwitter'), true)
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-          return
-        }
-
-        if (response.status === 200) {
-          var _response$responseHea
-
-          var ct0 = (_response$responseHea = response.responseHeaders.match(/ct0=(.+?);/)) === null || _response$responseHea === void 0 ? void 0 : _response$responseHea[1]
-
-          if (ct0) {
-            twitterInfo.ct0 = ct0
-            twitterInfo.updateTime = new Date().getTime()
-            GM_setValue('twitterInfo', twitterInfo)
-            status.success()
+          if (response.finalUrl.includes('twitter.com/login')) {
+            status.error('Error:' + getI18n('loginTwitter'), true)
             resolve({
-              result: 'success',
+              result: 'error',
               statusText: response.statusText,
               status: response.status
             })
+            return
+          }
+
+          if (response.status === 200) {
+            var _response$responseHea
+
+            var ct0 = (_response$responseHea = response.responseHeaders.match(/ct0=(.+?);/)) === null || _response$responseHea === void 0 ? void 0 : _response$responseHea[1]
+
+            if (ct0) {
+              twitterInfo.ct0 = ct0
+              twitterInfo.updateTime = new Date().getTime()
+              GM_setValue('twitterInfo', twitterInfo)
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error: Parameter "ct0" not found!')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
           } else {
-            status.error('Error: Parameter "ct0" not found!')
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
             resolve({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
           }
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          resolve({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: resolve,
-      status: status
-    })
+        },
+        r: resolve,
+        status: status
+      })
+    } catch (e) {
+      throwError(e, 'updateTwitterInfo')
+    }
   }
 
   function toggleTwitterUser (_x7, _x8) {
@@ -2711,14 +2819,15 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context30.prev = _context30.next) {
             case 0:
               follow = _args30.length > 2 && _args30[2] !== undefined ? _args30[2] : true
-              _context30.next = 3
+              _context30.prev = 1
+              _context30.next = 4
               return getTwitterUserId(name)
 
-            case 3:
+            case 4:
               userId = _context30.sent
 
               if (userId) {
-                _context30.next = 6
+                _context30.next = 7
                 break
               }
 
@@ -2728,7 +2837,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: 0
               }))
 
-            case 6:
+            case 7:
               status = echoLog({
                 type: ''.concat(follow ? '' : 'un', 'followTwitterUser'),
                 text: name
@@ -2775,13 +2884,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 r: r,
                 status: status
               })
+              _context30.next = 14
+              break
 
-            case 8:
+            case 11:
+              _context30.prev = 11
+              _context30.t0 = _context30.catch(1)
+              throwError(_context30.t0, 'toggleTwitterUser')
+
+            case 14:
             case 'end':
               return _context30.stop()
           }
         }
-      }, _callee27)
+      }, _callee27, null, [[1, 11]])
     }))
     return _toggleTwitterUser.apply(this, arguments)
   }
@@ -2800,49 +2916,54 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context31.prev = _context31.next) {
             case 0:
               retweet = _args31.length > 2 && _args31[2] !== undefined ? _args31[2] : true
-              status = echoLog({
-                type: ''.concat(retweet ? '' : 'un', 'retweet'),
-                text: retweetId
-              })
-              httpRequest({
-                url: 'https://api.twitter.com/1.1/statuses/'.concat(retweet ? '' : 'un', 'retweet.json'),
-                method: 'POST',
-                headers: {
-                  authorization: 'Bearer ' + twitterInfo.authorization,
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  'x-csrf-token': twitterInfo.ct0
-                },
-                data: $.param({
-                  tweet_mode: 'extended',
-                  id: retweetId
-                }),
-                responseType: 'json',
-                onload: function onload (response) {
-                  var _response$response21, _response$response21$, _response$response21$2
 
-                  if (debug) console.log(response)
+              try {
+                status = echoLog({
+                  type: ''.concat(retweet ? '' : 'un', 'retweet'),
+                  text: retweetId
+                })
+                httpRequest({
+                  url: 'https://api.twitter.com/1.1/statuses/'.concat(retweet ? '' : 'un', 'retweet.json'),
+                  method: 'POST',
+                  headers: {
+                    authorization: 'Bearer ' + twitterInfo.authorization,
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'x-csrf-token': twitterInfo.ct0
+                  },
+                  data: $.param({
+                    tweet_mode: 'extended',
+                    id: retweetId
+                  }),
+                  responseType: 'json',
+                  onload: function onload (response) {
+                    var _response$response21, _response$response21$, _response$response21$2
 
-                  if (response.status === 200 || response.status === 403 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : (_response$response21$ = _response$response21.errors) === null || _response$response21$ === void 0 ? void 0 : (_response$response21$2 = _response$response21$[0]) === null || _response$response21$2 === void 0 ? void 0 : _response$response21$2.code) === 327) {
-                    status.success()
-                    r({
-                      result: 'success',
-                      statusText: response.statusText,
-                      status: response.status
-                    })
-                  } else {
-                    status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    r({
-                      result: 'error',
-                      statusText: response.statusText,
-                      status: response.status
-                    })
-                  }
-                },
-                r: r,
-                status: status
-              })
+                    if (debug) console.log(response)
 
-            case 3:
+                    if (response.status === 200 || response.status === 403 && ((_response$response21 = response.response) === null || _response$response21 === void 0 ? void 0 : (_response$response21$ = _response$response21.errors) === null || _response$response21$ === void 0 ? void 0 : (_response$response21$2 = _response$response21$[0]) === null || _response$response21$2 === void 0 ? void 0 : _response$response21$2.code) === 327) {
+                      status.success()
+                      r({
+                        result: 'success',
+                        statusText: response.statusText,
+                        status: response.status
+                      })
+                    } else {
+                      status.error('Error:' + response.statusText + '(' + response.status + ')')
+                      r({
+                        result: 'error',
+                        statusText: response.statusText,
+                        status: response.status
+                      })
+                    }
+                  },
+                  r: r,
+                  status: status
+                })
+              } catch (e) {
+                throwError(e, 'toggleRetweet')
+              }
+
+            case 2:
             case 'end':
               return _context31.stop()
           }
@@ -2853,36 +2974,45 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function getTwitterUserId (name) {
-    return new Promise(function (resolve) {
-      var status = echoLog({
-        type: 'getTwitterUserId',
-        text: name
-      })
-      httpRequest({
-        url: 'https://api.twitter.com/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=%7B%22screen_name%22%3A%22' + name + '%22%2C%22withHighlightedLabel%22%3Atrue%7D',
-        method: 'GET',
-        headers: {
-          authorization: 'Bearer ' + twitterInfo.authorization,
-          'content-type': 'application/json'
-        },
-        responseType: 'json',
-        anonymous: true,
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'getTwitterUserId',
+          text: name
+        })
+        httpRequest({
+          url: 'https://api.twitter.com/graphql/-xfUfZsnR_zqjFd-IfrN5A/UserByScreenName?variables=%7B%22screen_name%22%3A%22' + name + '%22%2C%22withHighlightedLabel%22%3Atrue%7D',
+          method: 'GET',
+          headers: {
+            authorization: 'Bearer ' + twitterInfo.authorization,
+            'content-type': 'application/json'
+          },
+          responseType: 'json',
+          anonymous: true,
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.status === 200) {
-            var _response$response11, _response$response11$, _response$response11$2
+            if (response.status === 200) {
+              var _response$response11, _response$response11$, _response$response11$2
 
-            var userId = (_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : (_response$response11$ = _response$response11.data) === null || _response$response11$ === void 0 ? void 0 : (_response$response11$2 = _response$response11$.user) === null || _response$response11$2 === void 0 ? void 0 : _response$response11$2.rest_id // eslint-disable-line camelcase
+              var userId = (_response$response11 = response.response) === null || _response$response11 === void 0 ? void 0 : (_response$response11$ = _response$response11.data) === null || _response$response11$ === void 0 ? void 0 : (_response$response11$2 = _response$response11$.user) === null || _response$response11$2 === void 0 ? void 0 : _response$response11$2.rest_id // eslint-disable-line camelcase
 
-            if (userId) {
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status,
-                userId: userId
-              })
+              if (userId) {
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  userId: userId
+                })
+              } else {
+                status.error('Error:' + response.statusText + '(' + response.status + ')')
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
             } else {
               status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve({
@@ -2891,24 +3021,19 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 status: response.status
               })
             }
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (_ref8) {
+        var userId = _ref8.userId
+        return userId
+      }).catch(function () {
+        return false
       })
-    }).then(function (_ref8) {
-      var userId = _ref8.userId
-      return userId
-    }).catch(function () {
-      return false
-    })
+    } catch (e) {
+      throwError(e, 'getTwitterUserId')
+    }
   }
 
   function toggleTwitterActions (_x11) {
@@ -2924,6 +3049,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context33.prev = _context33.next) {
             case 0:
               website = _ref9.website, type = _ref9.type, elements = _ref9.elements, resolve = _ref9.resolve, action = _ref9.action, _ref9$toFinalUrl = _ref9.toFinalUrl, toFinalUrl = _ref9$toFinalUrl === void 0 ? {} : _ref9$toFinalUrl
+              _context33.prev = 1
 
               /*
               if (new Date().getTime() - twitterInfo.updateTime > 10 * 60 * 1000) {
@@ -2932,7 +3058,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
               */
               _iterator34 = _createForOfIteratorHelper(unique(elements))
-              _context33.prev = 2
+              _context33.prev = 3
               _loop15 = /* #__PURE__ */regeneratorRuntime.mark(function _loop15 () {
                 var _toFinalUrlElement$ma2, _toFinalUrlElement$ma3
 
@@ -3000,56 +3126,105 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator34.s()
 
-            case 5:
+            case 6:
               if ((_step35 = _iterator34.n()).done) {
-                _context33.next = 9
+                _context33.next = 10
                 break
               }
 
-              return _context33.delegateYield(_loop15(), 't0', 7)
+              return _context33.delegateYield(_loop15(), 't0', 8)
 
-            case 7:
-              _context33.next = 5
+            case 8:
+              _context33.next = 6
               break
 
-            case 9:
-              _context33.next = 14
+            case 10:
+              _context33.next = 15
               break
 
-            case 11:
-              _context33.prev = 11
-              _context33.t1 = _context33.catch(2)
+            case 12:
+              _context33.prev = 12
+              _context33.t1 = _context33.catch(3)
 
               _iterator34.e(_context33.t1)
 
-            case 14:
-              _context33.prev = 14
+            case 15:
+              _context33.prev = 15
 
               _iterator34.f()
 
-              return _context33.finish(14)
-
-            case 17:
-              resolve()
+              return _context33.finish(15)
 
             case 18:
+              resolve()
+              _context33.next = 24
+              break
+
+            case 21:
+              _context33.prev = 21
+              _context33.t2 = _context33.catch(1)
+              throwError(_context33.t2, 'toggleTwitterActions')
+
+            case 24:
             case 'end':
               return _context33.stop()
           }
         }
-      }, _callee29, null, [[2, 11, 14, 17]])
+      }, _callee29, null, [[1, 21], [3, 12, 15, 18]])
     }))
     return _toggleTwitterActions.apply(this, arguments)
   }
 
   function verifyDiscordAuth () {
-    var status = echoLog({
-      type: 'verifyDiscordAuth'
-    })
-    return new Promise(function (resolve) {
+    try {
+      var status = echoLog({
+        type: 'verifyDiscordAuth'
+      })
+      return new Promise(function (resolve) {
+        httpRequest({
+          url: 'https://discord.com/api/v6/users/@me',
+          method: 'HEAD',
+          headers: {
+            authorization: discordInfo.authorization
+          },
+          onload: function onload (response) {
+            if (debug) console.log(response)
+
+            if (response.status === 200) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: resolve,
+          status: status
+        })
+      })
+    } catch (e) {
+      throwError(e, 'verifyDiscordAuth')
+    }
+  }
+
+  function joinDiscordServer (r, inviteId) {
+    try {
+      var status = echoLog({
+        type: 'joinDiscordServer',
+        text: inviteId
+      })
       httpRequest({
-        url: 'https://discord.com/api/v6/users/@me',
-        method: 'HEAD',
+        url: 'https://discord.com/api/v6/invites/' + inviteId,
+        method: 'POST',
+        dataType: 'json',
         headers: {
           authorization: discordInfo.authorization
         },
@@ -3057,99 +3232,69 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           if (debug) console.log(response)
 
           if (response.status === 200) {
+            var _response$response12, _response$response12$
+
             status.success()
-            resolve({
+            r({
               result: 'success',
               statusText: response.statusText,
-              status: response.status
+              status: response.status,
+              guild: [inviteId, (_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : (_response$response12$ = _response$response12.guild) === null || _response$response12$ === void 0 ? void 0 : _response$response12$.id]
             })
           } else {
             status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
+            r({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
           }
         },
-        r: resolve,
+        r: r,
         status: status
       })
-    })
-  }
-
-  function joinDiscordServer (r, inviteId) {
-    var status = echoLog({
-      type: 'joinDiscordServer',
-      text: inviteId
-    })
-    httpRequest({
-      url: 'https://discord.com/api/v6/invites/' + inviteId,
-      method: 'POST',
-      dataType: 'json',
-      headers: {
-        authorization: discordInfo.authorization
-      },
-      onload: function onload (response) {
-        if (debug) console.log(response)
-
-        if (response.status === 200) {
-          var _response$response12, _response$response12$
-
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status,
-            guild: [inviteId, (_response$response12 = response.response) === null || _response$response12 === void 0 ? void 0 : (_response$response12$ = _response$response12.guild) === null || _response$response12$ === void 0 ? void 0 : _response$response12$.id]
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
+    } catch (e) {
+      throwError(e, 'joinDiscordServer')
+    }
   }
 
   function leaveDiscordServer (r, inviteId, guild) {
-    var status = echoLog({
-      type: 'leaveDiscordServer',
-      text: inviteId
-    })
-    httpRequest({
-      url: 'https://discord.com/api/v6/users/@me/guilds/' + guild,
-      method: 'DELETE',
-      headers: {
-        authorization: discordInfo.authorization
-      },
-      onload: function onload (response) {
-        if (debug) console.log(response)
+    try {
+      var status = echoLog({
+        type: 'leaveDiscordServer',
+        text: inviteId
+      })
+      httpRequest({
+        url: 'https://discord.com/api/v6/users/@me/guilds/' + guild,
+        method: 'DELETE',
+        headers: {
+          authorization: discordInfo.authorization
+        },
+        onload: function onload (response) {
+          if (debug) console.log(response)
 
-        if (response.status === 204) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
+          if (response.status === 204) {
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            r({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: r,
+        status: status
+      })
+    } catch (e) {
+      throwError(e, 'leaveDiscordServer')
+    }
   }
 
   function toggleDiscordActions (_x12) {
@@ -3158,45 +3303,46 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function _toggleDiscordActions () {
     _toggleDiscordActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee30 (_ref10) {
-      var website, elements, resolve, action, _ref10$toFinalUrl, toFinalUrl, _ref10$toGuild, toGuild, verifyResult, pro, _iterator35, _step36, _loop16
+      var website, elements, resolve, action, _ref10$toFinalUrl, toFinalUrl, _ref10$toGuild, toGuild, verifyResult, _pro14, _iterator35, _step36, _loop16
 
       return regeneratorRuntime.wrap(function _callee30$ (_context34) {
         while (1) {
           switch (_context34.prev = _context34.next) {
             case 0:
               website = _ref10.website, elements = _ref10.elements, resolve = _ref10.resolve, action = _ref10.action, _ref10$toFinalUrl = _ref10.toFinalUrl, toFinalUrl = _ref10$toFinalUrl === void 0 ? {} : _ref10$toFinalUrl, _ref10$toGuild = _ref10.toGuild, toGuild = _ref10$toGuild === void 0 ? {} : _ref10$toGuild
+              _context34.prev = 1
 
               if (!(new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired)) {
-                _context34.next = 14
+                _context34.next = 15
                 break
               }
 
-              _context34.next = 4
+              _context34.next = 5
               return verifyDiscordAuth()
 
-            case 4:
+            case 5:
               verifyResult = _context34.sent
 
               if (!verifyResult) {
-                _context34.next = 11
+                _context34.next = 12
                 break
               }
 
               discordInfo.updateTime = new Date().getTime()
               discordInfo.expired = false
               GM_setValue('discordInfo', discordInfo)
-              _context34.next = 14
+              _context34.next = 15
               break
 
-            case 11:
+            case 12:
               echoLog({
                 type: 'updateDiscordAuth'
               })
               resolve({})
               return _context34.abrupt('return')
 
-            case 14:
-              pro = []
+            case 15:
+              _pro14 = []
               _iterator35 = _createForOfIteratorHelper(unique(elements))
 
               try {
@@ -3212,7 +3358,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                   }
 
                   if (inviteId) {
-                    pro.push(new Promise(function (resolve) {
+                    _pro14.push(new Promise(function (resolve) {
                       var guild = toGuild[inviteId]
 
                       if (action === 'fuck') {
@@ -3235,104 +3381,115 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 _iterator35.f()
               }
 
-              Promise.all(pro).then(function (data) {
+              Promise.all(_pro14).then(function (data) {
                 resolve(data)
               }).catch(function () {
                 resolve()
               })
+              _context34.next = 24
+              break
 
-            case 18:
+            case 21:
+              _context34.prev = 21
+              _context34.t0 = _context34.catch(1)
+              throwError(_context34.t0, 'toggleDiscordActions')
+
+            case 24:
             case 'end':
               return _context34.stop()
           }
         }
-      }, _callee30)
+      }, _callee30, null, [[1, 21]])
     }))
     return _toggleDiscordActions.apply(this, arguments)
   }
 
   function getInsInfo (name) {
-    return new Promise(function (resolve) {
-      var status = echoLog({
-        type: 'getInsInfo',
-        text: name
-      })
-      httpRequest({
-        url: 'https://www.instagram.com/'.concat(name, '/'),
-        method: 'GET',
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'getInsInfo',
+          text: name
+        })
+        httpRequest({
+          url: 'https://www.instagram.com/'.concat(name, '/'),
+          method: 'GET',
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.finalUrl.includes('accounts/login')) {
-            status.error('Error:' + getI18n('loginIns'), true)
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-            return
-          } else if (response.finalUrl.includes('www.instagram.com/challenge')) {
-            status.error('Error:' + getI18n('insBanned'))
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-            return
-          }
-
-          if (response.status === 200) {
-            var _response$responseTex5, _response$responseTex6
-
-            var _data = (_response$responseTex5 = response.responseText) === null || _response$responseTex5 === void 0 ? void 0 : (_response$responseTex6 = _response$responseTex5.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)) === null || _response$responseTex6 === void 0 ? void 0 : _response$responseTex6[1]
-
-            if (_data) {
-              var _data$config, _data$entry_data, _data$entry_data$Prof, _data$entry_data$Prof2, _data$entry_data$Prof3, _data$entry_data$Prof4
-
-              var data = JSON.parse(_data)
-              insInfo.csrftoken = data === null || data === void 0 ? void 0 : (_data$config = data.config) === null || _data$config === void 0 ? void 0 : _data$config.csrf_token // eslint-disable-line camelcase
-
-              insInfo.hash = data === null || data === void 0 ? void 0 : data.rollout_hash // eslint-disable-line camelcase
-
-              status.success()
+            if (response.finalUrl.includes('accounts/login')) {
+              status.error('Error:' + getI18n('loginIns'), true)
               resolve({
-                result: 'success',
+                result: 'error',
                 statusText: response.statusText,
-                status: response.status,
-                id: data === null || data === void 0 ? void 0 : (_data$entry_data = data.entry_data) === null || _data$entry_data === void 0 ? void 0 : (_data$entry_data$Prof = _data$entry_data.ProfilePage) === null || _data$entry_data$Prof === void 0 ? void 0 : (_data$entry_data$Prof2 = _data$entry_data$Prof[0]) === null || _data$entry_data$Prof2 === void 0 ? void 0 : (_data$entry_data$Prof3 = _data$entry_data$Prof2.graphql) === null || _data$entry_data$Prof3 === void 0 ? void 0 : (_data$entry_data$Prof4 = _data$entry_data$Prof3.user) === null || _data$entry_data$Prof4 === void 0 ? void 0 : _data$entry_data$Prof4.id
-              }) // eslint-disable-line camelcase
+                status: response.status
+              })
+              return
+            } else if (response.finalUrl.includes('www.instagram.com/challenge')) {
+              status.error('Error:' + getI18n('insBanned'))
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+              return
+            }
+
+            if (response.status === 200) {
+              var _response$responseTex5, _response$responseTex6
+
+              var _data = (_response$responseTex5 = response.responseText) === null || _response$responseTex5 === void 0 ? void 0 : (_response$responseTex6 = _response$responseTex5.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)) === null || _response$responseTex6 === void 0 ? void 0 : _response$responseTex6[1]
+
+              if (_data) {
+                var _data$config, _data$entry_data, _data$entry_data$Prof, _data$entry_data$Prof2, _data$entry_data$Prof3, _data$entry_data$Prof4
+
+                var data = JSON.parse(_data)
+                insInfo.csrftoken = data === null || data === void 0 ? void 0 : (_data$config = data.config) === null || _data$config === void 0 ? void 0 : _data$config.csrf_token // eslint-disable-line camelcase
+
+                insInfo.hash = data === null || data === void 0 ? void 0 : data.rollout_hash // eslint-disable-line camelcase
+
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  id: data === null || data === void 0 ? void 0 : (_data$entry_data = data.entry_data) === null || _data$entry_data === void 0 ? void 0 : (_data$entry_data$Prof = _data$entry_data.ProfilePage) === null || _data$entry_data$Prof === void 0 ? void 0 : (_data$entry_data$Prof2 = _data$entry_data$Prof[0]) === null || _data$entry_data$Prof2 === void 0 ? void 0 : (_data$entry_data$Prof3 = _data$entry_data$Prof2.graphql) === null || _data$entry_data$Prof3 === void 0 ? void 0 : (_data$entry_data$Prof4 = _data$entry_data$Prof3.user) === null || _data$entry_data$Prof4 === void 0 ? void 0 : _data$entry_data$Prof4.id
+                }) // eslint-disable-line camelcase
+              } else {
+                status.error('Error: Ins data error!')
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
             } else {
-              status.error('Error: Ins data error!')
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
               resolve({
                 result: 'error',
                 statusText: response.statusText,
                 status: response.status
               })
             }
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (_ref11) {
+        var id = _ref11.id
+        return {
+          id: id,
+          error: !id
+        }
+      }).catch(function (error) {
+        return {
+          id: null,
+          error: error
+        }
       })
-    }).then(function (_ref11) {
-      var id = _ref11.id
-      return {
-        id: id,
-        error: !id
-      }
-    }).catch(function (error) {
-      return {
-        id: null,
-        error: error
-      }
-    })
+    } catch (e) {
+      throwError(e, 'getInsInfo')
+    }
   }
 
   function followIns (_x13, _x14) {
@@ -3347,16 +3504,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         while (1) {
           switch (_context35.prev = _context35.next) {
             case 0:
-              _context35.next = 2
+              _context35.prev = 0
+              _context35.next = 3
               return getInsInfo(name)
 
-            case 2:
+            case 3:
               _yield$getInsInfo = _context35.sent
               id = _yield$getInsInfo.id
               error = _yield$getInsInfo.error
 
               if (!error) {
-                _context35.next = 8
+                _context35.next = 9
                 break
               }
 
@@ -3366,7 +3524,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               })
               return _context35.abrupt('return', error)
 
-            case 8:
+            case 9:
               status = echoLog({
                 type: 'followIns',
                 text: name
@@ -3407,13 +3565,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 r: r,
                 status: status
               })
+              _context35.next = 16
+              break
 
-            case 10:
+            case 13:
+              _context35.prev = 13
+              _context35.t0 = _context35.catch(0)
+              throwError(_context35.t0, 'followIns')
+
+            case 16:
             case 'end':
               return _context35.stop()
           }
         }
-      }, _callee31)
+      }, _callee31, null, [[0, 13]])
     }))
     return _followIns.apply(this, arguments)
   }
@@ -3430,16 +3595,17 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
         while (1) {
           switch (_context36.prev = _context36.next) {
             case 0:
-              _context36.next = 2
+              _context36.prev = 0
+              _context36.next = 3
               return getInsInfo(name)
 
-            case 2:
+            case 3:
               _yield$getInsInfo2 = _context36.sent
               id = _yield$getInsInfo2.id
               error = _yield$getInsInfo2.error
 
               if (!error) {
-                _context36.next = 8
+                _context36.next = 9
                 break
               }
 
@@ -3449,7 +3615,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               })
               return _context36.abrupt('return', error)
 
-            case 8:
+            case 9:
               status = echoLog({
                 type: 'unfollowIns',
                 text: name
@@ -3490,13 +3656,20 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
                 r: r,
                 status: status
               })
+              _context36.next = 16
+              break
 
-            case 10:
+            case 13:
+              _context36.prev = 13
+              _context36.t0 = _context36.catch(0)
+              throwError(_context36.t0, 'unfollowIns')
+
+            case 16:
             case 'end':
               return _context36.stop()
           }
         }
-      }, _callee32)
+      }, _callee32, null, [[0, 13]])
     }))
     return _unfollowIns.apply(this, arguments)
   }
@@ -3507,53 +3680,58 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
   function _toggleInsActions () {
     _toggleInsActions = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee33 (_ref12) {
-      var website, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, pro, _iterator36, _step37, _loop17
+      var website, elements, resolve, action, _ref12$toFinalUrl, toFinalUrl, _pro15, _iterator36, _step37, _loop17
 
       return regeneratorRuntime.wrap(function _callee33$ (_context37) {
         while (1) {
           switch (_context37.prev = _context37.next) {
             case 0:
               website = _ref12.website, elements = _ref12.elements, resolve = _ref12.resolve, action = _ref12.action, _ref12$toFinalUrl = _ref12.toFinalUrl, toFinalUrl = _ref12$toFinalUrl === void 0 ? {} : _ref12$toFinalUrl
-              pro = []
-              _iterator36 = _createForOfIteratorHelper(unique(elements))
 
               try {
-                _loop17 = function _loop17 () {
-                  var element = _step37.value
-                  var name = element
+                _pro15 = []
+                _iterator36 = _createForOfIteratorHelper(unique(elements))
 
-                  if (website === 'giveawaysu' && toFinalUrl[element]) {
-                    var _toFinalUrlElement$ma5
+                try {
+                  _loop17 = function _loop17 () {
+                    var element = _step37.value
+                    var name = element
 
-                    var toFinalUrlElement = toFinalUrl[element] || ''
-                    name = (_toFinalUrlElement$ma5 = toFinalUrlElement.match(/https:\/\/www.instagram.com\/(.+)?\//)) === null || _toFinalUrlElement$ma5 === void 0 ? void 0 : _toFinalUrlElement$ma5[1]
+                    if (website === 'giveawaysu' && toFinalUrl[element]) {
+                      var _toFinalUrlElement$ma5
+
+                      var toFinalUrlElement = toFinalUrl[element] || ''
+                      name = (_toFinalUrlElement$ma5 = toFinalUrlElement.match(/https:\/\/www\.instagram\.com\/(.+)?\//)) === null || _toFinalUrlElement$ma5 === void 0 ? void 0 : _toFinalUrlElement$ma5[1]
+                    }
+
+                    if (name) {
+                      _pro15.push(new Promise(function (resolve) {
+                        if (action === 'fuck') {
+                          followIns(resolve, name)
+                        } else {
+                          unfollowIns(resolve, name)
+                        }
+                      }))
+                    }
                   }
 
-                  if (name) {
-                    pro.push(new Promise(function (resolve) {
-                      if (action === 'fuck') {
-                        followIns(resolve, name)
-                      } else {
-                        unfollowIns(resolve, name)
-                      }
-                    }))
+                  for (_iterator36.s(); !(_step37 = _iterator36.n()).done;) {
+                    _loop17()
                   }
+                } catch (err) {
+                  _iterator36.e(err)
+                } finally {
+                  _iterator36.f()
                 }
 
-                for (_iterator36.s(); !(_step37 = _iterator36.n()).done;) {
-                  _loop17()
-                }
-              } catch (err) {
-                _iterator36.e(err)
-              } finally {
-                _iterator36.f()
+                Promise.all(_pro15).finally(function () {
+                  resolve()
+                })
+              } catch (e) {
+                throwError(e, 'toggleInsActions')
               }
 
-              Promise.all(pro).finally(function () {
-                resolve()
-              })
-
-            case 5:
+            case 2:
             case 'end':
               return _context37.stop()
           }
@@ -3564,106 +3742,115 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
   }
 
   function updateRedditInfo () {
-    return new Promise(function (resolve) {
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'updateRedditInfo'
+        })
+        httpRequest({
+          url: 'https://www.reddit.com/',
+          method: 'GET',
+          nochche: true,
+          onload: function onload (response) {
+            if (debug) console.log(response)
+
+            if (response.status === 200) {
+              if (response.responseText.includes('www.reddit.com/login/')) {
+                status.error('Error:' + getI18n('loginReddit'), true)
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+                return
+              }
+
+              var _ref13 = response.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/) || []
+              var _ref14 = _slicedToArray(_ref13, 3)
+              var accessToken = _ref14[1]
+              var expiresTime = _ref14[2]
+
+              if (accessToken) {
+                redditInfo.accessToken = accessToken
+                redditInfo.expiresTime = new Date(expiresTime).getTime()
+                GM_setValue('redditInfo', redditInfo)
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              } else {
+                status.error('Error: Parameter "accessToken" not found!')
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: resolve,
+          status: status
+        })
+      })
+    } catch (e) {
+      throwError(e, 'updateRedditInfo')
+    }
+  }
+
+  function toggleReddit (r, name) {
+    var join = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true
+
+    try {
       var status = echoLog({
-        type: 'updateRedditInfo'
+        type: join ? 'joinReddit' : 'leaveReddit',
+        text: name
       })
       httpRequest({
-        url: 'https://www.reddit.com/',
-        method: 'GET',
-        nochche: true,
+        url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer ' + redditInfo.accessToken,
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          action: join ? 'sub' : 'unsub',
+          sr_name: name,
+          api_type: 'json'
+        }),
         onload: function onload (response) {
           if (debug) console.log(response)
 
           if (response.status === 200) {
-            if (response.responseText.includes('www.reddit.com/login/')) {
-              status.error('Error:' + getI18n('loginReddit'), true)
-              resolve({
-                result: 'error',
-                statusText: response.statusText,
-                status: response.status
-              })
-              return
-            }
-
-            var _ref13 = response.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/) || []
-            var _ref14 = _slicedToArray(_ref13, 3)
-            var accessToken = _ref14[1]
-            var expiresTime = _ref14[2]
-
-            if (accessToken) {
-              redditInfo.accessToken = accessToken
-              redditInfo.expiresTime = new Date(expiresTime).getTime()
-              GM_setValue('redditInfo', redditInfo)
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status
-              })
-            } else {
-              status.error('Error: Parameter "accessToken" not found!')
-              resolve({
-                result: 'error',
-                statusText: response.statusText,
-                status: response.status
-              })
-            }
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
           } else {
             status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
+            r({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
           }
         },
-        r: resolve,
+        r: r,
         status: status
       })
-    })
-  }
-
-  function toggleReddit (r, name) {
-    var join = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true
-    var status = echoLog({
-      type: join ? 'joinReddit' : 'leaveReddit',
-      text: name
-    })
-    httpRequest({
-      url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
-      method: 'POST',
-      headers: {
-        authorization: 'Bearer ' + redditInfo.accessToken,
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      data: $.param({
-        action: join ? 'sub' : 'unsub',
-        sr_name: name,
-        api_type: 'json'
-      }),
-      onload: function onload (response) {
-        if (debug) console.log(response)
-
-        if (response.status === 200) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
+    } catch (e) {
+      throwError(e, 'toggleReddit')
+    }
   }
 
   function toggleRedditActions (_x18) {
@@ -3679,28 +3866,29 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context39.prev = _context39.next) {
             case 0:
               website = _ref15.website, type = _ref15.type, elements = _ref15.elements, resolve = _ref15.resolve, action = _ref15.action, _ref15$toFinalUrl = _ref15.toFinalUrl, toFinalUrl = _ref15$toFinalUrl === void 0 ? {} : _ref15$toFinalUrl
+              _context39.prev = 1
 
               if (!(new Date().getTime() > redditInfo.expiresTime)) {
-                _context39.next = 7
+                _context39.next = 8
                 break
               }
 
-              _context39.next = 4
+              _context39.next = 5
               return updateRedditInfo()
 
-            case 4:
+            case 5:
               result = _context39.sent
 
               if (!(!(result === null || result === void 0 ? void 0 : result.result) === 'success')) {
-                _context39.next = 7
+                _context39.next = 8
                 break
               }
 
               return _context39.abrupt('return')
 
-            case 7:
+            case 8:
               _iterator37 = _createForOfIteratorHelper(unique(elements))
-              _context39.prev = 8
+              _context39.prev = 9
               _loop18 = /* #__PURE__ */regeneratorRuntime.mark(function _loop18 () {
                 var element, name, _toFinalUrlElement$ma6, toFinalUrlElement
 
@@ -3736,91 +3924,102 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator37.s()
 
-            case 11:
+            case 12:
               if ((_step38 = _iterator37.n()).done) {
-                _context39.next = 15
+                _context39.next = 16
                 break
               }
 
-              return _context39.delegateYield(_loop18(), 't0', 13)
+              return _context39.delegateYield(_loop18(), 't0', 14)
 
-            case 13:
-              _context39.next = 11
+            case 14:
+              _context39.next = 12
               break
 
-            case 15:
-              _context39.next = 20
+            case 16:
+              _context39.next = 21
               break
 
-            case 17:
-              _context39.prev = 17
-              _context39.t1 = _context39.catch(8)
+            case 18:
+              _context39.prev = 18
+              _context39.t1 = _context39.catch(9)
 
               _iterator37.e(_context39.t1)
 
-            case 20:
-              _context39.prev = 20
+            case 21:
+              _context39.prev = 21
 
               _iterator37.f()
 
-              return _context39.finish(20)
-
-            case 23:
-              resolve()
+              return _context39.finish(21)
 
             case 24:
+              resolve()
+              _context39.next = 30
+              break
+
+            case 27:
+              _context39.prev = 27
+              _context39.t2 = _context39.catch(1)
+              throwError(_context39.t2, 'toggleRedditActions')
+
+            case 30:
             case 'end':
               return _context39.stop()
           }
         }
-      }, _callee34, null, [[8, 17, 20, 23]])
+      }, _callee34, null, [[1, 27], [9, 18, 21, 24]])
     }))
     return _toggleRedditActions.apply(this, arguments)
   }
 
   function verifyVkLogin () {
-    return new Promise(function (resolve) {
-      var status = echoLog({
-        type: 'verifyVkLogin'
-      })
-      httpRequest({
-        url: 'https://vk.com/im',
-        method: 'HEAD',
-        onload: function onload (response) {
-          if (debug) console.log(response)
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'verifyVkLogin'
+        })
+        httpRequest({
+          url: 'https://vk.com/im',
+          method: 'HEAD',
+          onload: function onload (response) {
+            if (debug) console.log(response)
 
-          if (response.toFinalUrl.includes('vk.com/login')) {
-            status.error('Error:' + getI18n('loginVk'), true)
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else if (response.status === 200) {
-            status.success()
-            resolve({
-              result: 'success',
-              statusText: response.statusText,
-              status: response.status
-            })
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
-              result: 'error',
-              statusText: response.statusText,
-              status: response.status
-            })
-          }
-        },
-        r: resolve,
-        status: status
+            if (response.toFinalUrl.includes('vk.com/login')) {
+              status.error('Error:' + getI18n('loginVk'), true)
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else if (response.status === 200) {
+              status.success()
+              resolve({
+                result: 'success',
+                statusText: response.statusText,
+                status: response.status
+              })
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: resolve,
+          status: status
+        })
+      }).then(function (_ref16) {
+        var result = _ref16.result
+        return result === 'success'
+      }).catch(function () {
+        return false
       })
-    }).then(function (_ref16) {
-      var result = _ref16.result
-      return result === 'success'
-    }).catch(function () {
-      return false
-    })
+    } catch (e) {
+      throwError(e, 'verifyVkLogin')
+    }
   }
 
   function toggleVk (_x19, _x20) {
@@ -3839,220 +4038,244 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context40.prev = _context40.next) {
             case 0:
               join = _args40.length > 2 && _args40[2] !== undefined ? _args40[2] : true
-              _context40.next = 3
+              _context40.prev = 1
+              _context40.next = 4
               return getVkId(name)
 
-            case 3:
+            case 4:
               _yield$getVkId = _context40.sent
               data = _yield$getVkId.data
 
               if (data) {
-                _context40.next = 7
+                _context40.next = 8
                 break
               }
 
               return _context40.abrupt('return')
 
-            case 7:
+            case 8:
               _context40.t0 = data.type
-              _context40.next = _context40.t0 === 'group' ? 10 : _context40.t0 === 'public' ? 12 : 13
+              _context40.next = _context40.t0 === 'group' ? 11 : _context40.t0 === 'public' ? 13 : 14
               break
 
-            case 10:
+            case 11:
               toggleVkGroup(r, name, data, join)
-              return _context40.abrupt('break', 13)
-
-            case 12:
-              toggleVkPublic(r, name, data, join)
+              return _context40.abrupt('break', 14)
 
             case 13:
+              toggleVkPublic(r, name, data, join)
+
+            case 14:
+              _context40.next = 19
+              break
+
+            case 16:
+              _context40.prev = 16
+              _context40.t1 = _context40.catch(1)
+              throwError(_context40.t1, 'toggleVk')
+
+            case 19:
             case 'end':
               return _context40.stop()
           }
         }
-      }, _callee35)
+      }, _callee35, null, [[1, 16]])
     }))
     return _toggleVk.apply(this, arguments)
   }
 
   function toggleVkGroup (r, name, data) {
     var join = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true
-    var status = echoLog({
-      type: join ? 'joinVkGroup' : 'leaveVkGroup',
-      text: name
-    })
 
-    if (data.groupAct === 'enter' && !join || data.groupAct === 'leave' && join) {
-      status.success()
-      r({
-        result: 'success'
-      })
-    }
-
-    var reqData = {
-      act: join ? 'enter' : 'leave',
-      al: 1,
-      gid: data.groupId,
-      hash: data.groupHash
-    }
-    if (join) reqData.context = '_'
-    httpRequest({
-      url: 'https://vk.com/al_groups.php',
-      method: 'POST',
-      headers: {
-        origin: 'https://vk.com',
-        referer: 'https://vk.com/' + name,
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      data: $.param(reqData),
-      onload: function onload (response) {
-        if (debug) console.log(response)
-
-        if (response.status === 200) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
-  }
-
-  function toggleVkPublic (r, name, data) {
-    var join = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true
-    var status = echoLog({
-      type: join ? 'joinVkPublic' : 'leaveVkPublic',
-      text: name
-    })
-
-    if (data.publicJoined && join || !data.publicJoined && !join) {
-      status.success()
-      r({
-        result: 'success'
-      })
-    }
-
-    httpRequest({
-      url: 'https://vk.com/al_public.php',
-      method: 'POST',
-      headers: {
-        origin: 'https://vk.com',
-        referer: 'https://vk.com/' + name,
-        'content-type': 'application/x-www-form-urlencoded'
-      },
-      data: $.param({
-        act: join ? 'a_enter' : 'a_leave',
-        al: 1,
-        pid: data.publicPid,
-        hash: data.publicHash
-      }),
-      onload: function onload (response) {
-        if (debug) console.log(response)
-
-        if (response.status === 200) {
-          status.success()
-          r({
-            result: 'success',
-            statusText: response.statusText,
-            status: response.status
-          })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({
-            result: 'error',
-            statusText: response.statusText,
-            status: response.status
-          })
-        }
-      },
-      r: r,
-      status: status
-    })
-  }
-
-  function getVkId (name) {
-    return new Promise(function (resolve) {
+    try {
       var status = echoLog({
-        type: 'getVkId',
+        type: join ? 'joinVkGroup' : 'leaveVkGroup',
         text: name
       })
+
+      if (data.groupAct === 'enter' && !join || data.groupAct === 'leave' && join) {
+        status.success()
+        r({
+          result: 'success'
+        })
+      }
+
+      var reqData = {
+        act: join ? 'enter' : 'leave',
+        al: 1,
+        gid: data.groupId,
+        hash: data.groupHash
+      }
+      if (join) reqData.context = '_'
       httpRequest({
-        url: 'https://vk.com/' + name,
-        method: 'GET',
+        url: 'https://vk.com/al_groups.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/' + name,
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param(reqData),
         onload: function onload (response) {
           if (debug) console.log(response)
 
           if (response.status === 200) {
-            var _response$responseTex7, _response$responseTex8
-
-            var _ref17 = response.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || []
-            var _ref18 = _slicedToArray(_ref17, 4)
-            var groupAct = _ref18[1]
-            var groupId = _ref18[2]
-            var groupHash = _ref18[3]
-
-            var publicHash = (_response$responseTex7 = response.responseText.match(/"enterHash":"(.*?)"/)) === null || _response$responseTex7 === void 0 ? void 0 : _response$responseTex7[1]
-            var publicPid = (_response$responseTex8 = response.responseText.match(/"public_id":([\d]+?),/)) === null || _response$responseTex8 === void 0 ? void 0 : _response$responseTex8[1]
-            var publicJoined = !response.responseText.includes('Public.subscribe')
-
-            if (groupAct && groupId && groupHash) {
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status,
-                data: {
-                  groupAct: groupAct,
-                  groupId: groupId,
-                  groupHash: groupHash,
-                  type: 'group'
-                }
-              })
-            } else if (publicHash && publicPid) {
-              status.success()
-              resolve({
-                result: 'success',
-                statusText: response.statusText,
-                status: response.status,
-                data: {
-                  publicHash: publicHash,
-                  publicPid: publicPid,
-                  publicJoined: publicJoined,
-                  type: 'public'
-                }
-              })
-            } else {
-              status.error('Error: Parameter "id" not found!')
-              resolve({
-                result: 'error',
-                statusText: response.statusText,
-                status: response.status
-              })
-            }
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
           } else {
             status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({
+            r({
               result: 'error',
               statusText: response.statusText,
               status: response.status
             })
           }
         },
-        r: resolve,
+        r: r,
         status: status
       })
-    })
+    } catch (e) {
+      throwError(e, 'toggleVkGroup')
+    }
+  }
+
+  function toggleVkPublic (r, name, data) {
+    var join = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : true
+
+    try {
+      var status = echoLog({
+        type: join ? 'joinVkPublic' : 'leaveVkPublic',
+        text: name
+      })
+
+      if (data.publicJoined && join || !data.publicJoined && !join) {
+        status.success()
+        r({
+          result: 'success'
+        })
+      }
+
+      httpRequest({
+        url: 'https://vk.com/al_public.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/' + name,
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          act: join ? 'a_enter' : 'a_leave',
+          al: 1,
+          pid: data.publicPid,
+          hash: data.publicHash
+        }),
+        onload: function onload (response) {
+          if (debug) console.log(response)
+
+          if (response.status === 200) {
+            status.success()
+            r({
+              result: 'success',
+              statusText: response.statusText,
+              status: response.status
+            })
+          } else {
+            status.error('Error:' + response.statusText + '(' + response.status + ')')
+            r({
+              result: 'error',
+              statusText: response.statusText,
+              status: response.status
+            })
+          }
+        },
+        r: r,
+        status: status
+      })
+    } catch (e) {
+      throwError(e, 'toggleVkPublic')
+    }
+  }
+
+  function getVkId (name) {
+    try {
+      return new Promise(function (resolve) {
+        var status = echoLog({
+          type: 'getVkId',
+          text: name
+        })
+        httpRequest({
+          url: 'https://vk.com/' + name,
+          method: 'GET',
+          onload: function onload (response) {
+            if (debug) console.log(response)
+
+            if (response.status === 200) {
+              var _response$responseTex7, _response$responseTex8
+
+              var _ref17 = response.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || []
+              var _ref18 = _slicedToArray(_ref17, 4)
+              var groupAct = _ref18[1]
+              var groupId = _ref18[2]
+              var groupHash = _ref18[3]
+
+              var publicHash = (_response$responseTex7 = response.responseText.match(/"enterHash":"(.*?)"/)) === null || _response$responseTex7 === void 0 ? void 0 : _response$responseTex7[1]
+              var publicPid = (_response$responseTex8 = response.responseText.match(/"public_id":([\d]+?),/)) === null || _response$responseTex8 === void 0 ? void 0 : _response$responseTex8[1]
+              var publicJoined = !response.responseText.includes('Public.subscribe')
+
+              if (groupAct && groupId && groupHash) {
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  data: {
+                    groupAct: groupAct,
+                    groupId: groupId,
+                    groupHash: groupHash,
+                    type: 'group'
+                  }
+                })
+              } else if (publicHash && publicPid) {
+                status.success()
+                resolve({
+                  result: 'success',
+                  statusText: response.statusText,
+                  status: response.status,
+                  data: {
+                    publicHash: publicHash,
+                    publicPid: publicPid,
+                    publicJoined: publicJoined,
+                    type: 'public'
+                  }
+                })
+              } else {
+                status.error('Error: Parameter "id" not found!')
+                resolve({
+                  result: 'error',
+                  statusText: response.statusText,
+                  status: response.status
+                })
+              }
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              resolve({
+                result: 'error',
+                statusText: response.statusText,
+                status: response.status
+              })
+            }
+          },
+          r: resolve,
+          status: status
+        })
+      })
+    } catch (e) {
+      throwError(e, 'getVkId')
+    }
   }
 
   function toggleVkActions (_x21) {
@@ -4068,22 +4291,23 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
           switch (_context42.prev = _context42.next) {
             case 0:
               website = _ref19.website, type = _ref19.type, elements = _ref19.elements, resolve = _ref19.resolve, action = _ref19.action, _ref19$toFinalUrl = _ref19.toFinalUrl, toFinalUrl = _ref19$toFinalUrl === void 0 ? {} : _ref19$toFinalUrl
-              _context42.next = 3
+              _context42.prev = 1
+              _context42.next = 4
               return verifyVkLogin()
 
-            case 3:
+            case 4:
               isLogin = _context42.sent
 
               if (isLogin) {
-                _context42.next = 6
+                _context42.next = 7
                 break
               }
 
               return _context42.abrupt('return', resolve())
 
-            case 6:
+            case 7:
               _iterator38 = _createForOfIteratorHelper(unique(elements))
-              _context42.prev = 7
+              _context42.prev = 8
               _loop19 = /* #__PURE__ */regeneratorRuntime.mark(function _loop19 () {
                 var element, name, _toFinalUrlElement$ma7, toFinalUrlElement
 
@@ -4119,76 +4343,87 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
               _iterator38.s()
 
-            case 10:
+            case 11:
               if ((_step39 = _iterator38.n()).done) {
-                _context42.next = 14
+                _context42.next = 15
                 break
               }
 
-              return _context42.delegateYield(_loop19(), 't0', 12)
+              return _context42.delegateYield(_loop19(), 't0', 13)
 
-            case 12:
-              _context42.next = 10
+            case 13:
+              _context42.next = 11
               break
 
-            case 14:
-              _context42.next = 19
+            case 15:
+              _context42.next = 20
               break
 
-            case 16:
-              _context42.prev = 16
-              _context42.t1 = _context42.catch(7)
+            case 17:
+              _context42.prev = 17
+              _context42.t1 = _context42.catch(8)
 
               _iterator38.e(_context42.t1)
 
-            case 19:
-              _context42.prev = 19
+            case 20:
+              _context42.prev = 20
 
               _iterator38.f()
 
-              return _context42.finish(19)
-
-            case 22:
-              resolve()
+              return _context42.finish(20)
 
             case 23:
+              resolve()
+              _context42.next = 29
+              break
+
+            case 26:
+              _context42.prev = 26
+              _context42.t2 = _context42.catch(1)
+              throwError(_context42.t2, 'toggleVkActions')
+
+            case 29:
             case 'end':
               return _context42.stop()
           }
         }
-      }, _callee36, null, [[7, 16, 19, 22]])
+      }, _callee36, null, [[1, 26], [8, 17, 20, 23]])
     }))
     return _toggleVkActions.apply(this, arguments)
   }
 
   function toggleActions (e) {
-    switch (e.social) {
-      case 'discord':
-        toggleDiscordActions(e)
-        break
+    try {
+      switch (e.social) {
+        case 'discord':
+          toggleDiscordActions(e)
+          break
 
-      case 'ins':
-        toggleInsActions(e)
-        break
+        case 'ins':
+          toggleInsActions(e)
+          break
 
-      case 'twitter':
-        toggleTwitterActions(e)
-        break
+        case 'twitter':
+          toggleTwitterActions(e)
+          break
 
-      case 'twitch':
-        toggleTwitchActions(e)
-        break
+        case 'twitch':
+          toggleTwitchActions(e)
+          break
 
-      case 'reddit':
-        toggleRedditActions(e)
-        break
+        case 'reddit':
+          toggleRedditActions(e)
+          break
 
-      case 'vk':
-        toggleVkActions(e)
-        break
+        case 'vk':
+          toggleVkActions(e)
+          break
 
-      default:
-        toggleSteamActions(e)
+        default:
+          toggleSteamActions(e)
+      }
+    } catch (e) {
+      throwError(e, 'toggleActions')
     }
   }
 
@@ -7160,7 +7395,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _link = $(redditLink).attr('href')
 
-            var name = _link === null || _link === void 0 ? void 0 : (_link$match2 = _link.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+            var name = _link === null || _link === void 0 ? void 0 : (_link$match2 = _link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
 
             if (name) {
               this.addBtn(redditLink, 'toggleReddit', name, '', ['加入', '退出'])
@@ -7185,7 +7420,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _link2 = $(insLink).attr('href')
 
-            var _name = _link2 === null || _link2 === void 0 ? void 0 : (_link2$match = _link2.match(/https:\/\/www.instagram.com\/(.+)?\//)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
+            var _name = _link2 === null || _link2 === void 0 ? void 0 : (_link2$match = _link2.match(/https:\/\/www\.instagram\.com\/(.+)?\//)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
 
             if (_name) {
               this.addBtn(insLink, 'toggleIns', _name, '', ['关注', '取关'])
@@ -7210,8 +7445,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _link3 = $(twitterLink).attr('href')
 
-            var userId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match = _link3.match(/https:\/\/twitter.com\/(.+)/)) === null || _link3$match === void 0 ? void 0 : _link3$match[1]
-            var tweetId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match2 = _link3.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _link3$match2 === void 0 ? void 0 : _link3$match2[1]
+            var userId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match = _link3.match(/https:\/\/twitter\.com\/(.+)/)) === null || _link3$match === void 0 ? void 0 : _link3$match[1]
+            var tweetId = _link3 === null || _link3 === void 0 ? void 0 : (_link3$match2 = _link3.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link3$match2 === void 0 ? void 0 : _link3$match2[1]
 
             if (tweetId) {
               this.addBtn(twitterLink, 'toggleTwitter', tweetId, 'retweet', ['转推', '撤销转推'])
@@ -7238,7 +7473,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _link4 = $(twitchLink).attr('href')
 
-            var _name2 = _link4 === null || _link4 === void 0 ? void 0 : (_link4$match = _link4.match(/https:\/\/www.twitch.tv\/(.+)/)) === null || _link4$match === void 0 ? void 0 : _link4$match[1]
+            var _name2 = _link4 === null || _link4 === void 0 ? void 0 : (_link4$match = _link4.match(/https:\/\/www\.twitch\.tv\/(.+)/)) === null || _link4$match === void 0 ? void 0 : _link4$match[1]
 
             if (_name2) {
               this.addBtn(twitchLink, 'toggleTwitch', _name2, '', ['关注', '取关'])
@@ -7263,7 +7498,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
 
             var _link5 = $(vkLink).attr('href')
 
-            var _name3 = _link5 === null || _link5 === void 0 ? void 0 : (_link5$match = _link5.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link5$match === void 0 ? void 0 : _link5$match[1]
+            var _name3 = _link5 === null || _link5 === void 0 ? void 0 : (_link5$match = _link5.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _link5$match === void 0 ? void 0 : _link5$match[1]
 
             if (_name3) {
               this.addBtn(vkLink, 'toggleVk', _name3, '', ['加入', '退出'])
@@ -7497,7 +7732,7 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
             var taskDes = _ref56[0]
             var verifyBtn = _ref56[1]
 
-            if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) {
+            if (/join[\w\W]*?steamcommunity\.com\/groups/gim.test(taskDes.html())) {
               var groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
 
               if (verifyBtn.length > 0) {
@@ -7507,8 +7742,8 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               this.taskInfo.groups.push(groupName)
             }
 
-            if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) {
-              var curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
+            if (/follow[\w\W]*?store\.steampowered\.com\/curator/gim.test(taskDes.html())) {
+              var curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store\.steampowered\.com\/curator\/([\d]*)/)[1]
 
               if (verifyBtn.length > 0) {
                 this.currentTaskInfo.curators.push(curatorName)
@@ -7517,10 +7752,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               this.taskInfo.curators.push(curatorName)
             }
 
-            if (/follow[\w\W]*?https?:\/\/twitter.com\//gim.test(taskDes.html())) {
+            if (/follow[\w\W]*?https?:\/\/twitter\.com\//gim.test(taskDes.html())) {
               var _taskDes$find$attr$ma
 
-              var name = (_taskDes$find$attr$ma = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter.com\/([^/]+)/)) === null || _taskDes$find$attr$ma === void 0 ? void 0 : _taskDes$find$attr$ma[1]
+              var name = (_taskDes$find$attr$ma = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter\.com\/([^/]+)/)) === null || _taskDes$find$attr$ma === void 0 ? void 0 : _taskDes$find$attr$ma[1]
 
               if (name) {
                 if (verifyBtn.length > 0) {
@@ -7531,10 +7766,10 @@ function _arrayLikeToArray (arr, len) { if (len == null || len > arr.length) len
               }
             }
 
-            if (/follow[\w\W]*?https?:\/\/twitch.tv\//gim.test(taskDes.html())) {
+            if (/follow[\w\W]*?https?:\/\/twitch\.tv\//gim.test(taskDes.html())) {
               var _taskDes$find$attr$ma2
 
-              var _name4 = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
+              var _name4 = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch\.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
 
               if (_name4) {
                 if (verifyBtn.length > 0) {

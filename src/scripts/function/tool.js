@@ -1,3 +1,4 @@
+import { getI18n } from '../i18n'
 
 function unique (e) {
   return [...new Set(e)]
@@ -77,11 +78,19 @@ function uniqueTaskInfo (data) {
   }
   return data
 }
+function throwError (e, name) {
+  Swal.fire({
+    icon: 'error',
+    text: getI18n('functionError', name)
+  })
+  console.log('%c%s', 'color:white;background:red', name + '\n' + e.stack)
+}
 export {
   unique,
   getUrlQuery,
   dateFormat,
   isEmptyObjArr,
   clearTaskInfo,
-  uniqueTaskInfo
+  uniqueTaskInfo,
+  throwError
 }

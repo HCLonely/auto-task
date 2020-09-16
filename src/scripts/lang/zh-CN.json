@@ -131,6 +131,7 @@
   "processSetting": "正在处理设置...",
   "creatUrlFailed": "创建下载链接失败！",
   "jsError": "脚本执行出错，详细信息请查看控制台(红色背景部分)！",
+  "functionError": "s%函数执行出错，详细信息请查看控制台(红色背景部分)！",
   "ajaxError": "Ajax请求出错",
   "firstUpdate": "首次更新到3.0+需要重新设置，是否前往设置？",
   "goSetting": "前往设置",

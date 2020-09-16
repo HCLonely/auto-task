@@ -91,7 +91,7 @@ const keylol = {
     if (redditLinks.length > 0) {
       for (const redditLink of redditLinks) {
         const link = $(redditLink).attr('href')
-        const name = link?.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)?.[1]
+        const name = link?.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1]
         if (name) {
           this.addBtn(redditLink, 'toggleReddit', name, '', ['加入', '退出'])
         }
@@ -100,7 +100,7 @@ const keylol = {
     if (insLinks.length > 0) {
       for (const insLink of insLinks) {
         const link = $(insLink).attr('href')
-        const name = link?.match(/https:\/\/www.instagram.com\/(.+)?\//)?.[1]
+        const name = link?.match(/https:\/\/www\.instagram\.com\/(.+)?\//)?.[1]
         if (name) {
           this.addBtn(insLink, 'toggleIns', name, '', ['关注', '取关'])
         }
@@ -109,8 +109,8 @@ const keylol = {
     if (twitterLinks.length > 0) {
       for (const twitterLink of twitterLinks) {
         const link = $(twitterLink).attr('href')
-        const userId = link?.match(/https:\/\/twitter.com\/(.+)/)?.[1]
-        const tweetId = link?.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)?.[1]
+        const userId = link?.match(/https:\/\/twitter\.com\/(.+)/)?.[1]
+        const tweetId = link?.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]
         if (tweetId) {
           this.addBtn(twitterLink, 'toggleTwitter', tweetId, 'retweet', ['转推', '撤销转推'])
         } else {
@@ -121,7 +121,7 @@ const keylol = {
     if (twitchLinks.length > 0) {
       for (const twitchLink of twitchLinks) {
         const link = $(twitchLink).attr('href')
-        const name = link?.match(/https:\/\/www.twitch.tv\/(.+)/)?.[1]
+        const name = link?.match(/https:\/\/www\.twitch\.tv\/(.+)/)?.[1]
         if (name) {
           this.addBtn(twitchLink, 'toggleTwitch', name, '', ['关注', '取关'])
         }
@@ -130,7 +130,7 @@ const keylol = {
     if (vkLinks.length > 0) {
       for (const vkLink of vkLinks) {
         const link = $(vkLink).attr('href')
-        const name = link?.match(/https:\/\/vk.com\/([^/]+)/)?.[1]
+        const name = link?.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]
         if (name) {
           this.addBtn(vkLink, 'toggleVk', name, '', ['加入', '退出'])
         }

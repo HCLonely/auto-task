@@ -29,22 +29,22 @@ const marvelousga = {
           $(task).find('.card-body p.card-text.monospace'),
           $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
         ]
-        if (/join[\w\W]*?steamcommunity.com\/groups/gim.test(taskDes.html())) { // 加组任务
+        if (/join[\w\W]*?steamcommunity\.com\/groups/gim.test(taskDes.html())) { // 加组任务
           const groupName = taskDes.find('a[href*="steamcommunity.com/groups"]').attr('href').match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
           if (verifyBtn.length > 0) {
             this.currentTaskInfo.groups.push(groupName)
           }
           this.taskInfo.groups.push(groupName)
         }
-        if (/follow[\w\W]*?store.steampowered.com\/curator/gim.test(taskDes.html())) { // 关注鉴赏家任务
-          const curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store.steampowered.com\/curator\/([\d]*)/)[1]
+        if (/follow[\w\W]*?store\.steampowered\.com\/curator/gim.test(taskDes.html())) { // 关注鉴赏家任务
+          const curatorName = taskDes.find('a[href*="store.steampowered.com/curator"]').attr('href').match(/store\.steampowered\.com\/curator\/([\d]*)/)[1]
           if (verifyBtn.length > 0) {
             this.currentTaskInfo.curators.push(curatorName)
           }
           this.taskInfo.curators.push(curatorName)
         }
-        if (/follow[\w\W]*?https?:\/\/twitter.com\//gim.test(taskDes.html())) { // 关注twitter
-          const name = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter.com\/([^/]+)/)?.[1]
+        if (/follow[\w\W]*?https?:\/\/twitter\.com\//gim.test(taskDes.html())) { // 关注twitter
+          const name = taskDes.find('a[href*="twitter.com"]').attr('href').match(/twitter\.com\/([^/]+)/)?.[1]
           if (name) {
             if (verifyBtn.length > 0) {
               this.currentTaskInfo.twitterUsers.push(name)
@@ -52,8 +52,8 @@ const marvelousga = {
             this.taskInfo.twitterUsers.push(name)
           }
         }
-        if (/follow[\w\W]*?https?:\/\/twitch.tv\//gim.test(taskDes.html())) { // 关注twitch
-          const name = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch.tv\/([^/]+)/)?.[1]
+        if (/follow[\w\W]*?https?:\/\/twitch\.tv\//gim.test(taskDes.html())) { // 关注twitch
+          const name = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch\.tv\/([^/]+)/)?.[1]
           if (name) {
             if (verifyBtn.length > 0) {
               this.currentTaskInfo.twitchChannels.push(name)

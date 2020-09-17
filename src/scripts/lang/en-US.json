@@ -130,6 +130,7 @@
   "downloadSetting": "Download the settings file",
   "processSetting": "Processing settings...",
   "jsError": "Script execution error, please see the console for details (red background part)!",
+  "functionError": "Function:s% execution error, please see the console for details (red background part)!",
   "ajaxError": "Ajax request error",
   "firstUpdate": "The first update to 3.0+ requires re-setting. Do you want to go to the setting?",
   "goSetting": "Yes",

@@ -1,85 +1,85 @@
 /* global loadSettings, loadAnnouncement */
-import { fuc } from './function/main'
+import { fuc, throwError } from './function/main'
 import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 
 if (website || window.location.host.includes('hclonely')) {
-  try {
-    GM_addStyle(GM_getResourceText('CSS'))
-    $(document).ajaxError(function (event, xhr, options, exc) {
-      Swal.fire({
-        icon: 'error',
-        text: getI18n('jsError')
-      })
-      console.log('%c%s', 'color:white;background:red', getI18n('ajaxError') + '：')
-      console.log('Event:', event)
-      console.log('XMLHttpRequest :', xhr)
-      console.log('Options:', options)
-      console.log('JavaScript exception:', exc)
+  GM_addStyle(GM_getResourceText('CSS'))
+  $(document).ajaxError(function (event, xhr, options, exc) {
+    Swal.fire({
+      icon: 'error',
+      text: getI18n('jsError')
     })
-    if (window.location.host.includes('hclonely')) {
-      if (window.location.pathname.includes('setting')) {
-        unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
-        unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
-        unsafeWindow.language = language
-        typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
-      } else if (window.location.pathname.includes('announcement')) {
-        loadAnnouncement()
-      }
-    } else if (window.location.host.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
-      fuc.newTabBlock()
-    } else if (window.location.href.includes('discord.com/app')) {
-      fuc.getDiscordAuth()
-    } else if (window.location.href.includes('www.twitch.tv')) {
-      if (window.location.href.includes('#updateTwitchInfo')) {
-        fuc.updateTwitchInfo(true)
-      } else if (!window.location.href.includes('/login')) {
-        fuc.updateTwitchInfo(false)
-      }
-    } else {
-      if (website.before) website.before()
+    console.log('%c%s', 'color:white;background:red', getI18n('ajaxError') + '：')
+    console.log('Event:', event)
+    console.log('XMLHttpRequest :', xhr)
+    console.log('Options:', options)
+    console.log('JavaScript exception:', exc)
+  })
+  if (window.location.host.includes('hclonely')) {
+    if (window.location.pathname.includes('setting')) {
+      unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
+      unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
+      unsafeWindow.language = language
+      typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
+    } else if (window.location.pathname.includes('announcement')) {
+      loadAnnouncement()
+    }
+  } else if (window.location.host.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
+    fuc.newTabBlock()
+  } else if (window.location.href.includes('discord.com/app')) {
+    fuc.getDiscordAuth()
+  } else if (window.location.href.includes('www.twitch.tv')) {
+    if (window.location.href.includes('#updateTwitchInfo')) {
+      fuc.updateTwitchInfo(true)
+    } else if (!window.location.href.includes('/login')) {
+      fuc.updateTwitchInfo(false)
+    }
+  } else {
+    if (website.before) website.before()
 
-      if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
-      if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
+    if (globalConf.other.checkLogin && website.checkLogin) website.checkLogin()
+    if (globalConf.other.checkLeft && website.checkLeft) website.checkLeft()
 
-      let buttons = ''
-      const defaultBtn = {
-        fuck: {
-          show: true,
-          title: getI18n('fuckBtnTitle'),
-          text: 'FuckTask'
-        },
-        verify: {
-          show: true,
-          title: getI18n('verifyBtnTitle'),
-          text: 'Verify'
-        },
-        remove: {
-          show: true,
-          title: getI18n('removeBtnTitle'),
-          text: 'Remove'
-        }
+    let buttons = ''
+    const defaultBtn = {
+      fuck: {
+        show: true,
+        title: getI18n('fuckBtnTitle'),
+        text: 'FuckTask'
+      },
+      verify: {
+        show: true,
+        title: getI18n('verifyBtnTitle'),
+        text: 'Verify'
+      },
+      remove: {
+        show: true,
+        title: getI18n('removeBtnTitle'),
+        text: 'Remove'
       }
-      const showLogs = globalConf?.other?.showLogs
-      const websiteSettings = Object.assign(defaultBtn, website.setting)
-      for (const [k, v] of Object.entries(websiteSettings)) {
-        if (v.show) buttons += `<button id="${k}" type="button" class="btn btn-primary" title="${v.title}">${v.text}</button>`
-      }
-      if (showLogs) buttons += `<button id="toggle-logs" type="button" class="btn btn-primary" title="${!showLogs ? getI18n('showLog') : getI18n('hideLog')}">${!showLogs ? 'ShowLogs' : 'HideLogs'}</button>`
+    }
+    const showLogs = globalConf?.other?.showLogs
+    const websiteSettings = Object.assign(defaultBtn, website.setting)
+    for (const [k, v] of Object.entries(websiteSettings)) {
+      if (v.show) buttons += `<button id="${k}" type="button" class="btn btn-primary" title="${v.title}">${v.text}</button>`
+    }
+    if (showLogs) buttons += `<button id="toggle-logs" type="button" class="btn btn-primary" title="${!showLogs ? getI18n('showLog') : getI18n('hideLog')}">${!showLogs ? 'ShowLogs' : 'HideLogs'}</button>`
 
-      const buttonGroup = `<div class="btn-group-vertical" role="group" aria-label="button">${buttons}</div>`
-      $('body').append(`<div id="fuck-task-btn"><button id="toggle-btn-group" type="button" class="btn btn-outline-primary">&gt;</button>${buttonGroup}</div>`)
+    const buttonGroup = `<div class="btn-group-vertical" role="group" aria-label="button">${buttons}</div>`
+    $('body').append(`<div id="fuck-task-btn"><button id="toggle-btn-group" type="button" class="btn btn-outline-primary">&gt;</button>${buttonGroup}</div>`)
 
-      for (const [k, v] of Object.entries(websiteSettings)) {
-        if (v.show) {
-          $('#' + k).click(() => {
-            website[k]()
-          })
-        }
+    for (const [k, v] of Object.entries(websiteSettings)) {
+      if (v.show) {
+        $('#' + k).click(() => {
+          website[k]()
+        })
       }
-      $('#toggle-logs').click(fuc.toggleLogs)
-      $('#toggle-btn-group').click(() => {
+    }
+    $('#toggle-logs').click(fuc.toggleLogs)
+    $('#toggle-btn-group').click(() => {
+      try {
         const btnGroup = $('#fuck-task-btn .btn-group-vertical')
         if (btnGroup.css('width') === '0px') {
           btnGroup.css('width', '')
@@ -88,10 +88,14 @@ if (website || window.location.host.includes('hclonely')) {
           btnGroup.css('width', '0')
           $('#toggle-btn-group').attr('title', getI18n('show')).text('<')
         }
-      })
+      } catch (e) {
+        throwError(e, '$(\'#toggle-btn-group\').click')
+      }
+    })
 
-      // 快捷键功能
-      $(document).keydown(e => {
+    // 快捷键功能
+    $(document).keydown(e => {
+      try {
         const hotKey = globalConf.hotKey || {}
         for (const [k, v] of Object.entries(hotKey)) {
           const keys = v.split('+')
@@ -113,9 +117,12 @@ if (website || window.location.host.includes('hclonely')) {
             }
           }
         }
-      })
+      } catch (e) {
+        throwError(e, '$(document).keydown')
+      }
+    })
 
-      $('body').append(`<div id="fuck-task-info" class="card">
+    $('body').append(`<div id="fuck-task-info" class="card">
   <div class="card-body">
     <h3 class="card-title">${getI18n('taskLog')}</h3>
     <h4 class="card-subtitle">
@@ -129,43 +136,66 @@ if (website || window.location.host.includes('hclonely')) {
     </div>
   </div>
 </div>`)
-      $('#clean-cache').click(() => {
+    $('#clean-cache').click(() => {
+      try {
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
         const listValues = GM_listValues()
         for (const value of listValues) {
           if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo'].includes(value)) GM_deleteValue(value)
         }
         status.success()
-      })
-      $('#check-update').click(() => {
-        fuc.checkUpdate(true)
-      })
-      $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
-        window.open($(this).attr('data-href'), '_blank')
-      })
-      fuc.checkUpdate()
-
-      // $('.fuck-task-logs .el-notification__content').show()
-      if (!showLogs) {
-        $('#fuck-task-logs').animate({
-          right: '-100%',
-          display: '-webkit-box',
-          display: '-ms-flexbox', // eslint-disable-line no-dupe-keys
-          display: 'flex' // eslint-disable-line no-dupe-keys
-        }, 0)
+      } catch (e) {
+        throwError(e, '$(\'#clean-cache\').click')
       }
-      if (website.after) website.after()
-    }
+    })
+    $('#check-update').click(() => {
+      try {
+        fuc.checkUpdate(true)
+      } catch (e) {
+        throwError(e, '$(\'#check-update\').click')
+      }
+    })
+    $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
+      try {
+        window.open($(this).attr('data-href'), '_blank')
+      } catch (e) {
+        throwError(e, '$(\'#auto-task-setting,#auto-task-feedback,#auto-task-announcement\').click')
+      }
+    })
+    fuc.checkUpdate()
 
-    GM_registerMenuCommand(getI18n('readme'), () => { window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank') })
-    GM_registerMenuCommand(getI18n('updateSteamInfo'), () => {
+    // $('.fuck-task-logs .el-notification__content').show()
+    if (!showLogs) {
+      $('#fuck-task-logs').animate({
+        right: '-100%',
+        display: '-webkit-box',
+        display: '-ms-flexbox', // eslint-disable-line no-dupe-keys
+        display: 'flex' // eslint-disable-line no-dupe-keys
+      }, 0)
+    }
+    if (website.after) website.after()
+  }
+
+  GM_registerMenuCommand(getI18n('readme'), () => {
+    try {
+      window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank')
+    } catch (e) {
+      throwError(e, 'GM_registerMenuCommand(\'readme\')')
+    }
+  })
+  GM_registerMenuCommand(getI18n('updateSteamInfo'), () => {
+    try {
       new Promise(resolve => {
         fuc.updateSteamInfo(resolve, 'all', true)
       }).then(r => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('updateSteamInfoComplete')}</font></li>` })
       })
-    })
-    GM_registerMenuCommand('Language', () => {
+    } catch (e) {
+      throwError(e, 'GM_registerMenuCommand(\'updateSteamInfo\')')
+    }
+  })
+  GM_registerMenuCommand('Language', () => {
+    try {
       Swal.fire({
         title: getI18n('language') + ' : ' + language,
         input: 'select',
@@ -182,12 +212,8 @@ if (website || window.location.host.includes('hclonely')) {
           GM_setValue('language', result.value)
         }
       })
-    })
-  } catch (e) {
-    Swal.fire({
-      icon: 'error',
-      text: getI18n('jsError')
-    })
-    console.log('%c%s', 'color:white;background:red', e.stack)
-  }
+    } catch (e) {
+      throwError(e, 'GM_registerMenuCommand(\'Language\')')
+    }
+  })
 }

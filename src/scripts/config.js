@@ -1,5 +1,6 @@
 import { getI18n } from './i18n'
 import { defaultConf } from './defaultConf'
+import { throwError } from './function/main'
 
 if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
   if (typeof GM_getValue('conf').global?.fuck?.joinSteamGroup !== 'boolean') {
@@ -36,40 +37,60 @@ const globalConf = config.global
 const debug = globalConf.other.showDetails
 
 function getSteamInfo () {
-  return Object.assign({
-    userName: '',
-    steam64Id: '',
-    communitySessionID: '',
-    storeSessionID: '',
-    updateTime: 0
-  }, GM_getValue('steamInfo'))
+  try {
+    return Object.assign({
+      userName: '',
+      steam64Id: '',
+      communitySessionID: '',
+      storeSessionID: '',
+      updateTime: 0
+    }, GM_getValue('steamInfo'))
+  } catch (e) {
+    throwError(e, 'getSteamInfo')
+  }
 }
 function getDiscordInfo () {
-  return Object.assign({
-    authorization: '',
-    expired: true,
-    updateTime: 0
-  }, GM_getValue('discordInfo'))
+  try {
+    return Object.assign({
+      authorization: '',
+      expired: true,
+      updateTime: 0
+    }, GM_getValue('discordInfo'))
+  } catch (e) {
+    throwError(e, 'getDiscordInfo')
+  }
 }
 function getTwitchInfo () {
-  return Object.assign({
-    authToken: '',
-    isLogin: false,
-    updateTime: 0
-  }, GM_getValue('twitchInfo'))
+  try {
+    return Object.assign({
+      authToken: '',
+      isLogin: false,
+      updateTime: 0
+    }, GM_getValue('twitchInfo'))
+  } catch (e) {
+    throwError(e, 'getTwitchInfo')
+  }
 }
 function getTwitterInfo () {
-  return Object.assign({
-    authorization: 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-    ct0: '',
-    updateTime: 0
-  }, GM_getValue('twitterInfo'))
+  try {
+    return Object.assign({
+      authorization: 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+      ct0: '',
+      updateTime: 0
+    }, GM_getValue('twitterInfo'))
+  } catch (e) {
+    throwError(e, 'getTwitterInfo')
+  }
 }
 function getRedditInfo () {
-  return Object.assign({
-    accessToken: '',
-    expiresTime: 0
-  }, GM_getValue('redditInfo'))
+  try {
+    return Object.assign({
+      accessToken: '',
+      expiresTime: 0
+    }, GM_getValue('redditInfo'))
+  } catch (e) {
+    throwError(e, 'getRedditInfo')
+  }
 }
 
 export { defaultConf, globalConf, debug, config }

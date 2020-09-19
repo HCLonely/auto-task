@@ -33,6 +33,8 @@ const giveawaysu = {
           fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
           $('#actions tr')
         ]
+        if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
+        if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
         for (const task of tasks) {
           const td = $(task).find('td:not(".hidden")')
           const colorfulTask = td.eq(1).find('a:not([data-trigger="link"])')
@@ -160,8 +162,6 @@ const giveawaysu = {
       }
     }
     */
-      if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
-      if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
       const {
         groups,
         forums,

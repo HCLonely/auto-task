@@ -110,7 +110,11 @@ const gamehag = {
         status.success()
       } else {
         status.success()
-        fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
+        if (['remove', 'do_task', 'verify'].includes(callback)) {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+        } else {
+          fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('unknown')}！</font></li>` })
+        }
       }
       if (debug) console.log(this)
     } catch (e) {

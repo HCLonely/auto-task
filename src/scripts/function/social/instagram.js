@@ -50,6 +50,7 @@ function getInsInfo (name) {
     })
   } catch (e) {
     throwError(e, 'getInsInfo')
+    return { id: null, e }
   }
 }
 

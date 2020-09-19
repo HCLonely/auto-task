@@ -1,12 +1,12 @@
 {
   "name": "auto-task",
-  "version": "3.0.28",
+  "version": "3.0.29",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {
     "test": "standard",
-    "dev": "gulp development && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix",
-    "build": "gulp production && echo [info] Format file: auto-task.user.js && standard auto-task.user.js --fix"
+    "dev": "gulp development && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix && cp auto-task-test.user.js docs/auto-task-test.user.js || copy auto-task-test.user.js docs/auto-task-test.user.js && cp auto-task-helper.user.js docs/auto-task-helper.user.js || copy auto-task-helper.user.js docs/auto-task-helper.user.js",
+    "build": "gulp production && echo [info] Format file: auto-task.user.js && standard auto-task.user.js --fix && cp auto-task.user.js public/auto-task.user.js || copy auto-task.user.js public/auto-task.user.js && cp auto-task-helper.user.js public/auto-task-helper.user.js || copy auto-task-helper.user.js public/auto-task-helper.user.js"
   },
   "author": "HCLonely",
   "license": "MIT",

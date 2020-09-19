@@ -3960,7 +3960,7 @@ try {
               if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
                 echoLog({
                   type: 'custom',
-                  text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://auto-task-test.hclonely.com/auto-task-test.user.js" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
+                  text: '<li>'.concat(getI18n('newVer') + 'V' + response.response.version, '<a href="https://auto-task-test.hclonely.com/auto-task-test.user.js?t=').concat(new Date().getTime(), '" target="_blank">').concat(getI18n('updateNow'), '</a><font></font></li>')
                 })
                 if (s) status.success(getI18n('newVer') + response.response.version)
               } else {

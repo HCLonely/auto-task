@@ -9,9 +9,26 @@ const { info } = require('./lib/log')
 const { buildUserJsDev, budilPageJsDev } = require('./build.dev')
 const { buildUserJs, budilPageJs } = require('./build')
 
+function packRequireJs () {
+  const cookie = fs.readFileSync('src/requirejs/js.cookie.min.js')
+  const jquery = fs.readFileSync('src/requirejs/jquery.min.js')
+  const effect = fs.readFileSync('src/requirejs/effect.min.js')
+  const popper = fs.readFileSync('src/requirejs/popper.min.js')
+  const bootstrap = fs.readFileSync('src/requirejs/bootstrap.min.js')
+  const runtime = fs.readFileSync('src/requirejs/runtime.min.js')
+  const sweetalert2 = fs.readFileSync('src/requirejs/sweetalert2@9.js')
+  const polyfill = fs.readFileSync('src/requirejs/polyfill.min.js')
+  const overhang = fs.readFileSync('src/requirejs/overhang.min.js')
+  const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang].join('\n')
+  fs.writeFileSync('require/require.min.js', all)
+}
 /* Development */
 gulp.task('generate-userjs-dev', async function () {
   await buildUserJsDev()
+})
+
+gulp.task('generate-requirejs', async function () {
+  await packRequireJs()
 })
 
 gulp.task('generate-html-dev', function () {
@@ -59,7 +76,7 @@ gulp.task('generate-other-file-dev', async () => {
   info('Generate file: CNAME')
   await fs.writeFileSync('./docs/CNAME', 'auto-task-test.hclonely.com')
 })
-gulp.task('development', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-other-file-dev')))
+gulp.task('development', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-requirejs', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-other-file-dev')))
 
 /* Production */
 gulp.task('generate-userjs', async function () {
@@ -110,4 +127,4 @@ gulp.task('generate-other-file', async () => {
   fs.writeJsonSync('./public/version.json', { version: version })
 })
 
-gulp.task('production', gulp.series(gulp.parallel('generate-userjs', 'generate-html', 'minify-images', 'generate-js', 'generate-other-file')))
+gulp.task('production', gulp.series(gulp.parallel('generate-userjs', 'generate-requirejs', 'generate-html', 'minify-images', 'generate-js', 'generate-other-file')))

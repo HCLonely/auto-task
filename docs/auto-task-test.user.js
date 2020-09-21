@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.0.29
+// @version            3.0.30
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -31,16 +31,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js
-// @require            https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
-// @require            https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.29/require/bootstrap.min.js
-// @require            https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
-// @require            https://cdn.jsdelivr.net/npm/sweetalert2@9
-// @require            https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.29/require/overhang.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.29/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.30/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.30/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6219,8 +6211,7 @@ try {
               link: link
             })
           } else {
-            if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
-              this.links.push(link)
+            if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) { // this.taskInfo.links.push(link)
             } else {
               if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
                 taskInfo.push({

@@ -87,7 +87,7 @@ const giveawaysu = {
         taskInfo.push({ name: 'vk', link })
       } else {
         if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
-          this.links.push(link)
+          // this.taskInfo.links.push(link)
         } else {
           if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
             taskInfo.push({ name: 'wGame', link })

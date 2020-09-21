@@ -31,15 +31,7 @@
 // @exclude            *googleads*
 // @include            https://__SITEURL__/setting.html
 
-// @require            https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js
-// @require            https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/components-jqueryui@1.12.1/ui/effect.min.js
-// @require            https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/bootstrap.min.js
-// @require            https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.5/runtime.min.js
-// @require            https://cdn.jsdelivr.net/npm/sweetalert2@9
-// @require            https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/overhang.min.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/require.min.js
 // @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/fuck-task.min.css
 
 // @grant              GM_setValue

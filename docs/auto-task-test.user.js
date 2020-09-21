@@ -458,6 +458,11 @@ try {
             ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.reddit.com/r/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
 
+          case 'followRedditUser':
+          case 'unfollowRedditUser':
+            ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.reddit.com/user/').concat(e.text.replace('u_', ''), '" target="_blank">').concat(e.text.replace('u_', ''), '</a>...<font></font></li>'))
+            break
+
           case 'verifyVkLogin':
             ele = $('<li>'.concat(getI18n('verifyVkLogin'), '...<font></font></li>'))
             break
@@ -3266,8 +3271,14 @@ try {
       var join = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true
 
       try {
+        var _type = join ? 'joinReddit' : 'leaveReddit'
+
+        if (/^u_/.test(name)) {
+          _type = join ? 'followRedditUser' : 'unfollowRedditUser'
+        }
+
         var status = echoLog({
-          type: join ? 'joinReddit' : 'leaveReddit',
+          type: _type,
           text: name
         })
         httpRequest({
@@ -3342,7 +3353,7 @@ try {
                 _iterator6 = _createForOfIteratorHelper(unique(elements))
                 _context15.prev = 9
                 _loop6 = /* #__PURE__ */regeneratorRuntime.mark(function _loop6 () {
-                  var element, name, _toFinalUrlElement$ma6, toFinalUrlElement
+                  var element, name, _toFinalUrlElement$ma6, _toFinalUrlElement$ma7, toFinalUrlElement, userName
 
                   return regeneratorRuntime.wrap(function _loop6$ (_context14) {
                     while (1) {
@@ -3354,6 +3365,9 @@ try {
                           if (website === 'giveawaysu' && toFinalUrl[element]) {
                             toFinalUrlElement = toFinalUrl[element] || ''
                             name = (_toFinalUrlElement$ma6 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _toFinalUrlElement$ma6 === void 0 ? void 0 : _toFinalUrlElement$ma6[1]
+                            userName = (_toFinalUrlElement$ma7 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/user\/([^/]*)/)) === null || _toFinalUrlElement$ma7 === void 0 ? void 0 : _toFinalUrlElement$ma7[1]
+                            if (userName) userName = 'u_' + userName
+                            name = name || userName
                           }
 
                           if (!name) {
@@ -3759,7 +3773,7 @@ try {
                 _iterator7 = _createForOfIteratorHelper(unique(elements))
                 _context18.prev = 8
                 _loop7 = /* #__PURE__ */regeneratorRuntime.mark(function _loop7 () {
-                  var element, name, _toFinalUrlElement$ma7, toFinalUrlElement
+                  var element, name, _toFinalUrlElement$ma8, toFinalUrlElement
 
                   return regeneratorRuntime.wrap(function _loop7$ (_context17) {
                     while (1) {
@@ -3770,7 +3784,7 @@ try {
 
                           if (website === 'giveawaysu' && toFinalUrl[element]) {
                             toFinalUrlElement = toFinalUrl[element] || ''
-                            name = (_toFinalUrlElement$ma7 = toFinalUrlElement.match(/https:\/\/vk.com\/([^/]+)/)) === null || _toFinalUrlElement$ma7 === void 0 ? void 0 : _toFinalUrlElement$ma7[1]
+                            name = (_toFinalUrlElement$ma8 = toFinalUrlElement.match(/https:\/\/vk.com\/([^/]+)/)) === null || _toFinalUrlElement$ma8 === void 0 ? void 0 : _toFinalUrlElement$ma8[1]
                           }
 
                           if (!name) {
@@ -4226,6 +4240,8 @@ try {
       loginReddit: '请先<a href="https://www.reddit.com/login/" target="_blank">登录reddit</a>',
       joinReddit: '正在加入subreddit',
       leaveReddit: '正在退出subreddit',
+      followRedditUser: '正在关注reddit用户',
+      unfollowRedditUser: '正在取关reddit用户',
       verifyVkLogin: '正在检测vk是否登录',
       loginVk: '请先<a href="https://vk.com/login" target="_blank">登录vk</a>',
       joinVkGroup: '正在加入vk群',
@@ -4401,6 +4417,8 @@ try {
       loginReddit: 'Please <a href="https://www.reddit.com/login/" target="_blank">login to reddit</a>',
       joinReddit: 'Joining subreddit',
       leaveReddit: 'Leaving subreddit',
+      followRedditUser: 'Following reddit user',
+      unfollowRedditUser: 'Unfollowing reddit user',
       verifyVkLogin: 'Checking whether vk is logged in',
       loginVk: 'Please <a href="https://vk.com/login" target="_blank">login to vk</a>',
       joinVkGroup: 'Joining vk group',
@@ -4433,6 +4451,7 @@ try {
           retweet: true,
           followTwitchChannel: true,
           joinReddit: true,
+          followRedditUser: true,
           joinVk: true,
           visitLink: true,
           verifyTask: true,
@@ -4456,6 +4475,7 @@ try {
           unretweet: true,
           unfollowTwitchChannel: true,
           leaveReddit: true,
+          unfollowRedditUser: true,
           leaveVk: true
         },
         other: {
@@ -4487,6 +4507,7 @@ try {
           followIns: true,
           followTwitchChannel: true,
           joinReddit: true,
+          followRedditUser: true,
           joinVk: true,
           visitLink: true
         },
@@ -4502,6 +4523,7 @@ try {
           unfollowIns: true,
           unfollowTwitchChannel: true,
           leaveReddit: true,
+          unfollowRedditUser: true,
           leaveVk: true
         },
         enable: false
@@ -6200,7 +6222,7 @@ try {
               name: 'twitch',
               link: link
             })
-          } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName)) {
+          } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName) || /follow.*reddit/gim.test(taskName)) {
             taskInfo.push({
               name: 'reddit',
               link: link

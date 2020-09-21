@@ -81,7 +81,7 @@ const giveawaysu = {
         taskInfo.push({ name: 'instagram', link })
       } else if (taskIcon.includes('twitch') || /follow.*twitch.*channel/gim.test(taskName)) {
         taskInfo.push({ name: 'twitch', link })
-      } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName)) {
+      } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName) || /follow.*reddit/gim.test(taskName)) {
         taskInfo.push({ name: 'reddit', link })
       } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         taskInfo.push({ name: 'vk', link })

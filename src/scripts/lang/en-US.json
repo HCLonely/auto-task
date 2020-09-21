@@ -163,6 +163,8 @@
   "loginReddit": "Please <a href=\"https://www.reddit.com/login/\" target=\"_blank\">login to reddit</a>",
   "joinReddit": "Joining subreddit",
   "leaveReddit": "Leaving subreddit",
+  "followRedditUser": "Following reddit user",
+  "unfollowRedditUser": "Unfollowing reddit user",
   "verifyVkLogin": "Checking whether vk is logged in",
   "loginVk": "Please <a href=\"https://vk.com/login\" target=\"_blank\">login to vk</a>",
   "joinVkGroup": "Joining vk group",

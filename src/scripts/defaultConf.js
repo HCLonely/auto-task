@@ -15,6 +15,7 @@ const defaultConf = {
       retweet: true,
       followTwitchChannel: true,
       joinReddit: true,
+      followRedditUser: true,
       joinVk: true,
       visitLink: true,
       verifyTask: true,
@@ -38,6 +39,7 @@ const defaultConf = {
       unretweet: true,
       unfollowTwitchChannel: true,
       leaveReddit: true,
+      unfollowRedditUser: true,
       leaveVk: true
     },
     other: {
@@ -69,6 +71,7 @@ const defaultConf = {
       followIns: true,
       followTwitchChannel: true,
       joinReddit: true,
+      followRedditUser: true,
       joinVk: true,
       visitLink: true
     },
@@ -84,6 +87,7 @@ const defaultConf = {
       unfollowIns: true,
       unfollowTwitchChannel: true,
       leaveReddit: true,
+      unfollowRedditUser: true,
       leaveVk: true
     },
     enable: false

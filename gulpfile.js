@@ -16,7 +16,7 @@ function packRequireJs () {
   const popper = fs.readFileSync('src/requirejs/popper.min.js')
   const bootstrap = fs.readFileSync('src/requirejs/bootstrap.min.js')
   const runtime = fs.readFileSync('src/requirejs/runtime.min.js')
-  const sweetalert2 = fs.readFileSync('src/requirejs/sweetalert2@9.js')
+  const sweetalert2 = fs.readFileSync('src/requirejs/sweetalert2@9.min.js')
   const polyfill = fs.readFileSync('src/requirejs/polyfill.min.js')
   const overhang = fs.readFileSync('src/requirejs/overhang.min.js')
   const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang].join('\n')

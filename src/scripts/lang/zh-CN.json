@@ -164,6 +164,8 @@
   "loginReddit": "请先<a href=\"https://www.reddit.com/login/\" target=\"_blank\">登录reddit</a>",
   "joinReddit": "正在加入subreddit",
   "leaveReddit": "正在退出subreddit",
+  "followRedditUser": "正在关注reddit用户",
+  "unfollowRedditUser": "正在取关reddit用户",
   "verifyVkLogin": "正在检测vk是否登录",
   "loginVk": "请先<a href=\"https://vk.com/login\" target=\"_blank\">登录vk</a>",
   "joinVkGroup": "正在加入vk群",

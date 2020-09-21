@@ -94,6 +94,10 @@ function echoLog (e) {
       case 'leaveReddit':
         ele = $(`<li>${getI18n(e.type)}<a href="https://www.reddit.com/r/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
         break
+      case 'followRedditUser':
+      case 'unfollowRedditUser':
+        ele = $(`<li>${getI18n(e.type)}<a href="https://www.reddit.com/user/${e.text.replace('u_', '')}" target="_blank">${e.text.replace('u_', '')}</a>...<font></font></li>`)
+        break
       case 'verifyVkLogin':
         ele = $(`<li>${getI18n('verifyVkLogin')}...<font></font></li>`)
         break

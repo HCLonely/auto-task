@@ -48,7 +48,11 @@ function updateRedditInfo () {
 
 function toggleReddit (r, name, join = true) {
   try {
-    const status = echoLog({ type: join ? 'joinReddit' : 'leaveReddit', text: name })
+    let type = join ? 'joinReddit' : 'leaveReddit'
+    if (/^u_/.test(name)) {
+      type = join ? 'followRedditUser' : 'unfollowRedditUser'
+    }
+    const status = echoLog({ type, text: name })
 
     httpRequest({
       url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
@@ -88,6 +92,9 @@ async function toggleRedditActions ({ website, type, elements, resolve, action, 
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         const toFinalUrlElement = toFinalUrl[element] || ''
         name = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)?.[1]
+        let userName = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/user\/([^/]*)/)?.[1]
+        if (userName) userName = 'u_' + userName
+        name = name || userName
       }
       if (name) {
         await new Promise(resolve => {

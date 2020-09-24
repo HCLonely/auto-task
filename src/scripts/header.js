@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name               自动任务
+// @name               自动任务__TEST__
 // @name:en            Auto Task__TEST__
-// @name:zh-CN         自动任务
+// @name:zh-CN         自动任务__TEST__
 // @namespace          auto-task
 // @version            __VERSION__
 // @description        自动完成赠key站任务

@@ -3,16 +3,16 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.0.32
+// @version            3.1.0
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
 // @author             HCLonely
 // @license            MIT
 // @iconURL            https://auto-task-test.hclonely.com/img/favicon.ico
-// @homepage           https://blog.hclonely.com/posts/777c60d5/
+// @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL          https://github.com/HCLonely/auto-task/raw/master/auto-task-test.user.js
+// @updateURL          https://auto-task-test.hclonely.com/auto-task-test.user.js
 
 // @include            *://giveaway.su/giveaway/view/*
 // @include            *://marvelousga.com/*
@@ -31,8 +31,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.32/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.0.32/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.0/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.0/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -4273,7 +4273,7 @@ try {
       leaveDiscordServer: '正在退出discord服务器',
       updateDiscordAuth: 'Discord凭证失效，请<a href="https://discord.com/app" target="_blank">更新凭证</a>！',
       getAuthSuccess: '更新凭证成功！',
-      getAuthError: '更新凭证失败，请确认已正确安装<a href="https://github.com/HCLonely/auto-task/raw/master/auto-task-helper.user.js" target="_blank">辅助脚本</a>！',
+      getAuthError: '更新凭证失败，请确认已正确安装辅助脚本！',
       getInsInfo: '正在获ins用户id',
       followIns: '正在关注ins用户',
       unfollowIns: '正在取关ins用户',
@@ -4450,7 +4450,7 @@ try {
       leaveDiscordServer: 'Leaving discord server',
       updateDiscordAuth: 'Discord authorization is invalid, please <a href="https://discord.com/app" target="_blank">update the authorization</a>!',
       getAuthSuccess: 'Successfully updated auth!',
-      getAuthError: 'Failed to update auth, please confirm that the <a href="https://github.com/HCLonely/auto-task/raw/master/auto-task-helper.user.js" target="_blank">helper script</a> has been installed correctly!',
+      getAuthError: 'Failed to update auth, please confirm that the helper script has been installed correctly!',
       getInsInfo: 'Getting ins user id',
       followIns: 'Following ins user',
       unfollowIns: 'Unfollowing ins user',

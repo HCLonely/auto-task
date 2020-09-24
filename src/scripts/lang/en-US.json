@@ -140,7 +140,7 @@
   "leaveDiscordServer": "Leaving discord server",
   "updateDiscordAuth": "Discord authorization is invalid, please <a href=\"https://discord.com/app\" target=\"_blank\">update the authorization</a>!",
   "getAuthSuccess": "Successfully updated auth!",
-  "getAuthError": "Failed to update auth, please confirm that the <a href=\"https://github.com/HCLonely/auto-task/raw/master/auto-task-helper.user.js\" target=\"_blank\">helper script</a> has been installed correctly!",
+  "getAuthError": "Failed to update auth, please confirm that the helper script has been installed correctly!",
   "getInsInfo": "Getting ins user id",
   "followIns": "Following ins user",
   "unfollowIns": "Unfollowing ins user",

@@ -10,9 +10,9 @@
 // @author             HCLonely
 // @license            MIT
 // @iconURL            https://__SITEURL__/img/favicon.ico
-// @homepage           https://blog.hclonely.com/posts/777c60d5/
+// @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL          https://github.com/HCLonely/auto-task/raw/master/__FILENAME__
+// @updateURL          https://__SITEURL__/__FILENAME__
 
 // @include            *://giveaway.su/giveaway/view/*
 // @include            *://marvelousga.com/*

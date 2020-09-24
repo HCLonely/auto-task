@@ -137,9 +137,7 @@ const gamehag = {
             fuc.visitLink(resolve, '/games/war-thunder/play', { headers: { 'x-csrf-token': $('meta[name="csrf-token"]').attr('content') } })
           }))
         }
-        await new Promise(resolve => {
-          setTimeout(() => { resolve() }, 1000)
-        })
+        await fuc.delay(1000)
       }
       Promise.all(pro).finally(async () => {
         const pro = await this.toggleActions('fuck')

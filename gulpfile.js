@@ -6,8 +6,8 @@ const htmlclean = require('gulp-htmlclean')
 const imagemin = require('gulp-imagemin')
 
 const { info } = require('./lib/log')
-const { buildUserJsDev, budilPageJsDev } = require('./build.dev')
-const { buildUserJs, budilPageJs } = require('./build')
+const { buildUserJsDev, buildPageJsDev } = require('./build.dev')
+const { buildUserJs, buildPageJs } = require('./build')
 
 function packRequireJs () {
   const cookie = fs.readFileSync('src/requirejs/js.cookie.min.js')
@@ -54,7 +54,7 @@ gulp.task('generate-js-dev', async function () {
   info('Generate js files for webpage')
   const files = ['main.js']
   for (const e of files) {
-    await budilPageJsDev(e)
+    await buildPageJsDev(e)
   }
 })
 
@@ -106,7 +106,7 @@ gulp.task('generate-js', async function () {
   info('Generate js files for webpage')
   const files = ['main.js']
   for (const e of files) {
-    await budilPageJs(e)
+    await buildPageJs(e)
   }
 })
 

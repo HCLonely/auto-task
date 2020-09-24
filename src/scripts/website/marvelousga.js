@@ -142,7 +142,7 @@ const marvelousga = {
       throwError(e, 'marvelousga.do_task')
     }
   },
-  verify (verify = false) {
+  async verify (verify = false) {
     try {
       if (verify) {
         const pro = []
@@ -195,6 +195,7 @@ const marvelousga = {
               status
             })
           }))
+          await fuc.delay(500)
         }
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font><font class="warning">${getI18n('doYourself')}<a class="hclonely-google" href="javascript:void(0)" target="_self">${getI18n('googleVerify')}</a>${getI18n('getKey')}!</font></li>` })

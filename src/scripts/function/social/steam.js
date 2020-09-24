@@ -2,7 +2,7 @@ import { debug } from '../../config'
 import { getI18n } from '../../i18n'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
-import { unique, throwError } from '../tool'
+import { unique, throwError, delay } from '../tool'
 
 function updateSteamInfo (r, type = 'all', update = false) {
   try {
@@ -727,6 +727,7 @@ async function toggleSteamActions ({ website, type, elements, resolve, action, t
             break
         }
       }
+      await delay(1000)
     }
     Promise.all(pro).finally(() => {
       resolve()

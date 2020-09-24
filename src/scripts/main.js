@@ -126,11 +126,11 @@ if (website || window.location.host.includes('hclonely')) {
   <div class="card-body">
     <h3 class="card-title">${getI18n('taskLog')}</h3>
     <h4 class="card-subtitle">
-      <a id="check-update" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
-      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://__SITEURL__/setting.html" targrt="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
-      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://__SITEURL__/announcement.html" targrt="_blank" class="card-link iconfont icon-announcement" title="${getI18n('visitUpdateText')}"></a>
-      <a id="clean-cache" href="javascript:void(0)" targrt="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
-      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" targrt="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
+      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
+      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://__SITEURL__/setting.html" terget="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
+      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://__SITEURL__/announcement.html" terget="_blank" class="card-link iconfont icon-announcement" title="${getI18n('visitUpdateText')}"></a>
+      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
+      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
     </h4>
     <div class="card-textarea">
     </div>

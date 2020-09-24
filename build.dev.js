@@ -81,7 +81,7 @@ async function buildUserJs () {
   info('Format file: auto-task-test.user.js')
 }
 
-async function budilPageJs (file) {
+async function buildPageJs (file) {
   const bundle = await rollup.rollup({
     input: 'src/page/js/' + file,
     plugins: [
@@ -117,4 +117,4 @@ function generateHelper () {
   success('Write file to: auto-task-helper.user.js')
 }
 exports.buildUserJsDev = buildUserJs
-exports.budilPageJsDev = budilPageJs
+exports.buildPageJsDev = buildPageJs

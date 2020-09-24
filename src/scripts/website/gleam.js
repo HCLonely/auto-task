@@ -125,7 +125,7 @@ const gleam = {
       const pro = []
       await fuc.updateInfo(this.currentTaskInfo)
       const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
-      const socals = [...discords, ...facebooks, ...youtubes]
+      const socialPlatforms = [...discords, ...facebooks, ...youtubes]
       if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
         pro.push(new Promise(resolve => {
           fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'fuck' })
@@ -142,8 +142,8 @@ const gleam = {
         }))
       }
       if (globalConf.other.autoOpen) {
-        if (socals.length > 0) {
-          for (const task of socals) {
+        if (socialPlatforms.length > 0) {
+          for (const task of socialPlatforms) {
             const title = $(task).find('.entry-method-title').text().trim()
             const [
               status,

@@ -113,6 +113,12 @@ function throwError (e, name) {
   })
   console.log('%c%s', 'color:white;background:red', name + '\n' + e.stack)
 }
+
+function delay (time = 1000) {
+  return new Promise(resolve => {
+    setTimeout(() => { resolve() }, time)
+  })
+}
 export {
   unique,
   getUrlQuery,
@@ -120,5 +126,6 @@ export {
   isEmptyObjArr,
   clearTaskInfo,
   uniqueTaskInfo,
-  throwError
+  throwError,
+  delay
 }

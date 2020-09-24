@@ -1,6 +1,6 @@
 import { debug } from '../config'
 import { getI18n } from '../i18n'
-import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo } from './tool'
+import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo, delay } from './tool'
 
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
@@ -29,7 +29,8 @@ const fuc = {
   uniqueTaskInfo,
   updateInfo,
   checkUpdate,
-  newTabBlock
+  newTabBlock,
+  delay
 }
 function newTabBlock () {
   try {

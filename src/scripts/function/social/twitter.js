@@ -11,6 +11,7 @@ function updateTwitterInfo (resolve) {
     httpRequest({
       url: 'https://twitter.com/settings/account?k',
       method: 'HEAD',
+      cookie: 'ct0=',
       onload (response) {
         if (debug) console.log(response)
         if (response.finalUrl.includes('twitter.com/login')) {

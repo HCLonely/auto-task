@@ -34,6 +34,7 @@
         "Swal",
         "unfollow",
         "Unfollowing",
+        "Unliking",
         "unretweet",
         "Unretweeting",
         "unsub",
@@ -41,6 +42,8 @@
         "voteup",
         "wgauthtoken",
         "xlink",
+        "youtu",
+        "ZXZXO",
         "Русский"
     ],
     "flagWords": []

@@ -102,6 +102,10 @@ function echoLog (e) {
       case 'unfollowYtbChannel':
         ele = $(`<li>${getI18n(e.type)}<a href="https://www.youtube.com/channel/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
+      case 'likeYtbVideo':
+      case 'unlikeYtbVideo':
+        ele = $(`<li>${getI18n(e.type)}<a href="https://www.youtube.com/watch?v=${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
       case 'getYtbToken':
         ele = $(`<li>${getI18n('getYtbToken')}...<font></font></li>`)
         break

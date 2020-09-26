@@ -17,6 +17,7 @@ const defaultConf = {
       joinReddit: true,
       followRedditUser: true,
       followYoutubeChannel: true,
+      likeYoutubeVideo: true,
       joinVk: true,
       visitLink: true,
       verifyTask: true,
@@ -42,6 +43,7 @@ const defaultConf = {
       leaveReddit: true,
       unfollowRedditUser: true,
       unfollowYoutubeChannel: true,
+      unlikeYoutubeVideo: true,
       leaveVk: true
     },
     other: {
@@ -75,6 +77,7 @@ const defaultConf = {
       joinReddit: true,
       followRedditUser: true,
       followYoutubeChannel: true,
+      likeYoutubeVideo: true,
       joinVk: true,
       visitLink: true
     },
@@ -92,6 +95,7 @@ const defaultConf = {
       leaveReddit: true,
       unfollowRedditUser: true,
       unfollowYoutubeChannel: true,
+      unlikeYoutubeVideo: true,
       leaveVk: true
     },
     enable: false

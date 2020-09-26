@@ -83,14 +83,14 @@ const giveawaysu = {
         taskInfo.push({ name: 'twitch', link })
       } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName) || /follow.*reddit/gim.test(taskName)) {
         taskInfo.push({ name: 'reddit', link })
-        /* disable
-      } else if (taskIcon.includes('youtube') || /subscribe.*youtube.*channel/gim.test(taskName)) {
-        taskInfo.push({ name: 'youtube', link })
-        */
+      } else if (/subscribe.*youtube.*channel/gim.test(taskName)) {
+        taskInfo.push({ name: 'youtubeChannel', link })
+      } else if (/(watch|like).*youtube.*video/gim.test(taskName) || ((taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName))) {
+        taskInfo.push({ name: 'youtubeVideo', link })
       } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         taskInfo.push({ name: 'vk', link })
       } else {
-        if (/(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+        if (/(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
           // this.taskInfo.links.push(link)
         } else {
           if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
@@ -173,7 +173,8 @@ const giveawaysu = {
         instagrams,
         twitchs,
         reddits,
-        youtubes,
+        youtubeChannels,
+        youtubeVideos,
         vks,
         toFinalUrl,
         toGuild
@@ -254,9 +255,14 @@ const giveawaysu = {
           fuc.toggleActions({ social: 'reddit', website: 'giveawaysu', elements: reddits, resolve, action, toFinalUrl })
         }))
       }
-      if (this.conf[action][fuck ? 'followYoutubeChannel' : 'unfollowYoutubeChannel'] && youtubes.length > 0) {
+      if (this.conf[action][fuck ? 'followYoutubeChannel' : 'unfollowYoutubeChannel'] && youtubeChannels.length > 0) {
         pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'youtube', website: 'giveawaysu', elements: youtubes, resolve, action, toFinalUrl })
+          fuc.toggleActions({ social: 'youtube', type: 'channel', website: 'giveawaysu', elements: youtubeChannels, resolve, action, toFinalUrl })
+        }))
+      }
+      if (this.conf[action][fuck ? 'likeYoutubeVideo' : 'unlikeYoutubeVideo'] && youtubeVideos.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ social: 'youtube', type: 'video', website: 'giveawaysu', elements: youtubeVideos, resolve, action, toFinalUrl })
         }))
       }
       if (this.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
@@ -335,7 +341,8 @@ const giveawaysu = {
     instagrams: [],
     twitchs: [],
     reddits: [],
-    youtubes: [],
+    youtubeChannels: [],
+    youtubeVideos: [],
     vks: [],
     links: [],
     toFinalUrl: {},

@@ -5,6 +5,7 @@ import { toggleTwitterActions } from './twitter'
 import { toggleTwitchActions } from './twitch'
 import { toggleRedditActions } from './reddit'
 import { toggleVkActions } from './vk'
+import { toggleYtbActions } from './youtube'
 import { throwError } from '../tool'
 
 function toggleActions (e) {
@@ -27,6 +28,9 @@ function toggleActions (e) {
         break
       case 'vk':
         toggleVkActions(e)
+        break
+      case 'youtube':
+        toggleYtbActions(e)
         break
       default:
         toggleSteamActions(e)

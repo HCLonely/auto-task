@@ -152,7 +152,7 @@ async function toggleTwitchActions ({ website, type, elements, resolve, action, 
   try {
     if (new Date().getTime() - twitchInfo.updateTime > 10 * 60 * 1000) {
       const result = await verifyTwitchAuth()
-      if (!result) return
+      if (!result) return resolve()
     }
     for (const element of unique(elements)) {
       let name = element

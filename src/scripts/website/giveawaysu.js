@@ -83,10 +83,14 @@ const giveawaysu = {
         taskInfo.push({ name: 'twitch', link })
       } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName) || /follow.*reddit/gim.test(taskName)) {
         taskInfo.push({ name: 'reddit', link })
+        /* disable
+      } else if (taskIcon.includes('youtube') || /subscribe.*youtube.*channel/gim.test(taskName)) {
+        taskInfo.push({ name: 'youtube', link })
+        */
       } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         taskInfo.push({ name: 'vk', link })
       } else {
-        if (/(Subscribe.*YouTube)|(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+        if (/(Like.*YouTube)|(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
           // this.taskInfo.links.push(link)
         } else {
           if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
@@ -155,13 +159,6 @@ const giveawaysu = {
   },
   async do_task (action) {
     try {
-    /* disable
-    if (globalConf.other.autoOpen && act === 'join' && this.links.length > 0) {
-      for (const link of fuc.unique(this.links)) {
-        window.open(link, '_blank')
-      }
-    }
-    */
       const {
         groups,
         forums,
@@ -176,6 +173,7 @@ const giveawaysu = {
         instagrams,
         twitchs,
         reddits,
+        youtubes,
         vks,
         toFinalUrl,
         toGuild
@@ -256,6 +254,11 @@ const giveawaysu = {
           fuc.toggleActions({ social: 'reddit', website: 'giveawaysu', elements: reddits, resolve, action, toFinalUrl })
         }))
       }
+      if (this.conf[action][fuck ? 'followYoutubeChannel' : 'unfollowYoutubeChannel'] && youtubes.length > 0) {
+        pro.push(new Promise(resolve => {
+          fuc.toggleActions({ social: 'youtube', website: 'giveawaysu', elements: youtubes, resolve, action, toFinalUrl })
+        }))
+      }
       if (this.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
         pro.push(new Promise(resolve => {
           fuc.toggleActions({ social: 'vk', website: 'giveawaysu', elements: vks, resolve, action, toFinalUrl })
@@ -332,6 +335,7 @@ const giveawaysu = {
     instagrams: [],
     twitchs: [],
     reddits: [],
+    youtubes: [],
     vks: [],
     links: [],
     toFinalUrl: {},

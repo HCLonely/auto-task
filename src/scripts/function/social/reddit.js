@@ -85,7 +85,7 @@ async function toggleRedditActions ({ website, type, elements, resolve, action, 
   try {
     if (new Date().getTime() > redditInfo.expiresTime) {
       const result = await updateRedditInfo()
-      if (!result?.result === 'success') return
+      if (!result?.result === 'success') return resolve()
     }
     for (const element of unique(elements)) {
       let name = element

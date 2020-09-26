@@ -28,6 +28,7 @@
 // @include            *://keylol.com/*
 // @include            *://discord.com/app
 // @include            *://www.twitch.tv/*
+// @include            *://www.youtube.com/*
 // @exclude            *googleads*
 // @include            https://__SITEURL__/setting.html
 
@@ -54,6 +55,7 @@
 // @connect            twitter.com
 // @connect            api.twitter.com
 // @connect            youtube.com
+// @connect            www.youtube.com
 // @connect            facebook.com
 // @connect            instagram.com
 // @connect            vk.com

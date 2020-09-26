@@ -92,8 +92,7 @@ async function toggleDiscordActions ({ website, elements, resolve, action, toFin
         GM_setValue('discordInfo', discordInfo)
       } else {
         echoLog({ type: 'updateDiscordAuth' })
-        resolve({})
-        return
+        return resolve({})
       }
     }
     const pro = []

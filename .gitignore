@@ -1,6 +1,5 @@
 node_modules/
 src/page/announcement.html
 src/page/js/loadAnnouncement.js
-src/scripts/function/social/youtube.js
 stats.html
 public/

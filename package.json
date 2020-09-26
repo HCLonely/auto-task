@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {
@@ -41,6 +41,7 @@
       "$",
       "Swal",
       "Cookies",
+      "sha1",
       "GM_setValue",
       "GM_getValue",
       "GM_listValues",
@@ -61,7 +62,8 @@
       "insInfo",
       "twitchInfo",
       "twitterInfo",
-      "redditInfo"
+      "redditInfo",
+      "youtubeInfo"
     ],
     "ignore": [
       "/docs/js/main.js"

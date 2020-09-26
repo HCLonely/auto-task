@@ -19,6 +19,7 @@ window.insInfo = {}
 window.twitchInfo = getTwitchInfo()
 window.twitterInfo = getTwitterInfo()
 window.redditInfo = getRedditInfo()
+window.youtubeInfo = getYtbInfo()
 
 const config = Object.assign(JSON.parse(JSON.stringify(defaultConf)), GM_getValue('conf') || {})
 for (const k of Object.keys(config)) {
@@ -90,6 +91,16 @@ function getRedditInfo () {
     }, GM_getValue('redditInfo'))
   } catch (e) {
     throwError(e, 'getRedditInfo')
+  }
+}
+function getYtbInfo () {
+  try {
+    return Object.assign({
+      PAPISID: '',
+      updateTime: 0
+    }, GM_getValue('youtubeInfo'))
+  } catch (e) {
+    throwError(e, 'getYtbInfo')
   }
 }
 

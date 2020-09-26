@@ -98,6 +98,13 @@ function echoLog (e) {
       case 'unfollowRedditUser':
         ele = $(`<li>${getI18n(e.type)}<a href="https://www.reddit.com/user/${e.text.replace('u_', '')}" target="_blank">${e.text.replace('u_', '')}</a>...<font></font></li>`)
         break
+      case 'followYtbChannel':
+      case 'unfollowYtbChannel':
+        ele = $(`<li>${getI18n(e.type)}<a href="https://www.youtube.com/channel/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
+      case 'getYtbToken':
+        ele = $(`<li>${getI18n('getYtbToken')}...<font></font></li>`)
+        break
       case 'verifyVkLogin':
         ele = $(`<li>${getI18n('verifyVkLogin')}...<font></font></li>`)
         break

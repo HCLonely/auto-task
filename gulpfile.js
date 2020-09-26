@@ -19,7 +19,8 @@ function packRequireJs () {
   const sweetalert2 = fs.readFileSync('src/requirejs/sweetalert2@9.min.js')
   const polyfill = fs.readFileSync('src/requirejs/polyfill.min.js')
   const overhang = fs.readFileSync('src/requirejs/overhang.min.js')
-  const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang].join('\n')
+  const sha1 = fs.readFileSync('src/requirejs/sha1.min.js')
+  const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang, sha1].join('\n')
   fs.writeFileSync('require/require.min.js', all)
 }
 /* Development */

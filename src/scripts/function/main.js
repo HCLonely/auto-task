@@ -6,6 +6,7 @@ import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
 import { updateTwitchInfo } from './social/twitch'
 import { updateTwitterInfo } from './social/twitter'
+import { updateYtbInfo } from './social/youtube'
 import { toggleActions } from './social/toggleActions'
 
 import { echoLog, toggleLogs } from './log'
@@ -25,6 +26,7 @@ const fuc = {
   toggleActions,
   getDiscordAuth,
   updateTwitchInfo,
+  updateYtbInfo,
   clearTaskInfo,
   uniqueTaskInfo,
   updateInfo,

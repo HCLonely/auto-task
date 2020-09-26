@@ -4,7 +4,9 @@ import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 
-if (website || window.location.host.includes('hclonely')) {
+const pageHref = window.location.href
+const pageHost = window.location.host
+if (website || pageHost.includes('hclonely')) {
   GM_addStyle(GM_getResourceText('CSS'))
   $(document).ajaxError(function (event, xhr, options, exc) {
     Swal.fire({
@@ -17,7 +19,7 @@ if (website || window.location.host.includes('hclonely')) {
     console.log('Options:', options)
     console.log('JavaScript exception:', exc)
   })
-  if (window.location.host.includes('hclonely')) {
+  if (pageHost.includes('hclonely')) {
     if (window.location.pathname.includes('setting')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
       unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
@@ -26,16 +28,8 @@ if (website || window.location.host.includes('hclonely')) {
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()
     }
-  } else if (window.location.host.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
+  } else if (pageHost.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
     fuc.newTabBlock()
-  } else if (window.location.href.includes('discord.com/app')) {
-    fuc.getDiscordAuth()
-  } else if (window.location.href.includes('www.twitch.tv')) {
-    if (window.location.href.includes('#updateTwitchInfo')) {
-      fuc.updateTwitchInfo(true)
-    } else if (!window.location.href.includes('/login')) {
-      fuc.updateTwitchInfo(false)
-    }
   } else {
     if (website.before) website.before()
 
@@ -216,4 +210,18 @@ if (website || window.location.host.includes('hclonely')) {
       throwError(e, 'GM_registerMenuCommand(\'Language\')')
     }
   })
+} else if (pageHref.includes('discord.com/app')) {
+  fuc.getDiscordAuth()
+} else if (pageHref.includes('www.twitch.tv')) {
+  if (pageHref.includes('#updateTwitchInfo')) {
+    fuc.updateTwitchInfo(true)
+  } else if (!pageHref.includes('/login')) {
+    fuc.updateTwitchInfo(false)
+  }
+} else if (pageHref.includes('www.youtube.com')) {
+  if (pageHref.includes('#updateYtbInfo')) {
+    fuc.updateYtbInfo(true)
+  } else {
+    fuc.updateYtbInfo(false)
+  }
 }

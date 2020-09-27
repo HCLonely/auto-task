@@ -44,7 +44,8 @@ function getSteamInfo () {
       steam64Id: '',
       communitySessionID: '',
       storeSessionID: '',
-      updateTime: 0
+      storeUpdateTime: 0,
+      communityUpdateTime: 0
     }, GM_getValue('steamInfo'))
   } catch (e) {
     throwError(e, 'getSteamInfo')

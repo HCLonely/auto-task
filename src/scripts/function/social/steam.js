@@ -6,86 +6,83 @@ import { unique, throwError, delay } from '../tool'
 
 function updateSteamInfo (r, type = 'all', update = false) {
   try {
-    if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
-      const pro = []
-      if (type === 'community' || type === 'all') {
-        pro.push(new Promise((resolve, reject) => {
-          const status = echoLog({ type: 'updateSteamCommunity' })
-          httpRequest({
-            url: 'https://steamcommunity.com/my',
-            method: 'GET',
-            onload (response) {
-              if (debug) console.log(response)
-              if (response.status === 200) {
-                if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
-                  status.error('Error:' + getI18n('loginSteamCommunity'), true)
-                  reject(Error('Not Login'))
-                } else {
-                  const [
-                    steam64Id,
-                    communitySessionID,
-                    userName
-                  ] = [
-                    response.responseText.match(/g_steamID = "(.+?)";/),
-                    response.responseText.match(/g_sessionID = "(.+?)";/),
-                    response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
-                  ]
-                  if (steam64Id) steamInfo.steam64Id = steam64Id[1]
-                  if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
-                  if (userName) steamInfo.userName = userName[1]
-                  status.success()
-                  resolve()
-                }
+    const pro = []
+    if ((new Date().getTime() - steamInfo.communityUpdateTime > 10 * 60 * 1000 || update) && (type === 'community' || type === 'all')) {
+      pro.push(new Promise((resolve, reject) => {
+        const status = echoLog({ type: 'updateSteamCommunity' })
+        httpRequest({
+          url: 'https://steamcommunity.com/my',
+          method: 'GET',
+          onload (response) {
+            if (debug) console.log(response)
+            if (response.status === 200) {
+              if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
+                status.error('Error:' + getI18n('loginSteamCommunity'), true)
+                reject(Error('Not Login'))
               } else {
-                status.error('Error:' + response.statusText + '(' + response.status + ')')
-                reject(new Error('Request Failed'))
+                const [
+                  steam64Id,
+                  communitySessionID,
+                  userName
+                ] = [
+                  response.responseText.match(/g_steamID = "(.+?)";/),
+                  response.responseText.match(/g_sessionID = "(.+?)";/),
+                  response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)
+                ]
+                if (steam64Id) steamInfo.steam64Id = steam64Id[1]
+                if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
+                if (userName) steamInfo.userName = userName[1]
+                steamInfo.communityUpdateTime = new Date().getTime()
+                status.success()
+                resolve()
               }
-            },
-            r: resolve,
-            status
-          })
-        }))
-      }
-      if (type === 'store' || type === 'all') {
-        pro.push(new Promise((resolve, reject) => {
-          const status = echoLog({ type: 'updateSteamStore' })
-
-          httpRequest({
-            url: 'https://store.steampowered.com/stats/',
-            method: 'GET',
-            onload (response) {
-              if (debug) console.log(response)
-              if (response.status === 200) {
-                if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
-                  status.error('Error:' + getI18n('loginSteamStore'), true)
-                  reject(new Error('Not Login'))
-                } else {
-                  const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                  if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
-                  status.success()
-                  resolve()
-                }
-              } else {
-                status.error('Error:' + response.statusText + '(' + response.status + ')')
-                reject(new Error('Request Failed'))
-              }
-            },
-            r: resolve,
-            status
-          })
-        }))
-      }
-      Promise.all(pro).then(() => {
-        steamInfo.updateTime = new Date().getTime()
-        GM_setValue('steamInfo', steamInfo)
-        r(1)
-      }).catch(err => {
-        console.error(err)
-        r(0)
-      })
-    } else {
-      r(1)
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              reject(new Error('Request Failed'))
+            }
+          },
+          r: resolve,
+          status
+        })
+      }))
     }
+    if ((new Date().getTime() - steamInfo.storeUpdateTime > 10 * 60 * 1000 || update) && (type === 'store' || type === 'all')) {
+      pro.push(new Promise((resolve, reject) => {
+        const status = echoLog({ type: 'updateSteamStore' })
+
+        httpRequest({
+          url: 'https://store.steampowered.com/stats/',
+          method: 'GET',
+          onload (response) {
+            if (debug) console.log(response)
+            if (response.status === 200) {
+              if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
+                status.error('Error:' + getI18n('loginSteamStore'), true)
+                reject(new Error('Not Login'))
+              } else {
+                const storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
+                steamInfo.storeUpdateTime = new Date().getTime()
+                status.success()
+                resolve()
+              }
+            } else {
+              status.error('Error:' + response.statusText + '(' + response.status + ')')
+              reject(new Error('Request Failed'))
+            }
+          },
+          r: resolve,
+          status
+        })
+      }))
+    }
+    Promise.all(pro).then(() => {
+      GM_setValue('steamInfo', steamInfo)
+      r(1)
+    }).catch(err => {
+      console.error(err)
+      r(0)
+    })
   } catch (e) {
     throwError(e, 'updateSteamInfo')
   }

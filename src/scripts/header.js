@@ -13,6 +13,7 @@
 // @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL          https://__SITEURL__/__FILENAME__
+// @downloadURL        https://__SITEURL__/__FILENAME__
 
 // @include            *://giveaway.su/giveaway/view/*
 // @include            *://marvelousga.com/*
@@ -39,6 +40,7 @@
 // @grant              GM_getValue
 // @grant              GM_listValues
 // @grant              GM_deleteValue
+// @grant              GM_addValueChangeListener
 // @grant              GM_addStyle
 // @grant              GM_xmlhttpRequest
 // @grant              GM_getResourceText

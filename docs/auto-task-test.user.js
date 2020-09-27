@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.1.3
+// @version            3.1.4
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -13,6 +13,7 @@
 // @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL          https://auto-task-test.hclonely.com/auto-task-test.user.js
+// @downloadURL        https://auto-task-test.hclonely.com/auto-task-test.user.js
 
 // @include            *://giveaway.su/giveaway/view/*
 // @include            *://marvelousga.com/*
@@ -32,13 +33,14 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.3/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.3/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.4/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.4/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
 // @grant              GM_listValues
 // @grant              GM_deleteValue
+// @grant              GM_addValueChangeListener
 // @grant              GM_addStyle
 // @grant              GM_xmlhttpRequest
 // @grant              GM_getResourceText
@@ -146,7 +148,8 @@ try {
           steam64Id: '',
           communitySessionID: '',
           storeSessionID: '',
-          updateTime: 0
+          storeUpdateTime: 0,
+          communityUpdateTime: 0
         }, GM_getValue('steamInfo'))
       } catch (e) {
         throwError(e, 'getSteamInfo')
@@ -683,89 +686,86 @@ try {
       var update = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false
 
       try {
-        if (new Date().getTime() - steamInfo.updateTime > 10 * 60 * 1000 || update) {
-          var pro = []
+        var pro = []
 
-          if (type === 'community' || type === 'all') {
-            pro.push(new Promise(function (resolve, reject) {
-              var status = echoLog({
-                type: 'updateSteamCommunity'
-              })
-              httpRequest({
-                url: 'https://steamcommunity.com/my',
-                method: 'GET',
-                onload: function onload (response) {
-                  if (debug) console.log(response)
+        if ((new Date().getTime() - steamInfo.communityUpdateTime > 10 * 60 * 1000 || update) && (type === 'community' || type === 'all')) {
+          pro.push(new Promise(function (resolve, reject) {
+            var status = echoLog({
+              type: 'updateSteamCommunity'
+            })
+            httpRequest({
+              url: 'https://steamcommunity.com/my',
+              method: 'GET',
+              onload: function onload (response) {
+                if (debug) console.log(response)
 
-                  if (response.status === 200) {
-                    if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
-                      status.error('Error:' + getI18n('loginSteamCommunity'), true)
-                      reject(Error('Not Login'))
-                    } else {
-                      var _ref = [response.responseText.match(/g_steamID = "(.+?)";/), response.responseText.match(/g_sessionID = "(.+?)";/), response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)]
-                      var steam64Id = _ref[0]
-                      var communitySessionID = _ref[1]
-                      var userName = _ref[2]
-                      if (steam64Id) steamInfo.steam64Id = steam64Id[1]
-                      if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
-                      if (userName) steamInfo.userName = userName[1]
-                      status.success()
-                      resolve()
-                    }
+                if (response.status === 200) {
+                  if ($(response.responseText).find('a[href*="/login/home"]').length > 0) {
+                    status.error('Error:' + getI18n('loginSteamCommunity'), true)
+                    reject(Error('Not Login'))
                   } else {
-                    status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    reject(new Error('Request Failed'))
+                    var _ref = [response.responseText.match(/g_steamID = "(.+?)";/), response.responseText.match(/g_sessionID = "(.+?)";/), response.responseText.match(/steamcommunity.com\/id\/(.+?)\/friends\//)]
+                    var steam64Id = _ref[0]
+                    var communitySessionID = _ref[1]
+                    var userName = _ref[2]
+                    if (steam64Id) steamInfo.steam64Id = steam64Id[1]
+                    if (communitySessionID) steamInfo.communitySessionID = communitySessionID[1]
+                    if (userName) steamInfo.userName = userName[1]
+                    steamInfo.communityUpdateTime = new Date().getTime()
+                    status.success()
+                    resolve()
                   }
-                },
-                r: resolve,
-                status: status
-              })
-            }))
-          }
-
-          if (type === 'store' || type === 'all') {
-            pro.push(new Promise(function (resolve, reject) {
-              var status = echoLog({
-                type: 'updateSteamStore'
-              })
-              httpRequest({
-                url: 'https://store.steampowered.com/stats/',
-                method: 'GET',
-                onload: function onload (response) {
-                  if (debug) console.log(response)
-
-                  if (response.status === 200) {
-                    if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
-                      status.error('Error:' + getI18n('loginSteamStore'), true)
-                      reject(new Error('Not Login'))
-                    } else {
-                      var storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
-                      if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
-                      status.success()
-                      resolve()
-                    }
-                  } else {
-                    status.error('Error:' + response.statusText + '(' + response.status + ')')
-                    reject(new Error('Request Failed'))
-                  }
-                },
-                r: resolve,
-                status: status
-              })
-            }))
-          }
-
-          Promise.all(pro).then(function () {
-            steamInfo.updateTime = new Date().getTime()
-            GM_setValue('steamInfo', steamInfo)
-            r(1)
-          }).catch(function (err) {
-            console.error(err)
-            r(0)
-          })
-        } else {
-          r(1)
+                } else {
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  reject(new Error('Request Failed'))
+                }
+              },
+              r: resolve,
+              status: status
+            })
+          }))
         }
+
+        if ((new Date().getTime() - steamInfo.storeUpdateTime > 10 * 60 * 1000 || update) && (type === 'store' || type === 'all')) {
+          pro.push(new Promise(function (resolve, reject) {
+            var status = echoLog({
+              type: 'updateSteamStore'
+            })
+            httpRequest({
+              url: 'https://store.steampowered.com/stats/',
+              method: 'GET',
+              onload: function onload (response) {
+                if (debug) console.log(response)
+
+                if (response.status === 200) {
+                  if ($(response.responseText).find('a[href*="/login/"]').length > 0) {
+                    status.error('Error:' + getI18n('loginSteamStore'), true)
+                    reject(new Error('Not Login'))
+                  } else {
+                    var storeSessionID = response.responseText.match(/g_sessionID = "(.+?)";/)
+                    if (storeSessionID) steamInfo.storeSessionID = storeSessionID[1]
+                    steamInfo.storeUpdateTime = new Date().getTime()
+                    status.success()
+                    resolve()
+                  }
+                } else {
+                  status.error('Error:' + response.statusText + '(' + response.status + ')')
+                  reject(new Error('Request Failed'))
+                }
+              },
+              r: resolve,
+              status: status
+            })
+          }))
+        }
+
+        Promise.all(pro).then(function () {
+          GM_setValue('steamInfo', steamInfo)
+          r(1)
+        }).catch(function (err) {
+          console.error(err)
+          r(0)
+        })
       } catch (e) {
         throwError(e, 'updateSteamInfo')
       }
@@ -10428,11 +10428,29 @@ try {
         }
 
         if (website.after) website.after()
+        GM_addValueChangeListener('steamInfo', function (name, oldValue, newValue, remote) {
+          window.steamInfo = Object.assign(steamInfo, newValue)
+        })
+        GM_addValueChangeListener('discordInfo', function (name, oldValue, newValue, remote) {
+          window.discordInfo = Object.assign(discordInfo, newValue)
+        })
+        GM_addValueChangeListener('twitchInfo', function (name, oldValue, newValue, remote) {
+          window.twitchInfo = Object.assign(twitchInfo, newValue)
+        })
+        GM_addValueChangeListener('twitterInfo', function (name, oldValue, newValue, remote) {
+          window.twitterInfo = Object.assign(twitterInfo, newValue)
+        })
+        GM_addValueChangeListener('redditInfo', function (name, oldValue, newValue, remote) {
+          window.redditInfo = Object.assign(redditInfo, newValue)
+        })
+        GM_addValueChangeListener('youtubeInfo', function (name, oldValue, newValue, remote) {
+          window.youtubeInfo = Object.assign(youtubeInfo, newValue)
+        })
       }
 
       GM_registerMenuCommand(getI18n('readme'), function () {
         try {
-          window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank')
+          window.open('https://github.com/HCLonely/auto-task', '_blank')
         } catch (e) {
           throwError(e, 'GM_registerMenuCommand(\'readme\')')
         }

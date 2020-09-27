@@ -168,11 +168,30 @@ if (website || pageHost.includes('hclonely')) {
       }, 0)
     }
     if (website.after) website.after()
+
+    GM_addValueChangeListener('steamInfo', (name, oldValue, newValue, remote) => {
+      window.steamInfo = Object.assign(steamInfo, newValue)
+    })
+    GM_addValueChangeListener('discordInfo', (name, oldValue, newValue, remote) => {
+      window.discordInfo = Object.assign(discordInfo, newValue)
+    })
+    GM_addValueChangeListener('twitchInfo', (name, oldValue, newValue, remote) => {
+      window.twitchInfo = Object.assign(twitchInfo, newValue)
+    })
+    GM_addValueChangeListener('twitterInfo', (name, oldValue, newValue, remote) => {
+      window.twitterInfo = Object.assign(twitterInfo, newValue)
+    })
+    GM_addValueChangeListener('redditInfo', (name, oldValue, newValue, remote) => {
+      window.redditInfo = Object.assign(redditInfo, newValue)
+    })
+    GM_addValueChangeListener('youtubeInfo', (name, oldValue, newValue, remote) => {
+      window.youtubeInfo = Object.assign(youtubeInfo, newValue)
+    })
   }
 
   GM_registerMenuCommand(getI18n('readme'), () => {
     try {
-      window.open('https://blog.hclonely.com/posts/777c60d5/', '_blank')
+      window.open('https://github.com/HCLonely/auto-task', '_blank')
     } catch (e) {
       throwError(e, 'GM_registerMenuCommand(\'readme\')')
     }

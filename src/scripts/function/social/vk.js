@@ -10,10 +10,10 @@ function verifyVkLogin () {
       const status = echoLog({ type: 'verifyVkLogin' })
       httpRequest({
         url: 'https://vk.com/im',
-        method: 'HEAD',
+        method: 'GET',
         onload (response) {
           if (debug) console.log(response)
-          if (response.toFinalUrl.includes('vk.com/login')) {
+          if (response.finalUrl.includes('vk.com/login')) {
             status.error('Error:' + getI18n('loginVk'), true)
             resolve({ result: 'error', statusText: response.statusText, status: response.status })
           } else if (response.status === 200) {

@@ -27,6 +27,7 @@
 // @include            *://*freegamelottery.com*
 // @include            *://gleam.io/*
 // @include            *://keylol.com/*
+// @include            *://givekey.ru/giveaway/*
 // @include            *://discord.com/app
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*

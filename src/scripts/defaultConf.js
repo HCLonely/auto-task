@@ -210,13 +210,14 @@ const defaultConf = {
       followCurator: true,
       addToWishlist: true,
       followGame: true,
-      visitLink: true
+      joinVK: true
     },
     remove: {
       leaveSteamGroup: true,
       unfollowCurator: true,
       removeFromWishlist: true,
-      unfollowGame: true
+      unfollowGame: true,
+      leaveVK: true
     },
     enable: false
   },

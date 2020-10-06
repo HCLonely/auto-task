@@ -164,7 +164,7 @@ const givekey = {
   },
   checkLeft () {
     try {
-      if ($('#keys_count').text()) {
+      if (!$('#keys_count').text()) {
         Swal.fire({
           icon: 'warning',
           title: getI18n('notice'),

@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.1.5
+// @version            3.1.6
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -34,8 +34,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.5/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.5/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.6/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.1.6/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -7826,7 +7826,7 @@ try {
       },
       checkLeft: function checkLeft () {
         try {
-          if ($('#keys_count').text()) {
+          if (!$('#keys_count').text()) {
             Swal.fire({
               icon: 'warning',
               title: getI18n('notice'),

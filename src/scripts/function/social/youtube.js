@@ -26,7 +26,7 @@ function updateYtbInfo (notice) {
       }
     }
   } catch (e) {
-    if (debug) console.log(e)
+    if (debug) console.error(e)
     if (notice) {
       Swal.fire({
         title: getI18n('updateYtbInfoError'),
@@ -36,24 +36,17 @@ function updateYtbInfo (notice) {
   }
 }
 
-async function toggleYtbChannel (r, link, follow = true) {
+async function toggleYtbChannel (link, follow = true) {
   try {
-    const { data, unknownLink, needLogin } = await getYtbToken(link, 'channel')
-    const { apiKey, client, request, channelId } = data || {}
-    if (needLogin) {
-      echoLog({ type: 'custom', text: getI18n('loginYtb') })
-      return r({ result: 'error', statusText: 'needLogin', status: 0 })
-    }
-    if (unknownLink) {
-      echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
-      return r({ result: 'error', statusText: 'unsupportedLink', status: 0 })
-    }
-    if (!apiKey) return r({ result: 'error', statusText: '"getYtbToken" failed', status: 0 })
+    const { params, unknownLink, needLogin } = await getYtbToken(link, 'channel')
+    const { apiKey, client, request, channelId } = params || {}
+    if (needLogin) return echoLog({ type: 'custom', text: getI18n('loginYtb') })
+    if (unknownLink) return echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
+    if (!apiKey) return echoLog({ type: 'custom', text: '"getYtbToken" failed' })
 
-    client.hl = 'en'
-    const status = echoLog({ type: follow ? 'followYtbChannel' : 'unfollowYtbChannel', text: channelId })
+    const logStatus = echoLog({ type: follow ? 'followYtbChannel' : 'unfollowYtbChannel', text: channelId })
     const nowTime = parseInt(new Date().getTime() / 1000)
-    httpRequest({
+    const { result, statusText, status, data } = await httpRequest({
       url: `https://www.youtube.com/youtubei/v1/subscription/${follow ? '' : 'un'}subscribe?key=${apiKey}`,
       method: 'POST',
       headers: {
@@ -77,25 +70,21 @@ async function toggleYtbChannel (r, link, follow = true) {
         },
         channelIds: [channelId],
         params: follow ? 'EgIIAhgA' : 'CgIIAhgA'
-      }),
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 200) {
-          if ((follow && (/"subscribed": true/.test(response.responseText) || response.responseText.includes('The subscription already exists'))) || (!follow && /"subscribed": false/.test(response.responseText))) {
-            status.success()
-            r({ result: 'success', statusText: response.statusText, status: response.status })
-          } else {
-            status.error(getI18n('tryUpdateYtbAuth'), true)
-            r({ result: 'error', statusText: response.statusText, status: response.status })
-          }
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      })
     })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        if ((follow && (/"subscribed": true/.test(data.responseText) || data.responseText.includes('The subscription already exists'))) || (!follow && /"subscribed": false/.test(data.responseText))) {
+          logStatus.success()
+        } else {
+          logStatus.error(getI18n('tryUpdateYtbAuth'), true)
+        }
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
   } catch (e) {
     throwError(e, 'toggleYtbChannel')
   }
@@ -103,19 +92,13 @@ async function toggleYtbChannel (r, link, follow = true) {
 
 async function toggleLikeYtbVideo (r, link, like = true) {
   try {
-    const { data, unknownLink, needLogin } = await getYtbToken(link, 'likeVideo')
-    const { apiKey, client, request, videoId, likeParams } = data || {}
-    if (needLogin) {
-      echoLog({ type: 'custom', text: getI18n('loginYtb') })
-      return r({ result: 'error', statusText: 'needLogin', status: 0 })
-    }
-    if (unknownLink) {
-      echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
-      return r({ result: 'error', statusText: 'unsupportedLink', status: 0 })
-    }
-    if (!apiKey) return r({ result: 'error', statusText: '"getYtbToken" failed', status: 0 })
+    const { params, unknownLink, needLogin } = await getYtbToken(link, 'likeVideo')
+    const { apiKey, client, request, videoId, likeParams } = params || {}
+    if (needLogin) return echoLog({ type: 'custom', text: getI18n('loginYtb') })
+    if (unknownLink) return echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
+    if (!apiKey) return echoLog({ type: 'custom', text: '"getYtbToken" failed' })
 
-    const status = echoLog({ type: like ? 'likeYtbVideo' : 'unlikeYtbVideo', text: videoId })
+    const logStatus = echoLog({ type: like ? 'likeYtbVideo' : 'unlikeYtbVideo', text: videoId })
     const nowTime = parseInt(new Date().getTime() / 1000)
     const likeVideoData = {
       context: {
@@ -135,11 +118,10 @@ async function toggleLikeYtbVideo (r, link, like = true) {
       if (likeParams) {
         likeVideoData.params = likeParams
       } else {
-        status.error('Empty likeParams')
-        return r({ result: 'error', statusText: 'Empty likeParams', status: 0 })
+        return logStatus.error('Empty likeParams')
       }
     }
-    httpRequest({
+    const { result, statusText, status, data } = await httpRequest({
       url: `https://www.youtube.com/youtubei/v1/like/${like ? '' : 'remove'}like?key=${apiKey}`,
       method: 'POST',
       headers: {
@@ -151,101 +133,88 @@ async function toggleLikeYtbVideo (r, link, like = true) {
         'x-origin': 'https://www.youtube.com',
         authorization: `SAPISIDHASH ${nowTime}_${sha1(`${nowTime} ${youtubeInfo.PAPISID} https://www.youtube.com`)}`
       },
-      data: JSON.stringify(likeVideoData),
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 200) {
-          if ((like && response.responseText.includes('Added to Liked videos')) || (!like && (response.responseText.includes('Removed from Liked videos') || response.responseText.includes('Dislike removed')))) {
-            status.success()
-            r({ result: 'success', statusText: response.statusText, status: response.status })
-          } else {
-            status.error(getI18n('tryUpdateYtbAuth'), true)
-            r({ result: 'error', statusText: response.statusText, status: response.status })
-          }
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      data: JSON.stringify(likeVideoData)
     })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        if ((like && data.responseText.includes('Added to Liked videos')) || (!like && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed')))) {
+          logStatus.success()
+        } else {
+          logStatus.error(getI18n('tryUpdateYtbAuth'), true)
+        }
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
   } catch (e) {
     throwError(e, 'toggleYtbChannel')
   }
 }
 
-function getYtbToken (link, type) {
+async function getYtbToken (link, type) {
   try {
-    return new Promise(resolve => {
-      /* disable
-      if (!/https?:\/\/www\.youtube\.com\/c(hannel)?\/.+/.test(link)) {
-        return resolve({ unknownLink: true })
-      }
-      */
-      const status = echoLog({ type: 'getYtbToken' })
-
-      httpRequest({
-        url: link,
-        method: 'GET',
-        onload (response) {
-          if (debug) console.log(response)
-          if (response.status === 200) {
-            if (response.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
-              status.error('Error:' + getI18n('loginYtb'), true)
-              return resolve({ result: 'error', statusText: response.statusText, status: response.status, needLogin: true })
-            }
-            const apiKey = response.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1]
-            // const channelId = response.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)?.[1]
-            const context = response.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/)?.[1] || '{}'
-            const { client, request } = JSON.parse(context)
-            if (apiKey && client && request) {
-              client.hl = 'en'
-              if (type === 'channel') {
-                const channelId = response.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)?.[1]
-                if (channelId) {
-                  status.success()
-                  resolve({ result: 'success', statusText: response.statusText, status: response.status, data: { apiKey, client, request, channelId } })
-                } else {
-                  status.error('Error: Get "channelId" failed!')
-                  resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                }
-              } else if (type === 'likeVideo') {
-                const videoId = response.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)?.[1]
-                const likeParams = response.responseText.match(/"likeParams":"(.*?)"/)?.[1]
-                if (videoId) {
-                  status.success()
-                  resolve({ result: 'success', statusText: response.statusText, status: response.status, data: { apiKey, client, request, videoId, likeParams } })
-                } else {
-                  status.error('Error: Get "videoId" failed!')
-                  resolve({ result: 'error', statusText: response.statusText, status: response.status })
-                }
-              } else {
-                resolve({ result: 'error', statusText: 'Unknown type', status: response.status })
-              }
+    const logStatus = echoLog({ type: 'getYtbToken' })
+    const { result, statusText, status, data } = await httpRequest({
+      url: link,
+      method: 'GET'
+    })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
+          logStatus.error('Error:' + getI18n('loginYtb'), true)
+          return { needLogin: true }
+        }
+        const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1]
+        const context = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/)?.[1] || '{}'
+        const { client, request } = JSON.parse(context)
+        if (apiKey && client && request) {
+          client.hl = 'en'
+          if (type === 'channel') {
+            const channelId = data.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)?.[1]
+            if (channelId) {
+              logStatus.success()
+              return { params: { apiKey, client, request, channelId } }
             } else {
-              status.error('Error: Parameter "apiKey" not found!')
-              resolve({ result: 'error', statusText: response.statusText, status: response.status })
+              logStatus.error('Error: Get "channelId" failed!')
+              return {}
+            }
+          } else if (type === 'likeVideo') {
+            const videoId = data.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)?.[1]
+            const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1]
+            if (videoId) {
+              logStatus.success()
+              return { params: { apiKey, client, request, videoId, likeParams } }
+            } else {
+              logStatus.error('Error: Get "videoId" failed!')
+              return {}
             }
           } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
+            logStatus.error('Error: Unknown type')
+            return {}
           }
-        },
-        r: resolve,
-        status
-      })
-    })
+        } else {
+          logStatus.error('Error: Parameter "apiKey" not found!')
+          return {}
+        }
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+        return {}
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return {}
+    }
   } catch (e) {
     throwError(e, 'getYtbToken')
   }
 }
 
-async function toggleYtbActions ({ website, type, elements, resolve, action, toFinalUrl = {} }) {
+async function toggleYtbActions ({ website, type, elements, action, toFinalUrl = {} }) {
   try {
     if (!youtubeInfo.PAPISID) {
-      echoLog({ type: 'custom', text: `<li style="color:red;">${getI18n('updateYtbInfo')}</li>` })
-      return resolve()
+      return echoLog({ type: 'custom', text: `<li style="color:red;">${getI18n('updateYtbInfo')}</li>` })
     }
     for (const element of unique(elements)) {
       let link = element
@@ -255,19 +224,14 @@ async function toggleYtbActions ({ website, type, elements, resolve, action, toF
       if (link) {
         switch (type) {
           case 'channel':
-            await new Promise(resolve => {
-              toggleYtbChannel(resolve, link, action === 'fuck')
-            })
+            await toggleYtbChannel(link, action === 'fuck')
             break
           case 'video':
-            await new Promise(resolve => {
-              toggleLikeYtbVideo(resolve, link, action === 'fuck')
-            })
+            await toggleLikeYtbVideo(link, action === 'fuck')
             break
         }
       }
     }
-    resolve()
   } catch (e) {
     throwError(e, 'toggleYtbActions')
   }

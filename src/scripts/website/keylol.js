@@ -15,60 +15,47 @@ const keylol = {
       unsafeWindow.toggleDiscord = (action, inviteId) => {
         const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']') || {}
         const toGuild = taskInfo.toGuild || {}
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'discord', website: 'keylol', elements: [inviteId], resolve, action, toGuild })
-        }).then(data => {
-          if (action === 'fuck') {
-            const [inviteId, guild] = data?.[0]?.guild || []
-            if (inviteId && guild) {
-              toGuild[inviteId] = guild
-              taskInfo.toGuild = toGuild
-              GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', taskInfo)
+        return fuc.toggleActions({ social: 'discord', website: 'keylol', elements: [inviteId], action, toGuild })
+          .then(data => {
+            if (action === 'fuck') {
+              const [inviteId, guild] = data?.[0]?.guild || []
+              if (inviteId && guild) {
+                toGuild[inviteId] = guild
+                taskInfo.toGuild = toGuild
+                GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', taskInfo)
+              }
             }
-          }
-        })
+          })
       }
-      unsafeWindow.toggleReddit = (action, name) => {
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'reddit', website: 'keylol', elements: [name], resolve, action })
-        })
+      unsafeWindow.toggleREDDIT = (action, name) => {
+        return fuc.toggleActions({ social: 'reddit', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleIns = (action, name) => {
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'ins', website: 'keylol', elements: [name], resolve, action })
-        })
+      unsafeWindow.toggleINS = (action, name) => {
+        return fuc.toggleActions({ social: 'ins', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleTwitter = async (action, name, type) => {
+      unsafeWindow.toggleTWITTER = async (action, name, type) => {
         await fuc.updateInfo({}, { twitter: true })
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'twitter', website: 'keylol', elements: [name], resolve, type, action })
-        })
+        return fuc.toggleActions({ social: 'twitter', website: 'keylol', elements: [name], type, action })
       }
-      unsafeWindow.toggleTwitch = (action, name) => {
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'twitch', website: 'keylol', elements: [name], resolve, action })
-        })
+      unsafeWindow.toggleTWITCH = (action, name) => {
+        return fuc.toggleActions({ social: 'twitch', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleVk = (action, name) => {
-        return new Promise(resolve => {
-          fuc.toggleActions({ social: 'vk', website: 'keylol', elements: [name], resolve, action })
-        })
+      unsafeWindow.toggleVK = (action, name) => {
+        return fuc.toggleActions({ social: 'vk', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleSteam = async (action, name, type, ...args) => {
+      unsafeWindow.toggleSTEAM = async (action, name, type, ...args) => {
         const isAnnouncement = type === 'announcement'
         const isGroup = type === 'group'
         await fuc.updateInfo({}, { steamStore: isGroup || isAnnouncement, steamCommunity: !isGroup })
-        return new Promise(resolve => {
-          let elements = [name]
-          if (args) {
-            if (args.length === 3) {
-              elements = [[args[0], name, args[1], args[2]]]
-            } else if (args.length === 1) {
-              elements = { 1: name, input: args[0] }
-            }
+        let elements = [name]
+        if (args) {
+          if (args.length === 3) {
+            elements = [[args[0], name, args[1], args[2]]]
+          } else if (args.length === 1) {
+            elements = { 1: name, input: args[0] }
           }
-          fuc.toggleActions({ social: 'steam', website: 'keylol', elements, resolve, action, type })
-        })
+        }
+        return fuc.toggleActions({ social: 'steam', website: 'keylol', elements, action, type })
       }
       unsafeWindow.toggleAutoTaskSelect = (event, ele) => {
         if (event.button === 2) {
@@ -100,7 +87,7 @@ const keylol = {
           const link = $(redditLink).attr('href')
           const name = link?.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1]
           if (name) {
-            this.addBtn(redditLink, 'toggleReddit', name, '', ['加入', '退出'])
+            this.addBtn(redditLink, 'toggleREDDIT', name, '', ['加入', '退出'])
           }
         }
       }
@@ -109,7 +96,7 @@ const keylol = {
           const link = $(insLink).attr('href')
           const name = link?.match(/https:\/\/www\.instagram\.com\/(.+)?\//)?.[1]
           if (name) {
-            this.addBtn(insLink, 'toggleIns', name, '', ['关注', '取关'])
+            this.addBtn(insLink, 'toggleINS', name, '', ['关注', '取关'])
           }
         }
       }
@@ -119,9 +106,9 @@ const keylol = {
           const userId = link?.match(/https:\/\/twitter\.com\/(.+)/)?.[1]
           const tweetId = link?.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]
           if (tweetId) {
-            this.addBtn(twitterLink, 'toggleTwitter', tweetId, 'retweet', ['转推', '撤销转推'])
+            this.addBtn(twitterLink, 'toggleTWITTER', tweetId, 'retweet', ['转推', '撤销转推'])
           } else {
-            this.addBtn(twitterLink, 'toggleTwitter', userId, 'follow', ['关注', '取关'])
+            this.addBtn(twitterLink, 'toggleTWITTER', userId, 'follow', ['关注', '取关'])
           }
         }
       }
@@ -130,7 +117,7 @@ const keylol = {
           const link = $(twitchLink).attr('href')
           const name = link?.match(/https:\/\/www\.twitch\.tv\/(.+)/)?.[1]
           if (name) {
-            this.addBtn(twitchLink, 'toggleTwitch', name, '', ['关注', '取关'])
+            this.addBtn(twitchLink, 'toggleTWITCH', name, '', ['关注', '取关'])
           }
         }
       }
@@ -139,7 +126,7 @@ const keylol = {
           const link = $(vkLink).attr('href')
           const name = link?.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]
           if (name) {
-            this.addBtn(vkLink, 'toggleVk', name, '', ['加入', '退出'])
+            this.addBtn(vkLink, 'toggleVK', name, '', ['加入', '退出'])
           }
         }
       }
@@ -153,18 +140,18 @@ const keylol = {
           const franchiseName = link?.match(/franchise\/(.+)\/?/)?.[1]
           const [, url, announcementId, wgauthtoken, clanid] = link?.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/) || []
           if (gameId) {
-            this.addBtn(steamStoreLink, 'toggleSteam', gameId, 'game', ['关注', '取关'])
-            this.addBtn(steamStoreLink, 'toggleSteam', gameId, 'wishlist', ['加入愿望单', '移出愿望单'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', gameId, 'game', ['关注', '取关'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', gameId, 'wishlist', ['加入愿望单', '移出愿望单'])
           } else if (curatorId) {
-            this.addBtn(steamStoreLink, 'toggleSteam', curatorId, 'curator', ['关注', '取关'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', curatorId, 'curator', ['关注', '取关'])
           } else if (publisherName) {
-            this.addBtn(steamStoreLink, 'toggleSteam', publisherName, 'publisher', ['关注', '取关'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', publisherName, 'publisher', ['关注', '取关'])
           } else if (developerName) {
-            this.addBtn(steamStoreLink, 'toggleSteam', developerName, 'developer', ['关注', '取关'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', developerName, 'developer', ['关注', '取关'])
           } else if (franchiseName) {
-            this.addBtn(steamStoreLink, 'toggleSteam', franchiseName, 'franchise', ['关注', '取关'])
+            this.addBtn(steamStoreLink, 'toggleSTEAM', franchiseName, 'franchise', ['关注', '取关'])
           } else if (announcementId) {
-            this.addBtn(steamStoreLink, 'toggleSteam', announcementId, 'announcement', ['点赞'], url, wgauthtoken, clanid)
+            this.addBtn(steamStoreLink, 'toggleSTEAM', announcementId, 'announcement', ['点赞'], url, wgauthtoken, clanid)
           }
         }
       }
@@ -174,9 +161,9 @@ const keylol = {
           const groupId = link?.match(/groups\/(.+)\/?/)?.[1]
           const announcement = link?.match(/announcements\/detail\/([\d]+)/)
           if (groupId) {
-            this.addBtn(steamCommunityLink, 'toggleSteam', groupId, 'group', ['加入', '退出'])
+            this.addBtn(steamCommunityLink, 'toggleSTEAM', groupId, 'group', ['加入', '退出'])
           } else if (announcement) {
-            this.addBtn(steamCommunityLink, 'toggleSteam', announcement[1], 'announcement', ['点赞'], announcement.input)
+            this.addBtn(steamCommunityLink, 'toggleSTEAM', announcement[1], 'announcement', ['点赞'], announcement.input)
           }
         }
       }
@@ -217,25 +204,21 @@ const keylol = {
       throwError(e, 'keylol.addBtn')
     }
   },
-  updateSteamInfo (callback) {
+  async updateSteamInfo (callback) {
     try {
-      new Promise(resolve => {
-        if (this.taskInfo.groups.length > 0) {
-          if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
+      let result = false
+      if (this.taskInfo.groups.length > 0) {
+        if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
+          result = await fuc.updateSteamInfo('all')
         } else {
-          resolve(1)
+          result = await fuc.updateSteamInfo('community')
         }
-      }).then(s => {
-        if (s === 1) callback()
-      }).catch(err => {
-        console.error(err)
-      })
+      } else if (this.taskInfo.curators.length > 0 || this.taskInfo.fGames.length > 0 || this.taskInfo.wishlists.length > 0) {
+        result = await fuc.updateSteamInfo('store')
+      } else {
+        result = true
+      }
+      if (result) callback()
     } catch (e) {
       throwError(e, 'keylol.updateSteamInfo')
     }

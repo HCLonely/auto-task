@@ -87,7 +87,7 @@ if (website || pageHost.includes('hclonely')) {
       }
     })
 
-    // 快捷键功能
+    // INFO: 快捷键功能
     $(document).keydown(e => {
       try {
         const hotKey = globalConf.hotKey || {}
@@ -191,18 +191,18 @@ if (website || pageHost.includes('hclonely')) {
 
   GM_registerMenuCommand(getI18n('readme'), () => {
     try {
-      window.open('https://github.com/HCLonely/auto-task', '_blank')
+      window.open('https://auto-task-doc.js.org', '_blank')
     } catch (e) {
       throwError(e, 'GM_registerMenuCommand(\'readme\')')
     }
   })
-  GM_registerMenuCommand(getI18n('updateSteamInfo'), () => {
+  GM_registerMenuCommand(getI18n('updateSteamInfo'), async () => {
     try {
-      new Promise(resolve => {
-        fuc.updateSteamInfo(resolve, 'all', true)
-      }).then(r => {
+      if (await fuc.updateSteamInfo('all', true)) {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('updateSteamInfoComplete')}</font></li>` })
-      })
+      } else {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('updateSteamInfoFailed')}</font></li>` })
+      }
     } catch (e) {
       throwError(e, 'GM_registerMenuCommand(\'updateSteamInfo\')')
     }
@@ -215,7 +215,7 @@ if (website || pageHost.includes('hclonely')) {
         inputOptions: {
           auto: getI18n('auto'),
           'zh-CN': '简体中文',
-          en: 'English'
+          'en-US': 'English'
         },
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),

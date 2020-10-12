@@ -27,10 +27,14 @@ for (const k of Object.keys(config)) {
   if (defaultConfig[k]) {
     if (Object.prototype.toString.call(defaultConfig[k]) === '[object Object]') {
       for (const k1 of Object.keys(defaultConfig[k])) {
-        config[k][k1] = Object.assign(defaultConfig[k][k1], config[k][k1])
+        if (Object.prototype.toString.call(defaultConfig[k]) === '[object Object]') {
+          config[k][k1] = Object.assign(defaultConfig[k][k1], config[k][k1])
+        } else {
+          config[k][k1] = config[k][k1] ?? defaultConfig[k][k1]
+        }
       }
     } else {
-      config[k] = config[k] || defaultConfig[k]
+      config[k] = config[k] ?? defaultConfig[k]
     }
   }
 }

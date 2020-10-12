@@ -1,68 +1,53 @@
-import { debug } from '../../config'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
-import { unique, throwError } from '../tool'
+import { unique, throwError, delay } from '../tool'
 import { getI18n } from '../../i18n'
 
-function getInsInfo (name) {
+async function getInsInfo (name) {
   try {
-    return new Promise(resolve => {
-      const status = echoLog({ type: 'getInsInfo', text: name })
-
-      httpRequest({
-        url: `https://www.instagram.com/${name}/`,
-        method: 'GET',
-        onload (response) {
-          if (debug) console.log(response)
-          if (response.finalUrl.includes('accounts/login')) {
-            status.error('Error:' + getI18n('loginIns'), true)
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
-            return
-          } else if (response.finalUrl.includes('www.instagram.com/challenge')) {
-            status.error('Error:' + getI18n('insBanned'))
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
-            return
-          }
-          if (response.status === 200) {
-            const _data = response.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]
-            if (_data) {
-              const data = JSON.parse(_data)
-              insInfo.csrftoken = data?.config?.csrf_token // eslint-disable-line camelcase
-              insInfo.hash = data?.rollout_hash // eslint-disable-line camelcase
-              status.success()
-              resolve({ result: 'success', statusText: response.statusText, status: response.status, id: data?.entry_data?.ProfilePage?.[0]?.graphql?.user?.id }) // eslint-disable-line camelcase
-            } else {
-              status.error('Error: Ins data error!')
-              resolve({ result: 'error', statusText: response.statusText, status: response.status })
-            }
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
-          }
-        },
-        r: resolve,
-        status
-      })
-    }).then(({ id }) => {
-      return { id, error: !id }
-    }).catch(error => {
-      return { id: null, error }
+    const logStatus = echoLog({ type: 'getInsInfo', text: name })
+    const { result, statusText, status, data } = await httpRequest({
+      url: `https://www.instagram.com/${name}/`,
+      method: 'GET'
     })
+    if (result === 'Success') {
+      if (data.finalUrl.includes('accounts/login')) {
+        logStatus.error('Error:' + getI18n('loginIns'), true)
+        return null
+      } else if (data.finalUrl.includes('www.instagram.com/challenge')) {
+        logStatus.error('Error:' + getI18n('insBanned'))
+        return null
+      }
+      if (data.status === 200) {
+        const _data = data.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]
+        if (_data) {
+          const data = JSON.parse(_data)
+          insInfo.csrftoken = data?.config?.csrf_token // eslint-disable-line camelcase
+          insInfo.hash = data?.rollout_hash // eslint-disable-line camelcase
+          const id = data?.entry_data?.ProfilePage?.[0]?.graphql?.user?.id // eslint-disable-line camelcase
+          if (id) logStatus.success()
+          return id
+        } else {
+          logStatus.error('Error: Get ins data error!')
+          return null
+        }
+      } else {
+        logStatus.error(`${result}:${statusText}(${status})`)
+        return null
+      }
+    }
   } catch (e) {
     throwError(e, 'getInsInfo')
-    return { id: null, e }
+    return null
   }
 }
 
-async function followIns (r, name) {
+async function followIns (name) {
   try {
-    const { id, error } = await getInsInfo(name)
-    if (error) {
-      r({ result: 'error', statusText: 'getInsInfo error' })
-      return error
-    }
-    const status = echoLog({ type: 'followIns', text: name })
-    httpRequest({
+    const id = await getInsInfo(name)
+    if (!id) return
+    const logStatus = echoLog({ type: 'followIns', text: name })
+    const { result, statusText, status, data } = await httpRequest({
       url: `https://www.instagram.com/web/friendships/${id}/follow/`,
       method: 'POST',
       dataType: 'json',
@@ -73,34 +58,28 @@ async function followIns (r, name) {
         'content-type': 'application/x-www-form-urlencoded',
         'sec-fetch-site': 'same-origin',
         'x-instagram-ajax': insInfo.hash
-      },
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 200 && response.response?.result === 'following') {
-          status.success()
-          r({ result: 'success', statusText: response.statusText, status: response.status })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      }
     })
+    if (result === 'Success') {
+      if (data.status === 200 && data.response?.result === 'following') {
+        logStatus.success()
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
   } catch (e) {
     throwError(e, 'followIns')
   }
 }
 
-async function unfollowIns (r, name) {
+async function unfollowIns (name) {
   try {
-    const { id, error } = await getInsInfo(name)
-    if (error) {
-      r({ result: 'error', statusText: 'getInsInfo error' })
-      return error
-    }
-    const status = echoLog({ type: 'unfollowIns', text: name })
-    httpRequest({
+    const id = await getInsInfo(name)
+    if (!id) return
+    const logStatus = echoLog({ type: 'unfollowIns', text: name })
+    const { result, statusText, status, data } = await httpRequest({
       url: `https://www.instagram.com/web/friendships/${id}/unfollow/`,
       method: 'POST',
       dataType: 'json',
@@ -111,26 +90,23 @@ async function unfollowIns (r, name) {
         'content-type': 'application/x-www-form-urlencoded',
         'sec-fetch-site': 'same-origin',
         'x-instagram-ajax': insInfo.hash
-      },
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 200 && response.response?.status === 'ok') {
-          status.success()
-          r({ result: 'success', statusText: response.statusText, status: response.status })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      }
     })
+    if (result === 'Success') {
+      if (data.status === 200 && data.response?.status === 'ok') {
+        logStatus.success()
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
   } catch (e) {
     throwError(e, 'unfollowIns')
   }
 }
 
-async function toggleInsActions ({ website, elements, resolve, action, toFinalUrl = {} }) {
+async function toggleInsActions ({ website, elements, action, toFinalUrl = {} }) {
   try {
     const pro = []
     for (const element of unique(elements)) {
@@ -140,18 +116,15 @@ async function toggleInsActions ({ website, elements, resolve, action, toFinalUr
         name = toFinalUrlElement.match(/https:\/\/www\.instagram\.com\/(.+)?\//)?.[1]
       }
       if (name) {
-        pro.push(new Promise(resolve => {
-          if (action === 'fuck') {
-            followIns(resolve, name)
-          } else {
-            unfollowIns(resolve, name)
-          }
-        }))
+        if (action === 'fuck') {
+          pro.push(followIns(name))
+        } else {
+          pro.push(unfollowIns(name))
+        }
       }
+      await delay(1000)
     }
-    Promise.all(pro).finally(() => {
-      resolve()
-    })
+    return Promise.all(pro)
   } catch (e) {
     throwError(e, 'toggleInsActions')
   }

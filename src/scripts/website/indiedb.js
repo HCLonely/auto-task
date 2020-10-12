@@ -11,19 +11,13 @@ const indiedb = {
       throwError(e, 'indiedb.test')
     }
   },
-  fuck () {
+  async fuck () {
     try {
       if ($('a.buttonenter:contains(Register to join)').length > 0) fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
       const currentoption = $('a.buttonenter.buttongiveaway')
       if (/join giveaway/gim.test(currentoption.text())) {
-        const [
-          status,
-          doTask
-        ] = [
-          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` }),
-          this.do_task
-        ]
-        fuc.httpRequest({
+        const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('joinGiveaway')}<font></font></li>` })
+        const { result, statusText, status, data } = await fuc.httpRequest({
           url: currentoption.attr('href'),
           method: 'POST',
           data: 'ajax=t',
@@ -31,24 +25,25 @@ const indiedb = {
           headers: {
             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
             accept: 'application/json, text/javascript, */*; q=0.01'
-          },
-          onload (response) {
-            if (debug) console.log(response)
-            if (response.status === 200) {
-              if (response.response?.success) {
-                currentoption.addClass('buttonentered').text('Success - Giveaway joined')
-                $('#giveawaysjoined').slideDown()
-                $('#giveawaysrecommend').slideDown()
-                status.success('Success' + (response.response?.text ? (':' + response.response?.text) : ''))
-                doTask()
-              } else {
-                status.error('Error' + (response.response?.text ? (':' + response.response?.text) : ''))
-              }
-            } else {
-              status.error('Error:' + (response.statusText || response.status))
-            }
           }
         })
+        if (result === 'Success') {
+          if (data.status === 200) {
+            if (data.response?.success) {
+              currentoption.addClass('buttonentered').text('Success - Giveaway joined')
+              $('#giveawaysjoined').slideDown()
+              $('#giveawaysrecommend').slideDown()
+              logStatus.success('Success' + (data.response?.text ? (':' + data.response?.text) : ''))
+              this.do_task()
+            } else {
+              logStatus.error('Error' + (data.response?.text ? (':' + data.response?.text) : ''))
+            }
+          } else {
+            logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+          }
+        } else {
+          logStatus.error(`${result}:${statusText}(${status})`)
+        }
       } else if (/success/gim.test($('a.buttonenter.buttongiveaway').text())) {
         this.do_task()
       } else {
@@ -69,7 +64,8 @@ const indiedb = {
         }
       })
       if (id.length === 2) {
-        const [tasks, pro] = [$('#giveawaysjoined a[class*=promo]'), []]
+        const pro = []
+        const tasks = $('#giveawaysjoined a[class*=promo]')
         for (const task of tasks) {
           const promo = $(task)
           if (!promo.hasClass('buttonentered')) {
@@ -85,17 +81,17 @@ const indiedb = {
                   error (response, error, exception) {
                     if (debug) console.log({ response, error, exception })
                     status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                    resolve(0)
+                    resolve()
                   },
                   success (response) {
                     if (debug) console.log(response)
                     if (response.success) {
                       status.success('Success:' + response.text)
                       promo.addClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                      resolve(1)
+                      resolve()
                     } else {
                       status.error('Error:' + response.text)
-                      resolve(0)
+                      resolve()
                     }
                   }
                 })
@@ -111,17 +107,17 @@ const indiedb = {
                   error (response, error, exception) {
                     if (debug) console.log({ response, error, exception })
                     status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                    resolve(0)
+                    resolve()
                   },
                   success (response) {
                     if (debug) console.log(response)
                     if (response.success) {
                       status.success('Success:' + response.text)
                       promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                      resolve(1)
+                      resolve()
                     } else {
                       status.error('Error:' + response.text)
-                      resolve(0)
+                      resolve()
                     }
                   }
                 })
@@ -139,17 +135,17 @@ const indiedb = {
                   error (response, error, exception) {
                     if (debug) console.log({ response, error, exception })
                     status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                    resolve(0)
+                    resolve()
                   },
                   success (response) {
                     if (debug) console.log(response)
                     if (response.success) {
                       status.success('Success:' + response.text)
                       promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                      resolve(1)
+                      resolve()
                     } else {
                       status.error('Error:' + response.text)
-                      resolve(0)
+                      resolve()
                     }
                   }
                 })
@@ -165,17 +161,17 @@ const indiedb = {
                   error (response, error, exception) {
                     if (debug) console.log({ response, error, exception })
                     status.error('Error:An error has occurred performing the action requested. Please try again shortly.')
-                    resolve(0)
+                    resolve()
                   },
                   success (response) {
                     if (debug) console.log(response)
                     if (response.success) {
                       status.success('Success:' + response.text)
                       promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html())
-                      resolve(1)
+                      resolve()
                     } else {
                       status.error('Error:' + response.text)
-                      resolve(0)
+                      resolve()
                     }
                   }
                 })
@@ -210,7 +206,7 @@ const indiedb = {
       show: false
     }
   },
-  conf: config?.indiedb?.enable.valueOf() ? config.indiedb : globalConf
+  conf: config?.indiedb?.enable ? config.indiedb : globalConf
 }
 
 export { indiedb }

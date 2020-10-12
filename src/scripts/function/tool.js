@@ -1,4 +1,5 @@
 import { getI18n } from '../i18n'
+import { toggleActions } from './social/toggleActions'
 
 function unique (e) {
   try {
@@ -119,6 +120,66 @@ function delay (time = 1000) {
     setTimeout(() => { resolve() }, time)
   })
 }
+
+function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, toGuild }, config, action, website) {
+  const pro = []
+  const fuck = action === 'fuck'
+  if (groups && groups.length > 0 && config[fuck ? 'joinSteamGroup' : 'leaveSteamGroup']) {
+    pro.push(toggleActions({ website, type: 'group', elements: groups, action, toFinalUrl }))
+  }
+  if (forums && forums.length > 0 && config[fuck ? 'subscribeSteamForum' : 'unsubscribeSteamForum']) {
+    pro.push(toggleActions({ website, type: 'forum', elements: forums, action, toFinalUrl }))
+  }
+  if (curators && curators.length > 0 && config[fuck ? 'followCurator' : 'unfollowCurator']) {
+    pro.push(toggleActions({ website, type: 'curator', elements: curators, action, toFinalUrl }))
+  }
+  if (publishers && publishers.length > 0 && config[fuck ? 'followPublisher' : 'unfollowPublisher']) {
+    pro.push(toggleActions({ website, type: 'publisher', elements: publishers, action, toFinalUrl }))
+  }
+  if (developers && developers.length > 0 && config[fuck ? 'followDeveloper' : 'unfollowDeveloper']) {
+    pro.push(toggleActions({ website, type: 'developer', elements: developers, action, toFinalUrl }))
+  }
+  if (franchises && franchises.length > 0 && config[fuck ? 'followFranchise' : 'unfollowFranchise']) {
+    pro.push(toggleActions({ website, type: 'franchise', elements: franchises, action, toFinalUrl }))
+  }
+  if (fGames && fGames.length > 0 && config[fuck ? 'followGame' : 'unfollowGame']) {
+    pro.push(toggleActions({ website, type: 'game', elements: fGames, action, toFinalUrl }))
+  }
+  if (wGames && wGames.length > 0 && config[fuck ? 'addToWishlist' : 'removeFromWishlist']) {
+    pro.push(toggleActions({ website, type: 'wishlist', elements: wGames, action, toFinalUrl }))
+  }
+  if (fuck && announcements && announcements.length > 0 && config.fuck.likeAnnouncement) {
+    pro.push(toggleActions({ website, type: 'announcement', elements: announcements, action, toFinalUrl }))
+  }
+  if (instagrams && instagrams.length > 0 && config[fuck ? 'followIns' : 'unfollowIns']) {
+    pro.push(toggleActions({ website, social: 'ins', elements: instagrams, action, toFinalUrl }))
+  }
+  if (twitchs && twitchs.length > 0 && config[fuck ? 'followTwitchChannel' : 'unfollowTwitchChannel']) {
+    pro.push(toggleActions({ website, social: 'twitch', elements: twitchs, action, toFinalUrl }))
+  }
+  if (reddits && reddits.length > 0 && config[fuck ? 'joinReddit' : 'leaveReddit']) {
+    pro.push(toggleActions({ website, social: 'reddit', elements: reddits, action, toFinalUrl }))
+  }
+  if (youtubeChannels && youtubeChannels.length > 0 && config[fuck ? 'followYoutubeChannel' : 'unfollowYoutubeChannel']) {
+    pro.push(toggleActions({ website, social: 'youtube', type: 'channel', elements: youtubeChannels, action, toFinalUrl }))
+  }
+  if (youtubeVideos && youtubeVideos.length > 0 && config[fuck ? 'likeYoutubeVideo' : 'unlikeYoutubeVideo']) {
+    pro.push(toggleActions({ website, social: 'youtube', type: 'video', elements: youtubeVideos, action, toFinalUrl }))
+  }
+  if (vks && vks.length > 0 && config[fuck ? 'joinVk' : 'leaveVk']) {
+    pro.push(toggleActions({ website, social: 'vk', elements: vks, action, toFinalUrl }))
+  }
+  if (twitterUsers && twitterUsers.length > 0 && config[fuck ? 'followTwitterUser' : 'unfollowTwitterUser']) {
+    pro.push(toggleActions({ website, social: 'twitter', type: 'follow', elements: twitterUsers, action, toFinalUrl }))
+  }
+  if (retweets && retweets.length > 0 && config[fuck ? 'retweet' : 'unretweet']) {
+    pro.push(toggleActions({ website, social: 'twitter', type: 'retweet', elements: retweets, action, toFinalUrl }))
+  }
+  if (website !== 'gleam' && discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
+    pro.push(toggleActions({ website, social: 'discord', elements: discords, action, toFinalUrl, toGuild }))
+  }
+  return Promise.all(pro)
+}
 export {
   unique,
   getUrlQuery,
@@ -127,5 +188,6 @@ export {
   clearTaskInfo,
   uniqueTaskInfo,
   throwError,
-  delay
+  delay,
+  assignment
 }

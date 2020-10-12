@@ -12,7 +12,8 @@ const banana = {
   },
   fuck () {
     try {
-      const [needBanana, needPoints] = [$("p:contains('Collect'):contains('banana')"), $("p:contains('Collect'):contains('point')")]
+      const needBanana = $("p:contains('Collect'):contains('banana')")
+      const needPoints = $("p:contains('Collect'):contains('point')")
       let msg = ''
       if (needBanana.length > 0) msg = getI18n('needBanana', needBanana.text().match(/[\d]+/gim)[0])
       if (needPoints.length > 0) msg = getI18n('needPoints', needPoints.text().replace(/Collect/gi, ''))
@@ -44,28 +45,19 @@ const banana = {
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-
-        const [
-          status,
-          tasksUl,
-          pro
-        ] = [
-          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksInfo')}<font></font></li>` }),
-          $('ul.tasks li:not(:contains(Completed))'),
-          []
-        ]
-
-        for (const task of tasksUl) { // 遍历任务信息
-          const [taskDes, verifyBtn] = [$(task).find('p'), $(task).find('button:contains(Verify)')]
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksInfo')}<font></font></li>` })
+        const tasksUl = $('ul.tasks li:not(:contains(Completed))')
+        const pro = []
+        for (const task of tasksUl) {
+          const taskDes = $(task).find('p')
+          const verifyBtn = $(task).find('button:contains(Verify)')
           const taskId = verifyBtn.attr('onclick')?.match(/\?verify=([\d]+)/)?.[1]
           if (taskId) {
             this.currentTaskInfo.tasks.push({ taskId, taskDes: taskDes.text() })
             if (/join.*?steam.*?group/gim.test(taskDes.text())) {
-              pro.push(new Promise(resolve => {
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-                }).then(({ result, finalUrl }) => {
-                  if (result === 'success') {
+              pro.push(fuc.getFinalUrl(window.location.origin + window.location.pathname + '?q=' + taskId)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
                     const groupName = finalUrl.match(/groups\/(.+)\/?/)?.[1]
                     if (groupName) {
                       this.currentTaskInfo.groups.push(groupName)
@@ -76,18 +68,11 @@ const banana = {
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
-                  resolve(1)
-                }).catch(error => {
-                  if (debug) console.error(error)
-                  resolve(0)
-                })
-              }))
+                }))
             } else if (/follow.*?curator/gim.test(taskDes.text())) {
-              pro.push(new Promise(resolve => {
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-                }).then(({ result, finalUrl }) => {
-                  if (result === 'success') {
+              pro.push(fuc.getFinalUrl(window.location.origin + window.location.pathname + '?q=' + taskId)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
                     const curatorId = finalUrl.match(/curator\/([\d]+)/)?.[1]
                     if (curatorId) {
                       this.currentTaskInfo.curators.push(curatorId)
@@ -98,18 +83,11 @@ const banana = {
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
-                  resolve(1)
-                }).catch(error => {
-                  if (debug) console.error(error)
-                  resolve(0)
-                })
-              }))
+                }))
             } else if (/wishlist/gim.test(taskDes.text())) {
-              pro.push(new Promise(resolve => {
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-                }).then(({ result, finalUrl }) => {
-                  if (result === 'success') {
+              pro.push(fuc.getFinalUrl(window.location.origin + window.location.pathname + '?q=' + taskId)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
                     const appId = finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
                     if (appId) {
                       this.currentTaskInfo.wishlists.push(appId)
@@ -120,18 +98,11 @@ const banana = {
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
-                  resolve(1)
-                }).catch(error => {
-                  if (debug) console.error(error)
-                  resolve(0)
-                })
-              }))
+                }))
             } else if (/Retweet/gim.test(taskDes.text())) {
-              pro.push(new Promise(resolve => {
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, window.location.origin + window.location.pathname + '?q=' + taskId)
-                }).then(({ result, finalUrl }) => {
-                  if (result === 'success') {
+              pro.push(fuc.getFinalUrl(window.location.origin + window.location.pathname + '?q=' + taskId)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
                     const appId = finalUrl.match(/status\/([\d]+)/)?.[1]
                     if (appId) {
                       this.currentTaskInfo.retweets.push(appId)
@@ -142,13 +113,8 @@ const banana = {
                   } else {
                     this.currentTaskInfo.taskIds.push(taskId)
                   }
-                  resolve(1)
-                }).catch(error => {
-                  if (debug) console.error(error)
-                  resolve(0)
-                })
-              }))
-            } else {
+                }))
+            } else { // TODO: twitter & youtube
               if (/(Subscribe.*channel)|(Twitter)|(Retweet)/gim.test(taskDes.text())) {
                 if (!this.verifyBtn) this.verifyBtn = taskDes.parent().find('button:contains(Verify)')
                 if (callback === 'do_task' && globalConf.other.autoOpen) {
@@ -184,13 +150,13 @@ const banana = {
   },
   async do_task () {
     try {
-      const pro = await this.toggleActions('fuck')
+      const pro = []
+      pro.push(this.toggleActions('fuck'))
       const links = fuc.unique(this.currentTaskInfo.links)
       if (this.conf.fuck.visitLink) {
         for (const link of links) {
-          pro.push(new Promise(resolve => {
-            fuc.visitLink(resolve, link)
-          }))
+          pro.push(fuc.visitLink(link))
+          await fuc.delay(1000)
         }
       }
       Promise.all(pro).finally(() => {
@@ -201,25 +167,25 @@ const banana = {
       throwError(e, 'banana.do_task')
     }
   },
-  verify (verify = false) {
+  async verifyTask (task) {
+    const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
+    const { result, statusText, status } = await fuc.httpRequest({
+      url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
+      method: 'GET'
+    })
+    if (result === 'Success') {
+      logStatus.warning('Complete')
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
+  },
+  async verify (verify = false) {
     try {
       if (verify) {
         const pro = []
         for (const task of fuc.unique(this.currentTaskInfo.tasks)) {
-          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes}...<font></font></li>` })
-          pro.push(new Promise(resolve => {
-            fuc.httpRequest({
-              url: window.location.origin + window.location.pathname + '?verify=' + task.taskId,
-              method: 'GET',
-              onload (response) {
-                if (debug) console.log(response)
-                status.warning('Complete')
-                resolve({ result: 'success', statusText: response.statusText, status: response.status })
-              },
-              r: resolve,
-              status
-            })
-          }))
+          pro.push(this.verifyTask(task))
+          await fuc.delay(500)
         }
         Promise.all(pro).finally(() => {
           fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('verifyTasksComplete')}</font></li>` })
@@ -235,10 +201,8 @@ const banana = {
   async remove (remove = false) {
     try {
       if (remove) {
-        const pro = await this.toggleActions('remove')
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+        await this.toggleActions('remove')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       } else {
         this.get_tasks('remove')
       }
@@ -248,37 +212,10 @@ const banana = {
   },
   async toggleActions (action) {
     try {
-      const pro = []
       const fuck = action === 'fuck'
       const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
       await fuc.updateInfo(taskInfo)
-      const { groups, curators, wishlists, fGames, retweets } = taskInfo
-      if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'banana', type: 'group', elements: groups, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'banana', type: 'curator', elements: curators, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'banana', type: 'wishlist', elements: wishlists, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'banana', type: 'game', elements: fGames, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'retweet' : 'unretweet'] && retweets.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'banana', social: 'twitter', type: 'retweet', elements: retweets, resolve, action })
-        }))
-      }
-      return pro
+      await fuc.assignment(taskInfo, this.conf[action], action, 'banana')
     } catch (e) {
       throwError(e, 'banana.toggleActions')
     }
@@ -336,7 +273,7 @@ const banana = {
     retweets: []
   },
   setting: {},
-  conf: config?.banana?.enable.valueOf() ? config.banana : globalConf
+  conf: config?.banana?.enable ? config.banana : globalConf
 }
 
 export { banana }

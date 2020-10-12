@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const takekey = {
   test () {
     try {
-      return window.location.host.includes('takekey')
+      return window.location.host.includes('takekey.ru')
     } catch (e) {
       throwError(e, 'takekey.test')
     }
@@ -17,89 +17,89 @@ const takekey = {
       throwError(e, 'takekey.fuck')
     }
   },
-  get_tasks (callback = 'do_task') {
+  async get_tasks (callback = 'do_task') {
     try {
       const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
       if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
         this.remove(true)
       } else {
-        [this.tasks, this.groups, this.curators, this.links] = [[], [], [], []]
-        const [
-          pro,
-          status,
-          tasksContainer
-        ] = [
-          [],
-          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
-          $('#usl>div')
-        ]
+        this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+        const tasksContainer = $('#usl>div')
+        const pro = []
 
-        for (const task of tasksContainer) { // 遍历任务信息
-          this.tasks.push(task)
-          const [
-            icon,
-            link,
-            id
-          ] = [
-            $(task).find('i'),
-            $(task).children('a[id]').attr('href'),
-            $(task).children('a[id]').attr('id')
-          ]
+        for (const task of tasksContainer) {
+          this.currentTaskInfo.tasks.push(task)
+          const icon = $(task).find('i')
+          const a = $(task).children('a[id]').attr('onclick', 'return false;')
+          const link = a.attr('href')
+          // const id = a.attr('id')
+          // const taskDes = a.text().trim()
+          a[0].click()
+          a.removeAttr('onclick')
           if (icon.hasClass('fa-steam')) {
             if (link && /gid\/[\d]+/.test(link)) {
-              pro.push(new Promise(r => { // eslint-disable-line promise/param-names
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, link)
-                }).then(data => {
-                  if (data.result === 'success') {
-                    const groupName = data.finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)[1]
+              pro.push(fuc.getFinalUrl(link)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
+                    const groupName = finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)?.[1]
                     if (groupName) {
-                      this.groups.push(groupName)
+                      this.currentTaskInfo.groups.push(groupName)
                       this.taskInfo.groups.push(groupName)
-                      r(1)
-                    } else {
-                      r(0)
                     }
-                  } else {
-                    r(0)
                   }
-                }).catch(() => {
-                  r(0)
-                })
-              }))
+                }))
             }
           } else if (icon.hasClass('fa-link')) {
-            this.links.push(id)
+            /* disable
+            pro.push(fuc.getFinalUrl(link)
+              .then(({ result, finalUrl }) => {
+                if (result === 'Success') {
+                  if (finalUrl.includes('www.youtube.com/channel')) {
+                    this.currentTaskInfo.youtubeChannels.push(finalUrl)
+                    this.taskInfo.youtubeChannels.push(finalUrl)
+                  } else if (finalUrl.includes('store.steampowered.com/app')) {
+                    const gameId = finalUrl.match(/app\/([\d]+)/)?.[1]
+                    if (gameId) {
+                      if (/add to Wishlist/gim.test(taskDes)) {
+                        this.currentTaskInfo.wGames.push(gameId)
+                        this.taskInfo.wGames.push(gameId)
+                      }
+                    }
+                  } else if (finalUrl.includes('twitter.com')) {
+                    /*
+                    const twitterUser = finalUrl.match(/https:\/\/twitter.com\/(.+)/)?.[1]
+                    if (twitterUser) {
+                      if (/follow/gim.test(taskDes)) {
+                        this.currentTaskInfo.twitterUsers.push(twitterUser)
+                        this.taskInfo.twitterUsers.push(twitterUser)
+                      }
+                    }
+                  }
+                }
+              }))
+            await fuc.delay(500)
+                    */
+            this.currentTaskInfo.links.push(link)
           } else if (icon.hasClass('fa-vk')) {
-            this.vks.push(link)
+            const path = link.match(/https:\/\/vk.com\/([^/]+)/)?.[1]
+            if (path) {
+              this.currentTaskInfo.vks.push(path)
+              this.taskInfo.vks.push(path)
+            }
           } else {
-            this.others.push(icon)
+            fuc.echoLog({ type: 'custom', text: `<li>${getI18n('unknownTaskType', `${icon}(${link})`)}<font></font></li>` })
           }
         }
         Promise.all(pro).finally(() => {
-          [
-            this.groups,
-            this.curators,
-            this.links,
-            this.others,
-            this.taskInfo.groups,
-            this.taskInfo.curators,
-            this.tasks
-          ] = [
-            fuc.unique(this.groups),
-            fuc.unique(this.curators),
-            fuc.unique(this.links),
-            fuc.unique(this.others),
-            fuc.unique(this.taskInfo.groups),
-            fuc.unique(this.taskInfo.curators),
-            fuc.unique(this.tasks)
-          ]
+          this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
+          this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
           status.success()
           if (debug) console.log(this)
           if (callback === 'do_task') {
-            if (this.tasks.length === 0) {
+            if (this.currentTaskInfo.tasks.length === 0) {
               fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
               if (this.conf.fuck.verifyTask) this.verify()
             } else {
@@ -114,102 +114,73 @@ const takekey = {
       throwError(e, 'takekey.get_tasks')
     }
   },
-  do_task () {
+  async do_task () {
     try {
-      this.updateSteamInfo(async () => {
-        const [
-          pro,
-          links,
-          others,
-          vks
-        ] = [
-          [],
-          fuc.unique(this.links),
-          fuc.unique(this.others),
-          fuc.unique(this.vks)
-        ]
-        await this.toggleActions('fuck', pro)
-        if (this.conf.fuck.visit) {
-          for (const link of links) {
-            const a = $(`a[id='${link}']`).attr('onclick', 'return false;')
-            a[0].click()
-            a.removeAttr('onclick')
-            pro.push(new Promise(resolve => {
-              fuc.visitLink(resolve, $(`a[id='${link}']`).attr('href'))
-            }))
-          }
+      /* disable
+      await this.toggleActions('fuck')
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify()
+      */
+      const pro = []
+      pro.push(this.toggleActions('fuck'))
+      const links = fuc.unique(this.currentTaskInfo.links)
+      if (this.conf.fuck.visitLink) {
+        for (const link of links) {
+          pro.push(fuc.visitLink(link, { method: 'GET' }))
+          await fuc.delay(1000)
         }
-        if (globalConf.other.autoOpen) {
-          for (const vk of vks) {
-            window.open(vk, '_blank')
-          }
-        }
-        for (const other of others) {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('unknowntype')}:${$(other).attr('class')}</font></li>` })
-        }
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          if (this.conf.fuck.verifyTask) this.verify()
-        })
+      }
+      Promise.all(pro).finally(() => {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+        if (this.conf.fuck.verifyTask) this.verify()
       })
     } catch (e) {
       throwError(e, 'takekey.do_task')
     }
   },
-  verify () {
+  async verify () {
     try {
-      setTimeout(() => { $('.fa-check').click() }, 1000)
+      const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}...<font></font></li>` })
+      const { result, statusText, status, data } = await fuc.httpRequest({
+        url: window.location.href,
+        method: 'POST',
+        dataType: 'json'
+      })
+      if (result === 'Success') {
+        if (data.status === 200 && data?.response?.status === 'success') {
+          logStatus.success(data?.response?.msg, true)
+        } else {
+          logStatus.error('Error:' + (data?.response?.msg || data.statusText + '(' + data.status + ')'), true)
+        }
+      } else {
+        logStatus.error(`${result}:${statusText}(${status})`)
+      }
+      logStatus.scrollIntoView()
+      // setTimeout(() => { $('.fa-check').click() }, 1000)
     } catch (e) {
       throwError(e, 'takekey.verify')
     }
   },
-  remove (remove = false) {
+  async toggleActions (action) {
     try {
-      const pro = []
+      const fuck = action === 'fuck'
+      const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
+      await fuc.updateInfo(taskInfo)
+      await fuc.assignment(taskInfo, this.conf[action], action, 'givekey')
+    } catch (e) {
+      throwError(e, 'takekey.toggleActions')
+    }
+  },
+  async remove (remove = false) {
+    try {
       if (remove) {
-        this.updateSteamInfo(async () => {
-          await this.toggleActions('remove', pro)
-          Promise.all(pro).finally(() => {
-            fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-          })
-        })
+        await this.toggleActions('remove')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       } else {
         this.get_tasks('remove')
       }
     } catch (e) {
       throwError(e, 'takekey.remove')
-    }
-  },
-  toggleActions (action, pro) {
-    try {
-      const groups = action === 'fuck' ? this.groups : this.taskInfo.groups
-      if (this.conf[action][action === 'fuck' ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'takekey', type: 'group', elements: groups, resolve, action })
-        }))
-      }
-    /* disable
-    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
-    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
-    const curators = action === 'fuck' ? this.curators : this.taskInfo.curators
-    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'takekey', type: 'wishlist', elements: wishlists, resolve, action })
-      }))
-    }
-    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'takekey', type: 'game', elements: fGames, resolve, action })
-      }))
-    }
-    if (this.conf[action][action === 'fuck' ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'takekey', type: 'curator', elements: curators, resolve, action })
-      }))
-    }
-    */
-    } catch (e) {
-      throwError(e, 'takekey.toggleActions')
     }
   },
   get_giveawayId () {
@@ -218,29 +189,6 @@ const takekey = {
       return id?.[1] || window.location.href
     } catch (e) {
       throwError(e, 'takekey.get_giveawayId')
-    }
-  },
-  updateSteamInfo (callback) {
-    try {
-      new Promise(resolve => {
-        if (this.taskInfo.groups.length > 0) {
-          if (this.taskInfo.curators.length > 0) {
-            fuc.updateSteamInfo(resolve, 'all')
-          } else {
-            fuc.updateSteamInfo(resolve, 'community')
-          }
-        } else if (this.taskInfo.curators.length > 0) {
-          fuc.updateSteamInfo(resolve, 'store')
-        } else {
-          resolve(1)
-        }
-      }).then(s => {
-        if (s === 1) callback()
-      }).catch(err => {
-        console.error(err)
-      })
-    } catch (e) {
-      throwError(e, 'takekey.updateSteamInfo')
     }
   },
   checkLogin () {
@@ -252,7 +200,7 @@ const takekey = {
   },
   checkLeft () {
     try {
-      const leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)
+      const leftKey = $('span:contains(Осталось ключей),span:contains(Keys Left)').text().match(/[\d]+/)?.[0]
       if (!(leftKey && parseInt(leftKey[0]) > 0)) {
         Swal.fire({
           icon: 'warning',
@@ -261,8 +209,8 @@ const takekey = {
           confirmButtonText: getI18n('confirm'),
           cancelButtonText: getI18n('cancel'),
           showCancelButton: true
-        }).then((result) => {
-          if (result.value) {
+        }).then(({ value }) => {
+          if (value) {
             window.close()
           }
         })
@@ -271,16 +219,22 @@ const takekey = {
       throwError(e, 'takekey.checkLeft')
     }
   },
-  groups: [], // 任务需要加的组
-  curators: [], // 任务需要关注的鉴赏家
-  links: [], // 需要浏览的页面链接
-  others: [],
-  vks: [],
-  taskInfo: {
-    groups: [], // 所有任务需要加的组
-    curators: []// 所有任务需要关注的鉴赏家
+  currentTaskInfo: {
+    links: [],
+    groups: [],
+    // wGames: [],
+    vks: [],
+    // youtubeChannels: [],
+    // twitterUsers: [],
+    tasks: []
   },
-  tasks: [], // 任务信息
+  taskInfo: {
+    groups: [],
+    // wGames: [],
+    // youtubeChannels: [],
+    // twitterUsers: [],
+    vks: []
+  },
   setting: {},
   conf: config?.takekey?.enable ? config.takekey : globalConf
 }

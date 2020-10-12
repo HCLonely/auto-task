@@ -18,31 +18,32 @@ const freegamelottery = {
       throwError(e, 'freegamelottery.after')
     }
   },
-  fuck () {
+  async fuck () {
     try {
       GM_setValue('lottery', 1)
       if ($('a.registration-button').length > 0) {
         if (this.conf.fuck.autoLogin) {
           const userInfo = GM_getValue('conf').freegamelottery.userInfo
           if (userInfo) {
-            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('logining')}<font></font></li>` })
-            fuc.httpRequest({
+            const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('logining')}<font></font></li>` })
+            const { result, statusText, status, data } = await fuc.httpRequest({
               url: 'https://freegamelottery.com/user/login',
               method: 'POST',
               data: `username=${userInfo.username}&password=${userInfo.password}&rememberMe=1`,
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-              },
-              onload (data) {
-                if (data.status === 200) {
-                  status.success()
-                  window.location.reload(true)
-                } else {
-                  status.error('Error:' + (data.statusText || data.status))
-                }
-              },
-              status
+              }
             })
+            if (result === 'Success') {
+              if (data.status === 200) {
+                logStatus.success()
+                window.location.reload(true)
+              } else {
+                logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+              }
+            } else {
+              logStatus.error(`${result}:${statusText}(${status})`)
+            }
           } else {
             $('body').overhang({
               type: 'warn',
@@ -115,7 +116,7 @@ const freegamelottery = {
       show: false
     }
   },
-  conf: config?.freegamelottery?.enable.valueOf() ? config.freegamelottery : globalConf
+  conf: config?.freegamelottery?.enable ? config.freegamelottery : globalConf
 }
 
 export { freegamelottery }

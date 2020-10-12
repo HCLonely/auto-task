@@ -203,35 +203,43 @@ const defaultConf = {
     },
     enable: false
   },
-  /* disable
   givekey: {
     fuck: {
       joinSteamGroup: true,
       followCurator: true,
       addToWishlist: true,
       followGame: true,
-      joinVK: true
+      joinVk: true,
+      visitLink: true
     },
     remove: {
       leaveSteamGroup: true,
       unfollowCurator: true,
       removeFromWishlist: true,
-      unfollowGame: true,
-      leaveVK: true
+      leaveVk: true,
+      unfollowGame: true
     },
     enable: false
   },
   takekey: {
     fuck: {
       joinSteamGroup: true,
-      visitLink: true
+      // addToWishlist: true,
+      joinVk: true,
+      visitLink: true,
+      // followTwitterUser: true,
+      // followYoutubeChannel: true,
+      verifyTask: true
     },
     remove: {
-      leaveSteamGroup: true
+      leaveSteamGroup: true,
+      // removeFromWishlist: true,
+      // unfollowTwitterUser: true,
+      // unfollowYoutubeChannel: true,
+      leaveVk: true
     },
     enable: false
   },
-  */
   gleam: {
     fuck: {
       joinSteamGroup: true,

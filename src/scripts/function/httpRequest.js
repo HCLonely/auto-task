@@ -3,99 +3,63 @@ import { echoLog } from './log'
 import { throwError } from './tool'
 
 function httpRequest (options) {
-  /* disable
   return new Promise(resolve => {
     options.method = options.method.toUpperCase()
     if (options.dataType) options.responseType = options.dataType
     const requestObj = Object.assign({
       timeout: 30000,
       ontimeout (data) {
-        resolve({ result: 'error', statusText: 'Timeout', status: 0, data, options })
-        /*
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Timeout(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Timeout', status: 0, option: options })
-
+        resolve({ result: 'Error', statusText: 'Timeout', status: 601, data, options })
       },
       onabort (data) {
-        resolve({ result: 'error', statusText: 'Aborted', status: 0, data, options })
-        /*
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Aborted(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Aborted', status: 0, option: options })
-
+        resolve({ result: 'Error', statusText: 'Aborted', status: 602, data, options })
       },
       onerror (data) {
-        resolve({ result: 'error', statusText: 'Error', status: 0, data, options })
-        /*
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Error(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Error', status: 0, option: options })
-
+        resolve({ result: 'Error', statusText: 'Error', status: 603, data, options })
+      },
+      onload (data) {
+        resolve({ result: 'Success', statusText: 'Load', status: 600, data, options })
       }
     }, options)
-    if (debug) console.log('发送请求:', requestObj)
     GM_xmlhttpRequest(requestObj)
   }).then(result => {
-
+    if (debug) console.log('发送请求:', result)
+    return result
+  }).catch(error => {
+    throwError(error, 'httpRequest')
+    if (debug) console.log('发送请求:', { errorMsg: error, options })
+    return { result: 'JsError', statusText: 'Error', status: 604, error, options }
   })
-  */
-  try {
-    options.method = options.method.toUpperCase()
-    if (options.dataType) options.responseType = options.dataType
-    const requestObj = Object.assign({
-      timeout: 30000,
-      ontimeout (data) {
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Timeout(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Timeout', status: 0, option: options })
-      },
-      onabort (data) {
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Aborted(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Aborted', status: 0, option: options })
-      },
-      onerror (data) {
-        if (debug) console.log(data)
-        if (options.status) options.status.error('Error:Error(0)')
-        if (options.r) options.r({ result: 'error', statusText: 'Error', status: 0, option: options })
-      }
-    }, options)
-    if (debug) console.log('发送请求:', requestObj)
-    GM_xmlhttpRequest(requestObj)
-  } catch (e) {
-    throwError(e, 'httpRequest')
-  }
 }
-function getFinalUrl (r, url, options = null) {
+async function getFinalUrl (url, options = null) {
   try {
     const conf = Object.assign({
       url,
-      method: 'GET',
-      onload (response) {
-        r({ result: 'success', finalUrl: response.finalUrl, url })
-      },
-      r
+      method: 'GET'
     }, options)
-    httpRequest(conf)
-  } catch (e) {
-    throwError(e, 'getFinalUrl')
+    const { result, statusText, status, data } = await httpRequest(conf)
+    if (result === 'Success') {
+      return { result, statusText, status, finalUrl: data.finalUrl, url }
+    } else {
+      return { result, statusText, status, url }
+    }
+  } catch (error) {
+    throwError(error, 'getFinalUrl')
+    return { result: 'FunctionError', statusText: 'getFinalUrl', status: 605, url }
   }
 }
-function visitLink (r, url, options = {}) {
+async function visitLink (url, options = { method: 'HEAD' }) {
   try {
-    if (!options.method) options.method = 'HEAD'
-    const status = echoLog({ type: 'visitLink', text: url })
-    new Promise(resolve => {
-      getFinalUrl(resolve, url, options)
-    }).then(() => {
-      status.warning('Complete')
-      r(1)
-    }).catch(err => {
-      console.error(err)
-    })
-  } catch (e) {
-    throwError(e, 'visitLink')
+    const logStatus = echoLog({ type: 'visitLink', text: url })
+    const { result, statusText, status } = await getFinalUrl(url, options)
+    if (result === 'Success') {
+      logStatus.warning('Complete')
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
+  } catch (error) {
+    if (debug) console.error(error)
+    throwError(error, 'visitLink')
   }
 }
 

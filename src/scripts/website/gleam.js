@@ -25,16 +25,9 @@ const gleam = {
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-
-        const [
-          status,
-          tasksContainer
-        ] = [
-          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
-          $('div.entry-content .entry-method')
-        ]
-
-        for (const task of tasksContainer) { // 遍历任务信息
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+        const tasksContainer = $('div.entry-content .entry-method')
+        for (const task of tasksContainer) {
           if ($(task).find('i.fa-question').length > 0) {
             if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
               this.currentTaskInfo.links.push(task)
@@ -101,17 +94,15 @@ const gleam = {
             }
           }
         }
-
         this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
         this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
-
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
         if (callback === 'do_task') {
           this.do_task()
         } else if (callback === 'verify') {
-          this.verify(true)
+          this.verify()
         } else {
           !fuc.isEmptyObjArr(this.taskInfo) ? this.remove(true) : fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('cannotRemove')}</font></li>` })
         }
@@ -124,34 +115,15 @@ const gleam = {
     try {
       const pro = []
       await fuc.updateInfo(this.currentTaskInfo)
-      const { groups, twitterUsers, retweets, discords, facebooks, youtubes, others, links } = this.currentTaskInfo
+      pro.push(fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam'))
+      const { discords, facebooks, youtubes, others, links } = this.currentTaskInfo
       const socialPlatforms = [...discords, ...facebooks, ...youtubes]
-      if (this.conf.fuck.joinSteamGroup && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'fuck' })
-        }))
-      }
-      if (this.conf.fuck.followTwitterUser && twitterUsers.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'fuck' })
-        }))
-      }
-      if (this.conf.fuck.retweet && retweets.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'fuck' })
-        }))
-      }
       if (globalConf.other.autoOpen) {
         if (socialPlatforms.length > 0) {
           for (const task of socialPlatforms) {
             const title = $(task).find('.entry-method-title').text().trim()
-            const [
-              status,
-              button
-            ] = [
-              fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` }),
-              $(task).find('a.btn-info:first').attr('href')
-            ]
+            const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
+            const button = $(task).find('a.btn-info:first').attr('href')
             if (button) {
               window.open(button, '_blank')
               status.warning(getI18n('openPage'))
@@ -162,9 +134,7 @@ const gleam = {
         }
       }
       if ((globalConf.other.autoOpen || this.conf.fuck.visit) && links.length > 0) {
-        pro.push(new Promise(resolve => {
-          this.visit_link(links, 0, resolve)
-        }))
+        pro.push(this.visit_link(links))
       }
       for (const other of others) {
         const icon = $(other).find('.icon-wrapper i')
@@ -178,19 +148,34 @@ const gleam = {
       }
       Promise.all(pro).finally(() => {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify(0)
+        if (this.conf.fuck.verifyTask) this.verify()
       })
     } catch (e) {
       throwError(e, 'gleam.do_task')
     }
   },
-  verify (i = 0) {
+  async verify () {
     try {
       if ($('.ng-scope[ng-include*=challenge]').is(':visible')) {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('notRobot')}</font></li>` })
-        return
+        return fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('notRobot')}</font></li>` })
       }
       const tasks = $('div.entry-content .entry-method')
+      for (const task of tasks) {
+        if ($(task).find('i.fa-question').length > 0) {
+          const title = $(task).find('.entry-method-title').text().trim()
+          const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}:${title}...<font></font></li>` })
+          $(task).find('a.enter-link')[0].click()
+          const enterBtn = $(task).find('.form-actions.center .btn-primary:contains(Continue)').removeAttr('disabled')
+          if (enterBtn.length > 0) {
+            await fuc.delay(1000)
+            enterBtn[0].click()
+            status.warning('Complete')
+          }
+        }
+        await fuc.delay(1000)
+      }
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font><font class="warning">${getI18n('finishSelf')}</font></li>` })
+      /* disable
       if (i < tasks.length) {
         if (tasks.eq(i).find('i.fa-question').length > 0) {
           const title = tasks.eq(i).find('.entry-method-title').text().trim()
@@ -198,11 +183,11 @@ const gleam = {
           tasks.eq(i).find('a.enter-link')[0].click()
           const enterBtn = tasks.eq(i).find('.form-actions.center .btn-primary:contains(Continue)').removeAttr('disabled')
           if (enterBtn.length > 0) {
-            setTimeout(() => {
-              enterBtn[0].click()
-              status.warning('Complete')
-              setTimeout(() => { gleam.verify(++i) }, 1000)
-            }, 1000)
+            await fuc.delay(1000)
+            enterBtn[0].click()
+            status.warning('Complete')
+            await fuc.delay(1000)
+            gleam.verify(++i)
           } else {
             setTimeout(() => { gleam.verify(++i) }, 1000)
           }
@@ -212,34 +197,17 @@ const gleam = {
       } else {
         fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font><font class="warning">${getI18n('finishSelf')}</font></li>` })
       }
+      */
     } catch (e) {
       throwError(e, 'gleam.verify')
     }
   },
   async remove (remove = false) {
     try {
-      const pro = []
       if (remove) {
         await fuc.updateInfo(this.taskInfo)
-        const { groups, twitterUsers, retweets } = this.taskInfo
-        if (this.conf.remove.leaveSteamGroup && groups.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', type: 'group', elements: groups, resolve, action: 'remove' })
-          }))
-        }
-        if (this.conf.remove.unfollowTwitterUser && twitterUsers.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'follow', elements: twitterUsers, resolve, action: 'remove' })
-          }))
-        }
-        if (this.conf.remove.unretweet && retweets.length > 0) {
-          pro.push(new Promise(resolve => {
-            fuc.toggleActions({ website: 'gleam', social: 'twitter', type: 'retweet', elements: retweets, resolve, action: 'remove' })
-          }))
-        }
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+        await fuc.assignment(this.taskInfo, this.conf.remove, 'remove', 'gleam')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       } else {
         this.get_tasks('remove')
       }
@@ -247,28 +215,28 @@ const gleam = {
       throwError(e, 'gleam.remove')
     }
   },
-  visit_link (links, i, r) {
+  async visit_link (links) {
     try {
-      if (i < links.length) {
-        const title = $(links[i]).find('.entry-method-title').text().trim()
+      for (const link of links) {
+        const title = $(link).find('.entry-method-title').text().trim()
         const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('doing')}:${title}...<font></font></li>` })
-        const taskTime = $(links[i]).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
+        const taskTime = $(link).find('.form-actions.center span:contains(Visit):contains(seconds)').text()
         const url = language === 'en' ? 'https://__SITEURL__/time_en.html?time=' : 'https://__SITEURL__/time.html?time='
         let timer = null
 
         if (taskTime) {
           timer = taskTime.match(/[\d]+/)?.[0]
         }
-        const taskBtn = $(links[i]).find('a.btn-info')
+        const taskBtn = $(link).find('a.btn-info')
         const href = taskBtn.attr('href')
         taskBtn.removeAttr('href')[0].click()
-        GM_openInTab(timer ? (url + timer) : 'javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
-          status.warning('Complete')
-          taskBtn.attr('target', '_blank').attr('href', href)
-          gleam.visit_link(links, ++i, r)
-        }
-      } else {
-        r(1)
+        await new Promise(resolve => {
+          GM_openInTab(timer ? (url + timer) : 'javascript:setTimeout(()=>{window.close()},1000)', { active: 1, setParent: 1 }).onclose = () => {
+            status.warning('Complete')
+            taskBtn.attr('target', '_blank').attr('href', href)
+            resolve()
+          }
+        })
       }
     } catch (e) {
       throwError(e, 'gleam.visit_link')
@@ -319,7 +287,7 @@ const gleam = {
     discords: []
   },
   setting: {},
-  conf: config?.gleam?.enable.valueOf() ? config.gleam : globalConf
+  conf: config?.gleam?.enable ? config.gleam : globalConf
 }
 
 export { gleam }

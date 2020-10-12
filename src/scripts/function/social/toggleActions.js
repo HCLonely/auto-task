@@ -8,32 +8,25 @@ import { toggleVkActions } from './vk'
 import { toggleYtbActions } from './youtube'
 import { throwError } from '../tool'
 
-function toggleActions (e) {
+async function toggleActions (e) {
   try {
     switch (e.social) {
       case 'discord':
-        toggleDiscordActions(e)
-        break
+        return toggleDiscordActions(e)
       case 'ins':
-        toggleInsActions(e)
-        break
+        return toggleInsActions(e)
       case 'twitter':
-        toggleTwitterActions(e)
-        break
+        return toggleTwitterActions(e)
       case 'twitch':
-        toggleTwitchActions(e)
-        break
+        return toggleTwitchActions(e)
       case 'reddit':
-        toggleRedditActions(e)
-        break
+        return toggleRedditActions(e)
       case 'vk':
-        toggleVkActions(e)
-        break
+        return toggleVkActions(e)
       case 'youtube':
-        toggleYtbActions(e)
-        break
+        return toggleYtbActions(e)
       default:
-        toggleSteamActions(e)
+        return toggleSteamActions(e)
     }
   } catch (e) {
     throwError(e, 'toggleActions')

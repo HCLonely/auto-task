@@ -1,88 +1,73 @@
-import { debug } from '../../config'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
-import { unique, throwError } from '../tool'
+import { unique, throwError, delay } from '../tool'
 
-function verifyDiscordAuth () {
+async function verifyDiscordAuth () {
   try {
-    const status = echoLog({ type: 'verifyDiscordAuth' })
-
-    return new Promise(resolve => {
-      httpRequest({
-        url: 'https://discord.com/api/v6/users/@me',
-        method: 'HEAD',
-        headers: { authorization: discordInfo.authorization },
-        onload (response) {
-          if (debug) console.log(response)
-          if (response.status === 200) {
-            status.success()
-            resolve({ result: 'success', statusText: response.statusText, status: response.status })
-          } else {
-            status.error('Error:' + response.statusText + '(' + response.status + ')')
-            resolve({ result: 'error', statusText: response.statusText, status: response.status })
-          }
-        },
-        r: resolve,
-        status
-      })
+    const logStatus = echoLog({ type: 'verifyDiscordAuth' })
+    const { result, statusText, status, data } = await httpRequest({
+      url: 'https://discord.com/api/v6/users/@me',
+      method: 'HEAD',
+      headers: { authorization: discordInfo.authorization }
     })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        logStatus.success()
+        return true
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+        return false
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return false
+    }
   } catch (e) {
     throwError(e, 'verifyDiscordAuth')
+    return false
   }
 }
-function joinDiscordServer (r, inviteId) {
+async function joinDiscordServer (inviteId) {
   try {
-    const status = echoLog({ type: 'joinDiscordServer', text: inviteId })
-
-    httpRequest({
+    const logStatus = echoLog({ type: 'joinDiscordServer', text: inviteId })
+    const { result, statusText, status, data } = await httpRequest({
       url: 'https://discord.com/api/v6/invites/' + inviteId,
       method: 'POST',
       dataType: 'json',
-      headers: { authorization: discordInfo.authorization },
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 200) {
-          status.success()
-          r({ result: 'success', statusText: response.statusText, status: response.status, guild: [inviteId, response.response?.guild?.id] })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      headers: { authorization: discordInfo.authorization }
     })
+    if (result === 'Success' && data.status === 200) {
+      logStatus.success()
+      return { result, statusText: data.statusText, status: data.status, guild: [inviteId, data.response?.guild?.id] }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return { result, statusText: data?.statusText || statusText, status: data?.status || status }
+    }
   } catch (e) {
     throwError(e, 'joinDiscordServer')
   }
 }
 
-function leaveDiscordServer (r, inviteId, guild) {
+async function leaveDiscordServer (inviteId, guild) {
   try {
-    const status = echoLog({ type: 'leaveDiscordServer', text: inviteId })
-
-    httpRequest({
+    const logStatus = echoLog({ type: 'leaveDiscordServer', text: inviteId })
+    const { result, statusText, status, data } = await httpRequest({
       url: 'https://discord.com/api/v6/users/@me/guilds/' + guild,
       method: 'DELETE',
-      headers: { authorization: discordInfo.authorization },
-      onload (response) {
-        if (debug) console.log(response)
-        if (response.status === 204) {
-          status.success()
-          r({ result: 'success', statusText: response.statusText, status: response.status })
-        } else {
-          status.error('Error:' + response.statusText + '(' + response.status + ')')
-          r({ result: 'error', statusText: response.statusText, status: response.status })
-        }
-      },
-      r,
-      status
+      headers: { authorization: discordInfo.authorization }
     })
+    if (result === 'Success' && data.status === 204) {
+      logStatus.success()
+      return { result, statusText: data.statusText, status: data.status }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return { result, statusText: data?.statusText || statusText, status: data?.status || status }
+    }
   } catch (e) {
     throwError(e, 'leaveDiscordServer')
   }
 }
-async function toggleDiscordActions ({ website, elements, resolve, action, toFinalUrl = {}, toGuild = {} }) {
+async function toggleDiscordActions ({ website, elements, action, toFinalUrl = {}, toGuild = {} }) {
   try {
     if (new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired) {
       const verifyResult = await verifyDiscordAuth()
@@ -92,7 +77,7 @@ async function toggleDiscordActions ({ website, elements, resolve, action, toFin
         GM_setValue('discordInfo', discordInfo)
       } else {
         echoLog({ type: 'updateDiscordAuth' })
-        return resolve({})
+        return
       }
     }
     const pro = []
@@ -103,23 +88,16 @@ async function toggleDiscordActions ({ website, elements, resolve, action, toFin
         inviteId = toFinalUrlElement.match(/invite\/(.+)/)?.[1]
       }
       if (inviteId) {
-        pro.push(new Promise(resolve => {
-          const guild = toGuild[inviteId]
-          if (action === 'fuck') {
-            joinDiscordServer(resolve, inviteId)
-          } else if (guild) {
-            leaveDiscordServer(resolve, inviteId, guild)
-          } else {
-            resolve({})
-          }
-        }))
+        const guild = toGuild[inviteId]
+        if (action === 'fuck') {
+          pro.push(joinDiscordServer(inviteId))
+        } else if (guild) {
+          pro.push(leaveDiscordServer(inviteId, guild))
+        }
       }
+      await delay(1000)
     }
-    Promise.all(pro).then(data => {
-      resolve(data)
-    }).catch(() => {
-      resolve()
-    })
+    return Promise.all(pro)
   } catch (e) {
     throwError(e, 'toggleDiscordActions')
   }

@@ -9,7 +9,7 @@ const { uglify } = require('rollup-plugin-uglify')
 const minCSS = require('./lib/minCss')
 
 const version = fs.readJSONSync('package.json').version
-const disableWebsites = ['takekey']
+const disableWebsites = []
 
 function loadWebsites () {
   const websiteDir = 'src/scripts/website/'

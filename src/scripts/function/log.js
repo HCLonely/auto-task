@@ -3,7 +3,7 @@ import { throwError } from './tool'
 
 function echoLog (e) {
   try {
-    let ele = ''
+    let ele = null
     switch (e.type) {
       case 'updateSteamCommunity':
         ele = $(`<li>${getI18n('updateCommunityId')}<font></font></li>`)
@@ -24,7 +24,7 @@ function echoLog (e) {
       case 'followCurator':
       case 'unfollowCurator':
       case 'getCuratorId':
-        ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/curator/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/${e.text.includes('/') ? e.text : `curator/${e.text}`}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
       case 'getDeveloperId':
       case 'followDeveloper':
@@ -117,6 +117,7 @@ function echoLog (e) {
       case 'leaveVkGroup':
       case 'joinVkPublic':
       case 'leaveVkPublic':
+      case 'repostVkWall':
         ele = $(`<li>${getI18n(e.type)}<a href="https://vk.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
         break
       case 'visitLink':
@@ -150,6 +151,9 @@ function echoLog (e) {
       info (text = 'Info', html = false) {
         this.font.attr('class', '').addClass('info')
         html ? this.font.html(text) : this.font.text(text)
+      },
+      scrollIntoView () {
+        this.font[0].scrollIntoView()
       }
     }
     return status

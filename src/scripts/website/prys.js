@@ -20,27 +20,16 @@ const prys = {
   },
   get_tasks (callback = 'do_task') {
     try {
-      const [
-        status,
-        steps
-      ] = [
-        fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
-        $('#steps tbody tr')
-      ]
+      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+      const steps = $('#steps tbody tr')
       for (let i = 0; i < steps.length; i++) {
         if (steps.eq(i).find('span:contains(Success)').length === 0) checkClick(i)
       }
       if (callback === 'do_task') {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        const [
-          taskInfoHistory,
-          pro
-        ] = [
-          GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']'),
-          []
-        ]
+        const pro = []
+        const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
         if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
-
         for (const step of steps) {
           if ($(step).find('span:contains(Success)').length === 0) {
             if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -59,38 +48,20 @@ const prys = {
               }
             } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
               const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-              pro.push(new Promise(resolve => {
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, link)
-                }).then(data => {
-                  if (data.result === 'success') {
-                    const groupName = data.finalUrl.match(/groups\/(.+)\/?/)?.[1]
+              pro.push(fuc.getFinalUrl(link)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
+                    const groupName = finalUrl.match(/groups\/(.+)\/?/)?.[1]
                     if (groupName) {
                       this.currentTaskInfo.groups.push(groupName)
                       this.taskInfo.groups.push(groupName)
                     }
                   }
-                  resolve(1)
-                }).catch(() => {
-                  resolve(1)
-                })
-              }))
+                }))
             }
           }
         }
-        if (pro.length > 0) {
-          Promise.all(pro).finally(() => {
-            this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
-            this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
-            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-            if (this.currentTaskInfo.groups.length > 0 || this.currentTaskInfo.curators.length > 0) {
-              this.do_task()
-            } else {
-              fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-              if (this.conf.fuck.verifyTask) this.verify()
-            }
-          })
-        } else {
+        Promise.all(pro).finally(() => {
           this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
           this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
           GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
@@ -100,7 +71,7 @@ const prys = {
             fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
             if (this.conf.fuck.verifyTask) this.verify()
           }
-        }
+        })
       } else if (callback === 'verify') {
         this.currentTaskInfo.tasks = []
         const checks = $('#steps tbody a[id^=check]')
@@ -131,22 +102,15 @@ const prys = {
               if (groupName) this.taskInfo.groups.push(groupName)
             } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
               const link = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
-              pro.push(new Promise(resolve => { // eslint-disable-line promise/param-names
-                new Promise(resolve => {
-                  fuc.getFinalUrl(resolve, link)
-                }).then(data => {
-                  if (data.result === 'success') {
-                    const groupName = data.finalUrl.match(/groups\/(.+)\/?/)?.[1]
+              pro.push(fuc.getFinalUrl(link)
+                .then(({ result, finalUrl }) => {
+                  if (result === 'Success') {
+                    const groupName = finalUrl.match(/groups\/(.+)\/?/)?.[1]
                     if (groupName) {
                       this.taskInfo.groups.push(groupName)
                     }
                   }
-                  resolve(1)
-                }).catch(error => {
-                  if (debug) console.error(error)
-                  resolve(0)
-                })
-              }))
+                }))
             }
           }
           if (pro.length > 0) {
@@ -180,11 +144,9 @@ const prys = {
   },
   async do_task () {
     try {
-      const pro = await this.toggleActions('fuck')
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (this.conf.fuck.verifyTask) this.verify()
-      })
+      await this.toggleActions('fuck')
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (this.conf.fuck.verifyTask) this.verify()
     } catch (e) {
       throwError(e, 'prys.do_task')
     }
@@ -209,9 +171,8 @@ const prys = {
       throwError(e, 'prys.verify')
     }
   },
-  checkStep (step, r, status, captcha) {
+  checkStep (step, resolve, status, captcha = null) {
     try {
-      if (!captcha) captcha = null
       if (step !== 'captcha') {
         $('#check' + step).replaceWith('<span id="check' + step + '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>')
       }
@@ -220,7 +181,7 @@ const prys = {
         id: getURLParameter('id'),
         'g-recaptcha-response': captcha
       }, json => {
-        r(1)
+        resolve()
         if (json.success && step !== 'captcha') {
           $('#check' + step).replaceWith('<span class="text-success" id="check' + step + '"><i class="fa fa-check"></i> Success</span>')
           status.success()
@@ -241,7 +202,7 @@ const prys = {
           }
         }
       }).fail(() => {
-        r(1)
+        resolve()
         $('#check' + step).replaceWith('<a id="check' + step + '" href="javascript:checkStep(' + step + ')"><i class="fa fa-question"></i> Check</a>')
         status.error('Error:0')
       })
@@ -252,10 +213,8 @@ const prys = {
   async remove (remove = false) {
     try {
       if (remove) {
-        const pro = await this.toggleActions('remove')
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+        await this.toggleActions('remove')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       } else {
         this.get_tasks('remove')
       }
@@ -265,36 +224,10 @@ const prys = {
   },
   async toggleActions (action) {
     try {
-      const pro = []
       const fuck = action === 'fuck'
       const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
       await fuc.updateInfo(taskInfo)
-      const { groups, curators } = taskInfo
-      if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'prys', type: 'group', elements: groups, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'prys', type: 'curator', elements: curators, resolve, action })
-        }))
-      }
-      return pro
-    /* disable
-    const wishlists = action === 'fuck' ? this.wishlists : this.taskInfo.wishlists
-    const fGames = action === 'fuck' ? this.fGames : this.taskInfo.fGames
-    if (this.conf[action][action === 'fuck' ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'prys', type: 'wishlist', elements: wishlists, resolve, action })
-      }))
-    }
-    if (this.conf[action][action === 'fuck' ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-      pro.push(new Promise(resolve => {
-        fuc.toggleActions({ website: 'prys', type: 'game', elements: fGames, resolve, action })
-      }))
-    }
-    */
+      await fuc.assignment(taskInfo, this.conf[action], action, 'prys')
     } catch (e) {
       throwError(e, 'prys.toggleActions')
     }
@@ -337,7 +270,7 @@ const prys = {
     curators: []
   },
   setting: {},
-  conf: config?.prys?.enable.valueOf() ? config.prys : globalConf
+  conf: config?.prys?.enable ? config.prys : globalConf
 }
 
 export { prys }

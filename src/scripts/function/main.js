@@ -1,6 +1,5 @@
-import { debug } from '../config'
 import { getI18n } from '../i18n'
-import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo, delay } from './tool'
+import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo, delay, assignment } from './tool'
 
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
@@ -24,6 +23,7 @@ const fuc = {
   dateFormat,
   isEmptyObjArr,
   toggleActions,
+  assignment,
   getDiscordAuth,
   updateTwitchInfo,
   updateYtbInfo,
@@ -36,50 +36,39 @@ const fuc = {
 }
 function newTabBlock () {
   try {
-    const [d, cookiename] = [new Date(), 'haveVisited1']
+    const date = new Date()
+    const cookiename = 'haveVisited1'
     document.cookie = cookiename + '=1; path=/'
-    document.cookie = cookiename + '=' + (d.getUTCMonth() + 1) + '/' + d.getUTCDate() + '/' + d.getUTCFullYear() + '; path=/'
+    document.cookie = cookiename + '=' + (date.getUTCMonth() + 1) + '/' + date.getUTCDate() + '/' + date.getUTCFullYear() + '; path=/'
   } catch (e) {
     throwError(e, 'newTabBlock')
   }
 }
-function checkUpdate (s = false) {
+async function checkUpdate (s = false) {
   try {
-    let status = false
-    if (s) status = echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
-    httpRequest({
+    let logStatus = false
+    if (s) logStatus = echoLog({ type: 'custom', text: `<li>${getI18n('checkingUpdate')}<font></font></li>` })
+    const { result, statusText, status, data } = await httpRequest({
       url: 'https://__SITEURL__/version.json?t=' + new Date().getTime(),
       method: 'get',
-      dataType: 'json',
-      onload (response) {
-        if (debug) console.log(response)
-        const [ov1, ov2, ov3] = GM_info.script.version.split('.')
-        if (response.response?.version) {
-          const [nv1, nv2, nv3] = response.response.version.split('.')
-          if (nv1 > ov1 || (nv1 === ov1 && nv2 > ov2) || (nv1 === ov1 && nv2 === ov2 && nv3 > ov3)) {
-            echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + response.response.version}<a href="https://__SITEURL__/__FILENAME__?t=${new Date().getTime()}" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
-            if (s) status.success(getI18n('newVer') + response.response.version)
-          } else {
-            if (s) status.success(getI18n('thisIsNew'))
-          }
-        } else {
-          if (s) status.error('Error:' + (response.statusText || response.status))
-        }
-      },
-      ontimeout (response) {
-        if (debug) console.log(response)
-        if (s) status.error('Error:Timeout(0)')
-      },
-      onabort (response) {
-        if (debug) console.log(response)
-        if (s) status.error('Error:Abort(0)')
-      },
-      onerror (response) {
-        if (debug) console.log(response)
-        if (s) status.error('Error:Error(0)')
-      },
-      status
+      dataType: 'json'
     })
+    if (result === 'Success') {
+      const [ov1, ov2, ov3] = GM_info.script.version.split('.')
+      if (data.response?.version) {
+        const [nv1, nv2, nv3] = data.response.version.split('.')
+        if (nv1 > ov1 || (nv1 === ov1 && nv2 > ov2) || (nv1 === ov1 && nv2 === ov2 && nv3 > ov3)) {
+          echoLog({ type: 'custom', text: `<li>${getI18n('newVer') + 'V' + data.response.version}<a href="https://__SITEURL__/__FILENAME__?t=${new Date().getTime()}" target="_blank">${getI18n('updateNow')}</a><font></font></li>` })
+          if (s) logStatus.success(getI18n('newVer') + data.response.version)
+        } else {
+          if (s) logStatus.success(getI18n('thisIsNew'))
+        }
+      } else {
+        if (s) logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      if (s) logStatus.error(`${result}:${statusText}(${status})`)
+    }
   } catch (e) {
     throwError(e, 'checkUpdate')
   }
@@ -103,7 +92,9 @@ function updateInfo (data = {}, args = {}) {
       reddits: [],
       vks: [],
       twitterUsers: [],
-      retweets: []
+      retweets: [],
+      youtubeChannels: [],
+      youtubeVideos: []
     }
     const {
       groups,
@@ -130,26 +121,14 @@ function updateInfo (data = {}, args = {}) {
     twitter = twitter ?? [...twitterUsers, ...retweets].length > 0
     const pro = []
     if (steamStore && steamCommunity) {
-      pro.push(new Promise(resolve => {
-        updateSteamInfo(resolve, 'all')
-      }))
+      pro.push(updateSteamInfo('all'))
     } else if (steamStore) {
-      pro.push(new Promise(resolve => {
-        updateSteamInfo(resolve, 'store')
-      }))
+      pro.push(updateSteamInfo('store'))
     } else if (steamCommunity) {
-      pro.push(new Promise(resolve => {
-        updateSteamInfo(resolve, 'community')
-      }))
+      pro.push(updateSteamInfo('community'))
     }
-    if (twitter) {
-      pro.push(new Promise(resolve => {
-        if (new Date().getTime() - twitterInfo.updateTime > 15 * 60 * 1000) {
-          updateTwitterInfo(resolve)
-        } else {
-          resolve()
-        }
-      }))
+    if (twitter && new Date().getTime() - twitterInfo.updateTime > 15 * 60 * 1000) {
+      pro.push(updateTwitterInfo())
     }
     return Promise.all(pro)
   } catch (e) {

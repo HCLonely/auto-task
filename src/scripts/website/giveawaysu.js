@@ -26,13 +26,8 @@ const giveawaysu = {
         this.do_task('remove')
       } else {
         if (taskInfo && !fuc.isEmptyObjArr(taskInfo)) this.taskInfo = taskInfo
-        const [
-          status,
-          tasks
-        ] = [
-          fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` }),
-          $('#actions tr')
-        ]
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
+        const tasks = $('#actions tr')
         if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click()
         if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click()
         for (const task of tasks) {
@@ -109,32 +104,29 @@ const giveawaysu = {
   },
   getFinalUrl (e) {
     try {
-      const [status, pro] = [fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` }), []]
+      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('processTasksUrl')}<font></font></li>` })
+      const pro = []
 
       for (const link of this.taskInfo.links) {
-        pro.push(new Promise(resolve => {
-          if (this.taskInfo.toFinalUrl[link]) {
-            resolve({ result: 'success' })
-          } else {
-            fuc.getFinalUrl(resolve, link, {
-              onload (response) {
-                if (response.finalUrl.includes('newshub/app')) {
-                  const div = response.responseText.match(/<div id="application_config"[\w\W]*?>/)?.[0]
-                  if (!div) {
-                    resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
-                    return
-                  }
-                  const appConfig = $(div)
-                  const { authwgtoken } = JSON.parse(appConfig.attr('data-userinfo'))
-                  const { clanAccountID } = JSON.parse(appConfig.attr('data-groupvanityinfo'))[0]
-                  resolve({ result: 'success', finalUrl: `${response.finalUrl}?authwgtoken=${authwgtoken}&clanid=${clanAccountID}`, url: link })
-                } else {
-                  resolve({ result: 'success', finalUrl: response.finalUrl, url: link })
-                }
+        if (this.taskInfo.toFinalUrl[link]) continue
+        pro.push(fuc.httpRequest({
+          url: link,
+          method: 'GET'
+        })
+          .then(({ result, statusText, status, data }) => {
+            if (data?.finalUrl?.includes('newshub/app')) {
+              const div = data.responseText.match(/<div id="application_config"[\w\W]*?>/)?.[0]
+              if (!div) {
+                return { finalUrl: data.finalUrl, url: link }
               }
-            })
-          }
-        }))
+              const appConfig = $(div)
+              const { authwgtoken } = JSON.parse(appConfig.attr('data-userinfo'))
+              const { clanAccountID } = JSON.parse(appConfig.attr('data-groupvanityinfo'))[0]
+              return { finalUrl: `${data.finalUrl}?authwgtoken=${authwgtoken}&clanid=${clanAccountID}`, url: link }
+            } else {
+              return { finalUrl: data.finalUrl, url: link }
+            }
+          }))
       }
       Promise.all(pro).then(data => {
         for (const r of data) {
@@ -144,7 +136,6 @@ const giveawaysu = {
         }
         this.links = fuc.unique(this.links)
         this.taskInfo = fuc.uniqueTaskInfo(this.taskInfo)
-        // 任务链接处理完成
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
         status.success()
         if (debug) console.log(this)
@@ -159,121 +150,18 @@ const giveawaysu = {
   },
   async do_task (action) {
     try {
-      const {
-        groups,
-        forums,
-        curators,
-        publishers,
-        developers,
-        franchises,
-        fGames,
-        wGames,
-        announcements,
-        discords,
-        instagrams,
-        twitchs,
-        reddits,
-        youtubeChannels,
-        youtubeVideos,
-        vks,
-        toFinalUrl,
-        toGuild
-      } = this.taskInfo
-      const pro = []
-      const fuck = action === 'fuck'
       await fuc.updateInfo(this.taskInfo)
-      if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'group', elements: groups, resolve, action, toFinalUrl })
-        }))
+      const data = await fuc.assignment(this.taskInfo, this.conf[action], action, 'giveawaysu')
+      const toGuild = this.taskInfo.toGuild
+      if (action === 'fuck') {
+        for (const e of data) {
+          const [inviteId, guild] = e?.guild || []
+          if (inviteId && guild) toGuild[inviteId] = guild
+        }
+        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       }
-      if (this.conf[action][fuck ? 'subscribeSteamForum' : 'unsubscribeSteamForum'] && forums.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'forum', elements: forums, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'curator', elements: curators, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followPublisher' : 'unfollowPublisher'] && publishers.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'publisher', elements: publishers, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followDeveloper' : 'unfollowDeveloper'] && developers.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'developer', elements: developers, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followFranchise' : 'unfollowFranchise'] && franchises.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'franchise', elements: franchises, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'game', elements: fGames, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wGames.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'wishlist', elements: wGames, resolve, action, toFinalUrl })
-        }))
-      }
-      if (fuck && this.conf.fuck.likeAnnouncement && announcements.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'giveawaysu', type: 'announcement', elements: announcements, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'joinDiscordServer' : 'leaveDiscordServer'] && discords.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'discord', website: 'giveawaysu', elements: discords, resolve, action, toFinalUrl, toGuild })
-        }).then(data => {
-          if (fuck) {
-            for (const e of data) {
-              const [inviteId, guild] = e.guild || []
-              if (inviteId && guild) toGuild[inviteId] = guild
-            }
-            GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-          }
-        }))
-      }
-      if (this.conf[action][fuck ? 'followIns' : 'unfollowIns'] && instagrams.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'ins', website: 'giveawaysu', elements: instagrams, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followTwitchChannel' : 'unfollowTwitchChannel'] && twitchs.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'twitch', website: 'giveawaysu', elements: twitchs, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'joinReddit' : 'leaveReddit'] && reddits.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'reddit', website: 'giveawaysu', elements: reddits, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followYoutubeChannel' : 'unfollowYoutubeChannel'] && youtubeChannels.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'youtube', type: 'channel', website: 'giveawaysu', elements: youtubeChannels, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'likeYoutubeVideo' : 'unlikeYoutubeVideo'] && youtubeVideos.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'youtube', type: 'video', website: 'giveawaysu', elements: youtubeVideos, resolve, action, toFinalUrl })
-        }))
-      }
-      if (this.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ social: 'vk', website: 'giveawaysu', elements: vks, resolve, action, toFinalUrl })
-        }))
-      }
-      Promise.all(pro).finally(() => {
-        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        if (fuck) fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
-      })
+      fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      if (action === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
     } catch (e) {
       throwError(e, 'giveawaysu.do_task')
     }
@@ -353,7 +241,7 @@ const giveawaysu = {
       show: false
     }
   },
-  conf: config?.giveawaysu?.enable.valueOf() ? config.giveawaysu : globalConf
+  conf: config?.giveawaysu?.enable ? config.giveawaysu : globalConf
 }
 
 export { giveawaysu }

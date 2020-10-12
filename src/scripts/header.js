@@ -10,7 +10,7 @@
 // @author             HCLonely
 // @license            MIT
 // @iconURL            https://__SITEURL__/img/favicon.ico
-// @homepage           https://github.com/HCLonely/auto-task
+// @homepage           https://auto-task-doc.js.org
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL          https://__SITEURL__/__FILENAME__
 // @downloadURL        https://__SITEURL__/__FILENAME__
@@ -23,7 +23,7 @@
 // @include            *://prys.revadike.com/giveaway/?id=*
 // @include            *://www.indiedb.com/giveaways*
 // @include            *://www.opiumpulses.com/giveaways
-// @exclude            *://takekey.ru/distribution/*
+// @include            *://takekey.ru/distribution/*
 // @include            *://*freegamelottery.com*
 // @include            *://gleam.io/*
 // @include            *://keylol.com/*

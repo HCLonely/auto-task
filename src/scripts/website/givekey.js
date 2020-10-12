@@ -31,7 +31,7 @@ const givekey = {
           const taskEle = $(task)
           const href = taskEle.attr('href')
           const text = taskEle.text().trim()
-          if (href.includes('vk.com') && text.includes('Subscribe')) {
+          if (href.includes('vk.com') && /Subscribe|Repost/gi.test(text)) {
             const name = href.match(/vk\.com\/([^/]*)/)?.[1]
             if (name) {
               this.currentTaskInfo.vks.push(name)
@@ -72,13 +72,13 @@ const givekey = {
   },
   async do_task () {
     try {
-      const pro = await this.toggleActions('fuck')
+      const pro = []
+      pro.push(this.toggleActions('fuck'))
       const links = fuc.unique(this.currentTaskInfo.links)
       if (this.conf.fuck.visitLink) {
         for (const link of links) {
-          pro.push(new Promise(resolve => {
-            fuc.visitLink(resolve, link)
-          }))
+          pro.push(fuc.visitLink(link))
+          await fuc.delay(1000)
         }
       }
       Promise.all(pro).finally(() => {
@@ -100,10 +100,8 @@ const givekey = {
   async remove (remove = false) {
     try {
       if (remove) {
-        const pro = await this.toggleActions('remove')
-        Promise.all(pro).finally(() => {
-          fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-        })
+        await this.toggleActions('remove')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       } else {
         this.get_tasks('remove')
       }
@@ -113,37 +111,10 @@ const givekey = {
   },
   async toggleActions (action) {
     try {
-      const pro = []
       const fuck = action === 'fuck'
       const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
       await fuc.updateInfo(taskInfo)
-      const { groups, curators, wishlists, fGames, vks } = taskInfo
-      if (this.conf[action][fuck ? 'joinSteamGroup' : 'leaveSteamGroup'] && groups.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'givekey', type: 'group', elements: groups, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followCurator' : 'unfollowCurator'] && curators.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'givekey', type: 'curator', elements: curators, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'addToWishlist' : 'removeFromWishlist'] && wishlists.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'givekey', type: 'wishlist', elements: wishlists, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'followGame' : 'unfollowGame'] && fGames.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'givekey', type: 'game', elements: fGames, resolve, action })
-        }))
-      }
-      if (this.conf[action][fuck ? 'joinVk' : 'leaveVk'] && vks.length > 0) {
-        pro.push(new Promise(resolve => {
-          fuc.toggleActions({ website: 'givekey', social: 'vk', type: 'club', elements: vks, resolve, action })
-        }))
-      }
-      return pro
+      await fuc.assignment(taskInfo, this.conf[action], action, 'givekey')
     } catch (e) {
       throwError(e, 'givekey.toggleActions')
     }
@@ -199,7 +170,28 @@ const givekey = {
     vks: []
   },
   setting: {},
-  conf: config?.givekay?.enable.valueOf() ? config.givekay : globalConf
+  conf: config?.givekay?.enable ? config.givekay : globalConf
 }
 
 export { givekey }
+
+/* disable
+var atApp = {
+    loading: false,
+    centrifuge: new Centrifuge('wss://app.givekey.ru/connection/websocket'),
+    uid: $('meta[name="uid"]').attr("content"),
+    init: function () {
+        this.centrifuge.setToken($('meta[name="cent_token"]').attr("content")), this.centrifuge.connect(), this
+            .centrifuge.on("connect", function (e) {
+                console.log(`Connected!`);
+            }), this.centrifuge.on("disconnect", function (e) {
+                console.log(`DisConnected!\n${e.reason}`)
+            });
+        if (this.uid) this.centrifuge.subscribe(`usr#${this.uid}`, (data) => this.parse(data.data));
+    },
+    parse: (e, link, page) => {
+      console.log(e)
+    }
+};
+$(() => atApp.init());
+*/

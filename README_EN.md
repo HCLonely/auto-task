@@ -4,6 +4,8 @@
 
 Automatically complete giveaway tasks.
 
+[Document](https://auto-task-doc.js.org/)
+
 ## Installation
 
 1. Before: Please install [Tampermonkey](https://www.tampermonkey.net/) extension before installing this script

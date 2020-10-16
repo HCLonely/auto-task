@@ -4,6 +4,9 @@
 
 自动完成 Key 站任务。
 
+[使用文档](https://auto-task-doc.js.org/)
+[Document](https://auto-task-doc.js.org/)
+
 ## 安装
 
 1. 安装前提：安装此脚本前请先安装[Tampermonkey](https://www.tampermonkey.net/)扩展

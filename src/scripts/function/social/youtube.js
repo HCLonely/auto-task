@@ -94,9 +94,9 @@ async function toggleLikeYtbVideo (r, link, like = true) {
   try {
     const { params, unknownLink, needLogin } = await getYtbToken(link, 'likeVideo')
     const { apiKey, client, request, videoId, likeParams } = params || {}
-    if (needLogin) return echoLog({ type: 'custom', text: getI18n('loginYtb') })
-    if (unknownLink) return echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
-    if (!apiKey) return echoLog({ type: 'custom', text: '"getYtbToken" failed' })
+    if (needLogin) return echoLog({ type: 'custom', text: `<li>${getI18n('loginYtb')}</li>` })
+    if (unknownLink) return echoLog({ type: 'custom', text: `<li>${getI18n('unsupportedLink')}</li>` })
+    if (!apiKey) return echoLog({ type: 'custom', text: '<li>"getYtbToken" failed</li>' })
 
     const logStatus = echoLog({ type: like ? 'likeYtbVideo' : 'unlikeYtbVideo', text: videoId })
     const nowTime = parseInt(new Date().getTime() / 1000)

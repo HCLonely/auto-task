@@ -6,7 +6,7 @@ import { delay } from '../function/tool'
 const marvelousga = {
   test () {
     try {
-      return window.location.host.includes('marvelousga')
+      return window.location.host === 'marvelousga.com'
     } catch (e) {
       throwError(e, 'marvelousga.test')
     }

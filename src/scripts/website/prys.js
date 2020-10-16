@@ -6,7 +6,7 @@ import { config, globalConf, debug } from '../config'
 const prys = {
   test () {
     try {
-      return window.location.host.includes('prys.revadike')
+      return window.location.host === 'prys.revadike.com'
     } catch (e) {
       throwError(e, 'prys.test')
     }

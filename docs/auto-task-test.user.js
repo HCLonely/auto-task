@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.2.0
+// @version            3.2.1
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -34,8 +34,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.0/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.0/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.1/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.1/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -76,7 +76,8 @@
 // @run-at             document-end
 // ==/UserScript==
 
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,promise/param-names,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
+/* esling-disable security/detect-non-literal-fs-filename */
 /* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
@@ -2443,7 +2444,7 @@ try {
 
     var followIns = /* #__PURE__ */(function () {
       var _ref25 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee23 (name) {
-        var id, logStatus, _yield$httpRequest22, result, statusText, status, data, _data$response11
+        var id, logStatus, _yield$httpRequest22, result, statusText, status, data, _data$response11, _data$response12
 
         return regeneratorRuntime.wrap(function _callee23$ (_context23) {
           while (1) {
@@ -2494,7 +2495,7 @@ try {
                   if (data.status === 200 && ((_data$response11 = data.response) === null || _data$response11 === void 0 ? void 0 : _data$response11.result) === 'following') {
                     logStatus.success()
                   } else {
-                    logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+                    logStatus.error('Error:' + (((_data$response12 = data.response) === null || _data$response12 === void 0 ? void 0 : _data$response12.feedback_message) || data.statusText + '(' + data.status + ')'))
                   }
                 } else {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
@@ -2523,7 +2524,7 @@ try {
 
     var unfollowIns = /* #__PURE__ */(function () {
       var _ref26 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee24 (name) {
-        var id, logStatus, _yield$httpRequest23, result, statusText, status, data, _data$response12
+        var id, logStatus, _yield$httpRequest23, result, statusText, status, data, _data$response13
 
         return regeneratorRuntime.wrap(function _callee24$ (_context24) {
           while (1) {
@@ -2571,7 +2572,7 @@ try {
                 data = _yield$httpRequest23.data
 
                 if (result === 'Success') {
-                  if (data.status === 200 && ((_data$response12 = data.response) === null || _data$response12 === void 0 ? void 0 : _data$response12.status) === 'ok') {
+                  if (data.status === 200 && ((_data$response13 = data.response) === null || _data$response13 === void 0 ? void 0 : _data$response13.status) === 'ok') {
                     logStatus.success()
                   } else {
                     logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -2890,9 +2891,9 @@ try {
         var statusText
         var status
         var data
-        var _data$response13
-        var _data$response13$erro
-        var _data$response13$erro2
+        var _data$response14
+        var _data$response14$erro
+        var _data$response14$erro2
         var _args28 = arguments
 
         return regeneratorRuntime.wrap(function _callee28$ (_context28) {
@@ -2929,7 +2930,7 @@ try {
                 data = _yield$httpRequest26.data
 
                 if (result === 'Success') {
-                  if (data.status === 200 || data.status === 403 && ((_data$response13 = data.response) === null || _data$response13 === void 0 ? void 0 : (_data$response13$erro = _data$response13.errors) === null || _data$response13$erro === void 0 ? void 0 : (_data$response13$erro2 = _data$response13$erro[0]) === null || _data$response13$erro2 === void 0 ? void 0 : _data$response13$erro2.code) === 327) {
+                  if (data.status === 200 || data.status === 403 && ((_data$response14 = data.response) === null || _data$response14 === void 0 ? void 0 : (_data$response14$erro = _data$response14.errors) === null || _data$response14$erro === void 0 ? void 0 : (_data$response14$erro2 = _data$response14$erro[0]) === null || _data$response14$erro2 === void 0 ? void 0 : _data$response14$erro2.code) === 327) {
                     logStatus.success()
                   } else {
                     logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -2961,7 +2962,7 @@ try {
 
     var getTwitterUserId = /* #__PURE__ */(function () {
       var _ref32 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee29 (name) {
-        var logStatus, _yield$httpRequest27, result, statusText, status, data, _data$response14, _data$response14$data, _data$response14$data2, userId
+        var logStatus, _yield$httpRequest27, result, statusText, status, data, _data$response15, _data$response15$data, _data$response15$data2, userId
 
         return regeneratorRuntime.wrap(function _callee29$ (_context29) {
           while (1) {
@@ -3001,7 +3002,7 @@ try {
                   break
                 }
 
-                userId = (_data$response14 = data.response) === null || _data$response14 === void 0 ? void 0 : (_data$response14$data = _data$response14.data) === null || _data$response14$data === void 0 ? void 0 : (_data$response14$data2 = _data$response14$data.user) === null || _data$response14$data2 === void 0 ? void 0 : _data$response14$data2.rest_id // eslint-disable-line camelcase
+                userId = (_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$data = _data$response15.data) === null || _data$response15$data === void 0 ? void 0 : (_data$response15$data2 = _data$response15$data.user) === null || _data$response15$data2 === void 0 ? void 0 : _data$response15$data2.rest_id // eslint-disable-line camelcase
 
                 if (!userId) {
                   _context29.next = 17
@@ -3206,7 +3207,7 @@ try {
 
     var verifyTwitchAuth = /* #__PURE__ */(function () {
       var _ref35 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee31 () {
-        var logStatus, _yield$httpRequest28, result, statusText, status, data, _data$response15, _data$response15$, _data$response15$$dat
+        var logStatus, _yield$httpRequest28, result, statusText, status, data, _data$response16, _data$response16$, _data$response16$$dat
 
         return regeneratorRuntime.wrap(function _callee31$ (_context31) {
           while (1) {
@@ -3240,7 +3241,7 @@ try {
                   break
                 }
 
-                if (!(data.status === 200 && ((_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$ = _data$response15[0]) === null || _data$response15$ === void 0 ? void 0 : (_data$response15$$dat = _data$response15$.data) === null || _data$response15$$dat === void 0 ? void 0 : _data$response15$$dat.currentUser))) {
+                if (!(data.status === 200 && ((_data$response16 = data.response) === null || _data$response16 === void 0 ? void 0 : (_data$response16$ = _data$response16[0]) === null || _data$response16$ === void 0 ? void 0 : (_data$response16$$dat = _data$response16$.data) === null || _data$response16$$dat === void 0 ? void 0 : _data$response16$$dat.currentUser))) {
                   _context31.next = 15
                   break
                 }
@@ -3373,7 +3374,7 @@ try {
 
     var getTwitchChannelId = /* #__PURE__ */(function () {
       var _ref37 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee33 (name) {
-        var logStatus, _yield$httpRequest30, result, statusText, status, data, _data$response16, _data$response16$, _data$response16$$dat, _data$response16$$dat2, channelId
+        var logStatus, _yield$httpRequest30, result, statusText, status, data, _data$response17, _data$response17$, _data$response17$$dat, _data$response17$$dat2, channelId
 
         return regeneratorRuntime.wrap(function _callee33$ (_context33) {
           while (1) {
@@ -3413,7 +3414,7 @@ try {
                   break
                 }
 
-                channelId = (_data$response16 = data.response) === null || _data$response16 === void 0 ? void 0 : (_data$response16$ = _data$response16[0]) === null || _data$response16$ === void 0 ? void 0 : (_data$response16$$dat = _data$response16$.data) === null || _data$response16$$dat === void 0 ? void 0 : (_data$response16$$dat2 = _data$response16$$dat.user) === null || _data$response16$$dat2 === void 0 ? void 0 : _data$response16$$dat2.id
+                channelId = (_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : (_data$response17$ = _data$response17[0]) === null || _data$response17$ === void 0 ? void 0 : (_data$response17$$dat = _data$response17$.data) === null || _data$response17$$dat === void 0 ? void 0 : (_data$response17$$dat2 = _data$response17$$dat.user) === null || _data$response17$$dat2 === void 0 ? void 0 : _data$response17$$dat2.id
 
                 if (!channelId) {
                   _context33.next = 17
@@ -4092,6 +4093,7 @@ try {
                     jsonData = JSON.parse(((_dataR$responseText = dataR.responseText) === null || _dataR$responseText === void 0 ? void 0 : _dataR$responseText.replace('<!--', '')) || '{}')
 
                     if ((jsonData === null || jsonData === void 0 ? void 0 : (_jsonData$payload = jsonData.payload) === null || _jsonData$payload === void 0 ? void 0 : (_jsonData$payload$ = _jsonData$payload[1]) === null || _jsonData$payload$ === void 0 ? void 0 : (_jsonData$payload$$ = _jsonData$payload$[1]) === null || _jsonData$payload$$ === void 0 ? void 0 : _jsonData$payload$$.share_my) === true) {
+                      // eslint-disable-line camelcase
                       logStatus.success()
                     } else {
                       logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')
@@ -4750,7 +4752,7 @@ try {
 
                 return _context46.abrupt('return', echoLog({
                   type: 'custom',
-                  text: getI18n('loginYtb')
+                  text: '<li>'.concat(getI18n('loginYtb'), '</li>')
                 }))
 
               case 11:
@@ -4761,7 +4763,7 @@ try {
 
                 return _context46.abrupt('return', echoLog({
                   type: 'custom',
-                  text: getI18n('unsupportedLink')
+                  text: '<li>'.concat(getI18n('unsupportedLink'), '</li>')
                 }))
 
               case 13:
@@ -4772,7 +4774,7 @@ try {
 
                 return _context46.abrupt('return', echoLog({
                   type: 'custom',
-                  text: '"getYtbToken" failed'
+                  text: '<li>"getYtbToken" failed</li>'
                 }))
 
               case 15:
@@ -5644,7 +5646,7 @@ try {
         var statusText
         var status
         var data
-        var _data$response17
+        var _data$response18
         var _GM_info$script$versi
         var _GM_info$script$versi2
         var ov1
@@ -5687,7 +5689,7 @@ try {
                 if (result === 'Success') {
                   _GM_info$script$versi = GM_info.script.version.split('.'), _GM_info$script$versi2 = _slicedToArray(_GM_info$script$versi, 3), ov1 = _GM_info$script$versi2[0], ov2 = _GM_info$script$versi2[1], ov3 = _GM_info$script$versi2[2]
 
-                  if ((_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : _data$response17.version) {
+                  if ((_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.version) {
                     _data$response$versio = data.response.version.split('.'), _data$response$versio2 = _slicedToArray(_data$response$versio, 3), nv1 = _data$response$versio2[0], nv2 = _data$response$versio2[1], nv3 = _data$response$versio2[2]
 
                     if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
@@ -5794,6 +5796,7 @@ try {
       }
     }
 
+    unsafeWindow.AutoTask = {}
     'use strict'
 
     zh_CN = {
@@ -6511,7 +6514,7 @@ try {
     var banana = {
       test: function test () {
         try {
-          return window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway')
+          return window.location.host === 'www.bananagiveaway.com' || window.location.host === 'www.grabfreegame.com'
         } catch (e) {
           throwError(e, 'banana.test')
         }
@@ -7280,7 +7283,7 @@ try {
     var gamehag = {
       test: function test () {
         try {
-          return window.location.host.includes('gamehag')
+          return window.location.host === 'gamehag.com'
         } catch (e) {
           throwError(e, 'gamehag.test')
         }
@@ -7862,7 +7865,7 @@ try {
     var giveawaysu = {
       test: function test () {
         try {
-          return window.location.host.includes('giveaway.su')
+          return window.location.host === 'giveaway.su'
         } catch (e) {
           throwError(e, 'giveawaysu.test')
         }
@@ -8305,7 +8308,7 @@ try {
     var givekey = {
       test: function test () {
         try {
-          return window.location.host.includes('givekey.ru')
+          return window.location.host === 'givekey.ru'
         } catch (e) {
           throwError(e, 'givekey.test')
         }
@@ -8643,7 +8646,7 @@ try {
     var gleam = {
       test: function test () {
         try {
-          return window.location.host.includes('gleam.io')
+          return window.location.host === 'gleam.io'
         } catch (e) {
           throwError(e, 'gleam.test')
         }
@@ -9205,7 +9208,7 @@ try {
     var indiedb = {
       test: function test () {
         try {
-          return window.location.host.includes('indiedb')
+          return window.location.host === 'www.indiedb.com'
         } catch (e) {
           throwError(e, 'indiedb.test')
         }
@@ -9214,7 +9217,7 @@ try {
         var _this20 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee71 () {
-          var currentoption, logStatus, _yield$fuc$httpReques4, result, statusText, status, data, _data$response18, _data$response19, _data$response20, _data$response21, _data$response22
+          var currentoption, logStatus, _yield$fuc$httpReques4, result, statusText, status, data, _data$response19, _data$response20, _data$response21, _data$response22, _data$response23
 
           return regeneratorRuntime.wrap(function _callee71$ (_context72) {
             while (1) {
@@ -9259,15 +9262,15 @@ try {
 
                   if (result === 'Success') {
                     if (data.status === 200) {
-                      if ((_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.success) {
+                      if ((_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.success) {
                         currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                         $('#giveawaysjoined').slideDown()
                         $('#giveawaysrecommend').slideDown()
-                        logStatus.success('Success' + (((_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.text) ? ':' + ((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.text) : ''))
+                        logStatus.success('Success' + (((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.text) ? ':' + ((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) : ''))
 
                         _this20.do_task()
                       } else {
-                        logStatus.error('Error' + (((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
+                        logStatus.error('Error' + (((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) ? ':' + ((_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.text) : ''))
                       }
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -9529,7 +9532,7 @@ try {
         try {
           var _$$eq$attr
 
-          return window.location.host.includes('keylol.com') && !window.location.href.includes('mod=forumdisplay') && ((_$$eq$attr = $('.subforum_left_title_left_up a').eq(3).attr('href')) === null || _$$eq$attr === void 0 ? void 0 : _$$eq$attr.includes('319'))
+          return window.location.host === 'keylol.com' && !window.location.href.includes('mod=forumdisplay') && ((_$$eq$attr = $('.subforum_left_title_left_up a').eq(3).attr('href')) === null || _$$eq$attr === void 0 ? void 0 : _$$eq$attr.includes('319'))
         } catch (e) {
           throwError(e, 'keylol.test')
         }
@@ -9538,7 +9541,7 @@ try {
         var _this21 = this
 
         try {
-          unsafeWindow.toggleDiscord = function (action, inviteId) {
+          AutoTask.toggleDiscord = function (action, inviteId) {
             var taskInfo = GM_getValue('taskInfo[' + window.location.host + _this21.get_giveawayId() + ']') || {}
             var toGuild = taskInfo.toGuild || {}
             return fuc.toggleActions({
@@ -9565,7 +9568,7 @@ try {
             })
           }
 
-          unsafeWindow.toggleREDDIT = function (action, name) {
+          AutoTask.toggleREDDIT = function (action, name) {
             return fuc.toggleActions({
               social: 'reddit',
               website: 'keylol',
@@ -9574,7 +9577,7 @@ try {
             })
           }
 
-          unsafeWindow.toggleINS = function (action, name) {
+          AutoTask.toggleINS = function (action, name) {
             return fuc.toggleActions({
               social: 'ins',
               website: 'keylol',
@@ -9583,7 +9586,7 @@ try {
             })
           }
 
-          unsafeWindow.toggleTWITTER = /* #__PURE__ */(function () {
+          AutoTask.toggleTWITTER = /* #__PURE__ */(function () {
             var _ref85 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee72 (action, name, type) {
               return regeneratorRuntime.wrap(function _callee72$ (_context73) {
                 while (1) {
@@ -9616,7 +9619,7 @@ try {
             }
           }())
 
-          unsafeWindow.toggleTWITCH = function (action, name) {
+          AutoTask.toggleTWITCH = function (action, name) {
             return fuc.toggleActions({
               social: 'twitch',
               website: 'keylol',
@@ -9625,7 +9628,7 @@ try {
             })
           }
 
-          unsafeWindow.toggleVK = function (action, name) {
+          AutoTask.toggleVK = function (action, name) {
             return fuc.toggleActions({
               social: 'vk',
               website: 'keylol',
@@ -9634,7 +9637,7 @@ try {
             })
           }
 
-          unsafeWindow.toggleSTEAM = /* #__PURE__ */(function () {
+          AutoTask.toggleSTEAM = /* #__PURE__ */(function () {
             var _ref86 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 (action, name, type) {
               var isAnnouncement
               var isGroup
@@ -9695,7 +9698,7 @@ try {
             }
           }())
 
-          unsafeWindow.toggleAutoTaskSelect = function (event, ele) {
+          AutoTask.toggleAutoTaskSelect = function (event, ele) {
             if (event.button === 2) {
               var isSelected = ele.getAttribute('selected')
               isSelected ? ele.removeAttribute('selected') : ele.setAttribute('selected', 'selected')
@@ -10030,8 +10033,8 @@ try {
             args[_key2 - 5] = arguments[_key2]
           }
 
-          var joinBtn = text[0] ? $('<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="toggleAutoTaskSelect(event, this)" onclick="'.concat(func, "('fuck','").concat(name, "'").concat(type ? ",'".concat(type, "'") : '').concat(args && args.length === 3 ? ",'".concat(args[0], "','").concat(args[1], "','").concat(args[2], "'") : '').concat(args && args.length === 1 ? ",'".concat(args[0], "'") : '', ')" target="_self">').concat(text[0], '</a>')) : ''
-          var leaveBtn = text[1] ? $('<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="toggleAutoTaskSelect(event, this)" onclick="'.concat(func, "('remove','").concat(name, "','").concat(type, "')\" target=\"_self\">").concat(text[1], '</a>')) : ''
+          var joinBtn = text[0] ? $('<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="AutoTask.toggleAutoTaskSelect(event, this)" onclick="AutoTask.'.concat(func, "('fuck','").concat(name, "'").concat(type ? ",'".concat(type, "'") : '').concat(args && args.length === 3 ? ",'".concat(args[0], "','").concat(args[1], "','").concat(args[2], "'") : '').concat(args && args.length === 1 ? ",'".concat(args[0], "'") : '', ')" target="_self">').concat(text[0], '</a>')) : ''
+          var leaveBtn = text[1] ? $('<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="AutoTask.toggleAutoTaskSelect(event, this)" onclick="AutoTask.'.concat(func, "('remove','").concat(name, "','").concat(type, "')\" target=\"_self\">").concat(text[1], '</a>')) : ''
           $(before).after(leaveBtn).after(joinBtn)
         } catch (e) {
           throwError(e, 'keylol.addBtn')
@@ -10126,7 +10129,7 @@ try {
     var marvelousga = {
       test: function test () {
         try {
-          return window.location.host.includes('marvelousga')
+          return window.location.host === 'marvelousga.com'
         } catch (e) {
           throwError(e, 'marvelousga.test')
         }
@@ -10682,7 +10685,7 @@ try {
     var opiumpulses = {
       test: function test () {
         try {
-          return window.location.host.includes('opiumpulses')
+          return window.location.host === 'www.opiumpulses.com'
         } catch (e) {
           throwError(e, 'opiumpulses.test')
         }
@@ -10887,7 +10890,7 @@ try {
     var prys = {
       test: function test () {
         try {
-          return window.location.host.includes('prys.revadike')
+          return window.location.host === 'prys.revadike.com'
         } catch (e) {
           throwError(e, 'prys.test')
         }
@@ -11383,7 +11386,7 @@ try {
     var takekey = {
       test: function test () {
         try {
-          return window.location.host.includes('takekey.ru')
+          return window.location.host === 'takekey.ru'
         } catch (e) {
           throwError(e, 'takekey.test')
         }
@@ -11602,7 +11605,7 @@ try {
       },
       verify: function verify () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee87 () {
-          var logStatus, _yield$fuc$httpReques7, result, statusText, status, data, _data$response23, _data$response24, _data$response25
+          var logStatus, _yield$fuc$httpReques7, result, statusText, status, data, _data$response24, _data$response25, _data$response26
 
           return regeneratorRuntime.wrap(function _callee87$ (_context88) {
             while (1) {
@@ -11628,10 +11631,10 @@ try {
                   data = _yield$fuc$httpReques7.data
 
                   if (result === 'Success') {
-                    if (data.status === 200 && (data === null || data === void 0 ? void 0 : (_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.status) === 'success') {
-                      logStatus.success(data === null || data === void 0 ? void 0 : (_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.msg, true)
+                    if (data.status === 200 && (data === null || data === void 0 ? void 0 : (_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.status) === 'success') {
+                      logStatus.success(data === null || data === void 0 ? void 0 : (_data$response25 = data.response) === null || _data$response25 === void 0 ? void 0 : _data$response25.msg, true)
                     } else {
-                      logStatus.error('Error:' + ((data === null || data === void 0 ? void 0 : (_data$response25 = data.response) === null || _data$response25 === void 0 ? void 0 : _data$response25.msg) || data.statusText + '(' + data.status + ')'), true)
+                      logStatus.error('Error:' + ((data === null || data === void 0 ? void 0 : (_data$response26 = data.response) === null || _data$response26 === void 0 ? void 0 : _data$response26.msg) || data.statusText + '(' + data.status + ')'), true)
                     }
                   } else {
                     logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
@@ -11826,7 +11829,7 @@ try {
         console.log('JavaScript exception:', exc)
       })
 
-      if (pageHost.includes('hclonely')) {
+      if (pageHost.includes('hclonely.com')) {
         if (window.location.pathname.includes('setting')) {
           var _GM_getValue, _GM_getValue$global2, _GM_getValue$global2$
 
@@ -11839,7 +11842,7 @@ try {
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
         }
-      } else if (pageHost.includes('marvelousga') && !window.location.pathname.includes('giveaway')) {
+      } else if (pageHost === 'marvelousga.com' && !window.location.pathname.includes('giveaway')) {
         fuc.newTabBlock()
       } else {
         var _globalConf$other
@@ -11950,7 +11953,7 @@ try {
             throwError(e, '$(document).keydown')
           }
         })
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/announcement.html" terget="_blank" class="card-link iconfont icon-announcement" title="').concat(getI18n('visitUpdateText'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
         $('#clean-cache').click(function () {
           try {
             var status = fuc.echoLog({
@@ -11985,11 +11988,11 @@ try {
             throwError(e, '$(\'#check-update\').click')
           }
         })
-        $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
+        $('#auto-task-setting,#auto-task-feedback').click(function () {
           try {
             window.open($(this).attr('data-href'), '_blank')
           } catch (e) {
-            throwError(e, '$(\'#auto-task-setting,#auto-task-feedback,#auto-task-announcement\').click')
+            throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
           }
         })
         fuc.checkUpdate()
@@ -12099,13 +12102,13 @@ try {
       })
     } else if (pageHref.includes('discord.com/app')) {
       fuc.getDiscordAuth()
-    } else if (pageHref.includes('www.twitch.tv')) {
+    } else if (pageHost === 'www.twitch.tv') {
       if (pageHref.includes('#updateTwitchInfo')) {
         fuc.updateTwitchInfo(true)
       } else if (!pageHref.includes('/login')) {
         fuc.updateTwitchInfo(false)
       }
-    } else if (pageHref.includes('www.youtube.com')) {
+    } else if (pageHost === 'www.youtube.com') {
       if (pageHref.includes('#updateYtbInfo')) {
         fuc.updateYtbInfo(true)
       } else {

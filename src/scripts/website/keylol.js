@@ -5,14 +5,14 @@ import { globalConf } from '../config'
 const keylol = {
   test () {
     try {
-      return window.location.host.includes('keylol.com') && !window.location.href.includes('mod=forumdisplay') && $('.subforum_left_title_left_up a').eq(3).attr('href')?.includes('319')
+      return window.location.host === 'keylol.com' && !window.location.href.includes('mod=forumdisplay') && $('.subforum_left_title_left_up a').eq(3).attr('href')?.includes('319')
     } catch (e) {
       throwError(e, 'keylol.test')
     }
   },
   after () {
     try {
-      unsafeWindow.toggleDiscord = (action, inviteId) => {
+      AutoTask.toggleDiscord = (action, inviteId) => {
         const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']') || {}
         const toGuild = taskInfo.toGuild || {}
         return fuc.toggleActions({ social: 'discord', website: 'keylol', elements: [inviteId], action, toGuild })
@@ -27,23 +27,23 @@ const keylol = {
             }
           })
       }
-      unsafeWindow.toggleREDDIT = (action, name) => {
+      AutoTask.toggleREDDIT = (action, name) => {
         return fuc.toggleActions({ social: 'reddit', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleINS = (action, name) => {
+      AutoTask.toggleINS = (action, name) => {
         return fuc.toggleActions({ social: 'ins', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleTWITTER = async (action, name, type) => {
+      AutoTask.toggleTWITTER = async (action, name, type) => {
         await fuc.updateInfo({}, { twitter: true })
         return fuc.toggleActions({ social: 'twitter', website: 'keylol', elements: [name], type, action })
       }
-      unsafeWindow.toggleTWITCH = (action, name) => {
+      AutoTask.toggleTWITCH = (action, name) => {
         return fuc.toggleActions({ social: 'twitch', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleVK = (action, name) => {
+      AutoTask.toggleVK = (action, name) => {
         return fuc.toggleActions({ social: 'vk', website: 'keylol', elements: [name], action })
       }
-      unsafeWindow.toggleSTEAM = async (action, name, type, ...args) => {
+      AutoTask.toggleSTEAM = async (action, name, type, ...args) => {
         const isAnnouncement = type === 'announcement'
         const isGroup = type === 'group'
         await fuc.updateInfo({}, { steamStore: isGroup || isAnnouncement, steamCommunity: !isGroup })
@@ -57,7 +57,7 @@ const keylol = {
         }
         return fuc.toggleActions({ social: 'steam', website: 'keylol', elements, action, type })
       }
-      unsafeWindow.toggleAutoTaskSelect = (event, ele) => {
+      AutoTask.toggleAutoTaskSelect = (event, ele) => {
         if (event.button === 2) {
           const isSelected = ele.getAttribute('selected')
           isSelected ? ele.removeAttribute('selected') : ele.setAttribute('selected', 'selected')
@@ -197,8 +197,8 @@ const keylol = {
   },
   addBtn (before, func, name, type, text, ...args) {
     try {
-      const joinBtn = text[0] ? $(`<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="toggleAutoTaskSelect(event, this)" onclick="${func}('fuck','${name}'${type ? `,'${type}'` : ''}${args && args.length === 3 ? `,'${args[0]}','${args[1]}','${args[2]}'` : ''}${args && args.length === 1 ? `,'${args[0]}'` : ''})" target="_self">${text[0]}</a>`) : ''
-      const leaveBtn = text[1] ? $(`<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="toggleAutoTaskSelect(event, this)" onclick="${func}('remove','${name}','${type}')" target="_self">${text[1]}</a>`) : ''
+      const joinBtn = text[0] ? $(`<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="AutoTask.toggleAutoTaskSelect(event, this)" onclick="AutoTask.${func}('fuck','${name}'${type ? `,'${type}'` : ''}${args && args.length === 3 ? `,'${args[0]}','${args[1]}','${args[2]}'` : ''}${args && args.length === 1 ? `,'${args[0]}'` : ''})" target="_self">${text[0]}</a>`) : ''
+      const leaveBtn = text[1] ? $(`<a href="javascript:void(0);" class="auto-task-keylol" oncontextmenu="return false" onmousedown="AutoTask.toggleAutoTaskSelect(event, this)" onclick="AutoTask.${func}('remove','${name}','${type}')" target="_self">${text[1]}</a>`) : ''
       $(before).after(leaveBtn).after(joinBtn)
     } catch (e) {
       throwError(e, 'keylol.addBtn')

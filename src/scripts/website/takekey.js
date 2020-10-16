@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const takekey = {
   test () {
     try {
-      return window.location.host.includes('takekey.ru')
+      return window.location.host === 'takekey.ru'
     } catch (e) {
       throwError(e, 'takekey.test')
     }

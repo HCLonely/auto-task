@@ -19,7 +19,7 @@ if (website || pageHost.includes('hclonely')) {
     console.log('Options:', options)
     console.log('JavaScript exception:', exc)
   })
-  if (pageHost.includes('hclonely')) {
+  if (pageHost.includes('hclonely.com')) {
     if (window.location.pathname.includes('setting')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
       unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
@@ -28,7 +28,7 @@ if (website || pageHost.includes('hclonely')) {
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()
     }
-  } else if (pageHost.includes('marvelousga') && (!window.location.pathname.includes('giveaway'))) {
+  } else if (pageHost === 'marvelousga.com' && (!window.location.pathname.includes('giveaway'))) {
     fuc.newTabBlock()
   } else {
     if (website.before) website.before()
@@ -122,7 +122,6 @@ if (website || pageHost.includes('hclonely')) {
     <h4 class="card-subtitle">
       <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
       <a id="auto-task-setting" href="javascript:void(0)" data-href="https://__SITEURL__/setting.html" terget="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
-      <a id="auto-task-announcement" href="javascript:void(0)" data-href="https://__SITEURL__/announcement.html" terget="_blank" class="card-link iconfont icon-announcement" title="${getI18n('visitUpdateText')}"></a>
       <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
       <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
     </h4>
@@ -149,11 +148,11 @@ if (website || pageHost.includes('hclonely')) {
         throwError(e, '$(\'#check-update\').click')
       }
     })
-    $('#auto-task-setting,#auto-task-feedback,#auto-task-announcement').click(function () {
+    $('#auto-task-setting,#auto-task-feedback').click(function () {
       try {
         window.open($(this).attr('data-href'), '_blank')
       } catch (e) {
-        throwError(e, '$(\'#auto-task-setting,#auto-task-feedback,#auto-task-announcement\').click')
+        throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
       }
     })
     fuc.checkUpdate()
@@ -231,13 +230,13 @@ if (website || pageHost.includes('hclonely')) {
   })
 } else if (pageHref.includes('discord.com/app')) {
   fuc.getDiscordAuth()
-} else if (pageHref.includes('www.twitch.tv')) {
+} else if (pageHost === 'www.twitch.tv') {
   if (pageHref.includes('#updateTwitchInfo')) {
     fuc.updateTwitchInfo(true)
   } else if (!pageHref.includes('/login')) {
     fuc.updateTwitchInfo(false)
   }
-} else if (pageHref.includes('www.youtube.com')) {
+} else if (pageHost === 'www.youtube.com') {
   if (pageHref.includes('#updateYtbInfo')) {
     fuc.updateYtbInfo(true)
   } else {

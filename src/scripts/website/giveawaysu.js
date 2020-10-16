@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const giveawaysu = {
   test () {
     try {
-      return window.location.host.includes('giveaway.su')
+      return window.location.host === 'giveaway.su'
     } catch (e) {
       throwError(e, 'giveawaysu.test')
     }

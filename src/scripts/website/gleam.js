@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const gleam = {
   test () {
     try {
-      return window.location.host.includes('gleam.io')
+      return window.location.host === 'gleam.io'
     } catch (e) {
       throwError(e, 'gleam.test')
     }

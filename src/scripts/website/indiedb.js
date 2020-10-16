@@ -6,7 +6,7 @@ import { config, globalConf, debug } from '../config'
 const indiedb = {
   test () {
     try {
-      return window.location.host.includes('indiedb')
+      return window.location.host === 'www.indiedb.com'
     } catch (e) {
       throwError(e, 'indiedb.test')
     }

@@ -96,7 +96,7 @@ async function toggleVkWall (name, join) {
         if (resultR === 'Success') {
           if (dataR.status === 200) {
             const jsonData = JSON.parse(dataR.responseText?.replace('<!--', '') || '{}')
-            if (jsonData?.payload?.[1]?.[1]?.share_my === true) {
+            if (jsonData?.payload?.[1]?.[1]?.share_my === true) { // eslint-disable-line camelcase
               logStatus.success()
             } else {
               logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')

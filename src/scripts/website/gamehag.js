@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const gamehag = {
   test () {
     try {
-      return window.location.host.includes('gamehag')
+      return window.location.host === 'gamehag.com'
     } catch (e) {
       throwError(e, 'gamehag.test')
     }

@@ -5,7 +5,7 @@ import { config, globalConf, debug } from '../config'
 const banana = {
   test () {
     try {
-      return (window.location.host.includes('grabfreegame') || window.location.host.includes('bananagiveaway'))
+      return (window.location.host === 'www.bananagiveaway.com' || window.location.host === 'www.grabfreegame.com')
     } catch (e) {
       throwError(e, 'banana.test')
     }

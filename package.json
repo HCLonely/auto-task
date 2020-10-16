@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {
@@ -54,6 +54,7 @@
       "GM_info",
       "GM_openInTab",
       "unsafeWindow",
+      "AutoTask",
       "File",
       "FileReader",
       "parent",
@@ -72,5 +73,14 @@
     "disable": [
       "no-sparse-arrays"
     ]
-  }
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "rules": {
+      "security/detect-non-literal-fs-filename": "off"
+    }
+  },
+  "eslintIgnore": [
+    "/src/**/*.min.js"
+  ]
 }

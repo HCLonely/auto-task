@@ -6,7 +6,7 @@ import { config, globalConf, debug } from '../config'
 const opiumpulses = {
   test () {
     try {
-      return window.location.host.includes('opiumpulses')
+      return window.location.host === 'www.opiumpulses.com'
     } catch (e) {
       throwError(e, 'opiumpulses.test')
     }

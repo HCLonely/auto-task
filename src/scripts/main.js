@@ -19,7 +19,7 @@ if (website || pageHost.includes('hclonely')) {
     console.log('Options:', options)
     console.log('JavaScript exception:', exc)
   })
-  if (pageHost.includes('hclonely.com')) {
+  if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
     if (window.location.pathname.includes('setting')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
       unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase

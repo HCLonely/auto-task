@@ -22,8 +22,8 @@ function getLanguage () {
 function getI18n (name, str = null) {
   try {
     let value = 'null'
-    if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : name
-    else value = i18n[language][name] || name
+    if (str) value = i18n[language]?.[name] ? i18n[language][name].replace(/s%/g, str) : name
+    else value = i18n[language]?.[name] || name
     return value
   } catch (e) {
     throwError(e, 'getI18n')

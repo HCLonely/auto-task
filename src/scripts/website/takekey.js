@@ -166,7 +166,7 @@ const takekey = {
       const fuck = action === 'fuck'
       const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
       await fuc.updateInfo(taskInfo)
-      await fuc.assignment(taskInfo, this.conf[action], action, 'givekey')
+      await fuc.assignment(taskInfo, this.conf[action], action, 'takekey')
     } catch (e) {
       throwError(e, 'takekey.toggleActions')
     }

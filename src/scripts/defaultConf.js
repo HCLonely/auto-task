@@ -240,6 +240,19 @@ const defaultConf = {
     },
     enable: false
   },
+  keyhub: {
+    fuck: {
+      joinSteamGroup: true,
+      addToWishlist: true,
+      visitLink: true,
+      verifyTask: true
+    },
+    remove: {
+      leaveSteamGroup: true,
+      removeFromWishlist: true
+    },
+    enable: false
+  },
   gleam: {
     fuck: {
       joinSteamGroup: true,

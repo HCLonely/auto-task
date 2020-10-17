@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.2.1
+// @version            3.2.2
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -28,14 +28,15 @@
 // @include            *://gleam.io/*
 // @include            *://keylol.com/*
 // @include            *://givekey.ru/giveaway/*
+// @include            *://key-hub.eu/giveaway/*
 // @include            *://discord.com/app
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.1/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.1/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.2/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.2/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -78,7 +79,7 @@
 
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
 /* esling-disable security/detect-non-literal-fs-filename */
-/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */
+/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions,VerifyTasks */
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
 
 function _slicedToArray (arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest() }
@@ -112,7 +113,7 @@ try {
   var en_US;
 
   (function () {
-    var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$givekay, _config$gleam, _config$indiedb, _config$marvelousga, _config$opiumpulses, _config$prys, _config$takekey
+    var _config$banana, _config$freegamelotte, _config$gamehag, _config$giveawaysu, _config$givekay, _config$gleam, _config$indiedb, _config$keyhub, _config$marvelousga, _config$opiumpulses, _config$prys, _config$takekey
 
     var echoLog = function echoLog (e) {
       try {
@@ -5593,8 +5594,10 @@ try {
       var str = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null
 
       try {
+        var _i18n$language, _i18n$language2
+
         var value = 'null'
-        if (str) value = i18n[language][name] ? i18n[language][name].replace(/s%/g, str) : name; else value = i18n[language][name] || name
+        if (str) value = ((_i18n$language = i18n[language]) === null || _i18n$language === void 0 ? void 0 : _i18n$language[name]) ? i18n[language][name].replace(/s%/g, str) : name; else value = ((_i18n$language2 = i18n[language]) === null || _i18n$language2 === void 0 ? void 0 : _i18n$language2[name]) || name
         return value
       } catch (e) {
         throwError(e, 'getI18n')
@@ -6398,6 +6401,19 @@ try {
         },
         enable: false
       },
+      keyhub: {
+        fuck: {
+          joinSteamGroup: true,
+          addToWishlist: true,
+          visitLink: true,
+          verifyTask: true
+        },
+        remove: {
+          leaveSteamGroup: true,
+          removeFromWishlist: true
+        },
+        enable: false
+      },
       gleam: {
         fuck: {
           joinSteamGroup: true,
@@ -6465,7 +6481,7 @@ try {
           for (var _i2 = 0, _Object$keys2 = Object.keys(defaultConfig[k]); _i2 < _Object$keys2.length; _i2++) {
             var k1 = _Object$keys2[_i2]
 
-            if (Object.prototype.toString.call(defaultConfig[k]) === '[object Object]') {
+            if (Object.prototype.toString.call(defaultConfig[k][k1]) === '[object Object]') {
               config[k][k1] = Object.assign(defaultConfig[k][k1], config[k][k1])
             } else {
               var _config$k$k
@@ -9527,6 +9543,382 @@ try {
       conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
     }
 
+    var keyhub = {
+      test: function test () {
+        try {
+          return window.location.host === 'key-hub.eu'
+        } catch (e) {
+          throwError(e, 'keyhub.test')
+        }
+      },
+      fuck: function fuck () {
+        try {
+          $('#VPNoverlay').hide()
+          $('#mainArticleSection').show()
+          this.get_tasks('do_task')
+        } catch (e) {
+          throwError(e, 'keyhub.fuck')
+        }
+      },
+      get_tasks: function get_tasks () {
+        var _arguments7 = arguments
+        var _this21 = this
+
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee72 () {
+          var callback, taskInfoHistory, status, tasks, pro, _iterator29, _step29, task, link, taskDes, _link$match, groupName, _link$match2, gameId
+
+          return regeneratorRuntime.wrap(function _callee72$ (_context73) {
+            while (1) {
+              switch (_context73.prev = _context73.next) {
+                case 0:
+                  callback = _arguments7.length > 0 && _arguments7[0] !== undefined ? _arguments7[0] : 'do_task'
+
+                  try {
+                    taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + _this21.get_giveawayId() + ']')
+                    if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) _this21.taskInfo = taskInfoHistory
+
+                    if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
+                      _this21.remove(true)
+                    } else {
+                      _this21.currentTaskInfo = fuc.clearTaskInfo(_this21.currentTaskInfo)
+                      status = fuc.echoLog({
+                        type: 'custom',
+                        text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
+                      })
+                      tasks = $('.task a')
+                      pro = []
+                      _iterator29 = _createForOfIteratorHelper(tasks)
+
+                      try {
+                        for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
+                          task = _step29.value
+
+                          link = $(task).attr('href')
+                          taskDes = $(task).text().trim()
+
+                          if (/steamcommunity\.com\/gid\//.test(link) && /join.*group/gim.test(taskDes)) {
+                            pro.push(fuc.getFinalUrl(link).then(function (_ref83) {
+                              var result = _ref83.result
+                              var finalUrl = _ref83.finalUrl
+
+                              if (result === 'Success') {
+                                var _finalUrl$match8
+
+                                var groupName = (_finalUrl$match8 = finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)) === null || _finalUrl$match8 === void 0 ? void 0 : _finalUrl$match8[1]
+
+                                if (groupName) {
+                                  _this21.currentTaskInfo.groups.push(groupName)
+
+                                  _this21.taskInfo.groups.push(groupName)
+                                }
+                              }
+                            }))
+                          } else if (/steamcommunity\.com\/groups\//.test(link) && /join.*group/gim.test(taskDes)) {
+                            groupName = (_link$match = link.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+
+                            if (groupName) {
+                              _this21.currentTaskInfo.groups.push(groupName)
+
+                              _this21.taskInfo.groups.push(groupName)
+                            }
+                          } else if (/store.steampowered.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
+                            gameId = (_link$match2 = link.match(/app\/([\d]+)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+
+                            if (gameId) {
+                              _this21.currentTaskInfo.wGames.push(gameId)
+
+                              _this21.taskInfo.wGames.push(gameId)
+                            }
+                          } else if (/\/away\?data=.*/.test(link)) {
+                            _this21.currentTaskInfo.links.push(link)
+                          } else {
+                            fuc.echoLog({
+                              type: 'custom',
+                              text: '<li>'.concat(getI18n('unknownTaskType', ''.concat(taskDes, '(').concat(link, ')')), '<font></font></li>')
+                            })
+                          }
+                        }
+                      } catch (err) {
+                        _iterator29.e(err)
+                      } finally {
+                        _iterator29.f()
+                      }
+
+                      Promise.all(pro).finally(function () {
+                        _this21.currentTaskInfo = fuc.uniqueTaskInfo(_this21.currentTaskInfo)
+                        _this21.taskInfo = fuc.uniqueTaskInfo(_this21.taskInfo)
+                        GM_setValue('taskInfo[' + window.location.host + _this21.get_giveawayId() + ']', _this21.taskInfo)
+                        status.success()
+                        if (debug) console.log(_this21)
+
+                        if (callback === 'do_task') {
+                          _this21.do_task()
+                        } else {
+                          !fuc.isEmptyObjArr(_this21.taskInfo) ? _this21.remove(true) : fuc.echoLog({
+                            type: 'custom',
+                            text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
+                          })
+                        }
+                      })
+                    }
+                  } catch (e) {
+                    throwError(e, 'keyhub.get_tasks')
+                  }
+
+                case 2:
+                case 'end':
+                  return _context73.stop()
+              }
+            }
+          }, _callee72)
+        }))()
+      },
+      do_task: function do_task () {
+        var _this22 = this
+
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 () {
+          var pro, links, _iterator30, _step30, link
+
+          return regeneratorRuntime.wrap(function _callee73$ (_context74) {
+            while (1) {
+              switch (_context74.prev = _context74.next) {
+                case 0:
+                  _context74.prev = 0
+                  pro = []
+                  pro.push(_this22.toggleActions('fuck'))
+                  links = fuc.unique(_this22.currentTaskInfo.links)
+
+                  if (!_this22.conf.fuck.visitLink) {
+                    _context74.next = 23
+                    break
+                  }
+
+                  _iterator30 = _createForOfIteratorHelper(links)
+                  _context74.prev = 6
+
+                  _iterator30.s()
+
+                case 8:
+                  if ((_step30 = _iterator30.n()).done) {
+                    _context74.next = 15
+                    break
+                  }
+
+                  link = _step30.value
+                  pro.push(fuc.visitLink(link, {
+                    method: 'GET'
+                  }))
+                  _context74.next = 13
+                  return fuc.delay(1000)
+
+                case 13:
+                  _context74.next = 8
+                  break
+
+                case 15:
+                  _context74.next = 20
+                  break
+
+                case 17:
+                  _context74.prev = 17
+                  _context74.t0 = _context74.catch(6)
+
+                  _iterator30.e(_context74.t0)
+
+                case 20:
+                  _context74.prev = 20
+
+                  _iterator30.f()
+
+                  return _context74.finish(20)
+
+                case 23:
+                  Promise.all(pro).finally(function () {
+                    fuc.echoLog({
+                      type: 'custom',
+                      text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                    })
+                    if (_this22.conf.fuck.verifyTask) _this22.verify()
+                  })
+                  _context74.next = 29
+                  break
+
+                case 26:
+                  _context74.prev = 26
+                  _context74.t1 = _context74.catch(0)
+                  throwError(_context74.t1, 'keyhub.do_task')
+
+                case 29:
+                case 'end':
+                  return _context74.stop()
+              }
+            }
+          }, _callee73, null, [[0, 26], [6, 17, 20, 23]])
+        }))()
+      },
+      verify: function verify () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee74 () {
+          return regeneratorRuntime.wrap(function _callee74$ (_context75) {
+            while (1) {
+              switch (_context75.prev = _context75.next) {
+                case 0:
+                  try {
+                    fuc.echoLog({
+                      type: 'custom',
+                      text: '<li>'.concat(getI18n('verifyingTask'), '...<font></font></li>')
+                    })
+                    $.get(window.location.href, function (res) {
+                      VerifyTasks(res.match(/onclick="javascript:VerifyTasks\('(.*?==)'\)"/)[1])
+                    })
+                  } catch (e) {
+                    throwError(e, 'keyhub.verify')
+                  }
+
+                case 1:
+                case 'end':
+                  return _context75.stop()
+              }
+            }
+          }, _callee74)
+        }))()
+      },
+      toggleActions: function toggleActions (action) {
+        var _this23 = this
+
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee75 () {
+          var fuck, taskInfo
+          return regeneratorRuntime.wrap(function _callee75$ (_context76) {
+            while (1) {
+              switch (_context76.prev = _context76.next) {
+                case 0:
+                  _context76.prev = 0
+                  fuck = action === 'fuck'
+                  taskInfo = fuck ? _this23.currentTaskInfo : _this23.taskInfo
+                  _context76.next = 5
+                  return fuc.updateInfo(taskInfo)
+
+                case 5:
+                  _context76.next = 7
+                  return fuc.assignment(taskInfo, _this23.conf[action], action, 'keyhub')
+
+                case 7:
+                  _context76.next = 12
+                  break
+
+                case 9:
+                  _context76.prev = 9
+                  _context76.t0 = _context76.catch(0)
+                  throwError(_context76.t0, 'keyhub.toggleActions')
+
+                case 12:
+                case 'end':
+                  return _context76.stop()
+              }
+            }
+          }, _callee75, null, [[0, 9]])
+        }))()
+      },
+      remove: function remove () {
+        var _arguments8 = arguments
+        var _this24 = this
+
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee76 () {
+          var remove
+          return regeneratorRuntime.wrap(function _callee76$ (_context77) {
+            while (1) {
+              switch (_context77.prev = _context77.next) {
+                case 0:
+                  remove = _arguments8.length > 0 && _arguments8[0] !== undefined ? _arguments8[0] : false
+                  _context77.prev = 1
+
+                  if (!remove) {
+                    _context77.next = 8
+                    break
+                  }
+
+                  _context77.next = 5
+                  return _this24.toggleActions('remove')
+
+                case 5:
+                  fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                  })
+                  _context77.next = 9
+                  break
+
+                case 8:
+                  _this24.get_tasks('remove')
+
+                case 9:
+                  _context77.next = 14
+                  break
+
+                case 11:
+                  _context77.prev = 11
+                  _context77.t0 = _context77.catch(1)
+                  throwError(_context77.t0, 'keyhub.remove')
+
+                case 14:
+                case 'end':
+                  return _context77.stop()
+              }
+            }
+          }, _callee76, null, [[1, 11]])
+        }))()
+      },
+      get_giveawayId: function get_giveawayId () {
+        try {
+          var id = window.location.href.match(/giveaway\/([\d]+)/)
+          return (id === null || id === void 0 ? void 0 : id[1]) || window.location.href
+        } catch (e) {
+          throwError(e, 'keyhub.get_giveawayId')
+        }
+      },
+      checkLogin: function checkLogin () {
+        try {
+          if ($('a[href="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
+        } catch (e) {
+          throwError(e, 'keyhub.checkLogin')
+        }
+      },
+      checkLeft: function checkLeft () {
+        try {
+          var leftKey = $('#keysleft').text().trim()
+
+          if (leftKey === '0') {
+            Swal.fire({
+              icon: 'warning',
+              title: getI18n('notice'),
+              text: getI18n('noKeysLeft'),
+              confirmButtonText: getI18n('confirm'),
+              cancelButtonText: getI18n('cancel'),
+              showCancelButton: true
+            }).then(function (_ref84) {
+              var value = _ref84.value
+
+              if (value) {
+                window.close()
+              }
+            })
+          }
+        } catch (e) {
+          throwError(e, 'keyhub.checkLeft')
+        }
+      },
+      currentTaskInfo: {
+        links: [],
+        groups: [],
+        wGames: []
+      },
+      taskInfo: {
+        groups: [],
+        wGames: []
+      },
+      setting: {},
+      conf: (config === null || config === void 0 ? void 0 : (_config$keyhub = config.keyhub) === null || _config$keyhub === void 0 ? void 0 : _config$keyhub.enable) ? config.keyhub : globalConf
+    }
+
     var keylol = {
       test: function test () {
         try {
@@ -9538,11 +9930,11 @@ try {
         }
       },
       after: function after () {
-        var _this21 = this
+        var _this25 = this
 
         try {
           AutoTask.toggleDiscord = function (action, inviteId) {
-            var taskInfo = GM_getValue('taskInfo[' + window.location.host + _this21.get_giveawayId() + ']') || {}
+            var taskInfo = GM_getValue('taskInfo[' + window.location.host + _this25.get_giveawayId() + ']') || {}
             var toGuild = taskInfo.toGuild || {}
             return fuc.toggleActions({
               social: 'discord',
@@ -9554,15 +9946,15 @@ try {
               if (action === 'fuck') {
                 var _data$
 
-                var _ref83 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
-                var _ref84 = _slicedToArray(_ref83, 2)
-                var _inviteId = _ref84[0]
-                var guild = _ref84[1]
+                var _ref85 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
+                var _ref86 = _slicedToArray(_ref85, 2)
+                var _inviteId = _ref86[0]
+                var guild = _ref86[1]
 
                 if (_inviteId && guild) {
                   toGuild[_inviteId] = guild
                   taskInfo.toGuild = toGuild
-                  GM_setValue('taskInfo[' + window.location.host + _this21.get_giveawayId() + ']', taskInfo)
+                  GM_setValue('taskInfo[' + window.location.host + _this25.get_giveawayId() + ']', taskInfo)
                 }
               }
             })
@@ -9587,18 +9979,18 @@ try {
           }
 
           AutoTask.toggleTWITTER = /* #__PURE__ */(function () {
-            var _ref85 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee72 (action, name, type) {
-              return regeneratorRuntime.wrap(function _callee72$ (_context73) {
+            var _ref87 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee77 (action, name, type) {
+              return regeneratorRuntime.wrap(function _callee77$ (_context78) {
                 while (1) {
-                  switch (_context73.prev = _context73.next) {
+                  switch (_context78.prev = _context78.next) {
                     case 0:
-                      _context73.next = 2
+                      _context78.next = 2
                       return fuc.updateInfo({}, {
                         twitter: true
                       })
 
                     case 2:
-                      return _context73.abrupt('return', fuc.toggleActions({
+                      return _context78.abrupt('return', fuc.toggleActions({
                         social: 'twitter',
                         website: 'keylol',
                         elements: [name],
@@ -9608,14 +10000,14 @@ try {
 
                     case 3:
                     case 'end':
-                      return _context73.stop()
+                      return _context78.stop()
                   }
                 }
-              }, _callee72)
+              }, _callee77)
             }))
 
             return function (_x52, _x53, _x54) {
-              return _ref85.apply(this, arguments)
+              return _ref87.apply(this, arguments)
             }
           }())
 
@@ -9638,22 +10030,22 @@ try {
           }
 
           AutoTask.toggleSTEAM = /* #__PURE__ */(function () {
-            var _ref86 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 (action, name, type) {
+            var _ref88 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee78 (action, name, type) {
               var isAnnouncement
               var isGroup
               var elements
               var _len
               var args
               var _key
-              var _args74 = arguments
+              var _args79 = arguments
 
-              return regeneratorRuntime.wrap(function _callee73$ (_context74) {
+              return regeneratorRuntime.wrap(function _callee78$ (_context79) {
                 while (1) {
-                  switch (_context74.prev = _context74.next) {
+                  switch (_context79.prev = _context79.next) {
                     case 0:
                       isAnnouncement = type === 'announcement'
                       isGroup = type === 'group'
-                      _context74.next = 4
+                      _context79.next = 4
                       return fuc.updateInfo({}, {
                         steamStore: isGroup || isAnnouncement,
                         steamCommunity: !isGroup
@@ -9662,8 +10054,8 @@ try {
                     case 4:
                       elements = [name]
 
-                      for (_len = _args74.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
-                        args[_key - 3] = _args74[_key]
+                      for (_len = _args79.length, args = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+                        args[_key - 3] = _args79[_key]
                       }
 
                       if (args) {
@@ -9677,7 +10069,7 @@ try {
                         }
                       }
 
-                      return _context74.abrupt('return', fuc.toggleActions({
+                      return _context79.abrupt('return', fuc.toggleActions({
                         social: 'steam',
                         website: 'keylol',
                         elements: elements,
@@ -9687,14 +10079,14 @@ try {
 
                     case 8:
                     case 'end':
-                      return _context74.stop()
+                      return _context79.stop()
                   }
                 }
-              }, _callee73)
+              }, _callee78)
             }))
 
             return function (_x55, _x56, _x57) {
-              return _ref86.apply(this, arguments)
+              return _ref88.apply(this, arguments)
             }
           }())
 
@@ -9716,62 +10108,62 @@ try {
           var steamCommunityLinks = mainPost.find('a[href*="steamcommunity.com"]')
 
           if (discordLinks.length > 0) {
-            var _iterator29 = _createForOfIteratorHelper(discordLinks)
-            var _step29
+            var _iterator31 = _createForOfIteratorHelper(discordLinks)
+            var _step31
 
             try {
-              for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
-                var _link$match
+              for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
+                var _link$match3
 
-                var discordLink = _step29.value
+                var discordLink = _step31.value
                 var link = $(discordLink).attr('href')
-                var inviteId = link === null || link === void 0 ? void 0 : (_link$match = link.match(/invite\/(.+)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+                var inviteId = link === null || link === void 0 ? void 0 : (_link$match3 = link.match(/invite\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
 
                 if (inviteId) {
                   this.addBtn(discordLink, 'toggleDiscord', inviteId, '', ['加入', '退出'])
                 }
               }
             } catch (err) {
-              _iterator29.e(err)
+              _iterator31.e(err)
             } finally {
-              _iterator29.f()
+              _iterator31.f()
             }
           }
 
           if (redditLinks.length > 0) {
-            var _iterator30 = _createForOfIteratorHelper(redditLinks)
-            var _step30
+            var _iterator32 = _createForOfIteratorHelper(redditLinks)
+            var _step32
 
             try {
-              for (_iterator30.s(); !(_step30 = _iterator30.n()).done;) {
-                var _link$match2
+              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+                var _link$match4
 
-                var redditLink = _step30.value
+                var redditLink = _step32.value
 
                 var _link = $(redditLink).attr('href')
 
-                var name = _link === null || _link === void 0 ? void 0 : (_link$match2 = _link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+                var name = _link === null || _link === void 0 ? void 0 : (_link$match4 = _link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]
 
                 if (name) {
                   this.addBtn(redditLink, 'toggleREDDIT', name, '', ['加入', '退出'])
                 }
               }
             } catch (err) {
-              _iterator30.e(err)
+              _iterator32.e(err)
             } finally {
-              _iterator30.f()
+              _iterator32.f()
             }
           }
 
           if (insLinks.length > 0) {
-            var _iterator31 = _createForOfIteratorHelper(insLinks)
-            var _step31
+            var _iterator33 = _createForOfIteratorHelper(insLinks)
+            var _step33
 
             try {
-              for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
+              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
                 var _link2$match
 
-                var insLink = _step31.value
+                var insLink = _step33.value
 
                 var _link2 = $(insLink).attr('href')
 
@@ -9782,21 +10174,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator31.e(err)
+              _iterator33.e(err)
             } finally {
-              _iterator31.f()
+              _iterator33.f()
             }
           }
 
           if (twitterLinks.length > 0) {
-            var _iterator32 = _createForOfIteratorHelper(twitterLinks)
-            var _step32
+            var _iterator34 = _createForOfIteratorHelper(twitterLinks)
+            var _step34
 
             try {
-              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+              for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
                 var _link3$match, _link3$match2
 
-                var twitterLink = _step32.value
+                var twitterLink = _step34.value
 
                 var _link3 = $(twitterLink).attr('href')
 
@@ -9810,21 +10202,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator32.e(err)
+              _iterator34.e(err)
             } finally {
-              _iterator32.f()
+              _iterator34.f()
             }
           }
 
           if (twitchLinks.length > 0) {
-            var _iterator33 = _createForOfIteratorHelper(twitchLinks)
-            var _step33
+            var _iterator35 = _createForOfIteratorHelper(twitchLinks)
+            var _step35
 
             try {
-              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
+              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
                 var _link4$match
 
-                var twitchLink = _step33.value
+                var twitchLink = _step35.value
 
                 var _link4 = $(twitchLink).attr('href')
 
@@ -9835,21 +10227,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator33.e(err)
+              _iterator35.e(err)
             } finally {
-              _iterator33.f()
+              _iterator35.f()
             }
           }
 
           if (vkLinks.length > 0) {
-            var _iterator34 = _createForOfIteratorHelper(vkLinks)
-            var _step34
+            var _iterator36 = _createForOfIteratorHelper(vkLinks)
+            var _step36
 
             try {
-              for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
+              for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
                 var _link5$match
 
-                var vkLink = _step34.value
+                var vkLink = _step36.value
 
                 var _link5 = $(vkLink).attr('href')
 
@@ -9860,21 +10252,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator34.e(err)
+              _iterator36.e(err)
             } finally {
-              _iterator34.f()
+              _iterator36.f()
             }
           }
 
           if (steamStoreLinks.length > 0) {
-            var _iterator35 = _createForOfIteratorHelper(steamStoreLinks)
-            var _step35
+            var _iterator37 = _createForOfIteratorHelper(steamStoreLinks)
+            var _step37
 
             try {
-              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
+              for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
                 var _link6$match, _link6$match2, _link6$match3, _link6$match4, _link6$match5, _link6$match6, _link6$match7
 
-                var steamStoreLink = _step35.value
+                var steamStoreLink = _step37.value
 
                 var _link6 = $(steamStoreLink).attr('href')
 
@@ -9884,12 +10276,12 @@ try {
                 var developerName = (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match5 = _link6.match(/developer\/(.+)\/?/)) === null || _link6$match5 === void 0 ? void 0 : _link6$match5[1]) || (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match6 = _link6.match(/dev\/(.+)\/?/)) === null || _link6$match6 === void 0 ? void 0 : _link6$match6[1])
                 var franchiseName = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match7 = _link6.match(/franchise\/(.+)\/?/)) === null || _link6$match7 === void 0 ? void 0 : _link6$match7[1]
 
-                var _ref87 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
-                var _ref88 = _slicedToArray(_ref87, 5)
-                var url = _ref88[1]
-                var announcementId = _ref88[2]
-                var wgauthtoken = _ref88[3]
-                var clanid = _ref88[4]
+                var _ref89 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
+                var _ref90 = _slicedToArray(_ref89, 5)
+                var url = _ref90[1]
+                var announcementId = _ref90[2]
+                var wgauthtoken = _ref90[3]
+                var clanid = _ref90[4]
 
                 if (gameId) {
                   this.addBtn(steamStoreLink, 'toggleSTEAM', gameId, 'game', ['关注', '取关'])
@@ -9907,21 +10299,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator35.e(err)
+              _iterator37.e(err)
             } finally {
-              _iterator35.f()
+              _iterator37.f()
             }
           }
 
           if (steamCommunityLinks.length > 0) {
-            var _iterator36 = _createForOfIteratorHelper(steamCommunityLinks)
-            var _step36
+            var _iterator38 = _createForOfIteratorHelper(steamCommunityLinks)
+            var _step38
 
             try {
-              for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
+              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
                 var _link7$match
 
-                var steamCommunityLink = _step36.value
+                var steamCommunityLink = _step38.value
 
                 var _link7 = $(steamCommunityLink).attr('href')
 
@@ -9935,9 +10327,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator36.e(err)
+              _iterator38.e(err)
             } finally {
-              _iterator36.f()
+              _iterator38.f()
             }
           }
 
@@ -9949,29 +10341,29 @@ try {
         }
       },
       fuck: function fuck () {
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee74 () {
-          var selectedBtns, _iterator37, _step37, btn, action
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee79 () {
+          var selectedBtns, _iterator39, _step39, btn, action
 
-          return regeneratorRuntime.wrap(function _callee74$ (_context75) {
+          return regeneratorRuntime.wrap(function _callee79$ (_context80) {
             while (1) {
-              switch (_context75.prev = _context75.next) {
+              switch (_context80.prev = _context80.next) {
                 case 0:
-                  _context75.prev = 0
+                  _context80.prev = 0
                   selectedBtns = $('.auto-task-keylol[selected="selected"]')
-                  _iterator37 = _createForOfIteratorHelper(selectedBtns)
-                  _context75.prev = 3
+                  _iterator39 = _createForOfIteratorHelper(selectedBtns)
+                  _context80.prev = 3
 
-                  _iterator37.s()
+                  _iterator39.s()
 
                 case 5:
-                  if ((_step37 = _iterator37.n()).done) {
-                    _context75.next = 13
+                  if ((_step39 = _iterator39.n()).done) {
+                    _context80.next = 13
                     break
                   }
 
-                  btn = _step37.value
+                  btn = _step39.value
                   action = $(btn).attr('onclick')
-                  _context75.next = 10
+                  _context80.next = 10
                   return eval(action)
 
                 case 10:
@@ -9979,41 +10371,41 @@ try {
                   btn.removeAttribute('selected')
 
                 case 11:
-                  _context75.next = 5
+                  _context80.next = 5
                   break
 
                 case 13:
-                  _context75.next = 18
+                  _context80.next = 18
                   break
 
                 case 15:
-                  _context75.prev = 15
-                  _context75.t0 = _context75.catch(3)
+                  _context80.prev = 15
+                  _context80.t0 = _context80.catch(3)
 
-                  _iterator37.e(_context75.t0)
+                  _iterator39.e(_context80.t0)
 
                 case 18:
-                  _context75.prev = 18
+                  _context80.prev = 18
 
-                  _iterator37.f()
+                  _iterator39.f()
 
-                  return _context75.finish(18)
+                  return _context80.finish(18)
 
                 case 21:
-                  _context75.next = 26
+                  _context80.next = 26
                   break
 
                 case 23:
-                  _context75.prev = 23
-                  _context75.t1 = _context75.catch(0)
-                  throwError(_context75.t1, 'keylol.fuck')
+                  _context80.prev = 23
+                  _context80.t1 = _context80.catch(0)
+                  throwError(_context80.t1, 'keylol.fuck')
 
                 case 26:
                 case 'end':
-                  return _context75.stop()
+                  return _context80.stop()
               }
             }
-          }, _callee74, null, [[0, 23], [3, 15, 18, 21]])
+          }, _callee79, null, [[0, 23], [3, 15, 18, 21]])
         }))()
       },
       verify: function verify () {},
@@ -10041,58 +10433,58 @@ try {
         }
       },
       updateSteamInfo: function updateSteamInfo (callback) {
-        var _this22 = this
+        var _this26 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee75 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee80 () {
           var result
-          return regeneratorRuntime.wrap(function _callee75$ (_context76) {
+          return regeneratorRuntime.wrap(function _callee80$ (_context81) {
             while (1) {
-              switch (_context76.prev = _context76.next) {
+              switch (_context81.prev = _context81.next) {
                 case 0:
-                  _context76.prev = 0
+                  _context81.prev = 0
                   result = false
 
-                  if (!(_this22.taskInfo.groups.length > 0)) {
-                    _context76.next = 14
+                  if (!(_this26.taskInfo.groups.length > 0)) {
+                    _context81.next = 14
                     break
                   }
 
-                  if (!(_this22.taskInfo.curators.length > 0 || _this22.taskInfo.fGames.length > 0 || _this22.taskInfo.wishlists.length > 0)) {
-                    _context76.next = 9
+                  if (!(_this26.taskInfo.curators.length > 0 || _this26.taskInfo.fGames.length > 0 || _this26.taskInfo.wishlists.length > 0)) {
+                    _context81.next = 9
                     break
                   }
 
-                  _context76.next = 6
+                  _context81.next = 6
                   return fuc.updateSteamInfo('all')
 
                 case 6:
-                  result = _context76.sent
-                  _context76.next = 12
+                  result = _context81.sent
+                  _context81.next = 12
                   break
 
                 case 9:
-                  _context76.next = 11
+                  _context81.next = 11
                   return fuc.updateSteamInfo('community')
 
                 case 11:
-                  result = _context76.sent
+                  result = _context81.sent
 
                 case 12:
-                  _context76.next = 21
+                  _context81.next = 21
                   break
 
                 case 14:
-                  if (!(_this22.taskInfo.curators.length > 0 || _this22.taskInfo.fGames.length > 0 || _this22.taskInfo.wishlists.length > 0)) {
-                    _context76.next = 20
+                  if (!(_this26.taskInfo.curators.length > 0 || _this26.taskInfo.fGames.length > 0 || _this26.taskInfo.wishlists.length > 0)) {
+                    _context81.next = 20
                     break
                   }
 
-                  _context76.next = 17
+                  _context81.next = 17
                   return fuc.updateSteamInfo('store')
 
                 case 17:
-                  result = _context76.sent
-                  _context76.next = 21
+                  result = _context81.sent
+                  _context81.next = 21
                   break
 
                 case 20:
@@ -10100,20 +10492,20 @@ try {
 
                 case 21:
                   if (result) callback()
-                  _context76.next = 27
+                  _context81.next = 27
                   break
 
                 case 24:
-                  _context76.prev = 24
-                  _context76.t0 = _context76.catch(0)
-                  throwError(_context76.t0, 'keylol.updateSteamInfo')
+                  _context81.prev = 24
+                  _context81.t0 = _context81.catch(0)
+                  throwError(_context81.t0, 'keylol.updateSteamInfo')
 
                 case 27:
                 case 'end':
-                  return _context76.stop()
+                  return _context81.stop()
               }
             }
-          }, _callee75, null, [[0, 24]])
+          }, _callee80, null, [[0, 24]])
         }))()
       },
       setting: {
@@ -10165,12 +10557,12 @@ try {
             })
             var tasksContainer = $('.container_task')
 
-            var _iterator38 = _createForOfIteratorHelper(tasksContainer)
-            var _step38
+            var _iterator40 = _createForOfIteratorHelper(tasksContainer)
+            var _step40
 
             try {
-              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
-                var task = _step38.value
+              for (_iterator40.s(); !(_step40 = _iterator40.n()).done;) {
+                var task = _step40.value
                 var taskDes = $(task).find('.card-body p.card-text.monospace')
                 var verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
 
@@ -10247,9 +10639,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator38.e(err)
+              _iterator40.e(err)
             } finally {
-              _iterator38.f()
+              _iterator40.f()
             }
 
             this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -10285,37 +10677,37 @@ try {
         }
       },
       do_task: function do_task () {
-        var _this23 = this
+        var _this27 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee76 () {
-          var pro, links, _iterator39, _step39, link
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee81 () {
+          var pro, links, _iterator41, _step41, link
 
-          return regeneratorRuntime.wrap(function _callee76$ (_context77) {
+          return regeneratorRuntime.wrap(function _callee81$ (_context82) {
             while (1) {
-              switch (_context77.prev = _context77.next) {
+              switch (_context82.prev = _context82.next) {
                 case 0:
-                  _context77.prev = 0
+                  _context82.prev = 0
                   pro = []
-                  pro.push(_this23.toggleActions('fuck'))
-                  links = fuc.unique(_this23.currentTaskInfo.links)
+                  pro.push(_this27.toggleActions('fuck'))
+                  links = fuc.unique(_this27.currentTaskInfo.links)
 
-                  if (!_this23.conf.fuck.visitLink) {
-                    _context77.next = 23
+                  if (!_this27.conf.fuck.visitLink) {
+                    _context82.next = 23
                     break
                   }
 
-                  _iterator39 = _createForOfIteratorHelper(links)
-                  _context77.prev = 6
+                  _iterator41 = _createForOfIteratorHelper(links)
+                  _context82.prev = 6
 
-                  _iterator39.s()
+                  _iterator41.s()
 
                 case 8:
-                  if ((_step39 = _iterator39.n()).done) {
-                    _context77.next = 15
+                  if ((_step41 = _iterator41.n()).done) {
+                    _context82.next = 15
                     break
                   }
 
-                  link = _step39.value
+                  link = _step41.value
                   pro.push(fuc.visitLink(link.pageUrl, {
                     url: '/ajax/verifyTasks/webpage/clickedLink',
                     method: 'POST',
@@ -10324,33 +10716,33 @@ try {
                       'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                     },
                     data: $.param({
-                      giveaway_slug: _this23.get_giveawayId(),
+                      giveaway_slug: _this27.get_giveawayId(),
                       giveaway_task_id: link.taskId
                     })
                   }))
-                  _context77.next = 13
+                  _context82.next = 13
                   return delay(500)
 
                 case 13:
-                  _context77.next = 8
+                  _context82.next = 8
                   break
 
                 case 15:
-                  _context77.next = 20
+                  _context82.next = 20
                   break
 
                 case 17:
-                  _context77.prev = 17
-                  _context77.t0 = _context77.catch(6)
+                  _context82.prev = 17
+                  _context82.t0 = _context82.catch(6)
 
-                  _iterator39.e(_context77.t0)
+                  _iterator41.e(_context82.t0)
 
                 case 20:
-                  _context77.prev = 20
+                  _context82.prev = 20
 
-                  _iterator39.f()
+                  _iterator41.f()
 
-                  return _context77.finish(20)
+                  return _context82.finish(20)
 
                 case 23:
                   Promise.all(pro).finally(function () {
@@ -10358,39 +10750,39 @@ try {
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this23.conf.fuck.verifyTask) _this23.verify()
+                    if (_this27.conf.fuck.verifyTask) _this27.verify()
                   })
-                  _context77.next = 29
+                  _context82.next = 29
                   break
 
                 case 26:
-                  _context77.prev = 26
-                  _context77.t1 = _context77.catch(0)
-                  throwError(_context77.t1, 'marvelousga.do_task')
+                  _context82.prev = 26
+                  _context82.t1 = _context82.catch(0)
+                  throwError(_context82.t1, 'marvelousga.do_task')
 
                 case 29:
                 case 'end':
-                  return _context77.stop()
+                  return _context82.stop()
               }
             }
-          }, _callee76, null, [[0, 26], [6, 17, 20, 23]])
+          }, _callee81, null, [[0, 26], [6, 17, 20, 23]])
         }))()
       },
       verifyTask: function verifyTask (task) {
-        var _this24 = this
+        var _this28 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee77 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee82 () {
           var logStatus, _yield$fuc$httpReques5, result, statusText, status, data
 
-          return regeneratorRuntime.wrap(function _callee77$ (_context78) {
+          return regeneratorRuntime.wrap(function _callee82$ (_context83) {
             while (1) {
-              switch (_context78.prev = _context78.next) {
+              switch (_context83.prev = _context83.next) {
                 case 0:
                   logStatus = fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
                   })
-                  _context78.next = 3
+                  _context83.next = 3
                   return fuc.httpRequest({
                     url: '/ajax/verifyTasks/' + task.provider + '/' + task.taskRoute,
                     method: 'POST',
@@ -10400,13 +10792,13 @@ try {
                       'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
                     },
                     data: $.param({
-                      giveaway_slug: _this24.get_giveawayId(),
+                      giveaway_slug: _this28.get_giveawayId(),
                       giveaway_task_id: task.taskId
                     })
                   })
 
                 case 3:
-                  _yield$fuc$httpReques5 = _context78.sent
+                  _yield$fuc$httpReques5 = _context83.sent
                   result = _yield$fuc$httpReques5.result
                   statusText = _yield$fuc$httpReques5.statusText
                   status = _yield$fuc$httpReques5.status
@@ -10445,68 +10837,68 @@ try {
 
                 case 9:
                 case 'end':
-                  return _context78.stop()
+                  return _context83.stop()
               }
             }
-          }, _callee77)
+          }, _callee82)
         }))()
       },
       verify: function verify () {
-        var _arguments7 = arguments
-        var _this25 = this
+        var _arguments9 = arguments
+        var _this29 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee78 () {
-          var verify, pro, _iterator40, _step40, task
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee83 () {
+          var verify, pro, _iterator42, _step42, task
 
-          return regeneratorRuntime.wrap(function _callee78$ (_context79) {
+          return regeneratorRuntime.wrap(function _callee83$ (_context84) {
             while (1) {
-              switch (_context79.prev = _context79.next) {
+              switch (_context84.prev = _context84.next) {
                 case 0:
-                  verify = _arguments7.length > 0 && _arguments7[0] !== undefined ? _arguments7[0] : false
-                  _context79.prev = 1
+                  verify = _arguments9.length > 0 && _arguments9[0] !== undefined ? _arguments9[0] : false
+                  _context84.prev = 1
 
                   if (!verify) {
-                    _context79.next = 25
+                    _context84.next = 25
                     break
                   }
 
                   pro = []
-                  _iterator40 = _createForOfIteratorHelper(fuc.unique(_this25.currentTaskInfo.tasks))
-                  _context79.prev = 5
+                  _iterator42 = _createForOfIteratorHelper(fuc.unique(_this29.currentTaskInfo.tasks))
+                  _context84.prev = 5
 
-                  _iterator40.s()
+                  _iterator42.s()
 
                 case 7:
-                  if ((_step40 = _iterator40.n()).done) {
-                    _context79.next = 14
+                  if ((_step42 = _iterator42.n()).done) {
+                    _context84.next = 14
                     break
                   }
 
-                  task = _step40.value
-                  pro.push(_this25.verifyTask(task))
-                  _context79.next = 12
+                  task = _step42.value
+                  pro.push(_this29.verifyTask(task))
+                  _context84.next = 12
                   return fuc.delay(500)
 
                 case 12:
-                  _context79.next = 7
+                  _context84.next = 7
                   break
 
                 case 14:
-                  _context79.next = 19
+                  _context84.next = 19
                   break
 
                 case 16:
-                  _context79.prev = 16
-                  _context79.t0 = _context79.catch(5)
+                  _context84.prev = 16
+                  _context84.t0 = _context84.catch(5)
 
-                  _iterator40.e(_context79.t0)
+                  _iterator42.e(_context84.t0)
 
                 case 19:
-                  _context79.prev = 19
+                  _context84.prev = 19
 
-                  _iterator40.f()
+                  _iterator42.f()
 
-                  return _context79.finish(19)
+                  return _context84.finish(19)
 
                 case 22:
                   Promise.all(pro).finally(function () {
@@ -10519,112 +10911,112 @@ try {
                       $('#get_key_container')[0].scrollIntoView()
                     })
                   })
-                  _context79.next = 26
+                  _context84.next = 26
                   break
 
                 case 25:
-                  _this25.get_tasks('verify')
+                  _this29.get_tasks('verify')
 
                 case 26:
-                  _context79.next = 31
+                  _context84.next = 31
                   break
 
                 case 28:
-                  _context79.prev = 28
-                  _context79.t1 = _context79.catch(1)
-                  throwError(_context79.t1, 'marvelousga.verify')
+                  _context84.prev = 28
+                  _context84.t1 = _context84.catch(1)
+                  throwError(_context84.t1, 'marvelousga.verify')
 
                 case 31:
                 case 'end':
-                  return _context79.stop()
+                  return _context84.stop()
               }
             }
-          }, _callee78, null, [[1, 28], [5, 16, 19, 22]])
+          }, _callee83, null, [[1, 28], [5, 16, 19, 22]])
         }))()
       },
       remove: function remove () {
-        var _arguments8 = arguments
-        var _this26 = this
+        var _arguments10 = arguments
+        var _this30 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee79 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee84 () {
           var remove
-          return regeneratorRuntime.wrap(function _callee79$ (_context80) {
+          return regeneratorRuntime.wrap(function _callee84$ (_context85) {
             while (1) {
-              switch (_context80.prev = _context80.next) {
+              switch (_context85.prev = _context85.next) {
                 case 0:
-                  remove = _arguments8.length > 0 && _arguments8[0] !== undefined ? _arguments8[0] : false
-                  _context80.prev = 1
+                  remove = _arguments10.length > 0 && _arguments10[0] !== undefined ? _arguments10[0] : false
+                  _context85.prev = 1
 
                   if (!remove) {
-                    _context80.next = 8
+                    _context85.next = 8
                     break
                   }
 
-                  _context80.next = 5
-                  return _this26.toggleActions('remove')
+                  _context85.next = 5
+                  return _this30.toggleActions('remove')
 
                 case 5:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  _context80.next = 9
+                  _context85.next = 9
                   break
 
                 case 8:
-                  _this26.get_tasks('remove')
+                  _this30.get_tasks('remove')
 
                 case 9:
-                  _context80.next = 14
+                  _context85.next = 14
                   break
 
                 case 11:
-                  _context80.prev = 11
-                  _context80.t0 = _context80.catch(1)
-                  throwError(_context80.t0, 'marvelousga.remove')
+                  _context85.prev = 11
+                  _context85.t0 = _context85.catch(1)
+                  throwError(_context85.t0, 'marvelousga.remove')
 
                 case 14:
                 case 'end':
-                  return _context80.stop()
+                  return _context85.stop()
               }
             }
-          }, _callee79, null, [[1, 11]])
+          }, _callee84, null, [[1, 11]])
         }))()
       },
       toggleActions: function toggleActions (action) {
-        var _this27 = this
+        var _this31 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee80 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee85 () {
           var fuck, taskInfo
-          return regeneratorRuntime.wrap(function _callee80$ (_context81) {
+          return regeneratorRuntime.wrap(function _callee85$ (_context86) {
             while (1) {
-              switch (_context81.prev = _context81.next) {
+              switch (_context86.prev = _context86.next) {
                 case 0:
-                  _context81.prev = 0
+                  _context86.prev = 0
                   fuck = action === 'fuck'
-                  taskInfo = fuck ? _this27.currentTaskInfo : _this27.taskInfo
-                  _context81.next = 5
+                  taskInfo = fuck ? _this31.currentTaskInfo : _this31.taskInfo
+                  _context86.next = 5
                   return fuc.updateInfo(taskInfo)
 
                 case 5:
-                  _context81.next = 7
-                  return fuc.assignment(taskInfo, _this27.conf[action], action, 'marvelousga')
+                  _context86.next = 7
+                  return fuc.assignment(taskInfo, _this31.conf[action], action, 'marvelousga')
 
                 case 7:
-                  _context81.next = 12
+                  _context86.next = 12
                   break
 
                 case 9:
-                  _context81.prev = 9
-                  _context81.t0 = _context81.catch(0)
-                  throwError(_context81.t0, 'marvelousga.toggleActions')
+                  _context86.prev = 9
+                  _context86.t0 = _context86.catch(0)
+                  throwError(_context86.t0, 'marvelousga.toggleActions')
 
                 case 12:
                 case 'end':
-                  return _context81.stop()
+                  return _context86.stop()
               }
             }
-          }, _callee80, null, [[0, 9]])
+          }, _callee85, null, [[0, 9]])
         }))()
       },
       get_giveawayId: function get_giveawayId () {
@@ -10652,8 +11044,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref89) {
-              var value = _ref89.value
+            }).then(function (_ref91) {
+              var value = _ref91.value
 
               if (value) {
                 window.close()
@@ -10698,37 +11090,37 @@ try {
         }
       },
       get_tasks: function get_tasks () {
-        var _arguments9 = arguments
-        var _this28 = this
+        var _arguments11 = arguments
+        var _this32 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee81 () {
-          var type, items, maxPoint, myPoint, _iterator41, _step41, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 () {
+          var type, items, maxPoint, myPoint, _iterator43, _step43, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
 
-          return regeneratorRuntime.wrap(function _callee81$ (_context82) {
+          return regeneratorRuntime.wrap(function _callee86$ (_context87) {
             while (1) {
-              switch (_context82.prev = _context82.next) {
+              switch (_context87.prev = _context87.next) {
                 case 0:
-                  type = _arguments9.length > 0 && _arguments9[0] !== undefined ? _arguments9[0] : 'FREE'
-                  _context82.prev = 1
+                  type = _arguments11.length > 0 && _arguments11[0] !== undefined ? _arguments11[0] : 'FREE'
+                  _context87.prev = 1
                   items = $(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))"))
-                  maxPoint = _this28.maxPoint()
-                  myPoint = _this28.myPoints
-                  _iterator41 = _createForOfIteratorHelper(items)
-                  _context82.prev = 6
+                  maxPoint = _this32.maxPoint()
+                  myPoint = _this32.myPoints
+                  _iterator43 = _createForOfIteratorHelper(items)
+                  _context87.prev = 6
 
-                  _iterator41.s()
+                  _iterator43.s()
 
                 case 8:
-                  if ((_step41 = _iterator41.n()).done) {
-                    _context82.next = 33
+                  if ((_step43 = _iterator43.n()).done) {
+                    _context87.next = 33
                     break
                   }
 
-                  item = _step41.value
+                  item = _step43.value
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
-                    _context82.next = 15
+                    _context87.next = 15
                     break
                   }
 
@@ -10736,12 +11128,12 @@ try {
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('noPoints'), '</font></li>')
                   })
-                  _context82.next = 31
+                  _context87.next = 31
                   break
 
                 case 15:
                   if (!(type === 'points' && !needPoints)) {
-                    _context82.next = 19
+                    _context87.next = 19
                     break
                   }
 
@@ -10749,12 +11141,12 @@ try {
                     type: 'custom',
                     text: '<li><font class="warning">'.concat(getI18n('getNeedPointsFailed'), '</font></li>')
                   })
-                  _context82.next = 31
+                  _context87.next = 31
                   break
 
                 case 19:
                   if (type === 'points' && parseInt(needPoints[0]) > maxPoint) {
-                    _context82.next = 31
+                    _context87.next = 31
                     break
                   }
 
@@ -10769,14 +11161,14 @@ try {
                     if (giveawayId) checkUser(giveawayId)
                   }
 
-                  _context82.next = 25
+                  _context87.next = 25
                   return fuc.httpRequest({
                     url: a.attr('href'),
                     method: 'GET'
                   })
 
                 case 25:
-                  _yield$fuc$httpReques6 = _context82.sent
+                  _yield$fuc$httpReques6 = _context87.sent
                   result = _yield$fuc$httpReques6.result
                   statusText = _yield$fuc$httpReques6.statusText
                   status = _yield$fuc$httpReques6.status
@@ -10799,45 +11191,45 @@ try {
                   }
 
                 case 31:
-                  _context82.next = 8
+                  _context87.next = 8
                   break
 
                 case 33:
-                  _context82.next = 38
+                  _context87.next = 38
                   break
 
                 case 35:
-                  _context82.prev = 35
-                  _context82.t0 = _context82.catch(6)
+                  _context87.prev = 35
+                  _context87.t0 = _context87.catch(6)
 
-                  _iterator41.e(_context82.t0)
+                  _iterator43.e(_context87.t0)
 
                 case 38:
-                  _context82.prev = 38
+                  _context87.prev = 38
 
-                  _iterator41.f()
+                  _iterator43.f()
 
-                  return _context82.finish(38)
+                  return _context87.finish(38)
 
                 case 41:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li>-----END-----</li>'
                   })
-                  _context82.next = 47
+                  _context87.next = 47
                   break
 
                 case 44:
-                  _context82.prev = 44
-                  _context82.t1 = _context82.catch(1)
-                  throwError(_context82.t1, 'opiumpulses.get_tasks')
+                  _context87.prev = 44
+                  _context87.t1 = _context87.catch(1)
+                  throwError(_context87.t1, 'opiumpulses.get_tasks')
 
                 case 47:
                 case 'end':
-                  return _context82.stop()
+                  return _context87.stop()
               }
             }
-          }, _callee81, null, [[1, 44], [6, 35, 38, 41]])
+          }, _callee86, null, [[1, 44], [6, 35, 38, 41]])
         }))()
       },
       verify: function verify () {
@@ -10903,7 +11295,7 @@ try {
         }
       },
       get_tasks: function get_tasks () {
-        var _this29 = this
+        var _this33 = this
 
         var callback = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'do_task'
 
@@ -10924,19 +11316,19 @@ try {
             var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
             if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-            var _iterator42 = _createForOfIteratorHelper(steps)
-            var _step42
+            var _iterator44 = _createForOfIteratorHelper(steps)
+            var _step44
 
             try {
-              for (_iterator42.s(); !(_step42 = _iterator42.n()).done;) {
-                var step = _step42.value
+              for (_iterator44.s(); !(_step44 = _iterator44.n()).done;) {
+                var step = _step44.value
 
                 if ($(step).find('span:contains(Success)').length === 0) {
                   if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                    var _link$match3
+                    var _link$match5
 
                     var link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-                    var curatorId = (_link$match3 = link.match(/curator\/([\d]+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
+                    var curatorId = (_link$match5 = link.match(/curator\/([\d]+)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]
 
                     if (curatorId) {
                       this.currentTaskInfo.curators.push(curatorId)
@@ -10956,19 +11348,19 @@ try {
                   } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                     var _link9 = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref90) {
-                      var result = _ref90.result
-                      var finalUrl = _ref90.finalUrl
+                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref92) {
+                      var result = _ref92.result
+                      var finalUrl = _ref92.finalUrl
 
                       if (result === 'Success') {
-                        var _finalUrl$match8
+                        var _finalUrl$match9
 
-                        var _groupName2 = (_finalUrl$match8 = finalUrl.match(/groups\/(.+)\/?/)) === null || _finalUrl$match8 === void 0 ? void 0 : _finalUrl$match8[1]
+                        var _groupName2 = (_finalUrl$match9 = finalUrl.match(/groups\/(.+)\/?/)) === null || _finalUrl$match9 === void 0 ? void 0 : _finalUrl$match9[1]
 
                         if (_groupName2) {
-                          _this29.currentTaskInfo.groups.push(_groupName2)
+                          _this33.currentTaskInfo.groups.push(_groupName2)
 
-                          _this29.taskInfo.groups.push(_groupName2)
+                          _this33.taskInfo.groups.push(_groupName2)
                         }
                       }
                     }))
@@ -10976,24 +11368,24 @@ try {
                 }
               }
             } catch (err) {
-              _iterator42.e(err)
+              _iterator44.e(err)
             } finally {
-              _iterator42.f()
+              _iterator44.f()
             }
 
             Promise.all(pro).finally(function () {
-              _this29.currentTaskInfo = fuc.uniqueTaskInfo(_this29.currentTaskInfo)
-              _this29.taskInfo = fuc.uniqueTaskInfo(_this29.taskInfo)
-              GM_setValue('taskInfo[' + window.location.host + _this29.get_giveawayId() + ']', _this29.taskInfo)
+              _this33.currentTaskInfo = fuc.uniqueTaskInfo(_this33.currentTaskInfo)
+              _this33.taskInfo = fuc.uniqueTaskInfo(_this33.taskInfo)
+              GM_setValue('taskInfo[' + window.location.host + _this33.get_giveawayId() + ']', _this33.taskInfo)
 
-              if (_this29.currentTaskInfo.groups.length > 0 || _this29.currentTaskInfo.curators.length > 0) {
-                _this29.do_task()
+              if (_this33.currentTaskInfo.groups.length > 0 || _this33.currentTaskInfo.curators.length > 0) {
+                _this33.do_task()
               } else {
                 fuc.echoLog({
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                 })
-                if (_this29.conf.fuck.verifyTask) _this29.verify()
+                if (_this33.conf.fuck.verifyTask) _this33.verify()
               }
             })
           } else if (callback === 'verify') {
@@ -11001,14 +11393,14 @@ try {
             var checks = $('#steps tbody a[id^=check]')
 
             if (checks.length > 0) {
-              var _iterator43 = _createForOfIteratorHelper(checks)
-              var _step43
+              var _iterator45 = _createForOfIteratorHelper(checks)
+              var _step45
 
               try {
-                for (_iterator43.s(); !(_step43 = _iterator43.n()).done;) {
+                for (_iterator45.s(); !(_step45 = _iterator45.n()).done;) {
                   var _$$attr$match
 
-                  var check = _step43.value
+                  var check = _step45.value
                   var id = (_$$attr$match = $(check).attr('id').match(/[\d]+/)) === null || _$$attr$match === void 0 ? void 0 : _$$attr$match[0]
                   if (id) {
                     this.currentTaskInfo.tasks.push({
@@ -11018,9 +11410,9 @@ try {
                   }
                 }
               } catch (err) {
-                _iterator43.e(err)
+                _iterator45.e(err)
               } finally {
-                _iterator43.f()
+                _iterator45.f()
               }
 
               this.verify(true)
@@ -11039,61 +11431,61 @@ try {
             } else {
               var _pro = []
 
-              var _iterator44 = _createForOfIteratorHelper(steps)
-              var _step44
+              var _iterator46 = _createForOfIteratorHelper(steps)
+              var _step46
 
               try {
-                for (_iterator44.s(); !(_step44 = _iterator44.n()).done;) {
-                  var _step45 = _step44.value
+                for (_iterator46.s(); !(_step46 = _iterator46.n()).done;) {
+                  var _step47 = _step46.value
 
-                  if ($(_step45).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                  if ($(_step47).find("a[href*='store.steampowered.com/curator/']").length > 0) {
                     var _link10$match
 
-                    var _link10 = $(_step45).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                    var _link10 = $(_step47).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
                     var _curatorId = (_link10$match = _link10.match(/curator\/([\d]+)/)) === null || _link10$match === void 0 ? void 0 : _link10$match[1]
 
                     if (_curatorId) this.taskInfo.curators.push(_curatorId)
-                  } else if ($(_step45).find("a[href*='steampowered.com/groups/']").length > 0) {
+                  } else if ($(_step47).find("a[href*='steampowered.com/groups/']").length > 0) {
                     var _link11$match
 
-                    var _link11 = $(_step45).find("a[href*='steampowered.com/groups/']").attr('href')
+                    var _link11 = $(_step47).find("a[href*='steampowered.com/groups/']").attr('href')
 
                     var _groupName3 = (_link11$match = _link11.match(/groups\/(.+)\/?/)) === null || _link11$match === void 0 ? void 0 : _link11$match[1]
 
                     if (_groupName3) this.taskInfo.groups.push(_groupName3)
-                  } else if ($(_step45).find("a[href*='steamcommunity.com/gid']").length > 0) {
-                    var _link12 = $(_step45).find("a[href*='steamcommunity.com/gid']").attr('href')
+                  } else if ($(_step47).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                    var _link12 = $(_step47).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref91) {
-                      var result = _ref91.result
-                      var finalUrl = _ref91.finalUrl
+                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref93) {
+                      var result = _ref93.result
+                      var finalUrl = _ref93.finalUrl
 
                       if (result === 'Success') {
-                        var _finalUrl$match9
+                        var _finalUrl$match10
 
-                        var _groupName4 = (_finalUrl$match9 = finalUrl.match(/groups\/(.+)\/?/)) === null || _finalUrl$match9 === void 0 ? void 0 : _finalUrl$match9[1]
+                        var _groupName4 = (_finalUrl$match10 = finalUrl.match(/groups\/(.+)\/?/)) === null || _finalUrl$match10 === void 0 ? void 0 : _finalUrl$match10[1]
 
                         if (_groupName4) {
-                          _this29.taskInfo.groups.push(_groupName4)
+                          _this33.taskInfo.groups.push(_groupName4)
                         }
                       }
                     }))
                   }
                 }
               } catch (err) {
-                _iterator44.e(err)
+                _iterator46.e(err)
               } finally {
-                _iterator44.f()
+                _iterator46.f()
               }
 
               if (_pro.length > 0) {
                 Promise.all(_pro).finally(function () {
-                  _this29.taskInfo = fuc.uniqueTaskInfo(_this29.taskInfo)
-                  GM_setValue('taskInfo[' + window.location.host + _this29.get_giveawayId() + ']', _this29.taskInfo)
+                  _this33.taskInfo = fuc.uniqueTaskInfo(_this33.taskInfo)
+                  GM_setValue('taskInfo[' + window.location.host + _this33.get_giveawayId() + ']', _this33.taskInfo)
 
-                  if (_this29.taskInfo.groups.length > 0 || _this29.taskInfo.curators.length > 0) {
-                    _this29.remove(true)
+                  if (_this33.taskInfo.groups.length > 0 || _this33.taskInfo.curators.length > 0) {
+                    _this33.remove(true)
                   } else {
                     fuc.echoLog({
                       type: 'custom',
@@ -11129,41 +11521,41 @@ try {
         }
       },
       do_task: function do_task () {
-        var _this30 = this
+        var _this34 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee82 () {
-          return regeneratorRuntime.wrap(function _callee82$ (_context83) {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee87 () {
+          return regeneratorRuntime.wrap(function _callee87$ (_context88) {
             while (1) {
-              switch (_context83.prev = _context83.next) {
+              switch (_context88.prev = _context88.next) {
                 case 0:
-                  _context83.prev = 0
-                  _context83.next = 3
-                  return _this30.toggleActions('fuck')
+                  _context88.prev = 0
+                  _context88.next = 3
+                  return _this34.toggleActions('fuck')
 
                 case 3:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  if (_this30.conf.fuck.verifyTask) _this30.verify()
-                  _context83.next = 10
+                  if (_this34.conf.fuck.verifyTask) _this34.verify()
+                  _context88.next = 10
                   break
 
                 case 7:
-                  _context83.prev = 7
-                  _context83.t0 = _context83.catch(0)
-                  throwError(_context83.t0, 'prys.do_task')
+                  _context88.prev = 7
+                  _context88.t0 = _context88.catch(0)
+                  throwError(_context88.t0, 'prys.do_task')
 
                 case 10:
                 case 'end':
-                  return _context83.stop()
+                  return _context88.stop()
               }
             }
-          }, _callee82, null, [[0, 7]])
+          }, _callee87, null, [[0, 7]])
         }))()
       },
       verify: function verify () {
-        var _this31 = this
+        var _this35 = this
 
         var verify = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false
 
@@ -11171,28 +11563,28 @@ try {
           if (verify) {
             var pro = []
 
-            var _iterator45 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-            var _step46
+            var _iterator47 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+            var _step48
 
             try {
               var _loop5 = function _loop5 () {
-                var task = _step46.value
+                var task = _step48.value
                 var status = fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
                 })
                 pro.push(new Promise(function (resolve) {
-                  _this31.checkStep(task.id, resolve, status)
+                  _this35.checkStep(task.id, resolve, status)
                 }))
               }
 
-              for (_iterator45.s(); !(_step46 = _iterator45.n()).done;) {
+              for (_iterator47.s(); !(_step48 = _iterator47.n()).done;) {
                 _loop5()
               }
             } catch (err) {
-              _iterator45.e(err)
+              _iterator47.e(err)
             } finally {
-              _iterator45.f()
+              _iterator47.f()
             }
 
             Promise.all(pro).finally(function () {
@@ -11254,88 +11646,88 @@ try {
         }
       },
       remove: function remove () {
-        var _arguments10 = arguments
-        var _this32 = this
+        var _arguments12 = arguments
+        var _this36 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee83 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee88 () {
           var remove
-          return regeneratorRuntime.wrap(function _callee83$ (_context84) {
+          return regeneratorRuntime.wrap(function _callee88$ (_context89) {
             while (1) {
-              switch (_context84.prev = _context84.next) {
+              switch (_context89.prev = _context89.next) {
                 case 0:
-                  remove = _arguments10.length > 0 && _arguments10[0] !== undefined ? _arguments10[0] : false
-                  _context84.prev = 1
+                  remove = _arguments12.length > 0 && _arguments12[0] !== undefined ? _arguments12[0] : false
+                  _context89.prev = 1
 
                   if (!remove) {
-                    _context84.next = 8
+                    _context89.next = 8
                     break
                   }
 
-                  _context84.next = 5
-                  return _this32.toggleActions('remove')
+                  _context89.next = 5
+                  return _this36.toggleActions('remove')
 
                 case 5:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  _context84.next = 9
+                  _context89.next = 9
                   break
 
                 case 8:
-                  _this32.get_tasks('remove')
+                  _this36.get_tasks('remove')
 
                 case 9:
-                  _context84.next = 14
+                  _context89.next = 14
                   break
 
                 case 11:
-                  _context84.prev = 11
-                  _context84.t0 = _context84.catch(1)
-                  throwError(_context84.t0, 'prys.remove')
+                  _context89.prev = 11
+                  _context89.t0 = _context89.catch(1)
+                  throwError(_context89.t0, 'prys.remove')
 
                 case 14:
                 case 'end':
-                  return _context84.stop()
+                  return _context89.stop()
               }
             }
-          }, _callee83, null, [[1, 11]])
+          }, _callee88, null, [[1, 11]])
         }))()
       },
       toggleActions: function toggleActions (action) {
-        var _this33 = this
+        var _this37 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee84 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee89 () {
           var fuck, taskInfo
-          return regeneratorRuntime.wrap(function _callee84$ (_context85) {
+          return regeneratorRuntime.wrap(function _callee89$ (_context90) {
             while (1) {
-              switch (_context85.prev = _context85.next) {
+              switch (_context90.prev = _context90.next) {
                 case 0:
-                  _context85.prev = 0
+                  _context90.prev = 0
                   fuck = action === 'fuck'
-                  taskInfo = fuck ? _this33.currentTaskInfo : _this33.taskInfo
-                  _context85.next = 5
+                  taskInfo = fuck ? _this37.currentTaskInfo : _this37.taskInfo
+                  _context90.next = 5
                   return fuc.updateInfo(taskInfo)
 
                 case 5:
-                  _context85.next = 7
-                  return fuc.assignment(taskInfo, _this33.conf[action], action, 'prys')
+                  _context90.next = 7
+                  return fuc.assignment(taskInfo, _this37.conf[action], action, 'prys')
 
                 case 7:
-                  _context85.next = 12
+                  _context90.next = 12
                   break
 
                 case 9:
-                  _context85.prev = 9
-                  _context85.t0 = _context85.catch(0)
-                  throwError(_context85.t0, 'prys.toggleActions')
+                  _context90.prev = 9
+                  _context90.t0 = _context90.catch(0)
+                  throwError(_context90.t0, 'prys.toggleActions')
 
                 case 12:
                 case 'end':
-                  return _context85.stop()
+                  return _context90.stop()
               }
             }
-          }, _callee84, null, [[0, 9]])
+          }, _callee89, null, [[0, 9]])
         }))()
       },
       get_giveawayId: function get_giveawayId () {
@@ -11359,8 +11751,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref92) {
-              var value = _ref92.value
+            }).then(function (_ref94) {
+              var value = _ref94.value
 
               if (value) {
                 window.close()
@@ -11399,39 +11791,39 @@ try {
         }
       },
       get_tasks: function get_tasks () {
-        var _arguments11 = arguments
-        var _this34 = this
+        var _arguments13 = arguments
+        var _this38 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee85 () {
-          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator46, _step47, task, icon, a, link, _link$match4, path
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee90 () {
+          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator48, _step49, task, icon, a, link, _link$match6, path
 
-          return regeneratorRuntime.wrap(function _callee85$ (_context86) {
+          return regeneratorRuntime.wrap(function _callee90$ (_context91) {
             while (1) {
-              switch (_context86.prev = _context86.next) {
+              switch (_context91.prev = _context91.next) {
                 case 0:
-                  callback = _arguments11.length > 0 && _arguments11[0] !== undefined ? _arguments11[0] : 'do_task'
+                  callback = _arguments13.length > 0 && _arguments13[0] !== undefined ? _arguments13[0] : 'do_task'
 
                   try {
-                    taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + _this34.get_giveawayId() + ']')
-                    if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) _this34.taskInfo = taskInfoHistory
+                    taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + _this38.get_giveawayId() + ']')
+                    if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) _this38.taskInfo = taskInfoHistory
 
                     if (callback === 'remove' && taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) {
-                      _this34.remove(true)
+                      _this38.remove(true)
                     } else {
-                      _this34.currentTaskInfo = fuc.clearTaskInfo(_this34.currentTaskInfo)
+                      _this38.currentTaskInfo = fuc.clearTaskInfo(_this38.currentTaskInfo)
                       status = fuc.echoLog({
                         type: 'custom',
                         text: '<li>'.concat(getI18n('getTasksInfo'), '<font></font></li>')
                       })
                       tasksContainer = $('#usl>div')
                       pro = []
-                      _iterator46 = _createForOfIteratorHelper(tasksContainer)
+                      _iterator48 = _createForOfIteratorHelper(tasksContainer)
 
                       try {
-                        for (_iterator46.s(); !(_step47 = _iterator46.n()).done;) {
-                          task = _step47.value
+                        for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
+                          task = _step49.value
 
-                          _this34.currentTaskInfo.tasks.push(task)
+                          _this38.currentTaskInfo.tasks.push(task)
 
                           icon = $(task).find('i')
                           a = $(task).children('a[id]').attr('onclick', 'return false;')
@@ -11442,32 +11834,32 @@ try {
 
                           if (icon.hasClass('fa-steam')) {
                             if (link && /gid\/[\d]+/.test(link)) {
-                              pro.push(fuc.getFinalUrl(link).then(function (_ref93) {
-                                var result = _ref93.result
-                                var finalUrl = _ref93.finalUrl
+                              pro.push(fuc.getFinalUrl(link).then(function (_ref95) {
+                                var result = _ref95.result
+                                var finalUrl = _ref95.finalUrl
 
                                 if (result === 'Success') {
-                                  var _finalUrl$match10
+                                  var _finalUrl$match11
 
-                                  var groupName = (_finalUrl$match10 = finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)) === null || _finalUrl$match10 === void 0 ? void 0 : _finalUrl$match10[1]
+                                  var groupName = (_finalUrl$match11 = finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)) === null || _finalUrl$match11 === void 0 ? void 0 : _finalUrl$match11[1]
 
                                   if (groupName) {
-                                    _this34.currentTaskInfo.groups.push(groupName)
+                                    _this38.currentTaskInfo.groups.push(groupName)
 
-                                    _this34.taskInfo.groups.push(groupName)
+                                    _this38.taskInfo.groups.push(groupName)
                                   }
                                 }
                               }))
                             }
                           } else if (icon.hasClass('fa-link')) {
-                            _this34.currentTaskInfo.links.push(link)
+                            _this38.currentTaskInfo.links.push(link)
                           } else if (icon.hasClass('fa-vk')) {
-                            path = (_link$match4 = link.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]
+                            path = (_link$match6 = link.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]
 
                             if (path) {
-                              _this34.currentTaskInfo.vks.push(path)
+                              _this38.currentTaskInfo.vks.push(path)
 
-                              _this34.taskInfo.vks.push(path)
+                              _this38.taskInfo.vks.push(path)
                             }
                           } else {
                             fuc.echoLog({
@@ -11477,30 +11869,30 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator46.e(err)
+                        _iterator48.e(err)
                       } finally {
-                        _iterator46.f()
+                        _iterator48.f()
                       }
 
                       Promise.all(pro).finally(function () {
-                        _this34.currentTaskInfo = fuc.uniqueTaskInfo(_this34.currentTaskInfo)
-                        _this34.taskInfo = fuc.uniqueTaskInfo(_this34.taskInfo)
-                        GM_setValue('taskInfo[' + window.location.host + _this34.get_giveawayId() + ']', _this34.taskInfo)
+                        _this38.currentTaskInfo = fuc.uniqueTaskInfo(_this38.currentTaskInfo)
+                        _this38.taskInfo = fuc.uniqueTaskInfo(_this38.taskInfo)
+                        GM_setValue('taskInfo[' + window.location.host + _this38.get_giveawayId() + ']', _this38.taskInfo)
                         status.success()
-                        if (debug) console.log(_this34)
+                        if (debug) console.log(_this38)
 
                         if (callback === 'do_task') {
-                          if (_this34.currentTaskInfo.tasks.length === 0) {
+                          if (_this38.currentTaskInfo.tasks.length === 0) {
                             fuc.echoLog({
                               type: 'custom',
                               text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                             })
-                            if (_this34.conf.fuck.verifyTask) _this34.verify()
+                            if (_this38.conf.fuck.verifyTask) _this38.verify()
                           } else {
-                            _this34.do_task()
+                            _this38.do_task()
                           }
                         } else {
-                          !fuc.isEmptyObjArr(_this34.taskInfo) ? _this34.remove(true) : fuc.echoLog({
+                          !fuc.isEmptyObjArr(_this38.taskInfo) ? _this38.remove(true) : fuc.echoLog({
                             type: 'custom',
                             text: '<li><font class="warning">'.concat(getI18n('cannotRemove'), '</font></li>')
                           })
@@ -11513,71 +11905,71 @@ try {
 
                 case 2:
                 case 'end':
-                  return _context86.stop()
+                  return _context91.stop()
               }
             }
-          }, _callee85)
+          }, _callee90)
         }))()
       },
       do_task: function do_task () {
-        var _this35 = this
+        var _this39 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 () {
-          var pro, links, _iterator47, _step48, link
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee91 () {
+          var pro, links, _iterator49, _step50, link
 
-          return regeneratorRuntime.wrap(function _callee86$ (_context87) {
+          return regeneratorRuntime.wrap(function _callee91$ (_context92) {
             while (1) {
-              switch (_context87.prev = _context87.next) {
+              switch (_context92.prev = _context92.next) {
                 case 0:
-                  _context87.prev = 0
+                  _context92.prev = 0
 
                   pro = []
-                  pro.push(_this35.toggleActions('fuck'))
-                  links = fuc.unique(_this35.currentTaskInfo.links)
+                  pro.push(_this39.toggleActions('fuck'))
+                  links = fuc.unique(_this39.currentTaskInfo.links)
 
-                  if (!_this35.conf.fuck.visitLink) {
-                    _context87.next = 23
+                  if (!_this39.conf.fuck.visitLink) {
+                    _context92.next = 23
                     break
                   }
 
-                  _iterator47 = _createForOfIteratorHelper(links)
-                  _context87.prev = 6
+                  _iterator49 = _createForOfIteratorHelper(links)
+                  _context92.prev = 6
 
-                  _iterator47.s()
+                  _iterator49.s()
 
                 case 8:
-                  if ((_step48 = _iterator47.n()).done) {
-                    _context87.next = 15
+                  if ((_step50 = _iterator49.n()).done) {
+                    _context92.next = 15
                     break
                   }
 
-                  link = _step48.value
+                  link = _step50.value
                   pro.push(fuc.visitLink(link, {
                     method: 'GET'
                   }))
-                  _context87.next = 13
+                  _context92.next = 13
                   return fuc.delay(1000)
 
                 case 13:
-                  _context87.next = 8
+                  _context92.next = 8
                   break
 
                 case 15:
-                  _context87.next = 20
+                  _context92.next = 20
                   break
 
                 case 17:
-                  _context87.prev = 17
-                  _context87.t0 = _context87.catch(6)
+                  _context92.prev = 17
+                  _context92.t0 = _context92.catch(6)
 
-                  _iterator47.e(_context87.t0)
+                  _iterator49.e(_context92.t0)
 
                 case 20:
-                  _context87.prev = 20
+                  _context92.prev = 20
 
-                  _iterator47.f()
+                  _iterator49.f()
 
-                  return _context87.finish(20)
+                  return _context92.finish(20)
 
                 case 23:
                   Promise.all(pro).finally(function () {
@@ -11585,38 +11977,38 @@ try {
                       type: 'custom',
                       text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                     })
-                    if (_this35.conf.fuck.verifyTask) _this35.verify()
+                    if (_this39.conf.fuck.verifyTask) _this39.verify()
                   })
-                  _context87.next = 29
+                  _context92.next = 29
                   break
 
                 case 26:
-                  _context87.prev = 26
-                  _context87.t1 = _context87.catch(0)
-                  throwError(_context87.t1, 'takekey.do_task')
+                  _context92.prev = 26
+                  _context92.t1 = _context92.catch(0)
+                  throwError(_context92.t1, 'takekey.do_task')
 
                 case 29:
                 case 'end':
-                  return _context87.stop()
+                  return _context92.stop()
               }
             }
-          }, _callee86, null, [[0, 26], [6, 17, 20, 23]])
+          }, _callee91, null, [[0, 26], [6, 17, 20, 23]])
         }))()
       },
       verify: function verify () {
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee87 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee92 () {
           var logStatus, _yield$fuc$httpReques7, result, statusText, status, data, _data$response24, _data$response25, _data$response26
 
-          return regeneratorRuntime.wrap(function _callee87$ (_context88) {
+          return regeneratorRuntime.wrap(function _callee92$ (_context93) {
             while (1) {
-              switch (_context88.prev = _context88.next) {
+              switch (_context93.prev = _context93.next) {
                 case 0:
-                  _context88.prev = 0
+                  _context93.prev = 0
                   logStatus = fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('verifyingTask'), '...<font></font></li>')
                   })
-                  _context88.next = 4
+                  _context93.next = 4
                   return fuc.httpRequest({
                     url: window.location.href,
                     method: 'POST',
@@ -11624,7 +12016,7 @@ try {
                   })
 
                 case 4:
-                  _yield$fuc$httpReques7 = _context88.sent
+                  _yield$fuc$httpReques7 = _context93.sent
                   result = _yield$fuc$httpReques7.result
                   statusText = _yield$fuc$httpReques7.statusText
                   status = _yield$fuc$httpReques7.status
@@ -11642,105 +12034,105 @@ try {
 
                   logStatus.scrollIntoView()
 
-                  _context88.next = 16
+                  _context93.next = 16
                   break
 
                 case 13:
-                  _context88.prev = 13
-                  _context88.t0 = _context88.catch(0)
-                  throwError(_context88.t0, 'takekey.verify')
+                  _context93.prev = 13
+                  _context93.t0 = _context93.catch(0)
+                  throwError(_context93.t0, 'takekey.verify')
 
                 case 16:
                 case 'end':
-                  return _context88.stop()
+                  return _context93.stop()
               }
             }
-          }, _callee87, null, [[0, 13]])
+          }, _callee92, null, [[0, 13]])
         }))()
       },
       toggleActions: function toggleActions (action) {
-        var _this36 = this
+        var _this40 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee88 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee93 () {
           var fuck, taskInfo
-          return regeneratorRuntime.wrap(function _callee88$ (_context89) {
+          return regeneratorRuntime.wrap(function _callee93$ (_context94) {
             while (1) {
-              switch (_context89.prev = _context89.next) {
+              switch (_context94.prev = _context94.next) {
                 case 0:
-                  _context89.prev = 0
+                  _context94.prev = 0
                   fuck = action === 'fuck'
-                  taskInfo = fuck ? _this36.currentTaskInfo : _this36.taskInfo
-                  _context89.next = 5
+                  taskInfo = fuck ? _this40.currentTaskInfo : _this40.taskInfo
+                  _context94.next = 5
                   return fuc.updateInfo(taskInfo)
 
                 case 5:
-                  _context89.next = 7
-                  return fuc.assignment(taskInfo, _this36.conf[action], action, 'givekey')
+                  _context94.next = 7
+                  return fuc.assignment(taskInfo, _this40.conf[action], action, 'takekey')
 
                 case 7:
-                  _context89.next = 12
+                  _context94.next = 12
                   break
 
                 case 9:
-                  _context89.prev = 9
-                  _context89.t0 = _context89.catch(0)
-                  throwError(_context89.t0, 'takekey.toggleActions')
+                  _context94.prev = 9
+                  _context94.t0 = _context94.catch(0)
+                  throwError(_context94.t0, 'takekey.toggleActions')
 
                 case 12:
                 case 'end':
-                  return _context89.stop()
+                  return _context94.stop()
               }
             }
-          }, _callee88, null, [[0, 9]])
+          }, _callee93, null, [[0, 9]])
         }))()
       },
       remove: function remove () {
-        var _arguments12 = arguments
-        var _this37 = this
+        var _arguments14 = arguments
+        var _this41 = this
 
-        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee89 () {
+        return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee94 () {
           var remove
-          return regeneratorRuntime.wrap(function _callee89$ (_context90) {
+          return regeneratorRuntime.wrap(function _callee94$ (_context95) {
             while (1) {
-              switch (_context90.prev = _context90.next) {
+              switch (_context95.prev = _context95.next) {
                 case 0:
-                  remove = _arguments12.length > 0 && _arguments12[0] !== undefined ? _arguments12[0] : false
-                  _context90.prev = 1
+                  remove = _arguments14.length > 0 && _arguments14[0] !== undefined ? _arguments14[0] : false
+                  _context95.prev = 1
 
                   if (!remove) {
-                    _context90.next = 8
+                    _context95.next = 8
                     break
                   }
 
-                  _context90.next = 5
-                  return _this37.toggleActions('remove')
+                  _context95.next = 5
+                  return _this41.toggleActions('remove')
 
                 case 5:
                   fuc.echoLog({
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
-                  _context90.next = 9
+                  _context95.next = 9
                   break
 
                 case 8:
-                  _this37.get_tasks('remove')
+                  _this41.get_tasks('remove')
 
                 case 9:
-                  _context90.next = 14
+                  _context95.next = 14
                   break
 
                 case 11:
-                  _context90.prev = 11
-                  _context90.t0 = _context90.catch(1)
-                  throwError(_context90.t0, 'takekey.remove')
+                  _context95.prev = 11
+                  _context95.t0 = _context95.catch(1)
+                  throwError(_context95.t0, 'takekey.remove')
 
                 case 14:
                 case 'end':
-                  return _context90.stop()
+                  return _context95.stop()
               }
             }
-          }, _callee89, null, [[1, 11]])
+          }, _callee94, null, [[1, 11]])
         }))()
       },
       get_giveawayId: function get_giveawayId () {
@@ -11772,8 +12164,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref94) {
-              var value = _ref94.value
+            }).then(function (_ref96) {
+              var value = _ref96.value
 
               if (value) {
                 window.close()
@@ -11801,7 +12193,7 @@ try {
       conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
     }
     var website = null
-    var websites = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keylol, marvelousga, opiumpulses, prys, takekey]
+    var websites = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keyhub, keylol, marvelousga, opiumpulses, prys, takekey]
 
     for (var _i6 = 0, _websites = websites; _i6 < _websites.length; _i6++) {
       var e = _websites[_i6]
@@ -11829,7 +12221,7 @@ try {
         console.log('JavaScript exception:', exc)
       })
 
-      if (pageHost.includes('hclonely.com')) {
+      if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
         if (window.location.pathname.includes('setting')) {
           var _GM_getValue, _GM_getValue$global2, _GM_getValue$global2$
 
@@ -11962,18 +12354,18 @@ try {
             })
             var listValues = GM_listValues()
 
-            var _iterator48 = _createForOfIteratorHelper(listValues)
-            var _step49
+            var _iterator50 = _createForOfIteratorHelper(listValues)
+            var _step51
 
             try {
-              for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
-                var value = _step49.value
+              for (_iterator50.s(); !(_step51 = _iterator50.n()).done;) {
+                var value = _step51.value
                 if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
               }
             } catch (err) {
-              _iterator48.e(err)
+              _iterator50.e(err)
             } finally {
-              _iterator48.f()
+              _iterator50.f()
             }
 
             status.success()
@@ -12034,18 +12426,18 @@ try {
           throwError(e, 'GM_registerMenuCommand(\'readme\')')
         }
       })
-      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee90 () {
-        return regeneratorRuntime.wrap(function _callee90$ (_context91) {
+      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee95 () {
+        return regeneratorRuntime.wrap(function _callee95$ (_context96) {
           while (1) {
-            switch (_context91.prev = _context91.next) {
+            switch (_context96.prev = _context96.next) {
               case 0:
-                _context91.prev = 0
-                _context91.next = 3
+                _context96.prev = 0
+                _context96.next = 3
                 return fuc.updateSteamInfo('all', true)
 
               case 3:
-                if (!_context91.sent) {
-                  _context91.next = 7
+                if (!_context96.sent) {
+                  _context96.next = 7
                   break
                 }
 
@@ -12053,7 +12445,7 @@ try {
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('updateSteamInfoComplete'), '</font></li>')
                 })
-                _context91.next = 8
+                _context96.next = 8
                 break
 
               case 7:
@@ -12063,20 +12455,20 @@ try {
                 })
 
               case 8:
-                _context91.next = 13
+                _context96.next = 13
                 break
 
               case 10:
-                _context91.prev = 10
-                _context91.t0 = _context91.catch(0)
-                throwError(_context91.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
+                _context96.prev = 10
+                _context96.t0 = _context96.catch(0)
+                throwError(_context96.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
 
               case 13:
               case 'end':
-                return _context91.stop()
+                return _context96.stop()
             }
           }
-        }, _callee90, null, [[0, 10]])
+        }, _callee95, null, [[0, 10]])
       })))
       GM_registerMenuCommand('Language', function () {
         try {

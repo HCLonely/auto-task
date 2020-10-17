@@ -28,6 +28,7 @@
 // @include            *://gleam.io/*
 // @include            *://keylol.com/*
 // @include            *://givekey.ru/giveaway/*
+// @include            *://key-hub.eu/giveaway/*
 // @include            *://discord.com/app
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
@@ -78,4 +79,4 @@
 
 /* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
 /* esling-disable security/detect-non-literal-fs-filename */
-/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions */
+/* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions,VerifyTasks */

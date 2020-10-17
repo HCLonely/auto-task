@@ -5,6 +5,7 @@ import { giveawaysu } from './giveawaysu'
 import { givekey } from './givekey'
 import { gleam } from './gleam'
 import { indiedb } from './indiedb'
+import { keyhub } from './keyhub'
 import { keylol } from './keylol'
 import { marvelousga } from './marvelousga'
 import { opiumpulses } from './opiumpulses'
@@ -13,7 +14,7 @@ import { takekey } from './takekey'
 
 let website = null
 
-const websites = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keylol, marvelousga, opiumpulses, prys, takekey]
+const websites = [banana, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keyhub, keylol, marvelousga, opiumpulses, prys, takekey]
 for (const e of websites) {
   if (e.test()) {
     website = e

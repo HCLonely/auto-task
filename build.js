@@ -73,6 +73,27 @@ async function buildUserJs () {
   info('Format file: auto-task.user.js')
 }
 
+async function buildI18nJs () {
+  info('Generate file: from "src/requirejs/i18n.js" to "src/requirejs/i18n.min.js"')
+  const bundle = await rollup.rollup({
+    input: 'src/requirejs/i18n.js',
+    plugins: [
+      json({ namedExports: false })
+    ]
+  })
+  await bundle.write({
+    file: 'src/requirejs/i18n.min.js',
+    format: 'cjs',
+    plugins: [
+      getBabelOutputPlugin({
+        presets: ['@babel/preset-env']
+      }),
+      uglify()
+    ]
+  })
+  success('Generate i18n.min.js completed!')
+}
+
 async function buildPageJs (file) {
   const bundle = await rollup.rollup({
     input: 'src/page/js/' + file,
@@ -106,3 +127,4 @@ function generateHelper () {
 }
 exports.buildUserJs = buildUserJs
 exports.buildPageJs = buildPageJs
+exports.buildI18nJs = buildI18nJs

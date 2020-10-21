@@ -1,4 +1,6 @@
 {
+  "ISO": "en-US",
+  "languageName": "English",
   "language": "Language",
   "auto": "Auto",
   "needBanana": "This key needs to collect s% banana, do you want to continue?",

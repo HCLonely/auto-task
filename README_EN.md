@@ -24,10 +24,6 @@ Important:
 2. The settings of the 2.0+ version and the 3.0+ version are not synchronized, and the 3.0+ version must be set for the first time
 3. To implement discord related functions, additional auxiliary scripts need to be installed: [Test version](https://auto-task-test.hclonely.com/auto-task-helper.user.js)  [Official version](https://auto-task.hclonely.com/auto-task-helper.user.js)
 
-## To do
-
-* [ ] Perfect wiki (Due to busy studies, the update is suspended!)
-
 ## Reference
 
 |  |

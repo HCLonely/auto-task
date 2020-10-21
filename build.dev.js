@@ -116,5 +116,31 @@ function generateHelper () {
   fs.writeFileSync('./auto-task-helper.user.js', text)
   success('Write file to: auto-task-helper.user.js')
 }
+
+async function buildI18nJs () {
+  info('Generate file: from "src/requirejs/i18n.js" to "src/requirejs/i18n.min.js"')
+  const bundle = await rollup.rollup({
+    input: 'src/requirejs/i18n.js',
+    plugins: [
+      progress({
+        clearLine: false
+      }),
+      analyze(),
+      json({ namedExports: false })
+    ]
+  })
+  await bundle.write({
+    file: 'src/requirejs/i18n.min.js',
+    format: 'cjs',
+    plugins: [
+      getBabelOutputPlugin({
+        presets: ['@babel/preset-env']
+      }),
+      uglify()
+    ]
+  })
+  success('Generate i18n.min.js completed!')
+}
 exports.buildUserJsDev = buildUserJs
 exports.buildPageJsDev = buildPageJs
+exports.buildI18nJsDev = buildI18nJs

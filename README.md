@@ -25,10 +25,6 @@ PS: 新功能和新网站的添加会先在测试版中进行测试。
 2. 2.0+版本的设置和 3.0+版本的设置不同步，首次使用 3.0+版本都要进行设置
 3. 要实现 discord 相关功能还要额外安装辅助脚本: [测试版](https://auto-task-test.hclonely.com/auto-task-helper.user.js)  [正式版](https://auto-task.hclonely.com/auto-task-helper.user.js)
 
-## To do
-
-* [ ] 完善 wiki(学业繁忙，暂停更新！)
-
 ## Reference
 
 |  |

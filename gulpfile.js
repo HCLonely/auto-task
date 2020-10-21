@@ -6,8 +6,8 @@ const htmlclean = require('gulp-htmlclean')
 const imagemin = require('gulp-imagemin')
 
 const { info } = require('./lib/log')
-const { buildUserJsDev, buildPageJsDev } = require('./build.dev')
-const { buildUserJs, buildPageJs } = require('./build')
+const { buildUserJsDev, buildPageJsDev, buildI18nJsDev } = require('./build.dev')
+const { buildUserJs, buildPageJs, buildI18nJs } = require('./build')
 
 function packRequireJs () {
   const cookie = fs.readFileSync('src/requirejs/js.cookie.min.js')
@@ -20,7 +20,8 @@ function packRequireJs () {
   const polyfill = fs.readFileSync('src/requirejs/polyfill.min.js')
   const overhang = fs.readFileSync('src/requirejs/overhang.min.js')
   const sha1 = fs.readFileSync('src/requirejs/sha1.min.js')
-  const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang, sha1].join('\n')
+  const i18n = fs.readFileSync('src/requirejs/i18n.min.js')
+  const all = [cookie, jquery, effect, popper, bootstrap, runtime, sweetalert2, polyfill, overhang, sha1, i18n].join('\n')
   fs.writeFileSync('require/require.min.js', all)
 }
 /* Development */
@@ -28,7 +29,8 @@ gulp.task('generate-userjs-dev', async function () {
   await buildUserJsDev()
 })
 
-gulp.task('generate-requirejs', async function () {
+gulp.task('generate-requirejs-dev', async function () {
+  await buildI18nJsDev()
   await packRequireJs()
 })
 
@@ -77,11 +79,16 @@ gulp.task('generate-other-file-dev', async () => {
   info('Generate file: CNAME')
   await fs.writeFileSync('./docs/CNAME', 'auto-task-test.hclonely.com')
 })
-gulp.task('development', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-requirejs', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-other-file-dev')))
+gulp.task('development', gulp.series(gulp.parallel('generate-userjs-dev', 'generate-requirejs-dev', 'generate-html-dev', 'minify-images-dev', 'generate-js-dev', 'generate-other-file-dev')))
 
 /* Production */
 gulp.task('generate-userjs', async function () {
   await buildUserJs()
+})
+
+gulp.task('generate-requirejs', async function () {
+  await buildI18nJs()
+  await packRequireJs()
 })
 
 gulp.task('generate-html', function () {

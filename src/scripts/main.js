@@ -208,14 +208,17 @@ if (website || pageHost.includes('hclonely')) {
   })
   GM_registerMenuCommand('Language', () => {
     try {
+      const inputOptions = {
+        auto: getI18n('auto')
+      }
+      for (const lang of i18n) {
+        const { ISO, languageName } = lang
+        if (ISO && languageName) inputOptions[ISO] = languageName
+      }
       Swal.fire({
         title: getI18n('language') + ' : ' + language,
         input: 'select',
-        inputOptions: {
-          auto: getI18n('auto'),
-          'zh-CN': '简体中文',
-          'en-US': 'English'
-        },
+        inputOptions,
         confirmButtonText: getI18n('confirm'),
         cancelButtonText: getI18n('cancel'),
         showCancelButton: true

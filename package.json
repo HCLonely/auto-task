@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {
@@ -65,7 +65,8 @@
       "twitchInfo",
       "twitterInfo",
       "redditInfo",
-      "youtubeInfo"
+      "youtubeInfo",
+      "i18n"
     ],
     "ignore": [
       "/docs/js/main.js"

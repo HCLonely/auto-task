@@ -41,7 +41,7 @@ const keyhub = {
             pro.push(fuc.getFinalUrl(link)
               .then(({ result, finalUrl }) => {
                 if (result === 'Success') {
-                  const groupName = finalUrl.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)?.[1]
+                  const groupName = finalUrl.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)?.[1]
                   if (groupName) {
                     this.currentTaskInfo.groups.push(groupName)
                     this.taskInfo.groups.push(groupName)
@@ -49,12 +49,12 @@ const keyhub = {
                 }
               }))
           } else if (/steamcommunity\.com\/groups\//.test(link) && /join.*group/gim.test(taskDes)) {
-            const groupName = link.match(/steamcommunity.com\/groups\/([\w\d\-_]*)/)?.[1]
+            const groupName = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)?.[1]
             if (groupName) {
               this.currentTaskInfo.groups.push(groupName)
               this.taskInfo.groups.push(groupName)
             }
-          } else if (/store.steampowered.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
+          } else if (/store\.steampowered\.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
             const gameId = link.match(/app\/([\d]+)/)?.[1]
             if (gameId) {
               this.currentTaskInfo.wGames.push(gameId)

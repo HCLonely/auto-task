@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.2.3
+// @version            3.2.4
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.3/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.3/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.4/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.4/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5556,7 +5556,7 @@ try {
         }))
       }
 
-      if (website !== 'gleam' && discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
+      if (discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
         pro.push(toggleActions({
           website: website,
           social: 'discord',
@@ -6033,13 +6033,15 @@ try {
           joinSteamGroup: true,
           followTwitterUser: true,
           retweet: true,
+          joinDiscordServer: true,
           visitLink: true,
           verifyTask: true
         },
         remove: {
           leaveSteamGroup: true,
           unfollowTwitterUser: true,
-          unretweet: true
+          unretweet: true,
+          leaveDiscordServer: true
         },
         enable: false
       },
@@ -8336,12 +8338,38 @@ try {
                           this.taskInfo.retweets.push(id)
                         }
                       }
+                    } else if (icon.hasClass('fa-twitch')) {
+                      var twitchTaskInfo = $(task).find('.user-links')
+
+                      if (/follow/gim.test(twitchTaskInfo.text())) {
+                        var _twitchTaskInfo$find$, _twitchTaskInfo$find$2
+
+                        var _name2 = (_twitchTaskInfo$find$ = twitchTaskInfo.find('a[href^="https://twitch.tv/"]').attr('href')) === null || _twitchTaskInfo$find$ === void 0 ? void 0 : (_twitchTaskInfo$find$2 = _twitchTaskInfo$find$.match(/https:\/\/twitch.tv\/(.+)/)) === null || _twitchTaskInfo$find$2 === void 0 ? void 0 : _twitchTaskInfo$find$2[1]
+
+                        if (_name2) {
+                          this.currentTaskInfo.twitchs.push(_name2)
+                          this.taskInfo.twitchs.push(_name2)
+                        }
+                      }
+                    } else if (icon.hasClass('fa-discord')) {
+                      if (/join/gim.test($(task).find('.user-links').text())) {
+                        var _$$find$attr, _$$find$attr$match
+
+                        var inviteId = (_$$find$attr = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')) === null || _$$find$attr === void 0 ? void 0 : (_$$find$attr$match = _$$find$attr.match(/https:\/\/discord.com\/invite\/(.+)/)) === null || _$$find$attr$match === void 0 ? void 0 : _$$find$attr$match[1]
+
+                        if (inviteId) {
+                          this.currentTaskInfo.discords.push(inviteId)
+                          this.taskInfo.discords.push(inviteId)
+                        } else {
+                          this.currentTaskInfo.discords.push(task)
+                        }
+                      } else {
+                        this.currentTaskInfo.discords.push(task)
+                      }
                     } else if (icon.hasClass('fa-facebook')) {
                       this.currentTaskInfo.facebooks.push(task)
                     } else if (icon.hasClass('fa-youtube')) {
                       this.currentTaskInfo.youtubes.push(task)
-                    } else if (icon.hasClass('fa-discord')) {
-                      this.currentTaskInfo.discords.push(task)
                     } else if (icon.hasClass('fa-steam') || icon.hasClass('fa-steam-symbol')) {
                       var title = $(task).find('.entry-method-title')
 
@@ -8419,7 +8447,7 @@ try {
         var _this18 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee67 () {
-          var pro, _this18$currentTaskIn, discords, facebooks, youtubes, others, links, socialPlatforms, _iterator24, _step24, task, title, status, button, _iterator25, _step25, other, icon, _title2, taskType
+          var pro, data, toGuild, _iterator24, _step24, e, _ref82, _ref83, inviteId, guild, _this18$currentTaskIn, facebooks, youtubes, others, links, socialPlatforms, _iterator25, _step25, task, title, status, button, _iterator26, _step26, other, icon, _title2, taskType
 
           return regeneratorRuntime.wrap(function _callee67$ (_context67) {
             while (1) {
@@ -8431,17 +8459,37 @@ try {
                   return fuc.updateInfo(_this18.currentTaskInfo)
 
                 case 4:
-                  pro.push(fuc.assignment(_this18.currentTaskInfo, _this18.conf.fuck, 'fuck', 'gleam'))
-                  _this18$currentTaskIn = _this18.currentTaskInfo, discords = _this18$currentTaskIn.discords, facebooks = _this18$currentTaskIn.facebooks, youtubes = _this18$currentTaskIn.youtubes, others = _this18$currentTaskIn.others, links = _this18$currentTaskIn.links
-                  socialPlatforms = [].concat(_toConsumableArray(discords), _toConsumableArray(facebooks), _toConsumableArray(youtubes))
+                  _context67.next = 6
+                  return fuc.assignment(_this18.currentTaskInfo, _this18.conf.fuck, 'fuck', 'gleam')
+
+                case 6:
+                  data = _context67.sent
+                  toGuild = _this18.taskInfo.toGuild
+                  _iterator24 = _createForOfIteratorHelper(data)
+
+                  try {
+                    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+                      e = _step24.value
+                      _ref82 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref83 = _slicedToArray(_ref82, 2), inviteId = _ref83[0], guild = _ref83[1]
+                      if (inviteId && guild) toGuild[inviteId] = guild
+                    }
+                  } catch (err) {
+                    _iterator24.e(err)
+                  } finally {
+                    _iterator24.f()
+                  }
+
+                  GM_setValue('taskInfo[' + window.location.host + _this18.get_giveawayId() + ']', _this18.taskInfo)
+                  _this18$currentTaskIn = _this18.currentTaskInfo, facebooks = _this18$currentTaskIn.facebooks, youtubes = _this18$currentTaskIn.youtubes, others = _this18$currentTaskIn.others, links = _this18$currentTaskIn.links
+                  socialPlatforms = [].concat(_toConsumableArray(facebooks), _toConsumableArray(youtubes))
 
                   if (globalConf.other.autoOpen) {
                     if (socialPlatforms.length > 0) {
-                      _iterator24 = _createForOfIteratorHelper(socialPlatforms)
+                      _iterator25 = _createForOfIteratorHelper(socialPlatforms)
 
                       try {
-                        for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-                          task = _step24.value
+                        for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+                          task = _step25.value
                           title = $(task).find('.entry-method-title').text().trim()
                           status = fuc.echoLog({
                             type: 'custom',
@@ -8457,9 +8505,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator24.e(err)
+                        _iterator25.e(err)
                       } finally {
-                        _iterator24.f()
+                        _iterator25.f()
                       }
                     }
                   }
@@ -8468,11 +8516,11 @@ try {
                     pro.push(_this18.visit_link(links))
                   }
 
-                  _iterator25 = _createForOfIteratorHelper(others)
+                  _iterator26 = _createForOfIteratorHelper(others)
 
                   try {
-                    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-                      other = _step25.value
+                    for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+                      other = _step26.value
                       icon = $(other).find('.icon-wrapper i')
 
                       if (icon.hasClass('fa-steam')) {
@@ -8490,9 +8538,9 @@ try {
                       }
                     }
                   } catch (err) {
-                    _iterator25.e(err)
+                    _iterator26.e(err)
                   } finally {
-                    _iterator25.f()
+                    _iterator26.f()
                   }
 
                   Promise.all(pro).finally(function () {
@@ -8502,25 +8550,25 @@ try {
                     })
                     if (_this18.conf.fuck.verifyTask) _this18.verify()
                   })
-                  _context67.next = 17
+                  _context67.next = 23
                   break
 
-                case 14:
-                  _context67.prev = 14
+                case 20:
+                  _context67.prev = 20
                   _context67.t0 = _context67.catch(0)
                   throwError(_context67.t0, 'gleam.do_task')
 
-                case 17:
+                case 23:
                 case 'end':
                   return _context67.stop()
               }
             }
-          }, _callee67, null, [[0, 14]])
+          }, _callee67, null, [[0, 20]])
         }))()
       },
       verify: function verify () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee68 () {
-          var tasks, _iterator26, _step26, task, title, status, enterBtn
+          var tasks, _iterator27, _step27, task, title, status, enterBtn
 
           return regeneratorRuntime.wrap(function _callee68$ (_context68) {
             while (1) {
@@ -8540,18 +8588,18 @@ try {
 
                 case 3:
                   tasks = $('div.entry-content .entry-method')
-                  _iterator26 = _createForOfIteratorHelper(tasks)
+                  _iterator27 = _createForOfIteratorHelper(tasks)
                   _context68.prev = 5
 
-                  _iterator26.s()
+                  _iterator27.s()
 
                 case 7:
-                  if ((_step26 = _iterator26.n()).done) {
+                  if ((_step27 = _iterator27.n()).done) {
                     _context68.next = 23
                     break
                   }
 
-                  task = _step26.value
+                  task = _step27.value
 
                   if (!($(task).find('i.fa-question').length > 0)) {
                     _context68.next = 19
@@ -8594,12 +8642,12 @@ try {
                   _context68.prev = 25
                   _context68.t0 = _context68.catch(5)
 
-                  _iterator26.e(_context68.t0)
+                  _iterator27.e(_context68.t0)
 
                 case 28:
                   _context68.prev = 28
 
-                  _iterator26.f()
+                  _iterator27.f()
 
                   return _context68.finish(28)
 
@@ -8680,14 +8728,14 @@ try {
       },
       visit_link: function visit_link (links) {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee70 () {
-          var _iterator27, _step27, _loop3
+          var _iterator28, _step28, _loop3, _ret2
 
           return regeneratorRuntime.wrap(function _callee70$ (_context71) {
             while (1) {
               switch (_context71.prev = _context71.next) {
                 case 0:
                   _context71.prev = 0
-                  _iterator27 = _createForOfIteratorHelper(links)
+                  _iterator28 = _createForOfIteratorHelper(links)
                   _context71.prev = 2
                   _loop3 = /* #__PURE__ */regeneratorRuntime.mark(function _loop3 () {
                     var link, title, status, taskTime, url, timer, _taskTime$match, taskBtn, href
@@ -8696,7 +8744,7 @@ try {
                       while (1) {
                         switch (_context70.prev = _context70.next) {
                           case 0:
-                            link = _step27.value
+                            link = _step28.value
                             title = $(link).find('.entry-method-title').text().trim()
                             status = fuc.echoLog({
                               type: 'custom',
@@ -8711,9 +8759,19 @@ try {
                             }
 
                             taskBtn = $(link).find('a.btn-info')
+
+                            if (!(taskBtn.length === 0)) {
+                              _context70.next = 11
+                              break
+                            }
+
+                            status.warning('End')
+                            return _context70.abrupt('return', 'continue')
+
+                          case 11:
                             href = taskBtn.attr('href')
                             taskBtn.removeAttr('href')[0].click()
-                            _context70.next = 12
+                            _context70.next = 15
                             return new Promise(function (resolve) {
                               GM_openInTab(timer ? url + timer : 'javascript:setTimeout(()=>{window.close()},1000)', {
                                 active: 1,
@@ -8725,7 +8783,7 @@ try {
                               }
                             })
 
-                          case 12:
+                          case 15:
                           case 'end':
                             return _context70.stop()
                         }
@@ -8733,52 +8791,62 @@ try {
                     }, _loop3)
                   })
 
-                  _iterator27.s()
+                  _iterator28.s()
 
                 case 5:
-                  if ((_step27 = _iterator27.n()).done) {
-                    _context71.next = 9
+                  if ((_step28 = _iterator28.n()).done) {
+                    _context71.next = 12
                     break
                   }
 
                   return _context71.delegateYield(_loop3(), 't0', 7)
 
                 case 7:
+                  _ret2 = _context71.t0
+
+                  if (!(_ret2 === 'continue')) {
+                    _context71.next = 10
+                    break
+                  }
+
+                  return _context71.abrupt('continue', 10)
+
+                case 10:
                   _context71.next = 5
                   break
 
-                case 9:
-                  _context71.next = 14
+                case 12:
+                  _context71.next = 17
                   break
-
-                case 11:
-                  _context71.prev = 11
-                  _context71.t1 = _context71.catch(2)
-
-                  _iterator27.e(_context71.t1)
 
                 case 14:
                   _context71.prev = 14
+                  _context71.t1 = _context71.catch(2)
 
-                  _iterator27.f()
-
-                  return _context71.finish(14)
+                  _iterator28.e(_context71.t1)
 
                 case 17:
-                  _context71.next = 22
+                  _context71.prev = 17
+
+                  _iterator28.f()
+
+                  return _context71.finish(17)
+
+                case 20:
+                  _context71.next = 25
                   break
 
-                case 19:
-                  _context71.prev = 19
+                case 22:
+                  _context71.prev = 22
                   _context71.t2 = _context71.catch(0)
                   throwError(_context71.t2, 'gleam.visit_link')
 
-                case 22:
+                case 25:
                 case 'end':
                   return _context71.stop()
               }
             }
-          }, _callee70, null, [[0, 19], [2, 11, 14, 17]])
+          }, _callee70, null, [[0, 22], [2, 14, 17, 20]])
         }))()
       },
       get_giveawayId: function get_giveawayId () {
@@ -8798,8 +8866,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref82) {
-              var value = _ref82.value
+            }).then(function (_ref84) {
+              var value = _ref84.value
 
               if (value) {
                 window.close()
@@ -8819,13 +8887,15 @@ try {
         facebooks: [],
         youtubes: [],
         others: [],
-        tasks: []
+        tasks: [],
+        toGuild: {}
       },
       taskInfo: {
         groups: [],
         twitterUsers: [],
         retweets: [],
-        discords: []
+        discords: [],
+        toGuild: {}
       },
       setting: {},
       conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
@@ -8948,12 +9018,12 @@ try {
               var pro = []
               var tasks = $('#giveawaysjoined a[class*=promo]')
 
-              var _iterator28 = _createForOfIteratorHelper(tasks)
-              var _step28
+              var _iterator29 = _createForOfIteratorHelper(tasks)
+              var _step29
 
               try {
                 var _loop4 = function _loop4 () {
-                  var task = _step28.value
+                  var task = _step29.value
                   var promo = $(task)
 
                   if (!promo.hasClass('buttonentered')) {
@@ -9109,13 +9179,13 @@ try {
                   }
                 }
 
-                for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+                for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
                   _loop4()
                 }
               } catch (err) {
-                _iterator28.e(err)
+                _iterator29.e(err)
               } finally {
-                _iterator28.f()
+                _iterator29.f()
               }
 
               Promise.all(pro).finally(function () {
@@ -9175,7 +9245,7 @@ try {
         var _this21 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee72 () {
-          var callback, taskInfoHistory, status, tasks, pro, _iterator29, _step29, task, link, taskDes, _link$match, groupName, _link$match2, gameId
+          var callback, taskInfoHistory, status, tasks, pro, _iterator30, _step30, task, link, taskDes, _link$match, groupName, _link$match2, gameId
 
           return regeneratorRuntime.wrap(function _callee72$ (_context73) {
             while (1) {
@@ -9197,19 +9267,19 @@ try {
                       })
                       tasks = $('.task a')
                       pro = []
-                      _iterator29 = _createForOfIteratorHelper(tasks)
+                      _iterator30 = _createForOfIteratorHelper(tasks)
 
                       try {
-                        for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
-                          task = _step29.value
+                        for (_iterator30.s(); !(_step30 = _iterator30.n()).done;) {
+                          task = _step30.value
 
                           link = $(task).attr('href')
                           taskDes = $(task).text().trim()
 
                           if (/steamcommunity\.com\/gid\//.test(link) && /join.*group/gim.test(taskDes)) {
-                            pro.push(fuc.getFinalUrl(link).then(function (_ref83) {
-                              var result = _ref83.result
-                              var finalUrl = _ref83.finalUrl
+                            pro.push(fuc.getFinalUrl(link).then(function (_ref85) {
+                              var result = _ref85.result
+                              var finalUrl = _ref85.finalUrl
 
                               if (result === 'Success') {
                                 var _finalUrl$match8
@@ -9249,9 +9319,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator29.e(err)
+                        _iterator30.e(err)
                       } finally {
-                        _iterator29.f()
+                        _iterator30.f()
                       }
 
                       Promise.all(pro).finally(function () {
@@ -9287,7 +9357,7 @@ try {
         var _this22 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 () {
-          var pro, links, _iterator30, _step30, link
+          var pro, links, _iterator31, _step31, link
 
           return regeneratorRuntime.wrap(function _callee73$ (_context74) {
             while (1) {
@@ -9303,18 +9373,18 @@ try {
                     break
                   }
 
-                  _iterator30 = _createForOfIteratorHelper(links)
+                  _iterator31 = _createForOfIteratorHelper(links)
                   _context74.prev = 6
 
-                  _iterator30.s()
+                  _iterator31.s()
 
                 case 8:
-                  if ((_step30 = _iterator30.n()).done) {
+                  if ((_step31 = _iterator31.n()).done) {
                     _context74.next = 15
                     break
                   }
 
-                  link = _step30.value
+                  link = _step31.value
                   pro.push(fuc.visitLink(link, {
                     method: 'GET'
                   }))
@@ -9333,12 +9403,12 @@ try {
                   _context74.prev = 17
                   _context74.t0 = _context74.catch(6)
 
-                  _iterator30.e(_context74.t0)
+                  _iterator31.e(_context74.t0)
 
                 case 20:
                   _context74.prev = 20
 
-                  _iterator30.f()
+                  _iterator31.f()
 
                   return _context74.finish(20)
 
@@ -9504,8 +9574,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref84) {
-              var value = _ref84.value
+            }).then(function (_ref86) {
+              var value = _ref86.value
 
               if (value) {
                 window.close()
@@ -9556,10 +9626,10 @@ try {
               if (action === 'fuck') {
                 var _data$
 
-                var _ref85 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
-                var _ref86 = _slicedToArray(_ref85, 2)
-                var _inviteId = _ref86[0]
-                var guild = _ref86[1]
+                var _ref87 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
+                var _ref88 = _slicedToArray(_ref87, 2)
+                var _inviteId = _ref88[0]
+                var guild = _ref88[1]
 
                 if (_inviteId && guild) {
                   toGuild[_inviteId] = guild
@@ -9589,7 +9659,7 @@ try {
           }
 
           AutoTask.toggleTWITTER = /* #__PURE__ */(function () {
-            var _ref87 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee77 (action, name, type) {
+            var _ref89 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee77 (action, name, type) {
               return regeneratorRuntime.wrap(function _callee77$ (_context78) {
                 while (1) {
                   switch (_context78.prev = _context78.next) {
@@ -9617,7 +9687,7 @@ try {
             }))
 
             return function (_x52, _x53, _x54) {
-              return _ref87.apply(this, arguments)
+              return _ref89.apply(this, arguments)
             }
           }())
 
@@ -9640,7 +9710,7 @@ try {
           }
 
           AutoTask.toggleSTEAM = /* #__PURE__ */(function () {
-            var _ref88 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee78 (action, name, type) {
+            var _ref90 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee78 (action, name, type) {
               var isAnnouncement
               var isGroup
               var elements
@@ -9696,7 +9766,7 @@ try {
             }))
 
             return function (_x55, _x56, _x57) {
-              return _ref88.apply(this, arguments)
+              return _ref90.apply(this, arguments)
             }
           }())
 
@@ -9718,14 +9788,14 @@ try {
           var steamCommunityLinks = mainPost.find('a[href*="steamcommunity.com"]')
 
           if (discordLinks.length > 0) {
-            var _iterator31 = _createForOfIteratorHelper(discordLinks)
-            var _step31
+            var _iterator32 = _createForOfIteratorHelper(discordLinks)
+            var _step32
 
             try {
-              for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
+              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
                 var _link$match3
 
-                var discordLink = _step31.value
+                var discordLink = _step32.value
                 var link = $(discordLink).attr('href')
                 var inviteId = link === null || link === void 0 ? void 0 : (_link$match3 = link.match(/invite\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
 
@@ -9734,21 +9804,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator31.e(err)
+              _iterator32.e(err)
             } finally {
-              _iterator31.f()
+              _iterator32.f()
             }
           }
 
           if (redditLinks.length > 0) {
-            var _iterator32 = _createForOfIteratorHelper(redditLinks)
-            var _step32
+            var _iterator33 = _createForOfIteratorHelper(redditLinks)
+            var _step33
 
             try {
-              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
                 var _link$match4
 
-                var redditLink = _step32.value
+                var redditLink = _step33.value
 
                 var _link = $(redditLink).attr('href')
 
@@ -9759,46 +9829,46 @@ try {
                 }
               }
             } catch (err) {
-              _iterator32.e(err)
-            } finally {
-              _iterator32.f()
-            }
-          }
-
-          if (insLinks.length > 0) {
-            var _iterator33 = _createForOfIteratorHelper(insLinks)
-            var _step33
-
-            try {
-              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
-                var _link2$match
-
-                var insLink = _step33.value
-
-                var _link2 = $(insLink).attr('href')
-
-                var _name2 = _link2 === null || _link2 === void 0 ? void 0 : (_link2$match = _link2.match(/https:\/\/www\.instagram\.com\/(.+)?\//)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
-
-                if (_name2) {
-                  this.addBtn(insLink, 'toggleINS', _name2, '', ['关注', '取关'])
-                }
-              }
-            } catch (err) {
               _iterator33.e(err)
             } finally {
               _iterator33.f()
             }
           }
 
-          if (twitterLinks.length > 0) {
-            var _iterator34 = _createForOfIteratorHelper(twitterLinks)
+          if (insLinks.length > 0) {
+            var _iterator34 = _createForOfIteratorHelper(insLinks)
             var _step34
 
             try {
               for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
+                var _link2$match
+
+                var insLink = _step34.value
+
+                var _link2 = $(insLink).attr('href')
+
+                var _name3 = _link2 === null || _link2 === void 0 ? void 0 : (_link2$match = _link2.match(/https:\/\/www\.instagram\.com\/(.+)?\//)) === null || _link2$match === void 0 ? void 0 : _link2$match[1]
+
+                if (_name3) {
+                  this.addBtn(insLink, 'toggleINS', _name3, '', ['关注', '取关'])
+                }
+              }
+            } catch (err) {
+              _iterator34.e(err)
+            } finally {
+              _iterator34.f()
+            }
+          }
+
+          if (twitterLinks.length > 0) {
+            var _iterator35 = _createForOfIteratorHelper(twitterLinks)
+            var _step35
+
+            try {
+              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
                 var _link3$match, _link3$match2
 
-                var twitterLink = _step34.value
+                var twitterLink = _step35.value
 
                 var _link3 = $(twitterLink).attr('href')
 
@@ -9812,53 +9882,28 @@ try {
                 }
               }
             } catch (err) {
-              _iterator34.e(err)
-            } finally {
-              _iterator34.f()
-            }
-          }
-
-          if (twitchLinks.length > 0) {
-            var _iterator35 = _createForOfIteratorHelper(twitchLinks)
-            var _step35
-
-            try {
-              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
-                var _link4$match
-
-                var twitchLink = _step35.value
-
-                var _link4 = $(twitchLink).attr('href')
-
-                var _name3 = _link4 === null || _link4 === void 0 ? void 0 : (_link4$match = _link4.match(/https:\/\/www\.twitch\.tv\/(.+)/)) === null || _link4$match === void 0 ? void 0 : _link4$match[1]
-
-                if (_name3) {
-                  this.addBtn(twitchLink, 'toggleTWITCH', _name3, '', ['关注', '取关'])
-                }
-              }
-            } catch (err) {
               _iterator35.e(err)
             } finally {
               _iterator35.f()
             }
           }
 
-          if (vkLinks.length > 0) {
-            var _iterator36 = _createForOfIteratorHelper(vkLinks)
+          if (twitchLinks.length > 0) {
+            var _iterator36 = _createForOfIteratorHelper(twitchLinks)
             var _step36
 
             try {
               for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
-                var _link5$match
+                var _link4$match
 
-                var vkLink = _step36.value
+                var twitchLink = _step36.value
 
-                var _link5 = $(vkLink).attr('href')
+                var _link4 = $(twitchLink).attr('href')
 
-                var _name4 = _link5 === null || _link5 === void 0 ? void 0 : (_link5$match = _link5.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _link5$match === void 0 ? void 0 : _link5$match[1]
+                var _name4 = _link4 === null || _link4 === void 0 ? void 0 : (_link4$match = _link4.match(/https:\/\/www\.twitch\.tv\/(.+)/)) === null || _link4$match === void 0 ? void 0 : _link4$match[1]
 
                 if (_name4) {
-                  this.addBtn(vkLink, 'toggleVK', _name4, '', ['加入', '退出'])
+                  this.addBtn(twitchLink, 'toggleTWITCH', _name4, '', ['关注', '取关'])
                 }
               }
             } catch (err) {
@@ -9868,15 +9913,40 @@ try {
             }
           }
 
-          if (steamStoreLinks.length > 0) {
-            var _iterator37 = _createForOfIteratorHelper(steamStoreLinks)
+          if (vkLinks.length > 0) {
+            var _iterator37 = _createForOfIteratorHelper(vkLinks)
             var _step37
 
             try {
               for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
+                var _link5$match
+
+                var vkLink = _step37.value
+
+                var _link5 = $(vkLink).attr('href')
+
+                var _name5 = _link5 === null || _link5 === void 0 ? void 0 : (_link5$match = _link5.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _link5$match === void 0 ? void 0 : _link5$match[1]
+
+                if (_name5) {
+                  this.addBtn(vkLink, 'toggleVK', _name5, '', ['加入', '退出'])
+                }
+              }
+            } catch (err) {
+              _iterator37.e(err)
+            } finally {
+              _iterator37.f()
+            }
+          }
+
+          if (steamStoreLinks.length > 0) {
+            var _iterator38 = _createForOfIteratorHelper(steamStoreLinks)
+            var _step38
+
+            try {
+              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
                 var _link6$match, _link6$match2, _link6$match3, _link6$match4, _link6$match5, _link6$match6, _link6$match7
 
-                var steamStoreLink = _step37.value
+                var steamStoreLink = _step38.value
 
                 var _link6 = $(steamStoreLink).attr('href')
 
@@ -9886,12 +9956,12 @@ try {
                 var developerName = (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match5 = _link6.match(/developer\/(.+)\/?/)) === null || _link6$match5 === void 0 ? void 0 : _link6$match5[1]) || (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match6 = _link6.match(/dev\/(.+)\/?/)) === null || _link6$match6 === void 0 ? void 0 : _link6$match6[1])
                 var franchiseName = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match7 = _link6.match(/franchise\/(.+)\/?/)) === null || _link6$match7 === void 0 ? void 0 : _link6$match7[1]
 
-                var _ref89 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
-                var _ref90 = _slicedToArray(_ref89, 5)
-                var url = _ref90[1]
-                var announcementId = _ref90[2]
-                var wgauthtoken = _ref90[3]
-                var clanid = _ref90[4]
+                var _ref91 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
+                var _ref92 = _slicedToArray(_ref91, 5)
+                var url = _ref92[1]
+                var announcementId = _ref92[2]
+                var wgauthtoken = _ref92[3]
+                var clanid = _ref92[4]
 
                 if (gameId) {
                   this.addBtn(steamStoreLink, 'toggleSTEAM', gameId, 'game', ['关注', '取关'])
@@ -9909,21 +9979,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator37.e(err)
+              _iterator38.e(err)
             } finally {
-              _iterator37.f()
+              _iterator38.f()
             }
           }
 
           if (steamCommunityLinks.length > 0) {
-            var _iterator38 = _createForOfIteratorHelper(steamCommunityLinks)
-            var _step38
+            var _iterator39 = _createForOfIteratorHelper(steamCommunityLinks)
+            var _step39
 
             try {
-              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
+              for (_iterator39.s(); !(_step39 = _iterator39.n()).done;) {
                 var _link7$match
 
-                var steamCommunityLink = _step38.value
+                var steamCommunityLink = _step39.value
 
                 var _link7 = $(steamCommunityLink).attr('href')
 
@@ -9937,9 +10007,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator38.e(err)
+              _iterator39.e(err)
             } finally {
-              _iterator38.f()
+              _iterator39.f()
             }
           }
 
@@ -9952,7 +10022,7 @@ try {
       },
       fuck: function fuck () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee79 () {
-          var selectedBtns, _iterator39, _step39, btn, action
+          var selectedBtns, _iterator40, _step40, btn, action
 
           return regeneratorRuntime.wrap(function _callee79$ (_context80) {
             while (1) {
@@ -9960,18 +10030,18 @@ try {
                 case 0:
                   _context80.prev = 0
                   selectedBtns = $('.auto-task-keylol[selected="selected"]')
-                  _iterator39 = _createForOfIteratorHelper(selectedBtns)
+                  _iterator40 = _createForOfIteratorHelper(selectedBtns)
                   _context80.prev = 3
 
-                  _iterator39.s()
+                  _iterator40.s()
 
                 case 5:
-                  if ((_step39 = _iterator39.n()).done) {
+                  if ((_step40 = _iterator40.n()).done) {
                     _context80.next = 13
                     break
                   }
 
-                  btn = _step39.value
+                  btn = _step40.value
                   action = $(btn).attr('onclick')
                   _context80.next = 10
                   return eval(action)
@@ -9992,12 +10062,12 @@ try {
                   _context80.prev = 15
                   _context80.t0 = _context80.catch(3)
 
-                  _iterator39.e(_context80.t0)
+                  _iterator40.e(_context80.t0)
 
                 case 18:
                   _context80.prev = 18
 
-                  _iterator39.f()
+                  _iterator40.f()
 
                   return _context80.finish(18)
 
@@ -10167,12 +10237,12 @@ try {
             })
             var tasksContainer = $('.container_task')
 
-            var _iterator40 = _createForOfIteratorHelper(tasksContainer)
-            var _step40
+            var _iterator41 = _createForOfIteratorHelper(tasksContainer)
+            var _step41
 
             try {
-              for (_iterator40.s(); !(_step40 = _iterator40.n()).done;) {
-                var task = _step40.value
+              for (_iterator41.s(); !(_step41 = _iterator41.n()).done;) {
+                var task = _step41.value
                 var taskDes = $(task).find('.card-body p.card-text.monospace')
                 var verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
 
@@ -10213,14 +10283,14 @@ try {
                 if (/follow[\w\W]*?https?:\/\/twitch\.tv\//gim.test(taskDes.html())) {
                   var _taskDes$find$attr$ma2
 
-                  var _name5 = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch\.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
+                  var _name6 = (_taskDes$find$attr$ma2 = taskDes.find('a[href*="twitch.tv"]').attr('href').match(/twitch\.tv\/([^/]+)/)) === null || _taskDes$find$attr$ma2 === void 0 ? void 0 : _taskDes$find$attr$ma2[1]
 
-                  if (_name5) {
+                  if (_name6) {
                     if (verifyBtn.length > 0) {
-                      this.currentTaskInfo.twitchChannels.push(_name5)
+                      this.currentTaskInfo.twitchChannels.push(_name6)
                     }
 
-                    this.taskInfo.twitchChannels.push(_name5)
+                    this.taskInfo.twitchChannels.push(_name6)
                   }
                 }
 
@@ -10249,9 +10319,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator40.e(err)
+              _iterator41.e(err)
             } finally {
-              _iterator40.f()
+              _iterator41.f()
             }
 
             this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -10290,7 +10360,7 @@ try {
         var _this27 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee81 () {
-          var pro, links, _iterator41, _step41, link
+          var pro, links, _iterator42, _step42, link
 
           return regeneratorRuntime.wrap(function _callee81$ (_context82) {
             while (1) {
@@ -10306,18 +10376,18 @@ try {
                     break
                   }
 
-                  _iterator41 = _createForOfIteratorHelper(links)
+                  _iterator42 = _createForOfIteratorHelper(links)
                   _context82.prev = 6
 
-                  _iterator41.s()
+                  _iterator42.s()
 
                 case 8:
-                  if ((_step41 = _iterator41.n()).done) {
+                  if ((_step42 = _iterator42.n()).done) {
                     _context82.next = 15
                     break
                   }
 
-                  link = _step41.value
+                  link = _step42.value
                   pro.push(fuc.visitLink(link.pageUrl, {
                     url: '/ajax/verifyTasks/webpage/clickedLink',
                     method: 'POST',
@@ -10345,12 +10415,12 @@ try {
                   _context82.prev = 17
                   _context82.t0 = _context82.catch(6)
 
-                  _iterator41.e(_context82.t0)
+                  _iterator42.e(_context82.t0)
 
                 case 20:
                   _context82.prev = 20
 
-                  _iterator41.f()
+                  _iterator42.f()
 
                   return _context82.finish(20)
 
@@ -10458,7 +10528,7 @@ try {
         var _this29 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee83 () {
-          var verify, pro, _iterator42, _step42, task
+          var verify, pro, _iterator43, _step43, task
 
           return regeneratorRuntime.wrap(function _callee83$ (_context84) {
             while (1) {
@@ -10473,18 +10543,18 @@ try {
                   }
 
                   pro = []
-                  _iterator42 = _createForOfIteratorHelper(fuc.unique(_this29.currentTaskInfo.tasks))
+                  _iterator43 = _createForOfIteratorHelper(fuc.unique(_this29.currentTaskInfo.tasks))
                   _context84.prev = 5
 
-                  _iterator42.s()
+                  _iterator43.s()
 
                 case 7:
-                  if ((_step42 = _iterator42.n()).done) {
+                  if ((_step43 = _iterator43.n()).done) {
                     _context84.next = 14
                     break
                   }
 
-                  task = _step42.value
+                  task = _step43.value
                   pro.push(_this29.verifyTask(task))
                   _context84.next = 12
                   return fuc.delay(500)
@@ -10501,12 +10571,12 @@ try {
                   _context84.prev = 16
                   _context84.t0 = _context84.catch(5)
 
-                  _iterator42.e(_context84.t0)
+                  _iterator43.e(_context84.t0)
 
                 case 19:
                   _context84.prev = 19
 
-                  _iterator42.f()
+                  _iterator43.f()
 
                   return _context84.finish(19)
 
@@ -10654,8 +10724,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref91) {
-              var value = _ref91.value
+            }).then(function (_ref93) {
+              var value = _ref93.value
 
               if (value) {
                 window.close()
@@ -10704,7 +10774,7 @@ try {
         var _this32 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 () {
-          var type, items, maxPoint, myPoint, _iterator43, _step43, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
+          var type, items, maxPoint, myPoint, _iterator44, _step44, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
 
           return regeneratorRuntime.wrap(function _callee86$ (_context87) {
             while (1) {
@@ -10715,18 +10785,18 @@ try {
                   items = $(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))"))
                   maxPoint = _this32.maxPoint()
                   myPoint = _this32.myPoints
-                  _iterator43 = _createForOfIteratorHelper(items)
+                  _iterator44 = _createForOfIteratorHelper(items)
                   _context87.prev = 6
 
-                  _iterator43.s()
+                  _iterator44.s()
 
                 case 8:
-                  if ((_step43 = _iterator43.n()).done) {
+                  if ((_step44 = _iterator44.n()).done) {
                     _context87.next = 33
                     break
                   }
 
-                  item = _step43.value
+                  item = _step44.value
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
@@ -10812,12 +10882,12 @@ try {
                   _context87.prev = 35
                   _context87.t0 = _context87.catch(6)
 
-                  _iterator43.e(_context87.t0)
+                  _iterator44.e(_context87.t0)
 
                 case 38:
                   _context87.prev = 38
 
-                  _iterator43.f()
+                  _iterator44.f()
 
                   return _context87.finish(38)
 
@@ -10926,12 +10996,12 @@ try {
             var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
             if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-            var _iterator44 = _createForOfIteratorHelper(steps)
-            var _step44
+            var _iterator45 = _createForOfIteratorHelper(steps)
+            var _step45
 
             try {
-              for (_iterator44.s(); !(_step44 = _iterator44.n()).done;) {
-                var step = _step44.value
+              for (_iterator45.s(); !(_step45 = _iterator45.n()).done;) {
+                var step = _step45.value
 
                 if ($(step).find('span:contains(Success)').length === 0) {
                   if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -10958,9 +11028,9 @@ try {
                   } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                     var _link9 = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref92) {
-                      var result = _ref92.result
-                      var finalUrl = _ref92.finalUrl
+                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref94) {
+                      var result = _ref94.result
+                      var finalUrl = _ref94.finalUrl
 
                       if (result === 'Success') {
                         var _finalUrl$match9
@@ -10978,9 +11048,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator44.e(err)
+              _iterator45.e(err)
             } finally {
-              _iterator44.f()
+              _iterator45.f()
             }
 
             Promise.all(pro).finally(function () {
@@ -11003,14 +11073,14 @@ try {
             var checks = $('#steps tbody a[id^=check]')
 
             if (checks.length > 0) {
-              var _iterator45 = _createForOfIteratorHelper(checks)
-              var _step45
+              var _iterator46 = _createForOfIteratorHelper(checks)
+              var _step46
 
               try {
-                for (_iterator45.s(); !(_step45 = _iterator45.n()).done;) {
+                for (_iterator46.s(); !(_step46 = _iterator46.n()).done;) {
                   var _$$attr$match
 
-                  var check = _step45.value
+                  var check = _step46.value
                   var id = (_$$attr$match = $(check).attr('id').match(/[\d]+/)) === null || _$$attr$match === void 0 ? void 0 : _$$attr$match[0]
                   if (id) {
                     this.currentTaskInfo.tasks.push({
@@ -11020,9 +11090,9 @@ try {
                   }
                 }
               } catch (err) {
-                _iterator45.e(err)
+                _iterator46.e(err)
               } finally {
-                _iterator45.f()
+                _iterator46.f()
               }
 
               this.verify(true)
@@ -11041,35 +11111,35 @@ try {
             } else {
               var _pro = []
 
-              var _iterator46 = _createForOfIteratorHelper(steps)
-              var _step46
+              var _iterator47 = _createForOfIteratorHelper(steps)
+              var _step47
 
               try {
-                for (_iterator46.s(); !(_step46 = _iterator46.n()).done;) {
-                  var _step47 = _step46.value
+                for (_iterator47.s(); !(_step47 = _iterator47.n()).done;) {
+                  var _step48 = _step47.value
 
-                  if ($(_step47).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                  if ($(_step48).find("a[href*='store.steampowered.com/curator/']").length > 0) {
                     var _link10$match
 
-                    var _link10 = $(_step47).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                    var _link10 = $(_step48).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
                     var _curatorId = (_link10$match = _link10.match(/curator\/([\d]+)/)) === null || _link10$match === void 0 ? void 0 : _link10$match[1]
 
                     if (_curatorId) this.taskInfo.curators.push(_curatorId)
-                  } else if ($(_step47).find("a[href*='steampowered.com/groups/']").length > 0) {
+                  } else if ($(_step48).find("a[href*='steampowered.com/groups/']").length > 0) {
                     var _link11$match
 
-                    var _link11 = $(_step47).find("a[href*='steampowered.com/groups/']").attr('href')
+                    var _link11 = $(_step48).find("a[href*='steampowered.com/groups/']").attr('href')
 
                     var _groupName3 = (_link11$match = _link11.match(/groups\/(.+)\/?/)) === null || _link11$match === void 0 ? void 0 : _link11$match[1]
 
                     if (_groupName3) this.taskInfo.groups.push(_groupName3)
-                  } else if ($(_step47).find("a[href*='steamcommunity.com/gid']").length > 0) {
-                    var _link12 = $(_step47).find("a[href*='steamcommunity.com/gid']").attr('href')
+                  } else if ($(_step48).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                    var _link12 = $(_step48).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref93) {
-                      var result = _ref93.result
-                      var finalUrl = _ref93.finalUrl
+                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref95) {
+                      var result = _ref95.result
+                      var finalUrl = _ref95.finalUrl
 
                       if (result === 'Success') {
                         var _finalUrl$match10
@@ -11084,9 +11154,9 @@ try {
                   }
                 }
               } catch (err) {
-                _iterator46.e(err)
+                _iterator47.e(err)
               } finally {
-                _iterator46.f()
+                _iterator47.f()
               }
 
               if (_pro.length > 0) {
@@ -11173,12 +11243,12 @@ try {
           if (verify) {
             var pro = []
 
-            var _iterator47 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-            var _step48
+            var _iterator48 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+            var _step49
 
             try {
               var _loop5 = function _loop5 () {
-                var task = _step48.value
+                var task = _step49.value
                 var status = fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
@@ -11188,13 +11258,13 @@ try {
                 }))
               }
 
-              for (_iterator47.s(); !(_step48 = _iterator47.n()).done;) {
+              for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
                 _loop5()
               }
             } catch (err) {
-              _iterator47.e(err)
+              _iterator48.e(err)
             } finally {
-              _iterator47.f()
+              _iterator48.f()
             }
 
             Promise.all(pro).finally(function () {
@@ -11361,8 +11431,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref94) {
-              var value = _ref94.value
+            }).then(function (_ref96) {
+              var value = _ref96.value
 
               if (value) {
                 window.close()
@@ -11405,7 +11475,7 @@ try {
         var _this38 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee90 () {
-          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator48, _step49, task, icon, a, link, _link$match6, path
+          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator49, _step50, task, icon, a, link, _link$match6, path
 
           return regeneratorRuntime.wrap(function _callee90$ (_context91) {
             while (1) {
@@ -11427,11 +11497,11 @@ try {
                       })
                       tasksContainer = $('#usl>div')
                       pro = []
-                      _iterator48 = _createForOfIteratorHelper(tasksContainer)
+                      _iterator49 = _createForOfIteratorHelper(tasksContainer)
 
                       try {
-                        for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
-                          task = _step49.value
+                        for (_iterator49.s(); !(_step50 = _iterator49.n()).done;) {
+                          task = _step50.value
 
                           _this38.currentTaskInfo.tasks.push(task)
 
@@ -11444,9 +11514,9 @@ try {
 
                           if (icon.hasClass('fa-steam')) {
                             if (link && /gid\/[\d]+/.test(link)) {
-                              pro.push(fuc.getFinalUrl(link).then(function (_ref95) {
-                                var result = _ref95.result
-                                var finalUrl = _ref95.finalUrl
+                              pro.push(fuc.getFinalUrl(link).then(function (_ref97) {
+                                var result = _ref97.result
+                                var finalUrl = _ref97.finalUrl
 
                                 if (result === 'Success') {
                                   var _finalUrl$match11
@@ -11479,9 +11549,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator48.e(err)
+                        _iterator49.e(err)
                       } finally {
-                        _iterator48.f()
+                        _iterator49.f()
                       }
 
                       Promise.all(pro).finally(function () {
@@ -11525,7 +11595,7 @@ try {
         var _this39 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee91 () {
-          var pro, links, _iterator49, _step50, link
+          var pro, links, _iterator50, _step51, link
 
           return regeneratorRuntime.wrap(function _callee91$ (_context92) {
             while (1) {
@@ -11542,18 +11612,18 @@ try {
                     break
                   }
 
-                  _iterator49 = _createForOfIteratorHelper(links)
+                  _iterator50 = _createForOfIteratorHelper(links)
                   _context92.prev = 6
 
-                  _iterator49.s()
+                  _iterator50.s()
 
                 case 8:
-                  if ((_step50 = _iterator49.n()).done) {
+                  if ((_step51 = _iterator50.n()).done) {
                     _context92.next = 15
                     break
                   }
 
-                  link = _step50.value
+                  link = _step51.value
                   pro.push(fuc.visitLink(link, {
                     method: 'GET'
                   }))
@@ -11572,12 +11642,12 @@ try {
                   _context92.prev = 17
                   _context92.t0 = _context92.catch(6)
 
-                  _iterator49.e(_context92.t0)
+                  _iterator50.e(_context92.t0)
 
                 case 20:
                   _context92.prev = 20
 
-                  _iterator49.f()
+                  _iterator50.f()
 
                   return _context92.finish(20)
 
@@ -11774,8 +11844,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref96) {
-              var value = _ref96.value
+            }).then(function (_ref98) {
+              var value = _ref98.value
 
               if (value) {
                 window.close()
@@ -11964,18 +12034,18 @@ try {
             })
             var listValues = GM_listValues()
 
-            var _iterator50 = _createForOfIteratorHelper(listValues)
-            var _step51
+            var _iterator51 = _createForOfIteratorHelper(listValues)
+            var _step52
 
             try {
-              for (_iterator50.s(); !(_step51 = _iterator50.n()).done;) {
-                var value = _step51.value
+              for (_iterator51.s(); !(_step52 = _iterator51.n()).done;) {
+                var value = _step52.value
                 if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
               }
             } catch (err) {
-              _iterator50.e(err)
+              _iterator51.e(err)
             } finally {
-              _iterator50.f()
+              _iterator51.f()
             }
 
             status.success()
@@ -12086,20 +12156,20 @@ try {
             auto: getI18n('auto')
           }
 
-          var _iterator51 = _createForOfIteratorHelper(i18n)
-          var _step52
+          var _iterator52 = _createForOfIteratorHelper(i18n)
+          var _step53
 
           try {
-            for (_iterator51.s(); !(_step52 = _iterator51.n()).done;) {
-              var lang = _step52.value
+            for (_iterator52.s(); !(_step53 = _iterator52.n()).done;) {
+              var lang = _step53.value
               var ISO = lang.ISO
               var languageName = lang.languageName
               if (ISO && languageName) inputOptions[ISO] = languageName
             }
           } catch (err) {
-            _iterator51.e(err)
+            _iterator52.e(err)
           } finally {
-            _iterator51.f()
+            _iterator52.f()
           }
 
           Swal.fire({

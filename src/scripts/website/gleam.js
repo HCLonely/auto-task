@@ -48,12 +48,31 @@ const gleam = {
                     this.taskInfo.retweets.push(id)
                   }
                 }
+              } else if (icon.hasClass('fa-twitch')) {
+                const twitchTaskInfo = $(task).find('.user-links')
+                if (/follow/gim.test(twitchTaskInfo.text())) {
+                  const name = twitchTaskInfo.find('a[href^="https://twitch.tv/"]').attr('href')?.match(/https:\/\/twitch.tv\/(.+)/)?.[1]
+                  if (name) {
+                    this.currentTaskInfo.twitchs.push(name)
+                    this.taskInfo.twitchs.push(name)
+                  }
+                }
+              } else if (icon.hasClass('fa-discord')) {
+                if (/join/gim.test($(task).find('.user-links').text())) {
+                  const inviteId = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')?.match(/https:\/\/discord.com\/invite\/(.+)/)?.[1]
+                  if (inviteId) {
+                    this.currentTaskInfo.discords.push(inviteId)
+                    this.taskInfo.discords.push(inviteId)
+                  } else {
+                    this.currentTaskInfo.discords.push(task)
+                  }
+                } else {
+                  this.currentTaskInfo.discords.push(task)
+                }
               } else if (icon.hasClass('fa-facebook')) {
                 this.currentTaskInfo.facebooks.push(task)
               } else if (icon.hasClass('fa-youtube')) {
                 this.currentTaskInfo.youtubes.push(task)
-              } else if (icon.hasClass('fa-discord')) {
-                this.currentTaskInfo.discords.push(task)
               } else if (icon.hasClass('fa-steam') || icon.hasClass('fa-steam-symbol')) {
                 const title = $(task).find('.entry-method-title')
                 if (/join.*group/gim.test(title.text())) {
@@ -115,9 +134,15 @@ const gleam = {
     try {
       const pro = []
       await fuc.updateInfo(this.currentTaskInfo)
-      pro.push(fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam'))
-      const { discords, facebooks, youtubes, others, links } = this.currentTaskInfo
-      const socialPlatforms = [...discords, ...facebooks, ...youtubes]
+      const data = await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam')
+      const toGuild = this.taskInfo.toGuild
+      for (const e of data) {
+        const [inviteId, guild] = e?.guild || []
+        if (inviteId && guild) toGuild[inviteId] = guild
+      }
+      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+      const { facebooks, youtubes, others, links } = this.currentTaskInfo
+      const socialPlatforms = [...facebooks, ...youtubes]
       if (globalConf.other.autoOpen) {
         if (socialPlatforms.length > 0) {
           for (const task of socialPlatforms) {
@@ -228,6 +253,10 @@ const gleam = {
           timer = taskTime.match(/[\d]+/)?.[0]
         }
         const taskBtn = $(link).find('a.btn-info')
+        if (taskBtn.length === 0) {
+          status.warning('End')
+          continue
+        }
         const href = taskBtn.attr('href')
         taskBtn.removeAttr('href')[0].click()
         await new Promise(resolve => {
@@ -278,13 +307,15 @@ const gleam = {
     facebooks: [],
     youtubes: [],
     others: [],
-    tasks: []
+    tasks: [],
+    toGuild: {}
   },
   taskInfo: {
     groups: [],
     twitterUsers: [],
     retweets: [],
-    discords: []
+    discords: [],
+    toGuild: {}
   },
   setting: {},
   conf: config?.gleam?.enable ? config.gleam : globalConf

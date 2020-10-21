@@ -175,7 +175,7 @@ function assignment ({ groups, forums, curators, publishers, developers, franchi
   if (retweets && retweets.length > 0 && config[fuck ? 'retweet' : 'unretweet']) {
     pro.push(toggleActions({ website, social: 'twitter', type: 'retweet', elements: retweets, action, toFinalUrl }))
   }
-  if (website !== 'gleam' && discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
+  if (discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
     pro.push(toggleActions({ website, social: 'discord', elements: discords, action, toFinalUrl, toGuild }))
   }
   return Promise.all(pro)

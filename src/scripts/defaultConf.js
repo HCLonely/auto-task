@@ -258,13 +258,15 @@ const defaultConf = {
       joinSteamGroup: true,
       followTwitterUser: true,
       retweet: true,
+      joinDiscordServer: true,
       visitLink: true,
       verifyTask: true
     },
     remove: {
       leaveSteamGroup: true,
       unfollowTwitterUser: true,
-      unretweet: true
+      unretweet: true,
+      leaveDiscordServer: true
     },
     enable: false
   },

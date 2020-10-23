@@ -33,7 +33,7 @@
     "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-uglify": "^6.0.4",
     "rollup-plugin-visualizer": "^4.1.0",
-    "standard": "^14.3.4"
+    "standard": "^15.0.0"
   },
   "standard": {
     "parser": "babel-eslint",

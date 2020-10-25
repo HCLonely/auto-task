@@ -37,7 +37,7 @@ const keyhub = {
           const link = $(task).attr('href')
           const taskDes = $(task).text().trim()
 
-          if (/steamcommunity\.com\/gid\//.test(link) && /join.*group/gim.test(taskDes)) {
+          if (/steamcommunity\.com\/gid\//.test(link) && /join/gim.test(taskDes)) {
             pro.push(fuc.getFinalUrl(link)
               .then(({ result, finalUrl }) => {
                 if (result === 'Success') {
@@ -48,7 +48,7 @@ const keyhub = {
                   }
                 }
               }))
-          } else if (/steamcommunity\.com\/groups\//.test(link) && /join.*group/gim.test(taskDes)) {
+          } else if (/steamcommunity\.com\/groups\//.test(link) && /join/gim.test(taskDes)) {
             const groupName = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)?.[1]
             if (groupName) {
               this.currentTaskInfo.groups.push(groupName)
@@ -105,7 +105,7 @@ const keyhub = {
   async verify () {
     try {
       fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}...<font></font></li>` })
-      $.get(window.location.href, function (res) { VerifyTasks(res.match(/onclick="javascript:VerifyTasks\('(.*?==)'\)"/)[1]) })
+      $.get(window.location.href, function (res) { VerifyTasks(res.match(/onclick="javascript:VerifyTasks\('(.*?)'\)"/)[1]) })
     } catch (e) {
       throwError(e, 'keyhub.verify')
     }

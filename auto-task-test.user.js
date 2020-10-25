@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.2.4
+// @version            3.2.5
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.4/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.4/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.5/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.5/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6062,7 +6062,43 @@ try {
         },
         enable: false
       },
-      announcement: ''
+      whiteList: {
+        steam: {
+          group: [],
+          wishlist: [],
+          game: [],
+          curator: [],
+          publisher: [],
+          developer: [],
+          forum: []
+        },
+        discord: {
+          server: []
+        },
+        instagram: {
+          user: []
+        },
+        reddit: {
+          reddit: []
+        },
+        twitch: {
+          channel: []
+        },
+        twitter: {
+          user: [],
+          retweet: []
+        },
+        vk: {
+          group: [],
+          public: [],
+          wall: []
+        },
+        youtube: {
+          channel: [],
+          video: []
+        },
+        enable: false
+      }
     }
 
     if (GM_getValue('conf') && window.location.host.includes('hclonely.com/setting')) {
@@ -9276,7 +9312,7 @@ try {
                           link = $(task).attr('href')
                           taskDes = $(task).text().trim()
 
-                          if (/steamcommunity\.com\/gid\//.test(link) && /join.*group/gim.test(taskDes)) {
+                          if (/steamcommunity\.com\/gid\//.test(link) && /join/gim.test(taskDes)) {
                             pro.push(fuc.getFinalUrl(link).then(function (_ref85) {
                               var result = _ref85.result
                               var finalUrl = _ref85.finalUrl
@@ -9293,7 +9329,7 @@ try {
                                 }
                               }
                             }))
-                          } else if (/steamcommunity\.com\/groups\//.test(link) && /join.*group/gim.test(taskDes)) {
+                          } else if (/steamcommunity\.com\/groups\//.test(link) && /join/gim.test(taskDes)) {
                             groupName = (_link$match = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
 
                             if (groupName) {
@@ -9448,7 +9484,7 @@ try {
                       text: '<li>'.concat(getI18n('verifyingTask'), '...<font></font></li>')
                     })
                     $.get(window.location.href, function (res) {
-                      VerifyTasks(res.match(/onclick="javascript:VerifyTasks\('(.*?==)'\)"/)[1])
+                      VerifyTasks(res.match(/onclick="javascript:VerifyTasks\('(.*?)'\)"/)[1])
                     })
                   } catch (e) {
                     throwError(e, 'keyhub.verify')

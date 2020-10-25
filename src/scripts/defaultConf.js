@@ -287,7 +287,43 @@ const defaultConf = {
     },
     enable: false
   },
-  announcement: ''
+  whiteList: {
+    steam: {
+      group: [],
+      wishlist: [],
+      game: [],
+      curator: [],
+      publisher: [],
+      developer: [],
+      forum: []
+    },
+    discord: {
+      server: []
+    },
+    instagram: {
+      user: []
+    },
+    reddit: {
+      reddit: []
+    },
+    twitch: {
+      channel: []
+    },
+    twitter: {
+      user: [],
+      retweet: []
+    },
+    vk: {
+      group: [],
+      public: [],
+      wall: []
+    },
+    youtube: {
+      channel: [],
+      video: []
+    },
+    enable: false
+  }
 }
 
 export { defaultConf }

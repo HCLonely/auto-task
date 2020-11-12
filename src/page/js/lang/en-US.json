@@ -171,5 +171,7 @@
   "vk": "Vk group name or wall id",
   "youtubeList": "YouTube white list",
   "video": "Liked video id",
-  "getId": "getId"
+  "getId": "GetId",
+  "enterTheUrl": "Enter the url",
+  "selectAType": "select a type"
 }

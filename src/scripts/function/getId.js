@@ -1,11 +1,11 @@
 import { throwError } from './tool'
-// import { getI18n } from '../i18n'
+import { getI18n } from '../i18n'
 import { getYtbToken } from './social/youtube'
 
 async function getId () {
   try {
     const [type, link] = await Swal.fire({
-      title: 'Select type',
+      title: getI18n('selectAType'),
       input: 'select',
       inputOptions: {
         Steam: {
@@ -40,21 +40,26 @@ async function getId () {
           'y-video': 'video'
         }
       },
-      inputPlaceholder: 'Select a type',
+      inputPlaceholder: getI18n('selectAType'),
       showCancelButton: true
     }).then(async ({ value: type }) => {
       const { value: url } = await Swal.fire({
         input: 'url',
         inputLabel: 'Link',
-        inputPlaceholder: 'Enter the URL'
+        inputPlaceholder: getI18n('enterTheUrl')
       })
 
       if (url && type) {
         return [type, url]
+      } else {
+        return []
       }
     })
-
     if (type && link) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Waiting...'
+      })
       let result
       switch (type) {
         case 's-group':
@@ -113,8 +118,7 @@ async function getId () {
       if (result) {
         Swal.fire({
           icon: 'success',
-          title: link,
-          text: result
+          html: `<ul style="text-align:left;"><li>Link: <code>${link}</code></li><li>Id/Name: <code>${result}</code></li></ul>`
         })
       }
     }

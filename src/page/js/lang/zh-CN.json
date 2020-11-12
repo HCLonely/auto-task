@@ -171,5 +171,7 @@
   "vk": "Vk 组名或动态 id",
   "youtubeList": "YouTube 白名单",
   "video": "点赞的视频id",
-  "getId": "获取Id"
+  "getId": "获取Id",
+  "enterTheUrl": "请输入链接",
+  "selectAType": "请选择一个类型"
 }

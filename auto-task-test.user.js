@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.2.5
+// @version            3.3.0
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.5/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.2.5/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.0/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.0/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6020,7 +6020,7 @@ try {
                 _context97.prev = 0
                 _context97.next = 3
                 return Swal.fire({
-                  title: 'Select type',
+                  title: getI18n('selectAType'),
                   input: 'select',
                   inputOptions: {
                     Steam: {
@@ -6055,7 +6055,7 @@ try {
                       'y-video': 'video'
                     }
                   },
-                  inputPlaceholder: 'Select a type',
+                  inputPlaceholder: getI18n('selectAType'),
                   showCancelButton: true
                 }).then(/* #__PURE__ */function () {
                   var _ref101 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee95 (_ref100) {
@@ -6070,7 +6070,7 @@ try {
                             return Swal.fire({
                               input: 'url',
                               inputLabel: 'Link',
-                              inputPlaceholder: 'Enter the URL'
+                              inputPlaceholder: getI18n('enterTheUrl')
                             })
 
                           case 3:
@@ -6078,13 +6078,16 @@ try {
                             url = _yield$Swal$fire.value
 
                             if (!(url && type)) {
-                              _context96.next = 7
+                              _context96.next = 9
                               break
                             }
 
                             return _context96.abrupt('return', [type, url])
 
-                          case 7:
+                          case 9:
+                            return _context96.abrupt('return', [])
+
+                          case 10:
                           case 'end':
                             return _context96.stop()
                         }
@@ -6104,105 +6107,108 @@ try {
                 link = _yield$Swal$fire$then2[1]
 
                 if (!(type && link)) {
-                  _context97.next = 49
+                  _context97.next = 50
                   break
                 }
 
+                Swal.fire({
+                  icon: 'warning',
+                  title: 'Waiting...'
+                })
                 _context97.t0 = type
-                _context97.next = _context97.t0 === 's-group' ? 11 : _context97.t0 === 's-game' ? 13 : _context97.t0 === 's-wishlist' ? 13 : _context97.t0 === 's-forum' ? 13 : _context97.t0 === 's-curator' ? 15 : _context97.t0 === 's-otherCurator' ? 17 : _context97.t0 === 'd-server' ? 19 : _context97.t0 === 'i-user' ? 21 : _context97.t0 === 'r-reddit' ? 23 : _context97.t0 === 'tc-channel' ? 28 : _context97.t0 === 'tt-user' ? 30 : _context97.t0 === 'tt-tweet' ? 32 : _context97.t0 === 'v-vk' ? 34 : _context97.t0 === 'y-channel' ? 36 : _context97.t0 === 'y-video' ? 42 : 48
+                _context97.next = _context97.t0 === 's-group' ? 12 : _context97.t0 === 's-game' ? 14 : _context97.t0 === 's-wishlist' ? 14 : _context97.t0 === 's-forum' ? 14 : _context97.t0 === 's-curator' ? 16 : _context97.t0 === 's-otherCurator' ? 18 : _context97.t0 === 'd-server' ? 20 : _context97.t0 === 'i-user' ? 22 : _context97.t0 === 'r-reddit' ? 24 : _context97.t0 === 'tc-channel' ? 29 : _context97.t0 === 'tt-user' ? 31 : _context97.t0 === 'tt-tweet' ? 33 : _context97.t0 === 'v-vk' ? 35 : _context97.t0 === 'y-channel' ? 37 : _context97.t0 === 'y-video' ? 43 : 49
                 break
 
-              case 11:
+              case 12:
                 result = (_link$match7 = link.match(/steamcommunity\.com\/groups\/([^/]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 13:
+              case 14:
                 result = (_link$match8 = link.match(/store\.steampowered\.com\/app\/([\d]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 15:
+              case 16:
                 result = (_link$match9 = link.match(/store\.steampowered\.com\/curator\/([\d]+)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 17:
+              case 18:
                 result = (_ref102 = (link.includes('publisher') ? link.match(/store\.steampowered\.com\/publisher\/(.+)\/?/) : link.includes('developer') ? link.match(/store\.steampowered\.com\/developer\/(.+)\/?/) : link.match(/pub\/(.+)\/?/) || link.match(/dev\/(.+)\/?/)) || link.match(/franchise\/(.+)\/?/)) === null || _ref102 === void 0 ? void 0 : _ref102[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 19:
+              case 20:
                 result = (_link$match10 = link.match(/discord\.com\/invite\/(.+)/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 21:
+              case 22:
                 result = (_link$match11 = link.match(/www\.instagram\.com\/(.+)?\//)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 23:
+              case 24:
                 result = (_link$match12 = link.match(/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1]
                 userName = (_link$match13 = link.match(/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]
                 if (userName) userName = 'u_' + userName
                 result = result || userName
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 28:
+              case 29:
                 result = (_link$match14 = link.match(/www\.twitch\.tv\/(.+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 30:
+              case 31:
                 result = (_link$match15 = link.match(/twitter\.com\/(.+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 32:
+              case 33:
                 result = (_link$match16 = link.match(/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 34:
+              case 35:
                 result = (_link$match17 = link.match(/vk\.com\/([^/]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1]
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 36:
-                _context97.next = 38
+              case 37:
+                _context97.next = 39
                 return getYtbToken(link, 'channel')
 
-              case 38:
+              case 39:
                 _yield$getYtbToken3 = _context97.sent
                 params = _yield$getYtbToken3.params
                 result = params === null || params === void 0 ? void 0 : params.channelId
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 42:
-                _context97.next = 44
+              case 43:
+                _context97.next = 45
                 return getYtbToken(link, 'likeVideo')
 
-              case 44:
+              case 45:
                 _yield$getYtbToken4 = _context97.sent
                 _params = _yield$getYtbToken4.params
                 result = _params === null || _params === void 0 ? void 0 : _params.videoId
-                return _context97.abrupt('break', 48)
+                return _context97.abrupt('break', 49)
 
-              case 48:
+              case 49:
                 if (result) {
                   Swal.fire({
                     icon: 'success',
-                    title: link,
-                    text: result
+                    html: '<ul style="text-align:left;"><li>Link: <code>'.concat(link, '</code></li><li>Id/Name: <code>').concat(result, '</code></li></ul>')
                   })
                 }
 
-              case 49:
-                _context97.next = 54
+              case 50:
+                _context97.next = 55
                 break
 
-              case 51:
-                _context97.prev = 51
+              case 52:
+                _context97.prev = 52
                 _context97.t1 = _context97.catch(0)
                 throwError(_context97.t1, 'getId')
 
-              case 54:
+              case 55:
               case 'end':
                 return _context97.stop()
             }
           }
-        }, _callee96, null, [[0, 51]])
+        }, _callee96, null, [[0, 52]])
       }))
 
       return function getId () {

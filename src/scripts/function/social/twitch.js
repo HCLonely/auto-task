@@ -142,7 +142,7 @@ async function toggleTwitchActions ({ website, type, elements, action, toFinalUr
       let name = element
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         const toFinalUrlElement = toFinalUrl[element] || ''
-        name = toFinalUrlElement.match(/https:\/\/www.twitch.tv\/(.+)/)?.[1]
+        name = toFinalUrlElement.match(/https:\/\/www\.twitch\.tv\/(.+)/)?.[1]
       }
       if (name) {
         await toggleTwitchChannel(name, action === 'fuck')

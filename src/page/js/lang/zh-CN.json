@@ -170,5 +170,6 @@
   "vkList": "Vk 白名单",
   "vk": "Vk 组名或动态 id",
   "youtubeList": "YouTube 白名单",
-  "video": "点赞的视频id"
+  "video": "点赞的视频id",
+  "getId": "获取Id"
 }

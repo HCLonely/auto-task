@@ -95,6 +95,7 @@ function loadSettings (config = defaultConfig) {
   if ($('.btn-group-vertical').length === 0) {
     form.after(`
 <div class="btn-group-vertical" role="group" aria-label="Basic example">
+  <button type="button" class="btn btn-primary" onclick="getId()">${getI18n('getId')}</button>
   <button type="button" class="btn btn-primary" onclick="saveSetting()">${getI18n('saveSetting')}</button>
   <button type="button" class="btn btn-primary" onclick="resetSetting()">${getI18n('resetSetting')}</button>
   <button type="button" class="btn btn-primary" onclick="exportConfig()">${getI18n('exportSetting')}</button>

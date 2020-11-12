@@ -246,4 +246,4 @@ async function toggleYtbActions ({ website, type, elements, action, toFinalUrl =
   }
 }
 
-export { toggleYtbActions, updateYtbInfo }
+export { toggleYtbActions, updateYtbInfo, getYtbToken }

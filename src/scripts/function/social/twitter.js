@@ -135,10 +135,10 @@ async function toggleTwitterActions ({ website, type, elements, action, toFinalU
         const toFinalUrlElement = toFinalUrl[element] || ''
         switch (type) {
           case 'follow':
-            id = toFinalUrlElement.match(/https:\/\/twitter.com\/(.+)/)?.[1]
+            id = toFinalUrlElement.match(/https:\/\/twitter\.com\/(.+)/)?.[1]
             break
           case 'retweet':
-            id = toFinalUrlElement.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)?.[1]
+            id = toFinalUrlElement.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]
             break
         }
       }

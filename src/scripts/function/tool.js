@@ -180,56 +180,6 @@ function assignment ({ groups, forums, curators, publishers, developers, franchi
   }
   return Promise.all(pro)
 }
-/* disable
-async function analyzeLink (link, type, isFinalUrl = true) {
-  let result
-  switch (type) {
-    case 'group':
-      result = link.match(/https?:\/\/steamcommunity\.com\/groups\/(.+)\/?/)?.[1]
-      break
-    case 'forum':
-      result = link.match(/https?:\/\/store\.steampowered\.com\/app\/([\d]+)/)?.[1]
-      break
-    case 'curator':
-    case 'publisher':
-    case 'developer':
-    case 'franchise':
-      result = /https?:\/\/store\.steampowered\.com\//.test(link) && (link.match(/curator\/([\d]+)/) || ((link.includes('publisher') ? link.match(/publisher\/(.+)\/?/) : link.includes('developer') ? link.match(/developer\/(.+)\/?/) : (link.match(/pub\/(.+)\/?/) || link.match(/dev\/(.+)\/?/))) || link.match(/franchise\/(.+)\/?/)))?.[1]
-      break
-    case 'game':
-    case 'wishlist':
-      result = link.match(/https?:\/\/store\.steampowered\.com\/app\/([\d]+)/)?.[1]
-      break
-    case 'discord': // guild
-      result = link.match(/https?:\/\/discord\.com\/invite\/(.+)/)?.[1]
-      break
-    case 'instagram':
-      result = link.match(/https:\/\/www\.instagram\.com\/(.+)?\//)?.[1]
-      break
-    case 'reddit':
-      {
-        result = link.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)?.[1]
-        let userName = link.match(/https?:\/\/www.reddit.com\/user\/([^/]*)/)?.[1]
-        if (userName) userName = 'u_' + userName
-        result = result || userName
-      }
-      break
-    case 'twitch':
-      result = link.match(/https:\/\/www.twitch.tv\/(.+)/)?.[1]
-      break
-    case 'twitterUser':
-      result = link.match(/https:\/\/twitter.com\/(.+)/)?.[1]
-      break
-    case 'retweet':
-      result = link.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)?.[1]
-      break
-    case 'vk':
-      result = link.match(/https:\/\/vk.com\/([^/]+)/)?.[1]
-      break
-  }
-  return result
-}
-*/
 export {
   unique,
   getUrlQuery,

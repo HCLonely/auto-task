@@ -237,7 +237,7 @@ async function toggleVkActions ({ website, type, elements, action, toFinalUrl = 
       let name = element
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         const toFinalUrlElement = toFinalUrl[element] || ''
-        name = toFinalUrlElement.match(/https:\/\/vk.com\/([^/]+)/)?.[1]
+        name = toFinalUrlElement.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]
       }
       if (name) {
         await toggleVk(name, action === 'fuck')

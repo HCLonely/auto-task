@@ -170,5 +170,6 @@
   "vkList": "Vk white list",
   "vk": "Vk group name or wall id",
   "youtubeList": "YouTube white list",
-  "video": "Liked video id"
+  "video": "Liked video id",
+  "getId": "getId"
 }

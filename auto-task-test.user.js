@@ -3227,11 +3227,11 @@ try {
                 break
 
               case 13:
-                id = (_toFinalUrlElement$ma3 = toFinalUrlElement.match(/https:\/\/twitter.com\/(.+)/)) === null || _toFinalUrlElement$ma3 === void 0 ? void 0 : _toFinalUrlElement$ma3[1]
+                id = (_toFinalUrlElement$ma3 = toFinalUrlElement.match(/https:\/\/twitter\.com\/(.+)/)) === null || _toFinalUrlElement$ma3 === void 0 ? void 0 : _toFinalUrlElement$ma3[1]
                 return _context30.abrupt('break', 17)
 
               case 15:
-                id = (_toFinalUrlElement$ma4 = toFinalUrlElement.match(/https:\/\/twitter.com\/.*?\/status\/([\d]+)/)) === null || _toFinalUrlElement$ma4 === void 0 ? void 0 : _toFinalUrlElement$ma4[1]
+                id = (_toFinalUrlElement$ma4 = toFinalUrlElement.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _toFinalUrlElement$ma4 === void 0 ? void 0 : _toFinalUrlElement$ma4[1]
                 return _context30.abrupt('break', 17)
 
               case 17:
@@ -3661,7 +3661,7 @@ try {
 
                 if (website === 'giveawaysu' && toFinalUrl[element]) {
                   toFinalUrlElement = toFinalUrl[element] || ''
-                  name = (_toFinalUrlElement$ma5 = toFinalUrlElement.match(/https:\/\/www.twitch.tv\/(.+)/)) === null || _toFinalUrlElement$ma5 === void 0 ? void 0 : _toFinalUrlElement$ma5[1]
+                  name = (_toFinalUrlElement$ma5 = toFinalUrlElement.match(/https:\/\/www\.twitch\.tv\/(.+)/)) === null || _toFinalUrlElement$ma5 === void 0 ? void 0 : _toFinalUrlElement$ma5[1]
                 }
 
                 if (!name) {
@@ -3955,8 +3955,8 @@ try {
 
                 if (website === 'giveawaysu' && toFinalUrl[element]) {
                   toFinalUrlElement = toFinalUrl[element] || ''
-                  name = (_toFinalUrlElement$ma6 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)) === null || _toFinalUrlElement$ma6 === void 0 ? void 0 : _toFinalUrlElement$ma6[1]
-                  userName = (_toFinalUrlElement$ma7 = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/user\/([^/]*)/)) === null || _toFinalUrlElement$ma7 === void 0 ? void 0 : _toFinalUrlElement$ma7[1]
+                  name = (_toFinalUrlElement$ma6 = toFinalUrlElement.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _toFinalUrlElement$ma6 === void 0 ? void 0 : _toFinalUrlElement$ma6[1]
+                  userName = (_toFinalUrlElement$ma7 = toFinalUrlElement.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)) === null || _toFinalUrlElement$ma7 === void 0 ? void 0 : _toFinalUrlElement$ma7[1]
                   if (userName) userName = 'u_' + userName
                   name = name || userName
                 }
@@ -4647,7 +4647,7 @@ try {
 
                 if (website === 'giveawaysu' && toFinalUrl[element]) {
                   toFinalUrlElement = toFinalUrl[element] || ''
-                  name = (_toFinalUrlElement$ma8 = toFinalUrlElement.match(/https:\/\/vk.com\/([^/]+)/)) === null || _toFinalUrlElement$ma8 === void 0 ? void 0 : _toFinalUrlElement$ma8[1]
+                  name = (_toFinalUrlElement$ma8 = toFinalUrlElement.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _toFinalUrlElement$ma8 === void 0 ? void 0 : _toFinalUrlElement$ma8[1]
                 }
 
                 if (!name) {
@@ -6006,6 +6006,209 @@ try {
         throwError(e, 'updateInfo')
       }
     }
+
+    var getId = /* #__PURE__ */(function () {
+      var _ref99 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee96 () {
+        var _link$match7, _link$match8, _link$match9, _ref102, _link$match10, _link$match11, _link$match14, _link$match15, _link$match16, _link$match17
+
+        var _yield$Swal$fire$then, _yield$Swal$fire$then2, type, link, result, _link$match12, _link$match13, userName, _yield$getYtbToken3, params, _yield$getYtbToken4, _params
+
+        return regeneratorRuntime.wrap(function _callee96$ (_context97) {
+          while (1) {
+            switch (_context97.prev = _context97.next) {
+              case 0:
+                _context97.prev = 0
+                _context97.next = 3
+                return Swal.fire({
+                  title: 'Select type',
+                  input: 'select',
+                  inputOptions: {
+                    Steam: {
+                      's-group': 'group',
+                      's-wishlist': 'wishlist',
+                      's-game': 'game',
+                      's-curator': 'curator',
+                      's-otherCurator': 'otherCurator',
+                      's-forum': 'forum'
+                    },
+                    discord: {
+                      'd-server': 'server'
+                    },
+                    instagram: {
+                      'i-user': 'user'
+                    },
+                    reddit: {
+                      'r-reddit': 'reddit'
+                    },
+                    twitch: {
+                      'tc-channel': 'channel'
+                    },
+                    twitter: {
+                      'tt-user': 'user',
+                      'tt-tweet': 'tweet'
+                    },
+                    vk: {
+                      'v-vk': 'vk'
+                    },
+                    youtube: {
+                      'y-channel': 'channel',
+                      'y-video': 'video'
+                    }
+                  },
+                  inputPlaceholder: 'Select a type',
+                  showCancelButton: true
+                }).then(/* #__PURE__ */function () {
+                  var _ref101 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee95 (_ref100) {
+                    var type, _yield$Swal$fire, url
+
+                    return regeneratorRuntime.wrap(function _callee95$ (_context96) {
+                      while (1) {
+                        switch (_context96.prev = _context96.next) {
+                          case 0:
+                            type = _ref100.value
+                            _context96.next = 3
+                            return Swal.fire({
+                              input: 'url',
+                              inputLabel: 'Link',
+                              inputPlaceholder: 'Enter the URL'
+                            })
+
+                          case 3:
+                            _yield$Swal$fire = _context96.sent
+                            url = _yield$Swal$fire.value
+
+                            if (!(url && type)) {
+                              _context96.next = 7
+                              break
+                            }
+
+                            return _context96.abrupt('return', [type, url])
+
+                          case 7:
+                          case 'end':
+                            return _context96.stop()
+                        }
+                      }
+                    }, _callee95)
+                  }))
+
+                  return function (_x57) {
+                    return _ref101.apply(this, arguments)
+                  }
+                }())
+
+              case 3:
+                _yield$Swal$fire$then = _context97.sent
+                _yield$Swal$fire$then2 = _slicedToArray(_yield$Swal$fire$then, 2)
+                type = _yield$Swal$fire$then2[0]
+                link = _yield$Swal$fire$then2[1]
+
+                if (!(type && link)) {
+                  _context97.next = 49
+                  break
+                }
+
+                _context97.t0 = type
+                _context97.next = _context97.t0 === 's-group' ? 11 : _context97.t0 === 's-game' ? 13 : _context97.t0 === 's-wishlist' ? 13 : _context97.t0 === 's-forum' ? 13 : _context97.t0 === 's-curator' ? 15 : _context97.t0 === 's-otherCurator' ? 17 : _context97.t0 === 'd-server' ? 19 : _context97.t0 === 'i-user' ? 21 : _context97.t0 === 'r-reddit' ? 23 : _context97.t0 === 'tc-channel' ? 28 : _context97.t0 === 'tt-user' ? 30 : _context97.t0 === 'tt-tweet' ? 32 : _context97.t0 === 'v-vk' ? 34 : _context97.t0 === 'y-channel' ? 36 : _context97.t0 === 'y-video' ? 42 : 48
+                break
+
+              case 11:
+                result = (_link$match7 = link.match(/steamcommunity\.com\/groups\/([^/]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]
+                return _context97.abrupt('break', 48)
+
+              case 13:
+                result = (_link$match8 = link.match(/store\.steampowered\.com\/app\/([\d]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1]
+                return _context97.abrupt('break', 48)
+
+              case 15:
+                result = (_link$match9 = link.match(/store\.steampowered\.com\/curator\/([\d]+)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1]
+                return _context97.abrupt('break', 48)
+
+              case 17:
+                result = (_ref102 = (link.includes('publisher') ? link.match(/store\.steampowered\.com\/publisher\/(.+)\/?/) : link.includes('developer') ? link.match(/store\.steampowered\.com\/developer\/(.+)\/?/) : link.match(/pub\/(.+)\/?/) || link.match(/dev\/(.+)\/?/)) || link.match(/franchise\/(.+)\/?/)) === null || _ref102 === void 0 ? void 0 : _ref102[1]
+                return _context97.abrupt('break', 48)
+
+              case 19:
+                result = (_link$match10 = link.match(/discord\.com\/invite\/(.+)/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1]
+                return _context97.abrupt('break', 48)
+
+              case 21:
+                result = (_link$match11 = link.match(/www\.instagram\.com\/(.+)?\//)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1]
+                return _context97.abrupt('break', 48)
+
+              case 23:
+                result = (_link$match12 = link.match(/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1]
+                userName = (_link$match13 = link.match(/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]
+                if (userName) userName = 'u_' + userName
+                result = result || userName
+                return _context97.abrupt('break', 48)
+
+              case 28:
+                result = (_link$match14 = link.match(/www\.twitch\.tv\/(.+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1]
+                return _context97.abrupt('break', 48)
+
+              case 30:
+                result = (_link$match15 = link.match(/twitter\.com\/(.+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1]
+                return _context97.abrupt('break', 48)
+
+              case 32:
+                result = (_link$match16 = link.match(/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1]
+                return _context97.abrupt('break', 48)
+
+              case 34:
+                result = (_link$match17 = link.match(/vk\.com\/([^/]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1]
+                return _context97.abrupt('break', 48)
+
+              case 36:
+                _context97.next = 38
+                return getYtbToken(link, 'channel')
+
+              case 38:
+                _yield$getYtbToken3 = _context97.sent
+                params = _yield$getYtbToken3.params
+                result = params === null || params === void 0 ? void 0 : params.channelId
+                return _context97.abrupt('break', 48)
+
+              case 42:
+                _context97.next = 44
+                return getYtbToken(link, 'likeVideo')
+
+              case 44:
+                _yield$getYtbToken4 = _context97.sent
+                _params = _yield$getYtbToken4.params
+                result = _params === null || _params === void 0 ? void 0 : _params.videoId
+                return _context97.abrupt('break', 48)
+
+              case 48:
+                if (result) {
+                  Swal.fire({
+                    icon: 'success',
+                    title: link,
+                    text: result
+                  })
+                }
+
+              case 49:
+                _context97.next = 54
+                break
+
+              case 51:
+                _context97.prev = 51
+                _context97.t1 = _context97.catch(0)
+                throwError(_context97.t1, 'getId')
+
+              case 54:
+              case 'end':
+                return _context97.stop()
+            }
+          }
+        }, _callee96, null, [[0, 51]])
+      }))
+
+      return function getId () {
+        return _ref99.apply(this, arguments)
+      }
+    }())
 
     unsafeWindow.AutoTask = {}
     'use strict'
@@ -12187,6 +12390,7 @@ try {
           unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
 
           unsafeWindow.language = language
+          unsafeWindow.getId = getId
           typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
@@ -12383,18 +12587,18 @@ try {
           throwError(e, 'GM_registerMenuCommand(\'readme\')')
         }
       })
-      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee95 () {
-        return regeneratorRuntime.wrap(function _callee95$ (_context96) {
+      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee97 () {
+        return regeneratorRuntime.wrap(function _callee97$ (_context98) {
           while (1) {
-            switch (_context96.prev = _context96.next) {
+            switch (_context98.prev = _context98.next) {
               case 0:
-                _context96.prev = 0
-                _context96.next = 3
+                _context98.prev = 0
+                _context98.next = 3
                 return fuc.updateSteamInfo('all', true)
 
               case 3:
-                if (!_context96.sent) {
-                  _context96.next = 7
+                if (!_context98.sent) {
+                  _context98.next = 7
                   break
                 }
 
@@ -12402,7 +12606,7 @@ try {
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('updateSteamInfoComplete'), '</font></li>')
                 })
-                _context96.next = 8
+                _context98.next = 8
                 break
 
               case 7:
@@ -12412,20 +12616,20 @@ try {
                 })
 
               case 8:
-                _context96.next = 13
+                _context98.next = 13
                 break
 
               case 10:
-                _context96.prev = 10
-                _context96.t0 = _context96.catch(0)
-                throwError(_context96.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
+                _context98.prev = 10
+                _context98.t0 = _context98.catch(0)
+                throwError(_context98.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
 
               case 13:
               case 'end':
-                return _context96.stop()
+                return _context98.stop()
             }
           }
-        }, _callee95, null, [[0, 10]])
+        }, _callee97, null, [[0, 10]])
       })))
       GM_registerMenuCommand('Language', function () {
         try {

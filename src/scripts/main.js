@@ -3,6 +3,7 @@ import { fuc, throwError } from './function/main'
 import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
+import { getId } from './function/getId'
 
 const pageHref = window.location.href
 const pageHost = window.location.host
@@ -24,6 +25,7 @@ if (website || pageHost.includes('hclonely')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
       unsafeWindow.GM_setValue = GM_setValue // eslint-disable-line camelcase
       unsafeWindow.language = language
+      unsafeWindow.getId = getId
       typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()

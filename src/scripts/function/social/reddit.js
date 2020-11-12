@@ -87,8 +87,8 @@ async function toggleRedditActions ({ website, type, elements, action, toFinalUr
       let name = element
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         const toFinalUrlElement = toFinalUrl[element] || ''
-        name = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/r\/([^/]*)/)?.[1]
-        let userName = toFinalUrlElement.match(/https?:\/\/www.reddit.com\/user\/([^/]*)/)?.[1]
+        name = toFinalUrlElement.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1]
+        let userName = toFinalUrlElement.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1]
         if (userName) userName = 'u_' + userName
         name = name || userName
       }

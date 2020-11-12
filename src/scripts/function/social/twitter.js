@@ -42,6 +42,9 @@ async function updateTwitterInfo () {
 }
 async function toggleTwitterUser (name, follow = true) {
   try {
+    if (!follow && whiteList.twitter.user.includes(name)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const userId = await getTwitterUserId(name)
     if (!userId) return
     const logStatus = echoLog({ type: `${follow ? '' : 'un'}followTwitterUser`, text: name })
@@ -67,6 +70,9 @@ async function toggleTwitterUser (name, follow = true) {
 
 async function toggleRetweet (retweetId, retweet = true) {
   try {
+    if (!retweet && whiteList.twitter.retweet.includes(retweetId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const logStatus = echoLog({ type: `${retweet ? '' : 'un'}retweet`, text: retweetId })
     const { result, statusText, status, data } = await httpRequest({
       url: `https://api.twitter.com/1.1/statuses/${retweet ? '' : 'un'}retweet.json`,

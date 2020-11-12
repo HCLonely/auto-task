@@ -153,10 +153,15 @@ const giveawaysu = {
       await fuc.updateInfo(this.taskInfo)
       const data = await fuc.assignment(this.taskInfo, this.conf[action], action, 'giveawaysu')
       const toGuild = this.taskInfo.toGuild
+      console.log(data)
       if (action === 'fuck') {
-        for (const e of data) {
-          const [inviteId, guild] = e?.guild || []
-          if (inviteId && guild) toGuild[inviteId] = guild
+        for (const $data of data) {
+          if ($data) {
+            for (const e of $data) {
+              const [inviteId, guild] = e?.guild || []
+              if (inviteId && guild) toGuild[inviteId] = guild
+            }
+          }
         }
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       }

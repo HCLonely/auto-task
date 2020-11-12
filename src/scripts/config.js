@@ -40,6 +40,7 @@ for (const k of Object.keys(config)) {
 }
 const globalConf = config.global
 const debug = globalConf.other.showDetails
+window.whiteList = getWhiteList()
 
 function getSteamInfo () {
   try {
@@ -106,6 +107,13 @@ function getYtbInfo () {
     }, GM_getValue('youtubeInfo'))
   } catch (e) {
     throwError(e, 'getYtbInfo')
+  }
+}
+function getWhiteList () {
+  try {
+    return Object.assign(defaultConf.whiteList, config.whiteList)
+  } catch (e) {
+    throwError(e, 'getWhiteList')
   }
 }
 

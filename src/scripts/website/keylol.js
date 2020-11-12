@@ -46,7 +46,7 @@ const keylol = {
       AutoTask.toggleSTEAM = async (action, name, type, ...args) => {
         const isAnnouncement = type === 'announcement'
         const isGroup = type === 'group'
-        await fuc.updateInfo({}, { steamStore: isGroup || isAnnouncement, steamCommunity: !isGroup })
+        await fuc.updateInfo({}, { steamStore: !isGroup || isAnnouncement, steamCommunity: isGroup })
         let elements = [name]
         if (args) {
           if (args.length === 3) {

@@ -8,29 +8,64 @@ function loadSettings (config = defaultConfig) {
   loadLatestVersion()
   for (const [key, value] of Object.entries(config)) {
     let tbody = ''
+    let table = ''
     if (!['announcement'].includes(key) && value !== null) {
       for (const [_k, _v] of Object.entries(value)) {
         let tr = ''
         for (const [k, v] of Object.entries(_v)) {
-          tr += `
+          if (key === 'whiteList') {
+            tr += `
+<tr>
+  ${tr === '' ? `<th rowspan="${Object.keys(_v).length}">${getI18n(_k + 'List')}</th>` : ''}
+  <td>${getI18n(k)}</td>
+  <td><div class="form-group row"><div class="col-sm-10"><input type="text" class="form-control" value="${v ? v.join(',') : ''}" name="${key + '-' + _k + '-' + k}" id="${key + '-' + _k + '-' + k}"></div></div></td>
+</tr>`
+          } else {
+            tr += `
 <tr>
   ${tr === '' ? `<th rowspan="${_k === 'verify' ? Object.keys(_v).length : (Object.keys(_v).length + 1)}">${getI18n(_k + 'Button')}</th>` : ''}
   <td>${getI18n(k)}</td>
   <td>${getI18n(k + 'Des')}</td>
   <td>${typeof v === 'boolean'
-            ? `<div class="custom-control custom-${_k === 'verify' ? 'radio' : 'checkbox'}"><input type="${_k === 'verify' ? 'radio' : 'checkbox'}" class="custom-control-input" name="${key + '-' + _k + '-' + k}" id="${key + '-' + _k + '-' + k}"${v ? ' checked="checked"' : ''}><label class="custom-control-label" for="${key + '-' + _k + '-' + k}">${getI18n('enable')}</label></div>`
-            : `<div class="form-group row"><div class="col-sm-10"><input type="text" class="form-control" value="${v}" name="${key + '-' + _k + '-' + k}" id="${key + '-' + _k + '-' + k}"></div></div>`}
+                ? `<div class="custom-control custom-${_k === 'verify' ? 'radio' : 'checkbox'}"><input type="${_k === 'verify' ? 'radio' : 'checkbox'}" class="custom-control-input" name="${key + '-' + _k + '-' + k}" id="${key + '-' + _k + '-' + k}"${v ? ' checked="checked"' : ''}><label class="custom-control-label" for="${key + '-' + _k + '-' + k}">${getI18n('enable')}</label></div>`
+                : `<div class="form-group row"><div class="col-sm-10"><input type="text" class="form-control" value="${v}" name="${key + '-' + _k + '-' + k}" id="${key + '-' + _k + '-' + k}"></div></div>`}
   </td>
 </tr>`
+          }
         }
-        tbody += tr + (['fuck', 'remove', 'other', 'hotKey'].includes(_k) ? `<tr>
+        if (key !== 'whiteList') {
+          tbody += tr + (['fuck', 'remove', 'other', 'hotKey'].includes(_k) ? `<tr>
   <td colspan="2"></td>
   <td>
   <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" name="${key + '-' + _k + '-all'}" id="${key + '-' + _k + '-all'}"><label class="custom-control-label" for="${key + '-' + _k + '-all'}">${getI18n('selectAll')}</label></div>
   </td>
 </tr>` : '')
+        } else {
+          tbody += tr
+        }
       }
-      const table = `
+      if (key === 'whiteList') {
+        table = `
+<table class="table table-bordered table-striped table-hover">
+  <thead>
+    <tr>
+      <th scope="col" colspan="4" class="table-header">
+        ${getI18n('whiteList')}
+        ${value.enable === undefined ? '' : `<div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" name="${key + '-enable'}" id="${key + '-enable'}"${value.enable ? ' checked="checked"' : ''}><label class="custom-control-label" for="${key + '-enable'}">${getI18n('enable')}</label></div>`}
+      </th>
+    </tr>
+    <tr>
+      <th scope="col">${getI18n('mainGroup')}</th>
+      <th scope="col">${getI18n('subGroup')}</th>
+      <th scope="col">${getI18n('option')}</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${tbody}
+  </tbody>
+</table>`
+      } else {
+        table = `
 <table class="table table-bordered table-striped table-hover">
   <thead>
     <tr>
@@ -50,6 +85,7 @@ function loadSettings (config = defaultConfig) {
     ${tbody}
   </tbody>
 </table>`
+      }
       form.append(table)
     } else {
       const table = `<div class="form-group row" style="display:none"><div class="col-sm-10"><input type="text" class="form-control" value="${value}" name="${key}" id="${key}"></div></div>`
@@ -231,7 +267,11 @@ function creatConfig () {
       case 3:
         if (!configRaw[keys[0]]) configRaw[keys[0]] = {}
         if (!configRaw[keys[0]][keys[1]]) configRaw[keys[0]][keys[1]] = {}
-        configRaw[keys[0]][keys[1]][keys[2]] = e.value === 'on' ? true : e.value
+        if (keys[0] === 'whiteList') {
+          configRaw[keys[0]][keys[1]][keys[2]] = e.value.split(',')
+        } else {
+          configRaw[keys[0]][keys[1]][keys[2]] = e.value === 'on' ? true : e.value
+        }
         break
       default:
         console.warn('Unknown key: defaultConfig.' + e.replace(/-/g, '.'), defaultConfig)

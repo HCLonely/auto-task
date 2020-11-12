@@ -1,7 +1,7 @@
 import { getI18n } from '../i18n'
 import { throwError } from './tool'
 
-function getDiscordAuth () {
+function getDiscordAuth (notice) {
   try {
     if (typeof discordAuth === 'string') {
       GM_setValue('discordInfo', {
@@ -9,20 +9,28 @@ function getDiscordAuth () {
         expired: false,
         updateTime: new Date().getTime()
       })
-      $('body').overhang({
-        type: 'success',
-        activity: 'notification',
-        message: getI18n('getAuthSuccess')
-      })
+      if (notice) {
+        Swal.fire({
+          title: getI18n('updateDiscordInfoSuccess'),
+          icon: 'success'
+        })
+      }
     } else {
-      $('body').overhang({
-        type: 'error',
-        activity: 'notification',
-        message: getI18n('getAuthError')
-      })
+      if (notice) {
+        Swal.fire({
+          title: getI18n('updateDiscordInfoError'),
+          icon: 'error'
+        })
+      }
     }
   } catch (e) {
     throwError(e, 'getDiscordAuth')
+    if (notice) {
+      Swal.fire({
+        title: getI18n('updateDiscordInfoError'),
+        icon: 'error'
+      })
+    }
   }
 }
 

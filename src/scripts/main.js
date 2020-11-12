@@ -231,7 +231,7 @@ if (website || pageHost.includes('hclonely')) {
       throwError(e, 'GM_registerMenuCommand(\'Language\')')
     }
   })
-} else if (pageHref.includes('discord.com/app')) {
+} else if (pageHost === 'discord.com') {
   fuc.getDiscordAuth()
 } else if (pageHost === 'www.twitch.tv') {
   if (pageHref.includes('#updateTwitchInfo')) {

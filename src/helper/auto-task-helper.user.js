@@ -13,7 +13,7 @@
 // @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
 // @updateURL          https://__SITEURL__/__FILENAME__
-// @include            *://discord.com/app
+// @include            *://discord.com/*
 // @grant              unsafeWindow
 // @run-at             document-start
 // ==/UserScript==

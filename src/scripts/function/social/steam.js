@@ -170,6 +170,9 @@ async function getGroupID (groupName) {
 }
 async function leaveSteamGroup (groupName) {
   try {
+    if (whiteList.steam.group.includes(groupName)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const groupId = await getGroupID(groupName)
     if (!groupId) return
     const logStatus = echoLog({ type: 'leaveSteamGroup', text: groupName })
@@ -196,6 +199,9 @@ async function leaveSteamGroup (groupName) {
 // INFO: Steam curator
 async function toggleCurator (curatorId, follow = true, logStatus = null) {
   try {
+    if (!follow && whiteList.steam.curator.includes(curatorId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     logStatus = logStatus || echoLog({ type: follow ? 'followCurator' : 'unfollowCurator', text: curatorId })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://store.steampowered.com/curators/ajaxfollow',
@@ -257,6 +263,9 @@ async function getCuratorID (developerName, path) {
 }
 async function toggleOtherCurator (name, path, follow = true) {
   try {
+    if (!follow && whiteList.steam.otherCurator.includes(name)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const curatorId = await getCuratorID(name, path)
     if (curatorId) {
       const logStatus = echoLog({ type: `${follow ? '' : 'un'}follow${path.replace(/^\S/, s => s.toUpperCase())}`, text: name })
@@ -306,6 +315,9 @@ async function addWishlist (gameId) {
 }
 async function removeWishlist (gameId) {
   try {
+    if (whiteList.steam.wishlist.includes(gameId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const logStatus = echoLog({ type: 'removeWishlist', text: gameId })
     const { result, data } = await httpRequest({
       url: 'https://store.steampowered.com/api/removefromwishlist',
@@ -342,6 +354,9 @@ async function removeWishlist (gameId) {
 // INFO: Steam follow game
 async function toggleGame (gameId, follow) {
   try {
+    if (!follow && whiteList.steam.game.includes(gameId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const logStatus = echoLog({ type: `${follow ? '' : 'un'}followGame`, text: gameId })
     const requestData = { sessionid: steamInfo.storeSessionID, appid: gameId }
     if (!follow) requestData.unfollow = '1'
@@ -419,6 +434,9 @@ async function likeAnnouncements (rawMatch) {
 // INFO: Steam forum
 async function toggleForum (gameId, subscribe = true) {
   try {
+    if (whiteList.steam.forum.includes(gameId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const forumId = await getForumId(gameId)
     if (!forumId) return
     const logStatus = echoLog({ type: `${subscribe ? '' : 'un'}subscribeForum`, text: gameId })

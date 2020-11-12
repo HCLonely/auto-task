@@ -32,6 +32,9 @@ async function verifyVkLogin () {
 }
 async function toggleVk (name, join = true) {
   try {
+    if (!join && whiteList.vk.vk.includes(name)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
     const data = await getVkId(name)
     if (!data) return
     switch (data.type) {

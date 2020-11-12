@@ -293,8 +293,7 @@ const defaultConf = {
       wishlist: [],
       game: [],
       curator: [],
-      publisher: [],
-      developer: [],
+      otherCurator: [],
       forum: []
     },
     discord: {
@@ -314,9 +313,12 @@ const defaultConf = {
       retweet: []
     },
     vk: {
+      vk: []
+      /*
       group: [],
       public: [],
       wall: []
+      */
     },
     youtube: {
       channel: [],

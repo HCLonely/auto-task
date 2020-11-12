@@ -29,7 +29,7 @@
 // @include            *://keylol.com/*
 // @include            *://givekey.ru/giveaway/*
 // @include            *://key-hub.eu/giveaway/*
-// @include            *://discord.com/app
+// @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
@@ -77,6 +77,6 @@
 // @run-at             document-end
 // ==/UserScript==
 
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval,multiline-ternary */
 /* esling-disable security/detect-non-literal-fs-filename */
 /* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions,VerifyTasks */

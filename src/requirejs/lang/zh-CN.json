@@ -190,5 +190,7 @@
   "getVkId": "正在获取vk群/社区id",
   "insBanned": "你的Ins账户已被封禁",
   "gsNotice": "为避免得到\"0000-0000-0000\"key, 已自动屏蔽\"Grab Key\"按钮，获取key时请关闭脚本！",
-  "unknownTaskType": "未知任务类型：s%, 请联系作者适配！"
+  "unknownTaskType": "未知任务类型：s%, 请联系作者适配！",
+  "updateDiscordInfoSuccess": "更新discord凭证成功",
+  "updateDiscordInfoError": "更新discord凭证失败"
 }

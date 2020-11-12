@@ -1,4 +1,3 @@
-import { debug } from '../../config'
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
 import { unique, throwError } from '../tool'
@@ -26,7 +25,7 @@ function updateYtbInfo (notice) {
       }
     }
   } catch (e) {
-    if (debug) console.error(e)
+    throwError(e, 'updateYtbInfo')
     if (notice) {
       Swal.fire({
         title: getI18n('updateYtbInfoError'),
@@ -40,6 +39,11 @@ async function toggleYtbChannel (link, follow = true) {
   try {
     const { params, unknownLink, needLogin } = await getYtbToken(link, 'channel')
     const { apiKey, client, request, channelId } = params || {}
+
+    if (!follow && whiteList.youtube.channel.includes(channelId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
+
     if (needLogin) return echoLog({ type: 'custom', text: getI18n('loginYtb') })
     if (unknownLink) return echoLog({ type: 'custom', text: getI18n('unsupportedLink') })
     if (!apiKey) return echoLog({ type: 'custom', text: '"getYtbToken" failed' })
@@ -90,10 +94,15 @@ async function toggleYtbChannel (link, follow = true) {
   }
 }
 
-async function toggleLikeYtbVideo (r, link, like = true) {
+async function toggleLikeYtbVideo (link, like = true) {
   try {
     const { params, unknownLink, needLogin } = await getYtbToken(link, 'likeVideo')
     const { apiKey, client, request, videoId, likeParams } = params || {}
+
+    if (!link && whiteList.youtube.video.includes(videoId)) {
+      return { result: 'Skiped', statusText: 'OK', status: 605 }
+    }
+
     if (needLogin) return echoLog({ type: 'custom', text: `<li>${getI18n('loginYtb')}</li>` })
     if (unknownLink) return echoLog({ type: 'custom', text: `<li>${getI18n('unsupportedLink')}</li>` })
     if (!apiKey) return echoLog({ type: 'custom', text: '<li>"getYtbToken" failed</li>' })

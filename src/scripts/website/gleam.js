@@ -136,9 +136,11 @@ const gleam = {
       await fuc.updateInfo(this.currentTaskInfo)
       const data = await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam')
       const toGuild = this.taskInfo.toGuild
-      for (const e of data) {
-        const [inviteId, guild] = e?.guild || []
-        if (inviteId && guild) toGuild[inviteId] = guild
+      for (const $data of data) {
+        for (const e of $data) {
+          const [inviteId, guild] = e?.guild || []
+          if (inviteId && guild) toGuild[inviteId] = guild
+        }
       }
       GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       const { facebooks, youtubes, others, links } = this.currentTaskInfo

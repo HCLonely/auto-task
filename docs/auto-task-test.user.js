@@ -29,7 +29,7 @@
 // @include            *://keylol.com/*
 // @include            *://givekey.ru/giveaway/*
 // @include            *://key-hub.eu/giveaway/*
-// @include            *://discord.com/app
+// @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
@@ -77,7 +77,7 @@
 // @run-at             document-end
 // ==/UserScript==
 
-/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval */
+/* eslint-disable no-unsafe-finally,no-void,camelcase,no-mixed-operators,no-fallthrough,no-unused-vars,no-new,no-unused-expressions,no-sequences,no-undef-init,no-unused-vars,no-func-assign,no-eval,multiline-ternary */
 /* esling-disable security/detect-non-literal-fs-filename */
 /* global loadSettings,loadAnnouncement,regeneratorRuntime,checkClick,getURLParameter,showAlert,urlPath,checkUser,Centrifuge,DashboardApp,captchaCheck,commonOptions,VerifyTasks */
 function _defineProperty (obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }) } else { obj[key] = value } return obj }
@@ -406,6 +406,14 @@ try {
         }, GM_getValue('youtubeInfo'))
       } catch (e) {
         throwError(e, 'getYtbInfo')
+      }
+    }
+
+    var getWhiteList = function getWhiteList () {
+      try {
+        return Object.assign(defaultConf.whiteList, config.whiteList)
+      } catch (e) {
+        throwError(e, 'getWhiteList')
       }
     }
 
@@ -1024,25 +1032,38 @@ try {
             switch (_context7.prev = _context7.next) {
               case 0:
                 _context7.prev = 0
-                _context7.next = 3
-                return getGroupID(groupName)
+
+                if (!whiteList.steam.group.includes(groupName)) {
+                  _context7.next = 3
+                  break
+                }
+
+                return _context7.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 3:
+                _context7.next = 5
+                return getGroupID(groupName)
+
+              case 5:
                 groupId = _context7.sent
 
                 if (groupId) {
-                  _context7.next = 6
+                  _context7.next = 8
                   break
                 }
 
                 return _context7.abrupt('return')
 
-              case 6:
+              case 8:
                 logStatus = echoLog({
                   type: 'leaveSteamGroup',
                   text: groupName
                 })
-                _context7.next = 9
+                _context7.next = 11
                 return httpRequest({
                   url: 'https://steamcommunity.com/id/' + steamInfo.userName + '/home_process',
                   method: 'POST',
@@ -1056,7 +1077,7 @@ try {
                   })
                 })
 
-              case 9:
+              case 11:
                 _yield$httpRequest6 = _context7.sent
                 result = _yield$httpRequest6.result
                 statusText = _yield$httpRequest6.statusText
@@ -1073,20 +1094,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context7.next = 20
+                _context7.next = 22
                 break
 
-              case 17:
-                _context7.prev = 17
+              case 19:
+                _context7.prev = 19
                 _context7.t0 = _context7.catch(0)
                 throwError(_context7.t0, 'leaveSteamGroup')
 
-              case 20:
+              case 22:
               case 'end':
                 return _context7.stop()
             }
           }
-        }, _callee7, null, [[0, 17]])
+        }, _callee7, null, [[0, 19]])
       }))
 
       return function leaveSteamGroup (_x5) {
@@ -1115,11 +1136,24 @@ try {
                 follow = _args8.length > 1 && _args8[1] !== undefined ? _args8[1] : true
                 logStatus = _args8.length > 2 && _args8[2] !== undefined ? _args8[2] : null
                 _context8.prev = 2
+
+                if (!(!follow && whiteList.steam.curator.includes(curatorId))) {
+                  _context8.next = 5
+                  break
+                }
+
+                return _context8.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 5:
                 logStatus = logStatus || echoLog({
                   type: follow ? 'followCurator' : 'unfollowCurator',
                   text: curatorId
                 })
-                _context8.next = 6
+                _context8.next = 8
                 return httpRequest({
                   url: 'https://store.steampowered.com/curators/ajaxfollow',
                   method: 'POST',
@@ -1134,7 +1168,7 @@ try {
                   dataType: 'json'
                 })
 
-              case 6:
+              case 8:
                 _yield$httpRequest7 = _context8.sent
                 result = _yield$httpRequest7.result
                 statusText = _yield$httpRequest7.statusText
@@ -1151,20 +1185,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context8.next = 17
+                _context8.next = 19
                 break
 
-              case 14:
-                _context8.prev = 14
+              case 16:
+                _context8.prev = 16
                 _context8.t0 = _context8.catch(2)
                 throwError(_context8.t0, 'toggleCurator')
 
-              case 17:
+              case 19:
               case 'end':
                 return _context8.stop()
             }
           }
-        }, _callee8, null, [[2, 14]])
+        }, _callee8, null, [[2, 16]])
       }))
 
       return function toggleCurator (_x6) {
@@ -1288,10 +1322,23 @@ try {
               case 0:
                 follow = _args10.length > 2 && _args10[2] !== undefined ? _args10[2] : true
                 _context10.prev = 1
-                _context10.next = 4
-                return getCuratorID(name, path)
+
+                if (!(!follow && whiteList.steam.otherCurator.includes(name))) {
+                  _context10.next = 4
+                  break
+                }
+
+                return _context10.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 4:
+                _context10.next = 6
+                return getCuratorID(name, path)
+
+              case 6:
                 curatorId = _context10.sent
 
                 if (curatorId) {
@@ -1304,20 +1351,20 @@ try {
                   toggleCurator(curatorId, follow, logStatus)
                 }
 
-                _context10.next = 11
+                _context10.next = 13
                 break
 
-              case 8:
-                _context10.prev = 8
+              case 10:
+                _context10.prev = 10
                 _context10.t0 = _context10.catch(1)
                 throwError(_context10.t0, 'toggleOtherCurator')
 
-              case 11:
+              case 13:
               case 'end':
                 return _context10.stop()
             }
           }
-        }, _callee10, null, [[1, 8]])
+        }, _callee10, null, [[1, 10]])
       }))
 
       return function toggleOtherCurator (_x9, _x10) {
@@ -1424,11 +1471,24 @@ try {
             switch (_context12.prev = _context12.next) {
               case 0:
                 _context12.prev = 0
+
+                if (!whiteList.steam.wishlist.includes(gameId)) {
+                  _context12.next = 3
+                  break
+                }
+
+                return _context12.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 3:
                 logStatus = echoLog({
                   type: 'removeWishlist',
                   text: gameId
                 })
-                _context12.next = 4
+                _context12.next = 6
                 return httpRequest({
                   url: 'https://store.steampowered.com/api/removefromwishlist',
                   method: 'POST',
@@ -1442,26 +1502,26 @@ try {
                   dataType: 'json'
                 })
 
-              case 4:
+              case 6:
                 _yield$httpRequest11 = _context12.sent
                 result = _yield$httpRequest11.result
                 data = _yield$httpRequest11.data
 
                 if (!(result === 'Success' && data.status === 200 && ((_data$response4 = data.response) === null || _data$response4 === void 0 ? void 0 : _data$response4.success) === true)) {
-                  _context12.next = 9
+                  _context12.next = 11
                   break
                 }
 
                 return _context12.abrupt('return', logStatus.success())
 
-              case 9:
-                _context12.next = 11
+              case 11:
+                _context12.next = 13
                 return httpRequest({
                   url: 'https://store.steampowered.com/app/' + gameId,
                   method: 'GET'
                 })
 
-              case 11:
+              case 13:
                 _yield$httpRequest12 = _context12.sent
                 resultR = _yield$httpRequest12.result
                 statusTextR = _yield$httpRequest12.statusText
@@ -1482,20 +1542,20 @@ try {
                   logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'))
                 }
 
-                _context12.next = 22
+                _context12.next = 24
                 break
 
-              case 19:
-                _context12.prev = 19
+              case 21:
+                _context12.prev = 21
                 _context12.t0 = _context12.catch(0)
                 throwError(_context12.t0, 'removeWishlist')
 
-              case 22:
+              case 24:
               case 'end':
                 return _context12.stop()
             }
           }
-        }, _callee12, null, [[0, 19]])
+        }, _callee12, null, [[0, 21]])
       }))
 
       return function removeWishlist (_x12) {
@@ -1512,6 +1572,19 @@ try {
             switch (_context13.prev = _context13.next) {
               case 0:
                 _context13.prev = 0
+
+                if (!(!follow && whiteList.steam.game.includes(gameId))) {
+                  _context13.next = 3
+                  break
+                }
+
+                return _context13.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 3:
                 logStatus = echoLog({
                   type: ''.concat(follow ? '' : 'un', 'followGame'),
                   text: gameId
@@ -1521,7 +1594,7 @@ try {
                   appid: gameId
                 }
                 if (!follow) requestData.unfollow = '1'
-                _context13.next = 6
+                _context13.next = 8
                 return httpRequest({
                   url: 'https://store.steampowered.com/explore/followgame/',
                   method: 'POST',
@@ -1531,26 +1604,26 @@ try {
                   data: $.param(requestData)
                 })
 
-              case 6:
+              case 8:
                 _yield$httpRequest13 = _context13.sent
                 result = _yield$httpRequest13.result
                 data = _yield$httpRequest13.data
 
                 if (!(result === 'Success' && data.status === 200 && data.responseText === 'true')) {
-                  _context13.next = 11
+                  _context13.next = 13
                   break
                 }
 
                 return _context13.abrupt('return', logStatus.success())
 
-              case 11:
-                _context13.next = 13
+              case 13:
+                _context13.next = 15
                 return httpRequest({
                   url: 'https://store.steampowered.com/app/' + gameId,
                   method: 'GET'
                 })
 
-              case 13:
+              case 15:
                 _yield$httpRequest14 = _context13.sent
                 resultR = _yield$httpRequest14.result
                 statusTextR = _yield$httpRequest14.statusText
@@ -1571,20 +1644,20 @@ try {
                   logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'))
                 }
 
-                _context13.next = 24
+                _context13.next = 26
                 break
 
-              case 21:
-                _context13.prev = 21
+              case 23:
+                _context13.prev = 23
                 _context13.t0 = _context13.catch(0)
                 throwError(_context13.t0, 'toggleGame')
 
-              case 24:
+              case 26:
               case 'end':
                 return _context13.stop()
             }
           }
-        }, _callee13, null, [[0, 21]])
+        }, _callee13, null, [[0, 23]])
       }))
 
       return function toggleGame (_x13, _x14) {
@@ -1699,25 +1772,38 @@ try {
               case 0:
                 subscribe = _args15.length > 1 && _args15[1] !== undefined ? _args15[1] : true
                 _context15.prev = 1
-                _context15.next = 4
-                return getForumId(gameId)
+
+                if (!whiteList.steam.forum.includes(gameId)) {
+                  _context15.next = 4
+                  break
+                }
+
+                return _context15.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 4:
+                _context15.next = 6
+                return getForumId(gameId)
+
+              case 6:
                 forumId = _context15.sent
 
                 if (forumId) {
-                  _context15.next = 7
+                  _context15.next = 9
                   break
                 }
 
                 return _context15.abrupt('return')
 
-              case 7:
+              case 9:
                 logStatus = echoLog({
                   type: ''.concat(subscribe ? '' : 'un', 'subscribeForum'),
                   text: gameId
                 })
-                _context15.next = 10
+                _context15.next = 12
                 return httpRequest({
                   url: 'https://steamcommunity.com/forum/'.concat(forumId, '/General/').concat(subscribe ? '' : 'un', 'subscribe/0/'),
                   method: 'POST',
@@ -1730,7 +1816,7 @@ try {
                   })
                 })
 
-              case 10:
+              case 12:
                 _yield$httpRequest16 = _context15.sent
                 result = _yield$httpRequest16.result
                 statusText = _yield$httpRequest16.statusText
@@ -1747,20 +1833,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context15.next = 21
+                _context15.next = 23
                 break
 
-              case 18:
-                _context15.prev = 18
+              case 20:
+                _context15.prev = 20
                 _context15.t0 = _context15.catch(1)
                 throwError(_context15.t0, 'subscribeForum')
 
-              case 21:
+              case 23:
               case 'end':
                 return _context15.stop()
             }
           }
-        }, _callee15, null, [[1, 18]])
+        }, _callee15, null, [[1, 20]])
       }))
 
       return function toggleForum (_x16) {
@@ -2157,11 +2243,24 @@ try {
             switch (_context20.prev = _context20.next) {
               case 0:
                 _context20.prev = 0
+
+                if (!whiteList.discord.server.includes(inviteId)) {
+                  _context20.next = 3
+                  break
+                }
+
+                return _context20.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 3:
                 logStatus = echoLog({
                   type: 'leaveDiscordServer',
                   text: inviteId
                 })
-                _context20.next = 4
+                _context20.next = 6
                 return httpRequest({
                   url: 'https://discord.com/api/v6/users/@me/guilds/' + guild,
                   method: 'DELETE',
@@ -2170,7 +2269,7 @@ try {
                   }
                 })
 
-              case 4:
+              case 6:
                 _yield$httpRequest20 = _context20.sent
                 result = _yield$httpRequest20.result
                 statusText = _yield$httpRequest20.statusText
@@ -2178,7 +2277,7 @@ try {
                 data = _yield$httpRequest20.data
 
                 if (!(result === 'Success' && data.status === 204)) {
-                  _context20.next = 14
+                  _context20.next = 16
                   break
                 }
 
@@ -2189,7 +2288,7 @@ try {
                   status: data.status
                 })
 
-              case 14:
+              case 16:
                 logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 return _context20.abrupt('return', {
                   result: result,
@@ -2197,21 +2296,21 @@ try {
                   status: (data === null || data === void 0 ? void 0 : data.status) || status
                 })
 
-              case 16:
-                _context20.next = 21
+              case 18:
+                _context20.next = 23
                 break
 
-              case 18:
-                _context20.prev = 18
+              case 20:
+                _context20.prev = 20
                 _context20.t0 = _context20.catch(0)
                 throwError(_context20.t0, 'leaveDiscordServer')
 
-              case 21:
+              case 23:
               case 'end':
                 return _context20.stop()
             }
           }
-        }, _callee20, null, [[0, 18]])
+        }, _callee20, null, [[0, 20]])
       }))
 
       return function leaveDiscordServer (_x20, _x21) {
@@ -2529,25 +2628,38 @@ try {
             switch (_context24.prev = _context24.next) {
               case 0:
                 _context24.prev = 0
-                _context24.next = 3
-                return getInsInfo(name)
+
+                if (!whiteList.instagram.user.includes(name)) {
+                  _context24.next = 3
+                  break
+                }
+
+                return _context24.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 3:
+                _context24.next = 5
+                return getInsInfo(name)
+
+              case 5:
                 id = _context24.sent
 
                 if (id) {
-                  _context24.next = 6
+                  _context24.next = 8
                   break
                 }
 
                 return _context24.abrupt('return')
 
-              case 6:
+              case 8:
                 logStatus = echoLog({
                   type: 'unfollowIns',
                   text: name
                 })
-                _context24.next = 9
+                _context24.next = 11
                 return httpRequest({
                   url: 'https://www.instagram.com/web/friendships/'.concat(id, '/unfollow/'),
                   method: 'POST',
@@ -2562,7 +2674,7 @@ try {
                   }
                 })
 
-              case 9:
+              case 11:
                 _yield$httpRequest23 = _context24.sent
                 result = _yield$httpRequest23.result
                 statusText = _yield$httpRequest23.statusText
@@ -2579,20 +2691,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context24.next = 20
+                _context24.next = 22
                 break
 
-              case 17:
-                _context24.prev = 17
+              case 19:
+                _context24.prev = 19
                 _context24.t0 = _context24.catch(0)
                 throwError(_context24.t0, 'unfollowIns')
 
-              case 20:
+              case 22:
               case 'end':
                 return _context24.stop()
             }
           }
-        }, _callee24, null, [[0, 17]])
+        }, _callee24, null, [[0, 19]])
       }))
 
       return function unfollowIns (_x25) {
@@ -2801,25 +2913,38 @@ try {
               case 0:
                 follow = _args27.length > 1 && _args27[1] !== undefined ? _args27[1] : true
                 _context27.prev = 1
-                _context27.next = 4
-                return getTwitterUserId(name)
+
+                if (!(!follow && whiteList.twitter.user.includes(name))) {
+                  _context27.next = 4
+                  break
+                }
+
+                return _context27.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 4:
+                _context27.next = 6
+                return getTwitterUserId(name)
+
+              case 6:
                 userId = _context27.sent
 
                 if (userId) {
-                  _context27.next = 7
+                  _context27.next = 9
                   break
                 }
 
                 return _context27.abrupt('return')
 
-              case 7:
+              case 9:
                 logStatus = echoLog({
                   type: ''.concat(follow ? '' : 'un', 'followTwitterUser'),
                   text: name
                 })
-                _context27.next = 10
+                _context27.next = 12
                 return httpRequest({
                   url: 'https://api.twitter.com/1.1/friendships/'.concat(follow ? 'create' : 'destroy', '.json'),
                   method: 'POST',
@@ -2842,7 +2967,7 @@ try {
                   })
                 })
 
-              case 10:
+              case 12:
                 _yield$httpRequest25 = _context27.sent
                 result = _yield$httpRequest25.result
                 statusText = _yield$httpRequest25.statusText
@@ -2859,20 +2984,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context27.next = 21
+                _context27.next = 23
                 break
 
-              case 18:
-                _context27.prev = 18
+              case 20:
+                _context27.prev = 20
                 _context27.t0 = _context27.catch(1)
                 throwError(_context27.t0, 'toggleTwitterUser')
 
-              case 21:
+              case 23:
               case 'end':
                 return _context27.stop()
             }
           }
-        }, _callee27, null, [[1, 18]])
+        }, _callee27, null, [[1, 20]])
       }))
 
       return function toggleTwitterUser (_x27) {
@@ -2900,11 +3025,24 @@ try {
               case 0:
                 retweet = _args28.length > 1 && _args28[1] !== undefined ? _args28[1] : true
                 _context28.prev = 1
+
+                if (!(!retweet && whiteList.twitter.retweet.includes(retweetId))) {
+                  _context28.next = 4
+                  break
+                }
+
+                return _context28.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 4:
                 logStatus = echoLog({
                   type: ''.concat(retweet ? '' : 'un', 'retweet'),
                   text: retweetId
                 })
-                _context28.next = 5
+                _context28.next = 7
                 return httpRequest({
                   url: 'https://api.twitter.com/1.1/statuses/'.concat(retweet ? '' : 'un', 'retweet.json'),
                   method: 'POST',
@@ -2920,7 +3058,7 @@ try {
                   responseType: 'json'
                 })
 
-              case 5:
+              case 7:
                 _yield$httpRequest26 = _context28.sent
                 result = _yield$httpRequest26.result
                 statusText = _yield$httpRequest26.statusText
@@ -2937,20 +3075,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context28.next = 16
+                _context28.next = 18
                 break
 
-              case 13:
-                _context28.prev = 13
+              case 15:
+                _context28.prev = 15
                 _context28.t0 = _context28.catch(1)
                 throwError(_context28.t0, 'toggleRetweet')
 
-              case 16:
+              case 18:
               case 'end':
                 return _context28.stop()
             }
           }
-        }, _callee28, null, [[1, 13]])
+        }, _callee28, null, [[1, 15]])
       }))
 
       return function toggleRetweet (_x28) {
@@ -3301,27 +3439,40 @@ try {
               case 0:
                 follow = _args32.length > 1 && _args32[1] !== undefined ? _args32[1] : true
                 _context32.prev = 1
-                _context32.next = 4
-                return getTwitchChannelId(name)
+
+                if (!whiteList.twitch.channel.includes(name)) {
+                  _context32.next = 4
+                  break
+                }
+
+                return _context32.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 4:
+                _context32.next = 6
+                return getTwitchChannelId(name)
+
+              case 6:
                 channelId = _context32.sent
 
                 if (channelId) {
-                  _context32.next = 7
+                  _context32.next = 9
                   break
                 }
 
                 return _context32.abrupt('return')
 
-              case 7:
+              case 9:
                 logStatus = echoLog({
                   type: ''.concat(follow ? '' : 'un', 'followTwitchChannel'),
                   text: name
                 })
                 followData = '[{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":false,"targetID":"' + channelId + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"3efee1acda90efdff9fef6e6b4a29213be3ee490781c5b54469717b6131ffdfe"}}}]'
                 unfollowData = '[{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"' + channelId + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"d7fbdb4e9780dcdc0cc1618ec783309471cd05a59584fc3c56ea1c52bb632d41"}}}]'
-                _context32.next = 12
+                _context32.next = 14
                 return httpRequest({
                   url: 'https://gql.twitch.tv/gql',
                   method: 'POST',
@@ -3332,7 +3483,7 @@ try {
                   data: follow ? followData : unfollowData
                 })
 
-              case 12:
+              case 14:
                 _yield$httpRequest29 = _context32.sent
                 result = _yield$httpRequest29.result
                 statusText = _yield$httpRequest29.statusText
@@ -3349,20 +3500,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context32.next = 23
+                _context32.next = 25
                 break
 
-              case 20:
-                _context32.prev = 20
+              case 22:
+                _context32.prev = 22
                 _context32.t0 = _context32.catch(1)
                 throwError(_context32.t0, 'toggleTwitchChannel')
 
-              case 23:
+              case 25:
               case 'end':
                 return _context32.stop()
             }
           }
-        }, _callee32, null, [[1, 20]])
+        }, _callee32, null, [[1, 22]])
       }))
 
       return function toggleTwitchChannel (_x31) {
@@ -3682,6 +3833,19 @@ try {
               case 0:
                 join = _args36.length > 1 && _args36[1] !== undefined ? _args36[1] : true
                 _context36.prev = 1
+
+                if (!(!join && whiteList.reddit.reddit.includes(name))) {
+                  _context36.next = 4
+                  break
+                }
+
+                return _context36.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 4:
                 type = join ? 'joinReddit' : 'leaveReddit'
 
                 if (/^u_/.test(name)) {
@@ -3692,7 +3856,7 @@ try {
                   type: type,
                   text: name
                 })
-                _context36.next = 7
+                _context36.next = 9
                 return httpRequest({
                   url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
                   method: 'POST',
@@ -3707,7 +3871,7 @@ try {
                   })
                 })
 
-              case 7:
+              case 9:
                 _yield$httpRequest32 = _context36.sent
                 result = _yield$httpRequest32.result
                 statusText = _yield$httpRequest32.statusText
@@ -3724,20 +3888,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context36.next = 18
+                _context36.next = 20
                 break
 
-              case 15:
-                _context36.prev = 15
+              case 17:
+                _context36.prev = 17
                 _context36.t0 = _context36.catch(1)
                 throwError(_context36.t0, 'toggleReddit')
 
-              case 18:
+              case 20:
               case 'end':
                 return _context36.stop()
             }
           }
-        }, _callee36, null, [[1, 15]])
+        }, _callee36, null, [[1, 17]])
       }))
 
       return function toggleReddit (_x34) {
@@ -3940,60 +4104,73 @@ try {
               case 0:
                 join = _args39.length > 1 && _args39[1] !== undefined ? _args39[1] : true
                 _context39.prev = 1
-                _context39.next = 4
-                return getVkId(name)
+
+                if (!(!join && whiteList.vk.vk.includes(name))) {
+                  _context39.next = 4
+                  break
+                }
+
+                return _context39.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
 
               case 4:
+                _context39.next = 6
+                return getVkId(name)
+
+              case 6:
                 data = _context39.sent
 
                 if (data) {
-                  _context39.next = 7
+                  _context39.next = 9
                   break
                 }
 
                 return _context39.abrupt('return')
 
-              case 7:
+              case 9:
                 _context39.t0 = data.type
-                _context39.next = _context39.t0 === 'group' ? 10 : _context39.t0 === 'public' ? 13 : _context39.t0 === 'wall' ? 16 : 19
+                _context39.next = _context39.t0 === 'group' ? 12 : _context39.t0 === 'public' ? 15 : _context39.t0 === 'wall' ? 18 : 21
                 break
-
-              case 10:
-                _context39.next = 12
-                return toggleVkGroup(name, data, join)
 
               case 12:
-                return _context39.abrupt('break', 19)
+                _context39.next = 14
+                return toggleVkGroup(name, data, join)
 
-              case 13:
-                _context39.next = 15
-                return toggleVkPublic(name, data, join)
+              case 14:
+                return _context39.abrupt('break', 21)
 
               case 15:
-                return _context39.abrupt('break', 19)
+                _context39.next = 17
+                return toggleVkPublic(name, data, join)
 
-              case 16:
-                _context39.next = 18
-                return toggleVkWall(name, join)
+              case 17:
+                return _context39.abrupt('break', 21)
 
               case 18:
-                return _context39.abrupt('break', 19)
+                _context39.next = 20
+                return toggleVkWall(name, join)
 
-              case 19:
-                _context39.next = 24
-                break
+              case 20:
+                return _context39.abrupt('break', 21)
 
               case 21:
-                _context39.prev = 21
+                _context39.next = 26
+                break
+
+              case 23:
+                _context39.prev = 23
                 _context39.t1 = _context39.catch(1)
                 throwError(_context39.t1, 'toggleVk')
 
-              case 24:
+              case 26:
               case 'end':
                 return _context39.stop()
             }
           }
-        }, _callee39, null, [[1, 21]])
+        }, _callee39, null, [[1, 23]])
       }))
 
       return function toggleVk (_x36) {
@@ -4548,7 +4725,7 @@ try {
           }
         }
       } catch (e) {
-        if (debug) console.error(e)
+        throwError(e, 'updateYtbInfo')
 
         if (notice) {
           Swal.fire({
@@ -4596,8 +4773,20 @@ try {
                 needLogin = _yield$getYtbToken.needLogin
                 _ref57 = params || {}, apiKey = _ref57.apiKey, client = _ref57.client, request = _ref57.request, channelId = _ref57.channelId
 
-                if (!needLogin) {
+                if (!(!follow && whiteList.youtube.channel.includes(channelId))) {
                   _context45.next = 11
+                  break
+                }
+
+                return _context45.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 11:
+                if (!needLogin) {
+                  _context45.next = 13
                   break
                 }
 
@@ -4606,9 +4795,9 @@ try {
                   text: getI18n('loginYtb')
                 }))
 
-              case 11:
+              case 13:
                 if (!unknownLink) {
-                  _context45.next = 13
+                  _context45.next = 15
                   break
                 }
 
@@ -4617,9 +4806,9 @@ try {
                   text: getI18n('unsupportedLink')
                 }))
 
-              case 13:
+              case 15:
                 if (apiKey) {
-                  _context45.next = 15
+                  _context45.next = 17
                   break
                 }
 
@@ -4628,13 +4817,13 @@ try {
                   text: '"getYtbToken" failed'
                 }))
 
-              case 15:
+              case 17:
                 logStatus = echoLog({
                   type: follow ? 'followYtbChannel' : 'unfollowYtbChannel',
                   text: channelId
                 })
                 nowTime = parseInt(new Date().getTime() / 1000)
-                _context45.next = 19
+                _context45.next = 21
                 return httpRequest({
                   url: 'https://www.youtube.com/youtubei/v1/subscription/'.concat(follow ? '' : 'un', 'subscribe?key=').concat(apiKey),
                   method: 'POST',
@@ -4662,7 +4851,7 @@ try {
                   })
                 })
 
-              case 19:
+              case 21:
                 _yield$httpRequest39 = _context45.sent
                 result = _yield$httpRequest39.result
                 statusText = _yield$httpRequest39.statusText
@@ -4683,20 +4872,20 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context45.next = 30
+                _context45.next = 32
                 break
 
-              case 27:
-                _context45.prev = 27
+              case 29:
+                _context45.prev = 29
                 _context45.t0 = _context45.catch(1)
                 throwError(_context45.t0, 'toggleYtbChannel')
 
-              case 30:
+              case 32:
               case 'end':
                 return _context45.stop()
             }
           }
-        }, _callee45, null, [[1, 27]])
+        }, _callee45, null, [[1, 29]])
       }))
 
       return function toggleYtbChannel (_x45) {
@@ -4705,7 +4894,7 @@ try {
     }())
 
     var toggleLikeYtbVideo = /* #__PURE__ */(function () {
-      var _ref58 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee46 (r, link) {
+      var _ref58 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee46 (link) {
         var like
         var _yield$getYtbToken2
         var params
@@ -4731,7 +4920,7 @@ try {
           while (1) {
             switch (_context46.prev = _context46.next) {
               case 0:
-                like = _args46.length > 2 && _args46[2] !== undefined ? _args46[2] : true
+                like = _args46.length > 1 && _args46[1] !== undefined ? _args46[1] : true
                 _context46.prev = 1
                 _context46.next = 4
                 return getYtbToken(link, 'likeVideo')
@@ -4743,8 +4932,20 @@ try {
                 needLogin = _yield$getYtbToken2.needLogin
                 _ref59 = params || {}, apiKey = _ref59.apiKey, client = _ref59.client, request = _ref59.request, videoId = _ref59.videoId, likeParams = _ref59.likeParams
 
-                if (!needLogin) {
+                if (!(!link && whiteList.youtube.video.includes(videoId))) {
                   _context46.next = 11
+                  break
+                }
+
+                return _context46.abrupt('return', {
+                  result: 'Skiped',
+                  statusText: 'OK',
+                  status: 605
+                })
+
+              case 11:
+                if (!needLogin) {
+                  _context46.next = 13
                   break
                 }
 
@@ -4753,9 +4954,9 @@ try {
                   text: '<li>'.concat(getI18n('loginYtb'), '</li>')
                 }))
 
-              case 11:
+              case 13:
                 if (!unknownLink) {
-                  _context46.next = 13
+                  _context46.next = 15
                   break
                 }
 
@@ -4764,9 +4965,9 @@ try {
                   text: '<li>'.concat(getI18n('unsupportedLink'), '</li>')
                 }))
 
-              case 13:
+              case 15:
                 if (apiKey) {
-                  _context46.next = 15
+                  _context46.next = 17
                   break
                 }
 
@@ -4775,7 +4976,7 @@ try {
                   text: '<li>"getYtbToken" failed</li>'
                 }))
 
-              case 15:
+              case 17:
                 logStatus = echoLog({
                   type: like ? 'likeYtbVideo' : 'unlikeYtbVideo',
                   text: videoId
@@ -4797,24 +4998,24 @@ try {
                 }
 
                 if (!like) {
-                  _context46.next = 24
+                  _context46.next = 26
                   break
                 }
 
                 if (!likeParams) {
-                  _context46.next = 23
+                  _context46.next = 25
                   break
                 }
 
                 likeVideoData.params = likeParams
-                _context46.next = 24
+                _context46.next = 26
                 break
 
-              case 23:
+              case 25:
                 return _context46.abrupt('return', logStatus.error('Empty likeParams'))
 
-              case 24:
-                _context46.next = 26
+              case 26:
+                _context46.next = 28
                 return httpRequest({
                   url: 'https://www.youtube.com/youtubei/v1/like/'.concat(like ? '' : 'remove', 'like?key=').concat(apiKey),
                   method: 'POST',
@@ -4830,7 +5031,7 @@ try {
                   data: JSON.stringify(likeVideoData)
                 })
 
-              case 26:
+              case 28:
                 _yield$httpRequest40 = _context46.sent
                 result = _yield$httpRequest40.result
                 statusText = _yield$httpRequest40.statusText
@@ -4851,23 +5052,23 @@ try {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 }
 
-                _context46.next = 37
+                _context46.next = 39
                 break
 
-              case 34:
-                _context46.prev = 34
+              case 36:
+                _context46.prev = 36
                 _context46.t0 = _context46.catch(1)
                 throwError(_context46.t0, 'toggleYtbChannel')
 
-              case 37:
+              case 39:
               case 'end':
                 return _context46.stop()
             }
           }
-        }, _callee46, null, [[1, 34]])
+        }, _callee46, null, [[1, 36]])
       }))
 
-      return function toggleLikeYtbVideo (_x46, _x47) {
+      return function toggleLikeYtbVideo (_x46) {
         return _ref58.apply(this, arguments)
       }
     }())
@@ -5037,7 +5238,7 @@ try {
         }, _callee47, null, [[0, 58]])
       }))
 
-      return function getYtbToken (_x48, _x49) {
+      return function getYtbToken (_x47, _x48) {
         return _ref60.apply(this, arguments)
       }
     }())
@@ -5143,7 +5344,7 @@ try {
         }, _callee48, null, [[1, 33], [5, 25, 28, 31]])
       }))
 
-      return function toggleYtbActions (_x50) {
+      return function toggleYtbActions (_x49) {
         return _ref62.apply(this, arguments)
       }
     }())
@@ -5200,7 +5401,7 @@ try {
         }, _callee49, null, [[0, 14]])
       }))
 
-      return function toggleActions (_x51) {
+      return function toggleActions (_x50) {
         return _ref63.apply(this, arguments)
       }
     }())
@@ -5601,7 +5802,7 @@ try {
       }
     }
 
-    var getDiscordAuth = function getDiscordAuth () {
+    var getDiscordAuth = function getDiscordAuth (notice) {
       try {
         if (typeof discordAuth === 'string') {
           GM_setValue('discordInfo', {
@@ -5609,20 +5810,30 @@ try {
             expired: false,
             updateTime: new Date().getTime()
           })
-          $('body').overhang({
-            type: 'success',
-            activity: 'notification',
-            message: getI18n('getAuthSuccess')
-          })
+
+          if (notice) {
+            Swal.fire({
+              title: getI18n('updateDiscordInfoSuccess'),
+              icon: 'success'
+            })
+          }
         } else {
-          $('body').overhang({
-            type: 'error',
-            activity: 'notification',
-            message: getI18n('getAuthError')
-          })
+          if (notice) {
+            Swal.fire({
+              title: getI18n('updateDiscordInfoError'),
+              icon: 'error'
+            })
+          }
         }
       } catch (e) {
         throwError(e, 'getDiscordAuth')
+
+        if (notice) {
+          Swal.fire({
+            title: getI18n('updateDiscordInfoError'),
+            icon: 'error'
+          })
+        }
       }
     }
 
@@ -6068,8 +6279,7 @@ try {
           wishlist: [],
           game: [],
           curator: [],
-          publisher: [],
-          developer: [],
+          otherCurator: [],
           forum: []
         },
         discord: {
@@ -6089,9 +6299,13 @@ try {
           retweet: []
         },
         vk: {
+          vk: []
+          /*
           group: [],
           public: [],
           wall: []
+          */
+
         },
         youtube: {
           channel: [],
@@ -6151,6 +6365,7 @@ try {
 
     var globalConf = config.global
     var debug = globalConf.other.showDetails
+    window.whiteList = getWhiteList()
     var language = getLanguage()
     var fuc = {
       httpRequest: httpRequest,
@@ -7826,7 +8041,7 @@ try {
         var _this14 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee63 () {
-          var data, toGuild, _iterator20, _step20, e, _ref78, _ref79, inviteId, guild
+          var data, toGuild, _iterator20, _step20, $data, _iterator21, _step21, e, _ref78, _ref79, inviteId, guild
 
           return regeneratorRuntime.wrap(function _callee63$ (_context63) {
             while (1) {
@@ -7843,15 +8058,30 @@ try {
                 case 5:
                   data = _context63.sent
                   toGuild = _this14.taskInfo.toGuild
+                  console.log(data)
 
                   if (action === 'fuck') {
                     _iterator20 = _createForOfIteratorHelper(data)
 
                     try {
                       for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
-                        e = _step20.value
-                        _ref78 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref79 = _slicedToArray(_ref78, 2), inviteId = _ref79[0], guild = _ref79[1]
-                        if (inviteId && guild) toGuild[inviteId] = guild
+                        $data = _step20.value
+
+                        if ($data) {
+                          _iterator21 = _createForOfIteratorHelper($data)
+
+                          try {
+                            for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
+                              e = _step21.value
+                              _ref78 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref79 = _slicedToArray(_ref78, 2), inviteId = _ref79[0], guild = _ref79[1]
+                              if (inviteId && guild) toGuild[inviteId] = guild
+                            }
+                          } catch (err) {
+                            _iterator21.e(err)
+                          } finally {
+                            _iterator21.f()
+                          }
+                        }
                       }
                     } catch (err) {
                       _iterator20.e(err)
@@ -7872,20 +8102,20 @@ try {
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
                   }
-                  _context63.next = 15
+                  _context63.next = 16
                   break
 
-                case 12:
-                  _context63.prev = 12
+                case 13:
+                  _context63.prev = 13
                   _context63.t0 = _context63.catch(0)
                   throwError(_context63.t0, 'giveawaysu.do_task')
 
-                case 15:
+                case 16:
                 case 'end':
                   return _context63.stop()
               }
             }
-          }, _callee63, null, [[0, 12]])
+          }, _callee63, null, [[0, 13]])
         }))()
       },
       fuck: function fuck () {
@@ -8001,12 +8231,12 @@ try {
             })
             var tasks = $('a[id^=task_]:not(.btn-success)')
 
-            var _iterator21 = _createForOfIteratorHelper(tasks)
-            var _step21
+            var _iterator22 = _createForOfIteratorHelper(tasks)
+            var _step22
 
             try {
-              for (_iterator21.s(); !(_step21 = _iterator21.n()).done;) {
-                var task = _step21.value
+              for (_iterator22.s(); !(_step22 = _iterator22.n()).done;) {
+                var task = _step22.value
                 var taskEle = $(task)
                 var href = taskEle.attr('href')
                 var text = taskEle.text().trim()
@@ -8044,9 +8274,9 @@ try {
                 status.success()
               }
             } catch (err) {
-              _iterator21.e(err)
+              _iterator22.e(err)
             } finally {
-              _iterator21.f()
+              _iterator22.f()
             }
 
             this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -8077,7 +8307,7 @@ try {
         var _this15 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee64 () {
-          var pro, links, _iterator22, _step22, link
+          var pro, links, _iterator23, _step23, link
 
           return regeneratorRuntime.wrap(function _callee64$ (_context64) {
             while (1) {
@@ -8093,18 +8323,18 @@ try {
                     break
                   }
 
-                  _iterator22 = _createForOfIteratorHelper(links)
+                  _iterator23 = _createForOfIteratorHelper(links)
                   _context64.prev = 6
 
-                  _iterator22.s()
+                  _iterator23.s()
 
                 case 8:
-                  if ((_step22 = _iterator22.n()).done) {
+                  if ((_step23 = _iterator23.n()).done) {
                     _context64.next = 15
                     break
                   }
 
-                  link = _step22.value
+                  link = _step23.value
                   pro.push(fuc.visitLink(link))
                   _context64.next = 13
                   return fuc.delay(1000)
@@ -8121,12 +8351,12 @@ try {
                   _context64.prev = 17
                   _context64.t0 = _context64.catch(6)
 
-                  _iterator22.e(_context64.t0)
+                  _iterator23.e(_context64.t0)
 
                 case 20:
                   _context64.prev = 20
 
-                  _iterator22.f()
+                  _iterator23.f()
 
                   return _context64.finish(20)
 
@@ -8339,12 +8569,12 @@ try {
             })
             var tasksContainer = $('div.entry-content .entry-method')
 
-            var _iterator23 = _createForOfIteratorHelper(tasksContainer)
-            var _step23
+            var _iterator24 = _createForOfIteratorHelper(tasksContainer)
+            var _step24
 
             try {
-              for (_iterator23.s(); !(_step23 = _iterator23.n()).done;) {
-                var task = _step23.value
+              for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
+                var task = _step24.value
 
                 if ($(task).find('i.fa-question').length > 0) {
                   if ($(task).hasClass('visit') || $(task).find('span:contains(Visit):contains(seconds)').length > 0) {
@@ -8453,9 +8683,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator23.e(err)
+              _iterator24.e(err)
             } finally {
-              _iterator23.f()
+              _iterator24.f()
             }
 
             this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -8483,7 +8713,7 @@ try {
         var _this18 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee67 () {
-          var pro, data, toGuild, _iterator24, _step24, e, _ref82, _ref83, inviteId, guild, _this18$currentTaskIn, facebooks, youtubes, others, links, socialPlatforms, _iterator25, _step25, task, title, status, button, _iterator26, _step26, other, icon, _title2, taskType
+          var pro, data, toGuild, _iterator25, _step25, $data, _iterator28, _step28, e, _ref82, _ref83, inviteId, guild, _this18$currentTaskIn, facebooks, youtubes, others, links, socialPlatforms, _iterator26, _step26, task, title, status, button, _iterator27, _step27, other, icon, _title2, taskType
 
           return regeneratorRuntime.wrap(function _callee67$ (_context67) {
             while (1) {
@@ -8501,18 +8731,29 @@ try {
                 case 6:
                   data = _context67.sent
                   toGuild = _this18.taskInfo.toGuild
-                  _iterator24 = _createForOfIteratorHelper(data)
+                  _iterator25 = _createForOfIteratorHelper(data)
 
                   try {
-                    for (_iterator24.s(); !(_step24 = _iterator24.n()).done;) {
-                      e = _step24.value
-                      _ref82 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref83 = _slicedToArray(_ref82, 2), inviteId = _ref83[0], guild = _ref83[1]
-                      if (inviteId && guild) toGuild[inviteId] = guild
+                    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
+                      $data = _step25.value
+                      _iterator28 = _createForOfIteratorHelper($data)
+
+                      try {
+                        for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+                          e = _step28.value
+                          _ref82 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref83 = _slicedToArray(_ref82, 2), inviteId = _ref83[0], guild = _ref83[1]
+                          if (inviteId && guild) toGuild[inviteId] = guild
+                        }
+                      } catch (err) {
+                        _iterator28.e(err)
+                      } finally {
+                        _iterator28.f()
+                      }
                     }
                   } catch (err) {
-                    _iterator24.e(err)
+                    _iterator25.e(err)
                   } finally {
-                    _iterator24.f()
+                    _iterator25.f()
                   }
 
                   GM_setValue('taskInfo[' + window.location.host + _this18.get_giveawayId() + ']', _this18.taskInfo)
@@ -8521,11 +8762,11 @@ try {
 
                   if (globalConf.other.autoOpen) {
                     if (socialPlatforms.length > 0) {
-                      _iterator25 = _createForOfIteratorHelper(socialPlatforms)
+                      _iterator26 = _createForOfIteratorHelper(socialPlatforms)
 
                       try {
-                        for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-                          task = _step25.value
+                        for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
+                          task = _step26.value
                           title = $(task).find('.entry-method-title').text().trim()
                           status = fuc.echoLog({
                             type: 'custom',
@@ -8541,9 +8782,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator25.e(err)
+                        _iterator26.e(err)
                       } finally {
-                        _iterator25.f()
+                        _iterator26.f()
                       }
                     }
                   }
@@ -8552,11 +8793,11 @@ try {
                     pro.push(_this18.visit_link(links))
                   }
 
-                  _iterator26 = _createForOfIteratorHelper(others)
+                  _iterator27 = _createForOfIteratorHelper(others)
 
                   try {
-                    for (_iterator26.s(); !(_step26 = _iterator26.n()).done;) {
-                      other = _step26.value
+                    for (_iterator27.s(); !(_step27 = _iterator27.n()).done;) {
+                      other = _step27.value
                       icon = $(other).find('.icon-wrapper i')
 
                       if (icon.hasClass('fa-steam')) {
@@ -8574,9 +8815,9 @@ try {
                       }
                     }
                   } catch (err) {
-                    _iterator26.e(err)
+                    _iterator27.e(err)
                   } finally {
-                    _iterator26.f()
+                    _iterator27.f()
                   }
 
                   Promise.all(pro).finally(function () {
@@ -8604,7 +8845,7 @@ try {
       },
       verify: function verify () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee68 () {
-          var tasks, _iterator27, _step27, task, title, status, enterBtn
+          var tasks, _iterator29, _step29, task, title, status, enterBtn
 
           return regeneratorRuntime.wrap(function _callee68$ (_context68) {
             while (1) {
@@ -8624,18 +8865,18 @@ try {
 
                 case 3:
                   tasks = $('div.entry-content .entry-method')
-                  _iterator27 = _createForOfIteratorHelper(tasks)
+                  _iterator29 = _createForOfIteratorHelper(tasks)
                   _context68.prev = 5
 
-                  _iterator27.s()
+                  _iterator29.s()
 
                 case 7:
-                  if ((_step27 = _iterator27.n()).done) {
+                  if ((_step29 = _iterator29.n()).done) {
                     _context68.next = 23
                     break
                   }
 
-                  task = _step27.value
+                  task = _step29.value
 
                   if (!($(task).find('i.fa-question').length > 0)) {
                     _context68.next = 19
@@ -8678,12 +8919,12 @@ try {
                   _context68.prev = 25
                   _context68.t0 = _context68.catch(5)
 
-                  _iterator27.e(_context68.t0)
+                  _iterator29.e(_context68.t0)
 
                 case 28:
                   _context68.prev = 28
 
-                  _iterator27.f()
+                  _iterator29.f()
 
                   return _context68.finish(28)
 
@@ -8764,14 +9005,14 @@ try {
       },
       visit_link: function visit_link (links) {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee70 () {
-          var _iterator28, _step28, _loop3, _ret2
+          var _iterator30, _step30, _loop3, _ret2
 
           return regeneratorRuntime.wrap(function _callee70$ (_context71) {
             while (1) {
               switch (_context71.prev = _context71.next) {
                 case 0:
                   _context71.prev = 0
-                  _iterator28 = _createForOfIteratorHelper(links)
+                  _iterator30 = _createForOfIteratorHelper(links)
                   _context71.prev = 2
                   _loop3 = /* #__PURE__ */regeneratorRuntime.mark(function _loop3 () {
                     var link, title, status, taskTime, url, timer, _taskTime$match, taskBtn, href
@@ -8780,7 +9021,7 @@ try {
                       while (1) {
                         switch (_context70.prev = _context70.next) {
                           case 0:
-                            link = _step28.value
+                            link = _step30.value
                             title = $(link).find('.entry-method-title').text().trim()
                             status = fuc.echoLog({
                               type: 'custom',
@@ -8827,10 +9068,10 @@ try {
                     }, _loop3)
                   })
 
-                  _iterator28.s()
+                  _iterator30.s()
 
                 case 5:
-                  if ((_step28 = _iterator28.n()).done) {
+                  if ((_step30 = _iterator30.n()).done) {
                     _context71.next = 12
                     break
                   }
@@ -8859,12 +9100,12 @@ try {
                   _context71.prev = 14
                   _context71.t1 = _context71.catch(2)
 
-                  _iterator28.e(_context71.t1)
+                  _iterator30.e(_context71.t1)
 
                 case 17:
                   _context71.prev = 17
 
-                  _iterator28.f()
+                  _iterator30.f()
 
                   return _context71.finish(17)
 
@@ -9054,12 +9295,12 @@ try {
               var pro = []
               var tasks = $('#giveawaysjoined a[class*=promo]')
 
-              var _iterator29 = _createForOfIteratorHelper(tasks)
-              var _step29
+              var _iterator31 = _createForOfIteratorHelper(tasks)
+              var _step31
 
               try {
                 var _loop4 = function _loop4 () {
-                  var task = _step29.value
+                  var task = _step31.value
                   var promo = $(task)
 
                   if (!promo.hasClass('buttonentered')) {
@@ -9215,13 +9456,13 @@ try {
                   }
                 }
 
-                for (_iterator29.s(); !(_step29 = _iterator29.n()).done;) {
+                for (_iterator31.s(); !(_step31 = _iterator31.n()).done;) {
                   _loop4()
                 }
               } catch (err) {
-                _iterator29.e(err)
+                _iterator31.e(err)
               } finally {
-                _iterator29.f()
+                _iterator31.f()
               }
 
               Promise.all(pro).finally(function () {
@@ -9281,7 +9522,7 @@ try {
         var _this21 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee72 () {
-          var callback, taskInfoHistory, status, tasks, pro, _iterator30, _step30, task, link, taskDes, _link$match, groupName, _link$match2, gameId
+          var callback, taskInfoHistory, status, tasks, pro, _iterator32, _step32, task, link, taskDes, _link$match, groupName, _link$match2, gameId
 
           return regeneratorRuntime.wrap(function _callee72$ (_context73) {
             while (1) {
@@ -9303,11 +9544,11 @@ try {
                       })
                       tasks = $('.task a')
                       pro = []
-                      _iterator30 = _createForOfIteratorHelper(tasks)
+                      _iterator32 = _createForOfIteratorHelper(tasks)
 
                       try {
-                        for (_iterator30.s(); !(_step30 = _iterator30.n()).done;) {
-                          task = _step30.value
+                        for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+                          task = _step32.value
 
                           link = $(task).attr('href')
                           taskDes = $(task).text().trim()
@@ -9355,9 +9596,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator30.e(err)
+                        _iterator32.e(err)
                       } finally {
-                        _iterator30.f()
+                        _iterator32.f()
                       }
 
                       Promise.all(pro).finally(function () {
@@ -9393,7 +9634,7 @@ try {
         var _this22 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 () {
-          var pro, links, _iterator31, _step31, link
+          var pro, links, _iterator33, _step33, link
 
           return regeneratorRuntime.wrap(function _callee73$ (_context74) {
             while (1) {
@@ -9409,18 +9650,18 @@ try {
                     break
                   }
 
-                  _iterator31 = _createForOfIteratorHelper(links)
+                  _iterator33 = _createForOfIteratorHelper(links)
                   _context74.prev = 6
 
-                  _iterator31.s()
+                  _iterator33.s()
 
                 case 8:
-                  if ((_step31 = _iterator31.n()).done) {
+                  if ((_step33 = _iterator33.n()).done) {
                     _context74.next = 15
                     break
                   }
 
-                  link = _step31.value
+                  link = _step33.value
                   pro.push(fuc.visitLink(link, {
                     method: 'GET'
                   }))
@@ -9439,12 +9680,12 @@ try {
                   _context74.prev = 17
                   _context74.t0 = _context74.catch(6)
 
-                  _iterator31.e(_context74.t0)
+                  _iterator33.e(_context74.t0)
 
                 case 20:
                   _context74.prev = 20
 
-                  _iterator31.f()
+                  _iterator33.f()
 
                   return _context74.finish(20)
 
@@ -9722,7 +9963,7 @@ try {
               }, _callee77)
             }))
 
-            return function (_x52, _x53, _x54) {
+            return function (_x51, _x52, _x53) {
               return _ref89.apply(this, arguments)
             }
           }())
@@ -9763,8 +10004,8 @@ try {
                       isGroup = type === 'group'
                       _context79.next = 4
                       return fuc.updateInfo({}, {
-                        steamStore: isGroup || isAnnouncement,
-                        steamCommunity: !isGroup
+                        steamStore: !isGroup || isAnnouncement,
+                        steamCommunity: isGroup
                       })
 
                     case 4:
@@ -9801,7 +10042,7 @@ try {
               }, _callee78)
             }))
 
-            return function (_x55, _x56, _x57) {
+            return function (_x54, _x55, _x56) {
               return _ref90.apply(this, arguments)
             }
           }())
@@ -9824,14 +10065,14 @@ try {
           var steamCommunityLinks = mainPost.find('a[href*="steamcommunity.com"]')
 
           if (discordLinks.length > 0) {
-            var _iterator32 = _createForOfIteratorHelper(discordLinks)
-            var _step32
+            var _iterator34 = _createForOfIteratorHelper(discordLinks)
+            var _step34
 
             try {
-              for (_iterator32.s(); !(_step32 = _iterator32.n()).done;) {
+              for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
                 var _link$match3
 
-                var discordLink = _step32.value
+                var discordLink = _step34.value
                 var link = $(discordLink).attr('href')
                 var inviteId = link === null || link === void 0 ? void 0 : (_link$match3 = link.match(/invite\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
 
@@ -9840,21 +10081,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator32.e(err)
+              _iterator34.e(err)
             } finally {
-              _iterator32.f()
+              _iterator34.f()
             }
           }
 
           if (redditLinks.length > 0) {
-            var _iterator33 = _createForOfIteratorHelper(redditLinks)
-            var _step33
+            var _iterator35 = _createForOfIteratorHelper(redditLinks)
+            var _step35
 
             try {
-              for (_iterator33.s(); !(_step33 = _iterator33.n()).done;) {
+              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
                 var _link$match4
 
-                var redditLink = _step33.value
+                var redditLink = _step35.value
 
                 var _link = $(redditLink).attr('href')
 
@@ -9865,21 +10106,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator33.e(err)
+              _iterator35.e(err)
             } finally {
-              _iterator33.f()
+              _iterator35.f()
             }
           }
 
           if (insLinks.length > 0) {
-            var _iterator34 = _createForOfIteratorHelper(insLinks)
-            var _step34
+            var _iterator36 = _createForOfIteratorHelper(insLinks)
+            var _step36
 
             try {
-              for (_iterator34.s(); !(_step34 = _iterator34.n()).done;) {
+              for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
                 var _link2$match
 
-                var insLink = _step34.value
+                var insLink = _step36.value
 
                 var _link2 = $(insLink).attr('href')
 
@@ -9890,21 +10131,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator34.e(err)
+              _iterator36.e(err)
             } finally {
-              _iterator34.f()
+              _iterator36.f()
             }
           }
 
           if (twitterLinks.length > 0) {
-            var _iterator35 = _createForOfIteratorHelper(twitterLinks)
-            var _step35
+            var _iterator37 = _createForOfIteratorHelper(twitterLinks)
+            var _step37
 
             try {
-              for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
+              for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
                 var _link3$match, _link3$match2
 
-                var twitterLink = _step35.value
+                var twitterLink = _step37.value
 
                 var _link3 = $(twitterLink).attr('href')
 
@@ -9918,21 +10159,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator35.e(err)
+              _iterator37.e(err)
             } finally {
-              _iterator35.f()
+              _iterator37.f()
             }
           }
 
           if (twitchLinks.length > 0) {
-            var _iterator36 = _createForOfIteratorHelper(twitchLinks)
-            var _step36
+            var _iterator38 = _createForOfIteratorHelper(twitchLinks)
+            var _step38
 
             try {
-              for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
+              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
                 var _link4$match
 
-                var twitchLink = _step36.value
+                var twitchLink = _step38.value
 
                 var _link4 = $(twitchLink).attr('href')
 
@@ -9943,21 +10184,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator36.e(err)
+              _iterator38.e(err)
             } finally {
-              _iterator36.f()
+              _iterator38.f()
             }
           }
 
           if (vkLinks.length > 0) {
-            var _iterator37 = _createForOfIteratorHelper(vkLinks)
-            var _step37
+            var _iterator39 = _createForOfIteratorHelper(vkLinks)
+            var _step39
 
             try {
-              for (_iterator37.s(); !(_step37 = _iterator37.n()).done;) {
+              for (_iterator39.s(); !(_step39 = _iterator39.n()).done;) {
                 var _link5$match
 
-                var vkLink = _step37.value
+                var vkLink = _step39.value
 
                 var _link5 = $(vkLink).attr('href')
 
@@ -9968,21 +10209,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator37.e(err)
+              _iterator39.e(err)
             } finally {
-              _iterator37.f()
+              _iterator39.f()
             }
           }
 
           if (steamStoreLinks.length > 0) {
-            var _iterator38 = _createForOfIteratorHelper(steamStoreLinks)
-            var _step38
+            var _iterator40 = _createForOfIteratorHelper(steamStoreLinks)
+            var _step40
 
             try {
-              for (_iterator38.s(); !(_step38 = _iterator38.n()).done;) {
+              for (_iterator40.s(); !(_step40 = _iterator40.n()).done;) {
                 var _link6$match, _link6$match2, _link6$match3, _link6$match4, _link6$match5, _link6$match6, _link6$match7
 
-                var steamStoreLink = _step38.value
+                var steamStoreLink = _step40.value
 
                 var _link6 = $(steamStoreLink).attr('href')
 
@@ -10015,21 +10256,21 @@ try {
                 }
               }
             } catch (err) {
-              _iterator38.e(err)
+              _iterator40.e(err)
             } finally {
-              _iterator38.f()
+              _iterator40.f()
             }
           }
 
           if (steamCommunityLinks.length > 0) {
-            var _iterator39 = _createForOfIteratorHelper(steamCommunityLinks)
-            var _step39
+            var _iterator41 = _createForOfIteratorHelper(steamCommunityLinks)
+            var _step41
 
             try {
-              for (_iterator39.s(); !(_step39 = _iterator39.n()).done;) {
+              for (_iterator41.s(); !(_step41 = _iterator41.n()).done;) {
                 var _link7$match
 
-                var steamCommunityLink = _step39.value
+                var steamCommunityLink = _step41.value
 
                 var _link7 = $(steamCommunityLink).attr('href')
 
@@ -10043,9 +10284,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator39.e(err)
+              _iterator41.e(err)
             } finally {
-              _iterator39.f()
+              _iterator41.f()
             }
           }
 
@@ -10058,7 +10299,7 @@ try {
       },
       fuck: function fuck () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee79 () {
-          var selectedBtns, _iterator40, _step40, btn, action
+          var selectedBtns, _iterator42, _step42, btn, action
 
           return regeneratorRuntime.wrap(function _callee79$ (_context80) {
             while (1) {
@@ -10066,18 +10307,18 @@ try {
                 case 0:
                   _context80.prev = 0
                   selectedBtns = $('.auto-task-keylol[selected="selected"]')
-                  _iterator40 = _createForOfIteratorHelper(selectedBtns)
+                  _iterator42 = _createForOfIteratorHelper(selectedBtns)
                   _context80.prev = 3
 
-                  _iterator40.s()
+                  _iterator42.s()
 
                 case 5:
-                  if ((_step40 = _iterator40.n()).done) {
+                  if ((_step42 = _iterator42.n()).done) {
                     _context80.next = 13
                     break
                   }
 
-                  btn = _step40.value
+                  btn = _step42.value
                   action = $(btn).attr('onclick')
                   _context80.next = 10
                   return eval(action)
@@ -10098,12 +10339,12 @@ try {
                   _context80.prev = 15
                   _context80.t0 = _context80.catch(3)
 
-                  _iterator40.e(_context80.t0)
+                  _iterator42.e(_context80.t0)
 
                 case 18:
                   _context80.prev = 18
 
-                  _iterator40.f()
+                  _iterator42.f()
 
                   return _context80.finish(18)
 
@@ -10273,12 +10514,12 @@ try {
             })
             var tasksContainer = $('.container_task')
 
-            var _iterator41 = _createForOfIteratorHelper(tasksContainer)
-            var _step41
+            var _iterator43 = _createForOfIteratorHelper(tasksContainer)
+            var _step43
 
             try {
-              for (_iterator41.s(); !(_step41 = _iterator41.n()).done;) {
-                var task = _step41.value
+              for (_iterator43.s(); !(_step43 = _iterator43.n()).done;) {
+                var task = _step43.value
                 var taskDes = $(task).find('.card-body p.card-text.monospace')
                 var verifyBtn = $(task).find('button[id^=task_]:not(:contains(VERIFIED))')
 
@@ -10355,9 +10596,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator41.e(err)
+              _iterator43.e(err)
             } finally {
-              _iterator41.f()
+              _iterator43.f()
             }
 
             this.currentTaskInfo = fuc.uniqueTaskInfo(this.currentTaskInfo)
@@ -10396,7 +10637,7 @@ try {
         var _this27 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee81 () {
-          var pro, links, _iterator42, _step42, link
+          var pro, links, _iterator44, _step44, link
 
           return regeneratorRuntime.wrap(function _callee81$ (_context82) {
             while (1) {
@@ -10412,18 +10653,18 @@ try {
                     break
                   }
 
-                  _iterator42 = _createForOfIteratorHelper(links)
+                  _iterator44 = _createForOfIteratorHelper(links)
                   _context82.prev = 6
 
-                  _iterator42.s()
+                  _iterator44.s()
 
                 case 8:
-                  if ((_step42 = _iterator42.n()).done) {
+                  if ((_step44 = _iterator44.n()).done) {
                     _context82.next = 15
                     break
                   }
 
-                  link = _step42.value
+                  link = _step44.value
                   pro.push(fuc.visitLink(link.pageUrl, {
                     url: '/ajax/verifyTasks/webpage/clickedLink',
                     method: 'POST',
@@ -10451,12 +10692,12 @@ try {
                   _context82.prev = 17
                   _context82.t0 = _context82.catch(6)
 
-                  _iterator42.e(_context82.t0)
+                  _iterator44.e(_context82.t0)
 
                 case 20:
                   _context82.prev = 20
 
-                  _iterator42.f()
+                  _iterator44.f()
 
                   return _context82.finish(20)
 
@@ -10564,7 +10805,7 @@ try {
         var _this29 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee83 () {
-          var verify, pro, _iterator43, _step43, task
+          var verify, pro, _iterator45, _step45, task
 
           return regeneratorRuntime.wrap(function _callee83$ (_context84) {
             while (1) {
@@ -10579,18 +10820,18 @@ try {
                   }
 
                   pro = []
-                  _iterator43 = _createForOfIteratorHelper(fuc.unique(_this29.currentTaskInfo.tasks))
+                  _iterator45 = _createForOfIteratorHelper(fuc.unique(_this29.currentTaskInfo.tasks))
                   _context84.prev = 5
 
-                  _iterator43.s()
+                  _iterator45.s()
 
                 case 7:
-                  if ((_step43 = _iterator43.n()).done) {
+                  if ((_step45 = _iterator45.n()).done) {
                     _context84.next = 14
                     break
                   }
 
-                  task = _step43.value
+                  task = _step45.value
                   pro.push(_this29.verifyTask(task))
                   _context84.next = 12
                   return fuc.delay(500)
@@ -10607,12 +10848,12 @@ try {
                   _context84.prev = 16
                   _context84.t0 = _context84.catch(5)
 
-                  _iterator43.e(_context84.t0)
+                  _iterator45.e(_context84.t0)
 
                 case 19:
                   _context84.prev = 19
 
-                  _iterator43.f()
+                  _iterator45.f()
 
                   return _context84.finish(19)
 
@@ -10810,7 +11051,7 @@ try {
         var _this32 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 () {
-          var type, items, maxPoint, myPoint, _iterator44, _step44, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
+          var type, items, maxPoint, myPoint, _iterator46, _step46, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques6, result, statusText, status, data, _data$responseText$ma17, points
 
           return regeneratorRuntime.wrap(function _callee86$ (_context87) {
             while (1) {
@@ -10821,18 +11062,18 @@ try {
                   items = $(".giveaways-page-item:contains('".concat(type, "'):not(:contains('ENTERED'))"))
                   maxPoint = _this32.maxPoint()
                   myPoint = _this32.myPoints
-                  _iterator44 = _createForOfIteratorHelper(items)
+                  _iterator46 = _createForOfIteratorHelper(items)
                   _context87.prev = 6
 
-                  _iterator44.s()
+                  _iterator46.s()
 
                 case 8:
-                  if ((_step44 = _iterator44.n()).done) {
+                  if ((_step46 = _iterator46.n()).done) {
                     _context87.next = 33
                     break
                   }
 
-                  item = _step44.value
+                  item = _step46.value
                   needPoints = $(item).find('.giveaways-page-item-header-points').text().match(/[\d]+/gim)
 
                   if (!(type === 'points' && needPoints && parseInt(needPoints[0]) > myPoint)) {
@@ -10918,12 +11159,12 @@ try {
                   _context87.prev = 35
                   _context87.t0 = _context87.catch(6)
 
-                  _iterator44.e(_context87.t0)
+                  _iterator46.e(_context87.t0)
 
                 case 38:
                   _context87.prev = 38
 
-                  _iterator44.f()
+                  _iterator46.f()
 
                   return _context87.finish(38)
 
@@ -11032,12 +11273,12 @@ try {
             var taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
             if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
 
-            var _iterator45 = _createForOfIteratorHelper(steps)
-            var _step45
+            var _iterator47 = _createForOfIteratorHelper(steps)
+            var _step47
 
             try {
-              for (_iterator45.s(); !(_step45 = _iterator45.n()).done;) {
-                var step = _step45.value
+              for (_iterator47.s(); !(_step47 = _iterator47.n()).done;) {
+                var step = _step47.value
 
                 if ($(step).find('span:contains(Success)').length === 0) {
                   if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
@@ -11084,9 +11325,9 @@ try {
                 }
               }
             } catch (err) {
-              _iterator45.e(err)
+              _iterator47.e(err)
             } finally {
-              _iterator45.f()
+              _iterator47.f()
             }
 
             Promise.all(pro).finally(function () {
@@ -11109,14 +11350,14 @@ try {
             var checks = $('#steps tbody a[id^=check]')
 
             if (checks.length > 0) {
-              var _iterator46 = _createForOfIteratorHelper(checks)
-              var _step46
+              var _iterator48 = _createForOfIteratorHelper(checks)
+              var _step48
 
               try {
-                for (_iterator46.s(); !(_step46 = _iterator46.n()).done;) {
+                for (_iterator48.s(); !(_step48 = _iterator48.n()).done;) {
                   var _$$attr$match
 
-                  var check = _step46.value
+                  var check = _step48.value
                   var id = (_$$attr$match = $(check).attr('id').match(/[\d]+/)) === null || _$$attr$match === void 0 ? void 0 : _$$attr$match[0]
                   if (id) {
                     this.currentTaskInfo.tasks.push({
@@ -11126,9 +11367,9 @@ try {
                   }
                 }
               } catch (err) {
-                _iterator46.e(err)
+                _iterator48.e(err)
               } finally {
-                _iterator46.f()
+                _iterator48.f()
               }
 
               this.verify(true)
@@ -11147,31 +11388,31 @@ try {
             } else {
               var _pro = []
 
-              var _iterator47 = _createForOfIteratorHelper(steps)
-              var _step47
+              var _iterator49 = _createForOfIteratorHelper(steps)
+              var _step49
 
               try {
-                for (_iterator47.s(); !(_step47 = _iterator47.n()).done;) {
-                  var _step48 = _step47.value
+                for (_iterator49.s(); !(_step49 = _iterator49.n()).done;) {
+                  var _step50 = _step49.value
 
-                  if ($(_step48).find("a[href*='store.steampowered.com/curator/']").length > 0) {
+                  if ($(_step50).find("a[href*='store.steampowered.com/curator/']").length > 0) {
                     var _link10$match
 
-                    var _link10 = $(_step48).find("a[href*='store.steampowered.com/curator/']").attr('href')
+                    var _link10 = $(_step50).find("a[href*='store.steampowered.com/curator/']").attr('href')
 
                     var _curatorId = (_link10$match = _link10.match(/curator\/([\d]+)/)) === null || _link10$match === void 0 ? void 0 : _link10$match[1]
 
                     if (_curatorId) this.taskInfo.curators.push(_curatorId)
-                  } else if ($(_step48).find("a[href*='steampowered.com/groups/']").length > 0) {
+                  } else if ($(_step50).find("a[href*='steampowered.com/groups/']").length > 0) {
                     var _link11$match
 
-                    var _link11 = $(_step48).find("a[href*='steampowered.com/groups/']").attr('href')
+                    var _link11 = $(_step50).find("a[href*='steampowered.com/groups/']").attr('href')
 
                     var _groupName3 = (_link11$match = _link11.match(/groups\/(.+)\/?/)) === null || _link11$match === void 0 ? void 0 : _link11$match[1]
 
                     if (_groupName3) this.taskInfo.groups.push(_groupName3)
-                  } else if ($(_step48).find("a[href*='steamcommunity.com/gid']").length > 0) {
-                    var _link12 = $(_step48).find("a[href*='steamcommunity.com/gid']").attr('href')
+                  } else if ($(_step50).find("a[href*='steamcommunity.com/gid']").length > 0) {
+                    var _link12 = $(_step50).find("a[href*='steamcommunity.com/gid']").attr('href')
 
                     _pro.push(fuc.getFinalUrl(_link12).then(function (_ref95) {
                       var result = _ref95.result
@@ -11190,9 +11431,9 @@ try {
                   }
                 }
               } catch (err) {
-                _iterator47.e(err)
+                _iterator49.e(err)
               } finally {
-                _iterator47.f()
+                _iterator49.f()
               }
 
               if (_pro.length > 0) {
@@ -11279,12 +11520,12 @@ try {
           if (verify) {
             var pro = []
 
-            var _iterator48 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
-            var _step49
+            var _iterator50 = _createForOfIteratorHelper(fuc.unique(this.currentTaskInfo.tasks))
+            var _step51
 
             try {
               var _loop5 = function _loop5 () {
-                var task = _step49.value
+                var task = _step51.value
                 var status = fuc.echoLog({
                   type: 'custom',
                   text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes, '...<font></font></li>')
@@ -11294,13 +11535,13 @@ try {
                 }))
               }
 
-              for (_iterator48.s(); !(_step49 = _iterator48.n()).done;) {
+              for (_iterator50.s(); !(_step51 = _iterator50.n()).done;) {
                 _loop5()
               }
             } catch (err) {
-              _iterator48.e(err)
+              _iterator50.e(err)
             } finally {
-              _iterator48.f()
+              _iterator50.f()
             }
 
             Promise.all(pro).finally(function () {
@@ -11511,7 +11752,7 @@ try {
         var _this38 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee90 () {
-          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator49, _step50, task, icon, a, link, _link$match6, path
+          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator51, _step52, task, icon, a, link, _link$match6, path
 
           return regeneratorRuntime.wrap(function _callee90$ (_context91) {
             while (1) {
@@ -11533,11 +11774,11 @@ try {
                       })
                       tasksContainer = $('#usl>div')
                       pro = []
-                      _iterator49 = _createForOfIteratorHelper(tasksContainer)
+                      _iterator51 = _createForOfIteratorHelper(tasksContainer)
 
                       try {
-                        for (_iterator49.s(); !(_step50 = _iterator49.n()).done;) {
-                          task = _step50.value
+                        for (_iterator51.s(); !(_step52 = _iterator51.n()).done;) {
+                          task = _step52.value
 
                           _this38.currentTaskInfo.tasks.push(task)
 
@@ -11585,9 +11826,9 @@ try {
                           }
                         }
                       } catch (err) {
-                        _iterator49.e(err)
+                        _iterator51.e(err)
                       } finally {
-                        _iterator49.f()
+                        _iterator51.f()
                       }
 
                       Promise.all(pro).finally(function () {
@@ -11631,7 +11872,7 @@ try {
         var _this39 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee91 () {
-          var pro, links, _iterator50, _step51, link
+          var pro, links, _iterator52, _step53, link
 
           return regeneratorRuntime.wrap(function _callee91$ (_context92) {
             while (1) {
@@ -11648,18 +11889,18 @@ try {
                     break
                   }
 
-                  _iterator50 = _createForOfIteratorHelper(links)
+                  _iterator52 = _createForOfIteratorHelper(links)
                   _context92.prev = 6
 
-                  _iterator50.s()
+                  _iterator52.s()
 
                 case 8:
-                  if ((_step51 = _iterator50.n()).done) {
+                  if ((_step53 = _iterator52.n()).done) {
                     _context92.next = 15
                     break
                   }
 
-                  link = _step51.value
+                  link = _step53.value
                   pro.push(fuc.visitLink(link, {
                     method: 'GET'
                   }))
@@ -11678,12 +11919,12 @@ try {
                   _context92.prev = 17
                   _context92.t0 = _context92.catch(6)
 
-                  _iterator50.e(_context92.t0)
+                  _iterator52.e(_context92.t0)
 
                 case 20:
                   _context92.prev = 20
 
-                  _iterator50.f()
+                  _iterator52.f()
 
                   return _context92.finish(20)
 
@@ -12070,18 +12311,18 @@ try {
             })
             var listValues = GM_listValues()
 
-            var _iterator51 = _createForOfIteratorHelper(listValues)
-            var _step52
+            var _iterator53 = _createForOfIteratorHelper(listValues)
+            var _step54
 
             try {
-              for (_iterator51.s(); !(_step52 = _iterator51.n()).done;) {
-                var value = _step52.value
+              for (_iterator53.s(); !(_step54 = _iterator53.n()).done;) {
+                var value = _step54.value
                 if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
               }
             } catch (err) {
-              _iterator51.e(err)
+              _iterator53.e(err)
             } finally {
-              _iterator51.f()
+              _iterator53.f()
             }
 
             status.success()
@@ -12192,20 +12433,20 @@ try {
             auto: getI18n('auto')
           }
 
-          var _iterator52 = _createForOfIteratorHelper(i18n)
-          var _step53
+          var _iterator54 = _createForOfIteratorHelper(i18n)
+          var _step55
 
           try {
-            for (_iterator52.s(); !(_step53 = _iterator52.n()).done;) {
-              var lang = _step53.value
+            for (_iterator54.s(); !(_step55 = _iterator54.n()).done;) {
+              var lang = _step55.value
               var ISO = lang.ISO
               var languageName = lang.languageName
               if (ISO && languageName) inputOptions[ISO] = languageName
             }
           } catch (err) {
-            _iterator52.e(err)
+            _iterator54.e(err)
           } finally {
-            _iterator52.f()
+            _iterator54.f()
           }
 
           Swal.fire({
@@ -12224,7 +12465,7 @@ try {
           throwError(e, 'GM_registerMenuCommand(\'Language\')')
         }
       })
-    } else if (pageHref.includes('discord.com/app')) {
+    } else if (pageHost === 'discord.com') {
       fuc.getDiscordAuth()
     } else if (pageHost === 'www.twitch.tv') {
       if (pageHref.includes('#updateTwitchInfo')) {

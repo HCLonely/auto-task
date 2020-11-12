@@ -310,7 +310,7 @@ const defaultConf = {
     },
     twitter: {
       user: [],
-      retweet: []
+      tweet: []
     },
     vk: {
       vk: []

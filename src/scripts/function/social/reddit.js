@@ -44,7 +44,7 @@ async function updateRedditInfo () {
 
 async function toggleReddit (name, join = true) {
   try {
-    if (!join && whiteList.reddit.reddit.includes(name)) {
+    if (whiteList.enable && !join && whiteList.reddit.reddit.includes(name)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     let type = join ? 'joinReddit' : 'leaveReddit'

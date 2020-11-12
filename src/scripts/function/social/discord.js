@@ -50,7 +50,7 @@ async function joinDiscordServer (inviteId) {
 
 async function leaveDiscordServer (inviteId, guild) {
   try {
-    if (whiteList.discord.server.includes(inviteId)) {
+    if (whiteList.enable && whiteList.discord.server.includes(inviteId)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     const logStatus = echoLog({ type: 'leaveDiscordServer', text: inviteId })

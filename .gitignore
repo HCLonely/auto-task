@@ -3,3 +3,4 @@ src/page/announcement.html
 src/page/js/loadAnnouncement.js
 stats.html
 public/
+package-lock.json

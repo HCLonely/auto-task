@@ -70,7 +70,7 @@ async function verifyTwitchAuth () {
 
 async function toggleTwitchChannel (name, follow = true) {
   try {
-    if (whiteList.twitch.channel.includes(name)) {
+    if (whiteList.enable && whiteList.twitch.channel.includes(name)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     const channelId = await getTwitchChannelId(name)

@@ -76,7 +76,7 @@ async function followIns (name) {
 
 async function unfollowIns (name) {
   try {
-    if (whiteList.instagram.user.includes(name)) {
+    if (whiteList.enable && whiteList.instagram.user.includes(name)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     const id = await getInsInfo(name)

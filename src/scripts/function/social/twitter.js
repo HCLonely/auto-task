@@ -42,7 +42,7 @@ async function updateTwitterInfo () {
 }
 async function toggleTwitterUser (name, follow = true) {
   try {
-    if (!follow && whiteList.twitter.user.includes(name)) {
+    if (whiteList.enable && !follow && whiteList.twitter.user.includes(name)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     const userId = await getTwitterUserId(name)
@@ -70,7 +70,7 @@ async function toggleTwitterUser (name, follow = true) {
 
 async function toggleRetweet (retweetId, retweet = true) {
   try {
-    if (!retweet && whiteList.twitter.retweet.includes(retweetId)) {
+    if (whiteList.enable && !retweet && whiteList.twitter.tweet.includes(retweetId)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
     const logStatus = echoLog({ type: `${retweet ? '' : 'un'}retweet`, text: retweetId })

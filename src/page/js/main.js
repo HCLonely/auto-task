@@ -268,7 +268,7 @@ function creatConfig () {
         if (!configRaw[keys[0]]) configRaw[keys[0]] = {}
         if (!configRaw[keys[0]][keys[1]]) configRaw[keys[0]][keys[1]] = {}
         if (keys[0] === 'whiteList') {
-          configRaw[keys[0]][keys[1]][keys[2]] = e.value.split(',')
+          configRaw[keys[0]][keys[1]][keys[2]] = e.value ? e.value.split(',') : []
         } else {
           configRaw[keys[0]][keys[1]][keys[2]] = e.value === 'on' ? true : e.value
         }

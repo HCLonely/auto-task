@@ -1033,7 +1033,7 @@ try {
               case 0:
                 _context7.prev = 0
 
-                if (!whiteList.steam.group.includes(groupName)) {
+                if (!(whiteList.enable && whiteList.steam.group.includes(groupName))) {
                   _context7.next = 3
                   break
                 }
@@ -1137,7 +1137,7 @@ try {
                 logStatus = _args8.length > 2 && _args8[2] !== undefined ? _args8[2] : null
                 _context8.prev = 2
 
-                if (!(!follow && whiteList.steam.curator.includes(curatorId))) {
+                if (!(whiteList.enable && !follow && whiteList.steam.curator.includes(curatorId))) {
                   _context8.next = 5
                   break
                 }
@@ -1323,7 +1323,7 @@ try {
                 follow = _args10.length > 2 && _args10[2] !== undefined ? _args10[2] : true
                 _context10.prev = 1
 
-                if (!(!follow && whiteList.steam.otherCurator.includes(name))) {
+                if (!(whiteList.enable && !follow && whiteList.steam.otherCurator.includes(name))) {
                   _context10.next = 4
                   break
                 }
@@ -1472,7 +1472,7 @@ try {
               case 0:
                 _context12.prev = 0
 
-                if (!whiteList.steam.wishlist.includes(gameId)) {
+                if (!(whiteList.enable && whiteList.steam.wishlist.includes(gameId))) {
                   _context12.next = 3
                   break
                 }
@@ -1573,7 +1573,7 @@ try {
               case 0:
                 _context13.prev = 0
 
-                if (!(!follow && whiteList.steam.game.includes(gameId))) {
+                if (!(whiteList.enable && !follow && whiteList.steam.game.includes(gameId))) {
                   _context13.next = 3
                   break
                 }
@@ -1773,7 +1773,7 @@ try {
                 subscribe = _args15.length > 1 && _args15[1] !== undefined ? _args15[1] : true
                 _context15.prev = 1
 
-                if (!whiteList.steam.forum.includes(gameId)) {
+                if (!(whiteList.enable && whiteList.steam.forum.includes(gameId))) {
                   _context15.next = 4
                   break
                 }
@@ -2244,7 +2244,7 @@ try {
               case 0:
                 _context20.prev = 0
 
-                if (!whiteList.discord.server.includes(inviteId)) {
+                if (!(whiteList.enable && whiteList.discord.server.includes(inviteId))) {
                   _context20.next = 3
                   break
                 }
@@ -2629,7 +2629,7 @@ try {
               case 0:
                 _context24.prev = 0
 
-                if (!whiteList.instagram.user.includes(name)) {
+                if (!(whiteList.enable && whiteList.instagram.user.includes(name))) {
                   _context24.next = 3
                   break
                 }
@@ -2914,7 +2914,7 @@ try {
                 follow = _args27.length > 1 && _args27[1] !== undefined ? _args27[1] : true
                 _context27.prev = 1
 
-                if (!(!follow && whiteList.twitter.user.includes(name))) {
+                if (!(whiteList.enable && !follow && whiteList.twitter.user.includes(name))) {
                   _context27.next = 4
                   break
                 }
@@ -3026,7 +3026,7 @@ try {
                 retweet = _args28.length > 1 && _args28[1] !== undefined ? _args28[1] : true
                 _context28.prev = 1
 
-                if (!(!retweet && whiteList.twitter.retweet.includes(retweetId))) {
+                if (!(whiteList.enable && !retweet && whiteList.twitter.tweet.includes(retweetId))) {
                   _context28.next = 4
                   break
                 }
@@ -3440,7 +3440,7 @@ try {
                 follow = _args32.length > 1 && _args32[1] !== undefined ? _args32[1] : true
                 _context32.prev = 1
 
-                if (!whiteList.twitch.channel.includes(name)) {
+                if (!(whiteList.enable && whiteList.twitch.channel.includes(name))) {
                   _context32.next = 4
                   break
                 }
@@ -3834,7 +3834,7 @@ try {
                 join = _args36.length > 1 && _args36[1] !== undefined ? _args36[1] : true
                 _context36.prev = 1
 
-                if (!(!join && whiteList.reddit.reddit.includes(name))) {
+                if (!(whiteList.enable && !join && whiteList.reddit.reddit.includes(name))) {
                   _context36.next = 4
                   break
                 }
@@ -4105,7 +4105,7 @@ try {
                 join = _args39.length > 1 && _args39[1] !== undefined ? _args39[1] : true
                 _context39.prev = 1
 
-                if (!(!join && whiteList.vk.vk.includes(name))) {
+                if (!(whiteList.enable && !join && whiteList.vk.vk.includes(name))) {
                   _context39.next = 4
                   break
                 }
@@ -4773,7 +4773,7 @@ try {
                 needLogin = _yield$getYtbToken.needLogin
                 _ref57 = params || {}, apiKey = _ref57.apiKey, client = _ref57.client, request = _ref57.request, channelId = _ref57.channelId
 
-                if (!(!follow && whiteList.youtube.channel.includes(channelId))) {
+                if (!(whiteList.enable && !follow && whiteList.youtube.channel.includes(channelId))) {
                   _context45.next = 11
                   break
                 }
@@ -4932,7 +4932,7 @@ try {
                 needLogin = _yield$getYtbToken2.needLogin
                 _ref59 = params || {}, apiKey = _ref59.apiKey, client = _ref59.client, request = _ref59.request, videoId = _ref59.videoId, likeParams = _ref59.likeParams
 
-                if (!(!link && whiteList.youtube.video.includes(videoId))) {
+                if (!(whiteList.enable && !link && whiteList.youtube.video.includes(videoId))) {
                   _context46.next = 11
                   break
                 }
@@ -6296,7 +6296,7 @@ try {
         },
         twitter: {
           user: [],
-          retweet: []
+          tweet: []
         },
         vk: {
           vk: []

@@ -40,7 +40,7 @@ async function toggleYtbChannel (link, follow = true) {
     const { params, unknownLink, needLogin } = await getYtbToken(link, 'channel')
     const { apiKey, client, request, channelId } = params || {}
 
-    if (!follow && whiteList.youtube.channel.includes(channelId)) {
+    if (whiteList.enable && !follow && whiteList.youtube.channel.includes(channelId)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
 
@@ -99,7 +99,7 @@ async function toggleLikeYtbVideo (link, like = true) {
     const { params, unknownLink, needLogin } = await getYtbToken(link, 'likeVideo')
     const { apiKey, client, request, videoId, likeParams } = params || {}
 
-    if (!link && whiteList.youtube.video.includes(videoId)) {
+    if (whiteList.enable && !link && whiteList.youtube.video.includes(videoId)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
 

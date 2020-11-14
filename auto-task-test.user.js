@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.0
+// @version            3.3.1
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.0/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.0/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.1/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.1/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -12643,20 +12643,11 @@ try {
             auto: getI18n('auto')
           }
 
-          var _iterator54 = _createForOfIteratorHelper(i18n)
-          var _step55
-
-          try {
-            for (_iterator54.s(); !(_step55 = _iterator54.n()).done;) {
-              var lang = _step55.value
-              var ISO = lang.ISO
-              var languageName = lang.languageName
-              if (ISO && languageName) inputOptions[ISO] = languageName
-            }
-          } catch (err) {
-            _iterator54.e(err)
-          } finally {
-            _iterator54.f()
+          for (var _i10 = 0, _Object$values2 = Object.values(i18n); _i10 < _Object$values2.length; _i10++) {
+            var lang = _Object$values2[_i10]
+            var ISO = lang.ISO
+            var languageName = lang.languageName
+            if (ISO && languageName) inputOptions[ISO] = languageName
           }
 
           Swal.fire({

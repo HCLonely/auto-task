@@ -12,12 +12,12 @@ assignees: ''
 <!-- Please confirm the following before submitting a question, if confirmed, enter `x` in `[]` -->
 
 - [] 我已经将脚本更新到了[最新版](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js) | I have updated this script to the [latest version](https://github.com/HCLonely/auto-task/raw/master/auto-task.user.js).
-- [] 我已经查看了[常见问题解决办法](https://github.com/HCLonely/auto-task/wiki/FAQ-zh-CN)但没有解决 | I have seen [FAQ](https://github.com/HCLonely/auto-task/wiki/FAQ) but not solved.
+- [] 我已经查看了[常见问题解决办法](https://auto-task-doc.js.org/FAQ/)但没有解决 | I have seen [FAQ](https://auto-task-doc.js.org/en/FAQ/) but not solved.
 - [] 我已经查看了[issues](https://github.com/HCLonely/auto-task/issues)但没有解决 | I have seen [issues](https://github.com/HCLonely/auto-task/issues) but not solved.
 
 
-**关于哪一个网站，最好提供具体网址（必需）**[支持的网站](https://github.com/HCLonely/auto-task/wiki/Website-zh-CN)
-<!-- Which website? It is better to provide a specific URL(required). [Supported website](https://github.com/HCLonely/auto-task/wiki/Website) -->
+**关于哪一个网站，最好提供具体网址（必需）**[支持的网站](https://auto-task-doc.js.org/guide/#%E6%94%AF%E6%8C%81%E7%9A%84%E7%BD%91%E7%AB%99%E5%8F%8A%E4%BB%BB%E5%8A%A1)
+<!-- Which website? It is better to provide a specific URL(required). [Supported website](https://auto-task-doc.js.org/en/guide/#supported-sites-and-tasks) -->
 
 
 **使用的浏览器和脚本管理器**

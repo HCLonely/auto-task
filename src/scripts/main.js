@@ -213,7 +213,7 @@ if (website || pageHost.includes('hclonely')) {
       const inputOptions = {
         auto: getI18n('auto')
       }
-      for (const lang of i18n) {
+      for (const lang of Object.values(i18n)) {
         const { ISO, languageName } = lang
         if (ISO && languageName) inputOptions[ISO] = languageName
       }

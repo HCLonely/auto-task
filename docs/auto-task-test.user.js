@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.1
+// @version            3.3.2
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.1/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.1/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.2/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.2/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -8267,16 +8267,15 @@ try {
                 case 5:
                   data = _context63.sent
                   toGuild = _this14.taskInfo.toGuild
-                  console.log(data)
 
-                  if (action === 'fuck') {
+                  if (action === 'fuck' && data) {
                     _iterator20 = _createForOfIteratorHelper(data)
 
                     try {
                       for (_iterator20.s(); !(_step20 = _iterator20.n()).done;) {
                         $data = _step20.value
 
-                        if ($data) {
+                        if (Array.isArray($data)) {
                           _iterator21 = _createForOfIteratorHelper($data)
 
                           try {
@@ -8311,20 +8310,20 @@ try {
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
                   }
-                  _context63.next = 16
+                  _context63.next = 15
                   break
 
-                case 13:
-                  _context63.prev = 13
+                case 12:
+                  _context63.prev = 12
                   _context63.t0 = _context63.catch(0)
                   throwError(_context63.t0, 'giveawaysu.do_task')
 
-                case 16:
+                case 15:
                 case 'end':
                   return _context63.stop()
               }
             }
-          }, _callee63, null, [[0, 13]])
+          }, _callee63, null, [[0, 12]])
         }))()
       },
       fuck: function fuck () {

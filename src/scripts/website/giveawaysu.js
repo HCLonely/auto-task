@@ -153,10 +153,9 @@ const giveawaysu = {
       await fuc.updateInfo(this.taskInfo)
       const data = await fuc.assignment(this.taskInfo, this.conf[action], action, 'giveawaysu')
       const toGuild = this.taskInfo.toGuild
-      console.log(data)
-      if (action === 'fuck') {
+      if (action === 'fuck' && data) {
         for (const $data of data) {
-          if ($data) {
+          if (Array.isArray($data)) {
             for (const e of $data) {
               const [inviteId, guild] = e?.guild || []
               if (inviteId && guild) toGuild[inviteId] = guild

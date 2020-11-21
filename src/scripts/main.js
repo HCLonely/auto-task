@@ -190,6 +190,11 @@ if (website || pageHost.includes('hclonely')) {
     })
   }
 
+  GM_registerMenuCommand('FuckTask', website.fuck)
+  GM_registerMenuCommand('Verify', website.verify)
+  GM_registerMenuCommand('Remove', website.remove)
+  GM_registerMenuCommand('toggleLogs', fuc.toggleLogs)
+
   GM_registerMenuCommand(getI18n('readme'), () => {
     try {
       window.open('https://auto-task-doc.js.org', '_blank')

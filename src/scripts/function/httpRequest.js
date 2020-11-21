@@ -2,7 +2,7 @@ import { debug } from '../config'
 import { echoLog } from './log'
 import { throwError } from './tool'
 
-function httpRequest (options) {
+function httpRequest (options, times = 0) {
   return new Promise(resolve => {
     options.method = options.method.toUpperCase()
     if (options.dataType) options.responseType = options.dataType
@@ -22,9 +22,13 @@ function httpRequest (options) {
       }
     }, options)
     GM_xmlhttpRequest(requestObj)
-  }).then(result => {
+  }).then(async result => {
     if (debug) console.log('发送请求:', result)
-    return result
+    if (result.status !== 600 && times < 2) {
+      return await httpRequest(options, ++times)
+    } else {
+      return result
+    }
   }).catch(error => {
     throwError(error, 'httpRequest')
     if (debug) console.log('发送请求:', { errorMsg: error, options })

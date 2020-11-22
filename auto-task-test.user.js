@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.3
+// @version            3.3.4
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.3/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.3/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.4/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.4/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -12614,12 +12614,12 @@ try {
         GM_addValueChangeListener('youtubeInfo', function (name, oldValue, newValue, remote) {
           window.youtubeInfo = Object.assign(youtubeInfo, newValue)
         })
+        GM_registerMenuCommand('FuckTask', website.fuck)
+        GM_registerMenuCommand('Verify', website.verify)
+        GM_registerMenuCommand('Remove', website.remove)
+        GM_registerMenuCommand('toggleLogs', fuc.toggleLogs)
       }
 
-      GM_registerMenuCommand('FuckTask', website.fuck)
-      GM_registerMenuCommand('Verify', website.verify)
-      GM_registerMenuCommand('Remove', website.remove)
-      GM_registerMenuCommand('toggleLogs', fuc.toggleLogs)
       GM_registerMenuCommand(getI18n('readme'), function () {
         try {
           window.open('https://auto-task-doc.js.org', '_blank')

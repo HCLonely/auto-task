@@ -188,12 +188,12 @@ if (website || pageHost.includes('hclonely')) {
     GM_addValueChangeListener('youtubeInfo', (name, oldValue, newValue, remote) => {
       window.youtubeInfo = Object.assign(youtubeInfo, newValue)
     })
-  }
 
-  GM_registerMenuCommand('FuckTask', website.fuck)
-  GM_registerMenuCommand('Verify', website.verify)
-  GM_registerMenuCommand('Remove', website.remove)
-  GM_registerMenuCommand('toggleLogs', fuc.toggleLogs)
+    GM_registerMenuCommand('FuckTask', website.fuck)
+    GM_registerMenuCommand('Verify', website.verify)
+    GM_registerMenuCommand('Remove', website.remove)
+    GM_registerMenuCommand('toggleLogs', fuc.toggleLogs)
+  }
 
   GM_registerMenuCommand(getI18n('readme'), () => {
     try {

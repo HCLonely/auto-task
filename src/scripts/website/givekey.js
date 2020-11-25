@@ -17,7 +17,7 @@ const givekey = {
       throwError(e, 'givekey.fuck')
     }
   },
-  get_tasks (callback = 'do_task') {
+  async get_tasks (callback = 'do_task') {
     try {
       const taskInfoHistory = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']')
       if (taskInfoHistory && !fuc.isEmptyObjArr(taskInfoHistory)) this.taskInfo = taskInfoHistory
@@ -25,7 +25,7 @@ const givekey = {
         this.remove(true)
       } else {
         this.currentTaskInfo = fuc.clearTaskInfo(this.currentTaskInfo)
-        const status = fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('getTasksInfo')}</font></li>` })
+        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font class="warning"></font></li>` })
         const tasks = $('a[id^=task_]:not(.btn-success)')
         for (const task of tasks) {
           const taskEle = $(task)
@@ -42,6 +42,18 @@ const givekey = {
             if (name) {
               this.currentTaskInfo.groups.push(name)
               this.taskInfo.groups.push(name)
+            }
+          } else if (/add to wishlist/gim.test(text)) {
+            const id = await fuc.getFinalUrl(href)
+              .then(({ result, finalUrl }) => {
+                if (result === 'Success') {
+                  return finalUrl?.match(/app\/([\d]+)/)?.[1]
+                }
+              })
+
+            if (id) {
+              this.currentTaskInfo.wGames.push(id)
+              this.taskInfo.wGames.push(id)
             }
           } else if (/https?:\/\/givekey\.ru\/giveaway\/away\/[\d]+/.test(href)) {
             this.currentTaskInfo.links.push(href)
@@ -157,7 +169,7 @@ const givekey = {
     links: [],
     groups: [],
     curators: [],
-    wishlists: [],
+    wGames: [],
     fGames: [],
     vks: [],
     tasks: []
@@ -165,7 +177,7 @@ const givekey = {
   taskInfo: {
     groups: [],
     curators: [],
-    wishlists: [],
+    wGames: [],
     fGames: [],
     vks: []
   },

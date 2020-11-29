@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.5
+// @version            3.3.6
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.5/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.5/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.6/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.6/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -4217,11 +4217,19 @@ try {
           while (1) {
             switch (_context41.prev = _context41.next) {
               case 0:
+                if (join) {
+                  _context41.next = 2
+                  break
+                }
+
+                return _context41.abrupt('return')
+
+              case 2:
                 logStatus = echoLog({
                   type: 'repostVkWall',
                   text: name
                 })
-                _context41.next = 3
+                _context41.next = 5
                 return httpRequest({
                   url: 'https://vk.com/like.php',
                   method: 'POST',
@@ -4237,7 +4245,7 @@ try {
                   })
                 })
 
-              case 3:
+              case 5:
                 _yield$httpRequest34 = _context41.sent
                 result = _yield$httpRequest34.result
                 statusText = _yield$httpRequest34.statusText
@@ -4245,23 +4253,23 @@ try {
                 data = _yield$httpRequest34.data
 
                 if (!(result === 'Success')) {
-                  _context41.next = 28
+                  _context41.next = 30
                   break
                 }
 
                 if (!(data.status === 200)) {
-                  _context41.next = 25
+                  _context41.next = 27
                   break
                 }
 
                 hash = (_data$responseText$ma8 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma8 === void 0 ? void 0 : _data$responseText$ma8[1]
 
                 if (!hash) {
-                  _context41.next = 22
+                  _context41.next = 24
                   break
                 }
 
-                _context41.next = 14
+                _context41.next = 16
                 return httpRequest({
                   url: 'https://vk.com/like.php',
                   method: 'POST',
@@ -4287,7 +4295,7 @@ try {
                   })
                 })
 
-              case 14:
+              case 16:
                 _yield$httpRequest35 = _context41.sent
                 resultR = _yield$httpRequest35.result
                 statusTextR = _yield$httpRequest35.statusText
@@ -4311,27 +4319,27 @@ try {
                   logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'))
                 }
 
-                _context41.next = 23
+                _context41.next = 25
                 break
 
-              case 22:
+              case 24:
                 logStatus.error('Error: Get "hash" failed')
 
-              case 23:
-                _context41.next = 26
+              case 25:
+                _context41.next = 28
                 break
 
-              case 25:
+              case 27:
                 logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
 
-              case 26:
-                _context41.next = 29
+              case 28:
+                _context41.next = 31
                 break
 
-              case 28:
+              case 30:
                 logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
 
-              case 29:
+              case 31:
               case 'end':
                 return _context41.stop()
             }
@@ -12611,6 +12619,8 @@ try {
               var _Object$entries5$_i = _slicedToArray(_Object$entries5[_i9], 2)
               var _k5 = _Object$entries5$_i[0]
               var _v = _Object$entries5$_i[1]
+
+              if (!_k5 || !_v) break
 
               var keys = _v.split('+')
 

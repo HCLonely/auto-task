@@ -53,6 +53,7 @@ async function toggleVk (name, join = true) {
   }
 }
 async function toggleVkWall (name, join) {
+  if (!join) return
   const logStatus = echoLog({ type: 'repostVkWall', text: name })
   const { result, statusText, status, data } = await httpRequest({
     url: 'https://vk.com/like.php',

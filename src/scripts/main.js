@@ -94,6 +94,7 @@ if (website || pageHost.includes('hclonely')) {
       try {
         const hotKey = globalConf.hotKey || {}
         for (const [k, v] of Object.entries(hotKey)) {
+          if (!k || !v) break
           const keys = v.split('+')
           const functionKey = keys.length === 2 ? e[keys[0].toLowerCase().trim() + 'Key'] : true
           if (functionKey && keys[1].toLowerCase().trim() === e.key) {

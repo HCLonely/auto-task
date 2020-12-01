@@ -59,15 +59,11 @@ const gleam = {
                 }
               } else if (icon.hasClass('fa-discord')) {
                 if (/join/gim.test($(task).find('.user-links').text())) {
-                  const inviteId = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')?.match(/https:\/\/discord.com\/invite\/(.+)/)?.[1]
+                  const inviteId = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')?.match(/https:\/\/discord.com\/invite\/(.+)/)?.[1] || $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.gg/"]').attr('href')?.match(/https:\/\/discord.gg\/(.+)/)?.[1]
                   if (inviteId) {
                     this.currentTaskInfo.discords.push(inviteId)
                     this.taskInfo.discords.push(inviteId)
-                  } else {
-                    this.currentTaskInfo.discords.push(task)
                   }
-                } else {
-                  this.currentTaskInfo.discords.push(task)
                 }
               } else if (icon.hasClass('fa-facebook')) {
                 this.currentTaskInfo.facebooks.push(task)
@@ -134,9 +130,10 @@ const gleam = {
     try {
       const pro = []
       await fuc.updateInfo(this.currentTaskInfo)
-      const data = await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam')
+      const data = await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam') || []
       const toGuild = this.taskInfo.toGuild
       for (const $data of data) {
+        if (!$data) continue
         for (const e of $data) {
           const [inviteId, guild] = e?.guild || []
           if (inviteId && guild) toGuild[inviteId] = guild

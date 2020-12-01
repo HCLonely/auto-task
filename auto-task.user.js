@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.3.6
+// @version            3.3.7
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.6/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.6/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.7/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.7/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -8964,18 +8964,14 @@ try {
                       }
                     } else if (icon.hasClass('fa-discord')) {
                       if (/join/gim.test($(task).find('.user-links').text())) {
-                        var _$$find$attr, _$$find$attr$match
+                        var _$$find$attr, _$$find$attr$match, _$$find$attr2, _$$find$attr2$match
 
-                        var inviteId = (_$$find$attr = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')) === null || _$$find$attr === void 0 ? void 0 : (_$$find$attr$match = _$$find$attr.match(/https:\/\/discord.com\/invite\/(.+)/)) === null || _$$find$attr$match === void 0 ? void 0 : _$$find$attr$match[1]
+                        var inviteId = ((_$$find$attr = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.com/invite/"]').attr('href')) === null || _$$find$attr === void 0 ? void 0 : (_$$find$attr$match = _$$find$attr.match(/https:\/\/discord.com\/invite\/(.+)/)) === null || _$$find$attr$match === void 0 ? void 0 : _$$find$attr$match[1]) || ((_$$find$attr2 = $(task).find('a.btn-info[ng-click^="triggerVisit"][href^="https://discord.gg/"]').attr('href')) === null || _$$find$attr2 === void 0 ? void 0 : (_$$find$attr2$match = _$$find$attr2.match(/https:\/\/discord.gg\/(.+)/)) === null || _$$find$attr2$match === void 0 ? void 0 : _$$find$attr2$match[1])
 
                         if (inviteId) {
                           this.currentTaskInfo.discords.push(inviteId)
                           this.taskInfo.discords.push(inviteId)
-                        } else {
-                          this.currentTaskInfo.discords.push(task)
                         }
-                      } else {
-                        this.currentTaskInfo.discords.push(task)
                       }
                     } else if (icon.hasClass('fa-facebook')) {
                       this.currentTaskInfo.facebooks.push(task)
@@ -9074,33 +9070,75 @@ try {
                   return fuc.assignment(_this19.currentTaskInfo, _this19.conf.fuck, 'fuck', 'gleam')
 
                 case 6:
-                  data = _context69.sent
-                  toGuild = _this19.taskInfo.toGuild
-                  _iterator25 = _createForOfIteratorHelper(data)
+                  _context69.t0 = _context69.sent
 
-                  try {
-                    for (_iterator25.s(); !(_step25 = _iterator25.n()).done;) {
-                      $data = _step25.value
-                      _iterator28 = _createForOfIteratorHelper($data)
-
-                      try {
-                        for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
-                          e = _step28.value
-                          _ref84 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref85 = _slicedToArray(_ref84, 2), inviteId = _ref85[0], guild = _ref85[1]
-                          if (inviteId && guild) toGuild[inviteId] = guild
-                        }
-                      } catch (err) {
-                        _iterator28.e(err)
-                      } finally {
-                        _iterator28.f()
-                      }
-                    }
-                  } catch (err) {
-                    _iterator25.e(err)
-                  } finally {
-                    _iterator25.f()
+                  if (_context69.t0) {
+                    _context69.next = 9
+                    break
                   }
 
+                  _context69.t0 = []
+
+                case 9:
+                  data = _context69.t0
+                  toGuild = _this19.taskInfo.toGuild
+                  _iterator25 = _createForOfIteratorHelper(data)
+                  _context69.prev = 12
+
+                  _iterator25.s()
+
+                case 14:
+                  if ((_step25 = _iterator25.n()).done) {
+                    _context69.next = 22
+                    break
+                  }
+
+                  $data = _step25.value
+
+                  if ($data) {
+                    _context69.next = 18
+                    break
+                  }
+
+                  return _context69.abrupt('continue', 20)
+
+                case 18:
+                  _iterator28 = _createForOfIteratorHelper($data)
+
+                  try {
+                    for (_iterator28.s(); !(_step28 = _iterator28.n()).done;) {
+                      e = _step28.value
+                      _ref84 = (e === null || e === void 0 ? void 0 : e.guild) || [], _ref85 = _slicedToArray(_ref84, 2), inviteId = _ref85[0], guild = _ref85[1]
+                      if (inviteId && guild) toGuild[inviteId] = guild
+                    }
+                  } catch (err) {
+                    _iterator28.e(err)
+                  } finally {
+                    _iterator28.f()
+                  }
+
+                case 20:
+                  _context69.next = 14
+                  break
+
+                case 22:
+                  _context69.next = 27
+                  break
+
+                case 24:
+                  _context69.prev = 24
+                  _context69.t1 = _context69.catch(12)
+
+                  _iterator25.e(_context69.t1)
+
+                case 27:
+                  _context69.prev = 27
+
+                  _iterator25.f()
+
+                  return _context69.finish(27)
+
+                case 30:
                   GM_setValue('taskInfo[' + window.location.host + _this19.get_giveawayId() + ']', _this19.taskInfo)
                   _this19$currentTaskIn = _this19.currentTaskInfo, facebooks = _this19$currentTaskIn.facebooks, youtubes = _this19$currentTaskIn.youtubes, others = _this19$currentTaskIn.others, links = _this19$currentTaskIn.links
                   socialPlatforms = [].concat(_toConsumableArray(facebooks), _toConsumableArray(youtubes))
@@ -9172,20 +9210,20 @@ try {
                     })
                     if (_this19.conf.fuck.verifyTask) _this19.verify()
                   })
-                  _context69.next = 23
+                  _context69.next = 43
                   break
 
-                case 20:
-                  _context69.prev = 20
-                  _context69.t0 = _context69.catch(0)
-                  throwError(_context69.t0, 'gleam.do_task')
+                case 40:
+                  _context69.prev = 40
+                  _context69.t2 = _context69.catch(0)
+                  throwError(_context69.t2, 'gleam.do_task')
 
-                case 23:
+                case 43:
                 case 'end':
                   return _context69.stop()
               }
             }
-          }, _callee69, null, [[0, 20]])
+          }, _callee69, null, [[0, 40], [12, 24, 27, 30]])
         }))()
       },
       verify: function verify () {

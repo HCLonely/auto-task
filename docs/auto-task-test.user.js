@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.7
+// @version            3.3.8
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.7/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.7/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/fuck-task.min.css#md5=f2adae164a7fcb8d12cf4c28148da215
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -2623,7 +2623,7 @@ try {
                   if (data.status === 200 && ((_data$response11 = data.response) === null || _data$response11 === void 0 ? void 0 : _data$response11.result) === 'following') {
                     logStatus.success()
                   } else {
-                    logStatus.error('Error:' + (((_data$response12 = data.response) === null || _data$response12 === void 0 ? void 0 : _data$response12.feedback_message) || data.statusText + '(' + data.status + ')'))
+                    logStatus.error('Error:' + (((_data$response12 = data.response) === null || _data$response12 === void 0 ? void 0 : _data$response12.feedback_message) || data.statusText + '(' + data.status + ')')) // eslint-disable-line camelcase
                   }
                 } else {
                   logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
@@ -8510,7 +8510,7 @@ try {
                   href = taskEle.attr('href')
                   text = taskEle.text().trim()
 
-                  if (!(href.includes('vk.com') && /Subscribe|Repost/gi.test(text))) {
+                  if (!(/^https?:\/\/vk\.com\//.test(href) && /Subscribe|Repost/gi.test(text))) {
                     _context65.next = 24
                     break
                   }

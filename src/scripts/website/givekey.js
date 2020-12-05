@@ -31,7 +31,7 @@ const givekey = {
           const taskEle = $(task)
           const href = taskEle.attr('href')
           const text = taskEle.text().trim()
-          if (href.includes('vk.com') && /Subscribe|Repost/gi.test(text)) {
+          if (/^https?:\/\/vk\.com\//.test(href) && /Subscribe|Repost/gi.test(text)) {
             const name = href.match(/vk\.com\/([^/]*)/)?.[1]
             if (name) {
               this.currentTaskInfo.vks.push(name)

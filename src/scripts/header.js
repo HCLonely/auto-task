@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://__SITEURL__/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/require.min.js#md5=__JSMD5__
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/fuck-task.min.css#md5=__CSSMD5__
 
 // @grant              GM_setValue
 // @grant              GM_getValue

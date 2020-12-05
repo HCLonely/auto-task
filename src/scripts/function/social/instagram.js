@@ -64,7 +64,7 @@ async function followIns (name) {
       if (data.status === 200 && data.response?.result === 'following') {
         logStatus.success()
       } else {
-        logStatus.error('Error:' + (data.response?.feedback_message || (data.statusText + '(' + data.status + ')')))
+        logStatus.error('Error:' + (data.response?.feedback_message || (data.statusText + '(' + data.status + ')'))) // eslint-disable-line camelcase
       }
     } else {
       logStatus.error(`${result}:${statusText}(${status})`)

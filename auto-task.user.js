@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/require.min.js#md5=__JSMD5__
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/fuck-task.min.css#md5=__CSSMD5__
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/fuck-task.min.css#md5=f2adae164a7fcb8d12cf4c28148da215
 
 // @grant              GM_setValue
 // @grant              GM_getValue

@@ -73,6 +73,8 @@
 // @connect            www.reddit.com
 // @connect            oauth.reddit.com
 // @connect            raw.githubusercontent.com
+// @connect            t.me
+// @connect            bit.ly
 // @connect            *
 // @run-at             document-end
 // ==/UserScript==

@@ -106,7 +106,13 @@ async function getTwitterUserId (name) {
     })
     if (result === 'Success') {
       if (data.status === 200) {
-        const userId = data.response?.data?.user?.rest_id // eslint-disable-line camelcase
+        let response = data.response
+        if (!response) {
+          try {
+            response = JSON.parse(data.responseText)
+          } catch (e) { }
+        }
+        const userId = response?.data?.user?.rest_id // eslint-disable-line camelcase
         if (userId) {
           logStatus.success()
           return userId

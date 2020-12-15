@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.3.8
+// @version            3.3.9
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.8/require/fuck-task.min.css#md5=f2adae164a7fcb8d12cf4c28148da215
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.9/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.9/require/fuck-task.min.css#md5=06aeb698b5e90497bb6855c9825f9f51
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -73,6 +73,8 @@
 // @connect            www.reddit.com
 // @connect            oauth.reddit.com
 // @connect            raw.githubusercontent.com
+// @connect            t.me
+// @connect            bit.ly
 // @connect            *
 // @run-at             document-end
 // ==/UserScript==
@@ -3129,7 +3131,7 @@ try {
 
     var getTwitterUserId = /* #__PURE__ */(function () {
       var _ref33 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee30 (name) {
-        var logStatus, _yield$httpRequest27, result, statusText, status, data, _data$response15, _data$response15$data, _data$response15$data2, userId
+        var logStatus, _yield$httpRequest27, result, statusText, status, data, _response, _response$data, _response$data$user, response, userId
 
         return regeneratorRuntime.wrap(function _callee30$ (_context30) {
           while (1) {
@@ -3160,60 +3162,68 @@ try {
                 data = _yield$httpRequest27.data
 
                 if (!(result === 'Success')) {
-                  _context30.next = 25
+                  _context30.next = 27
                   break
                 }
 
                 if (!(data.status === 200)) {
-                  _context30.next = 21
+                  _context30.next = 23
                   break
                 }
 
-                userId = (_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$data = _data$response15.data) === null || _data$response15$data === void 0 ? void 0 : (_data$response15$data2 = _data$response15$data.user) === null || _data$response15$data2 === void 0 ? void 0 : _data$response15$data2.rest_id // eslint-disable-line camelcase
+                response = data.response
+
+                if (!response) {
+                  try {
+                    response = JSON.parse(data.responseText)
+                  } catch (e) {}
+                }
+
+                userId = (_response = response) === null || _response === void 0 ? void 0 : (_response$data = _response.data) === null || _response$data === void 0 ? void 0 : (_response$data$user = _response$data.user) === null || _response$data$user === void 0 ? void 0 : _response$data$user.rest_id // eslint-disable-line camelcase
 
                 if (!userId) {
-                  _context30.next = 17
+                  _context30.next = 19
                   break
                 }
 
                 logStatus.success()
                 return _context30.abrupt('return', userId)
 
-              case 17:
+              case 19:
                 logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
                 return _context30.abrupt('return', false)
-
-              case 19:
-                _context30.next = 23
-                break
 
               case 21:
+                _context30.next = 25
+                break
+
+              case 23:
                 logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
                 return _context30.abrupt('return', false)
 
-              case 23:
-                _context30.next = 27
+              case 25:
+                _context30.next = 29
                 break
 
-              case 25:
+              case 27:
                 logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 return _context30.abrupt('return', false)
 
-              case 27:
-                _context30.next = 32
+              case 29:
+                _context30.next = 34
                 break
 
-              case 29:
-                _context30.prev = 29
+              case 31:
+                _context30.prev = 31
                 _context30.t0 = _context30.catch(0)
                 throwError(_context30.t0, 'getTwitterUserId')
 
-              case 32:
+              case 34:
               case 'end':
                 return _context30.stop()
             }
           }
-        }, _callee30, null, [[0, 29]])
+        }, _callee30, null, [[0, 31]])
       }))
 
       return function getTwitterUserId (_x30) {
@@ -3374,7 +3384,7 @@ try {
 
     var verifyTwitchAuth = /* #__PURE__ */(function () {
       var _ref36 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee32 () {
-        var logStatus, _yield$httpRequest28, result, statusText, status, data, _data$response16, _data$response16$, _data$response16$$dat
+        var logStatus, _yield$httpRequest28, result, statusText, status, data, _data$response15, _data$response15$, _data$response15$$dat
 
         return regeneratorRuntime.wrap(function _callee32$ (_context32) {
           while (1) {
@@ -3408,7 +3418,7 @@ try {
                   break
                 }
 
-                if (!(data.status === 200 && ((_data$response16 = data.response) === null || _data$response16 === void 0 ? void 0 : (_data$response16$ = _data$response16[0]) === null || _data$response16$ === void 0 ? void 0 : (_data$response16$$dat = _data$response16$.data) === null || _data$response16$$dat === void 0 ? void 0 : _data$response16$$dat.currentUser))) {
+                if (!(data.status === 200 && ((_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$ = _data$response15[0]) === null || _data$response15$ === void 0 ? void 0 : (_data$response15$$dat = _data$response15$.data) === null || _data$response15$$dat === void 0 ? void 0 : _data$response15$$dat.currentUser))) {
                   _context32.next = 15
                   break
                 }
@@ -3554,7 +3564,7 @@ try {
 
     var getTwitchChannelId = /* #__PURE__ */(function () {
       var _ref38 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee34 (name) {
-        var logStatus, _yield$httpRequest30, result, statusText, status, data, _data$response17, _data$response17$, _data$response17$$dat, _data$response17$$dat2, channelId
+        var logStatus, _yield$httpRequest30, result, statusText, status, data, _data$response16, _data$response16$, _data$response16$$dat, _data$response16$$dat2, channelId
 
         return regeneratorRuntime.wrap(function _callee34$ (_context34) {
           while (1) {
@@ -3594,7 +3604,7 @@ try {
                   break
                 }
 
-                channelId = (_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : (_data$response17$ = _data$response17[0]) === null || _data$response17$ === void 0 ? void 0 : (_data$response17$$dat = _data$response17$.data) === null || _data$response17$$dat === void 0 ? void 0 : (_data$response17$$dat2 = _data$response17$$dat.user) === null || _data$response17$$dat2 === void 0 ? void 0 : _data$response17$$dat2.id
+                channelId = (_data$response16 = data.response) === null || _data$response16 === void 0 ? void 0 : (_data$response16$ = _data$response16[0]) === null || _data$response16$ === void 0 ? void 0 : (_data$response16$$dat = _data$response16$.data) === null || _data$response16$$dat === void 0 ? void 0 : (_data$response16$$dat2 = _data$response16$$dat.user) === null || _data$response16$$dat2 === void 0 ? void 0 : _data$response16$$dat2.id
 
                 if (!channelId) {
                   _context34.next = 17
@@ -5896,7 +5906,7 @@ try {
         var statusText
         var status
         var data
-        var _data$response18
+        var _data$response17
         var _GM_info$script$versi
         var _GM_info$script$versi2
         var ov1
@@ -5939,7 +5949,7 @@ try {
                 if (result === 'Success') {
                   _GM_info$script$versi = GM_info.script.version.split('.'), _GM_info$script$versi2 = _slicedToArray(_GM_info$script$versi, 3), ov1 = _GM_info$script$versi2[0], ov2 = _GM_info$script$versi2[1], ov3 = _GM_info$script$versi2[2]
 
-                  if ((_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.version) {
+                  if ((_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : _data$response17.version) {
                     _data$response$versio = data.response.version.split('.'), _data$response$versio2 = _slicedToArray(_data$response$versio, 3), nv1 = _data$response$versio2[0], nv2 = _data$response$versio2[1], nv3 = _data$response$versio2[2]
 
                     if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
@@ -9543,6 +9553,7 @@ try {
         links: [],
         twitterUsers: [],
         retweets: [],
+        twitchs: [],
         discords: [],
         facebooks: [],
         youtubes: [],
@@ -9554,6 +9565,7 @@ try {
         groups: [],
         twitterUsers: [],
         retweets: [],
+        twitchs: [],
         discords: [],
         toGuild: {}
       },
@@ -9573,7 +9585,7 @@ try {
         var _this21 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee73 () {
-          var currentoption, logStatus, _yield$fuc$httpReques4, result, statusText, status, data, _data$response19, _data$response20, _data$response21, _data$response22, _data$response23
+          var currentoption, logStatus, _yield$fuc$httpReques4, result, statusText, status, data, _data$response18, _data$response19, _data$response20, _data$response21, _data$response22
 
           return regeneratorRuntime.wrap(function _callee73$ (_context74) {
             while (1) {
@@ -9618,15 +9630,15 @@ try {
 
                   if (result === 'Success') {
                     if (data.status === 200) {
-                      if ((_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.success) {
+                      if ((_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.success) {
                         currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                         $('#giveawaysjoined').slideDown()
                         $('#giveawaysrecommend').slideDown()
-                        logStatus.success('Success' + (((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.text) ? ':' + ((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) : ''))
+                        logStatus.success('Success' + (((_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.text) ? ':' + ((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.text) : ''))
 
                         _this21.do_task()
                       } else {
-                        logStatus.error('Error' + (((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) ? ':' + ((_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.text) : ''))
+                        logStatus.error('Error' + (((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
                       }
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -12337,7 +12349,7 @@ try {
       },
       verify: function verify () {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee94 () {
-          var logStatus, _yield$fuc$httpReques7, result, statusText, status, data, _data$response24, _data$response25, _data$response26
+          var logStatus, _yield$fuc$httpReques7, result, statusText, status, data, _data$response23, _data$response24, _data$response25
 
           return regeneratorRuntime.wrap(function _callee94$ (_context95) {
             while (1) {
@@ -12363,10 +12375,10 @@ try {
                   data = _yield$fuc$httpReques7.data
 
                   if (result === 'Success') {
-                    if (data.status === 200 && (data === null || data === void 0 ? void 0 : (_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.status) === 'success') {
-                      logStatus.success(data === null || data === void 0 ? void 0 : (_data$response25 = data.response) === null || _data$response25 === void 0 ? void 0 : _data$response25.msg, true)
+                    if (data.status === 200 && (data === null || data === void 0 ? void 0 : (_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.status) === 'success') {
+                      logStatus.success(data === null || data === void 0 ? void 0 : (_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.msg, true)
                     } else {
-                      logStatus.error('Error:' + ((data === null || data === void 0 ? void 0 : (_data$response26 = data.response) === null || _data$response26 === void 0 ? void 0 : _data$response26.msg) || data.statusText + '(' + data.status + ')'), true)
+                      logStatus.error('Error:' + ((data === null || data === void 0 ? void 0 : (_data$response25 = data.response) === null || _data$response25 === void 0 ? void 0 : _data$response25.msg) || data.statusText + '(' + data.status + ')'), true)
                     }
                   } else {
                     logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))

@@ -302,6 +302,7 @@ const gleam = {
     links: [],
     twitterUsers: [],
     retweets: [],
+    twitchs: [],
     discords: [],
     facebooks: [],
     youtubes: [],
@@ -313,6 +314,7 @@ const gleam = {
     groups: [],
     twitterUsers: [],
     retweets: [],
+    twitchs: [],
     discords: [],
     toGuild: {}
   },

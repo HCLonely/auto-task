@@ -106,7 +106,7 @@ async function getTwitterUserId (name) {
     })
     if (result === 'Success') {
       if (data.status === 200) {
-        let response = data.response
+        let response = data.response || (typeof data.responseText === 'object' ? data.responseText : null)
         if (!response) {
           try {
             response = JSON.parse(data.responseText)

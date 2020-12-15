@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.3.9
+// @version            3.3.10
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,8 +35,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.9/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.9/require/fuck-task.min.css#md5=06aeb698b5e90497bb6855c9825f9f51
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.10/require/require.min.js#md5=d2cd799c7459f0c49492f2ad99a6f039
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.3.10/require/fuck-task.min.css#md5=6a1bf8cb6e8a08900ac77e86a98843e0
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -91,6 +91,8 @@ function _nonIterableRest () { throw new TypeError('Invalid attempt to destructu
 function _iterableToArrayLimit (arr, i) { if (typeof Symbol === 'undefined' || !(Symbol.iterator in Object(arr))) return; var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break } } catch (err) { _d = true; _e = err } finally { try { if (!_n && _i.return != null) _i.return() } finally { if (_d) throw _e } } return _arr }
 
 function _arrayWithHoles (arr) { if (Array.isArray(arr)) return arr }
+
+function _typeof (obj) { '@babel/helpers - typeof'; if (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') { _typeof = function _typeof (obj) { return typeof obj } } else { _typeof = function _typeof (obj) { return obj && typeof Symbol === 'function' && obj.constructor === Symbol && obj !== Symbol.prototype ? 'symbol' : typeof obj } } return _typeof(obj) }
 
 function _toConsumableArray (arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread() }
 
@@ -3171,7 +3173,7 @@ try {
                   break
                 }
 
-                response = data.response
+                response = data.response || (_typeof(data.responseText) === 'object' ? data.responseText : null)
 
                 if (!response) {
                   try {

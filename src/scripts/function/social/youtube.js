@@ -176,7 +176,7 @@ async function getYtbToken (link, type) {
           return { needLogin: true }
         }
         const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1]
-        const context = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/)?.[1] || '{}'
+        const context = (data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/))?.[1] || '{}'
         const { client, request } = JSON.parse(context)
         if (apiKey && client && request) {
           client.hl = 'en'

@@ -191,5 +191,7 @@
   "gsNotice": "In order to avoid getting the \"0000-0000-0000\"key, the \"Grab Key\" button has been hidden, please close the script when obtaining the key!",
   "unknownTaskType": "Unknown task type: s%, please contact the author for adaptation!",
   "updateDiscordInfoSuccess": "Successfully updated discord auth",
-  "updateDiscordInfoError": "Failed to updated discord auth"
+  "updateDiscordInfoError": "Failed to updated discord auth",
+  "gettingKey": "Getting Key, please wait",
+  "getGiveawayIdFailed": "Failed to obtain giveaway id, please refresh and try again!"
 }

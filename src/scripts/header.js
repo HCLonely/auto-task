@@ -29,6 +29,7 @@
 // @include            *://keylol.com/*
 // @include            *://givekey.ru/giveaway/*
 // @include            *://key-hub.eu/giveaway/*
+// @include            *://freeanywhere.net/*
 // @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
@@ -51,6 +52,7 @@
 // @grant              GM_openInTab
 // @grant              unsafeWindow
 // @grant              window.close
+// @grant              window.localStorage
 
 // @connect            __SITEURL__
 // @connect            cdn.jsdelivr.net

@@ -253,6 +253,25 @@ const defaultConf = {
     },
     enable: false
   },
+  freeanywhere: {
+    fuck: {
+      joinSteamGroup: true,
+      followCurator: true,
+      addToWishlist: true,
+      followGame: true,
+      joinVk: true,
+      visitLink: true,
+      verifyTask: true
+    },
+    remove: {
+      leaveSteamGroup: true,
+      unfollowCurator: true,
+      removeFromWishlist: true,
+      leaveVk: true,
+      unfollowGame: true
+    },
+    enable: false
+  },
   gleam: {
     fuck: {
       joinSteamGroup: true,

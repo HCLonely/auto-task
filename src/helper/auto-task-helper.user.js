@@ -16,6 +16,7 @@
 // @include            *://discord.com/*
 // @grant              unsafeWindow
 // @run-at             document-start
+// @grant              window.localStorage
 // ==/UserScript==
 
 (function () {

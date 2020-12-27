@@ -90,8 +90,8 @@ const banana = {
                   if (result === 'Success') {
                     const appId = finalUrl.match(/store.steampowered.com\/app\/([\d]+)/)?.[1]
                     if (appId) {
-                      this.currentTaskInfo.wishlists.push(appId)
-                      this.taskInfo.wishlists.push(appId)
+                      this.currentTaskInfo.wGames.push(appId)
+                      this.taskInfo.wGames.push(appId)
                     } else {
                       this.currentTaskInfo.taskIds.push(taskId)
                     }
@@ -259,7 +259,7 @@ const banana = {
     links: [],
     groups: [],
     curators: [],
-    wishlists: [],
+    wGames: [],
     fGames: [],
     retweets: [],
     taskIds: [],
@@ -268,7 +268,7 @@ const banana = {
   taskInfo: {
     groups: [],
     curators: [],
-    wishlists: [],
+    wGames: [],
     fGames: [],
     retweets: []
   },

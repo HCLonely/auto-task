@@ -37,7 +37,7 @@ const keyhub = {
           const link = $(task).attr('href')
           const taskDes = $(task).text().trim()
 
-          if (/steamcommunity\.com\/gid\//.test(link) && /join/gim.test(taskDes)) {
+          if (/steamcommunity\.com\/gid\//.test(link)) {
             pro.push(fuc.getFinalUrl(link)
               .then(({ result, finalUrl }) => {
                 if (result === 'Success') {
@@ -48,7 +48,16 @@ const keyhub = {
                   }
                 }
               }))
-          } else if (/steamcommunity\.com\/groups\//.test(link) && /join/gim.test(taskDes)) {
+          } else if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
+            pro.push(fuc.getFinalUrl(link)
+              .then(({ result, finalUrl }) => {
+                if (result === 'Success') {
+                  if (/^https?:\/\/discord\.com\/|^https?:\/\/discordapp\.com\//.test(finalUrl)) {
+                    window.open(finalUrl, '_blank')
+                  }
+                }
+              }))
+          } else if (/steamcommunity\.com\/groups\//.test(link)) {
             const groupName = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)?.[1]
             if (groupName) {
               this.currentTaskInfo.groups.push(groupName)

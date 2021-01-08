@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.0
+// @version            3.4.1
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -36,8 +36,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.0/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.0/require/fuck-task.min.css#md5=02c86bd548c57d8f0177106f1c73a673
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.1/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.1/require/fuck-task.min.css#md5=6527f70622079d9e22578cd7c5073b20
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6061,8 +6061,8 @@ try {
     }
 
     var getId = /* #__PURE__ */(function () {
-      var _ref102 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee105 () {
-        var _link$match7, _link$match8, _link$match9, _ref105, _link$match10, _link$match11, _link$match14, _link$match15, _link$match16, _link$match17
+      var _ref103 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee105 () {
+        var _link$match7, _link$match8, _link$match9, _ref106, _link$match10, _link$match11, _link$match14, _link$match15, _link$match16, _link$match17
 
         var _yield$Swal$fire$then, _yield$Swal$fire$then2, type, link, result, _link$match12, _link$match13, userName, _yield$getYtbToken3, params, _yield$getYtbToken4, _params
 
@@ -6111,14 +6111,14 @@ try {
                   inputPlaceholder: getI18n('selectAType'),
                   showCancelButton: true
                 }).then(/* #__PURE__ */function () {
-                  var _ref104 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee104 (_ref103) {
+                  var _ref105 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee104 (_ref104) {
                     var type, _yield$Swal$fire, url
 
                     return regeneratorRuntime.wrap(function _callee104$ (_context105) {
                       while (1) {
                         switch (_context105.prev = _context105.next) {
                           case 0:
-                            type = _ref103.value
+                            type = _ref104.value
                             _context105.next = 3
                             return Swal.fire({
                               input: 'url',
@@ -6149,7 +6149,7 @@ try {
                   }))
 
                   return function (_x58) {
-                    return _ref104.apply(this, arguments)
+                    return _ref105.apply(this, arguments)
                   }
                 }())
 
@@ -6185,7 +6185,7 @@ try {
                 return _context106.abrupt('break', 49)
 
               case 18:
-                result = (_ref105 = (link.includes('publisher') ? link.match(/store\.steampowered\.com\/publisher\/(.+)\/?/) : link.includes('developer') ? link.match(/store\.steampowered\.com\/developer\/(.+)\/?/) : link.match(/pub\/(.+)\/?/) || link.match(/dev\/(.+)\/?/)) || link.match(/franchise\/(.+)\/?/)) === null || _ref105 === void 0 ? void 0 : _ref105[1]
+                result = (_ref106 = (link.includes('publisher') ? link.match(/store\.steampowered\.com\/publisher\/(.+)\/?/) : link.includes('developer') ? link.match(/store\.steampowered\.com\/developer\/(.+)\/?/) : link.match(/pub\/(.+)\/?/) || link.match(/dev\/(.+)\/?/)) || link.match(/franchise\/(.+)\/?/)) === null || _ref106 === void 0 ? void 0 : _ref106[1]
                 return _context106.abrupt('break', 49)
 
               case 20:
@@ -6265,7 +6265,7 @@ try {
       }))
 
       return function getId () {
-        return _ref102.apply(this, arguments)
+        return _ref103.apply(this, arguments)
       }
     }())
 
@@ -10745,7 +10745,7 @@ try {
                           link = $(task).attr('href')
                           taskDes = $(task).text().trim()
 
-                          if (/steamcommunity\.com\/gid\//.test(link) && /join/gim.test(taskDes)) {
+                          if (/steamcommunity\.com\/gid\//.test(link)) {
                             pro.push(fuc.getFinalUrl(link).then(function (_ref88) {
                               var result = _ref88.result
                               var finalUrl = _ref88.finalUrl
@@ -10762,7 +10762,18 @@ try {
                                 }
                               }
                             }))
-                          } else if (/steamcommunity\.com\/groups\//.test(link) && /join/gim.test(taskDes)) {
+                          } else if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
+                            pro.push(fuc.getFinalUrl(link).then(function (_ref89) {
+                              var result = _ref89.result
+                              var finalUrl = _ref89.finalUrl
+
+                              if (result === 'Success') {
+                                if (/^https?:\/\/discord\.com\/|^https?:\/\/discordapp\.com\//.test(finalUrl)) {
+                                  window.open(finalUrl, '_blank')
+                                }
+                              }
+                            }))
+                          } else if (/steamcommunity\.com\/groups\//.test(link)) {
                             groupName = (_link$match = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
 
                             if (groupName) {
@@ -11043,8 +11054,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref89) {
-              var value = _ref89.value
+            }).then(function (_ref90) {
+              var value = _ref90.value
 
               if (value) {
                 window.close()
@@ -11095,10 +11106,10 @@ try {
               if (action === 'fuck') {
                 var _data$
 
-                var _ref90 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
-                var _ref91 = _slicedToArray(_ref90, 2)
-                var _inviteId = _ref91[0]
-                var guild = _ref91[1]
+                var _ref91 = (data === null || data === void 0 ? void 0 : (_data$ = data[0]) === null || _data$ === void 0 ? void 0 : _data$.guild) || []
+                var _ref92 = _slicedToArray(_ref91, 2)
+                var _inviteId = _ref92[0]
+                var guild = _ref92[1]
 
                 if (_inviteId && guild) {
                   toGuild[_inviteId] = guild
@@ -11128,7 +11139,7 @@ try {
           }
 
           AutoTask.toggleTWITTER = /* #__PURE__ */(function () {
-            var _ref92 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 (action, name, type) {
+            var _ref93 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee86 (action, name, type) {
               return regeneratorRuntime.wrap(function _callee86$ (_context87) {
                 while (1) {
                   switch (_context87.prev = _context87.next) {
@@ -11156,7 +11167,7 @@ try {
             }))
 
             return function (_x52, _x53, _x54) {
-              return _ref92.apply(this, arguments)
+              return _ref93.apply(this, arguments)
             }
           }())
 
@@ -11179,7 +11190,7 @@ try {
           }
 
           AutoTask.toggleSTEAM = /* #__PURE__ */(function () {
-            var _ref93 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee87 (action, name, type) {
+            var _ref94 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee87 (action, name, type) {
               var isAnnouncement
               var isGroup
               var elements
@@ -11235,7 +11246,7 @@ try {
             }))
 
             return function (_x55, _x56, _x57) {
-              return _ref93.apply(this, arguments)
+              return _ref94.apply(this, arguments)
             }
           }())
 
@@ -11425,12 +11436,12 @@ try {
                 var developerName = (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match5 = _link6.match(/developer\/(.+)\/?/)) === null || _link6$match5 === void 0 ? void 0 : _link6$match5[1]) || (_link6 === null || _link6 === void 0 ? void 0 : (_link6$match6 = _link6.match(/dev\/(.+)\/?/)) === null || _link6$match6 === void 0 ? void 0 : _link6$match6[1])
                 var franchiseName = _link6 === null || _link6 === void 0 ? void 0 : (_link6$match7 = _link6.match(/franchise\/(.+)\/?/)) === null || _link6$match7 === void 0 ? void 0 : _link6$match7[1]
 
-                var _ref94 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
-                var _ref95 = _slicedToArray(_ref94, 5)
-                var url = _ref95[1]
-                var announcementId = _ref95[2]
-                var wgauthtoken = _ref95[3]
-                var clanid = _ref95[4]
+                var _ref95 = (_link6 === null || _link6 === void 0 ? void 0 : _link6.match(/(https?:\/\/store\.steampowered\.com\/newshub\/app\/[\d]+\/view\/([\d]+))\?authwgtoken=(.+?)&clanid=(.+)/)) || []
+                var _ref96 = _slicedToArray(_ref95, 5)
+                var url = _ref96[1]
+                var announcementId = _ref96[2]
+                var wgauthtoken = _ref96[3]
+                var clanid = _ref96[4]
 
                 if (gameId) {
                   this.addBtn(steamStoreLink, 'toggleSTEAM', gameId, 'game', ['关注', '取关'])
@@ -12193,8 +12204,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref96) {
-              var value = _ref96.value
+            }).then(function (_ref97) {
+              var value = _ref97.value
 
               if (value) {
                 window.close()
@@ -12497,9 +12508,9 @@ try {
                   } else if ($(step).find("a[href*='steamcommunity.com/gid']").length > 0) {
                     var _link9 = $(step).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref97) {
-                      var result = _ref97.result
-                      var finalUrl = _ref97.finalUrl
+                    pro.push(fuc.getFinalUrl(_link9).then(function (_ref98) {
+                      var result = _ref98.result
+                      var finalUrl = _ref98.finalUrl
 
                       if (result === 'Success') {
                         var _finalUrl$match10
@@ -12606,9 +12617,9 @@ try {
                   } else if ($(_step54).find("a[href*='steamcommunity.com/gid']").length > 0) {
                     var _link12 = $(_step54).find("a[href*='steamcommunity.com/gid']").attr('href')
 
-                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref98) {
-                      var result = _ref98.result
-                      var finalUrl = _ref98.finalUrl
+                    _pro.push(fuc.getFinalUrl(_link12).then(function (_ref99) {
+                      var result = _ref99.result
+                      var finalUrl = _ref99.finalUrl
 
                       if (result === 'Success') {
                         var _finalUrl$match11
@@ -12900,8 +12911,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref99) {
-              var value = _ref99.value
+            }).then(function (_ref100) {
+              var value = _ref100.value
 
               if (value) {
                 window.close()
@@ -12983,9 +12994,9 @@ try {
 
                           if (icon.hasClass('fa-steam')) {
                             if (link && /gid\/[\d]+/.test(link)) {
-                              pro.push(fuc.getFinalUrl(link).then(function (_ref100) {
-                                var result = _ref100.result
-                                var finalUrl = _ref100.finalUrl
+                              pro.push(fuc.getFinalUrl(link).then(function (_ref101) {
+                                var result = _ref101.result
+                                var finalUrl = _ref101.finalUrl
 
                                 if (result === 'Success') {
                                   var _finalUrl$match12
@@ -13313,8 +13324,8 @@ try {
               confirmButtonText: getI18n('confirm'),
               cancelButtonText: getI18n('cancel'),
               showCancelButton: true
-            }).then(function (_ref101) {
-              var value = _ref101.value
+            }).then(function (_ref102) {
+              var value = _ref102.value
 
               if (value) {
                 window.close()

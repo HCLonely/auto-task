@@ -214,7 +214,7 @@ async function getVkId (name) {
         } else if (publicHash && publicPid) {
           logStatus.success()
           return { publicHash, publicPid, publicJoined, type: 'public' }
-        } else if (data.responseText.includes('Wall.sendPost')){
+        } else if (data.responseText.includes('Wall.sendPost')) {
           logStatus.success()
           return { type: 'wall' }
         } else {

@@ -35,6 +35,7 @@ async function toggleVk (name, join = true) {
     if (whiteList.enable && !join && whiteList.vk.vk.includes(name)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
+    name = name.replace(/\/$/, '')
     const data = await getVkId(name)
     if (!data) return
     switch (data.type) {
@@ -213,6 +214,9 @@ async function getVkId (name) {
         } else if (publicHash && publicPid) {
           logStatus.success()
           return { publicHash, publicPid, publicJoined, type: 'public' }
+        } else if (data.responseText.includes('Wall.sendPost')){
+          logStatus.success()
+          return { type: 'wall' }
         } else {
           logStatus.error('Error: Parameter "id" not found!')
           return false

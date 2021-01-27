@@ -150,7 +150,7 @@ const takekey = {
         if (data.status === 200 && data?.response?.status === 'success') {
           logStatus.success(data?.response?.msg, true)
         } else {
-          logStatus.error('Error:' + (data?.response?.msg || data.statusText + '(' + data.status + ')'), true)
+          logStatus.error('Error:' + (JSON.stringify(data?.response?.msg) || data.statusText + '(' + data.status + ')'), true)
         }
       } else {
         logStatus.error(`${result}:${statusText}(${status})`)

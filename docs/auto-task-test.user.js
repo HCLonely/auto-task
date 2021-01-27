@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.1
+// @version            3.4.2
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -36,8 +36,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.1/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.1/require/fuck-task.min.css#md5=6527f70622079d9e22578cd7c5073b20
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/fuck-task.min.css#md5=bd07b61a42a4ea5eec0defc733ff6e6c
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -4162,60 +4162,61 @@ try {
                 })
 
               case 4:
-                _context40.next = 6
+                name = name.replace(/\/$/, '')
+                _context40.next = 7
                 return getVkId(name)
 
-              case 6:
+              case 7:
                 data = _context40.sent
 
                 if (data) {
-                  _context40.next = 9
+                  _context40.next = 10
                   break
                 }
 
                 return _context40.abrupt('return')
 
-              case 9:
+              case 10:
                 _context40.t0 = data.type
-                _context40.next = _context40.t0 === 'group' ? 12 : _context40.t0 === 'public' ? 15 : _context40.t0 === 'wall' ? 18 : 21
+                _context40.next = _context40.t0 === 'group' ? 13 : _context40.t0 === 'public' ? 16 : _context40.t0 === 'wall' ? 19 : 22
                 break
 
-              case 12:
-                _context40.next = 14
+              case 13:
+                _context40.next = 15
                 return toggleVkGroup(name, data, join)
 
-              case 14:
-                return _context40.abrupt('break', 21)
-
               case 15:
-                _context40.next = 17
+                return _context40.abrupt('break', 22)
+
+              case 16:
+                _context40.next = 18
                 return toggleVkPublic(name, data, join)
 
-              case 17:
-                return _context40.abrupt('break', 21)
-
               case 18:
-                _context40.next = 20
+                return _context40.abrupt('break', 22)
+
+              case 19:
+                _context40.next = 21
                 return toggleVkWall(name, join)
 
-              case 20:
-                return _context40.abrupt('break', 21)
-
               case 21:
-                _context40.next = 26
+                return _context40.abrupt('break', 22)
+
+              case 22:
+                _context40.next = 27
                 break
 
-              case 23:
-                _context40.prev = 23
+              case 24:
+                _context40.prev = 24
                 _context40.t1 = _context40.catch(1)
                 throwError(_context40.t1, 'toggleVk')
 
-              case 26:
+              case 27:
               case 'end':
                 return _context40.stop()
             }
           }
-        }, _callee40, null, [[1, 23]])
+        }, _callee40, null, [[1, 24]])
       }))
 
       return function toggleVk (_x37) {
@@ -4577,12 +4578,12 @@ try {
                 data = _yield$httpRequest38.data
 
                 if (!(result === 'Success')) {
-                  _context44.next = 35
+                  _context44.next = 40
                   break
                 }
 
                 if (!(data.status === 200)) {
-                  _context44.next = 31
+                  _context44.next = 36
                   break
                 }
 
@@ -4619,40 +4620,51 @@ try {
                 })
 
               case 27:
+                if (!data.responseText.includes('Wall.sendPost')) {
+                  _context44.next = 32
+                  break
+                }
+
+                logStatus.success()
+                return _context44.abrupt('return', {
+                  type: 'wall'
+                })
+
+              case 32:
                 logStatus.error('Error: Parameter "id" not found!')
                 return _context44.abrupt('return', false)
 
-              case 29:
-                _context44.next = 33
+              case 34:
+                _context44.next = 38
                 break
 
-              case 31:
+              case 36:
                 logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
                 return _context44.abrupt('return', false)
 
-              case 33:
-                _context44.next = 37
-                break
-
-              case 35:
-                logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
-                return _context44.abrupt('return', false)
-
-              case 37:
+              case 38:
                 _context44.next = 42
                 break
 
-              case 39:
-                _context44.prev = 39
+              case 40:
+                logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
+                return _context44.abrupt('return', false)
+
+              case 42:
+                _context44.next = 47
+                break
+
+              case 44:
+                _context44.prev = 44
                 _context44.t0 = _context44.catch(0)
                 throwError(_context44.t0, 'getVkId')
 
-              case 42:
+              case 47:
               case 'end':
                 return _context44.stop()
             }
           }
-        }, _callee44, null, [[0, 39]])
+        }, _callee44, null, [[0, 44]])
       }))
 
       return function getVkId (_x44) {
@@ -13186,7 +13198,7 @@ try {
                     if (data.status === 200 && (data === null || data === void 0 ? void 0 : (_data$response25 = data.response) === null || _data$response25 === void 0 ? void 0 : _data$response25.status) === 'success') {
                       logStatus.success(data === null || data === void 0 ? void 0 : (_data$response26 = data.response) === null || _data$response26 === void 0 ? void 0 : _data$response26.msg, true)
                     } else {
-                      logStatus.error('Error:' + ((data === null || data === void 0 ? void 0 : (_data$response27 = data.response) === null || _data$response27 === void 0 ? void 0 : _data$response27.msg) || data.statusText + '(' + data.status + ')'), true)
+                      logStatus.error('Error:' + (JSON.stringify(data === null || data === void 0 ? void 0 : (_data$response27 = data.response) === null || _data$response27 === void 0 ? void 0 : _data$response27.msg) || data.statusText + '(' + data.status + ')'), true)
                     }
                   } else {
                     logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))

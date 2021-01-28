@@ -1,7 +1,7 @@
 /*
  * @Author: HCLonely
  * @Date: 2021-01-28 16:28:08
- * @LastEditTime: 2021-01-28 16:54:40
+ * @LastEditTime: 2021-01-28 17:30:02
  * @LastEditors: HCLonely
  * @FilePath: \auto-task\src\page\js\delayNotice.js
  * @Description: 添加延迟提醒列表
@@ -30,7 +30,7 @@ window.addCard = function addCard (item) {
 function formatTaskLink (taskInfo) {
   let html = ''
   const toFinalUrl = taskInfo.toFinalUrl
-  for (const [k, v] of taskInfo) {
+  for (const [k, v] of Object.entries(taskInfo)) {
     const url = toFinalUrl[v]
     switch (k) {
       case 'groups':

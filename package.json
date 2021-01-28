@@ -72,7 +72,8 @@
       "addCard"
     ],
     "ignore": [
-      "/docs/js/main.js"
+      "/docs/js/main.js",
+      "/docs/js/delayNotice.js"
     ],
     "disable": [
       "no-sparse-arrays"

@@ -1,4 +1,4 @@
-/* global loadSettings, loadAnnouncement, addCard */
+/* global loadSettings, loadAnnouncement */
 import { fuc, throwError } from './function/main'
 import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'

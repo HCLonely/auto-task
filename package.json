@@ -68,7 +68,8 @@
       "redditInfo",
       "youtubeInfo",
       "i18n",
-      "whiteList"
+      "whiteList",
+      "addCard"
     ],
     "ignore": [
       "/docs/js/main.js"

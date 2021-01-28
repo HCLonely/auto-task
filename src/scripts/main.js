@@ -30,7 +30,7 @@ if (website || pageHost.includes('hclonely')) {
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()
     } else if (window.location.pathname.includes('notice-list')) {
-      const delayNoticeList = GM_getValue('noticeList')
+      const delayNoticeList = GM_getValue('noticeList') || []
       for (const item of delayNoticeList) {
         $('body').append(addCard(GM_getValue('delayNotice-' + item)))
       }

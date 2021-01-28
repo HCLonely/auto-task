@@ -13433,7 +13433,7 @@ try {
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
         } else if (window.location.pathname.includes('notice-list')) {
-          var delayNoticeList = GM_getValue('noticeList')
+          var delayNoticeList = GM_getValue('noticeList') || []
 
           var _iterator57 = _createForOfIteratorHelper(delayNoticeList)
           var _step58

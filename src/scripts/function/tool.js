@@ -121,6 +121,22 @@ function delay (time = 1000) {
   })
 }
 
+function addDelayNotice (taskInfo, echoLog) {
+  try {
+    const time = new Date().getTime()
+    const noticeList = GM_getValue('noticeList') || []
+    noticeList.push(time)
+    GM_setValue('noticeList', noticeList)
+    GM_setValue('delayNotice-' + time, {
+      time,
+      link: window.location.href,
+      tasks: taskInfo
+    })
+    echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('addedNotice')}</font></li>` })
+  } catch (e) {
+    throwError(e, 'addDelayNotice')
+  }
+}
 function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, toGuild }, config, action, website) {
   const pro = []
   const fuck = action === 'fuck'
@@ -180,6 +196,7 @@ function assignment ({ groups, forums, curators, publishers, developers, franchi
   }
   return Promise.all(pro)
 }
+
 export {
   unique,
   getUrlQuery,
@@ -189,5 +206,6 @@ export {
   uniqueTaskInfo,
   throwError,
   delay,
+  addDelayNotice,
   assignment
 }

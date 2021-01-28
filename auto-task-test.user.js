@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.2
+// @version            3.4.3
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -36,8 +36,8 @@
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/fuck-task.min.css#md5=bd07b61a42a4ea5eec0defc733ff6e6c
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/fuck-task.min.css#md5=b652da0e2c44973857d2e38e7734bb1b
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5624,6 +5624,26 @@ try {
       })
     }
 
+    var addDelayNotice = function addDelayNotice (taskInfo, echoLog) {
+      try {
+        var time = new Date().getTime()
+        var noticeList = GM_getValue('noticeList') || []
+        noticeList.push(time)
+        GM_setValue('noticeList', noticeList)
+        GM_setValue('delayNotice-' + time, {
+          time: time,
+          link: window.location.href,
+          tasks: taskInfo
+        })
+        echoLog({
+          type: 'custom',
+          text: '<li><font class="warning">'.concat(getI18n('addedNotice'), '</font></li>')
+        })
+      } catch (e) {
+        throwError(e, 'addDelayNotice')
+      }
+    }
+
     var assignment = function assignment (_ref66, config, action, website) {
       var groups = _ref66.groups
       var forums = _ref66.forums
@@ -6308,7 +6328,9 @@ try {
           visitLink: true,
           verifyTask: true,
           doTask: true,
-          autoLogin: false
+          autoLogin: false,
+          delayNotice: false,
+          delayNoticeTime: '0'
         },
         verify: {
           verifyTask: true
@@ -6681,7 +6703,8 @@ try {
       updateInfo: updateInfo,
       checkUpdate: checkUpdate,
       newTabBlock: newTabBlock,
-      delay: delay
+      delay: delay,
+      addDelayNotice: addDelayNotice
     }
     var banana = {
       test: function test () {
@@ -9162,12 +9185,15 @@ try {
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
+
                   if (action === 'fuck') {
                     fuc.echoLog({
                       type: 'custom',
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
+                    if (_this21.conf.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog)
                   }
+
                   _context71.next = 15
                   break
 
@@ -13406,6 +13432,22 @@ try {
           typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
+        } else if (window.location.pathname.includes('notice-list')) {
+          var delayNoticeList = GM_getValue('noticeList')
+
+          var _iterator57 = _createForOfIteratorHelper(delayNoticeList)
+          var _step58
+
+          try {
+            for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
+              var item = _step58.value
+              $('body').append(addCard(GM_getValue('delayNotice-' + item)))
+            }
+          } catch (err) {
+            _iterator57.e(err)
+          } finally {
+            _iterator57.f()
+          }
         }
       } else if (pageHost === 'marvelousga.com' && !window.location.pathname.includes('giveaway')) {
         fuc.newTabBlock()
@@ -13529,18 +13571,18 @@ try {
             })
             var listValues = GM_listValues()
 
-            var _iterator57 = _createForOfIteratorHelper(listValues)
-            var _step58
+            var _iterator58 = _createForOfIteratorHelper(listValues)
+            var _step59
 
             try {
-              for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
-                var value = _step58.value
+              for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
+                var value = _step59.value
                 if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
               }
             } catch (err) {
-              _iterator57.e(err)
+              _iterator58.e(err)
             } finally {
-              _iterator57.f()
+              _iterator58.f()
             }
 
             status.success()

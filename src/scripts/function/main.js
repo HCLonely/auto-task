@@ -1,5 +1,5 @@
 import { getI18n } from '../i18n'
-import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo, delay, assignment } from './tool'
+import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskInfo, uniqueTaskInfo, delay, assignment, addDelayNotice } from './tool'
 
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
@@ -32,7 +32,8 @@ const fuc = {
   updateInfo,
   checkUpdate,
   newTabBlock,
-  delay
+  delay,
+  addDelayNotice
 }
 function newTabBlock () {
   try {

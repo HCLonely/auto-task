@@ -165,7 +165,10 @@ const giveawaysu = {
         GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
       }
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
-      if (action === 'fuck') fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
+      if (action === 'fuck') {
+        fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
+        if (this.conf.delayNotice) fuc.addDelayNotice(this.taskInfo, fuc.echoLog)
+      }
     } catch (e) {
       throwError(e, 'giveawaysu.do_task')
     }

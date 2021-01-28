@@ -1,4 +1,4 @@
-/* global loadSettings, loadAnnouncement */
+/* global loadSettings, loadAnnouncement, addCard */
 import { fuc, throwError } from './function/main'
 import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
@@ -29,6 +29,11 @@ if (website || pageHost.includes('hclonely')) {
       typeof GM_getValue('conf')?.global?.fuck?.joinSteamGroup !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
     } else if (window.location.pathname.includes('announcement')) {
       loadAnnouncement()
+    } else if (window.location.pathname.includes('notice-list')) {
+      const delayNoticeList = GM_getValue('noticeList')
+      for (const item of delayNoticeList) {
+        $('body').append(addCard(GM_getValue('delayNotice-' + item)))
+      }
     }
   } else if (pageHost === 'marvelousga.com' && (!window.location.pathname.includes('giveaway'))) {
     fuc.newTabBlock()

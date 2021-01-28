@@ -22,7 +22,9 @@ const defaultConf = {
       visitLink: true,
       verifyTask: true,
       doTask: true,
-      autoLogin: false
+      autoLogin: false,
+      delayNotice: false,
+      delayNoticeTime: '0'
     },
     verify: {
       verifyTask: true

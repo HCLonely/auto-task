@@ -3,7 +3,7 @@ import { throwError } from './tool'
 
 function getDiscordAuth (notice) {
   try {
-    if (typeof discordAuth === 'string') {
+    if (typeof window.discordAuth === 'string') {
       GM_setValue('discordInfo', {
         authorization: discordAuth.replace(/"/g, ''),
         expired: false,

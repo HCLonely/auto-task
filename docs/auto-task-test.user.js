@@ -1,3 +1,11 @@
+/*
+ * @Author: HCLonely
+ * @Date: 2020-11-26 18:15:28
+ * @LastEditTime: 2021-01-28 18:30:08
+ * @LastEditors: HCLonely
+ * @FilePath: \auto-task\src\scripts\header.js
+ * @Description:
+ */
 // ==UserScript==
 // @name               自动任务 Test
 // @name:en            Auto Task Test
@@ -35,6 +43,7 @@
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
 // @include            https://auto-task-test.hclonely.com/setting.html
+// @include            https://auto-task-test.hclonely.com/notice-list.html
 
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
 // @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/fuck-task.min.css#md5=b652da0e2c44973857d2e38e7734bb1b
@@ -5644,6 +5653,21 @@ try {
       }
     }
 
+    var deleteDelayNotice = function deleteDelayNotice (time, echoLog) {
+      try {
+        var noticeList = GM_getValue('noticeList') || []
+        noticeList.splice(noticeList.indexOf(time), 1)
+        GM_setValue('noticeList', noticeList)
+        GM_deleteValue('delayNotice-' + time)
+        echoLog({
+          type: 'custom',
+          text: '<li><font class="warning">'.concat(getI18n('deletedNotice'), '</font></li>')
+        })
+      } catch (e) {
+        throwError(e, 'deleteDelayNotice')
+      }
+    }
+
     var assignment = function assignment (_ref66, config, action, website) {
       var groups = _ref66.groups
       var forums = _ref66.forums
@@ -5889,7 +5913,7 @@ try {
 
     var getDiscordAuth = function getDiscordAuth (notice) {
       try {
-        if (typeof discordAuth === 'string') {
+        if (typeof window.discordAuth === 'string') {
           GM_setValue('discordInfo', {
             authorization: discordAuth.replace(/"/g, ''),
             expired: false,
@@ -6301,6 +6325,52 @@ try {
       }
     }())
 
+    var addLogElement = function addLogElement () {
+      $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+      $('#clean-cache').click(function () {
+        try {
+          var status = fuc.echoLog({
+            type: 'custom',
+            text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
+          })
+          var listValues = GM_listValues()
+
+          var _iterator58 = _createForOfIteratorHelper(listValues)
+          var _step59
+
+          try {
+            for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
+              var value = _step59.value
+              if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
+            }
+          } catch (err) {
+            _iterator58.e(err)
+          } finally {
+            _iterator58.f()
+          }
+
+          status.success()
+        } catch (e) {
+          throwError(e, '$(\'#clean-cache\').click')
+        }
+      })
+      $('#check-update').click(function () {
+        try {
+          fuc.checkUpdate(true)
+        } catch (e) {
+          throwError(e, '$(\'#check-update\').click')
+        }
+      })
+      $('#auto-task-setting,#auto-task-feedback').click(function () {
+        try {
+          window.open($(this).attr('data-href'), '_blank')
+        } catch (e) {
+          throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
+        }
+      })
+      fuc.checkUpdate()
+    }
+
     unsafeWindow.AutoTask = {}
     'use strict'
 
@@ -6328,9 +6398,7 @@ try {
           visitLink: true,
           verifyTask: true,
           doTask: true,
-          autoLogin: false,
-          delayNotice: false,
-          delayNoticeTime: '0'
+          autoLogin: false
         },
         verify: {
           verifyTask: true
@@ -6360,7 +6428,9 @@ try {
           checkLogin: true,
           checkLeft: true,
           autoOpen: true,
-          reCaptcha: false
+          reCaptcha: false,
+          delayNotice: false,
+          delayNoticeTime: '0'
         },
         hotKey: {
           fuckKey: 'Alt + A',
@@ -6704,7 +6774,8 @@ try {
       checkUpdate: checkUpdate,
       newTabBlock: newTabBlock,
       delay: delay,
-      addDelayNotice: addDelayNotice
+      addDelayNotice: addDelayNotice,
+      deleteDelayNotice: deleteDelayNotice
     }
     var banana = {
       test: function test () {
@@ -9191,7 +9262,7 @@ try {
                       type: 'custom',
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
-                    if (_this21.conf.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog)
+                    if (globalConf.other.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog)
                   }
 
                   _context71.next = 15
@@ -13449,6 +13520,69 @@ try {
           } finally {
             _iterator57.f()
           }
+
+          addLogElement()
+
+          unsafeWindow.remove = /* #__PURE__ */(function () {
+            var _remove = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 (taskInfo) {
+              var _config$giveawaysu2
+
+              var conf
+              return regeneratorRuntime.wrap(function _callee106$ (_context107) {
+                while (1) {
+                  switch (_context107.prev = _context107.next) {
+                    case 0:
+                      conf = (config === null || config === void 0 ? void 0 : (_config$giveawaysu2 = config.giveawaysu) === null || _config$giveawaysu2 === void 0 ? void 0 : _config$giveawaysu2.enable) ? config.giveawaysu : globalConf
+                      _context107.next = 3
+                      return fuc.updateInfo(taskInfo)
+
+                    case 3:
+                      _context107.next = 5
+                      return fuc.assignment(taskInfo, conf.remove, 'remove', 'giveawaysu')
+
+                    case 5:
+                      fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                      })
+
+                    case 6:
+                    case 'end':
+                      return _context107.stop()
+                  }
+                }
+              }, _callee106)
+            }))
+
+            function remove (_x59) {
+              return _remove.apply(this, arguments)
+            }
+
+            return remove
+          }())
+
+          unsafeWindow.deleteNotice = /* #__PURE__ */(function () {
+            var _deleteNotice = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee107 (time) {
+              return regeneratorRuntime.wrap(function _callee107$ (_context108) {
+                while (1) {
+                  switch (_context108.prev = _context108.next) {
+                    case 0:
+                      fuc.deleteDelayNotice(time, fuc.echoLog)
+
+                    case 1:
+                    case 'end':
+                      return _context108.stop()
+                  }
+                }
+              }, _callee107)
+            }))
+
+            function deleteNotice (_x60) {
+              return _deleteNotice.apply(this, arguments)
+            }
+
+            return deleteNotice
+          }())
         }
       } else if (pageHost === 'marvelousga.com' && !window.location.pathname.includes('giveaway')) {
         fuc.newTabBlock()
@@ -13563,49 +13697,7 @@ try {
             throwError(e, '$(document).keydown')
           }
         })
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
-        $('#clean-cache').click(function () {
-          try {
-            var status = fuc.echoLog({
-              type: 'custom',
-              text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
-            })
-            var listValues = GM_listValues()
-
-            var _iterator58 = _createForOfIteratorHelper(listValues)
-            var _step59
-
-            try {
-              for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
-                var value = _step59.value
-                if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
-              }
-            } catch (err) {
-              _iterator58.e(err)
-            } finally {
-              _iterator58.f()
-            }
-
-            status.success()
-          } catch (e) {
-            throwError(e, '$(\'#clean-cache\').click')
-          }
-        })
-        $('#check-update').click(function () {
-          try {
-            fuc.checkUpdate(true)
-          } catch (e) {
-            throwError(e, '$(\'#check-update\').click')
-          }
-        })
-        $('#auto-task-setting,#auto-task-feedback').click(function () {
-          try {
-            window.open($(this).attr('data-href'), '_blank')
-          } catch (e) {
-            throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
-          }
-        })
-        fuc.checkUpdate()
+        addLogElement()
 
         if (!showLogs) {
           var _$$animate
@@ -13648,18 +13740,18 @@ try {
           throwError(e, 'GM_registerMenuCommand(\'readme\')')
         }
       })
-      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 () {
-        return regeneratorRuntime.wrap(function _callee106$ (_context107) {
+      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee108 () {
+        return regeneratorRuntime.wrap(function _callee108$ (_context109) {
           while (1) {
-            switch (_context107.prev = _context107.next) {
+            switch (_context109.prev = _context109.next) {
               case 0:
-                _context107.prev = 0
-                _context107.next = 3
+                _context109.prev = 0
+                _context109.next = 3
                 return fuc.updateSteamInfo('all', true)
 
               case 3:
-                if (!_context107.sent) {
-                  _context107.next = 7
+                if (!_context109.sent) {
+                  _context109.next = 7
                   break
                 }
 
@@ -13667,7 +13759,7 @@ try {
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('updateSteamInfoComplete'), '</font></li>')
                 })
-                _context107.next = 8
+                _context109.next = 8
                 break
 
               case 7:
@@ -13677,20 +13769,20 @@ try {
                 })
 
               case 8:
-                _context107.next = 13
+                _context109.next = 13
                 break
 
               case 10:
-                _context107.prev = 10
-                _context107.t0 = _context107.catch(0)
-                throwError(_context107.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
+                _context109.prev = 10
+                _context109.t0 = _context109.catch(0)
+                throwError(_context109.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
 
               case 13:
               case 'end':
-                return _context107.stop()
+                return _context109.stop()
             }
           }
-        }, _callee106, null, [[0, 10]])
+        }, _callee108, null, [[0, 10]])
       })))
       GM_registerMenuCommand('Language', function () {
         try {

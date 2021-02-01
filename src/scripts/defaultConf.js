@@ -22,9 +22,7 @@ const defaultConf = {
       visitLink: true,
       verifyTask: true,
       doTask: true,
-      autoLogin: false,
-      delayNotice: false,
-      delayNoticeTime: '0'
+      autoLogin: false
     },
     verify: {
       verifyTask: true
@@ -54,7 +52,9 @@ const defaultConf = {
       checkLogin: true,
       checkLeft: true,
       autoOpen: true,
-      reCaptcha: false
+      reCaptcha: false,
+      delayNotice: false,
+      delayNoticeTime: '0'
     },
     hotKey: {
       fuckKey: 'Alt + A',

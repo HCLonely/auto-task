@@ -137,6 +137,17 @@ function addDelayNotice (taskInfo, echoLog) {
     throwError(e, 'addDelayNotice')
   }
 }
+function deleteDelayNotice (time, echoLog) {
+  try {
+    const noticeList = GM_getValue('noticeList') || []
+    noticeList.splice(noticeList.indexOf(time), 1)
+    GM_setValue('noticeList', noticeList)
+    GM_deleteValue('delayNotice-' + time)
+    echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('deletedNotice')}</font></li>` })
+  } catch (e) {
+    throwError(e, 'deleteDelayNotice')
+  }
+}
 function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, toGuild }, config, action, website) {
   const pro = []
   const fuck = action === 'fuck'
@@ -207,5 +218,6 @@ export {
   throwError,
   delay,
   addDelayNotice,
+  deleteDelayNotice,
   assignment
 }

@@ -1,3 +1,11 @@
+/*
+ * @Author: HCLonely
+ * @Date: 2020-11-26 18:15:28
+ * @LastEditTime: 2021-01-28 18:30:08
+ * @LastEditors: HCLonely
+ * @FilePath: \auto-task\src\scripts\header.js
+ * @Description:
+ */
 // ==UserScript==
 // @name               自动任务__TEST__
 // @name:en            Auto Task__TEST__
@@ -35,6 +43,7 @@
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
 // @include            https://__SITEURL__/setting.html
+// @include            https://__SITEURL__/notice-list.html
 
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/require.min.js#md5=__JSMD5__
 // @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@__VERSION__/require/fuck-task.min.css#md5=__CSSMD5__

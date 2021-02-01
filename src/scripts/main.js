@@ -35,6 +35,16 @@ if (website || pageHost.includes('hclonely')) {
       for (const item of delayNoticeList) {
         $('body').append(addCard(GM_getValue('delayNotice-' + item)))
       }
+      addLogElement()
+      unsafeWindow.remove = async function remove (taskInfo) {
+        const conf = config?.giveawaysu?.enable ? config.giveawaysu : globalConf
+        await fuc.updateInfo(taskInfo)
+        await fuc.assignment(taskInfo, conf.remove, 'remove', 'giveawaysu')
+        fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
+      }
+      unsafeWindow.deleteNotice = async function deleteNotice (time) {
+        fuc.deleteDelayNotice(time, fuc.echoLog)
+      }
     }
   } else if (pageHost === 'marvelousga.com' && (!window.location.pathname.includes('giveaway'))) {
     fuc.newTabBlock()
@@ -124,48 +134,7 @@ if (website || pageHost.includes('hclonely')) {
         throwError(e, '$(document).keydown')
       }
     })
-
-    $('body').append(`<div id="fuck-task-info" class="card">
-  <div class="card-body">
-    <h3 class="card-title">${getI18n('taskLog')}</h3>
-    <h4 class="card-subtitle">
-      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
-      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://__SITEURL__/setting.html" terget="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
-      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
-      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
-    </h4>
-    <div class="card-textarea">
-    </div>
-  </div>
-</div>`)
-    $('#clean-cache').click(() => {
-      try {
-        const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
-        const listValues = GM_listValues()
-        for (const value of listValues) {
-          if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
-        }
-        status.success()
-      } catch (e) {
-        throwError(e, '$(\'#clean-cache\').click')
-      }
-    })
-    $('#check-update').click(() => {
-      try {
-        fuc.checkUpdate(true)
-      } catch (e) {
-        throwError(e, '$(\'#check-update\').click')
-      }
-    })
-    $('#auto-task-setting,#auto-task-feedback').click(function () {
-      try {
-        window.open($(this).attr('data-href'), '_blank')
-      } catch (e) {
-        throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
-      }
-    })
-    fuc.checkUpdate()
-
+    addLogElement()
     // $('.fuck-task-logs .el-notification__content').show()
     if (!showLogs) {
       $('#fuck-task-logs').animate({
@@ -259,4 +228,47 @@ if (website || pageHost.includes('hclonely')) {
   } else {
     fuc.updateYtbInfo(false)
   }
+}
+
+function addLogElement () {
+  $('body').append(`<div id="fuck-task-info" class="card">
+  <div class="card-body">
+    <h3 class="card-title">${getI18n('taskLog')}</h3>
+    <h4 class="card-subtitle">
+      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="${getI18n('checkUpdate')}"></a>
+      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://__SITEURL__/setting.html" terget="_self" class="card-link iconfont icon-setting" title="${getI18n('setting')}"></a>
+      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="${getI18n('cleanCache')}"></a>
+      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="${getI18n('feedback')}"></a>
+    </h4>
+    <div class="card-textarea">
+    </div>
+  </div>
+</div>`)
+  $('#clean-cache').click(() => {
+    try {
+      const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
+      const listValues = GM_listValues()
+      for (const value of listValues) {
+        if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
+      }
+      status.success()
+    } catch (e) {
+      throwError(e, '$(\'#clean-cache\').click')
+    }
+  })
+  $('#check-update').click(() => {
+    try {
+      fuc.checkUpdate(true)
+    } catch (e) {
+      throwError(e, '$(\'#check-update\').click')
+    }
+  })
+  $('#auto-task-setting,#auto-task-feedback').click(function () {
+    try {
+      window.open($(this).attr('data-href'), '_blank')
+    } catch (e) {
+      throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
+    }
+  })
+  fuc.checkUpdate()
 }

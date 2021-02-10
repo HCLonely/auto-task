@@ -23,17 +23,18 @@ if (website || pageHost.includes('hclonely')) {
   })
   if (pageHost !== 'auto-task.hclonely.com' && pageHost !== 'auto-task-test.hclonely.com') {
     const delayNoticeList = GM_getValue('noticeList')
-    if (!delayNoticeList) return
-    for (const time of delayNoticeList) {
-      const taskInfo = GM_getValue('delayNotice-' + time)
-      if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.deleteNoticeTime) && taskInfo) {
-        notice({
-          title: getI18n('delayNoticeTitle'),
-          text: getI18n('delayNoticeText'),
-          onclick: () => {
-            window.open('https://__SITEURL__/notice-list.html', '_blank')
-          }
-        })
+    if (delayNoticeList) {
+      for (const time of delayNoticeList) {
+        const taskInfo = GM_getValue('delayNotice-' + time)
+        if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.deleteNoticeTime) && taskInfo) {
+          notice({
+            title: getI18n('delayNoticeTitle'),
+            text: getI18n('delayNoticeText'),
+            onclick: () => {
+              window.open('https://__SITEURL__/notice-list.html', '_blank')
+            }
+          })
+        }
       }
     }
   }

@@ -1,11 +1,3 @@
-/*
- * @Author: HCLonely
- * @Date: 2020-11-26 18:15:28
- * @LastEditTime: 2021-01-28 18:30:08
- * @LastEditors: HCLonely
- * @FilePath: \auto-task\src\scripts\header.js
- * @Description:
- */
 // ==UserScript==
 // @name               自动任务 Test
 // @name:en            Auto Task Test
@@ -45,7 +37,7 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/require.min.js#md5=15ed97109c36331bff360eace6be73b4
 // @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.3/require/fuck-task.min.css#md5=b652da0e2c44973857d2e38e7734bb1b
 
 // @grant              GM_setValue
@@ -59,6 +51,7 @@
 // @grant              GM_registerMenuCommand
 // @grant              GM_info
 // @grant              GM_openInTab
+// @grant              GM_notification
 // @grant              unsafeWindow
 // @grant              window.close
 // @grant              window.localStorage
@@ -2048,7 +2041,7 @@ try {
                 return _context18.abrupt('break', 25)
 
               case 25:
-                if (!((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1])) {
+                if (!((_elementName = elementName) !== null && _elementName !== void 0 && _elementName[1])) {
                   _context18.next = 43
                   break
                 }
@@ -3431,7 +3424,7 @@ try {
                   break
                 }
 
-                if (!(data.status === 200 && ((_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$ = _data$response15[0]) === null || _data$response15$ === void 0 ? void 0 : (_data$response15$$dat = _data$response15$.data) === null || _data$response15$$dat === void 0 ? void 0 : _data$response15$$dat.currentUser))) {
+                if (!(data.status === 200 && (_data$response15 = data.response) !== null && _data$response15 !== void 0 && (_data$response15$ = _data$response15[0]) !== null && _data$response15$ !== void 0 && (_data$response15$$dat = _data$response15$.data) !== null && _data$response15$$dat !== void 0 && _data$response15$$dat.currentUser)) {
                   _context32.next = 15
                   break
                 }
@@ -5633,7 +5626,7 @@ try {
       })
     }
 
-    var addDelayNotice = function addDelayNotice (taskInfo, echoLog) {
+    var addDelayNotice = function addDelayNotice (taskInfo, echoLog, day) {
       try {
         var time = new Date().getTime()
         var noticeList = GM_getValue('noticeList') || []
@@ -5642,11 +5635,11 @@ try {
         GM_setValue('delayNotice-' + time, {
           time: time,
           link: window.location.href,
-          tasks: taskInfo
+          taskInfo: taskInfo
         })
         echoLog({
           type: 'custom',
-          text: '<li><font class="warning">'.concat(getI18n('addedNotice'), '</font></li>')
+          text: '<li><font class="warning">'.concat(getI18n('addedNotice', day), '</font></li>')
         })
       } catch (e) {
         throwError(e, 'addDelayNotice')
@@ -5665,6 +5658,20 @@ try {
         })
       } catch (e) {
         throwError(e, 'deleteDelayNotice')
+      }
+    }
+
+    var notice = function notice (options, callback) {
+      try {
+        var defaultOptions = {
+          title: 'auto-task',
+          text: 'auto-task notice',
+          image: 'https://auto-task-test.hclonely.com/img/favicon.ico',
+          timeout: 10000
+        }
+        GM_notification(Object.assign(defaultOptions, options), callback)
+      } catch (e) {
+        throwError(e, 'notice')
       }
     }
 
@@ -5904,7 +5911,7 @@ try {
         var _i18n$language, _i18n$language2
 
         var value = 'null'
-        if (str) value = ((_i18n$language = i18n[language]) === null || _i18n$language === void 0 ? void 0 : _i18n$language[name]) ? i18n[language][name].replace(/s%/g, str) : name; else value = ((_i18n$language2 = i18n[language]) === null || _i18n$language2 === void 0 ? void 0 : _i18n$language2[name]) || name
+        if (str) value = (_i18n$language = i18n[language]) !== null && _i18n$language !== void 0 && _i18n$language[name] ? i18n[language][name].replace(/s%/g, str) : name; else value = ((_i18n$language2 = i18n[language]) === null || _i18n$language2 === void 0 ? void 0 : _i18n$language2[name]) || name
         return value
       } catch (e) {
         throwError(e, 'getI18n')
@@ -6009,7 +6016,7 @@ try {
                 if (result === 'Success') {
                   _GM_info$script$versi = GM_info.script.version.split('.'), _GM_info$script$versi2 = _slicedToArray(_GM_info$script$versi, 3), ov1 = _GM_info$script$versi2[0], ov2 = _GM_info$script$versi2[1], ov3 = _GM_info$script$versi2[2]
 
-                  if ((_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : _data$response17.version) {
+                  if ((_data$response17 = data.response) !== null && _data$response17 !== void 0 && _data$response17.version) {
                     _data$response$versio = data.response.version.split('.'), _data$response$versio2 = _slicedToArray(_data$response$versio, 3), nv1 = _data$response$versio2[0], nv2 = _data$response$versio2[1], nv3 = _data$response$versio2[2]
 
                     if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
@@ -6335,18 +6342,18 @@ try {
           })
           var listValues = GM_listValues()
 
-          var _iterator58 = _createForOfIteratorHelper(listValues)
-          var _step59
+          var _iterator59 = _createForOfIteratorHelper(listValues)
+          var _step60
 
           try {
-            for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
-              var value = _step59.value
-              if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
+            for (_iterator59.s(); !(_step60 = _iterator59.n()).done;) {
+              var value = _step60.value
+              if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo', 'noticeList'].includes(value) && !value.includes('delayNotice-')) GM_deleteValue(value)
             }
           } catch (err) {
-            _iterator58.e(err)
+            _iterator59.e(err)
           } finally {
-            _iterator58.f()
+            _iterator59.f()
           }
 
           status.success()
@@ -6775,7 +6782,8 @@ try {
       newTabBlock: newTabBlock,
       delay: delay,
       addDelayNotice: addDelayNotice,
-      deleteDelayNotice: deleteDelayNotice
+      deleteDelayNotice: deleteDelayNotice,
+      notice: notice
     }
     var banana = {
       test: function test () {
@@ -7343,7 +7351,7 @@ try {
         retweets: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.enable) ? config.banana : globalConf
+      conf: config !== null && config !== void 0 && (_config$banana = config.banana) !== null && _config$banana !== void 0 && _config$banana.enable ? config.banana : globalConf
     }
     var freeanywhere = {
       test: function test () {
@@ -7839,7 +7847,7 @@ try {
                   data = _yield$fuc$httpReques4.data
 
                   if (result === 'Success') {
-                    if (data === null || data === void 0 ? void 0 : (_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.status) {
+                    if (data !== null && data !== void 0 && (_data$response18 = data.response) !== null && _data$response18 !== void 0 && _data$response18.status) {
                       logStatus.success()
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -7979,7 +7987,7 @@ try {
                   data = _yield$fuc$httpReques5.data
 
                   if (result === 'Success') {
-                    if (data === null || data === void 0 ? void 0 : (_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.reward) {
+                    if (data !== null && data !== void 0 && (_data$response19 = data.response) !== null && _data$response19 !== void 0 && _data$response19.reward) {
                       logStatus.success()
                       fuc.echoLog({
                         type: 'custom',
@@ -8117,7 +8125,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$freeanywhere = config.freeanywhere) === null || _config$freeanywhere === void 0 ? void 0 : _config$freeanywhere.enable) ? config.freeanywhere : globalConf
+      conf: config !== null && config !== void 0 && (_config$freeanywhere = config.freeanywhere) !== null && _config$freeanywhere !== void 0 && _config$freeanywhere.enable ? config.freeanywhere : globalConf
     }
 
     var freegamelottery = {
@@ -8318,7 +8326,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable) ? config.freegamelottery : globalConf
+      conf: config !== null && config !== void 0 && (_config$freegamelotte = config.freegamelottery) !== null && _config$freegamelotte !== void 0 && _config$freegamelotte.enable ? config.freegamelottery : globalConf
     }
     var gamehag = {
       test: function test () {
@@ -8900,7 +8908,7 @@ try {
         retweets: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable) ? config.gamehag : globalConf
+      conf: config !== null && config !== void 0 && (_config$gamehag = config.gamehag) !== null && _config$gamehag !== void 0 && _config$gamehag.enable ? config.gamehag : globalConf
     }
     var giveawaysu = {
       test: function test () {
@@ -9124,7 +9132,7 @@ try {
                 var status = _ref79.status
                 var data = _ref79.data
 
-                if (data === null || data === void 0 ? void 0 : (_data$finalUrl = data.finalUrl) === null || _data$finalUrl === void 0 ? void 0 : _data$finalUrl.includes('newshub/app')) {
+                if (data !== null && data !== void 0 && (_data$finalUrl = data.finalUrl) !== null && _data$finalUrl !== void 0 && _data$finalUrl.includes('newshub/app')) {
                   var _data$responseText$ma15
 
                   var div = (_data$responseText$ma15 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[0]
@@ -9262,7 +9270,7 @@ try {
                       type: 'custom',
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
-                    if (globalConf.other.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog)
+                    if (globalConf.other.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog, globalConf.other.delayNoticeTime)
                   }
 
                   _context71.next = 15
@@ -9360,7 +9368,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable) ? config.giveawaysu : globalConf
+      conf: config !== null && config !== void 0 && (_config$giveawaysu = config.giveawaysu) !== null && _config$giveawaysu !== void 0 && _config$giveawaysu.enable ? config.giveawaysu : globalConf
     }
     var givekey = {
       test: function test () {
@@ -9795,7 +9803,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$givekay = config.givekay) === null || _config$givekay === void 0 ? void 0 : _config$givekay.enable) ? config.givekay : globalConf
+      conf: config !== null && config !== void 0 && (_config$givekay = config.givekay) !== null && _config$givekay !== void 0 && _config$givekay.enable ? config.givekay : globalConf
     }
 
     var gleam = {
@@ -10476,7 +10484,7 @@ try {
         toGuild: {}
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
+      conf: config !== null && config !== void 0 && (_config$gleam = config.gleam) !== null && _config$gleam !== void 0 && _config$gleam.enable ? config.gleam : globalConf
     }
 
     var indiedb = {
@@ -10536,15 +10544,15 @@ try {
 
                   if (result === 'Success') {
                     if (data.status === 200) {
-                      if ((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.success) {
+                      if ((_data$response20 = data.response) !== null && _data$response20 !== void 0 && _data$response20.success) {
                         currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                         $('#giveawaysjoined').slideDown()
                         $('#giveawaysrecommend').slideDown()
-                        logStatus.success('Success' + (((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
+                        logStatus.success('Success' + ((_data$response21 = data.response) !== null && _data$response21 !== void 0 && _data$response21.text ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
 
                         _this28.do_task()
                       } else {
-                        logStatus.error('Error' + (((_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.text) ? ':' + ((_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.text) : ''))
+                        logStatus.error('Error' + ((_data$response23 = data.response) !== null && _data$response23 !== void 0 && _data$response23.text ? ':' + ((_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.text) : ''))
                       }
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -10798,7 +10806,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
+      conf: config !== null && config !== void 0 && (_config$indiedb = config.indiedb) !== null && _config$indiedb !== void 0 && _config$indiedb.enable ? config.indiedb : globalConf
     }
 
     var keyhub = {
@@ -11185,7 +11193,7 @@ try {
         wGames: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$keyhub = config.keyhub) === null || _config$keyhub === void 0 ? void 0 : _config$keyhub.enable) ? config.keyhub : globalConf
+      conf: config !== null && config !== void 0 && (_config$keyhub = config.keyhub) !== null && _config$keyhub !== void 0 && _config$keyhub.enable ? config.keyhub : globalConf
     }
 
     var keylol = {
@@ -12340,7 +12348,7 @@ try {
         twitchChannels: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.enable) ? config.marvelousga : globalConf
+      conf: config !== null && config !== void 0 && (_config$marvelousga = config.marvelousga) !== null && _config$marvelousga !== void 0 && _config$marvelousga.enable ? config.marvelousga : globalConf
     }
 
     var opiumpulses = {
@@ -12536,12 +12544,12 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.enable) ? config.opiumpulses : globalConf,
+      conf: config !== null && config !== void 0 && (_config$opiumpulses = config.opiumpulses) !== null && _config$opiumpulses !== void 0 && _config$opiumpulses.enable ? config.opiumpulses : globalConf,
       maxPoint: function maxPoint () {
         try {
           var _this$conf, _this$conf$other
 
-          return ((_this$conf = this.conf) === null || _this$conf === void 0 ? void 0 : (_this$conf$other = _this$conf.other) === null || _this$conf$other === void 0 ? void 0 : _this$conf$other.limitPoint) ? Number(this.conf.other.limitPoint) : Infinity
+          return (_this$conf = this.conf) !== null && _this$conf !== void 0 && (_this$conf$other = _this$conf.other) !== null && _this$conf$other !== void 0 && _this$conf$other.limitPoint ? Number(this.conf.other.limitPoint) : Infinity
         } catch (e) {
           throwError(e, 'opiumpulses.maxPoint')
         }
@@ -13042,7 +13050,7 @@ try {
         curators: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
+      conf: config !== null && config !== void 0 && (_config$prys = config.prys) !== null && _config$prys !== void 0 && _config$prys.enable ? config.prys : globalConf
     }
     var takekey = {
       test: function test () {
@@ -13459,7 +13467,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
+      conf: config !== null && config !== void 0 && (_config$takekey = config.takekey) !== null && _config$takekey !== void 0 && _config$takekey.enable ? config.takekey : globalConf
     }
     var website = null
     var websites = [banana, freeanywhere, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keyhub, keylol, marvelousga, opiumpulses, prys, takekey]
@@ -13490,6 +13498,36 @@ try {
         console.log('JavaScript exception:', exc)
       })
 
+      if (pageHost !== 'auto-task.hclonely.com' && pageHost !== 'auto-task-test.hclonely.com') {
+        var delayNoticeList = GM_getValue('noticeList')
+
+        if (delayNoticeList) {
+          var _iterator57 = _createForOfIteratorHelper(delayNoticeList)
+          var _step58
+
+          try {
+            for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
+              var time = _step58.value
+              var taskInfo = GM_getValue('delayNotice-' + time)
+
+              if ((new Date().getTime() - time) / (24 * 3600 * 1000) >= parseInt(globalConf.deleteNoticeTime) && taskInfo) {
+                notice({
+                  title: getI18n('delayNoticeTitle'),
+                  text: getI18n('delayNoticeText'),
+                  onclick: function onclick () {
+                    window.open('https://auto-task-test.hclonely.com/notice-list.html', '_blank')
+                  }
+                })
+              }
+            }
+          } catch (err) {
+            _iterator57.e(err)
+          } finally {
+            _iterator57.f()
+          }
+        }
+      }
+
       if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
         if (window.location.pathname.includes('setting')) {
           var _GM_getValue, _GM_getValue$global2, _GM_getValue$global2$
@@ -13505,20 +13543,22 @@ try {
           loadAnnouncement()
         } else if (window.location.pathname.includes('notice-list')) {
           $('.non-js').hide()
-          var delayNoticeList = GM_getValue('noticeList') || []
+          unsafeWindow.deleteNoticeTime = globalConf.other.deleteNoticeTime
 
-          var _iterator57 = _createForOfIteratorHelper(delayNoticeList)
-          var _step58
+          var _delayNoticeList = GM_getValue('noticeList') || []
+
+          var _iterator58 = _createForOfIteratorHelper(_delayNoticeList)
+          var _step59
 
           try {
-            for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
-              var item = _step58.value
+            for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
+              var item = _step59.value
               $('body').append(addCard(GM_getValue('delayNotice-' + item)))
             }
           } catch (err) {
-            _iterator57.e(err)
+            _iterator58.e(err)
           } finally {
-            _iterator57.f()
+            _iterator58.f()
           }
 
           addLogElement()
@@ -13532,7 +13572,7 @@ try {
                 while (1) {
                   switch (_context107.prev = _context107.next) {
                     case 0:
-                      conf = (config === null || config === void 0 ? void 0 : (_config$giveawaysu2 = config.giveawaysu) === null || _config$giveawaysu2 === void 0 ? void 0 : _config$giveawaysu2.enable) ? config.giveawaysu : globalConf
+                      conf = config !== null && config !== void 0 && (_config$giveawaysu2 = config.giveawaysu) !== null && _config$giveawaysu2 !== void 0 && _config$giveawaysu2.enable ? config.giveawaysu : globalConf
                       _context107.next = 3
                       return fuc.updateInfo(taskInfo)
 

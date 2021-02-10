@@ -153,7 +153,7 @@ function notice (options, callback) {
     const defaultOptions = {
       title: 'auto-task',
       text: 'auto-task notice',
-      image: 'https://__SITEURL__/img/favicon.ico',
+      image: 'https://__SITEURL__/img/notice-icon.jpg',
       timeout: 10000
     }
     GM_notification(Object.assign(defaultOptions, options), callback)

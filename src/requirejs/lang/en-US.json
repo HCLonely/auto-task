@@ -194,7 +194,8 @@
   "updateDiscordInfoError": "Failed to updated discord auth",
   "gettingKey": "Getting Key, please wait",
   "getGiveawayIdFailed": "Failed to obtain giveaway id, please refresh and try again!",
-  "addNotice": "You will be reminded to remove this page in s% days",
+  "addedNotice": "You will be reminded to remove this page in s% days",
+  "deletedNotice": "Delete reminder successfully",
   "delayNoticeTitle": "auto-task remove task reminder",
   "delayNoticeText": "Click to open the delayed removal task list"
 }

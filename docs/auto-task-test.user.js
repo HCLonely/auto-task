@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.5
+// @version            3.4.6
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.5/require/require.min.js#md5=15ed97109c36331bff360eace6be73b4
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.5/require/fuck-task.min.css#md5=97c455969dc6b1677362858297a23354
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.6/require/require.min.js#md5=1eb5a9b8b3e472cff13f2c5d256901b7
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.6/require/fuck-task.min.css#md5=b30799ecc0741009ec80eacd297a9f67
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5666,7 +5666,7 @@ try {
         var defaultOptions = {
           title: 'auto-task',
           text: 'auto-task notice',
-          image: 'https://auto-task-test.hclonely.com/img/favicon.ico',
+          image: 'https://auto-task-test.hclonely.com/img/notice-icon.jpg',
           timeout: 10000
         }
         GM_notification(Object.assign(defaultOptions, options), callback)

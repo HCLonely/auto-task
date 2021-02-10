@@ -54,6 +54,7 @@
       "GM_registerMenuCommand",
       "GM_info",
       "GM_openInTab",
+      "GM_notification",
       "unsafeWindow",
       "AutoTask",
       "File",

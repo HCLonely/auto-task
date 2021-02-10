@@ -121,7 +121,7 @@ function delay (time = 1000) {
   })
 }
 
-function addDelayNotice (taskInfo, echoLog) {
+function addDelayNotice (taskInfo, echoLog, day) {
   try {
     const time = new Date().getTime()
     const noticeList = GM_getValue('noticeList') || []
@@ -130,9 +130,9 @@ function addDelayNotice (taskInfo, echoLog) {
     GM_setValue('delayNotice-' + time, {
       time,
       link: window.location.href,
-      tasks: taskInfo
+      taskInfo
     })
-    echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('addedNotice')}</font></li>` })
+    echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('addedNotice', day)}</font></li>` })
   } catch (e) {
     throwError(e, 'addDelayNotice')
   }
@@ -146,6 +146,19 @@ function deleteDelayNotice (time, echoLog) {
     echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('deletedNotice')}</font></li>` })
   } catch (e) {
     throwError(e, 'deleteDelayNotice')
+  }
+}
+function notice (options, callback) {
+  try {
+    const defaultOptions = {
+      title: 'auto-task',
+      text: 'auto-task notice',
+      image: 'https://__SITEURL__/img/favicon.ico',
+      timeout: 10000
+    }
+    GM_notification(Object.assign(defaultOptions, options), callback)
+  } catch (e) {
+    throwError(e, 'notice')
   }
 }
 function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, toGuild }, config, action, website) {
@@ -219,5 +232,6 @@ export {
   delay,
   addDelayNotice,
   deleteDelayNotice,
-  assignment
+  assignment,
+  notice
 }

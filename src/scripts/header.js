@@ -1,11 +1,3 @@
-/*
- * @Author: HCLonely
- * @Date: 2020-11-26 18:15:28
- * @LastEditTime: 2021-01-28 18:30:08
- * @LastEditors: HCLonely
- * @FilePath: \auto-task\src\scripts\header.js
- * @Description:
- */
 // ==UserScript==
 // @name               自动任务__TEST__
 // @name:en            Auto Task__TEST__
@@ -59,6 +51,7 @@
 // @grant              GM_registerMenuCommand
 // @grant              GM_info
 // @grant              GM_openInTab
+// @grant              GM_notification
 // @grant              unsafeWindow
 // @grant              window.close
 // @grant              window.localStorage

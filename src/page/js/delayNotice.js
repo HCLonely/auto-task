@@ -1,16 +1,7 @@
-/*
- * @Author: HCLonely
- * @Date: 2021-01-28 16:28:08
- * @LastEditTime: 2021-01-30 11:06:25
- * @LastEditors: HCLonely
- * @FilePath: \auto-task\src\page\js\delayNotice.js
- * @Description: 添加延迟提醒列表
- */
-
 /* global dayjs */
 
 window.addCard = function addCard (item) {
-  return `<div class="card text-center">
+  return `<div class="card text-center" ${((new Date().getTime() - item.time) / (24 * 3600 * 1000)) >= parseInt(window.deleteNoticeTime) ? 'style="background-color:#ebf9ec"' : ''}>
   <div class="card-header">
     <a href="${item.link}" target="_blank">${item.link}</a>
     <a href="deleteNotice(${item.time})" class="btn delete btn-outline-danger">

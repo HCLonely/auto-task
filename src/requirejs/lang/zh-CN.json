@@ -194,5 +194,8 @@
   "updateDiscordInfoSuccess": "更新discord凭证成功",
   "updateDiscordInfoError": "更新discord凭证失败",
   "gettingKey": "正在获取Key, 请稍候",
-  "getGiveawayIdFailed": "获取giveaway id失败，请刷新重试！"
+  "getGiveawayIdFailed": "获取giveaway id失败，请刷新重试！",
+  "addNotice": "s% 天后会提醒你进行移除本页面的任务",
+  "delayNoticeTitle": "auto-task 移除任务提醒",
+  "delayNoticeText": "点击打开延迟移除任务列表"
 }

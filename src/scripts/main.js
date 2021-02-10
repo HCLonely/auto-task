@@ -4,6 +4,7 @@ import { language, getI18n } from './i18n'
 import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 import { getId } from './function/getId'
+import { notice } from './function/tool'
 
 const pageHref = window.location.href
 const pageHost = window.location.host
@@ -20,6 +21,22 @@ if (website || pageHost.includes('hclonely')) {
     console.log('Options:', options)
     console.log('JavaScript exception:', exc)
   })
+  if (pageHost !== 'auto-task.hclonely.com' && pageHost !== 'auto-task-test.hclonely.com') {
+    const delayNoticeList = GM_getValue('noticeList')
+    if (!delayNoticeList) return
+    for (const time of delayNoticeList) {
+      const taskInfo = GM_getValue('delayNotice-' + time)
+      if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.deleteNoticeTime) && taskInfo) {
+        notice({
+          title: getI18n('delayNoticeTitle'),
+          text: getI18n('delayNoticeText'),
+          onclick: () => {
+            window.open('https://__SITEURL__/notice-list.html', '_blank')
+          }
+        })
+      }
+    }
+  }
   if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
     if (window.location.pathname.includes('setting')) {
       unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
@@ -31,6 +48,7 @@ if (website || pageHost.includes('hclonely')) {
       loadAnnouncement()
     } else if (window.location.pathname.includes('notice-list')) {
       $('.non-js').hide()
+      unsafeWindow.deleteNoticeTime = globalConf.other.deleteNoticeTime
       const delayNoticeList = GM_getValue('noticeList') || []
       for (const item of delayNoticeList) {
         $('body').append(addCard(GM_getValue('delayNotice-' + item)))
@@ -249,7 +267,7 @@ function addLogElement () {
       const status = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('cleaning')}<font></font></li>` })
       const listValues = GM_listValues()
       for (const value of listValues) {
-        if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
+        if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo', 'noticeList'].includes(value) && !value.includes('delayNotice-')) GM_deleteValue(value)
       }
       status.success()
     } catch (e) {

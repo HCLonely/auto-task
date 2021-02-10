@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.4
+// @version            3.4.5
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.4/require/require.min.js#md5=15ed97109c36331bff360eace6be73b4
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.4/require/fuck-task.min.css#md5=7d5bfb6808daec9c97a963ce296f4378
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.5/require/require.min.js#md5=15ed97109c36331bff360eace6be73b4
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.5/require/fuck-task.min.css#md5=97c455969dc6b1677362858297a23354
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -13510,7 +13510,7 @@ try {
               var time = _step58.value
               var taskInfo = GM_getValue('delayNotice-' + time)
 
-              if ((new Date().getTime() - time) / (24 * 3600 * 1000) >= parseInt(globalConf.other.deleteNoticeTime) && taskInfo) {
+              if ((new Date().getTime() - time) / (24 * 3600 * 1000) >= parseInt(globalConf.other.delayNoticeTime) && taskInfo) {
                 notice({
                   title: getI18n('delayNoticeTitle'),
                   text: getI18n('delayNoticeText'),
@@ -13543,7 +13543,7 @@ try {
           loadAnnouncement()
         } else if (window.location.pathname.includes('notice-list')) {
           $('.non-js').hide()
-          unsafeWindow.deleteNoticeTime = globalConf.other.deleteNoticeTime
+          unsafeWindow.delayNoticeTime = globalConf.other.delayNoticeTime
 
           var _delayNoticeList = GM_getValue('noticeList') || []
 

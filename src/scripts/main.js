@@ -26,7 +26,7 @@ if (website || pageHost.includes('hclonely')) {
     if (delayNoticeList) {
       for (const time of delayNoticeList) {
         const taskInfo = GM_getValue('delayNotice-' + time)
-        if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.other.deleteNoticeTime) && taskInfo) {
+        if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.other.delayNoticeTime) && taskInfo) {
           notice({
             title: getI18n('delayNoticeTitle'),
             text: getI18n('delayNoticeText'),
@@ -49,7 +49,7 @@ if (website || pageHost.includes('hclonely')) {
       loadAnnouncement()
     } else if (window.location.pathname.includes('notice-list')) {
       $('.non-js').hide()
-      unsafeWindow.deleteNoticeTime = globalConf.other.deleteNoticeTime
+      unsafeWindow.delayNoticeTime = globalConf.other.delayNoticeTime
       const delayNoticeList = GM_getValue('noticeList') || []
       for (const item of delayNoticeList) {
         $('body').append(addCard(GM_getValue('delayNotice-' + item)))

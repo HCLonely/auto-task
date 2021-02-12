@@ -143,6 +143,7 @@ function deleteDelayNotice (time, echoLog) {
     noticeList.splice(noticeList.indexOf(time), 1)
     GM_setValue('noticeList', noticeList)
     GM_deleteValue('delayNotice-' + time)
+    $(time).remove()
     echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('deletedNotice')}</font></li>` })
   } catch (e) {
     throwError(e, 'deleteDelayNotice')

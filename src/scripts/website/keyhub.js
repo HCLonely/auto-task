@@ -151,7 +151,7 @@ const keyhub = {
   },
   checkLogin () {
     try {
-      if ($('a[href="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
+      if ($('a[href*="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
     } catch (e) {
       throwError(e, 'keyhub.checkLogin')
     }

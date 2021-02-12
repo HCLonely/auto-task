@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.7
+// @version            3.4.8
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.7/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.7/require/fuck-task.min.css#md5=9a97f5765a65f8bbadfd24f9185fa364
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/fuck-task.min.css#md5=23dd233e041df781f42ccc605e13bd14
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5652,6 +5652,7 @@ try {
         noticeList.splice(noticeList.indexOf(time), 1)
         GM_setValue('noticeList', noticeList)
         GM_deleteValue('delayNotice-' + time)
+        $(time).remove()
         echoLog({
           type: 'custom',
           text: '<li><font class="warning">'.concat(getI18n('deletedNotice'), '</font></li>')
@@ -10531,7 +10532,8 @@ try {
                     dataType: 'json',
                     headers: {
                       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                      accept: 'application/json, text/javascript, */*; q=0.01'
+                      accept: 'application/json, text/javascript, */*; q=0.01',
+                      origin: window.location.origin
                     }
                   })
 
@@ -11154,7 +11156,7 @@ try {
       },
       checkLogin: function checkLogin () {
         try {
-          if ($('a[href="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
+          if ($('a[href*="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
         } catch (e) {
           throwError(e, 'keyhub.checkLogin')
         }

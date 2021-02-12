@@ -1,7 +1,7 @@
 /* global dayjs */
 
 window.addCard = function addCard (item) {
-  return `<div class="card text-center" ${((new Date().getTime() - item.time) / (24 * 3600 * 1000)) >= parseInt(window.delayNoticeTime) ? 'style="background-color:#ebf9ec"' : ''}>
+  return `<div id="${item.time}" class="card text-center" ${((new Date().getTime() - item.time) / (24 * 3600 * 1000)) >= parseInt(window.delayNoticeTime) ? 'style="background-color:#ebf9ec"' : ''}>
   <div class="card-header">
     <a href="${item.link}" target="_blank">${item.link}</a>
     <a href="javascript:deleteNotice(${item.time})" class="btn delete btn-outline-danger">

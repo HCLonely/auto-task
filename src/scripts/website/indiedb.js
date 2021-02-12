@@ -24,7 +24,8 @@ const indiedb = {
           dataType: 'json',
           headers: {
             'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            accept: 'application/json, text/javascript, */*; q=0.01'
+            accept: 'application/json, text/javascript, */*; q=0.01',
+            origin: window.location.origin
           }
         })
         if (result === 'Success') {

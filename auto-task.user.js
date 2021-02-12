@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.4.2
+// @version            3.4.8
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -35,9 +35,10 @@
 // @include            *://www.youtube.com/*
 // @exclude            *googleads*
 // @include            https://auto-task.hclonely.com/setting.html
+// @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/require.min.js#md5=fb648862b1fe976040b316dee7c1b404
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.2/require/fuck-task.min.css#md5=bd07b61a42a4ea5eec0defc733ff6e6c
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/fuck-task.min.css#md5=23dd233e041df781f42ccc605e13bd14
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -50,6 +51,7 @@
 // @grant              GM_registerMenuCommand
 // @grant              GM_info
 // @grant              GM_openInTab
+// @grant              GM_notification
 // @grant              unsafeWindow
 // @grant              window.close
 // @grant              window.localStorage
@@ -2039,7 +2041,7 @@ try {
                 return _context18.abrupt('break', 25)
 
               case 25:
-                if (!((_elementName = elementName) === null || _elementName === void 0 ? void 0 : _elementName[1])) {
+                if (!((_elementName = elementName) !== null && _elementName !== void 0 && _elementName[1])) {
                   _context18.next = 43
                   break
                 }
@@ -3422,7 +3424,7 @@ try {
                   break
                 }
 
-                if (!(data.status === 200 && ((_data$response15 = data.response) === null || _data$response15 === void 0 ? void 0 : (_data$response15$ = _data$response15[0]) === null || _data$response15$ === void 0 ? void 0 : (_data$response15$$dat = _data$response15$.data) === null || _data$response15$$dat === void 0 ? void 0 : _data$response15$$dat.currentUser))) {
+                if (!(data.status === 200 && (_data$response15 = data.response) !== null && _data$response15 !== void 0 && (_data$response15$ = _data$response15[0]) !== null && _data$response15$ !== void 0 && (_data$response15$$dat = _data$response15$.data) !== null && _data$response15$$dat !== void 0 && _data$response15$$dat.currentUser)) {
                   _context32.next = 15
                   break
                 }
@@ -5624,6 +5626,56 @@ try {
       })
     }
 
+    var addDelayNotice = function addDelayNotice (taskInfo, echoLog, day) {
+      try {
+        var time = new Date().getTime()
+        var noticeList = GM_getValue('noticeList') || []
+        noticeList.push(time)
+        GM_setValue('noticeList', noticeList)
+        GM_setValue('delayNotice-' + time, {
+          time: time,
+          link: window.location.href,
+          taskInfo: taskInfo
+        })
+        echoLog({
+          type: 'custom',
+          text: '<li><font class="warning">'.concat(getI18n('addedNotice', day), '</font></li>')
+        })
+      } catch (e) {
+        throwError(e, 'addDelayNotice')
+      }
+    }
+
+    var deleteDelayNotice = function deleteDelayNotice (time, echoLog) {
+      try {
+        var noticeList = GM_getValue('noticeList') || []
+        noticeList.splice(noticeList.indexOf(time), 1)
+        GM_setValue('noticeList', noticeList)
+        GM_deleteValue('delayNotice-' + time)
+        $(time).remove()
+        echoLog({
+          type: 'custom',
+          text: '<li><font class="warning">'.concat(getI18n('deletedNotice'), '</font></li>')
+        })
+      } catch (e) {
+        throwError(e, 'deleteDelayNotice')
+      }
+    }
+
+    var notice = function notice (options, callback) {
+      try {
+        var defaultOptions = {
+          title: 'auto-task',
+          text: 'auto-task notice',
+          image: 'https://auto-task.hclonely.com/img/notice-icon.jpg',
+          timeout: 10000
+        }
+        GM_notification(Object.assign(defaultOptions, options), callback)
+      } catch (e) {
+        throwError(e, 'notice')
+      }
+    }
+
     var assignment = function assignment (_ref66, config, action, website) {
       var groups = _ref66.groups
       var forums = _ref66.forums
@@ -5860,7 +5912,7 @@ try {
         var _i18n$language, _i18n$language2
 
         var value = 'null'
-        if (str) value = ((_i18n$language = i18n[language]) === null || _i18n$language === void 0 ? void 0 : _i18n$language[name]) ? i18n[language][name].replace(/s%/g, str) : name; else value = ((_i18n$language2 = i18n[language]) === null || _i18n$language2 === void 0 ? void 0 : _i18n$language2[name]) || name
+        if (str) value = (_i18n$language = i18n[language]) !== null && _i18n$language !== void 0 && _i18n$language[name] ? i18n[language][name].replace(/s%/g, str) : name; else value = ((_i18n$language2 = i18n[language]) === null || _i18n$language2 === void 0 ? void 0 : _i18n$language2[name]) || name
         return value
       } catch (e) {
         throwError(e, 'getI18n')
@@ -5869,7 +5921,7 @@ try {
 
     var getDiscordAuth = function getDiscordAuth (notice) {
       try {
-        if (typeof discordAuth === 'string') {
+        if (typeof window.discordAuth === 'string') {
           GM_setValue('discordInfo', {
             authorization: discordAuth.replace(/"/g, ''),
             expired: false,
@@ -5965,7 +6017,7 @@ try {
                 if (result === 'Success') {
                   _GM_info$script$versi = GM_info.script.version.split('.'), _GM_info$script$versi2 = _slicedToArray(_GM_info$script$versi, 3), ov1 = _GM_info$script$versi2[0], ov2 = _GM_info$script$versi2[1], ov3 = _GM_info$script$versi2[2]
 
-                  if ((_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : _data$response17.version) {
+                  if ((_data$response17 = data.response) !== null && _data$response17 !== void 0 && _data$response17.version) {
                     _data$response$versio = data.response.version.split('.'), _data$response$versio2 = _slicedToArray(_data$response$versio, 3), nv1 = _data$response$versio2[0], nv2 = _data$response$versio2[1], nv3 = _data$response$versio2[2]
 
                     if (nv1 > ov1 || nv1 === ov1 && nv2 > ov2 || nv1 === ov1 && nv2 === ov2 && nv3 > ov3) {
@@ -6281,6 +6333,52 @@ try {
       }
     }())
 
+    var addLogElement = function addLogElement () {
+      $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="delay-notice-list" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/notice-list.html" terget="_self" class="card-link" title="').concat(getI18n('noticeList'), '">\n        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">\n          <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>\n          <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>\n        </svg>\n      </a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+      $('#clean-cache').click(function () {
+        try {
+          var status = fuc.echoLog({
+            type: 'custom',
+            text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
+          })
+          var listValues = GM_listValues()
+
+          var _iterator59 = _createForOfIteratorHelper(listValues)
+          var _step60
+
+          try {
+            for (_iterator59.s(); !(_step60 = _iterator59.n()).done;) {
+              var value = _step60.value
+              if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo', 'noticeList'].includes(value) && !value.includes('delayNotice-')) GM_deleteValue(value)
+            }
+          } catch (err) {
+            _iterator59.e(err)
+          } finally {
+            _iterator59.f()
+          }
+
+          status.success()
+        } catch (e) {
+          throwError(e, '$(\'#clean-cache\').click')
+        }
+      })
+      $('#check-update').click(function () {
+        try {
+          fuc.checkUpdate(true)
+        } catch (e) {
+          throwError(e, '$(\'#check-update\').click')
+        }
+      })
+      $('#auto-task-setting,#auto-task-feedback').click(function () {
+        try {
+          window.open($(this).attr('data-href'), '_blank')
+        } catch (e) {
+          throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
+        }
+      })
+      fuc.checkUpdate()
+    }
+
     unsafeWindow.AutoTask = {}
     'use strict'
 
@@ -6338,7 +6436,9 @@ try {
           checkLogin: true,
           checkLeft: true,
           autoOpen: true,
-          reCaptcha: false
+          reCaptcha: false,
+          delayNotice: false,
+          delayNoticeTime: '0'
         },
         hotKey: {
           fuckKey: 'Alt + A',
@@ -6681,7 +6781,10 @@ try {
       updateInfo: updateInfo,
       checkUpdate: checkUpdate,
       newTabBlock: newTabBlock,
-      delay: delay
+      delay: delay,
+      addDelayNotice: addDelayNotice,
+      deleteDelayNotice: deleteDelayNotice,
+      notice: notice
     }
     var banana = {
       test: function test () {
@@ -7249,7 +7352,7 @@ try {
         retweets: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$banana = config.banana) === null || _config$banana === void 0 ? void 0 : _config$banana.enable) ? config.banana : globalConf
+      conf: config !== null && config !== void 0 && (_config$banana = config.banana) !== null && _config$banana !== void 0 && _config$banana.enable ? config.banana : globalConf
     }
     var freeanywhere = {
       test: function test () {
@@ -7745,7 +7848,7 @@ try {
                   data = _yield$fuc$httpReques4.data
 
                   if (result === 'Success') {
-                    if (data === null || data === void 0 ? void 0 : (_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.status) {
+                    if (data !== null && data !== void 0 && (_data$response18 = data.response) !== null && _data$response18 !== void 0 && _data$response18.status) {
                       logStatus.success()
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -7885,7 +7988,7 @@ try {
                   data = _yield$fuc$httpReques5.data
 
                   if (result === 'Success') {
-                    if (data === null || data === void 0 ? void 0 : (_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.reward) {
+                    if (data !== null && data !== void 0 && (_data$response19 = data.response) !== null && _data$response19 !== void 0 && _data$response19.reward) {
                       logStatus.success()
                       fuc.echoLog({
                         type: 'custom',
@@ -8023,7 +8126,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$freeanywhere = config.freeanywhere) === null || _config$freeanywhere === void 0 ? void 0 : _config$freeanywhere.enable) ? config.freeanywhere : globalConf
+      conf: config !== null && config !== void 0 && (_config$freeanywhere = config.freeanywhere) !== null && _config$freeanywhere !== void 0 && _config$freeanywhere.enable ? config.freeanywhere : globalConf
     }
 
     var freegamelottery = {
@@ -8224,7 +8327,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$freegamelotte = config.freegamelottery) === null || _config$freegamelotte === void 0 ? void 0 : _config$freegamelotte.enable) ? config.freegamelottery : globalConf
+      conf: config !== null && config !== void 0 && (_config$freegamelotte = config.freegamelottery) !== null && _config$freegamelotte !== void 0 && _config$freegamelotte.enable ? config.freegamelottery : globalConf
     }
     var gamehag = {
       test: function test () {
@@ -8806,7 +8909,7 @@ try {
         retweets: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gamehag = config.gamehag) === null || _config$gamehag === void 0 ? void 0 : _config$gamehag.enable) ? config.gamehag : globalConf
+      conf: config !== null && config !== void 0 && (_config$gamehag = config.gamehag) !== null && _config$gamehag !== void 0 && _config$gamehag.enable ? config.gamehag : globalConf
     }
     var giveawaysu = {
       test: function test () {
@@ -9030,7 +9133,7 @@ try {
                 var status = _ref79.status
                 var data = _ref79.data
 
-                if (data === null || data === void 0 ? void 0 : (_data$finalUrl = data.finalUrl) === null || _data$finalUrl === void 0 ? void 0 : _data$finalUrl.includes('newshub/app')) {
+                if (data !== null && data !== void 0 && (_data$finalUrl = data.finalUrl) !== null && _data$finalUrl !== void 0 && _data$finalUrl.includes('newshub/app')) {
                   var _data$responseText$ma15
 
                   var div = (_data$responseText$ma15 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[0]
@@ -9162,12 +9265,15 @@ try {
                     type: 'custom',
                     text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                   })
+
                   if (action === 'fuck') {
                     fuc.echoLog({
                       type: 'custom',
                       text: '<li><font class="warning">'.concat(getI18n('closeExtensions'), '</font></li>')
                     })
+                    if (globalConf.other.delayNotice) fuc.addDelayNotice(_this21.taskInfo, fuc.echoLog, globalConf.other.delayNoticeTime)
                   }
+
                   _context71.next = 15
                   break
 
@@ -9263,7 +9369,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$giveawaysu = config.giveawaysu) === null || _config$giveawaysu === void 0 ? void 0 : _config$giveawaysu.enable) ? config.giveawaysu : globalConf
+      conf: config !== null && config !== void 0 && (_config$giveawaysu = config.giveawaysu) !== null && _config$giveawaysu !== void 0 && _config$giveawaysu.enable ? config.giveawaysu : globalConf
     }
     var givekey = {
       test: function test () {
@@ -9698,7 +9804,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$givekay = config.givekay) === null || _config$givekay === void 0 ? void 0 : _config$givekay.enable) ? config.givekay : globalConf
+      conf: config !== null && config !== void 0 && (_config$givekay = config.givekay) !== null && _config$givekay !== void 0 && _config$givekay.enable ? config.givekay : globalConf
     }
 
     var gleam = {
@@ -10379,7 +10485,7 @@ try {
         toGuild: {}
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$gleam = config.gleam) === null || _config$gleam === void 0 ? void 0 : _config$gleam.enable) ? config.gleam : globalConf
+      conf: config !== null && config !== void 0 && (_config$gleam = config.gleam) !== null && _config$gleam !== void 0 && _config$gleam.enable ? config.gleam : globalConf
     }
 
     var indiedb = {
@@ -10426,7 +10532,8 @@ try {
                     dataType: 'json',
                     headers: {
                       'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                      accept: 'application/json, text/javascript, */*; q=0.01'
+                      accept: 'application/json, text/javascript, */*; q=0.01',
+                      origin: window.location.origin
                     }
                   })
 
@@ -10439,15 +10546,15 @@ try {
 
                   if (result === 'Success') {
                     if (data.status === 200) {
-                      if ((_data$response20 = data.response) === null || _data$response20 === void 0 ? void 0 : _data$response20.success) {
+                      if ((_data$response20 = data.response) !== null && _data$response20 !== void 0 && _data$response20.success) {
                         currentoption.addClass('buttonentered').text('Success - Giveaway joined')
                         $('#giveawaysjoined').slideDown()
                         $('#giveawaysrecommend').slideDown()
-                        logStatus.success('Success' + (((_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.text) ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
+                        logStatus.success('Success' + ((_data$response21 = data.response) !== null && _data$response21 !== void 0 && _data$response21.text ? ':' + ((_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.text) : ''))
 
                         _this28.do_task()
                       } else {
-                        logStatus.error('Error' + (((_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.text) ? ':' + ((_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.text) : ''))
+                        logStatus.error('Error' + ((_data$response23 = data.response) !== null && _data$response23 !== void 0 && _data$response23.text ? ':' + ((_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.text) : ''))
                       }
                     } else {
                       logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -10701,7 +10808,7 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$indiedb = config.indiedb) === null || _config$indiedb === void 0 ? void 0 : _config$indiedb.enable) ? config.indiedb : globalConf
+      conf: config !== null && config !== void 0 && (_config$indiedb = config.indiedb) !== null && _config$indiedb !== void 0 && _config$indiedb.enable ? config.indiedb : globalConf
     }
 
     var keyhub = {
@@ -11049,7 +11156,7 @@ try {
       },
       checkLogin: function checkLogin () {
         try {
-          if ($('a[href="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
+          if ($('a[href*="/connect/steam"]').length > 0) window.open('/connect/steam', '_self')
         } catch (e) {
           throwError(e, 'keyhub.checkLogin')
         }
@@ -11088,7 +11195,7 @@ try {
         wGames: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$keyhub = config.keyhub) === null || _config$keyhub === void 0 ? void 0 : _config$keyhub.enable) ? config.keyhub : globalConf
+      conf: config !== null && config !== void 0 && (_config$keyhub = config.keyhub) !== null && _config$keyhub !== void 0 && _config$keyhub.enable ? config.keyhub : globalConf
     }
 
     var keylol = {
@@ -12243,7 +12350,7 @@ try {
         twitchChannels: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$marvelousga = config.marvelousga) === null || _config$marvelousga === void 0 ? void 0 : _config$marvelousga.enable) ? config.marvelousga : globalConf
+      conf: config !== null && config !== void 0 && (_config$marvelousga = config.marvelousga) !== null && _config$marvelousga !== void 0 && _config$marvelousga.enable ? config.marvelousga : globalConf
     }
 
     var opiumpulses = {
@@ -12439,12 +12546,12 @@ try {
           show: false
         }
       },
-      conf: (config === null || config === void 0 ? void 0 : (_config$opiumpulses = config.opiumpulses) === null || _config$opiumpulses === void 0 ? void 0 : _config$opiumpulses.enable) ? config.opiumpulses : globalConf,
+      conf: config !== null && config !== void 0 && (_config$opiumpulses = config.opiumpulses) !== null && _config$opiumpulses !== void 0 && _config$opiumpulses.enable ? config.opiumpulses : globalConf,
       maxPoint: function maxPoint () {
         try {
           var _this$conf, _this$conf$other
 
-          return ((_this$conf = this.conf) === null || _this$conf === void 0 ? void 0 : (_this$conf$other = _this$conf.other) === null || _this$conf$other === void 0 ? void 0 : _this$conf$other.limitPoint) ? Number(this.conf.other.limitPoint) : Infinity
+          return (_this$conf = this.conf) !== null && _this$conf !== void 0 && (_this$conf$other = _this$conf.other) !== null && _this$conf$other !== void 0 && _this$conf$other.limitPoint ? Number(this.conf.other.limitPoint) : Infinity
         } catch (e) {
           throwError(e, 'opiumpulses.maxPoint')
         }
@@ -12945,7 +13052,7 @@ try {
         curators: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$prys = config.prys) === null || _config$prys === void 0 ? void 0 : _config$prys.enable) ? config.prys : globalConf
+      conf: config !== null && config !== void 0 && (_config$prys = config.prys) !== null && _config$prys !== void 0 && _config$prys.enable ? config.prys : globalConf
     }
     var takekey = {
       test: function test () {
@@ -13362,7 +13469,7 @@ try {
         vks: []
       },
       setting: {},
-      conf: (config === null || config === void 0 ? void 0 : (_config$takekey = config.takekey) === null || _config$takekey === void 0 ? void 0 : _config$takekey.enable) ? config.takekey : globalConf
+      conf: config !== null && config !== void 0 && (_config$takekey = config.takekey) !== null && _config$takekey !== void 0 && _config$takekey.enable ? config.takekey : globalConf
     }
     var website = null
     var websites = [banana, freeanywhere, freegamelottery, gamehag, giveawaysu, givekey, gleam, indiedb, keyhub, keylol, marvelousga, opiumpulses, prys, takekey]
@@ -13393,6 +13500,36 @@ try {
         console.log('JavaScript exception:', exc)
       })
 
+      if (pageHost !== 'auto-task.hclonely.com' && pageHost !== 'auto-task-test.hclonely.com') {
+        var delayNoticeList = GM_getValue('noticeList')
+
+        if (delayNoticeList) {
+          var _iterator57 = _createForOfIteratorHelper(delayNoticeList)
+          var _step58
+
+          try {
+            for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
+              var time = _step58.value
+              var taskInfo = GM_getValue('delayNotice-' + time)
+
+              if ((new Date().getTime() - time) / (24 * 3600 * 1000) >= parseInt(globalConf.other.delayNoticeTime) && taskInfo) {
+                notice({
+                  title: getI18n('delayNoticeTitle'),
+                  text: getI18n('delayNoticeText'),
+                  onclick: function onclick () {
+                    window.open('https://auto-task.hclonely.com/notice-list.html', '_blank')
+                  }
+                })
+              }
+            }
+          } catch (err) {
+            _iterator57.e(err)
+          } finally {
+            _iterator57.f()
+          }
+        }
+      }
+
       if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
         if (window.location.pathname.includes('setting')) {
           var _GM_getValue, _GM_getValue$global2, _GM_getValue$global2$
@@ -13406,6 +13543,108 @@ try {
           typeof ((_GM_getValue = GM_getValue('conf')) === null || _GM_getValue === void 0 ? void 0 : (_GM_getValue$global2 = _GM_getValue.global) === null || _GM_getValue$global2 === void 0 ? void 0 : (_GM_getValue$global2$ = _GM_getValue$global2.fuck) === null || _GM_getValue$global2$ === void 0 ? void 0 : _GM_getValue$global2$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
+        } else if (window.location.pathname.includes('notice-list')) {
+          $('.non-js').hide()
+          unsafeWindow.delayNoticeTime = globalConf.other.delayNoticeTime
+
+          var _delayNoticeList = GM_getValue('noticeList') || []
+
+          var _iterator58 = _createForOfIteratorHelper(_delayNoticeList)
+          var _step59
+
+          try {
+            for (_iterator58.s(); !(_step59 = _iterator58.n()).done;) {
+              var item = _step59.value
+              $('body').append(addCard(GM_getValue('delayNotice-' + item)))
+            }
+          } catch (err) {
+            _iterator58.e(err)
+          } finally {
+            _iterator58.f()
+          }
+
+          addLogElement()
+
+          unsafeWindow.remove = /* #__PURE__ */(function () {
+            var _remove = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 (item) {
+              var _GM_getValue2, _config$giveawaysu2, _taskInfo3, conf
+
+              return regeneratorRuntime.wrap(function _callee106$ (_context107) {
+                while (1) {
+                  switch (_context107.prev = _context107.next) {
+                    case 0:
+                      _context107.prev = 0
+                      _taskInfo3 = (_GM_getValue2 = GM_getValue('delayNotice-' + item)) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.taskInfo
+
+                      if (_taskInfo3) {
+                        _context107.next = 4
+                        break
+                      }
+
+                      return _context107.abrupt('return', fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="error">'.concat(getI18n('noData'), '</font></li>')
+                      }))
+
+                    case 4:
+                      conf = config !== null && config !== void 0 && (_config$giveawaysu2 = config.giveawaysu) !== null && _config$giveawaysu2 !== void 0 && _config$giveawaysu2.enable ? config.giveawaysu : globalConf
+                      _context107.next = 7
+                      return fuc.updateInfo(_taskInfo3)
+
+                    case 7:
+                      _context107.next = 9
+                      return fuc.assignment(_taskInfo3, conf.remove, 'remove', 'giveawaysu')
+
+                    case 9:
+                      fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
+                      })
+                      _context107.next = 15
+                      break
+
+                    case 12:
+                      _context107.prev = 12
+                      _context107.t0 = _context107.catch(0)
+                      throwError(_context107.t0, 'remove')
+
+                    case 15:
+                    case 'end':
+                      return _context107.stop()
+                  }
+                }
+              }, _callee106, null, [[0, 12]])
+            }))
+
+            function remove (_x59) {
+              return _remove.apply(this, arguments)
+            }
+
+            return remove
+          }())
+
+          unsafeWindow.deleteNotice = /* #__PURE__ */(function () {
+            var _deleteNotice = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee107 (time) {
+              return regeneratorRuntime.wrap(function _callee107$ (_context108) {
+                while (1) {
+                  switch (_context108.prev = _context108.next) {
+                    case 0:
+                      fuc.deleteDelayNotice(time, fuc.echoLog)
+
+                    case 1:
+                    case 'end':
+                      return _context108.stop()
+                  }
+                }
+              }, _callee107)
+            }))
+
+            function deleteNotice (_x60) {
+              return _deleteNotice.apply(this, arguments)
+            }
+
+            return deleteNotice
+          }())
         }
       } else if (pageHost === 'marvelousga.com' && !window.location.pathname.includes('giveaway')) {
         fuc.newTabBlock()
@@ -13520,49 +13759,7 @@ try {
             throwError(e, '$(document).keydown')
           }
         })
-        $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
-        $('#clean-cache').click(function () {
-          try {
-            var status = fuc.echoLog({
-              type: 'custom',
-              text: '<li>'.concat(getI18n('cleaning'), '<font></font></li>')
-            })
-            var listValues = GM_listValues()
-
-            var _iterator57 = _createForOfIteratorHelper(listValues)
-            var _step58
-
-            try {
-              for (_iterator57.s(); !(_step58 = _iterator57.n()).done;) {
-                var value = _step58.value
-                if (!['conf', 'language', 'steamInfo', 'discordInfo', 'insInfo', 'twitchInfo', 'twitterInfo', 'redditInfo', 'youtubeInfo'].includes(value)) GM_deleteValue(value)
-              }
-            } catch (err) {
-              _iterator57.e(err)
-            } finally {
-              _iterator57.f()
-            }
-
-            status.success()
-          } catch (e) {
-            throwError(e, '$(\'#clean-cache\').click')
-          }
-        })
-        $('#check-update').click(function () {
-          try {
-            fuc.checkUpdate(true)
-          } catch (e) {
-            throwError(e, '$(\'#check-update\').click')
-          }
-        })
-        $('#auto-task-setting,#auto-task-feedback').click(function () {
-          try {
-            window.open($(this).attr('data-href'), '_blank')
-          } catch (e) {
-            throwError(e, '$(\'#auto-task-setting,#auto-task-feedback\').click')
-          }
-        })
-        fuc.checkUpdate()
+        addLogElement()
 
         if (!showLogs) {
           var _$$animate
@@ -13605,18 +13802,18 @@ try {
           throwError(e, 'GM_registerMenuCommand(\'readme\')')
         }
       })
-      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 () {
-        return regeneratorRuntime.wrap(function _callee106$ (_context107) {
+      GM_registerMenuCommand(getI18n('updateSteamInfo'), /* #__PURE__ */_asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee108 () {
+        return regeneratorRuntime.wrap(function _callee108$ (_context109) {
           while (1) {
-            switch (_context107.prev = _context107.next) {
+            switch (_context109.prev = _context109.next) {
               case 0:
-                _context107.prev = 0
-                _context107.next = 3
+                _context109.prev = 0
+                _context109.next = 3
                 return fuc.updateSteamInfo('all', true)
 
               case 3:
-                if (!_context107.sent) {
-                  _context107.next = 7
+                if (!_context109.sent) {
+                  _context109.next = 7
                   break
                 }
 
@@ -13624,7 +13821,7 @@ try {
                   type: 'custom',
                   text: '<li><font class="success">'.concat(getI18n('updateSteamInfoComplete'), '</font></li>')
                 })
-                _context107.next = 8
+                _context109.next = 8
                 break
 
               case 7:
@@ -13634,20 +13831,20 @@ try {
                 })
 
               case 8:
-                _context107.next = 13
+                _context109.next = 13
                 break
 
               case 10:
-                _context107.prev = 10
-                _context107.t0 = _context107.catch(0)
-                throwError(_context107.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
+                _context109.prev = 10
+                _context109.t0 = _context109.catch(0)
+                throwError(_context109.t0, 'GM_registerMenuCommand(\'updateSteamInfo\')')
 
               case 13:
               case 'end':
-                return _context107.stop()
+                return _context109.stop()
             }
           }
-        }, _callee106, null, [[0, 10]])
+        }, _callee108, null, [[0, 10]])
       })))
       GM_registerMenuCommand('Language', function () {
         try {

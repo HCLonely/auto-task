@@ -198,5 +198,6 @@
   "addedNotice": "s% 天后会提醒你进行移除本页面的任务",
   "deletedNotice": "删除提醒成功",
   "delayNoticeTitle": "auto-task 移除任务提醒",
-  "delayNoticeText": "点击打开延迟移除任务列表"
+  "delayNoticeText": "点击打开延迟移除任务列表",
+  "noData": "没有读取到数据"
 }

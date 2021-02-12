@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.6
+// @version            3.4.7
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.6/require/require.min.js#md5=1eb5a9b8b3e472cff13f2c5d256901b7
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.6/require/fuck-task.min.css#md5=b30799ecc0741009ec80eacd297a9f67
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.7/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.7/require/fuck-task.min.css#md5=9a97f5765a65f8bbadfd24f9185fa364
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6333,7 +6333,7 @@ try {
     }())
 
     var addLogElement = function addLogElement () {
-      $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
+      $('body').append('<div id="fuck-task-info" class="card">\n  <div class="card-body">\n    <h3 class="card-title">'.concat(getI18n('taskLog'), '</h3>\n    <h4 class="card-subtitle">\n      <a id="check-update" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-update_1" title="').concat(getI18n('checkUpdate'), '"></a>\n      <a id="auto-task-setting" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/setting.html" terget="_self" class="card-link iconfont icon-setting" title="').concat(getI18n('setting'), '"></a>\n      <a id="delay-notice-list" href="javascript:void(0)" data-href="https://auto-task-test.hclonely.com/notice-list.html" terget="_self" class="card-link" title="').concat(getI18n('noticeList'), '">\n        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-list" viewBox="0 0 16 16">\n          <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>\n          <path d="M5 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 5 8zm0-2.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm0 5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm-1-5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zM4 8a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm0 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>\n        </svg>\n      </a>\n      <a id="clean-cache" href="javascript:void(0)" terget="_self" class="card-link iconfont icon-clean" title="').concat(getI18n('cleanCache'), '"></a>\n      <a id="auto-task-feedback" href="javascript:void(0)" data-href="https://github.com/HCLonely/auto-task/issues/new/choose" terget="_blank" class="card-link iconfont icon-feedback" title="').concat(getI18n('feedback'), '"></a>\n    </h4>\n    <div class="card-textarea">\n    </div>\n  </div>\n</div>'))
       $('#clean-cache').click(function () {
         try {
           var status = fuc.echoLog({
@@ -13564,34 +13564,54 @@ try {
           addLogElement()
 
           unsafeWindow.remove = /* #__PURE__ */(function () {
-            var _remove = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 (taskInfo) {
-              var _config$giveawaysu2
+            var _remove = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 (item) {
+              var _GM_getValue2, _config$giveawaysu2, _taskInfo3, conf
 
-              var conf
               return regeneratorRuntime.wrap(function _callee106$ (_context107) {
                 while (1) {
                   switch (_context107.prev = _context107.next) {
                     case 0:
+                      _context107.prev = 0
+                      _taskInfo3 = (_GM_getValue2 = GM_getValue('delayNotice-' + item)) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.taskInfo
+
+                      if (_taskInfo3) {
+                        _context107.next = 4
+                        break
+                      }
+
+                      return _context107.abrupt('return', fuc.echoLog({
+                        type: 'custom',
+                        text: '<li><font class="error">'.concat(getI18n('noData'), '</font></li>')
+                      }))
+
+                    case 4:
                       conf = config !== null && config !== void 0 && (_config$giveawaysu2 = config.giveawaysu) !== null && _config$giveawaysu2 !== void 0 && _config$giveawaysu2.enable ? config.giveawaysu : globalConf
-                      _context107.next = 3
-                      return fuc.updateInfo(taskInfo)
+                      _context107.next = 7
+                      return fuc.updateInfo(_taskInfo3)
 
-                    case 3:
-                      _context107.next = 5
-                      return fuc.assignment(taskInfo, conf.remove, 'remove', 'giveawaysu')
+                    case 7:
+                      _context107.next = 9
+                      return fuc.assignment(_taskInfo3, conf.remove, 'remove', 'giveawaysu')
 
-                    case 5:
+                    case 9:
                       fuc.echoLog({
                         type: 'custom',
                         text: '<li><font class="success">'.concat(getI18n('allTasksComplete'), '</font></li>')
                       })
+                      _context107.next = 15
+                      break
 
-                    case 6:
+                    case 12:
+                      _context107.prev = 12
+                      _context107.t0 = _context107.catch(0)
+                      throwError(_context107.t0, 'remove')
+
+                    case 15:
                     case 'end':
                       return _context107.stop()
                   }
                 }
-              }, _callee106)
+              }, _callee106, null, [[0, 12]])
             }))
 
             function remove (_x59) {

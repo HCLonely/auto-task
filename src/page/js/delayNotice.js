@@ -16,7 +16,7 @@ window.addCard = function addCard (item) {
     <ul>
     ${formatTaskLink(item.taskInfo)}
     </ul>
-    <a href="remove('${JSON.stringify(item.taskInfo)}')" class="btn btn-primary">Remove</a>
+    <a href="javascript:remove('${item.time}')" class="btn btn-primary">Remove</a>
   </div>
   <div class="card-footer text-muted">
     ${dayjs(item.time).format('YYYY-MM-DD HH:mm:ss')}

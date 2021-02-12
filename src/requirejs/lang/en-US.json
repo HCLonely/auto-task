@@ -197,5 +197,6 @@
   "addedNotice": "You will be reminded to remove this page in s% days",
   "deletedNotice": "Delete reminder successfully",
   "delayNoticeTitle": "auto-task remove task reminder",
-  "delayNoticeText": "Click to open the delayed removal task list"
+  "delayNoticeText": "Click to open the delayed removal task list",
+  "noData": "No data"
 }

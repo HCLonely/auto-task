@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.4.8
+// @version            3.4.9
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.8/require/fuck-task.min.css#md5=23dd233e041df781f42ccc605e13bd14
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.9/require/require.min.js#md5=d9df51f8aa156512ba0fd711d3af24b9
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.4.9/require/fuck-task.min.css#md5=63de64705df01c0ddba37b9924000319
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5652,7 +5652,7 @@ try {
         noticeList.splice(noticeList.indexOf(time), 1)
         GM_setValue('noticeList', noticeList)
         GM_deleteValue('delayNotice-' + time)
-        $(time).remove()
+        $('#' + time).remove()
         echoLog({
           type: 'custom',
           text: '<li><font class="warning">'.concat(getI18n('deletedNotice'), '</font></li>')
@@ -7440,10 +7440,7 @@ try {
                   return fuc.httpRequest({
                     url: 'https://freeanywhere.net/api/v1/giveaway/'.concat(giveawayId, '/?format=json'),
                     method: 'get',
-                    responseType: 'json',
-                    headers: {
-                      authorization: 'Token '.concat(window.localStorage.getItem('token'))
-                    }
+                    responseType: 'json'
                   })
 
                 case 18:
@@ -7636,10 +7633,7 @@ try {
                   return fuc.httpRequest({
                     url: 'https://freeanywhere.net/api/v1/giveaway/'.concat(giveawayId, '/?format=json'),
                     method: 'get',
-                    responseType: 'json',
-                    headers: {
-                      authorization: 'Token '.concat(window.localStorage.getItem('token'))
-                    }
+                    responseType: 'json'
                   })
 
                 case 98:
@@ -7834,10 +7828,7 @@ try {
                   return fuc.httpRequest({
                     url: 'https://freeanywhere.net/api/v1/giveaway/'.concat(giveawayId, '/challenge-status/').concat(task.taskId, '/?format=json'),
                     method: 'GET',
-                    dataType: 'json',
-                    headers: {
-                      authorization: 'Token '.concat(window.localStorage.getItem('token'))
-                    }
+                    dataType: 'json'
                   })
 
                 case 4:

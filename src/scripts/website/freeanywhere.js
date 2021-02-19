@@ -45,10 +45,7 @@ const freeanywhere = {
         const { result, statusText, status, data } = await fuc.httpRequest({
           url: `https://freeanywhere.net/api/v1/giveaway/${giveawayId}/?format=json`,
           method: 'get',
-          responseType: 'json',
-          headers: {
-            authorization: `Token ${window.localStorage.getItem('token')}`
-          }
+          responseType: 'json'
         })
         if (result === 'Success') {
           const taskInfo = data?.response
@@ -124,10 +121,7 @@ const freeanywhere = {
         const { result, statusText, status, data } = await fuc.httpRequest({
           url: `https://freeanywhere.net/api/v1/giveaway/${giveawayId}/?format=json`,
           method: 'get',
-          responseType: 'json',
-          headers: {
-            authorization: `Token ${window.localStorage.getItem('token')}`
-          }
+          responseType: 'json'
         })
         if (result === 'Success') {
           const taskInfo = data?.response
@@ -193,10 +187,7 @@ const freeanywhere = {
     const { result, statusText, status, data } = await fuc.httpRequest({
       url: `https://freeanywhere.net/api/v1/giveaway/${giveawayId}/challenge-status/${task.taskId}/?format=json`,
       method: 'GET',
-      dataType: 'json',
-      headers: {
-        authorization: `Token ${window.localStorage.getItem('token')}`
-      }
+      dataType: 'json'
     })
     if (result === 'Success') {
       if (data?.response?.status) {

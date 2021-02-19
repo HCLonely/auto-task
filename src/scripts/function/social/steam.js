@@ -196,6 +196,32 @@ async function leaveSteamGroup (groupName) {
   }
 }
 
+/* disable
+// INFO: Steam workshop
+async function toggleWorkshop (id, appid, favorite = true) {
+  try {
+    const logStatus = echoLog({ type: favorite ? 'favoriteWorkshop' : 'unfavoriteWorkshop', text: id })
+    const { result, statusText, status, data } = await httpRequest({
+      url: `https://steamcommunity.com/sharedfiles/${favorite ? '' : 'un'}favorite`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      data: $.param({ id, appid, sessionID: steamInfo.communitySessionID })
+    })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        logStatus.success()
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
+  } catch (e) {
+    throwError(e, 'toggleWorkshop')
+  }
+}
+*/
+
 // INFO: Steam curator
 async function toggleCurator (curatorId, follow = true, logStatus = null) {
   try {

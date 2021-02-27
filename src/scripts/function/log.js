@@ -55,6 +55,7 @@ function echoLog (e) {
         break
       case 'joinDiscordServer':
       case 'leaveDiscordServer':
+      case 'getDiscordGuild':
         ele = $(`<li>${getI18n(e.type)}<a href="https://discord.com/invite/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
       case 'updateDiscordAuth':

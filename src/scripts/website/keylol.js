@@ -13,19 +13,7 @@ const keylol = {
   after () {
     try {
       AutoTask.toggleDiscord = (action, inviteId) => {
-        const taskInfo = GM_getValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']') || {}
-        const toGuild = taskInfo.toGuild || {}
-        return fuc.toggleActions({ social: 'discord', website: 'keylol', elements: [inviteId], action, toGuild })
-          .then(data => {
-            if (action === 'fuck') {
-              const [inviteId, guild] = data?.[0]?.guild || []
-              if (inviteId && guild) {
-                toGuild[inviteId] = guild
-                taskInfo.toGuild = toGuild
-                GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', taskInfo)
-              }
-            }
-          })
+        return fuc.toggleActions({ social: 'discord', website: 'keylol', elements: [inviteId], action })
       }
       AutoTask.toggleREDDIT = (action, name) => {
         return fuc.toggleActions({ social: 'reddit', website: 'keylol', elements: [name], action })

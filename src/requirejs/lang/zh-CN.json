@@ -140,6 +140,7 @@
   "goSetting": "前往设置",
   "getGroupError": "获取steam组信息失败 <a href=\"s%\" target=\"_blank\">s%</a>",
   "verifyDiscordAuth": "正在验证discord凭证",
+  "getDiscordGuild": "正在获取discord服务器guild",
   "joinDiscordServer": "正在加入discord服务器",
   "leaveDiscordServer": "正在退出discord服务器",
   "updateDiscordAuth": "Discord凭证失效，请<a href=\"https://discord.com/app\" target=\"_blank\">更新凭证</a>！",

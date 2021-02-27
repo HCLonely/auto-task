@@ -162,7 +162,7 @@ function notice (options, callback) {
     throwError(e, 'notice')
   }
 }
-function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, toGuild }, config, action, website) {
+function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl }, config, action, website) {
   const pro = []
   const fuck = action === 'fuck'
   if (groups && groups.length > 0 && config[fuck ? 'joinSteamGroup' : 'leaveSteamGroup']) {
@@ -217,7 +217,7 @@ function assignment ({ groups, forums, curators, publishers, developers, franchi
     pro.push(toggleActions({ website, social: 'twitter', type: 'retweet', elements: retweets, action, toFinalUrl }))
   }
   if (discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
-    pro.push(toggleActions({ website, social: 'discord', elements: discords, action, toFinalUrl, toGuild }))
+    pro.push(toggleActions({ website, social: 'discord', elements: discords, action, toFinalUrl }))
   }
   return Promise.all(pro)
 }

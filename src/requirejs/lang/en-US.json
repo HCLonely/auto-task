@@ -139,6 +139,7 @@
   "goSetting": "Yes",
   "getGroupError": "Failed to get steam group information. <a href=\"s%\" target=\"_blank\">s%</a>",
   "verifyDiscordAuth": "Verifying discord authorization",
+  "getDiscordGuild": "Getting discord server guild",
   "joinDiscordServer": "Joining discord server",
   "leaveDiscordServer": "Leaving discord server",
   "updateDiscordAuth": "Discord authorization is invalid, please <a href=\"https://discord.com/app\" target=\"_blank\">update the authorization</a>!",

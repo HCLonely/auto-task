@@ -38,7 +38,13 @@ async function joinDiscordServer (inviteId) {
     })
     if (result === 'Success' && data.status === 200) {
       logStatus.success()
-      return { result, statusText: data.statusText, status: data.status, guild: [inviteId, data.response?.guild?.id] }
+      const guild = data.response?.guild?.id
+      if (guild) {
+        const discordCache = GM_getValue('discord-cache') || {}
+        discordCache[inviteId] = guild
+        GM_setValue('discord-cache', discordCache)
+      }
+      return { result, statusText: data.statusText, status: data.status }
     } else {
       logStatus.error(`${result}:${statusText}(${status})`)
       return { result, statusText: data?.statusText || statusText, status: data?.status || status }
@@ -48,11 +54,13 @@ async function joinDiscordServer (inviteId) {
   }
 }
 
-async function leaveDiscordServer (inviteId, guild) {
+async function leaveDiscordServer (inviteId) {
   try {
     if (whiteList.enable && whiteList.discord.server.includes(inviteId)) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
+    const guild = await getDiscordGuild(inviteId)
+    if (!guild) return
     const logStatus = echoLog({ type: 'leaveDiscordServer', text: inviteId })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://discord.com/api/v6/users/@me/guilds/' + guild,
@@ -70,7 +78,40 @@ async function leaveDiscordServer (inviteId, guild) {
     throwError(e, 'leaveDiscordServer')
   }
 }
-async function toggleDiscordActions ({ website, elements, action, toFinalUrl = {}, toGuild = {} }) {
+
+async function getDiscordGuild (inviteId) {
+  try {
+    const logStatus = echoLog({ type: 'getDiscordGuild', text: inviteId })
+    const guild = GM_getValue('discord-cache')?.[inviteId]
+    if (guild) {
+      logStatus.success()
+      return guild
+    }
+    const { result, statusText, status, data } = await httpRequest({
+      url: 'https://discord.com/invite/' + inviteId,
+      method: 'GET'
+    })
+    if (result === 'Success' && data.status === 200) {
+      const guild = data.responseText.match(/https?:\/\/cdn\.discordapp\.com\/icons\/([\d]+?)\//)?.[1]
+      if (guild) {
+        logStatus.success()
+        const discordCache = GM_getValue('discord-cache') || {}
+        discordCache[inviteId] = guild
+        GM_setValue('discord-cache', discordCache)
+        return guild
+      } else {
+        logStatus.error(`${result}:${statusText}(${status})`)
+        return false
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return false
+    }
+  } catch (e) {
+    throwError(e, 'getDiscordGuild')
+  }
+}
+async function toggleDiscordActions ({ website, elements, action, toFinalUrl = {} }) {
   try {
     if (new Date().getTime() - discordInfo.updateTime > 10 * 60 * 1000 || discordInfo.expired) {
       const verifyResult = await verifyDiscordAuth()
@@ -91,12 +132,7 @@ async function toggleDiscordActions ({ website, elements, action, toFinalUrl = {
         inviteId = toFinalUrlElement.match(/invite\/(.+)/)?.[1]
       }
       if (inviteId) {
-        const guild = toGuild[inviteId]
-        if (action === 'fuck') {
-          pro.push(joinDiscordServer(inviteId))
-        } else if (guild) {
-          pro.push(leaveDiscordServer(inviteId, guild))
-        }
+        pro.push(action === 'fuck' ? joinDiscordServer(inviteId) : leaveDiscordServer(inviteId))
       }
       await delay(1000)
     }

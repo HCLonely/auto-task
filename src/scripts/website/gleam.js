@@ -130,16 +130,7 @@ const gleam = {
     try {
       const pro = []
       await fuc.updateInfo(this.currentTaskInfo)
-      const data = await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam') || []
-      const toGuild = this.taskInfo.toGuild
-      for (const $data of data) {
-        if (!$data) continue
-        for (const e of $data) {
-          const [inviteId, guild] = e?.guild || []
-          if (inviteId && guild) toGuild[inviteId] = guild
-        }
-      }
-      GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
+      await fuc.assignment(this.currentTaskInfo, this.conf.fuck, 'fuck', 'gleam')
       const { facebooks, youtubes, others, links } = this.currentTaskInfo
       const socialPlatforms = [...facebooks, ...youtubes]
       if (globalConf.other.autoOpen) {
@@ -307,16 +298,14 @@ const gleam = {
     facebooks: [],
     youtubes: [],
     others: [],
-    tasks: [],
-    toGuild: {}
+    tasks: []
   },
   taskInfo: {
     groups: [],
     twitterUsers: [],
     retweets: [],
     twitchs: [],
-    discords: [],
-    toGuild: {}
+    discords: []
   },
   setting: {},
   conf: config?.gleam?.enable ? config.gleam : globalConf

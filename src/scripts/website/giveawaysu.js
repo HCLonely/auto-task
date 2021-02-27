@@ -151,19 +151,7 @@ const giveawaysu = {
   async do_task (action) {
     try {
       await fuc.updateInfo(this.taskInfo)
-      const data = await fuc.assignment(this.taskInfo, this.conf[action], action, 'giveawaysu')
-      const toGuild = this.taskInfo.toGuild
-      if (action === 'fuck' && data) {
-        for (const $data of data) {
-          if (Array.isArray($data)) {
-            for (const e of $data) {
-              const [inviteId, guild] = e?.guild || []
-              if (inviteId && guild) toGuild[inviteId] = guild
-            }
-          }
-        }
-        GM_setValue('taskInfo[' + window.location.host + this.get_giveawayId() + ']', this.taskInfo)
-      }
+      await fuc.assignment(this.taskInfo, this.conf[action], action, 'giveawaysu')
       fuc.echoLog({ type: 'custom', text: `<li><font class="success">${getI18n('allTasksComplete')}</font></li>` })
       if (action === 'fuck') {
         fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('closeExtensions')}</font></li>` })
@@ -240,8 +228,7 @@ const giveawaysu = {
     youtubeVideos: [],
     vks: [],
     links: [],
-    toFinalUrl: {},
-    toGuild: {}
+    toFinalUrl: {}
   },
   setting: {
     verify: {

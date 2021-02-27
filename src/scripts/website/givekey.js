@@ -31,6 +31,7 @@ const givekey = {
           const taskEle = $(task)
           const href = taskEle.attr('href')
           const text = taskEle.text().trim()
+          const icon = taskEle.find('i')
           if (/^https?:\/\/vk\.com\//.test(href) && /Subscribe|Repost/gi.test(text)) {
             const name = href.match(/vk\.com\/([^/]*)/)?.[1]
             if (name) {
@@ -54,6 +55,30 @@ const givekey = {
             if (id) {
               this.currentTaskInfo.wGames.push(id)
               this.taskInfo.wGames.push(id)
+            }
+          } else if (/Subscribe to the curator/gim.test(text)) {
+            const id = await fuc.getFinalUrl(href)
+              .then(({ result, finalUrl }) => {
+                if (result === 'Success') {
+                  return finalUrl?.match(/curator\/([\d]+)/)?.[1]
+                }
+              })
+
+            if (id) {
+              this.currentTaskInfo.curators.push(id)
+              this.taskInfo.curators.push(id)
+            }
+          } else if (icon.hasClass('fa-discord') && /Join the server/gim.test(text)) {
+            const id = await fuc.getFinalUrl(href)
+              .then(({ result, finalUrl }) => {
+                if (result === 'Success') {
+                  return finalUrl?.match(/invite\/(.+)/)?.[1]
+                }
+              })
+
+            if (id) {
+              this.currentTaskInfo.discords.push(id)
+              this.taskInfo.discords.push(id)
             }
           } else if (/https?:\/\/givekey\.ru\/giveaway\/away\/[\d]+/.test(href)) {
             this.currentTaskInfo.links.push(href)
@@ -172,6 +197,7 @@ const givekey = {
     wGames: [],
     fGames: [],
     vks: [],
+    discords: [],
     tasks: []
   },
   taskInfo: {
@@ -179,7 +205,8 @@ const givekey = {
     curators: [],
     wGames: [],
     fGames: [],
-    vks: []
+    vks: [],
+    discords: []
   },
   setting: {},
   conf: config?.givekay?.enable ? config.givekay : globalConf

@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.5.0
+// @version            3.5.1
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.0/require/require.min.js#md5=b383a2783c07705b8944772c5b2d0f8c
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.0/require/fuck-task.min.css#md5=070323bcb129710066eeb6c6abc0332c
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.1/require/require.min.js#md5=b383a2783c07705b8944772c5b2d0f8c
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.1/require/fuck-task.min.css#md5=cb741d7e18d400168c167cd38f66bc63
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -7931,7 +7931,11 @@ try {
                   return fuc.httpRequest({
                     url: 'https://freeanywhere.net/api/v1/giveaway/'.concat(giveawayId, '/challenge-status/').concat(task.taskId, '/?format=json'),
                     method: 'GET',
-                    dataType: 'json'
+                    dataType: 'json',
+                    headers: {
+                      authorization: 'Token ' + window.localStorage.getItem('token'),
+                      'x-csrftoken': Cookies.get('csrftoken')
+                    }
                   })
 
                 case 4:

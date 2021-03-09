@@ -3,14 +3,14 @@ import { fuc, throwError } from '../function/main'
 import { config, globalConf, debug } from '../config'
 
 const freeanywhere = {
-  test() {
+  test () {
     try {
       return window.location.host === 'freeanywhere.net'
     } catch (e) {
       throwError(e, 'freeanywhere.test')
     }
   },
-  before() {
+  before () {
     try {
       if (!/^https?:\/\/freeanywhere\.net\/#\/giveaway\/[\d]+/.test(window.location.href)) {
         const id = window.location.href.match(/https?:\/\/freeanywhere\.net\/.*?#\/giveaway\/([\d]+)/)?.[1]
@@ -20,14 +20,14 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.before')
     }
   },
-  fuck() {
+  fuck () {
     try {
       this.get_tasks('do_task')
     } catch (e) {
       throwError(e, 'freeanywhere.fuck')
     }
   },
-  async get_tasks(callback = 'do_task') {
+  async get_tasks (callback = 'do_task') {
     try {
       const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('getTasksInfo')}<font></font></li>` })
       const giveawayId = this.get_giveawayId()
@@ -162,7 +162,7 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.get_tasks')
     }
   },
-  async do_task() {
+  async do_task () {
     try {
       const pro = []
       pro.push(this.toggleActions('fuck'))
@@ -181,7 +181,7 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.do_task')
     }
   },
-  async verifyTask(task) {
+  async verifyTask (task) {
     const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes.trim()}...<font></font></li>` })
     const giveawayId = this.giveawayId || this.get_giveawayId()
     const { result, statusText, status, data } = await fuc.httpRequest({
@@ -203,7 +203,7 @@ const freeanywhere = {
       logStatus.error(`${result}:${statusText}(${status})`)
     }
   },
-  async verify(verify = false) {
+  async verify (verify = false) {
     try {
       if (verify) {
         const pro = []
@@ -223,7 +223,7 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.verify')
     }
   },
-  async get_key() {
+  async get_key () {
     const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('gettingKey')}...<font></font></li>` })
     const giveawayId = this.giveawayId || this.get_giveawayId()
     const { result, statusText, status, data } = await fuc.httpRequest({
@@ -245,7 +245,7 @@ const freeanywhere = {
       logStatus.error(`${result}:${statusText}(${status})`)
     }
   },
-  async remove(remove = false) {
+  async remove (remove = false) {
     try {
       if (remove) {
         await this.toggleActions('remove')
@@ -257,7 +257,7 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.remove')
     }
   },
-  async toggleActions(action) {
+  async toggleActions (action) {
     try {
       const fuck = action === 'fuck'
       const taskInfo = fuck ? this.currentTaskInfo : this.taskInfo
@@ -267,14 +267,14 @@ const freeanywhere = {
       throwError(e, 'freeanywhere.toggleActions')
     }
   },
-  get_giveawayId() {
+  get_giveawayId () {
     try {
       return window.location.href.match(/\/giveaway\/([\d]+)/)?.[1] || window.location.href
     } catch (e) {
       throwError(e, 'freeanywhere.get_giveawayId')
     }
   },
-  checkLogin() {
+  checkLogin () {
     try {
       if ($('a[href="#/login"]').length > 0) window.open('/#/login', '_self')
     } catch (e) {

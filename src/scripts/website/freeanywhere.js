@@ -22,6 +22,10 @@ const freeanywhere = {
   },
   fuck () {
     try {
+      this.checkLogin()
+      if (window.location.href.includes('/login')) {
+        return fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
+      }
       this.get_tasks('do_task')
     } catch (e) {
       throwError(e, 'freeanywhere.fuck')
@@ -182,6 +186,10 @@ const freeanywhere = {
     }
   },
   async verifyTask (task) {
+    this.checkLogin()
+    if (window.location.href.includes('/login')) {
+      return fuc.echoLog({ type: 'custom', text: `<li><font class="error">${getI18n('needLogin')}</font></li>` })
+    }
     const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('verifyingTask')}${task.taskDes.trim()}...<font></font></li>` })
     const giveawayId = this.giveawayId || this.get_giveawayId()
     const { result, statusText, status, data } = await fuc.httpRequest({
@@ -278,7 +286,7 @@ const freeanywhere = {
     try {
       if ($('a[href="#/login"]').length > 0) window.open('/#/login', '_self')
     } catch (e) {
-      throwError(e, 'banana.checkLogin')
+      throwError(e, 'freeanywhere.checkLogin')
     }
   },
   currentTaskInfo: {

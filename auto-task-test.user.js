@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.5.1
+// @version            3.5.2
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.1/require/require.min.js#md5=b383a2783c07705b8944772c5b2d0f8c
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.1/require/fuck-task.min.css#md5=cb741d7e18d400168c167cd38f66bc63
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.2/require/require.min.js#md5=b383a2783c07705b8944772c5b2d0f8c
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.2/require/fuck-task.min.css#md5=d557af4e8dfdd2aa1105a294a955624b
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -7479,6 +7479,15 @@ try {
       },
       fuck: function fuck () {
         try {
+          this.checkLogin()
+
+          if (window.location.href.includes('/login')) {
+            return fuc.echoLog({
+              type: 'custom',
+              text: '<li><font class="error">'.concat(getI18n('needLogin'), '</font></li>')
+            })
+          }
+
           this.get_tasks('do_task')
         } catch (e) {
           throwError(e, 'freeanywhere.fuck')
@@ -7922,12 +7931,25 @@ try {
             while (1) {
               switch (_context60.prev = _context60.next) {
                 case 0:
+                  _this9.checkLogin()
+
+                  if (!window.location.href.includes('/login')) {
+                    _context60.next = 3
+                    break
+                  }
+
+                  return _context60.abrupt('return', fuc.echoLog({
+                    type: 'custom',
+                    text: '<li><font class="error">'.concat(getI18n('needLogin'), '</font></li>')
+                  }))
+
+                case 3:
                   logStatus = fuc.echoLog({
                     type: 'custom',
                     text: '<li>'.concat(getI18n('verifyingTask')).concat(task.taskDes.trim(), '...<font></font></li>')
                   })
                   giveawayId = _this9.giveawayId || _this9.get_giveawayId()
-                  _context60.next = 4
+                  _context60.next = 7
                   return fuc.httpRequest({
                     url: 'https://freeanywhere.net/api/v1/giveaway/'.concat(giveawayId, '/challenge-status/').concat(task.taskId, '/?format=json'),
                     method: 'GET',
@@ -7938,7 +7960,7 @@ try {
                     }
                   })
 
-                case 4:
+                case 7:
                   _yield$fuc$httpReques4 = _context60.sent
                   result = _yield$fuc$httpReques4.result
                   statusText = _yield$fuc$httpReques4.statusText
@@ -7955,7 +7977,7 @@ try {
                     logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                   }
 
-                case 10:
+                case 13:
                 case 'end':
                   return _context60.stop()
               }
@@ -8205,7 +8227,7 @@ try {
         try {
           if ($('a[href="#/login"]').length > 0) window.open('/#/login', '_self')
         } catch (e) {
-          throwError(e, 'banana.checkLogin')
+          throwError(e, 'freeanywhere.checkLogin')
         }
       },
       currentTaskInfo: {

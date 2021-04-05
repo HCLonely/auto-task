@@ -143,7 +143,7 @@
   "getDiscordGuild": "正在获取discord服务器guild",
   "joinDiscordServer": "正在加入discord服务器",
   "leaveDiscordServer": "正在退出discord服务器",
-  "updateDiscordAuth": "Discord凭证失效，请<a href=\"https://discord.com/app\" target=\"_blank\">更新凭证</a>！",
+  "updateDiscordAuth": "Discord凭证失效，请<a href=\"https://discord.com/channels/@me\" target=\"_blank\">更新凭证</a>！",
   "getAuthSuccess": "更新凭证成功！",
   "getAuthError": "更新凭证失败，请确认已正确安装辅助脚本！",
   "getInsInfo": "正在获ins用户id",

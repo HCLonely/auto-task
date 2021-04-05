@@ -142,7 +142,7 @@
   "getDiscordGuild": "Getting discord server guild",
   "joinDiscordServer": "Joining discord server",
   "leaveDiscordServer": "Leaving discord server",
-  "updateDiscordAuth": "Discord authorization is invalid, please <a href=\"https://discord.com/app\" target=\"_blank\">update the authorization</a>!",
+  "updateDiscordAuth": "Discord authorization is invalid, please <a href=\"https://discord.com/channels/@me\" target=\"_blank\">update the authorization</a>!",
   "getAuthSuccess": "Successfully updated auth!",
   "getAuthError": "Failed to update auth, please confirm that the helper script has been installed correctly!",
   "getInsInfo": "Getting ins user id",

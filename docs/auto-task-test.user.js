@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.5.2
+// @version            3.5.3
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.2/require/require.min.js#md5=b383a2783c07705b8944772c5b2d0f8c
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.2/require/fuck-task.min.css#md5=d557af4e8dfdd2aa1105a294a955624b
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.3/require/require.min.js#md5=4ece6c357cf5c6fb25447098d2f98775
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.3/require/fuck-task.min.css#md5=e715af1bcc6b0d4b15fa654c4f9c68ee
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6024,7 +6024,7 @@ try {
 
     var getDiscordAuth = function getDiscordAuth (notice) {
       try {
-        if (typeof window.discordAuth === 'string') {
+        if (typeof discordAuth === 'string') {
           GM_setValue('discordInfo', {
             authorization: discordAuth.replace(/"/g, ''),
             expired: false,

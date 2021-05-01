@@ -47,6 +47,12 @@ function echoLog (e) {
       case 'unfollowGame':
         ele = $(`<li>${getI18n(e.type)}<a href="https://store.steampowered.com/app/${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
         break
+      case 'favoriteWorkshop':
+      case 'unfavoriteWorkshop':
+      case 'getWorkshopAppId':
+      case 'voteupWorkshop':
+        ele = $(`<li>${getI18n(e.type)}<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
       case 'likeAnnouncements':
         ele = $(`<li>${getI18n('likeAnnouncements')}<a href="${e.url}" target="_blank">${e.id}</a>...<font></font></li>`)
         break
@@ -123,6 +129,9 @@ function echoLog (e) {
         break
       case 'visitLink':
         ele = $(`<li>${getI18n('visitLink')}<a href="${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
+        break
+      case 'text':
+        ele = $(`<li>${getI18n(e.text)}<font></font></li>`)
         break
       case 'custom':
         ele = $(e.text)

@@ -54,7 +54,9 @@ const defaultConf = {
       autoOpen: true,
       reCaptcha: false,
       delayNotice: false,
-      delayNoticeTime: '0'
+      delayNoticeTime: '10',
+      delayNoticeOnce: false,
+      changeCountry: false
     },
     hotKey: {
       fuckKey: 'Alt + A',

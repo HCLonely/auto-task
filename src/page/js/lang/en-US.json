@@ -57,8 +57,10 @@
   "limitPoint": "limitPoint",
   "delayNotice": "delayNotice",
   "delayNoticeTime": "delayNoticeTime",
+  "delayNoticeOnce": "Remind only once",
   "delayNoticeDes": "Remind you to remove it in a few days (only giveaway.su)",
   "delayNoticeTimeDes": "Remind you in how many days",
+  "delayNoticeOnceDes": "Remind only once",
   "joinSteamGroupDes": "Join steam group.",
   "leaveSteamGroupDes": "Leave steam group.",
   "subscribeSteamForumDes": "Subscribe steam forum.",
@@ -177,5 +179,7 @@
   "video": "Liked video id",
   "getId": "GetId",
   "enterTheUrl": "Enter the url",
-  "selectAType": "select a type"
+  "selectAType": "Select a type",
+  "changeCountry": "Change country",
+  "changeCountryDes": "Only valid for Chinese users"
 }

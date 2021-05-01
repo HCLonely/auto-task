@@ -1,5 +1,7 @@
 import { getI18n } from '../i18n'
 import { toggleActions } from './social/toggleActions'
+import { changeCountry } from './social/steam'
+import { globalConf } from '../config'
 
 function unique (e) {
   try {
@@ -125,6 +127,11 @@ function addDelayNotice (taskInfo, echoLog, day) {
   try {
     const time = new Date().getTime()
     const noticeList = GM_getValue('noticeList') || []
+    for (const item of noticeList) {
+      if (item.link === taskInfo.link) {
+        return
+      }
+    }
     noticeList.push(time)
     GM_setValue('noticeList', noticeList)
     GM_setValue('delayNotice-' + time, {
@@ -149,6 +156,20 @@ function deleteDelayNotice (time, echoLog) {
     throwError(e, 'deleteDelayNotice')
   }
 }
+function neverNotice (time) {
+  try {
+    const item = GM_getValue('delayNotice-' + time)
+    item.neverNotice = !item.neverNotice
+    GM_setValue('delayNotice-' + time, item)
+    const btn = $(`[data-time=${time}]`)
+    btn.toggleClass('btn-primary').toggleClass('btn-outline-primary')
+    const svgPath = btn.find('path')
+    const svgColor = svgPath.attr('fill')
+    svgPath.attr('fill', svgColor === '#fff' ? '#1296db' : '#fff')
+  } catch (e) {
+    throwError(e, 'neverNotice')
+  }
+}
 function notice (options, callback) {
   try {
     const defaultOptions = {
@@ -162,7 +183,10 @@ function notice (options, callback) {
     throwError(e, 'notice')
   }
 }
-function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl }, config, action, website) {
+async function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl }, config, action, website) {
+  if (globalConf.other.changeCountry) {
+    await changeCountry()
+  }
   const pro = []
   const fuck = action === 'fuck'
   if (groups && groups.length > 0 && config[fuck ? 'joinSteamGroup' : 'leaveSteamGroup']) {
@@ -189,7 +213,7 @@ function assignment ({ groups, forums, curators, publishers, developers, franchi
   if (wGames && wGames.length > 0 && config[fuck ? 'addToWishlist' : 'removeFromWishlist']) {
     pro.push(toggleActions({ website, type: 'wishlist', elements: wGames, action, toFinalUrl }))
   }
-  if (fuck && announcements && announcements.length > 0 && config.fuck.likeAnnouncement) {
+  if (fuck && announcements && announcements.length > 0 && config.likeAnnouncement) {
     pro.push(toggleActions({ website, type: 'announcement', elements: announcements, action, toFinalUrl }))
   }
   if (instagrams && instagrams.length > 0 && config[fuck ? 'followIns' : 'unfollowIns']) {
@@ -233,6 +257,7 @@ export {
   delay,
   addDelayNotice,
   deleteDelayNotice,
+  neverNotice,
   assignment,
   notice
 }

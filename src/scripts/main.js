@@ -26,7 +26,8 @@ if (website || pageHost.includes('hclonely')) {
     if (delayNoticeList) {
       for (const time of delayNoticeList) {
         const taskInfo = GM_getValue('delayNotice-' + time)
-        if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.other.delayNoticeTime) && taskInfo) {
+        const banNotice = globalConf.other.delayNoticeOnce && taskInfo.noticed
+        if (((new Date().getTime() - time) / (24 * 3600 * 1000)) >= parseInt(globalConf.other.delayNoticeTime) && taskInfo && !banNotice) {
           notice({
             title: getI18n('delayNoticeTitle'),
             text: getI18n('delayNoticeText'),
@@ -34,6 +35,10 @@ if (website || pageHost.includes('hclonely')) {
               window.open('https://__SITEURL__/notice-list.html', '_blank')
             }
           })
+          if (globalConf.other.delayNoticeOnce) {
+            taskInfo.noticed = true
+            GM_setValue('delayNotice-' + time, taskInfo)
+          }
         }
       }
     }
@@ -69,6 +74,9 @@ if (website || pageHost.includes('hclonely')) {
       }
       unsafeWindow.deleteNotice = async function deleteNotice (time) {
         fuc.deleteDelayNotice(time, fuc.echoLog)
+      }
+      unsafeWindow.neverNotice = async function neverNotice (time) {
+        fuc.neverNotice(time)
       }
     }
   } else if (pageHost === 'marvelousga.com' && (!window.location.pathname.includes('giveaway'))) {

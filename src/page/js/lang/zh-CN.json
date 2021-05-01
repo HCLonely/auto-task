@@ -57,8 +57,10 @@
   "limitPoint": "点数限制",
   "delayNotice": "延迟提醒",
   "delayNoticeTime": "延迟提醒时间",
+  "delayNoticeOnce": "只提醒一次",
   "delayNoticeDes": "几天后提醒你进行移除操作（仅giveaway.su）",
   "delayNoticeTimeDes": "延迟提醒时间（天）",
+  "delayNoticeOnceDes": "只提醒一次",
   "joinSteamGroupDes": "加入Steam组(Group)",
   "leaveSteamGroupDes": "退出Steam组(Group)",
   "subscribeSteamForumDes": "订阅Steam论坛(Forum)",
@@ -177,5 +179,7 @@
   "video": "点赞的视频id",
   "getId": "获取Id",
   "enterTheUrl": "请输入链接",
-  "selectAType": "请选择一个类型"
+  "selectAType": "请选择一个类型",
+  "changeCountry":"更换地区",
+  "changeCountryDes": "自动更换 Steam 购物车地区以便做某些限区游戏任务，需要自行配置好梯子"
 }

@@ -107,6 +107,75 @@ function updateSteamInfo (type = 'all', update = false) {
   }
 }
 
+// INFO:steam country
+async function getCountryInfo () {
+  try {
+    const logStatus = echoLog({ type: 'text', text: 'getCountryInfo' })
+    const { result, statusText, status, data } = await httpRequest({
+      url: 'https://store.steampowered.com/cart/',
+      method: 'Get'
+    })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        const userCountryCurrency = data.match(/a class="inactive_selection".*?id="(.+?)"/)?.[1]
+        const country = [...data.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)].map(e => e[1])
+        if (userCountryCurrency && country.length > 0) {
+          logStatus.success()
+          return { userCountryCurrency, country }
+        } else {
+          logStatus.error('Error: get country info filed')
+          return {}
+        }
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+        return {}
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return {}
+    }
+  } catch (e) {
+    throwError(e, 'getCountryInfo')
+  }
+}
+async function changeCountry (cc) {
+  try {
+    if (!cc) {
+      const { userCountryCurrency, country } = await getCountryInfo()
+      if (!userCountryCurrency || !country) return
+      if (userCountryCurrency !== 'CN') return echoLog({ type: 'text', text: 'notNeedChangeCountry' })
+      const anotherCountry = country.filter(e => e && e !== 'CN')
+      if (!anotherCountry) return echoLog({ type: 'text', text: 'noAnotherCountry' })
+      cc = anotherCountry
+    }
+    const logStatus = echoLog({ type: 'changeCountry', text: cc })
+    const { result, statusText, status, data } = await httpRequest({
+      url: 'https://store.steampowered.com/account/setcountry',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      data: $.param({ cc, sessionid: steamInfo.storeSessionID })
+    })
+    if (result === 'Success') {
+      if (data.status === 200 && data.responseText === 'true') {
+        const { userCountryCurrency } = await getCountryInfo()
+        if (userCountryCurrency === cc) {
+          logStatus.success()
+        } else {
+          logStatus.error('Error: change country filed')
+        }
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+        return {}
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return {}
+    }
+  } catch (e) {
+    throwError(e, 'changeCountry')
+  }
+}
+
 // INFO: Steam group
 async function joinSteamGroup (group) {
   try {
@@ -196,19 +265,22 @@ async function leaveSteamGroup (groupName) {
   }
 }
 
-/* disable
 // INFO: Steam workshop
-async function toggleWorkshop (id, appid, favorite = true) {
+async function toggleFavoriteWorkshop (id, favorite = true) {
   try {
+    const appid = await getWorkshopAppId(id)
+    if (!appid) return
     const logStatus = echoLog({ type: favorite ? 'favoriteWorkshop' : 'unfavoriteWorkshop', text: id })
     const { result, statusText, status, data } = await httpRequest({
       url: `https://steamcommunity.com/sharedfiles/${favorite ? '' : 'un'}favorite`,
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-      data: $.param({ id, appid, sessionID: steamInfo.communitySessionID })
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      data: $.param({ id, appid, sessionid: steamInfo.communitySessionID })
     })
     if (result === 'Success') {
-      if (data.status === 200) {
+      if (data.status === 200 && !data.responseText) {
         logStatus.success()
       } else {
         logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
@@ -217,10 +289,63 @@ async function toggleWorkshop (id, appid, favorite = true) {
       logStatus.error(`${result}:${statusText}(${status})`)
     }
   } catch (e) {
-    throwError(e, 'toggleWorkshop')
+    throwError(e, 'toggleFavoriteWorkshop')
   }
 }
-*/
+async function getWorkshopAppId (id) {
+  try {
+    const logStatus = echoLog({ type: 'getWorkshopAppId', text: id })
+    const { result, statusText, status, data } = await httpRequest({
+      url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`,
+      method: 'GET'
+    })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        const appid = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)?.[1]
+        if (appid) {
+          logStatus.success()
+        } else {
+          logStatus.error('Error: getWorkshopAppId failed')
+        }
+        return appid
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+        return false
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+      return false
+    }
+  } catch (e) {
+    throwError(e, 'getWorkshopAppId')
+    return false
+  }
+}
+async function voteupWorkshop (id) {
+  try {
+    const logStatus = echoLog({ type: 'voteupWorkshop', text: id })
+    const { result, statusText, status, data } = await httpRequest({
+      url: 'https://steamcommunity.com/sharedfiles/voteup',
+      method: 'POST',
+      responseType: 'json',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
+      data: $.param({ id, sessionid: steamInfo.communitySessionID })
+    })
+    if (result === 'Success') {
+      if (data.status === 200 && data.response?.success === 1) {
+        logStatus.success()
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
+  } catch (e) {
+    throwError(e, 'voteupWorkshop')
+  }
+}
 
 // INFO: Steam curator
 async function toggleCurator (curatorId, follow = true, logStatus = null) {
@@ -554,6 +679,10 @@ async function toggleSteamActions ({ website, type, elements, action, toFinalUrl
           case 'wishlist':
             elementName = toFinalUrlElement.match(/app\/([\d]+)/)
             break
+          case 'favoriteWorkshop':
+          case 'voteupWorkshop':
+            elementName = toFinalUrlElement.match(/\?id=([\d]+)/)
+            break
           case 'announcement': {
             if (toFinalUrlElement.includes('announcements/detail')) {
               elementName = toFinalUrlElement.match(/announcements\/detail\/([\d]+)/)
@@ -586,6 +715,12 @@ async function toggleSteamActions ({ website, type, elements, action, toFinalUrl
           case 'game':
             pro.push(toggleGame(elementName[1], action === 'fuck'))
             break
+          case 'favoriteWorkshop':
+            pro.push(toggleFavoriteWorkshop(elementName[1], action === 'fuck'))
+            break
+          case 'voteupWorkshop':
+            pro.push(voteupWorkshop(elementName[1]))
+            break
           case 'announcement':
             pro.push(likeAnnouncements(elementName))
             break
@@ -599,4 +734,4 @@ async function toggleSteamActions ({ website, type, elements, action, toFinalUrl
   }
 }
 
-export { updateSteamInfo, toggleSteamActions }
+export { updateSteamInfo, changeCountry, toggleSteamActions }

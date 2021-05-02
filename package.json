@@ -1,13 +1,16 @@
 {
   "name": "auto-task",
-  "version": "3.5.5",
+  "version": "3.5.6",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {
     "test": "standard",
     "fix": "standard --fix",
     "dev": "gulp development && node addMD5.js --dev && echo [info] Format file: auto-task-test.user.js && standard auto-task-test.user.js --fix && cp auto-task-test.user.js docs/auto-task-test.user.js || copy auto-task-test.user.js docs/auto-task-test.user.js && cp auto-task-helper.user.js docs/auto-task-helper.user.js || copy auto-task-helper.user.js docs/auto-task-helper.user.js",
-    "build": "gulp production && node addMD5.js && echo [info] Format file: auto-task.user.js && standard auto-task.user.js --fix && cp auto-task.user.js public/auto-task.user.js || copy auto-task.user.js public/auto-task.user.js && cp auto-task-helper.user.js public/auto-task-helper.user.js || copy auto-task-helper.user.js public/auto-task-helper.user.js"
+    "build": "gulp production && node addMD5.js && echo [info] Format file: auto-task.user.js && standard auto-task.user.js --fix && cp auto-task.user.js public/auto-task.user.js || copy auto-task.user.js public/auto-task.user.js && cp auto-task-helper.user.js public/auto-task-helper.user.js || copy auto-task-helper.user.js public/auto-task-helper.user.js",
+    "push:keylol":"node ./other/push2keylol.js",
+    "push:git": "node ./other/push2git.js",
+    "push": "node ./other/push2git.js && node ./other/push2keylol.js"
   },
   "author": "HCLonely",
   "license": "MIT",
@@ -20,10 +23,14 @@
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-replace": "^2.3.3",
     "@types/babel__core": "^7.1.9",
+    "axios": "^0.21.1",
     "babel-eslint": "^10.1.0",
     "babel-types": "^6.26.0",
     "chalk": "^4.1.0",
+    "cheerio": "^1.0.0-rc.6",
     "clean-css": "^4.2.3",
+    "dayjs": "^1.10.4",
+    "form-data": "^4.0.0",
     "fs-extra": "^9.0.1",
     "gulp": "^4.0.2",
     "gulp-htmlclean": "^2.7.22",

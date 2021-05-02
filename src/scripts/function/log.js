@@ -56,6 +56,9 @@ function echoLog (e) {
       case 'likeAnnouncements':
         ele = $(`<li>${getI18n('likeAnnouncements')}<a href="${e.url}" target="_blank">${e.id}</a>...<font></font></li>`)
         break
+      case 'changeCountry':
+        ele = $(`<li>${getI18n('changeCountry')}${e.text}...<font></font></li>`)
+        break
       case 'verifyDiscordAuth':
         ele = $(`<li>${getI18n('verifyDiscordAuth')}...<font></font></li>`)
         break

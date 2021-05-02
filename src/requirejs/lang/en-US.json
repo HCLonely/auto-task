@@ -206,5 +206,6 @@
   "voteupWorkshop": "Voting up workshop items",
   "getCountryInfo": "Getting country info...",
   "notNeedChangeCountry": "The current country is not supported for replacement",
-  "noAnotherCountry": "There is no area that can be replaced, please confirm that the vpn configuration is correct"
+  "noAnotherCountry": "There is no area that can be replaced, please confirm that the vpn configuration is correct",
+  "changeCountry": "Changing country"
 }

@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.5.4
+// @version            3.5.5
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.4/require/require.min.js#md5=a881e4ae7f6aec051d13f675a22f6d02
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.4/require/fuck-task.min.css#md5=776aeb05e0d86b7bbd3511c397ccec18
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.5/require/require.min.js#md5=9dd39904e974fb5880281550b927e71c
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.5/require/fuck-task.min.css#md5=fd0777b2118e431326945ce780b7fc98
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -185,6 +185,10 @@ try {
 
           case 'likeAnnouncements':
             ele = $('<li>'.concat(getI18n('likeAnnouncements'), '<a href="').concat(e.url, '" target="_blank">').concat(e.id, '</a>...<font></font></li>'))
+            break
+
+          case 'changeCountry':
+            ele = $('<li>'.concat(getI18n('changeCountry')).concat(e.text, '...<font></font></li>'))
             break
 
           case 'verifyDiscordAuth':
@@ -908,7 +912,7 @@ try {
 
     var getCountryInfo = /* #__PURE__ */(function () {
       var _ref6 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee6 () {
-        var logStatus, _yield$httpRequest4, result, statusText, status, data, _data$match, userCountryCurrency, country
+        var logStatus, _yield$httpRequest4, result, statusText, status, data, _data$responseText$ma5, userCountryCurrency, country
 
         return regeneratorRuntime.wrap(function _callee6$ (_context6) {
           while (1) {
@@ -942,8 +946,8 @@ try {
                   break
                 }
 
-                userCountryCurrency = (_data$match = data.match(/a class="inactive_selection".*?id="(.+?)"/)) === null || _data$match === void 0 ? void 0 : _data$match[1]
-                country = _toConsumableArray(data.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)).map(function (e) {
+                userCountryCurrency = (_data$responseText$ma5 = data.responseText.match(/a class="inactive_selection".*?id="(.+?)"/)) === null || _data$responseText$ma5 === void 0 ? void 0 : _data$responseText$ma5[1]
+                country = _toConsumableArray(data.responseText.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)).map(function (e) {
                   return e[1]
                 })
 
@@ -1046,7 +1050,7 @@ try {
                   return e && e !== 'CN'
                 })
 
-                if (anotherCountry) {
+                if (!(!anotherCountry || anotherCountry.length === 0)) {
                   _context7.next = 14
                   break
                 }
@@ -1057,7 +1061,7 @@ try {
                 }))
 
               case 14:
-                cc = anotherCountry
+                cc = anotherCountry[0]
 
               case 15:
                 logStatus = echoLog({
@@ -1089,7 +1093,7 @@ try {
                   break
                 }
 
-                if (!(data.status === 200 && data.responseText === 'true')) {
+                if (!(data.status === 200 && data.responseText === true)) {
                   _context7.next = 32
                   break
                 }
@@ -1210,7 +1214,7 @@ try {
 
     var getGroupID = /* #__PURE__ */(function () {
       var _ref9 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee9 (groupName) {
-        var logStatus, groupNameToId, _yield$httpRequest7, result, statusText, status, data, _data$responseText$ma5, groupId
+        var logStatus, groupNameToId, _yield$httpRequest7, result, statusText, status, data, _data$responseText$ma6, groupId
 
         return regeneratorRuntime.wrap(function _callee9$ (_context9) {
           while (1) {
@@ -1258,7 +1262,7 @@ try {
                   break
                 }
 
-                groupId = (_data$responseText$ma5 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma5 === void 0 ? void 0 : _data$responseText$ma5[1]
+                groupId = (_data$responseText$ma6 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma6 === void 0 ? void 0 : _data$responseText$ma6[1]
 
                 if (!groupId) {
                   _context9.next = 25
@@ -1494,7 +1498,7 @@ try {
 
     var getWorkshopAppId = /* #__PURE__ */(function () {
       var _ref12 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee12 (id) {
-        var logStatus, _yield$httpRequest10, result, statusText, status, data, _data$responseText$ma6, appid
+        var logStatus, _yield$httpRequest10, result, statusText, status, data, _data$responseText$ma7, appid
 
         return regeneratorRuntime.wrap(function _callee12$ (_context12) {
           while (1) {
@@ -1528,7 +1532,7 @@ try {
                   break
                 }
 
-                appid = (_data$responseText$ma6 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma6 === void 0 ? void 0 : _data$responseText$ma6[1]
+                appid = (_data$responseText$ma7 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma7 === void 0 ? void 0 : _data$responseText$ma7[1]
 
                 if (appid) {
                   logStatus.success()
@@ -1731,7 +1735,7 @@ try {
 
     var getCuratorID = /* #__PURE__ */(function () {
       var _ref15 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee15 (developerName, path) {
-        var logStatus, developerNameToId, _yield$httpRequest13, result, statusText, status, data, _data$responseText$ma7, developerId
+        var logStatus, developerNameToId, _yield$httpRequest13, result, statusText, status, data, _data$responseText$ma8, developerId
 
         return regeneratorRuntime.wrap(function _callee15$ (_context15) {
           while (1) {
@@ -1779,7 +1783,7 @@ try {
                   break
                 }
 
-                developerId = (_data$responseText$ma7 = data.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)) === null || _data$responseText$ma7 === void 0 ? void 0 : _data$responseText$ma7[1]
+                developerId = (_data$responseText$ma8 = data.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)) === null || _data$responseText$ma8 === void 0 ? void 0 : _data$responseText$ma8[1]
 
                 if (!developerId) {
                   _context15.next = 25
@@ -1950,9 +1954,9 @@ try {
 
                 if (resultR === 'Success') {
                   if (dataR.status === 200) {
-                    if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('已在库中')) {
+                    if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="already_in_library"')) {
                       logStatus.success()
-                    } else if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('添加至您的愿望单') || !dataR.responseText.includes('class="queue_actions_ctn"')) {
+                    } else if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('id="add_to_wishlist_area_success" style="display: none;') || !dataR.responseText.includes('class="queue_actions_ctn"')) {
                       logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')
                     } else {
                       logStatus.success()
@@ -2132,7 +2136,7 @@ try {
                 result = _yield$httpRequest18.result
                 data = _yield$httpRequest18.data
 
-                if (!(result === 'Success' && data.status === 200 && data.responseText === 'true')) {
+                if (!(result === 'Success' && data.status === 200 && data.responseText === true)) {
                   _context19.next = 13
                   break
                 }
@@ -2379,7 +2383,7 @@ try {
 
     var getForumId = /* #__PURE__ */(function () {
       var _ref22 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee22 (gameId) {
-        var logStatus, _yield$httpRequest22, result, statusText, status, data, _data$responseText, _data$responseText$ma8, forumId
+        var logStatus, _yield$httpRequest22, result, statusText, status, data, _data$responseText, _data$responseText$ma9, forumId
 
         return regeneratorRuntime.wrap(function _callee22$ (_context22) {
           while (1) {
@@ -2413,7 +2417,7 @@ try {
                   break
                 }
 
-                forumId = (_data$responseText = data.responseText) === null || _data$responseText === void 0 ? void 0 : (_data$responseText$ma8 = _data$responseText.match(/General_([\d]+)/)) === null || _data$responseText$ma8 === void 0 ? void 0 : _data$responseText$ma8[1]
+                forumId = (_data$responseText = data.responseText) === null || _data$responseText === void 0 ? void 0 : (_data$responseText$ma9 = _data$responseText.match(/General_([\d]+)/)) === null || _data$responseText$ma9 === void 0 ? void 0 : _data$responseText$ma9[1]
 
                 if (forumId) {
                   logStatus.success()
@@ -2876,7 +2880,7 @@ try {
 
     var getDiscordGuild = /* #__PURE__ */(function () {
       var _ref28 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee27 (inviteId) {
-        var _GM_getValue, logStatus, guild, _yield$httpRequest26, result, statusText, status, data, _data$responseText$ma9, _guild, discordCache
+        var _GM_getValue, logStatus, guild, _yield$httpRequest26, result, statusText, status, data, _data$responseText$ma10, _guild, discordCache
 
         return regeneratorRuntime.wrap(function _callee27$ (_context27) {
           while (1) {
@@ -2916,7 +2920,7 @@ try {
                   break
                 }
 
-                _guild = (_data$responseText$ma9 = data.responseText.match(/https?:\/\/cdn\.discordapp\.com\/icons\/([\d]+?)\//)) === null || _data$responseText$ma9 === void 0 ? void 0 : _data$responseText$ma9[1]
+                _guild = (_data$responseText$ma10 = data.responseText.match(/https?:\/\/cdn\.discordapp\.com\/icons\/([\d]+?)\//)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1]
 
                 if (!_guild) {
                   _context27.next = 23
@@ -4828,7 +4832,7 @@ try {
 
     var toggleVkWall = /* #__PURE__ */(function () {
       var _ref55 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee47 (name, join) {
-        var logStatus, _yield$httpRequest40, result, statusText, status, data, _data$responseText$ma10, hash, _yield$httpRequest41, resultR, statusTextR, statusR, dataR, _dataR$responseText, _jsonData$payload, _jsonData$payload$, _jsonData$payload$$, jsonData
+        var logStatus, _yield$httpRequest40, result, statusText, status, data, _data$responseText$ma11, hash, _yield$httpRequest41, resultR, statusTextR, statusR, dataR, _dataR$responseText, _jsonData$payload, _jsonData$payload$, _jsonData$payload$$, jsonData
 
         return regeneratorRuntime.wrap(function _callee47$ (_context47) {
           while (1) {
@@ -4879,7 +4883,7 @@ try {
                   break
                 }
 
-                hash = (_data$responseText$ma10 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1]
+                hash = (_data$responseText$ma11 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]
 
                 if (!hash) {
                   _context47.next = 24
@@ -5144,7 +5148,7 @@ try {
 
     var getVkId = /* #__PURE__ */(function () {
       var _ref58 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee50 (name) {
-        var logStatus, _yield$httpRequest44, result, statusText, status, data, _data$responseText$ma11, _data$responseText$ma12, _ref59, _ref60, groupAct, groupId, groupHash, publicHash, publicPid, publicJoined
+        var logStatus, _yield$httpRequest44, result, statusText, status, data, _data$responseText$ma12, _data$responseText$ma13, _ref59, _ref60, groupAct, groupId, groupHash, publicHash, publicPid, publicJoined
 
         return regeneratorRuntime.wrap(function _callee50$ (_context50) {
           while (1) {
@@ -5190,8 +5194,8 @@ try {
                 }
 
                 _ref59 = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || [], _ref60 = _slicedToArray(_ref59, 4), groupAct = _ref60[1], groupId = _ref60[2], groupHash = _ref60[3]
-                publicHash = (_data$responseText$ma11 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]
-                publicPid = (_data$responseText$ma12 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1]
+                publicHash = (_data$responseText$ma12 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1]
+                publicPid = (_data$responseText$ma13 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1]
                 publicJoined = !data.responseText.includes('Public.subscribe')
 
                 if (!(groupAct && groupId && groupHash)) {
@@ -5742,7 +5746,7 @@ try {
 
     var getYtbToken = /* #__PURE__ */(function () {
       var _ref67 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee54 (link, type) {
-        var logStatus, _yield$httpRequest47, result, statusText, status, data, _data$responseText$ma13, _ref68, apiKey, context, _JSON$parse, client, request, _data$responseText$ma14, channelId, _data$responseText$ma15, _data$responseText$ma16, videoId, likeParams
+        var logStatus, _yield$httpRequest47, result, statusText, status, data, _data$responseText$ma14, _ref68, apiKey, context, _JSON$parse, client, request, _data$responseText$ma15, channelId, _data$responseText$ma16, _data$responseText$ma17, videoId, likeParams
 
         return regeneratorRuntime.wrap(function _callee54$ (_context54) {
           while (1) {
@@ -5786,7 +5790,7 @@ try {
                 })
 
               case 14:
-                apiKey = (_data$responseText$ma13 = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1]
+                apiKey = (_data$responseText$ma14 = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1]
                 context = ((_ref68 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref68 === void 0 ? void 0 : _ref68[1]) || '{}'
                 _JSON$parse = JSON.parse(context), client = _JSON$parse.client, request = _JSON$parse.request
 
@@ -5802,7 +5806,7 @@ try {
                   break
                 }
 
-                channelId = (_data$responseText$ma14 = data.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1]
+                channelId = (_data$responseText$ma15 = data.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1]
 
                 if (!channelId) {
                   _context54.next = 26
@@ -5833,8 +5837,8 @@ try {
                   break
                 }
 
-                videoId = (_data$responseText$ma15 = data.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1]
-                likeParams = (_data$responseText$ma16 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
+                videoId = (_data$responseText$ma16 = data.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
+                likeParams = (_data$responseText$ma17 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1]
 
                 if (!videoId) {
                   _context54.next = 38
@@ -5912,7 +5916,7 @@ try {
 
     var toggleYtbActions = /* #__PURE__ */(function () {
       var _ref70 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee55 (_ref69) {
-        var website, type, elements, action, _ref69$toFinalUrl, toFinalUrl, _iterator8, _step8, element, link
+        var website, type, elements, action, _ref69$toFinalUrl, toFinalUrl, _iterator8, _step8, element, link, _link$match
 
         return regeneratorRuntime.wrap(function _callee55$ (_context55) {
           while (1) {
@@ -5939,7 +5943,7 @@ try {
 
               case 7:
                 if ((_step8 = _iterator8.n()).done) {
-                  _context55.next = 23
+                  _context55.next = 24
                   break
                 }
 
@@ -5950,65 +5954,69 @@ try {
                   link = toFinalUrl[element] || ''
                 }
 
+                if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/channel\/.*/.test(link)) {
+                  link = (_link$match = link.match(/url=(https:\/\/www.youtube.com\/channel\/.*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+                }
+
                 if (!link) {
-                  _context55.next = 21
+                  _context55.next = 22
                   break
                 }
 
                 _context55.t0 = type
-                _context55.next = _context55.t0 === 'channel' ? 15 : _context55.t0 === 'video' ? 18 : 21
+                _context55.next = _context55.t0 === 'channel' ? 16 : _context55.t0 === 'video' ? 19 : 22
                 break
 
-              case 15:
-                _context55.next = 17
+              case 16:
+                _context55.next = 18
                 return toggleYtbChannel(link, action === 'fuck')
 
-              case 17:
-                return _context55.abrupt('break', 21)
-
               case 18:
-                _context55.next = 20
+                return _context55.abrupt('break', 22)
+
+              case 19:
+                _context55.next = 21
                 return toggleLikeYtbVideo(link, action === 'fuck')
 
-              case 20:
-                return _context55.abrupt('break', 21)
-
               case 21:
+                return _context55.abrupt('break', 22)
+
+              case 22:
                 _context55.next = 7
                 break
 
-              case 23:
-                _context55.next = 28
+              case 24:
+                _context55.next = 29
                 break
 
-              case 25:
-                _context55.prev = 25
+              case 26:
+                _context55.prev = 26
                 _context55.t1 = _context55.catch(5)
 
                 _iterator8.e(_context55.t1)
 
-              case 28:
-                _context55.prev = 28
+              case 29:
+                _context55.prev = 29
 
                 _iterator8.f()
 
-                return _context55.finish(28)
+                return _context55.finish(29)
 
-              case 31:
-                _context55.next = 36
+              case 32:
+                _context55.next = 37
                 break
 
-              case 33:
-                _context55.prev = 33
+              case 34:
+                _context55.prev = 34
                 _context55.t2 = _context55.catch(1)
                 throwError(_context55.t2, 'toggleYtbActions')
 
-              case 36:
+              case 37:
               case 'end':
                 return _context55.stop()
             }
           }
-        }, _callee55, null, [[1, 33], [5, 25, 28, 31]])
+        }, _callee55, null, [[1, 34], [5, 26, 29, 32]])
       }))
 
       return function toggleYtbActions (_x54) {
@@ -6752,9 +6760,9 @@ try {
 
     var getId = /* #__PURE__ */(function () {
       var _ref106 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee112 () {
-        var _link$match7, _link$match8, _link$match9, _ref109, _link$match10, _link$match11, _link$match14, _link$match15, _link$match16, _link$match17
+        var _link$match8, _link$match9, _link$match10, _ref109, _link$match11, _link$match12, _link$match15, _link$match16, _link$match17, _link$match18
 
-        var _yield$Swal$fire$then, _yield$Swal$fire$then2, type, link, result, _link$match12, _link$match13, userName, _yield$getYtbToken3, params, _yield$getYtbToken4, _params
+        var _yield$Swal$fire$then, _yield$Swal$fire$then2, type, link, result, _link$match13, _link$match14, userName, _yield$getYtbToken3, params, _yield$getYtbToken4, _params
 
         return regeneratorRuntime.wrap(function _callee112$ (_context113) {
           while (1) {
@@ -6863,15 +6871,15 @@ try {
                 break
 
               case 12:
-                result = (_link$match7 = link.match(/steamcommunity\.com\/groups\/([^/]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]
+                result = (_link$match8 = link.match(/steamcommunity\.com\/groups\/([^/]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1]
                 return _context113.abrupt('break', 49)
 
               case 14:
-                result = (_link$match8 = link.match(/store\.steampowered\.com\/app\/([\d]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1]
+                result = (_link$match9 = link.match(/store\.steampowered\.com\/app\/([\d]+)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1]
                 return _context113.abrupt('break', 49)
 
               case 16:
-                result = (_link$match9 = link.match(/store\.steampowered\.com\/curator\/([\d]+)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1]
+                result = (_link$match10 = link.match(/store\.steampowered\.com\/curator\/([\d]+)/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1]
                 return _context113.abrupt('break', 49)
 
               case 18:
@@ -6879,34 +6887,34 @@ try {
                 return _context113.abrupt('break', 49)
 
               case 20:
-                result = (_link$match10 = link.match(/discord\.com\/invite\/(.+)/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1]
+                result = (_link$match11 = link.match(/discord\.com\/invite\/(.+)/)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1]
                 return _context113.abrupt('break', 49)
 
               case 22:
-                result = (_link$match11 = link.match(/www\.instagram\.com\/(.+)?\//)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1]
+                result = (_link$match12 = link.match(/www\.instagram\.com\/(.+)?\//)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1]
                 return _context113.abrupt('break', 49)
 
               case 24:
-                result = (_link$match12 = link.match(/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1]
-                userName = (_link$match13 = link.match(/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]
+                result = (_link$match13 = link.match(/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]
+                userName = (_link$match14 = link.match(/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1]
                 if (userName) userName = 'u_' + userName
                 result = result || userName
                 return _context113.abrupt('break', 49)
 
               case 29:
-                result = (_link$match14 = link.match(/www\.twitch\.tv\/(.+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1]
+                result = (_link$match15 = link.match(/www\.twitch\.tv\/(.+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1]
                 return _context113.abrupt('break', 49)
 
               case 31:
-                result = (_link$match15 = link.match(/twitter\.com\/(.+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1]
+                result = (_link$match16 = link.match(/twitter\.com\/(.+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1]
                 return _context113.abrupt('break', 49)
 
               case 33:
-                result = (_link$match16 = link.match(/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1]
+                result = (_link$match17 = link.match(/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1]
                 return _context113.abrupt('break', 49)
 
               case 35:
-                result = (_link$match17 = link.match(/vk\.com\/([^/]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1]
+                result = (_link$match18 = link.match(/vk\.com\/([^/]+)/)) === null || _link$match18 === void 0 ? void 0 : _link$match18[1]
                 return _context113.abrupt('break', 49)
 
               case 37:
@@ -9779,9 +9787,9 @@ try {
                 var data = _ref86.data
 
                 if (data !== null && data !== void 0 && (_data$finalUrl = data.finalUrl) !== null && _data$finalUrl !== void 0 && _data$finalUrl.includes('newshub/app')) {
-                  var _data$responseText$ma17
+                  var _data$responseText$ma18
 
-                  var div = (_data$responseText$ma17 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[0]
+                  var div = (_data$responseText$ma18 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[0]
 
                   if (!div) {
                     return {
@@ -11431,7 +11439,7 @@ try {
         var _this29 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee88 () {
-          var callback, taskInfoHistory, status, tasks, pro, _iterator33, _step33, task, link, taskDes, _link$match, groupName, _link$match2, gameId
+          var callback, taskInfoHistory, status, tasks, pro, _iterator33, _step33, task, link, taskDes, _link$match2, groupName, _link$match3, gameId
 
           return regeneratorRuntime.wrap(function _callee88$ (_context89) {
             while (1) {
@@ -11491,7 +11499,7 @@ try {
                               }
                             }))
                           } else if (/steamcommunity\.com\/groups\//.test(link)) {
-                            groupName = (_link$match = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+                            groupName = (_link$match2 = link.match(/steamcommunity\.com\/groups\/([\w\d\-_]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
 
                             if (groupName) {
                               _this29.currentTaskInfo.groups.push(groupName)
@@ -11499,7 +11507,7 @@ try {
                               _this29.taskInfo.groups.push(groupName)
                             }
                           } else if (/store\.steampowered\.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
-                            gameId = (_link$match2 = link.match(/app\/([\d]+)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1]
+                            gameId = (_link$match3 = link.match(/app\/([\d]+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
 
                             if (gameId) {
                               _this29.currentTaskInfo.wGames.push(gameId)
@@ -11970,11 +11978,11 @@ try {
 
             try {
               for (_iterator35.s(); !(_step35 = _iterator35.n()).done;) {
-                var _link$match3
+                var _link$match4
 
                 var discordLink = _step35.value
                 var link = $(discordLink).attr('href')
-                var inviteId = link === null || link === void 0 ? void 0 : (_link$match3 = link.match(/invite\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[1]
+                var inviteId = link === null || link === void 0 ? void 0 : (_link$match4 = link.match(/invite\/(.+)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]
 
                 if (inviteId) {
                   this.addBtn(discordLink, 'toggleDiscord', inviteId, '', ['加入', '退出'])
@@ -11993,13 +12001,13 @@ try {
 
             try {
               for (_iterator36.s(); !(_step36 = _iterator36.n()).done;) {
-                var _link$match4
+                var _link$match5
 
                 var redditLink = _step36.value
 
                 var _link = $(redditLink).attr('href')
 
-                var name = _link === null || _link === void 0 ? void 0 : (_link$match4 = _link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]
+                var name = _link === null || _link === void 0 ? void 0 : (_link$match5 = _link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]
 
                 if (name) {
                   this.addBtn(redditLink, 'toggleREDDIT', name, '', ['加入', '退出'])
@@ -12951,7 +12959,7 @@ try {
         var _this39 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee102 () {
-          var type, items, maxPoint, myPoint, _iterator47, _step47, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques10, result, statusText, status, data, _data$responseText$ma18, points
+          var type, items, maxPoint, myPoint, _iterator47, _step47, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques10, result, statusText, status, data, _data$responseText$ma19, points
 
           return regeneratorRuntime.wrap(function _callee102$ (_context103) {
             while (1) {
@@ -13034,7 +13042,7 @@ try {
                   if (result === 'Success') {
                     if (data.responseText && /You've entered this giveaway/gim.test(data.responseText)) {
                       logStatus.success()
-                      points = (_data$responseText$ma18 = data.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1]
+                      points = (_data$responseText$ma19 = data.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1]
 
                       if (type === 'points' && points) {
                         if (debug) console.log(getI18n('pointsLeft') + points)
@@ -13182,10 +13190,10 @@ try {
 
                 if ($(step).find('span:contains(Success)').length === 0) {
                   if ($(step).find("a[href*='store.steampowered.com/curator/']").length > 0) {
-                    var _link$match5
+                    var _link$match6
 
                     var link = $(step).find("a[href*='store.steampowered.com/curator/']").attr('href')
-                    var curatorId = (_link$match5 = link.match(/curator\/([\d]+)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]
+                    var curatorId = (_link$match6 = link.match(/curator\/([\d]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]
 
                     if (curatorId) {
                       this.currentTaskInfo.curators.push(curatorId)
@@ -13652,7 +13660,7 @@ try {
         var _this45 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee106 () {
-          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator52, _step53, task, icon, a, link, _link$match6, path
+          var callback, taskInfoHistory, status, tasksContainer, pro, _iterator52, _step53, task, icon, a, link, _link$match7, path
 
           return regeneratorRuntime.wrap(function _callee106$ (_context107) {
             while (1) {
@@ -13711,7 +13719,7 @@ try {
                           } else if (icon.hasClass('fa-link')) {
                             _this45.currentTaskInfo.links.push(link)
                           } else if (icon.hasClass('fa-vk')) {
-                            path = (_link$match6 = link.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]
+                            path = (_link$match7 = link.match(/https:\/\/vk.com\/([^/]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]
 
                             if (path) {
                               _this45.currentTaskInfo.vks.push(path)

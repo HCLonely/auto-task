@@ -207,5 +207,6 @@
   "voteupWorkshop": "正在点赞创意工坊物品",
   "getCountryInfo": "正在获取地区信息...",
   "notNeedChangeCountry": "当前地区不支持更换",
-  "noAnotherCountry": "没有可以更换的地区，请确认梯子配置正确"
+  "noAnotherCountry": "没有可以更换的地区，请确认梯子配置正确",
+  "changeCountry":"正在切换地区"
 }

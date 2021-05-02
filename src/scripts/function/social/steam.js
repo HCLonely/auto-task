@@ -117,8 +117,8 @@ async function getCountryInfo () {
     })
     if (result === 'Success') {
       if (data.status === 200) {
-        const userCountryCurrency = data.match(/a class="inactive_selection".*?id="(.+?)"/)?.[1]
-        const country = [...data.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)].map(e => e[1])
+        const userCountryCurrency = data.responseText.match(/a class="inactive_selection".*?id="(.+?)"/)?.[1]
+        const country = [...data.responseText.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)].map(e => e[1])
         if (userCountryCurrency && country.length > 0) {
           logStatus.success()
           return { userCountryCurrency, country }
@@ -145,8 +145,8 @@ async function changeCountry (cc) {
       if (!userCountryCurrency || !country) return
       if (userCountryCurrency !== 'CN') return echoLog({ type: 'text', text: 'notNeedChangeCountry' })
       const anotherCountry = country.filter(e => e && e !== 'CN')
-      if (!anotherCountry) return echoLog({ type: 'text', text: 'noAnotherCountry' })
-      cc = anotherCountry
+      if (!anotherCountry || anotherCountry.length === 0) return echoLog({ type: 'text', text: 'noAnotherCountry' })
+      cc = anotherCountry[0]
     }
     const logStatus = echoLog({ type: 'changeCountry', text: cc })
     const { result, statusText, status, data } = await httpRequest({
@@ -156,7 +156,7 @@ async function changeCountry (cc) {
       data: $.param({ cc, sessionid: steamInfo.storeSessionID })
     })
     if (result === 'Success') {
-      if (data.status === 200 && data.responseText === 'true') {
+      if (data.status === 200 && data.responseText === true) {
         const { userCountryCurrency } = await getCountryInfo()
         if (userCountryCurrency === cc) {
           logStatus.success()
@@ -447,9 +447,9 @@ async function addWishlist (gameId) {
     })
     if (resultR === 'Success') {
       if (dataR.status === 200) {
-        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('已在库中')) {
+        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="already_in_library"')) {
           logStatus.success()
-        } else if ((dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('添加至您的愿望单')) || !dataR.responseText.includes('class="queue_actions_ctn"')) {
+        } else if ((dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('id="add_to_wishlist_area_success" style="display: none;')) || !dataR.responseText.includes('class="queue_actions_ctn"')) {
           logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')
         } else {
           logStatus.success()
@@ -517,7 +517,7 @@ async function toggleGame (gameId, follow) {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
       data: $.param(requestData)
     })
-    if (result === 'Success' && data.status === 200 && data.responseText === 'true') {
+    if (result === 'Success' && data.status === 200 && data.responseText === true) {
       return logStatus.success()
     }
     const { result: resultR, statusText: statusTextR, status: statusR, data: dataR } = await httpRequest({

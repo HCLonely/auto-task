@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.5.7
+// @version            3.5.8
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.7/require/require.min.js#md5=68007d36810a2097bd1e638b54bea766
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.7/require/fuck-task.min.css#md5=9d0ff55f65f10782c682f6c9a917aa6f
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.8/require/require.min.js#md5=68007d36810a2097bd1e638b54bea766
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.8/require/fuck-task.min.css#md5=a9d18bf747e71f3267da29d4abebd7f6
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -922,7 +922,7 @@ try {
                   break
                 }
 
-                userCountryCurrency = (_data$responseText$ma5 = data.responseText.match(/a class="inactive_selection".*?id="(.+?)"/)) === null || _data$responseText$ma5 === void 0 ? void 0 : _data$responseText$ma5[1]
+                userCountryCurrency = (_data$responseText$ma5 = data.responseText.match(/<input id="usercountrycurrency".*?value="(.+?)"/)) === null || _data$responseText$ma5 === void 0 ? void 0 : _data$responseText$ma5[1]
                 country = _toConsumableArray(data.responseText.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)).map(function (e) {
                   return e[1]
                 })
@@ -6233,9 +6233,11 @@ try {
 
         try {
           for (_iterator9.s(); !(_step9 = _iterator9.n()).done;) {
+            var _GM_getValue2
+
             var item = _step9.value
 
-            if (item.link === taskInfo.link) {
+            if (((_GM_getValue2 = GM_getValue('delayNotice-' + item)) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.link) === window.location.href) {
               return
             }
           }
@@ -6274,6 +6276,21 @@ try {
         })
       } catch (e) {
         throwError(e, 'deleteDelayNotice')
+      }
+    }
+
+    var neverNotice = function neverNotice (time) {
+      try {
+        var item = GM_getValue('delayNotice-' + time)
+        item.neverNotice = !item.neverNotice
+        GM_setValue('delayNotice-' + time, item)
+        var btn = $('[data-time='.concat(time, ']'))
+        btn.toggleClass('btn-primary').toggleClass('btn-outline-primary')
+        var svgPath = btn.find('path')
+        var svgColor = svgPath.attr('fill')
+        svgPath.attr('fill', svgColor === '#fff' ? '#1296db' : '#fff')
+      } catch (e) {
+        throwError(e, 'neverNotice')
       }
     }
 
@@ -7428,7 +7445,8 @@ try {
       delay: delay,
       addDelayNotice: addDelayNotice,
       deleteDelayNotice: deleteDelayNotice,
-      notice: notice
+      notice: notice,
+      neverNotice: neverNotice
     }
     var banana = {
       test: function test () {
@@ -14132,7 +14150,7 @@ try {
 
       if (pageHost === 'auto-task.hclonely.com' || pageHost === 'auto-task-test.hclonely.com') {
         if (window.location.pathname.includes('setting')) {
-          var _GM_getValue2, _GM_getValue2$global, _GM_getValue2$global$
+          var _GM_getValue3, _GM_getValue3$global, _GM_getValue3$global$
 
           unsafeWindow.GM_info = GM_info // eslint-disable-line camelcase
 
@@ -14140,7 +14158,7 @@ try {
 
           unsafeWindow.language = language
           unsafeWindow.getId = getId
-          typeof ((_GM_getValue2 = GM_getValue('conf')) === null || _GM_getValue2 === void 0 ? void 0 : (_GM_getValue2$global = _GM_getValue2.global) === null || _GM_getValue2$global === void 0 ? void 0 : (_GM_getValue2$global$ = _GM_getValue2$global.fuck) === null || _GM_getValue2$global$ === void 0 ? void 0 : _GM_getValue2$global$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
+          typeof ((_GM_getValue3 = GM_getValue('conf')) === null || _GM_getValue3 === void 0 ? void 0 : (_GM_getValue3$global = _GM_getValue3.global) === null || _GM_getValue3$global === void 0 ? void 0 : (_GM_getValue3$global$ = _GM_getValue3$global.fuck) === null || _GM_getValue3$global$ === void 0 ? void 0 : _GM_getValue3$global$.joinSteamGroup) !== 'boolean' ? loadSettings(defaultConf) : loadSettings(config)
         } else if (window.location.pathname.includes('announcement')) {
           loadAnnouncement()
         } else if (window.location.pathname.includes('notice-list')) {
@@ -14167,14 +14185,14 @@ try {
 
           unsafeWindow.remove = /* #__PURE__ */(function () {
             var _remove = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee113 (item) {
-              var _GM_getValue3, _config$giveawaysu2, _taskInfo3, conf
+              var _GM_getValue4, _config$giveawaysu2, _taskInfo3, conf
 
               return regeneratorRuntime.wrap(function _callee113$ (_context114) {
                 while (1) {
                   switch (_context114.prev = _context114.next) {
                     case 0:
                       _context114.prev = 0
-                      _taskInfo3 = (_GM_getValue3 = GM_getValue('delayNotice-' + item)) === null || _GM_getValue3 === void 0 ? void 0 : _GM_getValue3.taskInfo
+                      _taskInfo3 = (_GM_getValue4 = GM_getValue('delayNotice-' + item)) === null || _GM_getValue4 === void 0 ? void 0 : _GM_getValue4.taskInfo
 
                       if (_taskInfo3) {
                         _context114.next = 4

@@ -128,7 +128,7 @@ function addDelayNotice (taskInfo, echoLog, day) {
     const time = new Date().getTime()
     const noticeList = GM_getValue('noticeList') || []
     for (const item of noticeList) {
-      if (item.link === taskInfo.link) {
+      if (GM_getValue('delayNotice-' + item)?.link === window.location.href) {
         return
       }
     }

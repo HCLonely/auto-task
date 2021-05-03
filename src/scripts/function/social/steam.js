@@ -117,7 +117,7 @@ async function getCountryInfo () {
     })
     if (result === 'Success') {
       if (data.status === 200) {
-        const userCountryCurrency = data.responseText.match(/a class="inactive_selection".*?id="(.+?)"/)?.[1]
+        const userCountryCurrency = data.responseText.match(/<input id="usercountrycurrency".*?value="(.+?)"/)?.[1]
         const country = [...data.responseText.matchAll(/<div class="currency_change_option .*?" data-country="(.+?)" >/g)].map(e => e[1])
         if (userCountryCurrency && country.length > 0) {
           logStatus.success()

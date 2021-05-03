@@ -156,20 +156,22 @@ async function changeCountry (cc) {
       data: $.param({ cc, sessionid: steamInfo.storeSessionID })
     })
     if (result === 'Success') {
-      if (data.status === 200 && data.responseText === true) {
+      if (data.status === 200 && data.responseText === 'true') {
         const { userCountryCurrency } = await getCountryInfo()
         if (userCountryCurrency === cc) {
           logStatus.success()
+          return userCountryCurrency
         } else {
           logStatus.error('Error: change country filed')
+          return 'CN'
         }
       } else {
         logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
-        return {}
+        return 'CN'
       }
     } else {
       logStatus.error(`${result}:${statusText}(${status})`)
-      return {}
+      return 'CN'
     }
   } catch (e) {
     throwError(e, 'changeCountry')

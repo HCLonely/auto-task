@@ -4,7 +4,7 @@ import { unique, throwError, delay } from '../tool'
 
 async function verifyDiscordAuth () {
   try {
-    const logStatus = echoLog({ type: 'verifyDiscordAuth' })
+    const logStatus = echoLog({ type: 'text', text: 'verifyDiscordAuth' })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://discord.com/api/v6/users/@me',
       method: 'HEAD',

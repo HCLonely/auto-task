@@ -184,8 +184,9 @@ function notice (options, callback) {
   }
 }
 async function assignment ({ groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl }, config, action, website) {
+  let userCountryCurrency = 'CN'
   if (globalConf.other.changeCountry) {
-    await changeCountry()
+    userCountryCurrency = await changeCountry()
   }
   const pro = []
   const fuck = action === 'fuck'
@@ -243,7 +244,11 @@ async function assignment ({ groups, forums, curators, publishers, developers, f
   if (discords && discords.length > 0 && config[fuck ? 'joinDiscordServer' : 'leaveDiscordServer']) {
     pro.push(toggleActions({ website, social: 'discord', elements: discords, action, toFinalUrl }))
   }
-  return Promise.all(pro)
+  const result = await Promise.all(pro)
+  if (userCountryCurrency !== 'CN') {
+    await changeCountry('CN')
+  }
+  return result
 }
 
 export {

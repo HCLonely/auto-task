@@ -59,9 +59,6 @@ function echoLog (e) {
       case 'changeCountry':
         ele = $(`<li>${getI18n('changeCountry')}${e.text}...<font></font></li>`)
         break
-      case 'verifyDiscordAuth':
-        ele = $(`<li>${getI18n('verifyDiscordAuth')}...<font></font></li>`)
-        break
       case 'joinDiscordServer':
       case 'leaveDiscordServer':
       case 'getDiscordGuild':
@@ -69,9 +66,6 @@ function echoLog (e) {
         break
       case 'updateDiscordAuth':
         ele = $(`<li style="color:red;">${getI18n('updateDiscordAuth')}</li>`)
-        break
-      case 'verifyTwitchAuth':
-        ele = $(`<li>${getI18n('verifyTwitchAuth')}...<font></font></li>`)
         break
       case 'followTwitchChannel':
       case 'unfollowTwitchChannel':
@@ -85,9 +79,6 @@ function echoLog (e) {
       case 'unfollowIns':
         ele = $(`<li>${getI18n(e.type)}<a href="https://www.instagram.com/${e.text}/" target="_blank">${e.text}</a>...<font></font></li>`)
         break
-      case 'updateTwitterInfo':
-        ele = $(`<li>${getI18n('updateTwitterInfo')}...<font></font></li>`)
-        break
       case 'getTwitterUserId':
       case 'followTwitterUser':
       case 'unfollowTwitterUser':
@@ -96,9 +87,6 @@ function echoLog (e) {
       case 'retweet':
       case 'unretweet':
         ele = $(`<li>${getI18n(e.type)}${e.text}...<font></font></li>`)
-        break
-      case 'updateRedditInfo':
-        ele = $(`<li>${getI18n('updateRedditInfo')}...<font></font></li>`)
         break
       case 'joinReddit':
       case 'leaveReddit':
@@ -115,12 +103,6 @@ function echoLog (e) {
       case 'likeYtbVideo':
       case 'unlikeYtbVideo':
         ele = $(`<li>${getI18n(e.type)}<a href="https://www.youtube.com/watch?v=${e.text}" target="_blank">${e.text}</a>...<font></font></li>`)
-        break
-      case 'getYtbToken':
-        ele = $(`<li>${getI18n('getYtbToken')}...<font></font></li>`)
-        break
-      case 'verifyVkLogin':
-        ele = $(`<li>${getI18n('verifyVkLogin')}...<font></font></li>`)
         break
       case 'getVkId':
       case 'joinVkGroup':

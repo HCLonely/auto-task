@@ -5,7 +5,7 @@ import { getI18n } from '../../i18n'
 
 async function verifyVkLogin () {
   try {
-    const logStatus = echoLog({ type: 'verifyVkLogin' })
+    const logStatus = echoLog({ type: 'text', text: 'verifyVkLogin' })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://vk.com/im',
       method: 'GET'

@@ -164,7 +164,7 @@ async function toggleLikeYtbVideo (link, like = true) {
 
 async function getYtbToken (link, type) {
   try {
-    const logStatus = echoLog({ type: 'getYtbToken' })
+    const logStatus = echoLog({ type: 'text', text: 'getYtbToken' })
     const { result, statusText, status, data } = await httpRequest({
       url: link,
       method: 'GET'

@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.5.6
+// @version            3.5.7
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.6/require/require.min.js#md5=9dd39904e974fb5880281550b927e71c
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.6/require/fuck-task.min.css#md5=2fac31e0f971d99a607795f698bfcaf6
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.7/require/require.min.js#md5=68007d36810a2097bd1e638b54bea766
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.5.7/require/fuck-task.min.css#md5=9d0ff55f65f10782c682f6c9a917aa6f
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -191,10 +191,6 @@ try {
             ele = $('<li>'.concat(getI18n('changeCountry')).concat(e.text, '...<font></font></li>'))
             break
 
-          case 'verifyDiscordAuth':
-            ele = $('<li>'.concat(getI18n('verifyDiscordAuth'), '...<font></font></li>'))
-            break
-
           case 'joinDiscordServer':
           case 'leaveDiscordServer':
           case 'getDiscordGuild':
@@ -203,10 +199,6 @@ try {
 
           case 'updateDiscordAuth':
             ele = $('<li style="color:red;">'.concat(getI18n('updateDiscordAuth'), '</li>'))
-            break
-
-          case 'verifyTwitchAuth':
-            ele = $('<li>'.concat(getI18n('verifyTwitchAuth'), '...<font></font></li>'))
             break
 
           case 'followTwitchChannel':
@@ -224,10 +216,6 @@ try {
             ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.instagram.com/').concat(e.text, '/" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
             break
 
-          case 'updateTwitterInfo':
-            ele = $('<li>'.concat(getI18n('updateTwitterInfo'), '...<font></font></li>'))
-            break
-
           case 'getTwitterUserId':
           case 'followTwitterUser':
           case 'unfollowTwitterUser':
@@ -237,10 +225,6 @@ try {
           case 'retweet':
           case 'unretweet':
             ele = $('<li>'.concat(getI18n(e.type)).concat(e.text, '...<font></font></li>'))
-            break
-
-          case 'updateRedditInfo':
-            ele = $('<li>'.concat(getI18n('updateRedditInfo'), '...<font></font></li>'))
             break
 
           case 'joinReddit':
@@ -261,14 +245,6 @@ try {
           case 'likeYtbVideo':
           case 'unlikeYtbVideo':
             ele = $('<li>'.concat(getI18n(e.type), '<a href="https://www.youtube.com/watch?v=').concat(e.text, '" target="_blank">').concat(e.text, '</a>...<font></font></li>'))
-            break
-
-          case 'getYtbToken':
-            ele = $('<li>'.concat(getI18n('getYtbToken'), '...<font></font></li>'))
-            break
-
-          case 'verifyVkLogin':
-            ele = $('<li>'.concat(getI18n('verifyVkLogin'), '...<font></font></li>'))
             break
 
           case 'getVkId':
@@ -1089,12 +1065,12 @@ try {
                 data = _yield$httpRequest5.data
 
                 if (!(result === 'Success')) {
-                  _context7.next = 36
+                  _context7.next = 42
                   break
                 }
 
-                if (!(data.status === 200 && data.responseText === true)) {
-                  _context7.next = 32
+                if (!(data.status === 200 && data.responseText === 'true')) {
+                  _context7.next = 38
                   break
                 }
 
@@ -1105,42 +1081,49 @@ try {
                 _yield$getCountryInfo2 = _context7.sent
                 _userCountryCurrency = _yield$getCountryInfo2.userCountryCurrency
 
-                if (_userCountryCurrency === cc) {
-                  logStatus.success()
-                } else {
-                  logStatus.error('Error: change country filed')
+                if (!(_userCountryCurrency === cc)) {
+                  _context7.next = 34
+                  break
                 }
 
-                _context7.next = 34
-                break
-
-              case 32:
-                logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
-                return _context7.abrupt('return', {})
+                logStatus.success()
+                return _context7.abrupt('return', _userCountryCurrency)
 
               case 34:
-                _context7.next = 38
-                break
+                logStatus.error('Error: change country filed')
+                return _context7.abrupt('return', 'CN')
 
               case 36:
-                logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
-                return _context7.abrupt('return', {})
-
-              case 38:
-                _context7.next = 43
+                _context7.next = 40
                 break
 
+              case 38:
+                logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+                return _context7.abrupt('return', 'CN')
+
               case 40:
-                _context7.prev = 40
+                _context7.next = 44
+                break
+
+              case 42:
+                logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
+                return _context7.abrupt('return', 'CN')
+
+              case 44:
+                _context7.next = 49
+                break
+
+              case 46:
+                _context7.prev = 46
                 _context7.t0 = _context7.catch(0)
                 throwError(_context7.t0, 'changeCountry')
 
-              case 43:
+              case 49:
               case 'end':
                 return _context7.stop()
             }
           }
-        }, _callee7, null, [[0, 40]])
+        }, _callee7, null, [[0, 46]])
       }))
 
       return function changeCountry (_x4) {
@@ -2634,7 +2617,8 @@ try {
               case 0:
                 _context24.prev = 0
                 logStatus = echoLog({
-                  type: 'verifyDiscordAuth'
+                  type: 'text',
+                  text: 'verifyDiscordAuth'
                 })
                 _context24.next = 4
                 return httpRequest({
@@ -3448,7 +3432,8 @@ try {
               case 0:
                 _context33.prev = 0
                 logStatus = echoLog({
-                  type: 'updateTwitterInfo'
+                  type: 'text',
+                  text: 'updateTwitterInfo'
                 })
                 _context33.next = 4
                 return httpRequest({
@@ -4002,7 +3987,8 @@ try {
               case 0:
                 _context38.prev = 0
                 logStatus = echoLog({
-                  type: 'verifyTwitchAuth'
+                  type: 'text',
+                  text: 'verifyTwitchAuth'
                 })
                 _context38.next = 4
                 return httpRequest({
@@ -4376,7 +4362,8 @@ try {
               case 0:
                 _context42.prev = 0
                 logStatus = echoLog({
-                  type: 'updateRedditInfo'
+                  type: 'text',
+                  text: 'updateRedditInfo'
                 })
                 _context42.next = 4
                 return httpRequest({
@@ -4673,7 +4660,8 @@ try {
               case 0:
                 _context45.prev = 0
                 logStatus = echoLog({
-                  type: 'verifyVkLogin'
+                  type: 'text',
+                  text: 'verifyVkLogin'
                 })
                 _context45.next = 4
                 return httpRequest({
@@ -5754,7 +5742,8 @@ try {
               case 0:
                 _context54.prev = 0
                 logStatus = echoLog({
-                  type: 'getYtbToken'
+                  type: 'text',
+                  text: 'getYtbToken'
                 })
                 _context54.next = 4
                 return httpRequest({
@@ -6304,22 +6293,26 @@ try {
 
     var assignment = /* #__PURE__ */(function () {
       var _ref73 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee57 (_ref72, config, action, website) {
-        var groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, pro, fuck
+        var groups, forums, curators, publishers, developers, franchises, fGames, wGames, announcements, discords, instagrams, twitchs, reddits, vks, twitterUsers, retweets, youtubeChannels, youtubeVideos, toFinalUrl, userCountryCurrency, pro, fuck, result
         return regeneratorRuntime.wrap(function _callee57$ (_context57) {
           while (1) {
             switch (_context57.prev = _context57.next) {
               case 0:
                 groups = _ref72.groups, forums = _ref72.forums, curators = _ref72.curators, publishers = _ref72.publishers, developers = _ref72.developers, franchises = _ref72.franchises, fGames = _ref72.fGames, wGames = _ref72.wGames, announcements = _ref72.announcements, discords = _ref72.discords, instagrams = _ref72.instagrams, twitchs = _ref72.twitchs, reddits = _ref72.reddits, vks = _ref72.vks, twitterUsers = _ref72.twitterUsers, retweets = _ref72.retweets, youtubeChannels = _ref72.youtubeChannels, youtubeVideos = _ref72.youtubeVideos, toFinalUrl = _ref72.toFinalUrl
+                userCountryCurrency = 'CN'
 
                 if (!globalConf.other.changeCountry) {
-                  _context57.next = 4
+                  _context57.next = 6
                   break
                 }
 
-                _context57.next = 4
+                _context57.next = 5
                 return changeCountry()
 
-              case 4:
+              case 5:
+                userCountryCurrency = _context57.sent
+
+              case 6:
                 pro = []
                 fuck = action === 'fuck'
 
@@ -6507,9 +6500,24 @@ try {
                   }))
                 }
 
-                return _context57.abrupt('return', Promise.all(pro))
+                _context57.next = 28
+                return Promise.all(pro)
 
-              case 25:
+              case 28:
+                result = _context57.sent
+
+                if (!(userCountryCurrency !== 'CN')) {
+                  _context57.next = 32
+                  break
+                }
+
+                _context57.next = 32
+                return changeCountry('CN')
+
+              case 32:
+                return _context57.abrupt('return', result)
+
+              case 33:
               case 'end':
                 return _context57.stop()
             }

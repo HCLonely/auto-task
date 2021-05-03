@@ -5,7 +5,7 @@ import { getI18n } from '../../i18n'
 
 async function updateTwitterInfo () {
   try {
-    const logStatus = echoLog({ type: 'updateTwitterInfo' })
+    const logStatus = echoLog({ type: 'text', text: 'updateTwitterInfo' })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://twitter.com/settings/account?k',
       method: 'HEAD',

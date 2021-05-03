@@ -43,7 +43,7 @@ function updateTwitchInfo (notice) {
 
 async function verifyTwitchAuth () {
   try {
-    const logStatus = echoLog({ type: 'verifyTwitchAuth' })
+    const logStatus = echoLog({ type: 'text', text: 'verifyTwitchAuth' })
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://gql.twitch.tv/gql',
       method: 'POST',

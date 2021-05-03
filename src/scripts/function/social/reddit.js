@@ -5,7 +5,7 @@ import { getI18n } from '../../i18n'
 
 async function updateRedditInfo () {
   try {
-    const logStatus = echoLog({ type: 'updateRedditInfo' })
+    const logStatus = echoLog({ type: 'text', text: 'updateRedditInfo' })
 
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://www.reddit.com/',

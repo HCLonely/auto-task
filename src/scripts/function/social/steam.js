@@ -516,34 +516,50 @@ async function toggleGame (gameId, follow) {
     const { result, data } = await httpRequest({
       url: 'https://store.steampowered.com/explore/followgame/',
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      },
       data: $.param(requestData)
     })
     if (result === 'Success' && data.status === 200 && data.responseText === true) {
-      return logStatus.success()
-    }
-    const { result: resultR, statusText: statusTextR, status: statusR, data: dataR } = await httpRequest({
-      url: 'https://store.steampowered.com/app/' + gameId,
-      method: 'GET'
-    })
-    if (resultR === 'Success') {
-      if (dataR.status === 200) {
-        if ((follow && dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')) || (!follow && !(dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="btnv6_blue_hoverfade btn_medium queue_btn_active" style="">')))) {
-          logStatus.success()
-        } else {
-          logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')
-        }
-      } else {
-        logStatus.error('Error:' + dataR.statusText + '(' + dataR.status + ')')
-      }
+      logStatus.success()
     } else {
-      logStatus.error(`${resultR}:${statusTextR}(${statusR})`)
+      const followed = await isFollowed(gameId)
+      console.log(followed)
+      if (follow === followed) {
+        logStatus.success()
+      } else {
+        logStatus.error('Error:' + data.statusText + '(' + data.status + ')')
+      }
     }
   } catch (e) {
     throwError(e, 'toggleGame')
   }
 }
 
+async function isFollowed (gameId) {
+  try {
+    const { result, data } = await httpRequest({
+      url: 'https://store.steampowered.com/app/' + gameId,
+      method: 'GET'
+    })
+    if (result === 'Success') {
+      if (data.status === 200) {
+        if ($(data.responseText.replace(/<img.*?>/g, '')).find('.queue_control_button.queue_btn_follow>.btnv6_blue_hoverfade.btn_medium.queue_btn_active').css('display') !== 'none') {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return null
+      }
+    } else {
+      return null
+    }
+  } catch (e) {
+    throwError(e, 'isFollowed')
+  }
+}
 // INFO: Steam announcement
 async function likeAnnouncements (rawMatch) {
   try {
@@ -661,11 +677,24 @@ async function toggleSteamActions ({ website, type, elements, action, toFinalUrl
           case 'publisher':
           case 'developer':
           case 'franchise':
-            elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
-            if (elementName) {
+            if (toFinalUrlElement.includes('curator')) {
               type = 'curator'
-            } else {
-              elementName = (toFinalUrlElement.includes('publisher') ? toFinalUrlElement.match(/publisher\/(.+)\/?/) : toFinalUrlElement.includes('developer') ? toFinalUrlElement.match(/developer\/(.+)\/?/) : (toFinalUrlElement.match(/pub\/(.+)\/?/) || toFinalUrlElement.match(/dev\/(.+)\/?/))) || toFinalUrlElement.match(/franchise\/(.+)\/?/)
+              elementName = toFinalUrlElement.match(/curator\/([\d]+)/)
+            } else if (toFinalUrlElement.includes('publisher')) {
+              type = 'publisher'
+              elementName = toFinalUrlElement.match(/publisher\/(.+)\/?/)
+            } else if (toFinalUrlElement.includes('developer')) {
+              type = 'developer'
+              elementName = toFinalUrlElement.match(/developer\/(.+)\/?/)
+            } else if (toFinalUrlElement.includes('pub')) {
+              type = 'pub'
+              elementName = toFinalUrlElement.match(/pub\/(.+)\/?/)
+            } else if (toFinalUrlElement.includes('dev')) {
+              type = 'dev'
+              elementName = toFinalUrlElement.match(/dev\/(.+)\/?/)
+            } else if (toFinalUrlElement.includes('franchise')) {
+              type = 'franchise'
+              elementName = toFinalUrlElement.match(/franchise\/(.+)\/?/)
             }
             break
             /* disable
@@ -706,6 +735,8 @@ async function toggleSteamActions ({ website, type, elements, action, toFinalUrl
           case 'curator':
             pro.push(toggleCurator(elementName[1], action === 'fuck'))
             break
+          case 'pub':
+          case 'dev':
           case 'publisher':
           case 'franchise':
           case 'developer':

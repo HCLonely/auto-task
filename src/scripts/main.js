@@ -302,7 +302,7 @@ function addLogElement () {
       throwError(e, '$(\'#check-update\').click')
     }
   })
-  $('#auto-task-setting,#auto-task-feedback').click(function () {
+  $('#auto-task-setting,#auto-task-feedback,#delay-notice-list').click(function () {
     try {
       window.open($(this).attr('data-href'), '_blank')
     } catch (e) {

@@ -79,6 +79,8 @@
 // @connect            raw.githubusercontent.com
 // @connect            t.me
 // @connect            bit.ly
+// @connect            giveaway.su
+// @connect            google.com
 // @connect            *
 // @run-at             document-end
 // ==/UserScript==

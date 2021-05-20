@@ -10,7 +10,10 @@ async function updateRedditInfo () {
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://www.reddit.com/',
       method: 'GET',
-      nochche: true
+      nochche: true,
+      headers: {
+        'Cache-Control': 'no-cache'
+      }
     })
     if (result === 'Success') {
       if (data.status === 200) {

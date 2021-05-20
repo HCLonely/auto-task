@@ -177,7 +177,6 @@ const defaultConf = {
     },
     enable: false
   },
-  */
   gamehag: {
     fuck: {
       joinSteamGroup: true,
@@ -195,6 +194,7 @@ const defaultConf = {
     },
     enable: false
   },
+  */
   prys: {
     fuck: {
       joinSteamGroup: true,

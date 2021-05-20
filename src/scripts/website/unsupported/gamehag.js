@@ -1,6 +1,6 @@
-import { getI18n } from '../i18n'
-import { fuc, throwError } from '../function/main'
-import { config, globalConf, debug } from '../config'
+import { getI18n } from '../../i18n'
+import { fuc, throwError } from '../../function/main'
+import { config, globalConf, debug } from '../../config'
 
 const gamehag = {
   test () {

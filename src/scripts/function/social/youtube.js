@@ -103,9 +103,9 @@ async function toggleLikeYtbVideo (link, like = true) {
       return { result: 'Skiped', statusText: 'OK', status: 605 }
     }
 
-    if (needLogin) return echoLog({ type: 'custom', text: `<li>${getI18n('loginYtb')}</li>` })
-    if (unknownLink) return echoLog({ type: 'custom', text: `<li>${getI18n('unsupportedLink')}</li>` })
-    if (!apiKey) return echoLog({ type: 'custom', text: '<li>"getYtbToken" failed</li>' })
+    if (needLogin) return echoLog({ type: 'text', text: `${getI18n('loginYtb')}` })
+    if (unknownLink) return echoLog({ type: 'text', text: `${getI18n('unsupportedLink')}` })
+    if (!apiKey) return echoLog({ type: 'text', text: '"getYtbToken" failed' })
 
     const logStatus = echoLog({ type: like ? 'likeYtbVideo' : 'unlikeYtbVideo', text: videoId })
     const nowTime = parseInt(new Date().getTime() / 1000)
@@ -190,7 +190,7 @@ async function getYtbToken (link, type) {
               return {}
             }
           } else if (type === 'likeVideo') {
-            const videoId = data.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)?.[1]
+            const videoId = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)?.[1]
             const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1]
             if (videoId) {
               logStatus.success()
@@ -230,8 +230,8 @@ async function toggleYtbActions ({ website, type, elements, action, toFinalUrl =
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         link = toFinalUrl[element] || ''
       }
-      if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/channel\/.*/.test(link)) {
-        link = link.match(/url=(https:\/\/www.youtube.com\/channel\/.*)/)?.[1]
+      if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+        link = link.match(/url=(https:\/\/www.youtube.com\/.*)/)?.[1]
       }
       if (link) {
         switch (type) {

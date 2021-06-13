@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.6.0
+// @version            3.6.1
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -36,8 +36,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.0/require/require.min.js#md5=92d5ee579fbb4039a6ef7aef66b32602
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.0/require/fuck-task.min.css#md5=06aeee82cb1ed4f53ac79c1c9cff9f0f
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.1/require/require.min.js#md5=92d5ee579fbb4039a6ef7aef66b32602
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.1/require/fuck-task.min.css#md5=4a9650799aea867355c4250fd411ebea
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -5690,8 +5690,8 @@ try {
                 }
 
                 return _context54.abrupt('return', echoLog({
-                  type: 'custom',
-                  text: '<li>'.concat(getI18n('loginYtb'), '</li>')
+                  type: 'text',
+                  text: ''.concat(getI18n('loginYtb'))
                 }))
 
               case 13:
@@ -5701,8 +5701,8 @@ try {
                 }
 
                 return _context54.abrupt('return', echoLog({
-                  type: 'custom',
-                  text: '<li>'.concat(getI18n('unsupportedLink'), '</li>')
+                  type: 'text',
+                  text: ''.concat(getI18n('unsupportedLink'))
                 }))
 
               case 15:
@@ -5712,8 +5712,8 @@ try {
                 }
 
                 return _context54.abrupt('return', echoLog({
-                  type: 'custom',
-                  text: '<li>"getYtbToken" failed</li>'
+                  type: 'text',
+                  text: '"getYtbToken" failed'
                 }))
 
               case 17:
@@ -5907,7 +5907,7 @@ try {
                   break
                 }
 
-                videoId = (_data$responseText$ma16 = data.responseText.match(/<link rel="shortlink" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
+                videoId = (_data$responseText$ma16 = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
                 likeParams = (_data$responseText$ma17 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1]
 
                 if (!videoId) {
@@ -6024,8 +6024,8 @@ try {
                   link = toFinalUrl[element] || ''
                 }
 
-                if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/channel\/.*/.test(link)) {
-                  link = (_link$match = link.match(/url=(https:\/\/www.youtube.com\/channel\/.*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
+                if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+                  link = (_link$match = link.match(/url=(https:\/\/www.youtube.com\/.*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
                 }
 
                 if (!link) {

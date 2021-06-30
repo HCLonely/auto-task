@@ -195,6 +195,20 @@ const giveawaysu = {
     }
   },
   async verify () {
+    $('tr[data-action-id="adjs"]').html('<td><div class="label label-danger" data-toggle="tooltip" data-placement="right" title="Disable AdBlock on our website"><i class="fa fa-ban"></i></div></td><td><a href="#adblock-modal">Disable AdBlock on our website</a></td><td class="text-right"><button type="button" class="btn btn-xs btn-default btn-success" data-type="action.adjs" data-action="adjs"><i class="glyphicon glyphicon-refresh"></i></button></td>')
+    $('.glyphicon.glyphicon-refresh').parent('a:not(.btn-success)').each(function (i) {
+      const href = $(this).attr('href')
+      $(this).removeAttr('href')
+      this.click()
+      $(this).attr('href', href)
+    })
+    const buttons = $.makeArray($('.glyphicon.glyphicon-refresh').parent('button:not(.btn-success)'))
+    for (const button of buttons) {
+      button.click()
+      await fuc.delay()
+    }
+  },
+  async repage () {
     const { isConfirmed } = await Swal.fire({
       title: getI18n('RePageNotice'),
       showCancelButton: true
@@ -287,7 +301,7 @@ const giveawaysu = {
     toFinalUrl: {}
   },
   setting: {
-    verify: {
+    repage: {
       show: true,
       text: 'RePage',
       title: getI18n('RePage')

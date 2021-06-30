@@ -209,5 +209,8 @@
   "notNeedChangeCountry": "当前地区不支持更换",
   "noAnotherCountry": "没有可以更换的地区，请确认梯子配置正确",
   "changeCountry": "正在切换地区",
-  "noticeList": "延迟提醒任务列表"
+  "noticeList": "延迟提醒任务列表",
+  "RePage": "重置页面",
+  "RePageNotice": "使用此功能重置页面获取Key, 可以省略掉关闭插件刷新页面等步骤，目前此功能处于测试阶段，请谨慎使用！",
+  "resettingPage": "正在重置页面，请等待显示\"Grab key\"按钮"
 }

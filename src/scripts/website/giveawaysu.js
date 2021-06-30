@@ -2,6 +2,32 @@ import { getI18n } from '../i18n'
 import { fuc, throwError } from '../function/main'
 import { config, globalConf, debug } from '../config'
 
+unsafeWindow.test = async function () {
+  const logStatus = fuc.echoLog({ type: 'custom', text: '<li>restore page<font></font></li>' })
+  const { result, statusText, status, data } = await fuc.httpRequest({
+    method: 'GET',
+    url: window.location.href
+  })
+  if (result === 'Success') {
+    const html = $(data.responseText.replace(/<(head|body)>/g, '<div class="$1">').replace('<html', '<div class="html"').replace(/<\/(head|body|html)>/g, '</div>'))
+    const headEles = html.find('div.head').children()
+    const bodyEle = html.find('div.body')
+    $('head').children().remove()
+    $('head').append(headEles)
+    const mainEleIndex = $('body').children('.wrapper-outer').index()
+    const mainRawEleIndex = bodyEle.children('.wrapper-outer').index()
+    const beforeRawEles = $('body').children(':lt(' + mainRawEleIndex + ')')
+    const afterRawEles = $('body').children(':gt(' + mainRawEleIndex + ')')
+    $('body').children(':lt(' + mainEleIndex + ')').remove()
+    $('body').prepend(beforeRawEles)
+    $('body').children(':gt(' + mainEleIndex + ')').remove()
+    $('body').append(afterRawEles)
+    $('html').children().not('head,body').remove()
+    $('#getKey').show()
+  } else {
+    logStatus.error(`${result}:${statusText}(${status})`)
+  }
+}
 const giveawaysu = {
   test () {
     try {
@@ -168,7 +194,37 @@ const giveawaysu = {
       throwError(e, 'giveawaysu.fuck')
     }
   },
-  verify () { },
+  async verify () {
+    const { isConfirmed } = await Swal.fire({
+      title: getI18n('RePageNotice'),
+      showCancelButton: true
+    })
+    if (!isConfirmed) return
+    const logStatus = fuc.echoLog({ type: 'custom', text: `<li>${getI18n('resettingPage')}...<font></font></li>` })
+    const { result, statusText, status, data } = await fuc.httpRequest({
+      method: 'GET',
+      url: window.location.href
+    })
+    if (result === 'Success') {
+      const html = $(data.responseText.replace(/<(head|body)>/g, '<div class="$1">').replace('<html', '<div class="html"').replace(/<\/(head|body|html)>/g, '</div>'))
+      const headEles = html.find('div.head').children()
+      const bodyEle = html.find('div.body')
+      $('head').children().remove()
+      $('head').append(headEles)
+      const mainEleIndex = $('body').children('.wrapper-outer').index()
+      const mainRawEleIndex = bodyEle.children('.wrapper-outer').index()
+      const beforeRawEles = bodyEle.children(':lt(' + mainRawEleIndex + ')')
+      const afterRawEles = bodyEle.children(':gt(' + mainRawEleIndex + ')')
+      $('body').children(':lt(' + mainEleIndex + ')').remove()
+      $('body').prepend(beforeRawEles)
+      $('body').children(':gt(' + mainEleIndex + ')').remove()
+      $('body').append(afterRawEles)
+      $('html').children().not('head,body').remove()
+      $('#getKey').show()
+    } else {
+      logStatus.error(`${result}:${statusText}(${status})`)
+    }
+  },
   remove () {
     try {
       this.get_tasks('remove')
@@ -232,7 +288,9 @@ const giveawaysu = {
   },
   setting: {
     verify: {
-      show: false
+      show: true,
+      text: 'RePage',
+      title: getI18n('RePage')
     }
   },
   conf: config?.giveawaysu?.enable ? config.giveawaysu : globalConf

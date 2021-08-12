@@ -112,7 +112,7 @@ gulp.task('generate-html', function () {
 
 gulp.task('generate-js', async function () {
   info('Generate js files for webpage')
-  const files = ['main.js']
+  const files = ['main.js', 'delayNotice.js']
   for (const e of files) {
     await buildPageJs(e)
   }

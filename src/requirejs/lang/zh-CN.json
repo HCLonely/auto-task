@@ -88,7 +88,7 @@
   "noAutoFinish": "没有检测到可以自动完成的任务！",
   "finishSelf": "没完成的请手动完成！",
   "getUrlFailed": "获取任务链接失败( s% )",
-  "closeExtensions": "建议关闭脚本管理器和广告屏蔽插件再获取key！",
+  "closeExtensions": "建议关闭脚本管理器和广告屏蔽插件再获取key！Or click \"RePage\" button and wait for \"Grab key\" to appear to get key (in test)!",
   "changeLanguage": "需要将页面语言设置为\"English\"或\"Русский\"(将页面右下角的自动翻译关闭)！如果已设置，请忽视本条信息",
   "gkrobot": "请在弹出的页面完成验证（如果有的话），然后关闭页面",
   "connectWss": "正在连接WSS...",

@@ -19,13 +19,11 @@ async function getInsInfo (name) {
         return null
       }
       if (data.status === 200) {
-        const _data = data.responseText?.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)?.[1]
-        if (_data) {
-          const data = JSON.parse(_data)
-          insInfo.csrftoken = data?.config?.csrf_token // eslint-disable-line camelcase
-          insInfo.hash = data?.rollout_hash // eslint-disable-line camelcase
-          const id = data?.entry_data?.ProfilePage?.[0]?.graphql?.user?.id // eslint-disable-line camelcase
-          if (id) logStatus.success()
+        insInfo.csrftoken = data.responseText.match(/"csrf_token":"(.+?)"/)?.[1] || insInfo.csrftoken
+        insInfo.hash = data.responseText.match(/"rollout_hash":"(.+?)"/)?.[1] || insInfo.hash
+        const id = data.responseText.match(/"profilePage_([\d]+?)"/)?.[1]
+        if (id) {
+          logStatus.success()
           return id
         } else {
           logStatus.error('Error: Get ins data error!')

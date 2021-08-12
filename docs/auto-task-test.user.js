@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.6.3
+// @version            3.6.4
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -36,8 +36,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.3/require/require.min.js#md5=29c3e5563758a114b42c9985529c08a4
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.3/require/fuck-task.min.css#md5=0316205f82dce54ebc05c9041d68fe7d
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.4/require/require.min.js#md5=bd9b95a14543bc1219f98c9b032c979a
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.4/require/fuck-task.min.css#md5=233bc9d5a697aa4a1bdb29943e670ae5
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -3140,7 +3140,7 @@ try {
 
     var getInsInfo = /* #__PURE__ */(function () {
       var _ref32 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee30 (name) {
-        var logStatus, _yield$httpRequest27, result, statusText, status, data, _data$responseText2, _data$responseText2$m, _data, _data2$config, _data2$entry_data, _data2$entry_data$Pro, _data2$entry_data$Pro2, _data2$entry_data$Pro3, _data2$entry_data$Pro4, _data2, id
+        var logStatus, _yield$httpRequest27, result, statusText, status, data, _data$responseText$ma11, _data$responseText$ma12, _data$responseText$ma13, id
 
         return regeneratorRuntime.wrap(function _callee30$ (_context30) {
           while (1) {
@@ -3165,7 +3165,7 @@ try {
                 data = _yield$httpRequest27.data
 
                 if (!(result === 'Success')) {
-                  _context30.next = 35
+                  _context30.next = 33
                   break
                 }
 
@@ -3188,55 +3188,50 @@ try {
 
               case 18:
                 if (!(data.status === 200)) {
-                  _context30.next = 33
+                  _context30.next = 31
                   break
                 }
 
-                _data = (_data$responseText2 = data.responseText) === null || _data$responseText2 === void 0 ? void 0 : (_data$responseText2$m = _data$responseText2.match(/window._sharedData[\s]*=[\s]*?(\{[\w\W]*?\});/)) === null || _data$responseText2$m === void 0 ? void 0 : _data$responseText2$m[1]
+                insInfo.csrftoken = ((_data$responseText$ma11 = data.responseText.match(/"csrf_token":"(.+?)"/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]) || insInfo.csrftoken
+                insInfo.hash = ((_data$responseText$ma12 = data.responseText.match(/"rollout_hash":"(.+?)"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1]) || insInfo.hash
+                id = (_data$responseText$ma13 = data.responseText.match(/"profilePage_([\d]+?)"/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1]
 
-                if (!_data) {
-                  _context30.next = 29
+                if (!id) {
+                  _context30.next = 27
                   break
                 }
 
-                _data2 = JSON.parse(_data)
-                insInfo.csrftoken = _data2 === null || _data2 === void 0 ? void 0 : (_data2$config = _data2.config) === null || _data2$config === void 0 ? void 0 : _data2$config.csrf_token // eslint-disable-line camelcase
-
-                insInfo.hash = _data2 === null || _data2 === void 0 ? void 0 : _data2.rollout_hash // eslint-disable-line camelcase
-
-                id = _data2 === null || _data2 === void 0 ? void 0 : (_data2$entry_data = _data2.entry_data) === null || _data2$entry_data === void 0 ? void 0 : (_data2$entry_data$Pro = _data2$entry_data.ProfilePage) === null || _data2$entry_data$Pro === void 0 ? void 0 : (_data2$entry_data$Pro2 = _data2$entry_data$Pro[0]) === null || _data2$entry_data$Pro2 === void 0 ? void 0 : (_data2$entry_data$Pro3 = _data2$entry_data$Pro2.graphql) === null || _data2$entry_data$Pro3 === void 0 ? void 0 : (_data2$entry_data$Pro4 = _data2$entry_data$Pro3.user) === null || _data2$entry_data$Pro4 === void 0 ? void 0 : _data2$entry_data$Pro4.id // eslint-disable-line camelcase
-
-                if (id) logStatus.success()
+                logStatus.success()
                 return _context30.abrupt('return', id)
 
-              case 29:
+              case 27:
                 logStatus.error('Error: Get ins data error!')
                 return _context30.abrupt('return', null)
 
-              case 31:
-                _context30.next = 35
+              case 29:
+                _context30.next = 33
                 break
 
-              case 33:
+              case 31:
                 logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'))
                 return _context30.abrupt('return', null)
 
-              case 35:
-                _context30.next = 41
+              case 33:
+                _context30.next = 39
                 break
 
-              case 37:
-                _context30.prev = 37
+              case 35:
+                _context30.prev = 35
                 _context30.t0 = _context30.catch(0)
                 throwError(_context30.t0, 'getInsInfo')
                 return _context30.abrupt('return', null)
 
-              case 41:
+              case 39:
               case 'end':
                 return _context30.stop()
             }
           }
-        }, _callee30, null, [[0, 37]])
+        }, _callee30, null, [[0, 35]])
       }))
 
       return function getInsInfo (_x29) {
@@ -4901,7 +4896,7 @@ try {
 
     var toggleVkWall = /* #__PURE__ */(function () {
       var _ref56 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee48 (name, join) {
-        var logStatus, _yield$httpRequest40, result, statusText, status, data, _data$responseText$ma11, hash, _yield$httpRequest41, resultR, statusTextR, statusR, dataR, _dataR$responseText, _jsonData$payload, _jsonData$payload$, _jsonData$payload$$, jsonData
+        var logStatus, _yield$httpRequest40, result, statusText, status, data, _data$responseText$ma14, hash, _yield$httpRequest41, resultR, statusTextR, statusR, dataR, _dataR$responseText, _jsonData$payload, _jsonData$payload$, _jsonData$payload$$, jsonData
 
         return regeneratorRuntime.wrap(function _callee48$ (_context48) {
           while (1) {
@@ -4952,7 +4947,7 @@ try {
                   break
                 }
 
-                hash = (_data$responseText$ma11 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]
+                hash = (_data$responseText$ma14 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1]
 
                 if (!hash) {
                   _context48.next = 24
@@ -5217,7 +5212,7 @@ try {
 
     var getVkId = /* #__PURE__ */(function () {
       var _ref59 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee51 (name) {
-        var logStatus, _yield$httpRequest44, result, statusText, status, data, _data$responseText$ma12, _data$responseText$ma13, _ref60, _ref61, groupAct, groupId, groupHash, publicHash, publicPid, publicJoined
+        var logStatus, _yield$httpRequest44, result, statusText, status, data, _data$responseText$ma15, _data$responseText$ma16, _ref60, _ref61, groupAct, groupId, groupHash, publicHash, publicPid, publicJoined
 
         return regeneratorRuntime.wrap(function _callee51$ (_context51) {
           while (1) {
@@ -5263,8 +5258,8 @@ try {
                 }
 
                 _ref60 = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), '(.*?)'/) || [], _ref61 = _slicedToArray(_ref60, 4), groupAct = _ref61[1], groupId = _ref61[2], groupHash = _ref61[3]
-                publicHash = (_data$responseText$ma12 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1]
-                publicPid = (_data$responseText$ma13 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1]
+                publicHash = (_data$responseText$ma15 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1]
+                publicPid = (_data$responseText$ma16 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
                 publicJoined = !data.responseText.includes('Public.subscribe')
 
                 if (!(groupAct && groupId && groupHash)) {
@@ -5815,7 +5810,7 @@ try {
 
     var getYtbToken = /* #__PURE__ */(function () {
       var _ref68 = _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee55 (link, type) {
-        var logStatus, _yield$httpRequest47, result, statusText, status, data, _data$responseText$ma14, _ref69, apiKey, context, _JSON$parse, client, request, _data$responseText$ma15, channelId, _data$responseText$ma16, _data$responseText$ma17, videoId, likeParams
+        var logStatus, _yield$httpRequest47, result, statusText, status, data, _data$responseText$ma17, _ref69, apiKey, context, _JSON$parse, client, request, _data$responseText$ma18, channelId, _data$responseText$ma19, _data$responseText$ma20, videoId, likeParams
 
         return regeneratorRuntime.wrap(function _callee55$ (_context55) {
           while (1) {
@@ -5860,7 +5855,7 @@ try {
                 })
 
               case 14:
-                apiKey = (_data$responseText$ma14 = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1]
+                apiKey = (_data$responseText$ma17 = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1]
                 context = ((_ref69 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref69 === void 0 ? void 0 : _ref69[1]) || '{}'
                 _JSON$parse = JSON.parse(context), client = _JSON$parse.client, request = _JSON$parse.request
 
@@ -5876,7 +5871,7 @@ try {
                   break
                 }
 
-                channelId = (_data$responseText$ma15 = data.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1]
+                channelId = (_data$responseText$ma18 = data.responseText.match(/<meta itemprop="channelId" content="(.+?)">/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1]
 
                 if (!channelId) {
                   _context55.next = 26
@@ -5907,8 +5902,8 @@ try {
                   break
                 }
 
-                videoId = (_data$responseText$ma16 = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1]
-                likeParams = (_data$responseText$ma17 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1]
+                videoId = (_data$responseText$ma19 = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1]
+                likeParams = (_data$responseText$ma20 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1]
 
                 if (!videoId) {
                   _context55.next = 38
@@ -8123,7 +8118,7 @@ try {
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee65 () {
           var _task$link$match, _task$link$match2, _task$link$match3, _task$link$match4, _task$link$match5, _task$link$match6, _task$link$match7, _task$link$match8, _task$link$match9, _task$link$match10
 
-          var callback, logStatus, giveawayId, taskInfoHistory, _yield$fuc$httpReques2, result, statusText, status, data, taskInfo, tasks, _iterator13, _step13, task, type, social, _yield$fuc$httpReques3, _result, _statusText, _status, _data3, _taskInfo, _tasks, _iterator14, _step14, _task
+          var callback, logStatus, giveawayId, taskInfoHistory, _yield$fuc$httpReques2, result, statusText, status, data, taskInfo, tasks, _iterator13, _step13, task, type, social, _yield$fuc$httpReques3, _result, _statusText, _status, _data, _taskInfo, _tasks, _iterator14, _step14, _task
 
           return regeneratorRuntime.wrap(function _callee65$ (_context65) {
             while (1) {
@@ -8376,10 +8371,10 @@ try {
                   _result = _yield$fuc$httpReques3.result
                   _statusText = _yield$fuc$httpReques3.statusText
                   _status = _yield$fuc$httpReques3.status
-                  _data3 = _yield$fuc$httpReques3.data
+                  _data = _yield$fuc$httpReques3.data
 
                   if (_result === 'Success') {
-                    _taskInfo = _data3 === null || _data3 === void 0 ? void 0 : _data3.response
+                    _taskInfo = _data === null || _data === void 0 ? void 0 : _data.response
 
                     if (_taskInfo) {
                       _tasks = _taskInfo.challenges
@@ -8417,11 +8412,11 @@ try {
                         logStatus.success()
                       } else {
                         logStatus.error()
-                        console.error(_data3)
+                        console.error(_data)
                       }
                     } else {
                       logStatus.error()
-                      console.error(_data3)
+                      console.error(_data)
                     }
                   } else {
                     logStatus.error(''.concat(_result, ':').concat(_statusText, '(').concat(_status, ')'))
@@ -9346,9 +9341,9 @@ try {
                 var data = _ref84.data
 
                 if (data !== null && data !== void 0 && (_data$finalUrl = data.finalUrl) !== null && _data$finalUrl !== void 0 && _data$finalUrl.includes('newshub/app')) {
-                  var _data$responseText$ma18
+                  var _data$responseText$ma21
 
-                  var div = (_data$responseText$ma18 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[0]
+                  var div = (_data$responseText$ma21 = data.responseText.match(/<div id="application_config"[\w\W]*?>/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[0]
 
                   if (!div) {
                     return {
@@ -12651,7 +12646,7 @@ try {
         var _this34 = this
 
         return _asyncToGenerator(/* #__PURE__ */regeneratorRuntime.mark(function _callee100 () {
-          var type, items, maxPoint, myPoint, _iterator44, _step44, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques11, result, statusText, status, data, _data$responseText$ma19, points
+          var type, items, maxPoint, myPoint, _iterator44, _step44, item, needPoints, logStatus, a, _a$attr$match, giveawayId, _yield$fuc$httpReques11, result, statusText, status, data, _data$responseText$ma22, points
 
           return regeneratorRuntime.wrap(function _callee100$ (_context101) {
             while (1) {
@@ -12734,7 +12729,7 @@ try {
                   if (result === 'Success') {
                     if (data.responseText && /You've entered this giveaway/gim.test(data.responseText)) {
                       logStatus.success()
-                      points = (_data$responseText$ma19 = data.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1]
+                      points = (_data$responseText$ma22 = data.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1]
 
                       if (type === 'points' && points) {
                         if (debug) console.log(getI18n('pointsLeft') + points)

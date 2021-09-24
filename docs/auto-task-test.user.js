@@ -6019,7 +6019,7 @@ try {
                   link = toFinalUrl[element] || ''
                 }
 
-                if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+                if (/^https:\/\/www\.google\.com.*?\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
                   link = (_link$match = link.match(/url=(https:\/\/www.youtube.com\/.*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
                 }
 

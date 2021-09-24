@@ -230,7 +230,7 @@ async function toggleYtbActions ({ website, type, elements, action, toFinalUrl =
       if (website === 'giveawaysu' && toFinalUrl[element]) {
         link = toFinalUrl[element] || ''
       }
-      if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+      if (/^https:\/\/www\.google\.com.*?\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
         link = link.match(/url=(https:\/\/www.youtube.com\/.*)/)?.[1]
       }
       if (link) {

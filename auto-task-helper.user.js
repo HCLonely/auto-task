@@ -9,10 +9,10 @@
 // @description:zh-CN  自动任务脚本的辅助脚本，用于获取discord auth
 // @author             HCLonely
 // @license            MIT
-// @iconURL            https://auto-task.hclonely.com/img/favicon.ico
+// @iconURL            https://auto-task-test.hclonely.com/img/favicon.ico
 // @homepage           https://github.com/HCLonely/auto-task
 // @supportURL         https://github.com/HCLonely/auto-task/issues/new/choose
-// @updateURL          https://auto-task.hclonely.com/auto-task-helper.user.js
+// @updateURL          https://auto-task-test.hclonely.com/auto-task-helper.user.js
 // @include            *://discord.com/*
 // @grant              unsafeWindow
 // @run-at             document-start

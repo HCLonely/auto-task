@@ -32,6 +32,7 @@
 // @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
 // @include            *://www.youtube.com/*
+// @include            *://twitter.com/settings/account?k*
 // @exclude            *googleads*
 // @include            https://__SITEURL__/setting.html
 // @include            https://__SITEURL__/notice-list.html

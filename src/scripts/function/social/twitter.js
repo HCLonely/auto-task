@@ -1,11 +1,27 @@
 import { echoLog } from '../log'
 import { httpRequest } from '../httpRequest'
 import { unique, throwError } from '../tool'
-import { getI18n } from '../../i18n'
+// import { getI18n } from '../../i18n'
 
 async function updateTwitterInfo () {
   try {
     const logStatus = echoLog({ type: 'text', text: 'updateTwitterInfo' })
+    return new Promise(resolve => {
+      const newTab = GM_openInTab('https://twitter.com/settings/account?k#auth', { active: true, insert: true, setParent: true })
+      newTab.onclose = async () => {
+        if (GM_getValue('twitterInfo')?.updateTime) {
+          twitterInfo.ct0 = GM_getValue('twitterInfo')?.ct0
+          logStatus.success()
+          resolve(true)
+        } else if (GM_getValue('twitterInfo')?.ct0 === 'login') {
+          resolve(await updateTwitterInfo())
+        } else {
+          logStatus.error('Error: Parameter "ct0" not found!')
+          resolve(false)
+        }
+      }
+    })
+    /*
     const { result, statusText, status, data } = await httpRequest({
       url: 'https://twitter.com/settings/account?k',
       method: 'HEAD',
@@ -36,8 +52,38 @@ async function updateTwitterInfo () {
       logStatus.error(`${result}:${statusText}(${status})`)
       return false
     }
+    */
   } catch (e) {
     throwError(e, 'updateTwitterInfo')
+  }
+}
+async function updateTwitterAuth () {
+  try {
+    const twitterInfo = GM_getValue('twitterInfo')
+    if (!window.location.href.includes('login')) {
+      if (Cookies.get('twid')) {
+        const ct0 = Cookies.get('ct0')
+        if (ct0) {
+          twitterInfo.ct0 = ct0
+          twitterInfo.updateTime = new Date().getTime()
+        } else {
+          twitterInfo.ct0 = null
+          twitterInfo.updateTime = 0
+        }
+        GM_setValue('twitterInfo', twitterInfo)
+        window.close()
+      } else {
+        twitterInfo.ct0 = 'login'
+        twitterInfo.updateTime = 0
+        GM_setValue('twitterInfo', twitterInfo)
+      }
+    } else {
+      twitterInfo.ct0 = 'login'
+      twitterInfo.updateTime = 0
+      GM_setValue('twitterInfo', twitterInfo)
+    }
+  } catch (e) {
+    throwError(e, 'updateTwitterAuth')
   }
 }
 async function toggleTwitterUser (name, follow = true) {
@@ -163,4 +209,5 @@ async function toggleTwitterActions ({ website, type, elements, action, toFinalU
     throwError(e, 'toggleTwitterActions')
   }
 }
-export { toggleTwitterActions, updateTwitterInfo }
+unsafeWindow.updateTwitterInfo = updateTwitterInfo
+export { toggleTwitterActions, updateTwitterInfo, updateTwitterAuth }

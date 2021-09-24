@@ -4,7 +4,7 @@ import { throwError, unique, getUrlQuery, dateFormat, isEmptyObjArr, clearTaskIn
 import { httpRequest, getFinalUrl, visitLink } from './httpRequest'
 import { updateSteamInfo } from './social/steam'
 import { updateTwitchInfo } from './social/twitch'
-import { updateTwitterInfo } from './social/twitter'
+import { updateTwitterInfo, updateTwitterAuth } from './social/twitter'
 import { updateYtbInfo } from './social/youtube'
 import { toggleActions } from './social/toggleActions'
 
@@ -27,6 +27,7 @@ const fuc = {
   getDiscordAuth,
   updateTwitchInfo,
   updateYtbInfo,
+  updateTwitterAuth,
   clearTaskInfo,
   uniqueTaskInfo,
   updateInfo,

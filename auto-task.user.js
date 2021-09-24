@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.6.5
+// @version            3.6.6
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.5/require/require.min.js#md5=5c5479ce5f02a270b791d57b362504e2
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.5/require/fuck-task.min.css#md5=6f8f145ecd220f452e6d7e7ad30784be
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.6/require/require.min.js#md5=bd9b95a14543bc1219f98c9b032c979a
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.6/require/fuck-task.min.css#md5=1026a9fa145f5f25687265d395158fb3
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -6056,7 +6056,7 @@ try {
                   link = toFinalUrl[element] || ''
                 }
 
-                if (/^https:\/\/www\.google\.com\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+                if (/^https:\/\/www\.google\.com.*?\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
                   link = (_link$match = link.match(/url=(https:\/\/www.youtube.com\/.*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1]
                 }
 

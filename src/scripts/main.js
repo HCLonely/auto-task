@@ -261,6 +261,10 @@ if (website || pageHost.includes('hclonely')) {
   } else {
     fuc.updateYtbInfo(false)
   }
+} else if (pageHost === 'twitter.com') {
+  if (pageHref.includes('#auth')) {
+    fuc.updateTwitterAuth()
+  }
 }
 
 function addLogElement () {

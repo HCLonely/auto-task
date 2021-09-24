@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "3.6.4",
+  "version": "3.6.5",
   "description": "Automatically complete giveaway tasks",
   "main": "auto-task-test.user.js",
   "scripts": {

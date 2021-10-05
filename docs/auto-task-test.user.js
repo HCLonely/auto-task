@@ -3,7 +3,7 @@
 // @name:en            Auto Task Test
 // @name:zh-CN         自动任务 Test
 // @namespace          auto-task
-// @version            3.6.7
+// @version            3.6.8
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task-test.hclonely.com/setting.html
 // @include            https://auto-task-test.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/require.min.js#md5=5c5479ce5f02a270b791d57b362504e2
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/fuck-task.min.css#md5=fac38639f7d37368ec0c0a1f35ab0732
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.8/require/require.min.js#md5=5c5479ce5f02a270b791d57b362504e2
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.8/require/fuck-task.min.css#md5=14b0a3c6891fda1c6cab97371958a96c
 
 // @grant              GM_setValue
 // @grant              GM_getValue

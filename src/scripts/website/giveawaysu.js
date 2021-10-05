@@ -82,7 +82,7 @@ const giveawaysu = {
       const [taskInfo, taskName, link] = [[], taskDes.text().trim(), taskDes.attr('href')]
       if (taskIcon.includes('ban') || /disable adblock/gim.test(taskName)) {
         return [{ name: 'nonSteam' }]
-      } else if (/join.*steam.*group/gim.test(taskName)) {
+      } else if (taskIcon.includes('steam') && /join.*group/gim.test(taskName)) {
         taskInfo.push({ name: 'group', link })
       } else if (/like.*announcement/gim.test(taskName)) {
         taskInfo.push({ name: 'announcement', link })

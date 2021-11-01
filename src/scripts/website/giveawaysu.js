@@ -301,11 +301,13 @@ const giveawaysu = {
     toFinalUrl: {}
   },
   setting: {
+    /* disable
     repage: {
       show: true,
       text: 'RePage',
       title: getI18n('RePage')
     }
+    */
   },
   conf: config?.giveawaysu?.enable ? config.giveawaysu : globalConf
 }

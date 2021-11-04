@@ -3590,7 +3590,7 @@ try {
             switch (_context36.prev = _context36.next) {
               case 0:
                 try {
-                  _twitterInfo = GM_getValue('twitterInfo')
+                  _twitterInfo = GM_getValue('twitterInfo') || {}
 
                   if (!window.location.href.includes('login')) {
                     if (Cookies.get('twid')) {

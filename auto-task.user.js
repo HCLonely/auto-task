@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.6.6
+// @version            3.6.7
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.6/require/require.min.js#md5=bd9b95a14543bc1219f98c9b032c979a
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.6/require/fuck-task.min.css#md5=1026a9fa145f5f25687265d395158fb3
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/require.min.js#md5=d1828f97d4dcb9423e24b4f5cc5f6739
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/fuck-task.min.css#md5=a544fc672343e3c0fb6db416ea2dc406
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -7149,6 +7149,9 @@ try {
         }
       })
       fuc.checkUpdate()
+      echoLog({
+        custom: '<li><font class="warning">'.concat(getI18n('updateNotice'), '</font></li>')
+      })
     }
 
     unsafeWindow.AutoTask = {}

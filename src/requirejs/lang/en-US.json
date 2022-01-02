@@ -211,5 +211,6 @@
   "noticeList": "Notice list",
   "RePage": "Reset page",
   "RePageNotice": "Using this function to reset the page to get the Key can omit the steps such as closing the plug-in and refreshing the page. At present, this function is in the testing stage, so please use it with caution!",
-  "resettingPage": "Resetting the page, please wait for the \"Grab key\" button to appear"
+  "resettingPage": "Resetting the page, please wait for the \"Grab key\" button to appear",
+  "updateNotice": "This version is no longer maintained, <a href=\"https://auto-task-doc.js.org/en/guide/\" target=\"_blank\">Click Here</a> to see the new version."
 }

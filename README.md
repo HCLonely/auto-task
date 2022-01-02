@@ -2,7 +2,7 @@
 ![Test](https://github.com/HCLonely/auto-task/workflows/Test/badge.svg)
 ![OSSAR](https://github.com/HCLonely/auto-task/workflows/OSSAR/badge.svg)
 
-自动完成 Key 站任务。
+此版本不再维护，新版本地址：https://github.com/HCLonely/auto-task-v4
 
 [使用文档](https://auto-task-doc.js.org/)
 [Document](https://auto-task-doc.js.org/)

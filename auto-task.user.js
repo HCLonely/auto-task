@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.6.12
+// @version            3.7.0
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.12/require/require.min.js
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.12/require/fuck-task.min.css
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.7.0/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.7.0/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -7149,8 +7149,9 @@ try {
         }
       })
       fuc.checkUpdate()
-      echoLog({
-        custom: '<li><font class="warning">'.concat(getI18n('updateNotice'), '</font></li>')
+      fuc.echoLog({
+        type: 'custom',
+        text: '<li><font class="warning">'.concat(getI18n('updateNotice'), '</font></li>')
       })
     }
 

@@ -5,7 +5,6 @@ import { config, defaultConf, globalConf } from './config'
 import { website } from './website/main'
 import { getId } from './function/getId'
 import { notice } from './function/tool'
-import { echoLog } from './function/log'
 
 const pageHref = window.location.href
 const pageHost = window.location.host
@@ -315,5 +314,5 @@ function addLogElement () {
     }
   })
   fuc.checkUpdate()
-  echoLog({ custom: `<li><font class="warning">${getI18n('updateNotice')}</font></li>` })
+  fuc.echoLog({ type: 'custom', text: `<li><font class="warning">${getI18n('updateNotice')}</font></li>` })
 }

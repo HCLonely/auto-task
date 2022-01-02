@@ -1,3 +1,4 @@
+/*
 const fs = require('fs')
 const crypto = require('crypto')
 const jsMD5 = md5(fs.readFileSync('./require/require.min.js'))
@@ -12,3 +13,9 @@ function md5 (data) {
   const hash = crypto.createHash('md5')
   return hash.update(data).digest('hex')
 }
+*/
+
+const fs = require('fs')
+const path = process.argv[2] === '--dev' ? 'auto-task-test.user.js' : 'auto-task.user.js'
+const code = fs.readFileSync(path).toString().replace('#md5=__JSMD5__', '').replace('#md5=__CSSMD5__', '')
+fs.writeFileSync(path, code)

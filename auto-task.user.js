@@ -3,7 +3,7 @@
 // @name:en            Auto Task
 // @name:zh-CN         自动任务
 // @namespace          auto-task
-// @version            3.6.7
+// @version            3.6.12
 // @description        自动完成赠key站任务
 // @description:en     Automatically complete giveaway tasks
 // @description:zh-CN  自动完成赠key站任务
@@ -37,8 +37,8 @@
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/notice-list.html
 
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/require.min.js#md5=d1828f97d4dcb9423e24b4f5cc5f6739
-// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.7/require/fuck-task.min.css#md5=a544fc672343e3c0fb6db416ea2dc406
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.12/require/require.min.js
+// @resource           CSS https://cdn.jsdelivr.net/gh/HCLonely/auto-task@3.6.12/require/fuck-task.min.css
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -3590,7 +3590,7 @@ try {
             switch (_context36.prev = _context36.next) {
               case 0:
                 try {
-                  _twitterInfo = GM_getValue('twitterInfo')
+                  _twitterInfo = GM_getValue('twitterInfo') || {}
 
                   if (!window.location.href.includes('login')) {
                     if (Cookies.get('twid')) {
@@ -9254,7 +9254,7 @@ try {
             return [{
               name: 'nonSteam'
             }]
-          } else if (/join.*steam.*group/gim.test(taskName)) {
+          } else if (taskIcon.includes('steam') && /join.*group/gim.test(taskName)) {
             taskInfo.push({
               name: 'group',
               link: link
@@ -9707,11 +9707,7 @@ try {
         toFinalUrl: {}
       },
       setting: {
-        repage: {
-          show: true,
-          text: 'RePage',
-          title: getI18n('RePage')
-        }
+
       },
       conf: config !== null && config !== void 0 && (_config$giveawaysu = config.giveawaysu) !== null && _config$giveawaysu !== void 0 && _config$giveawaysu.enable ? config.giveawaysu : globalConf
     }

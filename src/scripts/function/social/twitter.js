@@ -59,7 +59,7 @@ async function updateTwitterInfo () {
 }
 async function updateTwitterAuth () {
   try {
-    const twitterInfo = GM_getValue('twitterInfo')
+    const twitterInfo = GM_getValue('twitterInfo') || {}
     if (!window.location.href.includes('login')) {
       if (Cookies.get('twid')) {
         const ct0 = Cookies.get('ct0')

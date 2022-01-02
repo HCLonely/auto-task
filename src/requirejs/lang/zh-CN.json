@@ -213,5 +213,5 @@
   "RePage": "重置页面",
   "RePageNotice": "使用此功能重置页面获取Key, 可以省略掉关闭插件刷新页面等步骤，目前此功能处于测试阶段，请谨慎使用！",
   "resettingPage": "正在重置页面，请等待显示\"Grab key\"按钮",
-  "updateNotice": ""
+  "updateNotice": "此版本不再维护，新版本<a href=\"https://auto-task-doc.js.org/guide/\" target=\"_blank\">点此查看</a>"
 }

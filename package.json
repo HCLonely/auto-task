@@ -54,7 +54,7 @@
     "postcss-preset-env": "^10.1.5",
     "sass": "^1.86.0",
     "sass-loader": "^16.0.5",
-    "sweetalert2": "^11.17.2",
+    "sweetalert2": "^11.22.4",
     "terser-webpack-plugin": "^5.3.14",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.2",

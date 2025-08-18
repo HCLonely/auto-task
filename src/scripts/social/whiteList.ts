@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-06 13:16:38
- * @LastEditTime : 2025-05-30 10:49:58
+ * @LastEditTime : 2025-08-18 19:08:27
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/scripts/social/whiteList.ts
+ * @FilePath     : /auto-task/src/scripts/social/whiteList.ts
  * @Description  : 白名单相关
  */
 
@@ -14,6 +14,7 @@ import Steam from './Steam';
 import { getInfo } from './Youtube';
 import { stringToColour } from '../tools/tools';
 import throwError from '../tools/throwError';
+import { debug } from '../tools/debug';
 
 /**
  * 默认白名单配置对象，包含各个平台的默认设置。
@@ -99,6 +100,33 @@ const defaultWhiteList: whiteList = {
   }
 };
 
+// 优化正则表达式常量
+const REGEX_PATTERNS = {
+  DISCORD_INVITE: /invite\/(.+)/,
+  INSTAGRAM_USER: /https:\/\/www\.instagram\.com\/(.+)?\//,
+  TWITCH_CHANNEL: /https:\/\/(www\.)?twitch\.tv\/(.+)/,
+  TWITTER_USER: /https:\/\/twitter\.com\/(.+)/,
+  TWITTER_STATUS: /https:\/\/twitter\.com\/.*?\/status\/([\d]+)/,
+  VK_NAME: /https:\/\/vk\.com\/([^/]+)/,
+  REDDIT_USER: /https?:\/\/www\.reddit\.com\/user\/([^/]*)/,
+  REDDIT_SUBREDDIT: /https?:\/\/www\.reddit\.com\/r\/([^/]*)/,
+  STEAM_GROUP: /groups\/(.+)\/?/,
+  STEAM_APP: /app\/([\d]+)/,
+  STEAM_WORKSHOP: /\?id=([\d]+)/,
+  STEAM_CURATOR: /curator\/([\d]+)/,
+  STEAM_STORE: /https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/
+} as const;
+
+interface WhiteList {
+  [key: string]: {
+    [key: string]: string[];
+  };
+}
+
+interface DisabledType {
+  [key: string]: string[];
+}
+
 /**
  * 从给定的链接中提取特定类型的 ID。
  *
@@ -127,65 +155,73 @@ const defaultWhiteList: whiteList = {
  */
 const link2id = async function (type: string): Promise<string> {
   try {
+    debug('开始从链接获取ID', { type });
     const link = $('#socialLink').val() as string;
     let id = '';
     switch (type) {
-    case 'discord.servers':
-      id = link.match(/invite\/(.+)/)?.[1] || '';
-      break;
-    case 'instagram.users':
-      id = link.match(/https:\/\/www\.instagram\.com\/(.+)?\//)?.[1] || '';
-      break;
-    case 'twitch.channels':
-      id = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)?.[2] || '';
-      break;
-    case 'twitter.users':
-      id = link.match(/https:\/\/twitter\.com\/(.+)/)?.[1] || '';
-      break;
-    case 'twitter.retweets':
-      id = link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1] || '';
-      break;
-    case 'vk.names':
-      id = link.match(/https:\/\/vk\.com\/([^/]+)/)?.[1] || '';
-      break;
-    case 'youtube.channels':
-      id = (await getInfo(link, 'channel'))?.params?.channelId || '';
-      break;
-    case 'youtube.likes':
-      id = (await getInfo(link, 'likeVideo'))?.params?.videoId || '';
-      break;
-    case 'reddit.reddits':
-      id = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1] || link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1] || '';
-      break;
-    case 'steam.groups':
-      id = link.match(/groups\/(.+)\/?/)?.[1] || '';
-      break;
-    case 'steam.wishlists':
-    case 'steam.follows':
-    case 'steam.forums':
-    case 'steam.playtests':
-    case 'steam.playTime':
-      id = link.match(/app\/([\d]+)/)?.[1] || '';
-      break;
-    case 'steam.workshops':
-      id = link.match(/\?id=([\d]+)/)?.[1] || '';
-      break;
-    case 'steam.curators': {
-      if (link.includes('curator')) {
-        id = link.match(/curator\/([\d]+)/)?.[1] || '';
-      } else {
-        const param = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)?.slice(1, 3);
-        if (!param || param.length !== 2) break;
-        const steam = new Steam();
-        if (await steam.init()) {
-          id = await steam.getCuratorId(param[0], param[1]) || '';
+        case 'discord.servers':
+          id = REGEX_PATTERNS.DISCORD_INVITE.exec(link)?.[1] || '';
+          break;
+        case 'instagram.users':
+          id = REGEX_PATTERNS.INSTAGRAM_USER.exec(link)?.[1] || '';
+          break;
+        case 'twitch.channels':
+          id = REGEX_PATTERNS.TWITCH_CHANNEL.exec(link)?.[2] || '';
+          break;
+        case 'twitter.users':
+          id = REGEX_PATTERNS.TWITTER_USER.exec(link)?.[1] || '';
+          break;
+        case 'twitter.retweets':
+          id = REGEX_PATTERNS.TWITTER_STATUS.exec(link)?.[1] || '';
+          break;
+        case 'vk.names':
+          id = REGEX_PATTERNS.VK_NAME.exec(link)?.[1] || '';
+          break;
+        case 'youtube.channels':
+          id = (await getInfo(link, 'channel'))?.params?.channelId || '';
+          break;
+        case 'youtube.likes':
+          id = (await getInfo(link, 'likeVideo'))?.params?.videoId || '';
+          break;
+        case 'reddit.reddits': {
+          const userMatch = REGEX_PATTERNS.REDDIT_USER.exec(link);
+          const subredditMatch = REGEX_PATTERNS.REDDIT_SUBREDDIT.exec(link);
+          id = userMatch?.[1] || subredditMatch?.[1] || '';
+          break;
         }
-      }
+        case 'steam.groups':
+          id = REGEX_PATTERNS.STEAM_GROUP.exec(link)?.[1] || '';
+          break;
+        case 'steam.wishlists':
+        case 'steam.follows':
+        case 'steam.forums':
+        case 'steam.playtests':
+        case 'steam.playTime':
+          id = REGEX_PATTERNS.STEAM_APP.exec(link)?.[1] || '';
+          break;
+        case 'steam.workshops':
+          id = REGEX_PATTERNS.STEAM_WORKSHOP.exec(link)?.[1] || '';
+          break;
+        case 'steam.curators': {
+          if (link.includes('curator')) {
+            id = REGEX_PATTERNS.STEAM_CURATOR.exec(link)?.[1] || '';
+          } else {
+            const storeMatch = REGEX_PATTERNS.STEAM_STORE.exec(link);
+            if (!storeMatch) break;
+
+            const [, param1, param2] = storeMatch;
+            const steam = new Steam();
+            if (await steam.init()) {
+              id = await steam.getCuratorId(param1, param2) || '';
+            }
+          }
+          break;
+        }
     }
-      break;
-    }
+    debug('从链接获取ID结果', { type, id });
     return id;
   } catch (error) {
+    debug('从链接获取ID时发生错误', { error });
     throwError(error as Error, 'link2id');
     return __('getFailed', 'id');
   }
@@ -198,7 +234,7 @@ const link2id = async function (type: string): Promise<string> {
  * @property {string[]} disabledType.steam - Steam 平台上禁用的类型，包括 'workshopVotes'、'curatorLikes' 和 'announcements'。
  * @property {string[]} disabledType.twitter - Twitter 平台上禁用的类型，包括 'likes'。
  */
-const disabledType = {
+const disabledType: DisabledType = {
   steam: ['workshopVotes', 'curatorLikes', 'announcements'],
   twitter: ['likes']
 };
@@ -213,12 +249,15 @@ const disabledType = {
  */
 const assignWhiteList = (whiteList: whiteList): whiteList => {
   try {
+    debug('开始合并白名单');
     const newWhiteList: whiteList = {};
     for (const [key, value] of Object.entries(defaultWhiteList)) {
       newWhiteList[key as keyof whiteList] = { ...value, ...whiteList[key as keyof whiteList] };
     }
+    debug('白名单合并完成');
     return newWhiteList;
   } catch (error) {
+    debug('合并白名单时发生错误', { error });
     throwError(error as Error, 'assignWhiteList');
     return defaultWhiteList;
   }
@@ -235,26 +274,39 @@ const assignWhiteList = (whiteList: whiteList): whiteList => {
  */
 const whiteListOptions = function (showType: 'page' | 'swal'): void {
   try {
+    debug('开始显示白名单选项', { showType });
     const whiteList = assignWhiteList(GM_getValue<whiteList>('whiteList') || {});
     let whiteListOptionsForm = `<form id="whiteListForm" class="auto-task-form">
-  <table class="auto-task-table"><thead><tr><td>${__('website')}</td><td>${__('type')}</td><td>${__('edit')}</td></tr></thead><tbody>`;
+      <table class="auto-task-table">
+        <thead>
+          <tr>
+            <td>${__('website')}</td>
+            <td>${__('type')}</td>
+            <td>${__('edit')}</td>
+          </tr>
+        </thead>
+        <tbody>`;
+
     for (const [social, types] of Object.entries(whiteList)) {
-      whiteListOptionsForm += Object.keys(types).map(
-        // @ts-ignore
-        (type, index) => (disabledType[social]?.includes(type) ?
-          '' :
-          `<tr style="background-color: ${stringToColour(social)}66">${
-            index === 0 ?
-              `<th rowspan="${
-                // @ts-ignore
-                Object.keys(types).length - (disabledType[social] || []).length
-              }" style="background-color: ${stringToColour(social)}66">${social}</th>` :
-              ''
-          }<td>${__(type)}</td><td><button type="button" class="editWhiteList" data-value="${social}.${type}">${__('edit')}</button></td></tr>`))
-        .join('');
+      const validTypes = Object.keys(types).filter(
+        (type) => !disabledType[social as keyof DisabledType]?.includes(type)
+      );
+
+      whiteListOptionsForm += validTypes.map((type, index) => {
+        const bgColor = `${stringToColour(social)}66`;
+        return `
+          <tr style="background-color: ${bgColor}">
+            ${index === 0 ? `<th rowspan="${validTypes.length}" style="background-color: ${bgColor}">${social}</th>` : ''}
+            <td>${__(type)}</td>
+            <td><button type="button" class="editWhiteList" data-value="${social}.${type}">${__('edit')}</button></td>
+          </tr>`;
+      }).join('');
     }
+
     whiteListOptionsForm += '</tbody></table></form>';
+
     if (showType === 'swal') {
+      debug('使用Swal显示白名单选项');
       Swal.fire({
         title: __('whiteListOptions'),
         html: whiteListOptionsForm,
@@ -262,25 +314,33 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
         showCloseButton: true
       });
     } else {
+      debug('使用页面显示白名单选项');
       $('body').append(`<h2>${__('whiteList')}</h2>${whiteListOptionsForm}`);
     }
+
     $('.editWhiteList').on('click', function () {
       const value = $(this).attr('data-value');
       if (!value) return;
+
       const [social, type] = value.split('.');
-      // @ts-ignore
-      if (!whiteList?.[social]?.[type]) {
+      const currentList = (whiteList as WhiteList)[social]?.[type];
+
+      if (!currentList) {
+        debug('未找到白名单配置', { social, type });
         echoLog({}).warning(__('whiteListNotFound', value));
         return;
       }
+
+      debug('编辑白名单', { social, type });
       Swal.fire({
         title: __('changeWhiteListOption', value),
         input: 'textarea',
-        html: `<input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">
-        <button id="link2id" data-type="${value}" class="swal2-confirm swal2-styled">获取id</button>
-        <p style="margin-bottom:0 !important;">在下方填写白名单，每行一个</p>`,
-        // @ts-ignore
-        inputValue: whiteList[social][type].join('\n'),
+        html: `
+          <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">
+          <button id="link2id" data-type="${value}" class="swal2-confirm swal2-styled">获取id</button>
+          <p style="margin-bottom:0 !important;">在下方填写白名单，每行一个</p>
+        `,
+        inputValue: currentList.join('\n'),
         showConfirmButton: true,
         confirmButtonText: __('save'),
         showCancelButton: true,
@@ -289,13 +349,16 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
         denyButtonText: __('return')
       }).then(({ isDenied, isConfirmed, value }) => {
         if (isDenied) {
+          debug('返回白名单选项');
           if (showType === 'swal') {
             whiteListOptions(showType);
           }
           return;
-        } else if (isConfirmed) {
-          // @ts-ignore
-          whiteList[social][type] = value.split('\n');
+        }
+
+        if (isConfirmed && value) {
+          debug('保存白名单更改', { social, type, value });
+          (whiteList as WhiteList)[social][type] = value.split('\n').filter(Boolean);
           GM_setValue('whiteList', whiteList);
           Swal.fire({
             title: __('changeWhiteListSuccess'),
@@ -303,12 +366,18 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
           });
         }
       });
+
       $('#link2id').on('click', async function () {
-        const type = $(this).attr('data-type') as string;
-        $('#socialLink').val(await link2id(type));
+        const type = $(this).attr('data-type');
+        if (!type) return;
+
+        debug('从链接获取ID按钮点击', { type });
+        const id = await link2id(type);
+        $('#socialLink').val(id);
       });
     });
   } catch (error) {
+    debug('显示白名单选项时发生错误', { error });
     throwError(error as Error, 'whiteListOptions');
   }
 };

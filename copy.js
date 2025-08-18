@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2022-01-03 14:18:53
- * @LastEditTime : 2022-01-16 15:53:19
+ * @LastEditTime : 2025-08-11 14:13:24
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/copy.js
+ * @FilePath     : /auto-task/copy.js
  * @Description  : 复制文件到备用源网站
  */
 
@@ -14,6 +14,12 @@
 
   fs.copySync('./dist', './page/dist');
   fs.copySync('./package.json', './page/package.json');
+
+  fs.copySync('./page', './doc/docs/.vuepress/public', {
+    filter: (src) => {
+      return !src.includes('index.html') && !src.includes('vercel.json') && !src.includes('package.json');
+    }
+  });
 
   console.log(`Files copied ${chalk.default.green.bold('successfully')}!`);
 })();

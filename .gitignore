@@ -1,12 +1,6 @@
 .history
 node_modules
-stats.json
-*.js.ignore
 
-temp
+src/scripts/social/Instagram.ts
 test/
-test-*
-
-TID/
-XTID/
-*.LICENSE.txt
+CHANGELOG.md

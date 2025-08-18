@@ -1,14 +1,11 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2024-09-06 16:40:01
+ * @LastEditTime : 2025-08-18 19:07:15
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/scripts/website/GiveawayHopper.ts
+ * @FilePath     : /auto-task/src/scripts/website/GiveawayHopper.ts
  * @Description  : https://giveawayhopper.com/
  */
-
-// eslint-disable-next-line
-/// <reference path = "GiveawayHopper.d.ts" />
 
 import Swal from 'sweetalert2';
 import Website from './Website';
@@ -18,6 +15,7 @@ import __ from '../tools/i18n';
 import httpRequest from '../tools/httpRequest';
 import { delay, getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 const defaultTasksTemplate: giveawayHopperSocialTasks = {
   steam: {
@@ -59,55 +57,25 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  *
  * @static
  * @method test - 检查当前域名是否为 GiveawayHopper 网站。
- * @returns {boolean} 如果当前域名为 'giveawayHopper.io'，则返回 true；否则返回 false。
  *
  * @method before - 在执行操作之前重写全局的确认、警告和提示对话框。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
  * @method after - 页面加载后的异步方法，执行后续操作。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
- *
  * @method init - 初始化方法，尝试初始化抽奖功能。
- * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
- *
  * @method classifyTask - 分类任务的异步方法。
- * @param {'do' | 'undo'} action - 要执行的操作类型。
- * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
- *
  * @method extraDoTask - 执行额外任务的异步方法。
- * @param {Object} params - 方法参数对象。
- * @param {Array<string>} params.giveawayHopper - 包含要执行的GiveawayHopper任务链接的数组。
- * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
- *
  * @method verifyTask - 验证任务的异步方法。
- * @returns {Promise<boolean>} 如果所有任务成功验证，则返回 true；否则返回 false。
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
  *
  * @private
  * @method #checkSync - 检查同步状态的私有异步方法。
- * @returns {Promise<boolean>} 如果同步完成，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  *
  * @private
  * @method #doGiveawayHopperTask - 执行GiveawayHopper任务的私有异步方法。
- * @param {string} link - 要执行的GiveawayHopper任务链接。
- * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
  *
  * @private
  * @method #getGiveawayId - 获取抽奖ID的方法。
- * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  *
  * @private
  * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
- * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  */
 class GiveawayHopper extends Website {
   name = 'GiveawayHopper';
@@ -130,31 +98,33 @@ class GiveawayHopper extends Website {
    * 如果域名匹配，则返回 true；否则返回 false。
    */
   static test(): boolean {
-    return window.location.host === 'giveawayhopper.com';
+    const { host } = window.location;
+    const isMatch = host === 'giveawayhopper.com';
+    debug('检查网站匹配', { host, isMatch });
+    return isMatch;
   }
   /**
    * 页面加载后的异步方法
    *
    * @returns {Promise<void>} 无返回值。
-   *
    * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法在特定条件下执行后续操作。
-   * 首先检查当前URL中是否包含特定的查询参数。
-   * 如果包含，则设置一个定时器，检查任务是否完成。
-   * 遍历页面中的每个任务，查找可点击的元素并执行点击操作。
-   * 在每次点击后，等待 1 秒钟以确保操作完成。
-   * 如果未找到特定查询参数，则检查剩余密钥的状态。
-   * 如果检查失败，则记录相应的警告信息。
+   * 该方法在页面加载后执行初始化操作：
+   * 1. 检查用户登录状态，如果检查失败则记录警告信息
+   * 2. 获取抽奖ID
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       if (!this.#checkLogin()) {
+        debug('登录检查失败');
         echoLog({}).warning(__('checkLoginFailed'));
       }
-      this.#getGiveawayId();
+      const giveawayIdResult = this.#getGiveawayId();
+      debug('获取抽奖ID', { success: giveawayIdResult, id: this.giveawayId });
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'GiveawayHopper.after');
     }
   }
@@ -162,25 +132,32 @@ class GiveawayHopper extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
-   *
+   * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
    * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法尝试初始化抽奖功能。
-   * 首先记录初始化状态。如果获取抽奖ID失败，则返回 false。
-   * 如果成功获取抽奖ID，则将 `initialized` 属性设置为 true，并记录成功信息。
+   * 该方法执行以下初始化步骤：
+   * 1. 检查剩余密钥数量，如果检查失败则记录警告信息
+   * 2. 设置初始化标志
+   * 3. 记录成功状态
    */
   async init(): Promise<boolean> {
     try {
+      debug('初始化 GiveawayHopper');
       const logStatus = echoLog({ text: __('initing') });
-      if (!await this.#checkLeftKey()) {
+
+      const leftKeyResult = await this.#checkLeftKey();
+      if (!leftKeyResult) {
+        debug('检查剩余密钥失败');
         echoLog({}).warning(__('checkLeftKeyFailed'));
       }
+
       this.initialized = true;
+      debug('初始化完成');
       logStatus.success();
       return true;
     } catch (error) {
+      debug('初始化失败', { error });
       throwError(error as Error, 'GiveawayHopper.init');
       return false;
     }
@@ -191,81 +168,118 @@ class GiveawayHopper extends Website {
    *
    * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
    * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   *
    * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法根据传入的操作类型分类任务。
-   * 如果操作为 'undo'，则从存储中获取任务信息。
-   * 遍历页面中的任务，提取任务链接并根据任务类型分类到相应的社交任务列表中。
-   * 处理完成后，记录成功信息并将分类后的任务存储到本地。
+   * 该方法执行以下步骤：
+   * 1. 检查并获取抽奖ID
+   * 2. 如果是 'undo' 操作，从存储中恢复任务信息
+   * 3. 从API获取当前任务列表
+   * 4. 遍历任务并根据类型分类到相应的社交任务列表
+   * 5. 对任务列表进行去重处理
+   * 6. 将更新后的任务信息保存到存储中
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
+      debug('开始分类任务', { action });
       if (!this.giveawayId) {
+        debug('未找到抽奖ID，尝试获取');
         await this.#getGiveawayId();
       }
+
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
+        debug('恢复已保存的任务信息');
         this.socialTasks = GM_getValue<giveawayHopperGMTasks>(`giveawayHopperTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
       }
 
+      debug('请求任务列表');
       const { result, statusText, status, data } = await httpRequest({
         url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/with-auth`,
         method: 'GET',
         responseType: 'json',
-        fetch: true,
         headers: {
           authorization: `Bearer ${window.sessionStorage.gw_auth}`,
           'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
         }
       });
-      if (result === 'Success') {
-        if (data?.status === 200 && data?.response?.tasks) {
-          this.tasks = data.response.tasks;
-          for (const task of data.response.tasks) {
-            if (task.isDone) continue;
-            await httpRequest({
-              url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/visited`,
-              method: 'GET',
-              responseType: 'json',
-              fetch: true,
-              headers: {
-                authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-                'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
-              }
-            });
 
-            if (task.category === 'Steam' && task.type === 'JoinGroup') {
-              const steamGroupLink = await getRedirectLink(`https://steamcommunity.com/gid/${task.group_id}`);
-              if (!steamGroupLink) continue;
-              if (action === 'undo') this.socialTasks.steam.groupLinks.push(steamGroupLink);
-              if (action === 'do') this.undoneTasks.steam.groupLinks.push(steamGroupLink);
-              continue;
-            }
-            if (task.category === 'Discord' && task.type === 'JoinServer') {
-              if (action === 'undo') this.socialTasks.discord.serverLinks.push(`https://discord.gg/${task.invite_code}`);
-              if (action === 'do') this.undoneTasks.discord.serverLinks.push(`https://discord.gg/${task.invite_code}`);
-              continue;
-            }
-            if (['TikTok', 'YouTube', 'General'].includes(task.category)) {
-              continue;
-            }
-            echoLog({}).warning(`${__('unKnownTaskType')}: ${task.category}-${task.type}`);
-          }
-          logStatus.success();
-          this.undoneTasks = this.uniqueTasks(this.undoneTasks) as giveawayHopperSocialTasks;
-          this.socialTasks = this.uniqueTasks(this.socialTasks) as giveawayHopperSocialTasks;
-          if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
-          GM_setValue(`giveawayHopperTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
-          return true;
-        }
+      if (result !== 'Success') {
+        debug('请求任务列表失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200 || !data?.response?.tasks) {
+        debug('任务列表数据异常', { status: data?.status, response: data?.response });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      debug('获取到任务列表', { count: data.response.tasks.length });
+      this.tasks = data.response.tasks;
+
+      for (const task of data.response.tasks) {
+        if (task.isDone) {
+          debug('跳过已完成任务', { taskId: task.id, type: task.type });
+          continue;
+        }
+
+        debug('处理任务', { taskId: task.id, category: task.category, type: task.type });
+        await httpRequest({
+          url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/visited`,
+          method: 'GET',
+          responseType: 'json',
+          headers: {
+            authorization: `Bearer ${window.sessionStorage.gw_auth}`,
+            'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
+          }
+        });
+
+        if (task.category === 'Steam' && task.type === 'JoinGroup') {
+          debug('处理 Steam 组任务');
+          const steamGroupLink = await getRedirectLink(`https://steamcommunity.com/gid/${task.group_id}`);
+          if (!steamGroupLink) {
+            debug('获取 Steam 组链接失败');
+            continue;
+          }
+
+          debug('添加 Steam 组链接', { action, link: steamGroupLink });
+          if (action === 'undo') this.socialTasks.steam.groupLinks.push(steamGroupLink);
+          if (action === 'do') this.undoneTasks.steam.groupLinks.push(steamGroupLink);
+          continue;
+        }
+
+        if (task.category === 'Discord' && task.type === 'JoinServer') {
+          const discordLink = `https://discord.gg/${task.invite_code}`;
+          debug('添加 Discord 服务器链接', { action, link: discordLink });
+          if (action === 'undo') this.socialTasks.discord.serverLinks.push(discordLink);
+          if (action === 'do') this.undoneTasks.discord.serverLinks.push(discordLink);
+          continue;
+        }
+
+        if (['TikTok', 'YouTube', 'General'].includes(task.category)) {
+          debug('跳过特殊任务类型', { category: task.category });
+          continue;
+        }
+
+        debug('发现未知任务类型', { category: task.category, type: task.type });
+        echoLog({}).warning(`${__('unKnownTaskType')}: ${task.category}-${task.type}`);
+      }
+
+      logStatus.success();
+      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as giveawayHopperSocialTasks;
+      this.socialTasks = this.uniqueTasks(this.socialTasks) as giveawayHopperSocialTasks;
+
+      debug('任务分类完成', {
+        undoneTasks: this.undoneTasks,
+        socialTasks: this.socialTasks
+      });
+
+      GM_setValue(`giveawayHopperTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      return true;
     } catch (error) {
+      debug('任务分类失败', { error });
       throwError(error as Error, 'GiveawayHopper.classifyTask');
       return false;
     }
@@ -275,170 +289,280 @@ class GiveawayHopper extends Website {
    * 验证任务的异步方法
    *
    * @returns {Promise<boolean>} 如果所有任务成功验证，则返回 true；否则返回 false。
-   *
    * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法遍历页面中的所有任务，依次验证每个任务。
-   * 首先记录正在验证的任务状态，并检查是否存在人机验证。
-   * 如果存在人机验证，则记录相应信息并返回。
-   * 对于每个任务，如果任务未完成，则点击任务信息并处理可展开的内容。
-   * 如果存在可点击的按钮，则依次点击并等待相应的延迟。
-   * 在输入框中填入值并触发输入事件，最后点击继续按钮以完成任务验证。
-   * 如果所有任务成功完成，则记录成功信息。
+   * 该方法遍历所有未完成的任务，对每个任务：
+   * 1. 获取任务链接（如果需要）
+   * 2. 访问任务链接（如果存在）
+   * 3. 等待指定时间
+   * 4. 验证任务完成状态
    */
-  async verifyTask(): Promise<any> {
+  async verifyTask(): Promise<boolean> {
     try {
+      debug('开始验证任务');
       for (const task of this.tasks) {
-        if (task.isDone) continue;
-        const logStatus = echoLog({ text: `${__('verifyingTask')}[${task.displayName?.replace(':target', task.targetName) || task.name}]...` });
-        if (!task.link) {
-          if (task.category === 'YouTube' && task.type === 'FollowAccount') {
-            task.link = `https://www.youtube.com/@${task.targetName}`;
-          } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
-            task.link = `https://www.tiktok.com/@${task.targetName}`;
-          } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
-            task.link = '';
-          } else if (task.category === 'Discord' && task.type === 'JoinServer') {
-            task.link = '';
-          }
-        }
-        if (task.link) {
-          await httpRequest({
-            url: `https://giveawayhopper.com/fw?url=${encodeURIComponent(task.link)}&src=campaign&src_id=${this.giveawayId}&ref=task&ref_id=${task.id}&token=${window.sessionStorage.gw_auth}`,
-            method: 'GET',
-            fetch: true,
-            headers: {
-              authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-              'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
-            }
-          });
-        }
-        await delay(1000);
-        const postData: {
-          taskcategory: string
-          taskname: string
-          username?: string
-        } = { taskcategory: task.category, taskname: task.type };
-        if (['YouTube', 'TikTok'].includes(task.category)) {
-          postData.username = '1';
-        }
-        const { result, statusText, status, data } = await httpRequest({
-          url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/complete`,
-          method: 'POST',
-          fetch: true,
-          headers: {
-            authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-            'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string),
-            'content-type': 'application/json'
-          },
-          dataType: 'json',
-          data: JSON.stringify(postData)
-        });
-        if (result === 'Success') {
-          if (data?.status === 200 && data?.response?.completed) {
-            logStatus.success();
-            continue;
-          }
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        if (task.isDone) {
+          debug('跳过已完成任务', { taskId: task.id });
           continue;
         }
-        logStatus.error(`${result}:${statusText}(${status})`);
-        continue;
+
+        debug('验证任务', {
+          taskId: task.id,
+          name: task.displayName?.replace(':target', task.targetName) || task.name
+        });
+        const logStatus = echoLog({ text: `${__('verifyingTask')}[${task.displayName?.replace(':target', task.targetName) || task.name}]...` });
+
+        if (!task.link) {
+          debug('获取任务链接');
+          task.link = this.#getTaskLink(task);
+        }
+
+        if (task.link) {
+          debug('访问任务链接', { link: task.link });
+          await this.#visitTaskLink(task);
+        }
+
+        await delay(1000);
+        const verifyResult = await this.#verifyTask(task, logStatus);
+        debug('任务验证结果', { taskId: task.id, success: verifyResult });
+        if (!verifyResult) continue;
       }
+      debug('所有任务验证完成');
+      return true;
     } catch (error) {
+      debug('任务验证失败', { error });
       throwError(error as Error, 'GiveawayHopper.verifyTask');
       return false;
     }
   }
 
   /**
-   * 获取抽奖ID的方法
+   * 获取任务链接的私有方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+   * @param {giveawayHopperReturnTaskInfo} task - 任务信息对象
+   * @returns {string} 返回任务对应的链接，如果没有对应链接则返回空字符串
    *
    * @description
-   * 该方法从当前窗口的路径中提取抽奖ID。
-   * 如果成功获取到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
-   * 如果未能获取到抽奖ID，则记录错误信息并返回 false。
+   * 根据任务类型和目标生成对应的链接：
+   * - YouTube：生成频道订阅链接
+   * - TikTok：生成用户关注链接
+   * - Steam和Discord：返回空字符串（链接在其他地方处理）
+   */
+  #getTaskLink(task: giveawayHopperReturnTaskInfo): string {
+    try {
+      debug('生成任务链接', { category: task.category, type: task.type });
+      let link = '';
+
+      if (task.category === 'YouTube' && task.type === 'FollowAccount') {
+        link = `https://www.youtube.com/@${task.targetName}`;
+      } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
+        link = `https://www.tiktok.com/@${task.targetName}`;
+      } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
+        link = '';
+      } else if (task.category === 'Discord' && task.type === 'JoinServer') {
+        link = '';
+      }
+
+      debug('生成的任务链接', { link });
+      return link;
+    } catch (error) {
+      debug('生成任务链接失败', { error });
+      throwError(error as Error, 'GiveawayHopper.getTaskLink');
+      return '';
+    }
+  }
+
+  /**
+   * 访问任务链接的私有异步方法
+   *
+   * @param {giveawayHopperReturnTaskInfo} task - 任务信息对象
+   * @returns {Promise<void>} 无返回值
+   *
+   * @description
+   * 向服务器发送任务访问记录：
+   * 1. 构建包含任务信息的URL
+   * 2. 发送GET请求记录访问
+   * 3. 包含必要的认证信息
+   */
+  async #visitTaskLink(task: giveawayHopperReturnTaskInfo): Promise<void> {
+    debug('访问任务链接', { taskId: task.id, link: task.link });
+    await httpRequest({
+      url: `https://giveawayhopper.com/fw?url=${encodeURIComponent(task.link as string)}&src=campaign&src_id=${this.giveawayId}&ref=task&ref_id=${task.id}&token=${window.sessionStorage.gw_auth}`,
+      method: 'GET',
+      headers: {
+        authorization: `Bearer ${window.sessionStorage.gw_auth}`,
+        'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
+      }
+    });
+  }
+
+  /**
+   * 验证单个任务的私有异步方法
+   *
+   * @param {giveawayHopperReturnTaskInfo} task - 要验证的任务信息
+   * @param {any} logStatus - 日志状态对象，用于记录验证过程
+   * @returns {Promise<boolean>} 如果任务验证成功返回 true，否则返回 false
+   *
+   * @description
+   * 向服务器发送任务完成验证请求：
+   * 1. 构建验证数据（包括特殊处理YouTube和TikTok任务）
+   * 2. 发送POST请求进行验证
+   * 3. 处理响应结果并更新日志状态
+   */
+  async #verifyTask(task: giveawayHopperReturnTaskInfo, logStatus: any): Promise<boolean> {
+    debug('验证任务', { taskId: task.id, category: task.category, type: task.type });
+    const postData: {
+      taskcategory: string
+      taskname: string
+      username?: string
+    } = { taskcategory: task.category, taskname: task.type };
+
+    if (['YouTube', 'TikTok'].includes(task.category)) {
+      postData.username = '1';
+    }
+
+    const { result, statusText, status, data } = await httpRequest({
+      url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/complete`,
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${window.sessionStorage.gw_auth}`,
+        'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string),
+        'content-type': 'application/json'
+      },
+      dataType: 'json',
+      data: JSON.stringify(postData)
+    });
+
+    if (result !== 'Success') {
+      debug('任务验证请求失败', { result, statusText, status });
+      logStatus.error(`${result}:${statusText}(${status})`);
+      return false;
+    }
+
+    if (data?.status !== 200 || !data?.response?.completed) {
+      debug('任务验证响应异常', { status: data?.status, response: data?.response });
+      logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+      return false;
+    }
+
+    debug('任务验证成功', { taskId: task.id });
+    logStatus.success();
+    return true;
+  }
+
+  /**
+   * 获取抽奖ID的私有方法
+   *
+   * @returns {boolean} 如果成功获取抽奖ID返回 true，否则返回 false
+   * @throws {Error} 如果在获取过程中发生错误，将抛出错误
+   *
+   * @description
+   * 从当前页面URL中提取抽奖ID：
+   * 1. 从路径中获取最后一个部分作为ID
+   * 2. 验证ID是否存在
+   * 3. 保存ID到实例属性
    */
   #getGiveawayId(): boolean {
     try {
+      debug('从URL获取抽奖ID');
       const giveawayId = window.location.pathname.split('/').at(-1);
-      if (giveawayId) {
-        this.giveawayId = giveawayId;
-        return true;
+      if (!giveawayId) {
+        debug('获取抽奖ID失败');
+        echoLog({ text: __('getFailed', 'GiveawayId') });
+        return false;
       }
-      echoLog({ text: __('getFailed', 'GiveawayId') });
-      return false;
+
+      this.giveawayId = giveawayId;
+      debug('获取抽奖ID成功', { giveawayId });
+      return true;
     } catch (error) {
+      debug('获取抽奖ID出错', { error });
       throwError(error as Error, 'GiveawayHopper.getGiveawayId');
       return false;
     }
   }
 
   /**
-   * 检查用户是否已登录的私有方法
+   * 检查用户登录状态的私有方法
    *
-   * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+   * @returns {boolean} 如果用户已登录或不需要检查登录状态返回 true，发生错误返回 false
+   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
    *
    * @description
-   * 该方法检查全局选项中是否启用了登录检查功能。
-   * 如果启用且页面中存在 Steam 登录链接，则重定向用户到 Steam 登录页面。
-   * 如果没有找到登录链接，则返回 true，表示用户已登录或不需要登录。
+   * 检查用户登录状态：
+   * 1. 检查是否启用了登录检查功能
+   * 2. 查找登录按钮并在需要时自动点击
+   * 3. 返回检查结果
    */
   #checkLogin(): boolean {
     try {
-      if (!globalOptions.other.checkLogin) return true;
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
 
-      if ($('div.widget-connections-edit:contains("Log in")').length > 0) {
+      const needLogin = $('div.widget-connections-edit:contains("Log in")').length > 0;
+      if (needLogin) {
+        debug('未登录，自动点击登录按钮');
         $('div.widget-connections-edit:contains("Log in") a')[0].click();
       }
+      debug('登录检查完成', { needLogin });
       return true;
     } catch (error) {
+      debug('登录检查失败', { error });
       throwError(error as Error, 'GiveawayHopper.checkLogin');
       return false;
     }
   }
 
   /**
-   * 检查剩余密钥的私有异步方法
+   * 检查剩余密钥数量的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+   * @returns {Promise<boolean>} 如果检查成功返回 true，发生错误返回 false
+   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
    *
    * @description
-   * 该方法首先检查全局选项中是否启用了检查剩余密钥的功能。
-   * 如果启用且当前抽奖已结束且没有剩余密钥，则弹出警告框提示用户没有剩余密钥。
-   * 用户可以选择确认或取消，确认后将关闭窗口。
-   * 如果没有错误发生，则返回 true。
+   * 检查抽奖是否还有剩余密钥：
+   * 1. 检查是否启用了密钥检查功能
+   * 2. 获取并解析页面上的密钥数量信息
+   * 3. 如果没有剩余密钥，显示确认对话框
+   * 4. 根据用户选择决定是否关闭窗口
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
-      if (!globalOptions.other.checkLeftKey) return true;
-      if ($('p.widget-single-prize span').length > 0 && parseInt($('p.widget-single-prize span').text()
-        ?.match(/\d+/)?.[0] || '0', 10) > 0) {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
         return true;
       }
-      await Swal.fire({
+
+      const keyCount = parseInt($('p.widget-single-prize span').text()
+        ?.match(/\d+/)?.[0] || '0', 10);
+      debug('剩余密钥数量', { keyCount });
+
+      if (keyCount > 0) {
+        return true;
+      }
+
+      debug('没有剩余密钥，显示确认对话框');
+      const { value } = await Swal.fire({
         icon: 'warning',
         title: __('notice'),
         text: __('noKeysLeft'),
         confirmButtonText: __('confirm'),
         cancelButtonText: __('cancel'),
         showCancelButton: true
-      }).then(({ value }) => {
-        if (value) {
-          window.close();
-        }
       });
+
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
       return true;
     } catch (error) {
+      debug('检查剩余密钥失败', { error });
       throwError(error as Error, 'GiveawayHopper.checkLeftKey');
       return false;
     }

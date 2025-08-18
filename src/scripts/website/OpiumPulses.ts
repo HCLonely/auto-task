@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-14 17:22:20
- * @LastEditTime : 2022-01-02 12:52:20
+ * @LastEditTime : 2025-08-18 19:06:00
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/OpiumPulses.ts
+ * @FilePath     : /auto-task/src/scripts/website/OpiumPulses.ts
  * @Description  : https://www.opiumpulses.com/giveaways
  */
 
@@ -12,6 +12,7 @@ import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import httpRequest from '../tools/httpRequest';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 declare function checkUser(params:string): void
 interface options {
@@ -84,7 +85,10 @@ class OpiumPulses {
    * 如果域名匹配，则返回 true；否则返回 false。
    */
   static test(): boolean {
-    return window.location.host === 'www.opiumpulses.com';
+    const { host } = window.location;
+    const isMatch = host === 'www.opiumpulses.com';
+    debug('检查网站匹配', { host, isMatch });
+    return isMatch;
   }
 
   /**
@@ -100,11 +104,15 @@ class OpiumPulses {
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       if (!this.#checkLogin()) {
+        debug('检查登录失败');
         echoLog({}).warning(__('checkLoginFailed'));
       }
+      debug('解析最大积分', { maxPoint: this.options.maxPoint });
       this.maxPoints = parseInt(this.options.maxPoint, 10);
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'OpiumPulses.after');
     }
   }
@@ -122,8 +130,10 @@ class OpiumPulses {
    */
   async doFreeTask(): Promise<void> {
     try {
+      debug('开始执行免费任务');
       this.#toggleTask('FREE');
     } catch (error) {
+      debug('执行免费任务失败', { error });
       throwError(error as Error, 'OpiumPulses.doFreeTask');
     }
   }
@@ -142,10 +152,14 @@ class OpiumPulses {
    */
   async doPointTask(): Promise<void> {
     try {
-      this.myPoints = parseInt($('.page-header__nav-func-user-nav-items.points-items').text()
-        .match(/[\d]+/gim)?.[0] || '0', 10);
+      debug('开始执行积分任务');
+      const pointsText = $('.page-header__nav-func-user-nav-items.points-items').text();
+      const pointsMatch = pointsText.match(/[\d]+/gim)?.[0] || '0';
+      this.myPoints = parseInt(pointsMatch, 10);
+      debug('获取当前积分', { pointsText, pointsMatch, myPoints: this.myPoints });
       this.#toggleTask('points');
     } catch (error) {
+      debug('执行积分任务失败', { error });
       throwError(error as Error, 'OpiumPulses.doPointTask');
     }
   }
@@ -159,66 +173,125 @@ class OpiumPulses {
    * @throws {Error} 如果在切换任务过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法根据任务类型查找可用的抽奖项目。
-   * 如果任务类型为 'points'，则检查用户的积分是否足够。
-   * 遍历每个抽奖项目，提取所需积分和项目名称。
-   * 如果用户积分不足或未找到所需积分，则记录警告信息。
-   * 否则，尝试加入抽奖并记录相应的状态信息。
-   * 如果加入成功，则更新用户的积分。
+   * 该方法按以下步骤处理抽奖任务：
+   * 1. 查找未参与的抽奖项目
+   * 2. 对于每个抽奖项目：
+   *    - 提取所需积分和项目名称
+   *    - 对于积分任务：
+   *      * 检查用户积分是否足够，不足则跳过
+   *      * 验证所需积分是否有效，无效则跳过
+   *      * 检查是否超过最大积分限制，超过则跳过
+   *    - 记录加入抽奖的状态
+   *    - 处理用户验证（如果需要）
+   *    - 验证抽奖链接是否有效
+   *    - 发送加入抽奖请求
+   *    - 处理请求响应：
+   *      * 验证请求是否成功
+   *      * 检查用户是否有资格参与
+   *      * 确认是否成功加入抽奖
+   *    - 如果成功加入积分抽奖，更新用户积分
+   * 3. 完成后显示结束标记
    */
   async #toggleTask(type: 'FREE' | 'points'): Promise<void> {
     try {
+      debug('开始切换任务', { type });
       const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`);
+      debug('找到未参与的抽奖项目', { count: items.length });
+
       for (const item of items) {
-        const needPoints = parseInt($(item).find('.giveaways-page-item-header-points')
-          .text()
-          .match(/[\d]+/gim)?.[0] || '999999', 10);
+        const pointsText = $(item).find('.giveaways-page-item-header-points')
+          .text();
+        const needPoints = parseInt(pointsText.match(/[\d]+/gim)?.[0] || '999999', 10);
         const name = $(item).find('.giveaways-page-item-footer-name')
           .text()
           .trim();
-        if (type === 'points' && needPoints > this.myPoints) {
-          echoLog({}).warning(`${__('noPoints')}: ${name}`);
-        } else if (type === 'points' && !needPoints) {
-          echoLog({}).warning(`${__('getNeedPointsFailed')}: ${name}`);
-        } else if (!(type === 'points' && needPoints > this.maxPoints)) {
-          const logStatus = echoLog({ text: `${__('joiningLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more')
-            .attr('href')}" target="_blank">${name}</a>...` });
-          const aElement = $(item).find('a.giveaways-page-item-img-btn-enter:contains(\'enter\')');
-          if (aElement?.attr('onclick')?.includes('checkUser')) {
-            const giveawayId = aElement.attr('onclick')?.match(/[\d]+/)?.[0];
-            if (giveawayId) checkUser(giveawayId);
-          }
-          if (!aElement.attr('href')) {
-            logStatus.error('Error: No "href".');
+        debug('处理抽奖项目', { name, needPoints });
+
+        if (type === 'points') {
+          if (needPoints > this.myPoints) {
+            debug('积分不足', { needPoints, myPoints: this.myPoints });
+            echoLog({}).warning(`${__('noPoints')}: ${name}`);
             continue;
           }
-          const { result, statusText, status, data } = await httpRequest({
-            url: aElement.attr('href') as string,
-            method: 'GET'
-          });
-          if (result === 'Success') {
-            const { result: result0, statusText: statusText0, status: status0, data: data0 } = await httpRequest({
-              url: data?.finalUrl as string,
-              method: 'GET'
-            });
-            if (data0?.responseText && /You've entered this giveaway/gim.test(data0.responseText)) {
-              logStatus.success();
-              const points = data0.responseText.match(/Points:[\s]*?([\d]+)/)?.[1];
-              if (type === 'points' && points) {
-                this.myPoints = parseInt(points, 10);
-              }
-            } else if (data0?.responseText && /You're not eligible to enter/gim.test(data0.responseText)) {
-              logStatus.error('You\'re not eligible to enter');
-            } else {
-              logStatus.error(`${result0}:${statusText0}(${status0})`);
-            }
-          } else {
-            logStatus.error(`${result}:${statusText}(${status})`);
+          if (!needPoints) {
+            debug('获取所需积分失败');
+            echoLog({}).warning(`${__('getNeedPointsFailed')}: ${name}`);
+            continue;
+          }
+          if (needPoints > this.maxPoints) {
+            debug('超过最大积分限制', { needPoints, maxPoints: this.maxPoints });
+            continue;
+          }
+        }
+
+        const logStatus = echoLog({ text: `${__('joiningLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more')
+          .attr('href')}" target="_blank">${name}</a>...` });
+
+        const aElement = $(item).find('a.giveaways-page-item-img-btn-enter:contains(\'enter\')');
+        if (aElement?.attr('onclick')?.includes('checkUser')) {
+          const giveawayId = aElement.attr('onclick')?.match(/[\d]+/)?.[0];
+          if (giveawayId) {
+            debug('执行用户检查', { giveawayId });
+            checkUser(giveawayId);
+          }
+        }
+
+        if (!aElement.attr('href')) {
+          debug('无效的链接');
+          logStatus.error('Error: No "href".');
+          continue;
+        }
+
+        debug('发送加入请求', { url: aElement.attr('href') });
+        const { result, statusText, status, data } = await httpRequest({
+          url: aElement.attr('href') as string,
+          method: 'GET'
+        });
+
+        if (result !== 'Success') {
+          debug('请求失败', { result, statusText, status });
+          logStatus.error(`${result}:${statusText}(${status})`);
+          continue;
+        }
+
+        debug('发送最终请求', { url: data?.finalUrl });
+        const { result: result0, statusText: statusText0, status: status0, data: data0 } = await httpRequest({
+          url: data?.finalUrl as string,
+          method: 'GET'
+        });
+
+        if (!data0?.responseText) {
+          debug('响应无效', { result: result0, statusText: statusText0, status: status0 });
+          logStatus.error(`${result0}:${statusText0}(${status0})`);
+          continue;
+        }
+
+        if (/You're not eligible to enter/gim.test(data0.responseText)) {
+          debug('用户不符合参与条件');
+          logStatus.error('You\'re not eligible to enter');
+          continue;
+        }
+
+        if (!/You've entered this giveaway/gim.test(data0.responseText)) {
+          debug('加入抽奖失败', { result: result0, statusText: statusText0, status: status0 });
+          logStatus.error(`${result0}:${statusText0}(${status0})`);
+          continue;
+        }
+
+        debug('加入抽奖成功');
+        logStatus.success();
+        if (type === 'points') {
+          const points = data0.responseText.match(/Points:[\s]*?([\d]+)/)?.[1];
+          if (points) {
+            debug('更新用户积分', { points });
+            this.myPoints = parseInt(points, 10);
           }
         }
       }
+      debug('任务处理完成');
       echoLog({ text: '-----END-----' });
     } catch (error) {
+      debug('切换任务失败', { error });
       throwError(error as Error, 'OpiumPulses.toggleTask');
     }
   }
@@ -233,6 +306,7 @@ class OpiumPulses {
    * 当前实现仅返回 true，表示初始化过程已完成。
    */
   init(): boolean {
+    debug('初始化完成');
     return true;
   }
 
@@ -245,6 +319,7 @@ class OpiumPulses {
    * 该方法用于分类任务，当前实现仅返回 true，表示任务分类过程已完成。
    */
   classifyTask(): boolean {
+    debug('任务分类完成');
     return true;
   }
 
@@ -262,12 +337,19 @@ class OpiumPulses {
    */
   #checkLogin(): boolean {
     try {
-      if (!globalOptions.other.checkLogin) return true;
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
       if ($('a[href*="/site/login"]').length > 1) {
+        debug('未登录，重定向到登录页面');
         window.open('/site/login', '_self');
       }
+      debug('登录检查完成');
       return true;
     } catch (error) {
+      debug('检查登录失败', { error });
       throwError(error as Error, 'OpiumPulses.checkLogin');
       return false;
     }

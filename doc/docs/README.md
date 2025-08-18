@@ -12,5 +12,5 @@ features:
   details: 支持 Steam, Twitter, Discord, Youtube, Instagram, Reddit, Vk 等社交平台任务。
 - title: 上手简单
   details: 安装即用，一键完成。
-footer: MIT Licensed | Copyright © 2020 by HCLonely
+footer: MIT Licensed | Copyright © 2020-2025 by HCLonely
 ---

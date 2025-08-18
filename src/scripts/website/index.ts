@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-24 15:03:56
- * @LastEditTime : 2021-12-28 19:54:43
+ * @LastEditTime : 2025-08-18 19:06:33
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/index.ts
+ * @FilePath     : /auto-task/src/scripts/website/index.ts
  * @Description  : 整合website相关
  */
 
@@ -21,6 +21,7 @@ import SweepWidget from './SweepWidget';
 import Setting from './Setting';
 import History from './History';
 import GiveawayHopper from './GiveawayHopper';
+import Prys from './Prys';
 
 type WebsitesType = typeof FreeAnyWhere |
   typeof GiveawaySu |
@@ -35,7 +36,8 @@ type WebsitesType = typeof FreeAnyWhere |
   typeof SweepWidget |
   typeof Setting |
   typeof History |
-  typeof GiveawayHopper;
+  typeof GiveawayHopper |
+  typeof Prys;
 
 type WebsiteType = FreeAnyWhere |
   GiveawaySu |
@@ -50,7 +52,8 @@ type WebsiteType = FreeAnyWhere |
   SweepWidget |
   Setting |
   History |
-  GiveawayHopper;
+  GiveawayHopper |
+  Prys;
 
 /**
  * 网站类型数组
@@ -74,11 +77,12 @@ type WebsiteType = FreeAnyWhere |
  * - Setting
  * - History
  * - GiveawayHopper
+ * - Prys
  *
  * 这些网站类型用于后续的抽奖操作和管理。
  */
 const Websites: Array<WebsitesType> = [
-  FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper
+  FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys
 ];
 
 export { Websites, WebsiteType };

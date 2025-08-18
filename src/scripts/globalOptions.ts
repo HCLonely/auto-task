@@ -1,19 +1,12 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-24 16:41:12
- * @LastEditTime : 2022-02-12 17:59:15
+ * @LastEditTime : 2025-08-18 19:04:41
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/globalOptions.ts
+ * @FilePath     : /auto-task/src/scripts/globalOptions.ts
  * @Description  : 全局设置选项
  */
 
-// eslint-disable-next-line
-/// <reference path = "globalOptions.d.ts" />
-
-import Swal from 'sweetalert2';
-import __ from './tools/i18n';
-import throwError from './tools/throwError';
-import { stringToColour } from './tools/tools';
 /**
  * 默认全局选项配置对象，包含各个平台的任务设置、位置、热键和其他选项。
  *
@@ -21,8 +14,8 @@ import { stringToColour } from './tools/tools';
  * @property {Object} doTask - 执行任务的选项。
  * @property {Object} doTask.discord - Discord 平台的任务设置。
  * @property {boolean} doTask.discord.servers - 是否执行 Discord 服务器任务。
- * @property {Object} doTask.instagram - Instagram 平台的任务设置。
- * @property {boolean} doTask.instagram.users - 是否执行 Instagram 用户任务。
+//  * @property {Object} doTask.instagram - Instagram 平台的任务设置。
+//  * @property {boolean} doTask.instagram.users - 是否执行 Instagram 用户任务。
  * @property {Object} doTask.twitch - Twitch 平台的任务设置。
  * @property {boolean} doTask.twitch.channels - 是否执行 Twitch 频道任务。
  * @property {Object} doTask.twitter - Twitter 平台的任务设置。
@@ -89,9 +82,9 @@ const defaultGlobalOptions: globalOptions = {
     discord: {
       servers: true
     },
-    instagram: {
-      users: true
-    },
+    // instagram: {
+    //   users: true
+    // },
     twitch: {
       channels: true
     },
@@ -128,9 +121,9 @@ const defaultGlobalOptions: globalOptions = {
     discord: {
       servers: true
     },
-    instagram: {
-      users: true
-    },
+    // instagram: {
+    //   users: true
+    // },
     twitch: {
       channels: true
     },
@@ -163,7 +156,10 @@ const defaultGlobalOptions: globalOptions = {
     AsfEnabled: false,
     AsfIpcUrl: '',
     AsfIpcPassword: '',
-    AsfBotname: 'asf'
+    AsfBotname: 'asf',
+    steamWeb: false,
+    preferASF: false,
+    steamWebApiKey: ''
   },
   position: {
     buttonSideX: 'right',
@@ -195,143 +191,60 @@ const defaultGlobalOptions: globalOptions = {
   }
 };
 
-const userDefinedGlobalOptions = GM_getValue<object>('globalOptions') || {};
+/**
+ * 从存储中获取用户定义的全局选项
+ * 使用 GM_getValue 从油猴存储中读取配置，如果不存在则返回空对象
+ *
+ * @returns {Partial<globalOptions>} 用户定义的全局选项，可能只包含部分配置
+ */
+const userDefinedGlobalOptions = GM_getValue<Partial<globalOptions>>('globalOptions') || {};
 
 /**
- * 合并两个对象，返回一个新的对象。对于相同的键，如果两个对象的值都是对象，则递归合并；否则，使用第二个对象的值（如果存在）或第一个对象的值。
+ * 深度合并两个对象，返回一个新的对象
+ * 该方法会递归合并所有嵌套的对象属性，保留源对象中未定义的目标对象属性
  *
- * @param {globalOptions} obj1 - 第一个对象，作为基础对象。
- * @param {object} obj2 - 第二个对象，用于合并到第一个对象。
- *
- * @returns {globalOptions} 返回合并后的新对象。
- *
- * @throws {Error} 如果在合并过程中发生错误，将抛出错误。
+ * @template T - 对象类型参数，必须是一个对象类型
+ * @param {T} target - 目标对象，作为基础配置
+ * @param {Partial<T>} source - 源对象，用于覆盖目标对象的配置，可以是部分配置
+ * @returns {T} 返回合并后的新对象，类型与目标对象相同
+ * @throws {Error} 在合并过程中如果发生错误，会被 try-catch 捕获并记录，返回目标对象
  */
-const assignObject = (obj1: globalOptions, obj2: object): globalOptions => {
+const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
   try {
-    const newObj = {};
-    for (const [key, value] of Object.entries(obj1)) {
-      // @ts-ignore
-      if (Object.prototype.toString.call(value) === '[object Object]' && Object.prototype.toString.call(obj2[key]) === '[object Object]') {
-        // @ts-ignore
-        newObj[key] = assignObject(value, obj2[key]);
-      } else {
-        // @ts-ignore
-        newObj[key] = obj2[key] ?? value;
+    const result = { ...target };
+
+    for (const [key, value] of Object.entries(source)) {
+      const targetValue = target[key as keyof T];
+
+      if (isObject(value) && isObject(targetValue)) {
+        result[key as keyof T] = deepMerge(targetValue, value) as T[keyof T];
+      } else if (value !== undefined) {
+        result[key as keyof T] = value as T[keyof T];
       }
     }
-    return newObj as globalOptions;
+
+    return result;
   } catch (error) {
-    throwError(error as Error, 'assignObject');
-    return defaultGlobalOptions;
-  }
-};
-
-const globalOptions = assignObject(defaultGlobalOptions, userDefinedGlobalOptions);
-
-/**
- * 保存全局选项数据，将表单中的值序列化并更新 `globalOptions` 对象。
- *
- * @returns {void} 无返回值。
- *
- * @throws {Error} 如果在保存过程中发生错误，将抛出错误。
- */
-const saveData = () => {
-  try {
-    const data = {};
-    $('#globalOptionsForm').serializeArray()
-      .map((value) => {
-        // @ts-ignore
-        data[value.name] = value.value;
-        return value;
-      });
-    $.makeArray($('#globalOptionsForm input')).map((element) => {
-      const name = $(element).attr('name') as string;
-      const keys = name.split('.');
-      if (keys.length === 3) {
-        // @ts-ignore
-        globalOptions[keys[0]][keys[1]][keys[2]] = data[name] ? (data[name] === 'on' ? true : data[name]) : (data[name] ?? false); // eslint-disable-line
-      } else if (keys.length === 2) {
-        // @ts-ignore
-        globalOptions[keys[0]][keys[1]] = data[name] ? (data[name] === 'on' ? true : data[name]) : (data[name] ?? false); // eslint-disable-line
-      }
-      return element;
-    });
-
-    GM_setValue('globalOptions', globalOptions);
-    Swal.fire({
-      title: __('changeGlobalOptionsSuccess'),
-      icon: 'success'
-    });
-  } catch (error) {
-    throwError(error as Error, 'saveData');
+    console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: deepMerge\n${(error as Error).stack}`);
+    return target;
   }
 };
 
 /**
- * 更改全局选项并显示相应的表单。
+ * 检查值是否为普通对象（不包括数组和 null）
  *
- * @param {'page' | 'swal'} showType - 指定显示类型，支持 'page' 或 'swal'。
- *
- * @returns {void} 无返回值。
- *
- * @throws {Error} 如果在更改全局选项的过程中发生错误，将抛出错误。
+ * @param {unknown} value - 要检查的值，可以是任意类型
+ * @returns {boolean} 如果值是对象且不是数组或 null，返回 true；否则返回 false
  */
-const changeGlobalOptions = (showType: 'page' | 'swal') => {
-  try {
-    let globalOptionsForm = `<form id="globalOptionsForm" class="auto-task-form">
-      <table class="auto-task-table"><thead><tr><td>${__('type')}</td><td>${__('option')}</td><td>${__('value')}</td></tr></thead><tbody>`;
-    for (const [type, data1] of Object.entries(globalOptions)) {
-      for (const [option, data2] of Object.entries(data1)) {
-        if (['other', 'position', 'hotKey', 'ASF'].includes(type)) {
-          if (typeof data2 === 'boolean') {
-            globalOptionsForm +=
-              `<tr style="background-color: ${stringToColour(type)}44">${Object.keys(data1).indexOf(option) === 0 ?
-                `<th rowspan="${Object.keys(data1).length}">${__(type)}</th>` :
-                ''
-              }<td>${__(option)}</td><td><label><input type="checkbox" name="${type}.${option}"${data2 ? ' checked="checked"' : ''
-              }/><span><i></i></span></label></td></tr>`;
-          } else {
-            globalOptionsForm +=
-              `<tr style="background-color: ${stringToColour(type)}44">${Object.keys(data1).indexOf(option) === 0 ?
-                `<th rowspan="${Object.keys(data1).length}" style="background-color: ${stringToColour(type)}66">${__(type)}</th>` :
-                ''
-              }<td>${__(option)}</td><td><input class="editOption" type="text" name="${type}.${option}" value="${data2}"/></td></tr>`;
-          }
-        } else {
-          // @ts-ignore
-          for (const [socialType, data3] of Object.entries(data2)) {
-            globalOptionsForm +=
-              `<tr style="background-color: ${stringToColour(option)}66">${Object.keys(data1).indexOf(option) === 0 ?
-                `<th rowspan="${Object.keys(data1).map((key) => Object.keys(data1[key]).length)
-                  .reduce((acr, cur) => acr + cur)}" style="background-color: ${stringToColour(type)}66">${__(type)}</th>` :
-                ''
-              }<td>${option}.${__(socialType)}</td><td><label><input type="checkbox" name="${type}.${option}.${socialType}"${data3 ? ' checked="checked"' : ''
-              }/><span><i></i></span></label></td></tr>`;
-          }
-        }
-      }
-    }
-    globalOptionsForm += '</tbody></table></form>';
-    if (showType === 'swal') {
-      Swal.fire({
-        title: __('globalOptions'),
-        html: globalOptionsForm,
-        showConfirmButton: true,
-        confirmButtonText: __('save'),
-        showCancelButton: true,
-        cancelButtonText: __('close')
-      }).then(({ isConfirmed }) => {
-        if (isConfirmed) {
-          saveData();
-        }
-      });
-    } else {
-      $('body').append(`<h2>${__('globalOptions')}</h2>${globalOptionsForm}`);
-    }
-  } catch (error) {
-    throwError(error as Error, 'changeGlobalOptions');
-  }
-};
+const isObject = (value: unknown): value is object => value !== null && typeof value === 'object' && !Array.isArray(value);
 
-export { globalOptions, changeGlobalOptions, saveData };
+/**
+ * 全局配置实例
+ * 通过深度合并默认配置和用户定义的配置创建
+ * 这个实例将作为应用程序的主要配置对象
+ *
+ * @type {globalOptions} 完整的全局配置对象
+ */
+const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
+
+export { globalOptions };

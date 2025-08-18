@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-04 10:36:57
- * @LastEditTime : 2025-05-30 09:47:14
+ * @LastEditTime : 2025-08-18 19:08:41
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/scripts/social/Twitter.ts
+ * @FilePath     : /auto-task/src/scripts/social/Twitter.ts
  * @Description  : Twitter 关注/取关用户,转推/取消转推推文
  */
 
@@ -14,7 +14,9 @@ import httpRequest from '../tools/httpRequest';
 import { unique, delay } from '../tools/tools';
 import __ from '../tools/i18n';
 import { globalOptions } from '../globalOptions';
-import { createSession } from './XTID/main';
+import getTID from './XTID/getTID.js';
+import { getFwdForSdk } from './XFwdForSdk/main';
+import { debug } from '../tools/debug';
 /**
  * Twitter类用于处理与Twitter相关的任务，包括关注/取关用户和转推/取消转推推文。
  *
@@ -31,55 +33,34 @@ import { createSession } from './XTID/main';
  * @property {cache} #cache - 存储用户ID的缓存。
  * @private
  * @property {boolean} #initialized - 模块是否已初始化的标志。
+ * @private
+ * @property {Object} #session - Twitter API会话对象。
+ * @private
+ * @property {Function} #session.get - 获取Twitter API请求的事务ID。
  *
- * @constructor
- * @description 创建一个Twitter实例，初始化任务模板和白名单。
- *
- * @async
- * @function init
- * @returns {Promise<boolean>} - 返回初始化结果，true表示成功，false表示失败。
- *
- * @async
- * @function #verifyAuth
- * @returns {Promise<boolean>} - 返回Token验证结果，true表示有效，false表示无效。
- *
- * @async
- * @function #updateAuth
- * @returns {Promise<boolean>} - 返回更新Token的结果，true表示成功，false表示失败。
- *
- * @async
- * @function #toggleUser
- * @param {Object} options - 选项对象。
- * @param {string} options.name - Twitter用户名。
- * @param {boolean} [options.doTask=true] - 是否执行任务，true表示关注，false表示取关。
- * @param {boolean} [options.verify=false] - 是否用于验证Token。
- * @returns {Promise<boolean>} - 返回操作结果，true表示成功，false表示失败。
- *
- * @async
- * @function userName2id
- * @param {string} name - Twitter用户名。
- * @returns {Promise<string | false>} - 返回用户ID或false。
- *
- * @async
- * @function #toggleRetweet
- * @param {Object} options - 选项对象。
- * @param {string} options.retweetId - 推文的ID。
- * @param {boolean} [options.doTask=true] - 是否执行转推任务。
- * @returns {Promise<boolean>} - 返回操作结果，true表示成功，false表示失败。
- *
- * @async
- * @function toggle
- * @param {Object} options - 选项对象。
- * @param {boolean} [options.doTask=true] - 是否执行任务。
- * @param {Array<string>} [options.userLinks=[]] - Twitter用户链接数组。
- * @param {Array<string>} [options.retweetLinks=[]] - 推文链接数组。
- * @returns {Promise<boolean>} - 返回操作结果，true表示成功，false表示失败。
- *
- * @function #setCache
- * @param {string} name - 要缓存的Twitter用户名。
- * @param {string} id - 要缓存的Twitter用户ID。
- * @returns {void} - 无返回值。
+ * @method constructor - 创建一个Twitter实例，初始化任务模板和白名单。
+ * @method init - 初始化Twitter模块，验证用户身份并获取授权。
+ * @method #verifyAuth - 验证Twitter的身份验证Token是否有效。
+ * @method #updateAuth - 更新Twitter的身份验证Token。
+ * @method #toggleUser - 处理Twitter用户任务，关注或取关指定的用户。
+ * @method userName2id - 通过用户名获取Twitter用户的ID。
+ * @method #toggleRetweet - 处理转推任务，关注或撤销转推指定的推文。
+ * @method toggle - 统一处理Twitter相关任务，关注或取消关注指定的用户和推文。
+ * @method #setCache - 设置缓存，将指定的用户名与用户ID进行关联。
  */
+
+const generateSecCHUA = () => {
+  // 检查浏览器是否支持 navigator.userAgentData
+  if (navigator.userAgentData && navigator.userAgentData.brands) {
+    // 映射 brands 数组为 Sec-CH-UA 格式
+    return navigator.userAgentData.brands
+      .map((brand) => `"${brand.brand}";v="${brand.version}"`)
+      .join(', ');
+  }
+
+  // 不支持的浏览器返回模拟值（基于Chrome 125的典型格式）
+  return '"Google Chrome";v="125", "Chromium";v="125", "Not-A.Brand";v="99"';
+};
 
 class Twitter extends Social {
   tasks: twitterTasks;
@@ -88,9 +69,12 @@ class Twitter extends Social {
   #auth: auth = GM_getValue<auth>('twitterAuth') || {};
   #cache: cache = GM_getValue<cache>('twitterCache') || {};
   #initialized = false;
-  #session!: {
-    get: (method: string, path: string) => Promise<string>,
+  #getTID!: (method: string, path: string) => Promise<string>;
+  #FwdForSdk!: {
+    str: string,
+    expiryTimeMillis: number
   };
+  #headers: Record<string, string> = {};
 
   /**
    * 创建一个Twitter实例。
@@ -106,8 +90,20 @@ class Twitter extends Social {
     const defaultTasksTemplate: twitterTasks = {
       users: [], retweets: [], likes: []
     };
+    debug('初始化Twitter实例');
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.twitter || {}) };
+    this.#headers = {
+      authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+      'X-Twitter-Auth-Type': 'OAuth2Session',
+      'X-Twitter-Active-User': 'yes',
+      'sec-fetch-dest': 'empty',
+      'sec-fetch-mode': 'cors',
+      'sec-fetch-site': 'same-origin',
+      'sec-ch-ua-platform': '"Windows"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua': generateSecCHUA()
+    };
   }
 
   /**
@@ -128,32 +124,44 @@ class Twitter extends Social {
    */
   async init(): Promise<boolean> {
     try {
+      debug('开始初始化Twitter模块');
       if (this.#initialized) {
+        debug('Twitter模块已初始化');
         return true;
       }
-      if (!this.#auth.ct0) {
-        if (await this.#updateAuth()) {
-          this.#initialized = true;
-          return true;
-        }
+
+      debug('获取Twitter授权信息');
+      if (!await this.#updateAuth()) {
         return false;
       }
-      this.#session = await createSession();
+
+      debug('创建Twitter会话和SDK');
+      // this.#session = await createSession();
+      this.#getTID = await getTID();
+      this.#FwdForSdk = await getFwdForSdk();
       const isVerified = await this.#verifyAuth();
+
       if (isVerified) {
-        echoLog({}).success(__('initSuccess', 'Twitter'));
+        debug('Twitter授权验证成功');
+        echoLog({ before: '[Twitter]' }).success(__('initSuccess', 'Twitter'));
         this.#initialized = true;
         return true;
       }
+
+      debug('Twitter授权失效，尝试重新获取');
       GM_setValue('twitterAuth', null);
       if (await this.#updateAuth()) {
-        echoLog({}).success(__('initSuccess', 'Twitter'));
+        debug('Twitter重新授权成功');
+        echoLog({ before: '[Twitter]' }).success(__('initSuccess', 'Twitter'));
         this.#initialized = true;
         return true;
       }
-      echoLog({}).error(__('initFailed', 'Twitter'));
+
+      debug('Twitter初始化失败');
+      echoLog({ before: '[Twitter]' }).error(__('initFailed', 'Twitter'));
       return false;
     } catch (error) {
+      debug('Twitter初始化发生错误', { error });
       throwError(error as Error, 'Twitter.init');
       return false;
     }
@@ -163,6 +171,7 @@ class Twitter extends Social {
    * 验证Twitter的身份验证Token是否有效。
    *
    * @async
+   * @private
    * @function #verifyAuth
    * @returns {Promise<boolean>} - 返回一个Promise，表示Token验证的结果。
    *                              - true: Token有效
@@ -175,8 +184,10 @@ class Twitter extends Social {
    */
   async #verifyAuth(): Promise<boolean> {
     try {
+      debug('开始验证Twitter授权');
       return await this.#toggleUser({ name: 'verify', doTask: true, verify: true });
     } catch (error) {
+      debug('Twitter授权验证发生错误', { error });
       throwError(error as Error, 'Twitter.verifyAuth');
       return false;
     }
@@ -186,6 +197,7 @@ class Twitter extends Social {
    * 更新Twitter的身份验证Token。
    *
    * @async
+   * @private
    * @function #updateAuth
    * @returns {Promise<boolean>} - 返回一个Promise，表示更新操作的结果。
    *                              - true: 更新Token成功
@@ -199,29 +211,35 @@ class Twitter extends Social {
    */
   async #updateAuth(): Promise<boolean> {
     try {
-      const logStatus = echoLog({ text: __('updatingAuth', 'Twitter') });
+      debug('开始更新Twitter授权');
+      const logStatus = echoLog({ text: __('updatingAuth', 'Twitter'), before: '[Twitter]' });
       return await new Promise((resolve) => {
-        // eslint-disable-next-line camelcase
         GM_cookie.list({ url: 'https://x.com/settings/account' }, async (cookies, error) => {
           if (!error) {
             const ct0 = cookies.find((cookie) => cookie.name === 'ct0')?.value;
             const isLogin = cookies.find((cookie) => cookie.name === 'twid')?.value;
             if (isLogin && ct0) {
+              debug('成功获取Twitter授权信息');
               GM_setValue('twitterAuth', { ct0 });
               this.#auth = { ct0 };
+              this.#headers['x-csrf-token'] = ct0;
+              this.#headers['x-twitter-client-language'] = cookies.find((cookie) => cookie.name === 'lang')?.value || 'en';
               logStatus.success();
-              resolve(await this.#verifyAuth());
+              resolve(true);
             } else {
+              debug('获取Twitter授权失败：未登录');
               logStatus.error(__('needLogin'));
               resolve(false);
             }
           } else {
+            debug('获取Twitter授权失败', { error });
             logStatus.error('Error: Update twitter auth failed!');
             resolve(false);
           }
         });
       });
     } catch (error) {
+      debug('更新Twitter授权时发生错误', { error });
       throwError(error as Error, 'Twitter.updateToken');
       return false;
     }
@@ -231,11 +249,13 @@ class Twitter extends Social {
    * 处理Twitter用户任务，关注或取关指定的用户。
    *
    * @async
+   * @private
    * @function #toggleUser
    * @param {Object} options - 选项对象。
    * @param {string} options.name - Twitter用户名。
    * @param {boolean} [options.doTask=true] - 指示是否执行任务，true表示关注，false表示取关。
    * @param {boolean} [options.verify=false] - 指示是否用于验证Token，true表示验证，false表示处理用户任务。
+   * @param {boolean} [options.retry=false] - 指示是否为重试操作，用于防止无限重试。
    * @returns {Promise<boolean>} - 返回一个Promise，表示操作的结果。
    *                              - true: 操作成功
    *                              - false: 操作失败
@@ -251,28 +271,30 @@ class Twitter extends Social {
    */
   async #toggleUser({ name, doTask = true, verify = false, retry = false }: { name: string, doTask: boolean, verify?: boolean, retry?: boolean }): Promise<boolean> {
     try {
+      debug('开始处理Twitter用户任务', { name, doTask, verify, retry });
       if (!doTask && !verify && this.whiteList.users.includes(name)) {
-        echoLog({ type: 'whiteList', text: 'Twitter.unfollowUser', id: name });
+        debug('Twitter用户在白名单中，跳过取消关注', { name });
+        echoLog({ type: 'whiteList', text: 'Twitter.unfollowUser', id: name, before: '[Twitter]' });
         return true;
       }
+
       const userId: string | boolean = verify ? this.#verifyId : (await this.userName2id(name));
       if (!userId) return false;
+
       const logStatus = verify ?
-        echoLog({ text: __('verifyingAuth', 'Twitter') }) :
-        echoLog({ type: `${doTask ? '' : 'un'}followingTwitterUser`, text: name });
+        echoLog({ text: __('verifyingAuth', 'Twitter'), before: '[Twitter]' }) :
+        echoLog({ type: `${doTask ? '' : 'un'}followingTwitterUser`, text: name, before: '[Twitter]' });
+
       const { result, statusText, status, data } = await httpRequest({
         url: `https://x.com/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`,
         method: 'POST',
         headers: {
-          authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+          ...this.#headers,
           'Content-Type': 'application/x-www-form-urlencoded',
-          'x-csrf-token': this.#auth.ct0 as string,
-          'X-Twitter-Auth-Type': 'OAuth2Session',
-          'X-Twitter-Active-User': 'yes',
-          'x-client-transaction-id': await this.#session.get('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`)
+          'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`),
+          'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         responseType: 'json',
-        /* eslint-disable camelcase */
         data: $.param({
           include_profile_interstitial_type: 1,
           include_blocking: 1,
@@ -285,36 +307,50 @@ class Twitter extends Social {
           skip_status: 1,
           id: userId
         })
-        /* eslint-enable camelcase */
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
+
+      if (result !== 'Success') {
+        debug('Twitter用户操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status === 200) {
+        debug('Twitter用户操作成功', { name, doTask });
+        logStatus.success();
+        if (doTask && !verify) {
+          this.tasks.users = unique([...this.tasks.users, name]);
+        }
+        return true;
+      }
+
+      if (verify && data?.status === 403) {
+        if (data.response?.errors?.[0]?.code === 158) {
+          debug('Twitter授权验证成功（已关注）');
           logStatus.success();
-          if (doTask && !verify) {
-            this.tasks.users = unique([...this.tasks.users, name]);
-          }
           return true;
         }
-        if (verify && data?.status === 403) {
-          if (data.response?.errors?.[0]?.code === 158) {
-            logStatus.success();
-            return true;
-          }
-          if (data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
-            this.#auth.ct0 = data.responseHeaders['set-cookie']?.find((cookie: string) => cookie.includes('ct0='))?.split(';')
-              ?.at(0)
-              ?.split('=')
-              ?.at(-1) || this.#auth.ct0;
+
+        if (data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
+          const newCt0 = data.responseHeaders['set-cookie']?.find((cookie: string) => cookie.includes('ct0='))?.split(';')
+            ?.at(0)
+            ?.split('=')
+            ?.at(-1);
+          if (newCt0) {
+            debug('获取到新的Twitter授权Token，重试操作');
+            this.#auth.ct0 = newCt0;
+            GM_setValue('twitterAuth', this.#auth);
             logStatus.warning(__('retry'));
             return this.#toggleUser({ name, doTask, verify, retry: true });
           }
         }
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
+
+      debug('Twitter用户操作失败', { status: data?.status, statusText: data?.statusText });
+      logStatus.error(`Error:${data?.statusText}(${data?.status})`);
       return false;
     } catch (error) {
+      debug('处理Twitter用户任务时发生错误', { error });
       throwError(error as Error, 'Twitter.toggleUser');
       return false;
     }
@@ -339,55 +375,66 @@ class Twitter extends Social {
    */
   async userName2id(name: string): Promise<string | false> {
     try {
-      const logStatus = echoLog({ type: 'gettingTwitterUserId', text: name });
-      const userId = this.#cache[name];
-      if (userId) {
+      debug('开始获取Twitter用户ID', { name });
+      const logStatus = echoLog({ type: 'gettingTwitterUserId', text: name, before: '[Twitter]' });
+      const cachedUserId = this.#cache[name];
+      if (cachedUserId) {
+        debug('从缓存获取到Twitter用户ID', { name, id: cachedUserId });
         logStatus.success();
-        return userId;
+        return cachedUserId;
       }
+
       const { result, statusText, status, data } = await httpRequest({
         url: (
-          'https://x.com/i/api/graphql/mCbpQvZAw6zu_4PvuAUVVQ/UserByScreenName' +
-          `?variables=%7B%22screen_name%22%3A%22${name}%22%2C%22withSafetyModeUserFields%22%3Atrue%2C%22withSuperFollowsUserFields%22%3Atrue%7D`
+          'https://x.com/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' +
+          `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`
         ),
         method: 'GET',
         headers: {
-          authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+          ...this.#headers,
           'content-type': 'application/json',
           referer: `https://x.com/${name}`,
-          'x-csrf-token': this.#auth.ct0 as string,
-          'X-Twitter-Auth-Type': 'OAuth2Session',
-          'X-Twitter-Active-User': 'yes',
-          'x-client-transaction-id': await this.#session.get('GET', '/i/api/graphql/mCbpQvZAw6zu_4PvuAUVVQ/UserByScreenName' +
-            `?variables=%7B%22screen_name%22%3A%22${name}%22%2C%22withSafetyModeUserFields%22%3Atrue%2C%22withSuperFollowsUserFields%22%3Atrue%7D`)
+          'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' +
+            `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`),
+          'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         responseType: 'json'
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          let response = data.response || (typeof data.responseText === 'object' ? data.responseText : null);
-          if (!response) {
-            try {
-              response = JSON.parse(data.responseText);
-            } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
-              response = null;
-            }
-          }
-          const userId = String(response?.data?.user?.result?.rest_id);
-          if (userId) {
-            this.#setCache(name, userId);
-            logStatus.success();
-            return userId;
-          }
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
+
+      if (result !== 'Success') {
+        debug('获取Twitter用户ID请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('获取Twitter用户ID状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      let response = data.response || (typeof data.responseText === 'object' ? data.responseText : null);
+      if (!response) {
+        try {
+          response = JSON.parse(data.responseText);
+        } catch (error) { // eslint-disable-line @typescript-eslint/no-unused-vars
+          response = null;
+        }
+      }
+
+      const fetchedUserId = response?.data?.user?.result?.rest_id;
+      if (!fetchedUserId) {
+        debug('未找到Twitter用户ID', { name });
+        logStatus.error(`Error:${data.statusText}(${data.status})`);
+        return false;
+      }
+
+      debug('成功获取Twitter用户ID', { name, id: fetchedUserId });
+      this.#setCache(name, fetchedUserId);
+      logStatus.success();
+      return fetchedUserId;
     } catch (error) {
+      debug('获取Twitter用户ID时发生错误', { error });
       throwError(error as Error, 'Twitter.getUserId');
       return false;
     }
@@ -397,10 +444,12 @@ class Twitter extends Social {
    * 处理转推任务，关注或撤销转推指定的推文。
    *
    * @async
+   * @private
    * @function #toggleRetweet
    * @param {Object} options - 选项对象。
    * @param {string} options.retweetId - 推文的ID。
    * @param {boolean} [options.doTask=true] - 指示是否执行转推任务，true表示转推，false表示撤销转推。
+   * @param {boolean} [options.retry=false] - 指示是否为重试操作，用于防止无限重试。
    * @returns {Promise<boolean>} - 返回一个Promise，表示操作的结果。
    *                              - true: 操作成功
    *                              - false: 操作失败
@@ -413,45 +462,69 @@ class Twitter extends Social {
    * 如果请求失败或返回的状态不符合预期，则记录错误信息并返回false。
    * 如果在执行过程中发生错误，将抛出错误并返回false。
    */
-  async #toggleRetweet({ retweetId, doTask = true }: { retweetId: string, doTask: boolean }): Promise<boolean> {
+  async #toggleRetweet({ retweetId, doTask = true, retry = false }: { retweetId: string, doTask: boolean, retry?: boolean }): Promise<boolean> {
     try {
+      debug('开始处理Twitter转推任务', { retweetId, doTask, retry });
       if (!doTask && this.whiteList.retweets.includes(retweetId)) {
-        echoLog({ type: 'whiteList', text: 'Twitter.unretweet', id: retweetId });
+        debug('Twitter转推在白名单中，跳过取消', { retweetId });
+        echoLog({ type: 'whiteList', text: 'Twitter.unretweet', id: retweetId, before: '[Twitter]' });
         return true;
       }
-      const logStatus = echoLog({ type: `${doTask ? '' : 'un'}retweetting`, text: retweetId });
+
+      const logStatus = echoLog({ type: `${doTask ? '' : 'un'}retweetting`, text: retweetId, before: '[Twitter]' });
       const { result, statusText, status, data } = await httpRequest({
         url: `https://x.com/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`,
         method: 'POST',
         headers: {
-          authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+          ...this.#headers,
           'Content-Type': 'application/json',
           origin: 'https://x.com',
           referer: 'https://x.com/home',
-          'x-csrf-token': this.#auth.ct0 as string,
-          'X-Twitter-Auth-Type': 'OAuth2Session',
-          'X-Twitter-Active-User': 'yes',
-          'x-client-transaction-id': await this.#session.get('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`)
+          'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`),
+          'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         data: `{"variables":{"${doTask ? '' : 'source_'}tweet_id":"${retweetId}","dark_request":false},"queryId":"${doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw'}"}`,
         responseType: 'json'
       });
-      if (result === 'Success') {
-        if (data?.status === 200 || (data?.status === 403 && data.response?.errors?.[0]?.code === 327)) {
-          if (data.response?.errors && data.response?.errors?.[0]?.code !== 327) {
-            logStatus.error(`Error:${data.response?.errors?.[0]?.message}`);
-            return false;
-          }
-          logStatus.success();
-          if (doTask) this.tasks.retweets = unique([...this.tasks.retweets, retweetId]);
-          return true;
+
+      if (result !== 'Success') {
+        debug('Twitter转推操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status === 403 && data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
+        const newCt0 = data.responseHeaders['set-cookie']?.find((cookie: string) => cookie.includes('ct0='))?.split(';')
+          ?.at(0)
+          ?.split('=')
+          ?.at(-1);
+        if (newCt0) {
+          debug('获取到新的Twitter授权Token，重试操作');
+          this.#auth.ct0 = newCt0;
+          GM_setValue('twitterAuth', this.#auth);
+          logStatus.warning(__('retry'));
+          return this.#toggleRetweet({ retweetId, doTask, retry: true });
         }
+      }
+
+      if (data?.status !== 200 && !(data?.status === 403 && data.response?.errors?.[0]?.code === 327)) {
+        debug('Twitter转推操作状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      if (data.response?.errors && data.response?.errors?.[0]?.code !== 327) {
+        debug('Twitter转推操作出错', { error: data.response?.errors?.[0]?.message });
+        logStatus.error(`Error:${data.response?.errors?.[0]?.message}`);
+        return false;
+      }
+
+      debug('Twitter转推操作成功', { retweetId, doTask });
+      logStatus.success();
+      if (doTask) this.tasks.retweets = unique([...this.tasks.retweets, retweetId]);
+      return true;
     } catch (error) {
+      debug('处理Twitter转推任务时发生错误', { error });
       throwError(error as Error, 'Twitter.toggleRetweet');
       return false;
     }
@@ -488,44 +561,60 @@ class Twitter extends Social {
     retweetLinks?: Array<string>
   }): Promise<boolean> {
     try {
+      debug('开始处理Twitter链接任务', { doTask, userLinksCount: userLinks.length, retweetLinksCount: retweetLinks.length });
       if (!this.#initialized) {
-        echoLog({ text: __('needInit') });
+        debug('Twitter模块未初始化');
+        echoLog({ text: __('needInit'), before: '[Twitter]' });
         return false;
       }
 
-      const prom = [];
-
+      // Handle user tasks
       if (
         (doTask && !globalOptions.doTask.twitter.users) ||
         (!doTask && !globalOptions.undoTask.twitter.users)
       ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'twitter.users' });
+        debug('根据全局选项跳过Twitter用户任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'twitter.users', before: '[Twitter]' });
       } else {
-        const realUsers = this.getRealParams('users', userLinks, doTask, (link) => link.match(/https:\/\/x\.com\/(.+)/)?.[1] || link.match(/https:\/\/twitter\.com\/(.+)/)?.[1]);
+        const realUsers = this.getRealParams('users', userLinks, doTask, (link) => link.match(/https:\/\/x\.com\/([^/]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/([^/]+)/)?.[1]);
+        debug('处理后的Twitter用户列表', { count: realUsers.length, users: realUsers });
         if (realUsers.length > 0) {
           for (const user of realUsers) {
-            prom.push(this.#toggleUser({ name: user, doTask }));
+            if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
+              debug('Twitter SDK过期，重新获取', { expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis });
+              this.#FwdForSdk = await getFwdForSdk();
+            }
+            await this.#toggleUser({ name: user, doTask });
             await delay(1000);
           }
         }
       }
+
+      // Handle retweet tasks
       if (
         (doTask && !globalOptions.doTask.twitter.retweets) ||
         (!doTask && !globalOptions.undoTask.twitter.retweets)
       ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'twitter.retweets' });
+        debug('根据全局选项跳过Twitter转推任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'twitter.retweets', before: '[Twitter]' });
       } else {
         const realRetweets = this.getRealParams('retweets', retweetLinks, doTask,
           (link) => link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]);
+        debug('处理后的Twitter转推列表', { count: realRetweets.length, retweets: realRetweets });
         if (realRetweets.length > 0) {
           for (const retweet of realRetweets) {
-            prom.push(this.#toggleRetweet({ retweetId: retweet, doTask }));
+            if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
+              debug('Twitter SDK过期，重新获取');
+              this.#FwdForSdk = await getFwdForSdk();
+            }
+            await this.#toggleRetweet({ retweetId: retweet, doTask });
             await delay(1000);
           }
         }
       }
-      return Promise.all(prom).then(() => true);
+      return true;
     } catch (error) {
+      debug('处理Twitter链接任务时发生错误', { error });
       throwError(error as Error, 'Twitter.toggle');
       return false;
     }
@@ -534,6 +623,7 @@ class Twitter extends Social {
   /**
    * 设置缓存，将指定的用户名与用户ID进行关联。
    *
+   * @private
    * @function #setCache
    * @param {string} name - 要缓存的Twitter用户名。
    * @param {string} id - 要缓存的Twitter用户ID。
@@ -545,15 +635,14 @@ class Twitter extends Social {
    */
   #setCache(name: string, id: string): void {
     try {
+      debug('设置Twitter用户ID缓存', { name, id });
       this.#cache[name] = id;
       GM_setValue('twitterCache', this.#cache);
     } catch (error) {
+      debug('设置Twitter用户ID缓存时发生错误', { error });
       throwError(error as Error, 'Twitter.setCache');
     }
   }
 }
-
-// @ts-ignore
-// unsafeWindow.Twitter = Twitter;
 
 export default Twitter;

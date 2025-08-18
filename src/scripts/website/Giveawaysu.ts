@@ -1,14 +1,11 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-08 10:37:13
- * @LastEditTime : 2025-05-30 10:44:09
+ * @LastEditTime : 2025-08-18 19:07:08
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/scripts/website/Giveawaysu.ts
+ * @FilePath     : /auto-task/src/scripts/website/Giveawaysu.ts
  * @Description  : https://giveaway.su/
  */
-
-// eslint-disable-next-line
-/// <reference path = "Giveawaysu.d.ts" />
 
 import Swal from 'sweetalert2';
 import Website from './Website';
@@ -17,6 +14,7 @@ import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 const defaultTasks: gasSocialTasks = {
   steam: {
@@ -34,9 +32,9 @@ const defaultTasks: gasSocialTasks = {
   discord: {
     serverLinks: []
   },
-  instagram: {
-    userLinks: []
-  },
+  // instagram: {
+  //   userLinks: []
+  // },
   vk: {
     nameLinks: []
   },
@@ -118,7 +116,10 @@ class GiveawaySu extends Website {
    * 格式为：以 "http://" 或 "https://" 开头，后跟 "giveaway.su/giveaway/view/" 和一个数字ID。
    */
   static test(): boolean {
-    return /^https?:\/\/giveaway\.su\/giveaway\/view\/[\d]+/.test(window.location.href);
+    const url = window.location.href;
+    const isMatch = /^https?:\/\/giveaway\.su\/giveaway\/view\/[\d]+/.test(url);
+    debug('检查网站匹配', { url, isMatch });
+    return isMatch;
   }
 
   /**
@@ -135,14 +136,19 @@ class GiveawaySu extends Website {
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       if (!this.#checkLogin()) {
+        debug('登录检查失败');
         echoLog({}).warning(__('checkLoginFailed'));
       }
       if (!await this.#checkLeftKey()) {
+        debug('检查剩余密钥失败');
         echoLog({}).warning(__('checkLeftKeyFailed'));
       }
+      debug('显示网站通知');
       echoLog({}).warning(__('gsNotice'));
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'Giveawaysu.after');
     }
   }
@@ -162,17 +168,28 @@ class GiveawaySu extends Website {
    */
   init(): boolean {
     try {
+      debug('初始化 GiveawaySu');
       const logStatus = echoLog({ text: __('initing') });
+
       if ($('a.steam-login').length > 0) {
+        debug('发现未登录状态，重定向到 Steam 登录');
         window.open('/steam/redirect', '_self');
         logStatus.warning(__('needLogin'));
         return false;
       }
-      if (!this.#getGiveawayId()) return false;
+
+      const giveawayIdResult = this.#getGiveawayId();
+      if (!giveawayIdResult) {
+        debug('获取抽奖ID失败');
+        return false;
+      }
+
       this.initialized = true;
+      debug('初始化完成');
       logStatus.success();
       return true;
     } catch (error) {
+      debug('初始化失败', { error });
       throwError(error as Error, 'Giveawaysu.init');
       return false;
     }
@@ -194,94 +211,245 @@ class GiveawaySu extends Website {
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
+      debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
+
       if (action === 'undo') {
+        debug('恢复已保存的任务信息');
         this.socialTasks = GM_getValue<gasGMTasks>(`gasTasks-${this.giveawayId}`)?.tasks || defaultTasks;
         return true;
       }
 
-      const pro = [];
       const tasks = $('#actions tr');
-      if ($('div.bind-discord').is(':visible')) $('div.bind-discord a')[0].click();
-      if ($('div.bind-twitch').is(':visible')) $('div.bind-twitch a')[0].click();
-      for (const task of tasks) {
-        pro.push(new Promise((resolve) => {
-          const td = $(task).find('td:not(".hidden")');
-          const colorfulTask = td.eq(1).find('a:not([data-trigger="link"])');
-          const colorlessTask = td.eq(2).find('a:not([data-trigger="link"])');
-          const taskDes = colorfulTask.length > 0 ? colorfulTask : colorlessTask;
-          const taskIcon = td.eq(0).find('i')
-            .attr('class') || '';
-          const taskName = taskDes.text().trim();
-          if (taskIcon.includes('ban') || /disable adblock/gi.test(taskName)) {
-            return resolve(true);
-          }
-
-          getRedirectLink(taskDes.attr('href')).then((taskLink) => {
-            if (!taskLink) {
-              return resolve(false);
-            }
-            if (taskIcon.includes('steam') && /join/gi.test(taskName)) {
-              this.undoneTasks.steam.groupLinks.push(taskLink);
-            } else if (/like.*announcement/gi.test(taskName)) {
-              this.undoneTasks.steam.announcementLinks.push(taskLink);
-            } else if (/(follow|subscribe).*curator/gim.test(taskName) && /^https?:\/\/store\.steampowered\.com\/curator\//.test(taskLink)) {
-              this.undoneTasks.steam.curatorLinks.push(taskLink);
-            } else if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
-              this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
-            } else if (/subscribe.*steam.*forum/gim.test(taskName)) {
-              this.undoneTasks.steam.forumLinks.push(taskLink);
-            } else if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
-              this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
-            } else if (taskIcon.includes('plus') && /request.*playtest/gim.test(taskName)) {
-              this.undoneTasks.steam.playtestLinks.push(taskLink);
-            } else if (taskIcon.includes('discord') || /join.*discord/gim.test(taskName)) {
-              this.undoneTasks.discord.serverLinks.push(taskLink);
-            } else if (taskIcon.includes('instagram') || /follow.*instagram/gim.test(taskName)) {
-              this.undoneTasks.instagram.userLinks.push(taskLink);
-            } else if (taskIcon.includes('twitch') || /follow.*twitch.*channel/gim.test(taskName)) {
-              this.undoneTasks.twitch.channelLinks.push(taskLink);
-            } else if (taskIcon.includes('reddit') || /subscribe.*subreddit/gim.test(taskName) || /follow.*reddit/gim.test(taskName)) {
-              this.undoneTasks.reddit.redditLinks.push(taskLink);
-            } else if (/watch.*art/gim.test(taskName)) {
-              this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
-            } else if (/subscribe.*youtube.*channel/gim.test(taskName)) {
-              this.undoneTasks.youtube.channelLinks.push(taskLink);
-            } else if (/(watch|like).*youtube.*video/gim.test(taskName) ||
-              ((taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName))) {
-              this.undoneTasks.youtube.likeLinks.push(taskLink);
-            } else if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
-              this.undoneTasks.vk.nameLinks.push(taskLink);
-            } else {
-              if (/(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
-                // this.taskInfo.links.push(link)
-              } else {
-                if (/wishlist.*game|add.*wishlist/gim.test(taskName)) {
-                  this.undoneTasks.steam.wishlistLinks.push(taskLink);
-                }
-                if (/follow.*button/gim.test(taskName)) {
-                  this.undoneTasks.steam.followLinks.push(taskLink);
-                }
-              }
-            }
-            resolve(true);
-          })
-            .catch((error) => {
-              throwError(error as Error, 'Giveawaysu.classifyTask->getRedirectLink');
-              return false;
-            });
-        }));
+      if (!tasks.length) {
+        debug('未找到任务');
+        logStatus.warning(__('noTasks'));
+        return true;
       }
-      await Promise.all(pro);
+
+      debug('检查并处理 Discord 和 Twitch 绑定');
+      if ($('div.bind-discord').is(':visible')) {
+        debug('点击 Discord 绑定按钮');
+        $('div.bind-discord a')[0]?.click();
+      }
+      if ($('div.bind-twitch').is(':visible')) {
+        debug('点击 Twitch 绑定按钮');
+        $('div.bind-twitch a')[0]?.click();
+      }
+
+      const processTask = async (task: Element): Promise<boolean> => {
+        const td = $(task).find('td:not(".hidden")');
+        const colorfulTask = td.eq(1).find('a:not([data-trigger="link"])');
+        const colorlessTask = td.eq(2).find('a:not([data-trigger="link"])');
+        const taskDes = colorfulTask.length > 0 ? colorfulTask : colorlessTask;
+
+        if (!taskDes.length) {
+          debug('跳过无效任务');
+          return true;
+        }
+
+        const taskIcon = td.eq(0).find('i')
+          .attr('class') || '';
+        const taskName = taskDes.text().trim();
+        const taskHref = taskDes.attr('href');
+
+        debug('处理任务', { taskIcon, taskName, taskHref });
+
+        if (taskIcon.includes('ban') || /disable adblock/gi.test(taskName)) {
+          debug('跳过禁用任务');
+          return true;
+        }
+
+        if (!taskHref) {
+          debug('任务链接为空');
+          return false;
+        }
+
+        try {
+          debug('获取重定向链接');
+          const taskLink = await getRedirectLink(taskHref);
+          if (!taskLink) {
+            debug('获取重定向链接失败');
+            return false;
+          }
+          debug('分类任务', { taskLink, taskIcon, taskName });
+          this.#classifyTaskByType(taskLink, taskIcon, taskName);
+          return true;
+        } catch (error) {
+          debug('获取重定向链接失败', { error });
+          throwError(error as Error, 'Giveawaysu.classifyTask->getRedirectLink');
+          return false;
+        }
+      };
+
+      debug('开始处理所有任务');
+      const results = await Promise.all(Array.from(tasks).map(processTask));
+      const success = results.some((result) => result);
+
+      if (!success) {
+        debug('所有任务处理失败');
+        logStatus.error(__('allTasksFailed'));
+        return false;
+      }
+
+      debug('任务处理完成');
       logStatus.success();
+
       this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gasSocialTasks;
       this.socialTasks = this.undoneTasks;
-      if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
-      GM_setValue(`gasTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+
+      debug('保存任务信息');
+      GM_setValue(`gasTasks-${this.giveawayId}`, {
+        tasks: this.socialTasks,
+        time: new Date().getTime()
+      });
+
       return true;
     } catch (error) {
+      debug('任务分类失败', { error });
       throwError(error as Error, 'Giveawaysu.classifyTask');
       return false;
+    }
+  }
+
+  // 预编译正则表达式以提高性能
+  static readonly TASK_PATTERNS = {
+    wishlist: /wishlist.*game|add.*wishlist/gim,
+    follow: /follow.*button/gim,
+    twitter: /(on twitter)|(Follow.*on.*Facebook)/gim,
+    vkGroup: /join.*vk.*group/gim,
+    youtubeVideo: /(watch|like).*video/gim,
+    youtubeChannel: /subscribe.*youtube.*channel/gim,
+    watchArt: /watch.*art/gim,
+    reddit: /subscribe.*subreddit|follow.*reddit/gim,
+    twitchChannel: /follow.*twitch.*channel/gim,
+    instagram: /follow.*instagram/gim,
+    discord: /join.*discord/gim,
+    playtest: /request.*playtest/gim,
+    steamForum: /subscribe.*steam.*forum/gim,
+    curator: /(follow|subscribe).*curator/gim,
+    curatorLink: /^https?:\/\/store\.steampowered\.com\/curator\//,
+    announcement: /like.*announcement/gim,
+    steamGroup: /join/gi
+  };
+
+  #classifyTaskByType(taskLink: string, taskIcon: string, taskName: string): void {
+    try {
+      debug('开始分类任务', { taskLink, taskIcon, taskName });
+      const { TASK_PATTERNS } = GiveawaySu;
+
+      if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
+        debug('添加 Steam 组任务');
+        this.undoneTasks.steam.groupLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.announcement.test(taskName)) {
+        debug('添加 Steam 公告任务');
+        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.curator.test(taskName) && TASK_PATTERNS.curatorLink.test(taskLink)) {
+        debug('添加 Steam 鉴赏家关注任务');
+        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
+        debug('添加 Steam 鉴赏家点赞任务');
+        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.steamForum.test(taskName)) {
+        debug('添加 Steam 论坛任务');
+        this.undoneTasks.steam.forumLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
+        debug('添加 Steam 创意工坊投票任务');
+        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('plus') && TASK_PATTERNS.playtest.test(taskName)) {
+        debug('添加 Steam 游戏测试任务');
+        this.undoneTasks.steam.playtestLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
+        debug('添加 Discord 服务器任务');
+        this.undoneTasks.discord.serverLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
+        debug('跳过 Instagram 任务');
+        // debug('添加 Instagram 关注任务');
+        // this.undoneTasks.instagram.userLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('twitch') || TASK_PATTERNS.twitchChannel.test(taskName)) {
+        debug('添加 Twitch 频道任务');
+        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('reddit') || TASK_PATTERNS.reddit.test(taskName)) {
+        debug('添加 Reddit 任务');
+        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.watchArt.test(taskName)) {
+        debug('添加创意工坊物品任务');
+        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.youtubeChannel.test(taskName)) {
+        debug('添加 YouTube 频道任务');
+        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.youtubeVideo.test(taskName) ||
+        ((taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && TASK_PATTERNS.youtubeVideo.test(taskName))) {
+        debug('添加 YouTube 视频任务');
+        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        return;
+      }
+
+      if (taskIcon.includes('vk') || TASK_PATTERNS.vkGroup.test(taskName)) {
+        debug('添加 VK 任务');
+        this.undoneTasks.vk.nameLinks.push(taskLink);
+        return;
+      }
+
+      if (TASK_PATTERNS.twitter.test(taskName)) {
+        debug('跳过 Twitter 任务');
+        return;
+      }
+
+      if (TASK_PATTERNS.wishlist.test(taskName)) {
+        debug('添加 Steam 愿望单任务');
+        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+      }
+
+      if (TASK_PATTERNS.follow.test(taskName)) {
+        debug('添加 Steam 关注任务');
+        this.undoneTasks.steam.followLinks.push(taskLink);
+        return;
+      }
+
+      debug('未识别的任务类型', { taskLink, taskIcon, taskName });
+    } catch (error) {
+      debug('任务分类失败', { error });
+      throwError(error as Error, 'Giveawaysu.classifyTaskByType');
     }
   }
 
@@ -299,13 +467,21 @@ class GiveawaySu extends Website {
    */
   #checkLogin(): boolean {
     try {
-      if (!globalOptions.other.checkLogin) return true;
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
 
-      if ($('a.steam-login').length > 0) {
+      const needLogin = $('a.steam-login').length > 0;
+      if (needLogin) {
+        debug('未登录，重定向到 Steam 登录');
         window.open('/steam/redirect', '_self');
       }
+      debug('登录检查完成', { needLogin });
       return true;
     } catch (error) {
+      debug('登录检查失败', { error });
       throwError(error as Error, 'Giveawaysu.checkLogin');
       return false;
     }
@@ -326,23 +502,38 @@ class GiveawaySu extends Website {
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
-      if (!globalOptions.other.checkLeftKey) return true;
-      if ($('.giveaway-ended').length > 0 && $('.giveaway-key').length === 0) {
-        await Swal.fire({
-          icon: 'warning',
-          title: __('notice'),
-          text: __('noKeysLeft'),
-          confirmButtonText: __('confirm'),
-          cancelButtonText: __('cancel'),
-          showCancelButton: true
-        }).then(({ value }) => {
-          if (value) {
-            window.close();
-          }
-        });
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
       }
+
+      const isEnded = $('.giveaway-ended').length > 0;
+      const hasNoKeys = $('.giveaway-key').length === 0;
+      debug('检查抽奖状态', { isEnded, hasNoKeys });
+
+      if (!(isEnded && hasNoKeys)) {
+        return true;
+      }
+
+      debug('没有剩余密钥，显示确认对话框');
+      const { value } = await Swal.fire({
+        icon: 'warning',
+        title: __('notice'),
+        text: __('noKeysLeft'),
+        confirmButtonText: __('confirm'),
+        cancelButtonText: __('cancel'),
+        showCancelButton: true
+      });
+
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+
       return true;
     } catch (error) {
+      debug('检查剩余密钥失败', { error });
       throwError(error as Error, 'Giveawaysu.checkLeftKey');
       return false;
     }
@@ -363,14 +554,18 @@ class GiveawaySu extends Website {
    */
   #getGiveawayId(): boolean {
     try {
+      debug('从URL获取抽奖ID');
       const giveawayId = window.location.href.match(/\/view\/([\d]+)/)?.[1];
       if (giveawayId) {
         this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', { giveawayId });
         return true;
       }
+      debug('获取抽奖ID失败');
       echoLog({ text: __('getFailed', 'GiveawayId') });
       return false;
     } catch (error) {
+      debug('获取抽奖ID出错', { error });
       throwError(error as Error, 'Giveawaysu.getGiveawayId');
       return false;
     }

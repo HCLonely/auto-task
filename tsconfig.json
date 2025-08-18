@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "outDir": "./temp/", // 打包到的目录
+    "outDir": "./dist/", // 打包到的目录
     "sourceMap": false, // 是否生成sourceMap（用于浏览器调试）
     "strict": true,
     "declaration": false, // 是否生成声明文件
@@ -16,6 +16,10 @@
     "allowSyntheticDefaultImports": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.d.ts"
+  ],
+  "exclude": [
+    "src/**/Instagram.ts"
   ]
 }

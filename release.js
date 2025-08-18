@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2022-01-16 19:03:01
- * @LastEditTime : 2022-12-10 10:12:35
+ * @LastEditTime : 2025-08-11 14:34:19
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/release.js
+ * @FilePath     : /auto-task-v5/release.js
  * @Description  : 自动发布Release
  */
 
@@ -25,12 +25,14 @@
   }
   const options = {};
 
-  const { version, change } = fs.readJSONSync('./package.json');
-  if (version === releaseStep.with.name) {
+  const changelog = fs.readFileSync('./CHANGELOG.md', 'utf8').trim();
+  const package = fs.readJSONSync('./package.json');
+  package.change = changelog.split('\n').map(line => line.replace(/^-\s*/, '').trim()).filter(line => line);
+  fs.writeFileSync('./package.json', JSON.stringify(package, null, 2));
+  if (package.version === releaseStep.with.name) {
     settings.on = 'workflow_dispatch';
     fs.writeFileSync('./.github/workflows/Release.yml', yaml.dump(settings));
     console.log(`Version ${chalk.default.yellow.bold('not be changed')}!`);
-    // return console.log(`Release action changed ${chalk.green.bold('successfully')}!`);
   }
   settings.on = {
     push: {
@@ -38,16 +40,16 @@
       paths: ['src/**', '.github/workflows/Release.yml']
     }
   };
-  options.prerelease = version.includes('-');
-  options.tag_name = `v${version}`;
-  options.name = version;
-  options.body = `- ${change.join('\n- ')}`;
-  options.files = `dist/auto-task-v4-for-giveawaysu.user.js
-dist/auto-task-v4.compatibility.user.js
-dist/auto-task-v4.user.js
-dist/auto-task-v4-for-giveawaysu.all.user.js
-dist/auto-task-v4.compatibility.all.user.js
-dist/auto-task-v4.all.user.js`;
+  options.prerelease = package.version.includes('-');
+  options.tag_name = `v${package.version}`;
+  options.name = package.version;
+  options.body = changelog;
+  options.files = `dist/auto-task.user.js
+dist/auto-task.min.user.js
+dist/auto-task.compatibility.user.js
+dist/auto-task.all.user.js
+dist/auto-task.min.all.user.js
+dist/auto-task.compatibility.all.user.js`;
   options.token = '${{ github.TOKEN }}';
   releaseStep.with = options;
   fs.writeFileSync('./.github/workflows/Release.yml', yaml.dump(settings));

@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-04 11:47:59
- * @LastEditTime : 2022-05-16 10:36:10
+ * @LastEditTime : 2025-08-18 19:08:34
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/social/Vk.ts
+ * @FilePath     : /auto-task/src/scripts/social/Vk.ts
  * @Description  : Vk 加入/退出群组，关注/取关用户，转发/取消转发动态
  */
 
@@ -14,6 +14,7 @@ import httpRequest from '../tools/httpRequest';
 import __ from '../tools/i18n';
 import { unique, delay } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 interface dataParams {
   type: string
@@ -126,6 +127,7 @@ class Vk extends Social {
     const defaultTasksTemplate: vkTasks = {
       names: []
     };
+    debug('初始化Vk实例');
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.vk || {}) };
   }
@@ -147,18 +149,23 @@ class Vk extends Social {
    */
   async init(): Promise<boolean> {
     try {
+      debug('开始初始化Vk模块');
       if (this.#initialized) {
+        debug('Vk模块已初始化');
         return true;
       }
       const isVerified: boolean = await this.#verifyAuth();
       if (isVerified) {
-        echoLog({}).success(__('initSuccess', 'Vk'));
+        debug('Vk授权验证成功');
+        echoLog({ before: '[Vk]' }).success(__('initSuccess', 'Vk'));
         this.#initialized = true;
         return true;
       }
-      echoLog({}).error(__('initFailed', 'Vk'));
+      debug('Vk初始化失败');
+      echoLog({ before: '[Vk]' }).error(__('initFailed', 'Vk'));
       return false;
     } catch (error) {
+      debug('Vk初始化发生错误', { error });
       throwError(error as Error, 'Vk.init');
       return false;
     }
@@ -182,27 +189,37 @@ class Vk extends Social {
    */
   async #verifyAuth(): Promise<boolean> {
     try {
-      const logStatus = echoLog({ text: __('verifyAuth', 'Vk') });
+      debug('开始验证Vk授权');
+      const logStatus = echoLog({ text: __('verifyAuth', 'Vk'), before: '[Vk]' });
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://vk.com/im',
         method: 'GET'
       });
-      if (result === 'Success') {
-        if (data?.finalUrl.includes('vk.com/login')) {
-          logStatus.error(`Error:${__('loginVk')}`, true);
-          return false;
-        }
-        if (data?.status === 200) {
-          this.#username = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)?.[1] || '';
-          logStatus.success();
-          return true;
-        }
+
+      if (result !== 'Success') {
+        debug('Vk授权验证请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.finalUrl.includes('vk.com/login')) {
+        debug('Vk授权验证失败：需要登录');
+        logStatus.error(`Error:${__('loginVk')}`, true);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Vk授权验证状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      this.#username = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)?.[1] || '';
+      debug('Vk授权验证成功');
+      logStatus.success();
+      return true;
     } catch (error) {
+      debug('Vk授权验证发生错误', { error });
       throwError(error as Error, 'Vk.verifyAuth');
       return false;
     }
@@ -230,11 +247,14 @@ class Vk extends Social {
    */
   async #toggleGroup(name: string, dataParam: dataParams, doTask = true): Promise<boolean> {
     try {
-      const logStatus = echoLog({ type: doTask ? 'joiningVkGroup' : 'leavingVkGroup', text: name });
+      debug('开始处理Vk群组任务', { name, doTask });
+      const logStatus = echoLog({ type: doTask ? 'joiningVkGroup' : 'leavingVkGroup', text: name, before: '[Vk]' });
       if ((dataParam.groupAct === 'enter' && !doTask) || (dataParam.groupAct === 'leave' && doTask)) {
+        debug('Vk群组操作已完成，跳过', { name, doTask });
         logStatus.success();
         return true;
       }
+
       const reqData: {
         act: string
         al: number
@@ -248,6 +268,7 @@ class Vk extends Social {
         hash: dataParam.groupHash as string
       };
       if (doTask) reqData.context = '_';
+
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://vk.com/al_groups.php',
         method: 'POST',
@@ -258,18 +279,25 @@ class Vk extends Social {
         },
         data: $.param(reqData)
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          logStatus.success();
-          if (doTask) this.tasks.names = unique([...this.tasks.names, name]);
-          return true;
-        }
+
+      if (result !== 'Success') {
+        debug('Vk群组操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+      if (data?.status !== 200) {
+        debug('Vk群组操作状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+      debug('Vk群组操作成功', { name, doTask });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.names = unique([...this.tasks.names, name]);
+      }
+      return true;
     } catch (error) {
+      debug('处理Vk群组任务时发生错误', { error });
       throwError(error as Error, 'Vk.toggleGroup');
       return false;
     }
@@ -297,11 +325,14 @@ class Vk extends Social {
    */
   async #togglePublic(name: string, dataParam: dataParams, doTask = true): Promise<boolean> {
     try {
-      const logStatus = echoLog({ type: doTask ? 'joiningVkPublic' : 'leavingVkPublic', text: name });
+      debug('开始处理Vk公共页面任务', { name, doTask });
+      const logStatus = echoLog({ type: doTask ? 'joiningVkPublic' : 'leavingVkPublic', text: name, before: '[Vk]' });
       if ((dataParam.publicJoined && doTask) || (!dataParam.publicJoined && !doTask)) {
+        debug('Vk公共页面操作已完成，跳过', { name, doTask });
         logStatus.success();
         return true;
       }
+
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://vk.com/al_public.php',
         method: 'POST',
@@ -317,18 +348,25 @@ class Vk extends Social {
           hash: dataParam.publicHash
         })
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          logStatus.success();
-          if (doTask) this.tasks.names = unique([...this.tasks.names, name]);
-          return true;
-        }
+
+      if (result !== 'Success') {
+        debug('Vk公共页面操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Vk公共页面操作状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      debug('Vk公共页面操作成功', { name, doTask });
+      logStatus.success();
+      if (doTask) this.tasks.names = unique([...this.tasks.names, name]);
+      return true;
     } catch (error) {
+      debug('处理Vk公共页面任务时发生错误', { error });
       throwError(error as Error, 'Vk.togglePublic');
       return false;
     }
@@ -336,9 +374,9 @@ class Vk extends Social {
 
   async #toggleLikeWall(name:string, dataParam: dataParams, doTask = true): Promise<boolean> {
     try {
-      const logStatus = echoLog({ type: doTask ? 'likingVkPublic' : 'unlikingVkPublic', text: name });
+      debug('开始处理Vk点赞任务', { name, doTask });
+      const logStatus = echoLog({ type: doTask ? 'likingVkPublic' : 'unlikingVkPublic', text: name, before: '[Vk]' });
 
-      /* eslint-disable camelcase */
       const postData: { [name: string]: any } = {
         act: 'a_set_reaction',
         al: 1,
@@ -352,7 +390,7 @@ class Vk extends Social {
       if (doTask) {
         postData.reaction_id = 0;
       }
-      /* eslint-enable camelcase */
+
       const { result: resultR, statusText: statusTextR, status: statusR, data: dataR } = await httpRequest({
         url: 'https://vk.com/like.php?act=a_set_reaction',
         method: 'POST',
@@ -363,19 +401,30 @@ class Vk extends Social {
         },
         data: $.param(postData)
       });
-      if (resultR === 'Success') {
-        if (dataR?.status === 200) {
-          if (dataR.response?.payload?.[1]?.[1]?.like_my === true) {
-            logStatus.success();
-            return true;
-          }
-        }
+
+      if (resultR !== 'Success') {
+        debug('Vk点赞操作请求失败', { result: resultR, statusText: statusTextR, status: statusR });
+        logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
+        return false;
+      }
+
+      if (dataR?.status !== 200) {
+        debug('Vk点赞操作状态错误', { status: dataR?.status, statusText: dataR?.statusText });
         logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
         return false;
       }
-      logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-      return false;
+
+      if (dataR.response?.payload?.[1]?.[1]?.like_my !== true) {
+        debug('Vk点赞操作验证失败');
+        logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+        return false;
+      }
+
+      debug('Vk点赞操作成功', { name, doTask });
+      logStatus.success();
+      return true;
     } catch (error) {
+      debug('处理Vk点赞任务时发生错误', { error });
       throwError(error as Error, 'Vk.sendWall');
       return false;
     }
@@ -401,7 +450,8 @@ class Vk extends Social {
    */
   async #sendWall(name: string): Promise<boolean> {
     try {
-      const logStatus = echoLog({ type: 'sendingVkWall', text: name });
+      debug('开始处理Vk转发任务', { name });
+      const logStatus = echoLog({ type: 'sendingVkWall', text: name, before: '[Vk]' });
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://vk.com/like.php',
         method: 'POST',
@@ -416,65 +466,83 @@ class Vk extends Social {
           object: name
         })
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          const hash = data.responseText.match(/shHash:[\s]*'(.*?)'/)?.[1];
-          if (hash) {
-            const { result: resultR, statusText: statusTextR, status: statusR, data: dataR } = await httpRequest({
-              url: 'https://vk.com/like.php',
-              method: 'POST',
-              headers: {
-                origin: 'https://vk.com',
-                referer: `https://vk.com/${name}`,
-                'content-type': 'application/x-www-form-urlencoded'
-              },
-              /* eslint-disable camelcase */
-              data: $.param({
-                Message: '',
-                act: 'a_do_publish',
-                al: 1,
-                close_comments: 0,
-                friends_only: 0,
-                from: 'box',
-                hash,
-                list: '',
-                mark_as_ads: 0,
-                mute_notifications: 0,
-                object: name,
-                ret_data: 1,
-                to: 0
-              })
-              /* eslint-enable camelcase */
-            });
-            if (resultR === 'Success') {
-              if (dataR?.status === 200) {
-                const jsonData = JSON.parse(dataR.responseText?.replace('<!--', '') || '{}');
-                if (jsonData?.payload?.[1]?.[1]?.share_my === true) {
-                  logStatus.success();
-                  const postId = String(jsonData?.payload?.[1]?.[1]?.post_id);
-                  const ownerId = String(jsonData?.payload?.[1]?.[1]?.owner_id);
-                  if (postId && ownerId) {
-                    this.#setCache(name, `${ownerId}_${postId}`);
-                  }
-                  this.tasks.names = unique([...this.tasks.names, name]);
-                  return true;
-                }
-              }
-              logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-              return false;
-            }
-            logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-            return false;
-          }
-          logStatus.error('Error: Get "hash" failed');
-          return false;
-        }
+
+      if (result !== 'Success') {
+        debug('Vk转发操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Vk转发操作状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      const hash = data.responseText.match(/shHash:[\s]*'(.*?)'/)?.[1];
+      if (!hash) {
+        debug('获取Vk转发hash失败');
+        logStatus.error('Error: Get "hash" failed');
+        return false;
+      }
+
+      const { result: resultR, statusText: statusTextR, status: statusR, data: dataR } = await httpRequest({
+        url: 'https://vk.com/like.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: `https://vk.com/${name}`,
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        /* eslint-disable camelcase */
+        data: $.param({
+          Message: '',
+          act: 'a_do_publish',
+          al: 1,
+          close_comments: 0,
+          friends_only: 0,
+          from: 'box',
+          hash,
+          list: '',
+          mark_as_ads: 0,
+          mute_notifications: 0,
+          object: name,
+          ret_data: 1,
+          to: 0
+        })
+        /* eslint-enable camelcase */
+      });
+
+      if (resultR !== 'Success') {
+        debug('Vk转发确认请求失败', { result: resultR, statusText: statusTextR, status: statusR });
+        logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
+        return false;
+      }
+
+      if (dataR?.status !== 200) {
+        debug('Vk转发确认状态错误', { status: dataR?.status, statusText: dataR?.statusText });
+        logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+        return false;
+      }
+
+      const jsonData = JSON.parse(dataR.responseText?.replace('<!--', '') || '{}');
+      if (jsonData?.payload?.[1]?.[1]?.share_my !== true) {
+        debug('Vk转发确认验证失败');
+        logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+        return false;
+      }
+
+      debug('Vk转发操作成功', { name });
+      logStatus.success();
+      const postId = jsonData?.payload?.[1]?.[1]?.post_id;
+      const ownerId = jsonData?.payload?.[1]?.[1]?.owner_id;
+      if (postId && ownerId) {
+        this.#setCache(name, `${ownerId}_${postId}`);
+      }
+      this.tasks.names = unique([...this.tasks.names, name]);
+      return true;
     } catch (error) {
+      debug('处理Vk转发任务时发生错误', { error });
       throwError(error as Error, 'Vk.sendWall');
       return false;
     }
@@ -500,7 +568,8 @@ class Vk extends Social {
    */
   async #deleteWall(name: string, dataParams: dataParams): Promise<boolean> {
     try {
-      const logStatus = echoLog({ type: 'deletingVkWall', text: name });
+      debug('开始处理Vk删除墙任务', { name });
+      const logStatus = echoLog({ type: 'deletingVkWall', text: name, before: '[Vk]' });
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://vk.com/al_wall.php?act=delete',
         method: 'POST',
@@ -518,22 +587,27 @@ class Vk extends Social {
           post: this.#cache[name]
         })
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          const jsonData = JSON.parse(data.responseText?.replace('<!--', '') || '{}');
-          if (jsonData?.payload?.[1]?.[1]) {
-            logStatus.success();
-            return true;
-          }
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
+      if (result !== 'Success') {
+        debug('Vk删除墙请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+      if (data?.status !== 200) {
+        debug('Vk删除墙状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+      const jsonData = JSON.parse(data.responseText?.replace('<!--', '') || '{}');
+      if (!jsonData?.payload?.[1]?.[1]) {
+        debug('Vk删除墙验证失败');
+        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        return false;
+      }
+      debug('Vk删除墙操作成功', { name });
+      logStatus.success();
+      return true;
     } catch (error) {
+      debug('处理Vk删除墙任务时发生错误', { error });
       throwError(error as Error, 'Vk.deleteWall');
       return false;
     }
@@ -559,6 +633,7 @@ class Vk extends Social {
    */
   async #getId(name: string, doTask: boolean): Promise<dataParams | false> {
     try {
+      debug('开始获取Vk ID', { name, doTask });
       let url = `https://vk.com/${name}`;
       if (/^wall-/.test(name)) {
         if (doTask) {
@@ -569,50 +644,63 @@ class Vk extends Social {
         }
         url = `https://vk.com/${this.#username}?w=wall${this.#cache[name]}`;
       }
-      const logStatus = echoLog({ type: 'gettingVkId', text: name });
+      const logStatus = echoLog({ type: 'gettingVkId', text: name, before: '[Vk]' });
       const { result, statusText, status, data } = await httpRequest({
         url,
         method: 'GET'
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
-          const publicHash = data.responseText.match(/"enterHash":"(.*?)"/)?.[1];
-          const publicPid = data.responseText.match(/"public_id":([\d]+?),/)?.[1];
-          const publicJoined = !data.responseText.includes('Public.subscribe');
-          if (groupAct && groupId && groupHash) {
-            logStatus.success();
-            return { groupAct, groupId, groupHash, type: 'group' };
-          } else if (publicHash && publicPid) {
-            logStatus.success();
-            return { publicHash, publicPid, publicJoined, type: 'public' };
-          } else if (name.includes('action=like')) {
-            const hash = data.responseText.match(/data-reaction-hash="(.*?)"/)?.[1];
-            const trackCode = data.responseText.match(/data-post-track-code="(.*?)"/)?.[1];
-            const object = name.match(/wall-[\w_]+/)?.[0];
-            if (hash && trackCode && object) {
-              logStatus.success();
-              return { type: 'likeWall', hash, trackCode, object };
-            }
-          } else if (data.responseText.includes('wall.deletePost') && !doTask) {
-            const wallHash = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)?.[1];
-            if (wallHash) {
-              logStatus.success();
-              return { type: 'deleteWall', wallHash };
-            }
-          } else if (name.includes('wall') && doTask) {
-            logStatus.success();
-            return { type: 'sendWall' };
-          }
-          logStatus.error('Error: Parameters not found!');
-          return false;
-        }
+      if (result !== 'Success') {
+        debug('获取Vk ID请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+      if (data?.status !== 200) {
+        debug('获取Vk ID状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
+      const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
+      const publicHash = data.responseText.match(/"enterHash":"(.*?)"/)?.[1];
+      const publicPid = data.responseText.match(/"public_id":([\d]+?),/)?.[1];
+      const publicJoined = !data.responseText.includes('Public.subscribe');
+      if (groupAct && groupId && groupHash) {
+        debug('获取到Vk群组ID', { groupAct, groupId, groupHash });
+        logStatus.success();
+        return { groupAct, groupId, groupHash, type: 'group' };
+      }
+      if (publicHash && publicPid) {
+        debug('获取到Vk公共页面ID', { publicHash, publicPid, publicJoined });
+        logStatus.success();
+        return { publicHash, publicPid, publicJoined, type: 'public' };
+      }
+      if (name.includes('action=like')) {
+        const hash = data.responseText.match(/data-reaction-hash="(.*?)"/)?.[1];
+        const trackCode = data.responseText.match(/data-post-track-code="(.*?)"/)?.[1];
+        const object = name.match(/wall-[\w_]+/)?.[0];
+        if (hash && trackCode && object) {
+          debug('获取到Vk点赞ID', { hash, trackCode, object });
+          logStatus.success();
+          return { type: 'likeWall', hash, trackCode, object };
+        }
+      }
+      if (data.responseText.includes('wall.deletePost') && !doTask) {
+        const wallHash = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)?.[1];
+        if (wallHash) {
+          debug('获取到Vk删除墙ID', { wallHash });
+          logStatus.success();
+          return { type: 'deleteWall', wallHash };
+        }
+      }
+      if (name.includes('wall') && doTask) {
+        debug('获取到Vk墙ID');
+        logStatus.success();
+        return { type: 'sendWall' };
+      }
+      debug('未找到Vk ID参数');
+      logStatus.error('Error: Parameters not found!');
       return false;
     } catch (error) {
+      debug('获取Vk ID时发生错误', { error });
       throwError(error as Error, 'Vk.getId');
       return false;
     }
@@ -639,28 +727,32 @@ class Vk extends Social {
    */
   async #toggleVk({ name, doTask = true }: { name: string, doTask: boolean }): Promise<boolean> {
     try {
+      debug('开始处理Vk任务', { name, doTask });
       if (!doTask && this.whiteList.names.includes(name)) {
-        echoLog({ type: 'whiteList', text: 'Vk.undoTask', id: name });
+        debug('Vk任务在白名单中，跳过', { name });
+        echoLog({ type: 'whiteList', text: 'Vk.undoTask', id: name, before: '[Vk]' });
         return true;
       }
       const formatName: string = name.replace(/\/$/, '');
       const data = await this.#getId(formatName, doTask);
       if (!data) return false;
       switch (data.type) {
-      case 'group':
-        return await this.#toggleGroup(formatName, data, doTask);
-      case 'public':
-        return await this.#togglePublic(formatName, data, doTask);
-      case 'likeWall':
-        return await this.#toggleLikeWall(formatName, data, doTask);
-      case 'sendWall':
-        return doTask ? await this.#sendWall(formatName) : true;
-      case 'deleteWall':
-        return doTask ? true : await this.#deleteWall(formatName, data);
-      default:
-        return false;
+          case 'group':
+            return await this.#toggleGroup(formatName, data, doTask);
+          case 'public':
+            return await this.#togglePublic(formatName, data, doTask);
+          case 'likeWall':
+            return await this.#toggleLikeWall(formatName, data, doTask);
+          case 'sendWall':
+            return doTask ? await this.#sendWall(formatName) : true;
+          case 'deleteWall':
+            return doTask ? true : await this.#deleteWall(formatName, data);
+          default:
+            debug('未知的Vk任务类型', { type: data.type });
+            return false;
       }
     } catch (error) {
+      debug('处理Vk任务时发生错误', { error });
       throwError(error as Error, 'Vk.toggleVk');
       return false;
     }
@@ -698,8 +790,10 @@ class Vk extends Social {
      * @param {?Array} nameLinks Vk任务链接数组。
     */
     try {
+      debug('开始处理Vk链接任务', { doTask, nameLinksCount: nameLinks.length });
       if (!this.#initialized) {
-        echoLog({ text: __('needInit') });
+        debug('Vk模块未初始化');
+        echoLog({ text: __('needInit'), before: '[Vk]' });
         return false;
       }
       const prom = [];
@@ -708,9 +802,11 @@ class Vk extends Social {
         (doTask && !globalOptions.doTask.vk.names) ||
         (!doTask && !globalOptions.undoTask.vk.names)
       ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'vk.names' });
+        debug('根据全局选项跳过Vk任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'vk.names', before: '[Vk]' });
       } else {
         const realNames = this.getRealParams('names', nameLinks, doTask, (link) => link.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]);
+        debug('处理后的Vk链接列表', { count: realNames.length, names: realNames });
         if (realNames.length > 0) {
           for (const name of realNames) {
             prom.push(this.#toggleVk({ name, doTask }));
@@ -720,6 +816,7 @@ class Vk extends Social {
       }
       return Promise.all(prom).then(() => true);
     } catch (error) {
+      debug('处理Vk链接任务时发生错误', { error });
       throwError(error as Error, 'Vk.toggle');
       return false;
     }
@@ -739,9 +836,11 @@ class Vk extends Social {
    */
   #setCache(name: string, postId: string): void {
     try {
+      debug('设置Vk缓存', { name, postId });
       this.#cache[name] = postId;
       GM_setValue('vkCache', this.#cache);
     } catch (error) {
+      debug('设置Vk缓存时发生错误', { error });
       throwError(error as Error, 'Vk.setCache');
     }
   }

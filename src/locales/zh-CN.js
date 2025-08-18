@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-20 19:38:41
- * @LastEditTime : 2025-05-30 10:47:00
+ * @LastEditTime : 2025-08-18 19:12:11
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/locales/zh-CN.js
+ * @FilePath     : /auto-task/src/locales/zh-CN.js
  * @Description  : i18n中文
  */
 const data = {
@@ -163,11 +163,17 @@ const data = {
   errorRemoteDataFormat: '远程数据格式错误',
   updateHistory: '历史更新记录<a class="high-light" href="https://auto-task-doc.js.org/logs/" target="_blank">点此查看</a>',
   AsfEnabled: '使用ASF做Steam相关任务(需<a href="https://github.com/chr233/ASFEnhance" target="_blank">ASFEnhance</a>插件)',
+  steamWeb: '同时使用Steam Web API做任务',
+  preferASF: '优先使用ASF',
   AsfIpcUrl: 'ASF IPC 地址',
   AsfIpcPassword: 'ASF IPC 密码',
   versionNotMatched: '脚本管理器版本过低，需TamperMonkey >= 5.2.0或TamperMonkey Beta >= 5.2.6196',
+  curatorLimitNotice: '失败：可能是鉴赏家关注数量限制，请<a class="high-light" href="https://store.steampowered.com/curators/home/" target="_blank">取关部分鉴赏家</a>后再试',
+  unknownScriptHandler: '未知脚本管理器，适用性未知',
+  debugModeNotice: '检测到 DEBUG 模式已开启，非必要请关闭！',
+  steamWebApiKey: 'Steam Web API 密钥<br>用于检测游戏挂机状态，<a href="https://steamcommunity.com/dev/apikey" target="_blank">点此申请</a>',
 
-  // Steam
+  // SteamWeb
   groups: '组',
   officialGroups: '官方组',
   wishlists: '愿望单',
@@ -217,13 +223,14 @@ const data = {
   missParams: '缺少参数',
   gettingLicenses: '正在获取Licenses...',
   requestingPlayTestAccess: '正在请求访问权限',
+  gettingDemoAppid: '正在获取Steam游戏的Demo Appid',
   tryChangeAreaNotice: '此功能无法检测游戏是否限区，因此会尝试换区后再入库，换区失败也不影响后续入库',
-  gettingUserLink: '正在获取Steam用户社区链接...',
+  gettingUserInfo: '正在获取Steam用户社区凭证...',
   retry: '重试',
   owned: '已拥有',
   redirect: '重定向',
   noSubid: '无法获取，跳过',
-  noASFInstance: '未启用ASF',
+  noASFInstance: '未启用ASF，跳过挂时长任务',
 
   // Steam ASF
   initingASF: '正在初始化ASF...',
@@ -231,6 +238,11 @@ const data = {
   stoppingPlayGames: '正在停止挂游戏时长...',
   stopPlayTimeTitle: 'Steam游戏挂机时长满足，是否结束挂机？',
   stopPlayTimeText: '挂机已超时：%0 分钟',
+  ASFNotSupportted: '当前功能(%0)ASF无法实现，跳过',
+  checkingPlayGamesStatus: '正在检查挂游戏时长状态...',
+  gettingSteamId: '正在获取Steam ID...',
+  checkingPlayStatus: '正在检查挂机状态...',
+  noPlayStatus: '游戏未运行',
 
   // Discord
   servers: '服务器',
@@ -240,9 +252,10 @@ const data = {
   getDiscordAuthFailed: '获取Discord凭证失败，请检测Discord帐号是否已登录',
   discordImportantNotice: '重要提醒！！！',
   discordImportantNoticeText: '由于Discord网站后台更新，目前使用此脚本加组后可能会导致Discord帐号被强制退出，且需要两步验证才能正常登录，请谨慎使用！！！',
-  continue: '继续',
-  skipDiscordTask: '跳过Discord任务',
-  continueAndDontRemindAgain: '继续且不再提醒',
+  continueDiscordTask: '本次执行Discord任务',
+  skipDiscordTask: '本次跳过Discord任务',
+  continueAndDontRemindAgain: '总是执行Discord任务且不再提醒',
+  gettingDiscordXContextProperties: '正在获取Discord加群参数',
 
   // Instagram
   users: '用户',
@@ -314,7 +327,7 @@ const data = {
   gettingGleamLink: '正在获取Gleam任务链接...',
   gleamTaskNotice: '如果此页面长时间未关闭，请完成任一任务后自行关闭！',
   verifiedGleamTasks: '已尝试验证所有任务，验证失败的任务请尝试手动验证或完成！',
-  campaign: '检测到人机验证，请完成验证后重新验证任务！',
+  campaign: '检测到人机验证，请手动完成！3秒后重新检测...',
 
   // GiveawaySu
   gsNotice: '为避免得到"0000-0000-0000"key, 已自动屏蔽"Grab Key"按钮，获取key时请关闭脚本！',
@@ -331,11 +344,17 @@ const data = {
 
   // Freeanywhere
   tasksNotCompleted: '任务未完成',
-  notConnect: '社交平台未连接，跳过任务',
+  notConnect: '社交平台未连接，跳过任务: %0',
   tgTaskNotice: '检测到Telegram任务，需要手动完成',
+  updatingUserData: '正在更新用户数据...',
+  gettingUserGames: '正在获取用户游戏...',
 
   // opquests
   confirmingTask: '正在跳过警告页面...',
-  unSupporttedTaskType: '不支持的任务类型'
+  unSupporttedTaskType: '不支持的任务类型: %0',
+  taskNotFinished: '有任务未完成，不获取密钥',
+
+  // throwError
+  logCopied: '完整日志已复制到剪切板，请前往反馈！'
 };
 export default data;

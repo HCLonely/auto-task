@@ -1,14 +1,11 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-04 12:18:06
- * @LastEditTime : 2022-02-06 11:50:05
+ * @LastEditTime : 2025-08-18 19:08:20
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/social/Youtube.ts
+ * @FilePath     : /auto-task/src/scripts/social/Youtube.ts
  * @Description  : Youtube 订阅/取消订阅频道，点赞/取消点赞视频
  */
-
-// eslint-disable-next-line
-/// <reference path = "Youtube.d.ts" />
 
 import Social from './Social';
 import echoLog from '../echoLog';
@@ -17,6 +14,7 @@ import httpRequest from '../tools/httpRequest';
 import __ from '../tools/i18n';
 import { unique, delay } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 /**
  * 获取YouTube视频或频道的信息。
@@ -37,57 +35,78 @@ import { globalOptions } from '../globalOptions';
  */
 const getInfo = async function (link: string, type: string): Promise<youtubeInfo> {
   try {
-    const logStatus = echoLog({ text: __('gettingYtbToken') });
+    debug('开始获取YouTube信息', { link, type });
+    const logStatus = echoLog({ text: __('gettingYtbToken'), before: '[Youtube]' });
     const { result, statusText, status, data } = await httpRequest({
       url: link,
       method: 'GET'
     });
-    if (result === 'Success') {
-      if (data?.status === 200) {
-        if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
-          logStatus.error(`Error:${__('loginYtb')}`, true);
-          return { needLogin: true };
-        }
-        const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1];
-        const context: string = (
-          (
-            data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) ||
-            data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)
-          )?.[1] || '{}'
-        );
-        const { client, request } = JSON.parse(context);
-        if (apiKey && client && request) {
-          client.hl = 'en';
-          if (type === 'channel') {
-            const channelId = data.responseText.match(/"channelId":"(.+?)"/)?.[1];
-            if (channelId) {
-              logStatus.success();
-              return { params: { apiKey, client, request, channelId } };
-            }
-            logStatus.error('Error: Get "channelId" failed!');
-            return {};
-          } else if (type === 'likeVideo') {
-            const videoId = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)?.[1];
-            const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1];
-            if (videoId) {
-              logStatus.success();
-              return { params: { apiKey, client, request, videoId, likeParams } };
-            }
-            logStatus.error('Error: Get "videoId" failed!');
-            return {};
-          }
-          logStatus.error('Error: Unknown type');
-          return {};
-        }
-        logStatus.error('Error: Parameter "apiKey" not found!');
-        return {};
-      }
+
+    if (result !== 'Success') {
+      debug('获取YouTube信息请求失败', { result, statusText, status });
+      logStatus.error(`${result}:${statusText}(${status})`);
+      return {};
+    }
+
+    if (data?.status !== 200) {
+      debug('获取YouTube信息状态错误', { status: data?.status, statusText: data?.statusText });
       logStatus.error(`Error:${data?.statusText}(${data?.status})`);
       return {};
     }
-    logStatus.error(`${result}:${statusText}(${status})`);
+
+    if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
+      debug('获取YouTube信息失败：需要登录');
+      logStatus.error(`Error:${__('loginYtb')}`, true);
+      return { needLogin: true };
+    }
+
+    const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1];
+    const context: string = (
+      (
+        data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) ||
+        data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)
+      )?.[1] || '{}'
+    );
+    const { client, request } = JSON.parse(context);
+
+    if (!apiKey || !client || !request) {
+      debug('获取YouTube信息失败：缺少必要参数');
+      logStatus.error('Error: Parameter "apiKey" not found!');
+      return {};
+    }
+
+    client.hl = 'en';
+
+    if (type === 'channel') {
+      const channelId = data.responseText.match(/"channelId":"(.+?)"/)?.[1];
+      if (!channelId) {
+        debug('获取YouTube频道ID失败');
+        logStatus.error('Error: Get "channelId" failed!');
+        return {};
+      }
+      debug('成功获取YouTube频道信息', { channelId });
+      logStatus.success();
+      return { params: { apiKey, client, request, channelId } };
+    }
+
+    if (type === 'likeVideo') {
+      const videoId = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)?.[1];
+      const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1];
+      if (!videoId) {
+        debug('获取YouTube视频ID失败');
+        logStatus.error('Error: Get "videoId" failed!');
+        return {};
+      }
+      debug('成功获取YouTube视频信息', { videoId });
+      logStatus.success();
+      return { params: { apiKey, client, request, videoId, likeParams } };
+    }
+
+    debug('未知的YouTube信息类型', { type });
+    logStatus.error('Error: Unknown type');
     return {};
   } catch (error) {
+    debug('获取YouTube信息时发生错误', { error });
     throwError(error as Error, 'Youtube.getInfo');
     return {};
   }
@@ -172,6 +191,7 @@ class Youtube extends Social {
     const defaultTasksTemplate: youtubeTasks = {
       channels: [], likes: []
     };
+    debug('初始化YouTube实例');
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.youtube || {}) };
   }
@@ -194,10 +214,13 @@ class Youtube extends Social {
    */
   async init(): Promise<boolean> {
     try {
+      debug('开始初始化YouTube模块');
       if (this.#initialized) {
+        debug('YouTube模块已初始化');
         return true;
       }
       if (!this.#auth.PAPISID) {
+        debug('YouTube授权信息不完整，需要更新授权');
         if (await this.#updateAuth()) {
           this.#initialized = true;
           return true;
@@ -206,19 +229,24 @@ class Youtube extends Social {
       }
       const isVerified: boolean = await this.#verifyAuth();
       if (isVerified) {
-        echoLog({}).success(__('initSuccess', 'Youtube'));
+        debug('YouTube授权验证成功');
+        echoLog({ before: '[Youtube]' }).success(__('initSuccess', 'Youtube'));
         this.#initialized = true;
         return true;
       }
+      debug('YouTube授权失效，尝试重新获取');
       GM_setValue('youtubeAuth', null);
       if (await this.#updateAuth()) {
-        echoLog({}).success(__('initSuccess', 'Youtube'));
+        debug('YouTube重新授权成功');
+        echoLog({ before: '[Youtube]' }).success(__('initSuccess', 'Youtube'));
         this.#initialized = true;
         return true;
       }
-      echoLog({}).error(__('initFailed', 'Youtube'));
+      debug('YouTube初始化失败');
+      echoLog({ before: '[Youtube]' }).error(__('initFailed', 'Youtube'));
       return false;
     } catch (error) {
+      debug('YouTube初始化发生错误', { error });
       throwError(error as Error, 'Youtube.init');
       return false;
     }
@@ -239,8 +267,10 @@ class Youtube extends Social {
  */
   async #verifyAuth(): Promise<boolean> {
     try {
+      debug('开始验证YouTube授权');
       return await this.#toggleChannel({ link: this.#verifyChannel, doTask: true, verify: true });
     } catch (error) {
+      debug('YouTube授权验证发生错误', { error });
       throwError(error as Error, 'Youtube.verifyAuth');
       return false;
     }
@@ -263,44 +293,33 @@ class Youtube extends Social {
    */
   async #updateAuth(): Promise<boolean> {
     try {
-      const logStatus = echoLog({ text: __('updatingAuth', 'Youtube') });
+      debug('开始更新YouTube授权');
+      const logStatus = echoLog({ text: __('updatingAuth', 'Youtube'), before: '[Youtube]' });
       return await new Promise((resolve) => {
-        // eslint-disable-next-line camelcase
         GM_cookie.list({ url: 'https://www.youtube.com/@YouTube' }, async (cookies, error) => {
           if (!error) {
             const PAPISID = cookies.find((cookie) => cookie.name === '__Secure-3PAPISID')?.value;
 
             if (PAPISID) {
+              debug('成功获取YouTube新授权信息');
               GM_setValue('youtubeAuth', { PAPISID });
               this.#auth = { PAPISID };
               logStatus.success();
               resolve(await this.#verifyAuth());
             } else {
+              debug('获取YouTube授权失败：未登录');
               logStatus.error(__('needLogin'));
               resolve(false);
             }
           } else {
+            debug('获取YouTube授权失败', { error });
             logStatus.error('Error: Update youtube auth failed!');
             resolve(false);
           }
         });
-        /*
-        const newTab = GM_openInTab('https://www.youtube.com/#auth',
-          { active: true, insert: true, setParent: true });
-        newTab.onclose = async () => {
-          const auth = GM_getValue<auth>('youtubeAuth');
-          if (auth) {
-            this.#auth = auth;
-            logStatus.success();
-            this.#verifyAuth().then((result) => { resolve(result); });
-          } else {
-            logStatus.error('Error: Update youtube auth failed!');
-            resolve(false);
-          }
-        };
-        */
       });
     } catch (error) {
+      debug('更新YouTube授权时发生错误', { error });
       throwError(error as Error, 'Youtube.updateAuth');
       return false;
     }
@@ -323,6 +342,7 @@ class Youtube extends Social {
    * 在获取过程中，如果发生错误，将抛出错误并返回false。
    */
   #getInfo(link: string, type: string): Promise<youtubeInfo> {
+    debug('调用获取YouTube信息方法', { link, type });
     return getInfo(link, type);
   }
 
@@ -350,26 +370,32 @@ class Youtube extends Social {
    */
   async #toggleChannel({ link, doTask = true, verify = false }: { link: string, doTask: boolean, verify?: boolean }): Promise<boolean> {
     try {
+      debug('开始处理YouTube频道任务', { link, doTask, verify });
       const { params, needLogin } = await this.#getInfo(link, 'channel');
       const { apiKey, client, request, channelId } = params || {};
 
       if (needLogin) {
-        echoLog({ html: __('loginYtb') });
+        debug('YouTube频道操作失败：需要登录');
+        echoLog({ html: __('loginYtb'), before: '[Youtube]' });
         return false;
       }
+
       if (!(apiKey && client && request && channelId)) {
-        echoLog({ text: '"getYtbToken" failed' });
+        debug('YouTube频道操作失败：获取参数失败');
+        echoLog({ text: '"getYtbToken" failed', before: '[Youtube]' });
         return false;
       }
 
       if (!doTask && !verify && this.whiteList.channels.includes(channelId)) {
-        echoLog({ type: 'whiteList', text: 'Youtube.unfollowChannel', id: channelId });
+        debug('YouTube频道在白名单中，跳过取消订阅', { channelId });
+        echoLog({ type: 'whiteList', text: 'Youtube.unfollowChannel', id: channelId, before: '[Youtube]' });
         return true;
       }
 
       const logStatus = verify ?
-        echoLog({ text: __('verifyingAuth', 'Youtube') }) :
-        echoLog({ type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel', text: channelId });
+        echoLog({ text: __('verifyingAuth', 'Youtube'), before: '[Youtube]' }) :
+        echoLog({ type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel', text: channelId, before: '[Youtube]' });
+
       const nowTime = parseInt(String(new Date().getTime() / 1000), 10);
       const { result, statusText, status, data } = await httpRequest({
         url: `https://www.youtube.com/youtubei/v1/subscription/${doTask ? '' : 'un'}subscribe?key=${apiKey}&prettyPrint=false`,
@@ -397,33 +423,37 @@ class Youtube extends Social {
           params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
         })
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          if (
-            (
-              doTask &&
-              (/"subscribed":true/.test(data.responseText) || data.responseText.includes('The subscription already exists'))
-            ) || (!doTask && /"subscribed":false/.test(data.responseText))
-          ) {
-            logStatus.success();
-            if (doTask && !verify) {
-              this.tasks.channels = unique([...this.tasks.channels, link]);
-            }
-            return true;
-          }
-          if (verify && data.responseText.includes('You may not subscribe to yourself')) {
-            logStatus.success();
-            return true;
-          }
-          logStatus.error(__('tryUpdateYtbAuth'), true);
-          return false;
-        }
+
+      if (result !== 'Success') {
+        debug('YouTube频道操作请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('YouTube频道操作状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
+
+      const isSubscribed = doTask && (/"subscribed":true/.test(data.responseText) || data.responseText.includes('The subscription already exists'));
+      const isUnsubscribed = !doTask && /"subscribed":false/.test(data.responseText);
+      const isVerified = verify && data.responseText.includes('You may not subscribe to yourself');
+
+      if (isSubscribed || isUnsubscribed || isVerified) {
+        debug('YouTube频道操作成功', { doTask, verify });
+        logStatus.success();
+        if (doTask && !verify) {
+          this.tasks.channels = unique([...this.tasks.channels, link]);
+        }
+        return true;
+      }
+
+      debug('YouTube频道操作失败，需要更新授权');
+      logStatus.error(__('tryUpdateYtbAuth'), true);
       return false;
     } catch (error) {
+      debug('处理YouTube频道任务时发生错误', { error });
       throwError(error as Error, 'Youtube.toggleChannel');
       return false;
     }
@@ -452,25 +482,29 @@ class Youtube extends Social {
    */
   async #toggleLikeVideo({ link, doTask = true }: { link: string, doTask: boolean }): Promise<boolean> {
     try {
+      debug('开始处理YouTube视频点赞任务', { link, doTask });
       const { params, needLogin } = await this.#getInfo(link, 'likeVideo');
       const { apiKey, client, request, videoId, likeParams } = params || {};
 
       if (needLogin) {
-        echoLog({ html: `${__('loginYtb')}` });
+        debug('YouTube视频点赞失败：需要登录');
+        echoLog({ html: `${__('loginYtb')}`, before: '[Youtube]' });
         return false;
       }
 
       if (!(apiKey && client && request && videoId && likeParams)) {
-        echoLog({ text: '"getYtbToken" failed' });
+        debug('YouTube视频点赞失败：获取参数失败');
+        echoLog({ text: '"getYtbToken" failed', before: '[Youtube]' });
         return false;
       }
 
       if (!doTask && this.whiteList.likes.includes(videoId)) {
-        echoLog({ type: 'whiteList', text: 'Youtube.unlikeVideo', id: videoId });
+        debug('YouTube视频在白名单中，跳过取消点赞', { videoId });
+        echoLog({ type: 'whiteList', text: 'Youtube.unlikeVideo', id: videoId, before: '[Youtube]' });
         return true;
       }
 
-      const logStatus = echoLog({ type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo', text: videoId });
+      const logStatus = echoLog({ type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo', text: videoId, before: '[Youtube]' });
       const nowTime = parseInt(String(new Date().getTime() / 1000), 10);
       const likeVideoData: likeVideoData = {
         context: {
@@ -486,14 +520,17 @@ class Youtube extends Social {
           videoId
         }
       };
-      if (doTask) {
-        if (likeParams) {
-          likeVideoData.params = likeParams;
-        } else {
-          logStatus.error('Empty likeParams');
-          return false;
-        }
+
+      if (doTask && !likeParams) {
+        debug('YouTube视频点赞失败：缺少likeParams参数');
+        logStatus.error('Empty likeParams');
+        return false;
       }
+
+      if (doTask) {
+        likeVideoData.params = likeParams;
+      }
+
       const { result, statusText, status, data } = await httpRequest({
         url: `https://www.youtube.com/youtubei/v1/like/${doTask ? '' : 'remove'}like?key=${apiKey}`,
         method: 'POST',
@@ -508,27 +545,36 @@ class Youtube extends Social {
         },
         data: JSON.stringify(likeVideoData)
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          if (
-            (doTask && data.responseText.includes('Added to Liked videos')) ||
-            (!doTask &&
-              (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'))
-            )
-          ) {
-            logStatus.success();
-            if (doTask) this.tasks.likes = unique([...this.tasks.likes, link]);
-            return true;
-          }
-          logStatus.error(__('tryUpdateYtbAuth'), true);
-          return false;
-        }
+
+      if (result !== 'Success') {
+        debug('YouTube视频点赞请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('YouTube视频点赞状态错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
+
+      const isLiked = doTask && data.responseText.includes('Added to Liked videos');
+      const isUnliked = !doTask && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'));
+
+      if (isLiked || isUnliked) {
+        debug('YouTube视频点赞操作成功', { doTask });
+        logStatus.success();
+        if (doTask) {
+          this.tasks.likes = unique([...this.tasks.likes, link]);
+        }
+        return true;
+      }
+
+      debug('YouTube视频点赞失败，需要更新授权');
+      logStatus.error(__('tryUpdateYtbAuth'), true);
       return false;
     } catch (error) {
+      debug('处理YouTube视频点赞任务时发生错误', { error });
       throwError(error as Error, 'Youtube.toggleLikeVideo');
       return false;
     }
@@ -565,17 +611,22 @@ class Youtube extends Social {
     videoLinks?: Array<string>
   }): Promise<boolean> {
     try {
+      debug('开始处理YouTube链接任务', { doTask, channelLinksCount: channelLinks.length, videoLinksCount: videoLinks.length });
       if (!this.#initialized) {
-        echoLog({ text: __('needInit') });
+        debug('YouTube模块未初始化');
+        echoLog({ text: __('needInit'), before: '[Youtube]' });
         return false;
       }
-      const prom = [];
 
-      if (
-        (doTask && !globalOptions.doTask.youtube.channels) ||
-        (!doTask && !globalOptions.undoTask.youtube.channels)
-      ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'youtube.channels' });
+      const prom = [];
+      const shouldProcessChannels = (doTask && globalOptions.doTask.youtube.channels) ||
+                                  (!doTask && globalOptions.undoTask.youtube.channels);
+      const shouldProcessVideos = (doTask && globalOptions.doTask.youtube.likes) ||
+                                (!doTask && globalOptions.undoTask.youtube.likes);
+
+      if (!shouldProcessChannels) {
+        debug('根据全局选项跳过YouTube频道任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'youtube.channels', before: '[Youtube]' });
       } else {
         const realChannels = this.getRealParams('channels', channelLinks, doTask, (link) => {
           if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
@@ -583,6 +634,8 @@ class Youtube extends Social {
           }
           return link;
         });
+        debug('处理后的YouTube频道链接列表', { count: realChannels.length, channels: realChannels });
+
         if (realChannels.length > 0) {
           for (const channel of realChannels) {
             prom.push(this.#toggleChannel({ link: channel, doTask }));
@@ -590,11 +643,10 @@ class Youtube extends Social {
           }
         }
       }
-      if (
-        (doTask && !globalOptions.doTask.youtube.likes) ||
-        (!doTask && !globalOptions.undoTask.youtube.likes)
-      ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'youtube.likes' });
+
+      if (!shouldProcessVideos) {
+        debug('根据全局选项跳过YouTube视频任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'youtube.likes', before: '[Youtube]' });
       } else {
         const realLikes = this.getRealParams('likes', videoLinks, doTask, (link) => {
           if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
@@ -602,6 +654,8 @@ class Youtube extends Social {
           }
           return link;
         });
+        debug('处理后的YouTube视频链接列表', { count: realLikes.length, videos: realLikes });
+
         if (realLikes.length > 0) {
           for (const video of realLikes) {
             prom.push(this.#toggleLikeVideo({ link: video, doTask }));
@@ -609,8 +663,10 @@ class Youtube extends Social {
           }
         }
       }
+
       return Promise.all(prom).then(() => true);
     } catch (error) {
+      debug('处理YouTube链接任务时发生错误', { error });
       throwError(error as Error, 'Youtube.toggle');
       return false;
     }

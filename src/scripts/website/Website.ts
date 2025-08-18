@@ -1,19 +1,15 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:28
- * @LastEditTime : 2025-05-30 14:21:38
+ * @LastEditTime : 2025-08-18 19:05:06
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/scripts/website/Website.ts
- * @Description  :
+ * @FilePath     : /auto-task/src/scripts/website/Website.ts
+ * @Description  : 网站类
  */
 
-// eslint-disable-next-line
-/// <reference path = "Website.d.ts" />
-
-// import EventEmitter3 from 'eventemitter3';
 import throwError from '../tools/throwError';
 import Discord from '../social/Discord';
-import Instagram from '../social/Instagram';
+// import Instagram from '../social/Instagram';
 import Reddit from '../social/Reddit';
 import Twitch from '../social/Twitch';
 import Twitter from '../social/Twitter';
@@ -23,6 +19,7 @@ import Steam from '../social/Steam';
 import { unique, visitLink } from '../tools/tools';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
+import { debug } from '../tools/debug';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
@@ -89,7 +86,7 @@ abstract class Website {
   };
   protected social: {
     discord?: Discord
-    instagram?: Instagram
+    // instagram?: Instagram
     reddit?: Reddit
     twitch?: Twitch
     twitter?: Twitter
@@ -145,8 +142,12 @@ abstract class Website {
    */
   async #bind(name: string, init: Promise<boolean | 'skip'>): Promise<bindReturn> {
     try {
-      return { name, result: await init };
+      debug('开始绑定社交媒体', { name });
+      const result = await init;
+      debug('绑定结果', { name, result });
+      return { name, result };
     } catch (error) {
+      debug('绑定失败', { name, error });
       throwError(error as Error, 'Website.bind');
       return { name, result: false };
     }
@@ -168,31 +169,38 @@ abstract class Website {
    */
   protected async initSocial(action: string): Promise<boolean> {
     try {
+      debug('开始初始化社交媒体', { action });
       const pro = [];
       const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
 
       // 检查 Discord 任务
       if (tasks.discord) {
         const hasDiscord = Object.values(tasks.discord).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 Discord 任务', { hasDiscord });
         if (hasDiscord && (!this.socialInitialized.discord || !this.social.discord)) {
+          debug('初始化 Discord');
           this.social.discord = new Discord();
           pro.push(this.#bind('discord', this.social.discord.init(action)));
         }
       }
 
-      // 检查 Instagram 任务
-      if (tasks.instagram) {
-        const hasInstagram = Object.values(tasks.instagram).reduce((total, arr) => [...total, ...arr]).length > 0;
-        if (hasInstagram && (!this.socialInitialized.instagram || !this.social.instagram)) {
-          this.social.instagram = new Instagram();
-          pro.push(this.#bind('instagram', this.social.instagram.init()));
-        }
-      }
+      // // 检查 Instagram 任务
+      // if (tasks.instagram) {
+      //   const hasInstagram = Object.values(tasks.instagram).reduce((total, arr) => [...total, ...arr]).length > 0;
+      //   debug('检查 Instagram 任务', { hasInstagram });
+      //   if (hasInstagram && (!this.socialInitialized.instagram || !this.social.instagram)) {
+      //     debug('初始化 Instagram');
+      //     this.social.instagram = new Instagram();
+      //     pro.push(this.#bind('instagram', this.social.instagram.init()));
+      //   }
+      // }
 
       // 检查 Reddit 任务
       if (tasks.reddit) {
         const hasReddit = Object.values(tasks.reddit).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 Reddit 任务', { hasReddit });
         if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
+          debug('初始化 Reddit');
           this.social.reddit = new Reddit();
           pro.push(this.#bind('reddit', this.social.reddit.init()));
         }
@@ -201,7 +209,9 @@ abstract class Website {
       // 检查 Twitch 任务
       if (tasks.twitch) {
         const hasTwitch = Object.values(tasks.twitch).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 Twitch 任务', { hasTwitch });
         if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
+          debug('初始化 Twitch');
           this.social.twitch = new Twitch();
           pro.push(this.#bind('twitch', this.social.twitch.init()));
         }
@@ -210,7 +220,9 @@ abstract class Website {
       // 检查 Twitter 任务
       if (tasks.twitter) {
         const hasTwitter = Object.values(tasks.twitter).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 Twitter 任务', { hasTwitter });
         if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
+          debug('初始化 Twitter');
           this.social.twitter = new Twitter();
           pro.push(this.#bind('twitter', this.social.twitter.init()));
         }
@@ -219,7 +231,9 @@ abstract class Website {
       // 检查 VK 任务
       if (tasks.vk) {
         const hasVk = Object.values(tasks.vk).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 VK 任务', { hasVk });
         if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
+          debug('初始化 VK');
           this.social.vk = new Vk();
           pro.push(this.#bind('vk', this.social.vk.init()));
         }
@@ -228,7 +242,9 @@ abstract class Website {
       // 检查 YouTube 任务
       if (tasks.youtube) {
         const hasYoutube = Object.values(tasks.youtube).reduce((total, arr) => [...total, ...arr]).length > 0;
+        debug('检查 YouTube 任务', { hasYoutube });
         if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
+          debug('初始化 YouTube');
           this.social.youtube = new Youtube();
           pro.push(this.#bind('youtube', this.social.youtube.init()));
         }
@@ -237,21 +253,28 @@ abstract class Website {
       // 检查 Steam 任务
       if (tasks.steam) {
         const steamLength = Object.values(tasks.steam).reduce((total, arr) => [...total, ...arr]).length;
+        debug('检查 Steam 任务', { steamLength });
         if (steamLength > 0) {
-          if (!this.social.steam) this.social.steam = new Steam();
+          if (!this.social.steam) {
+            debug('创建 Steam 实例');
+            this.social.steam = new Steam();
+          }
           const steamCommunityLength = Object.keys(tasks.steam).map((type) => (
             ['groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks'].includes(type) ?
               (tasks.steam?.[type as keyof typeof tasks.steam]?.length || 0) : 0))
             .reduce((total, number) => total + number, 0);
+          debug('Steam 社区任务数量', { steamCommunityLength });
           if (steamLength - steamCommunityLength > 0) {
             this.steamTaskType.steamStore = true;
             if (!this.socialInitialized.steamStore) {
+              debug('初始化 Steam 商店');
               pro.push(this.#bind('steamStore', this.social.steam.init('store')));
             }
           }
           if (steamCommunityLength > 0) {
             if (!this.socialInitialized.steamCommunity) {
               this.steamTaskType.steamCommunity = true;
+              debug('初始化 Steam 社区');
               pro.push(this.#bind('steamCommunity', this.social.steam.init('community')));
             }
           }
@@ -260,22 +283,28 @@ abstract class Website {
 
       // 处理链接任务
       if (tasks.links && tasks.links.length > 0) {
+        debug('初始化链接访问', { linksCount: tasks.links.length });
         this.social.visitLink = visitLink;
       }
 
+      debug('等待所有社交媒体初始化完成');
       return await Promise.all(pro).then((result) => {
         let checked = true;
         for (const data of result) {
           if (data.result) {
+            debug('社交媒体初始化成功', { name: data.name });
             // @ts-ignore
             this.socialInitialized[data.name] = data.result;
           } else {
+            debug('社交媒体初始化失败', { name: data.name });
             checked = false;
           }
         }
+        debug('社交媒体初始化完成', { allSuccess: checked });
         return checked;
       });
     } catch (error) {
+      debug('初始化社交媒体失败', { error });
       throwError(error as Error, 'Website.initSocial');
       return false;
     }
@@ -296,16 +325,21 @@ abstract class Website {
    */
   protected uniqueTasks(allTasks: webSocialTasks): webSocialTasks {
     try {
+      debug('开始去重任务');
       const result: webSocialTasks = {};
       for (const [social, types] of Object.entries(allTasks)) {
+        debug('处理社交媒体任务', { social });
         result[social as socialType] = {};
         for (const [type, tasks] of Object.entries(types)) {
-        // @ts-ignore
+          debug('处理任务类型', { social, type });
+          // @ts-ignore
           result[social][type] = unique(tasks as Array<string>);
         }
       }
+      debug('任务去重完成');
       return result;
     } catch (error) {
+      debug('任务去重失败', { error });
       throwError(error as Error, 'Website.uniqueTasks');
       return allTasks;
     }
@@ -330,38 +364,49 @@ abstract class Website {
    */
   protected async toggleTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
+      debug('开始切换任务状态', { action });
       if (!this.initialized && !this.init()) {
+        debug('初始化失败');
         return false;
       }
       if (!(await this.classifyTask(action))) {
+        debug('任务分类失败');
         return false;
       }
-      // if (!(await this.initSocial(action))) {
-      //   return false;
-      // }
+
+      debug('初始化社交媒体');
       await this.initSocial(action);
       const pro = [];
       const doTask = action === 'do';
       const tasks = doTask ? this.undoneTasks : this.socialTasks;
+
+      // 处理各个社交媒体的任务
       if (this.socialInitialized.discord === true && this.social.discord) {
+        debug('处理 Discord 任务');
         pro.push(this.social.discord.toggle({ doTask, ...tasks.discord }));
       }
-      if (this.socialInitialized.instagram === true && this.social.instagram) {
-        pro.push(this.social.instagram.toggle({ doTask, ...tasks.instagram }));
-      }
+      // if (this.socialInitialized.instagram === true && this.social.instagram) {
+      //   debug('处理 Instagram 任务');
+      //   pro.push(this.social.instagram.toggle({ doTask, ...tasks.instagram }));
+      // }
       if (this.socialInitialized.reddit === true && this.social.reddit) {
+        debug('处理 Reddit 任务');
         pro.push(this.social.reddit.toggle({ doTask, ...tasks.reddit }));
       }
       if (this.socialInitialized.twitch === true && this.social.twitch) {
+        debug('处理 Twitch 任务');
         pro.push(this.social.twitch.toggle({ doTask, ...tasks.twitch }));
       }
       if (this.socialInitialized.twitter === true && this.social.twitter) {
+        debug('处理 Twitter 任务');
         pro.push(this.social.twitter.toggle({ doTask, ...tasks.twitter }));
       }
       if (this.socialInitialized.vk === true && this.social.vk) {
+        debug('处理 VK 任务');
         pro.push(this.social.vk.toggle({ doTask, ...tasks.vk }));
       }
       if (this.socialInitialized.youtube === true && this.social.youtube) {
+        debug('处理 YouTube 任务');
         pro.push(this.social.youtube.toggle({ doTask, ...tasks.youtube }));
       }
       if (
@@ -369,25 +414,36 @@ abstract class Website {
         (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) &&
         this.social.steam
       ) {
+        debug('处理 Steam 任务');
         pro.push(this.social.steam.toggle({ doTask, ...tasks.steam }));
       }
+
+      // 处理链接任务
       if (this.social.visitLink && tasks.links && doTask) {
+        debug('处理链接任务', { linksCount: tasks.links.length });
         for (const link of tasks.links) {
           pro.push(this.social.visitLink(link));
         }
       }
+
+      // 处理额外任务
       // @ts-ignore
       if (doTask && tasks.extra && this.extraDoTask) {
         const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
         if (hasExtra) {
+          debug('处理额外任务');
           // @ts-ignore
           pro.push(this.extraDoTask(tasks.extra));
         }
       }
+
+      debug('等待所有任务完成');
       await Promise.all(pro);
+      debug('所有任务完成');
       echoLog({}).success(__('allTasksComplete'));
       return true;
     } catch (error) {
+      debug('切换任务失败', { error });
       throwError(error as Error, 'Website.toggleTask');
       return false;
     }
@@ -406,8 +462,12 @@ abstract class Website {
    */
   async doTask(): Promise<boolean> {
     try {
-      return await this.toggleTask('do');
+      debug('开始执行任务');
+      const result = await this.toggleTask('do');
+      debug('任务执行完成', { success: result });
+      return result;
     } catch (error) {
+      debug('执行任务失败', { error });
       throwError(error as Error, 'Website.doTask');
       return false;
     }
@@ -426,8 +486,12 @@ abstract class Website {
    */
   async undoTask(): Promise<boolean> {
     try {
-      return await this.toggleTask('undo');
+      debug('开始撤销任务');
+      const result = await this.toggleTask('undo');
+      debug('任务撤销完成', { success: result });
+      return result;
     } catch (error) {
+      debug('撤销任务失败', { error });
       throwError(error as Error, 'Website.undoTask');
       return false;
     }

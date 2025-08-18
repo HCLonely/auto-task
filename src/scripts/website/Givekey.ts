@@ -1,14 +1,11 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-13 17:57:40
- * @LastEditTime : 2022-02-06 11:38:18
+ * @LastEditTime : 2025-08-18 19:06:52
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/Givekey.ts
+ * @FilePath     : /auto-task/src/scripts/website/Givekey.ts
  * @Description  : https://givekey.ru
  */
-
-// eslint-disable-next-line
-/// <reference path = "GiveKey.d.ts" />
 
 import Swal from 'sweetalert2';
 import Website from './Website';
@@ -17,6 +14,7 @@ import __ from '../tools/i18n';
 import { delay, getRedirectLink, unique } from '../tools/tools';
 import throwError from '../tools/throwError';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 const defaultTasksTemplate: gkSocialTasks = {
   steam: {
@@ -48,7 +46,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @property {gkSocialTasks} socialTasks - 存储社交任务的对象。
  * @property {gkSocialTasks} undoneTasks - 存储未完成任务的对象。
  * @property {string} userId - 用户ID。
- * @property {Array<string>} buttons - 可用按钮的数组。
+ * @property {Array<string>} buttons - 包含 'doTask'、'undoTask' 和 'verifyTask' 的按钮数组。
  *
  * @method static test - 检查当前域名是否为 Givekey 网站。
  * @returns {boolean} 如果当前域名为 'givekey.ru'，则返回 true；否则返回 false。
@@ -105,7 +103,10 @@ class Givekey extends Website {
    * 如果域名匹配，则返回 true；否则返回 false。
    */
   static test(): boolean {
-    return window.location.host === 'givekey.ru';
+    const url = window.location.host;
+    const isMatch = url === 'givekey.ru';
+    debug('检查网站匹配', { url, isMatch });
+    return isMatch;
   }
 
   /**
@@ -122,18 +123,22 @@ class Givekey extends Website {
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       await new Promise((resolve) => {
         const checker = setInterval(() => {
           if ($('#navbarDropdown').length > 0) {
+            debug('导航栏元素已加载');
             clearInterval(checker);
             resolve(true);
           }
-        }, 500); // 添加间隔时间以避免过于频繁的检查
+        }, 500);
       });
       if (!await this.#checkLeftKey()) {
+        debug('检查剩余密钥失败');
         echoLog({}).warning(__('checkLeftKeyFailed'));
       }
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'Givekey.after');
     }
   }
@@ -154,23 +159,31 @@ class Givekey extends Website {
    */
   init(): boolean {
     try {
+      debug('初始化 Givekey');
       const logStatus = echoLog({ text: __('initing') });
       if ($('a[href*="/auth/steam"]').length > 0) {
+        debug('未登录，重定向到 Steam 登录页面');
         window.open('/auth/steam', '_self');
         logStatus.warning(__('needLogin'));
         return false;
       }
-      if (!this.#getGiveawayId()) return false;
+      if (!this.#getGiveawayId()) {
+        debug('获取抽奖ID失败');
+        return false;
+      }
       const userId = $('meta[name="user-id"]').attr('content');
       if (!userId) {
+        debug('获取用户ID失败');
         logStatus.error(__('getFailed', __('userId')));
         return false;
       }
       this.userId = userId;
       this.initialized = true;
+      debug('初始化完成', { userId });
       logStatus.success();
       return true;
     } catch (error) {
+      debug('初始化失败', { error });
       throwError(error as Error, 'Givekey.init');
       return false;
     }
@@ -179,81 +192,95 @@ class Givekey extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {'do' | 'undo' | 'verify'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务，'verify' 表示验证任务。
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
+   * @param {'do' | 'undo' | 'verify'} action - 要执行的操作类型
+   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false
+   * @throws {Error} 如果在分类过程中发生错误，将抛出错误
    *
    * @description
-   * 该方法根据传入的操作类型分类任务。
-   * 如果操作为 'undo'，则从存储中获取任务信息。
-   * 遍历页面中的任务，提取任务链接并根据任务类型分类到相应的社交任务列表中。
-   * 处理完成后，记录成功信息并将分类后的任务存储到本地。
+   * 该方法根据传入的操作类型分类任务：
+   * - 'undo': 从存储中恢复之前保存的任务信息
+   * - 'verify': 仅收集任务ID用于验证
+   * - 'do': 收集并分类新的任务
+   *
+   * 处理流程：
+   * 1. 获取页面中的所有任务元素
+   * 2. 对每个任务进行分类处理
+   * 3. 更新任务列表并保存到存储中
    */
   async classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> {
     try {
+      debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
+
       if (action === 'undo') {
+        debug('恢复已保存的任务信息');
         this.socialTasks = GM_getValue<gkGMTasks>(`gkTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
       }
 
       const tasks = $('.card-body:has("button") .row');
+      debug('找到任务元素', { count: tasks.length });
+
       for (const task of tasks) {
         const taskEle = $(task);
-        const isSuccess = /Complete/i.test(taskEle.find('button').text()
-          .trim());
-        if (isSuccess && action !== 'undo') continue;
+        const button = taskEle.find('button');
+        const isSuccess = /Complete/i.test(button.text().trim());
+        debug('处理任务', { isSuccess });
+
+        if (isSuccess && action !== 'undo') {
+          debug('跳过已完成的任务');
+          continue;
+        }
+
         const checkButton = taskEle.find('#task_check');
         const taskId = checkButton.attr('data-id');
-        if (taskId) this.tasks.push(taskId);
+        if (taskId) {
+          debug('添加任务ID', { taskId });
+          this.tasks.push(taskId);
+        }
+
         if (action === 'verify') continue;
 
-        let href = taskEle.find('a').attr('href') || null;
-        const text = taskEle.find('a').text()
-          .trim();
-        const icon = taskEle.find('i');
-        if (!href || !text) continue;
+        const taskLink = taskEle.find('a');
+        let href: string | undefined | null = taskLink.attr('href');
+        if (!href) {
+          debug('任务链接为空');
+          continue;
+        }
+
+        const text = taskLink.text().trim();
+        if (!text) {
+          debug('任务描述为空');
+          continue;
+        }
+
         if (/^https?:\/\/givekey\.ru\/giveaway\/[\d]+\/execution_task/.test(href)) {
+          debug('获取重定向链接', { href });
           href = await getRedirectLink(href);
         }
-        if (!href) continue;
-
-        if (/^https?:\/\/vk\.com\//.test(href)) {
-          this.socialTasks.vk.nameLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.vk.nameLinks.push(href);
-        } else if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
-          this.socialTasks.steam.groupLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.groupLinks.push(href);
-        } else if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
-          this.socialTasks.steam.wishlistLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.wishlistLinks.push(href);
-        } else if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
-          if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
-            this.socialTasks.steam.curatorLinks.push(href);
-            if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLinks.push(href);
-          } else {
-            this.socialTasks.steam.curatorLikeLinks.push(href);
-            if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLikeLinks.push(href);
-          }
-        } else if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
-          this.socialTasks.twitter.userLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.twitter.userLinks.push(href);
-        } else if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
-          this.socialTasks.discord.serverLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.discord.serverLinks.push(href);
-        } else {
-          echoLog({}).warning(`${__('unKnownTaskType')}: ${text}(${href})`);
+        if (!href) {
+          debug('获取重定向链接失败');
+          continue;
         }
+
+        const icon = taskEle.find('i');
+        await this.#classifyTaskByType(href, text, icon, isSuccess, action);
       }
 
+      debug('任务分类完成');
       logStatus.success();
       this.tasks = unique(this.tasks);
       this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gkSocialTasks;
       this.socialTasks = this.uniqueTasks(this.socialTasks) as gkSocialTasks;
-      if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
-      GM_setValue(`gkTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+
+      debug('保存任务信息');
+      GM_setValue(`gkTasks-${this.giveawayId}`, {
+        tasks: this.socialTasks,
+        time: new Date().getTime()
+      });
+
       return true;
     } catch (error) {
+      debug('任务分类失败', { error });
       throwError(error as Error, 'Givekey.classifyTask');
       return false;
     }
@@ -275,25 +302,33 @@ class Givekey extends Website {
    */
   async verifyTask(): Promise<boolean> {
     try {
+      debug('开始验证任务');
       if (!this.initialized && !this.init()) {
+        debug('初始化失败');
         return false;
       }
       if (this.tasks.length === 0 && !(await this.classifyTask('verify'))) {
+        debug('任务分类失败');
         return false;
       }
       echoLog({}).warning(__('giveKeyNoticeBefore'));
       const taskLength = this.tasks.length;
-      for (let i = 0; i < taskLength; i++) { // eslint-disable-line
+      debug('开始验证任务', { taskCount: taskLength });
+
+      for (let i = 0; i < taskLength; i++) {
         await this.#verify(this.tasks[i]);
         if (i < (taskLength - 1)) {
+          debug('等待15秒');
           await delay(15000);
         }
       }
 
+      debug('所有任务验证完成');
       echoLog({}).success(__('allTasksComplete'));
       echoLog({ html: `<li><font class="warning">${__('giveKeyNoticeAfter')}</font></li>` });
       return true;
     } catch (error) {
+      debug('任务验证失败', { error });
       throwError(error as Error, 'Givekey.verifyTask');
       return false;
     }
@@ -317,39 +352,57 @@ class Givekey extends Website {
    */
   async #verify(task: string): Promise<boolean> {
     try {
+      debug('验证任务', { taskId: task });
       const logStatus = echoLog({ html: `<li>${__('verifyingTask')}${task}...<font></font></li>` });
+      const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
-      return await new Promise((resolve) => {
-        $.ajax({
-          url: 'https://givekey.ru/giveaway/task',
-          method: 'POST',
-          data: `id=${task}&user_id=${this.userId}`,
-          dataType: 'json',
-          headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          },
-          success: (data) => {
-            if (data.btn) $(`button[data-id=${this.userId}]`).html(data.btn);
-            if (data.status === 'ok') {
-              $(`.task_check_${data.id}`).html(`<button class="btn btn-success mb-2 btn-block" disabled>${data.btn}</button>`);
-              logStatus.success();
-              resolve(true);
-            } else if (data.status === 'end') {
-              logStatus.success();
-              echoLog({}).success(data.key);
-              resolve(true);
-            } else {
-              logStatus.error(`Error:${data.msg}`);
-              resolve(false);
-            }
-          },
-          error: (xhr) => {
-            logStatus.error(`Error:${xhr.statusText}(${xhr.status})`);
-            resolve(false);
-          }
-        });
+      if (!csrfToken) {
+        debug('CSRF token 未找到');
+        logStatus.error('CSRF token not found');
+        return false;
+      }
+
+      debug('发送验证请求');
+      const response = await $.ajax({
+        url: 'https://givekey.ru/giveaway/task',
+        method: 'POST',
+        data: `id=${task}&user_id=${this.userId}`,
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
+        }
       });
+
+      if (!response) {
+        debug('未收到响应');
+        logStatus.error('No response received');
+        return false;
+      }
+
+      debug('处理响应', { response });
+      if (response.btn) {
+        $(`button[data-id=${this.userId}]`).html(response.btn);
+      }
+
+      if (response.status === 'ok') {
+        $(`.task_check_${response.id}`).html(`<button class="btn btn-success mb-2 btn-block" disabled>${response.btn}</button>`);
+        debug('任务验证成功');
+        logStatus.success();
+        return true;
+      }
+
+      if (response.status === 'end') {
+        debug('获得密钥');
+        logStatus.success();
+        echoLog({}).success(response.key);
+        return true;
+      }
+
+      debug('验证失败', { error: response.msg });
+      logStatus.error(`Error:${response.msg}`);
+      return false;
     } catch (error) {
+      debug('验证过程出错', { error });
       throwError(error as Error, 'Givekey.verify');
       return false;
     }
@@ -370,14 +423,18 @@ class Givekey extends Website {
    */
   #getGiveawayId(): boolean {
     try {
+      debug('从URL获取抽奖ID');
       const giveawayId = window.location.href.match(/giveaway\/([\d]+)/)?.[1];
       if (giveawayId) {
         this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', { giveawayId });
         return true;
       }
+      debug('获取抽奖ID失败');
       echoLog({ text: __('getFailed', 'GiveawayId') });
       return false;
     } catch (error) {
+      debug('获取抽奖ID出错', { error });
       throwError(error as Error, 'Givekey.getGiveawayId');
       return false;
     }
@@ -386,37 +443,142 @@ class Givekey extends Website {
   /**
    * 检查剩余密钥的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+   * @returns {Promise<boolean>} 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false
+   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
    *
    * @description
-   * 该方法首先检查全局选项中是否启用了检查剩余密钥的功能。
-   * 如果启用且当前没有剩余密钥，则弹出警告框提示用户没有剩余密钥。
-   * 用户可以选择确认或取消，确认后将关闭窗口。
-   * 如果没有错误发生，则返回 true。
+   * 该方法检查是否还有可用的密钥：
+   * 1. 首先检查是否启用了密钥检查功能
+   * 2. 检查页面上是否显示有剩余密钥
+   * 3. 如果没有剩余密钥：
+   *    - 显示警告对话框
+   *    - 用户确认后关闭窗口
+   *    - 用户取消则继续执行
+   * 4. 所有情况下返回 true，除非发生错误
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
-      if (!globalOptions.other.checkLeftKey) return true;
-      if (!$('#keys_count').text()) {
-        await Swal.fire({
-          icon: 'warning',
-          title: __('notice'),
-          text: __('noKeysLeft'),
-          confirmButtonText: __('confirm'),
-          cancelButtonText: __('cancel'),
-          showCancelButton: true
-        }).then(({ value }) => {
-          if (value) {
-            window.close();
-          }
-        });
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+
+      const keysCount = $('#keys_count').text();
+      debug('检查密钥数量', { keysCount });
+      if (keysCount) return true;
+
+      debug('没有剩余密钥，显示确认对话框');
+      const { value } = await Swal.fire({
+        icon: 'warning',
+        title: __('notice'),
+        text: __('noKeysLeft'),
+        confirmButtonText: __('confirm'),
+        cancelButtonText: __('cancel'),
+        showCancelButton: true
+      });
+
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
       }
       return true;
     } catch (error) {
+      debug('检查剩余密钥失败', { error });
       throwError(error as Error, 'Givekey.checkLeftKey');
       return false;
+    }
+  }
+
+  /**
+   * 分类单个任务类型的私有异步方法
+   *
+   * @private
+   * @async
+   * @param {string} href - 任务链接URL
+   * @param {string} text - 任务描述文本
+   * @param {JQuery} icon - 任务图标的jQuery对象
+   * @param {boolean} isSuccess - 任务是否已完成的标志
+   * @param {string} action - 执行的操作类型（'do'、'undo' 或 'verify'）
+   * @returns {Promise<void>} 无返回值的Promise
+   * @throws {Error} 在任务分类过程中发生错误时抛出
+   *
+   * @description
+   * 该方法根据任务的属性将其分类到不同的社交平台任务类别中。
+   * 支持的任务类型包括：
+   * - VK社交平台任务：匹配 vk.com 域名
+   * - Steam群组任务：匹配 steamcommunity.com/groups
+   * - Steam愿望单任务：匹配 store.steampowered.com/app
+   * - Steam鉴赏家任务：
+   *   - 匹配 store.steampowered.com/curator（关注鉴赏家）
+   *   - 其他Steam相关任务（点赞鉴赏家）
+   * - Twitter关注任务：匹配 twitter.com 且包含 Subscribe 文本
+   * - Discord服务器任务：包含 discord 图标或匹配 discord.com/invite
+   *
+   * 处理流程：
+   * 1. 检查任务链接URL的格式
+   * 2. 根据URL、文本内容和图标类型确定任务类别
+   * 3. 将任务添加到对应的社交任务列表中
+   * 4. 如果是 'do' 操作且任务未完成，同时添加到未完成任务列表
+   * 5. 如果无法识别任务类型，记录警告信息
+   */
+  async #classifyTaskByType(href: string, text: string, icon: JQuery, isSuccess: boolean, action: string): Promise<void> {
+    try {
+      debug('开始分类任务类型', { href, text, isSuccess, action });
+
+      if (/^https?:\/\/vk\.com\//.test(href)) {
+        debug('添加 VK 任务');
+        this.socialTasks.vk.nameLinks.push(href);
+        if (action === 'do' && !isSuccess) this.undoneTasks.vk.nameLinks.push(href);
+        return;
+      }
+
+      if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
+        debug('添加 Steam 组任务');
+        this.socialTasks.steam.groupLinks.push(href);
+        if (action === 'do' && !isSuccess) this.undoneTasks.steam.groupLinks.push(href);
+        return;
+      }
+
+      if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
+        debug('添加 Steam 愿望单任务');
+        this.socialTasks.steam.wishlistLinks.push(href);
+        if (action === 'do' && !isSuccess) this.undoneTasks.steam.wishlistLinks.push(href);
+        return;
+      }
+
+      if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
+        if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
+          debug('添加 Steam 鉴赏家关注任务');
+          this.socialTasks.steam.curatorLinks.push(href);
+          if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLinks.push(href);
+        } else {
+          debug('添加 Steam 鉴赏家点赞任务');
+          this.socialTasks.steam.curatorLikeLinks.push(href);
+          if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLikeLinks.push(href);
+        }
+        return;
+      }
+
+      if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
+        debug('添加 Twitter 关注任务');
+        this.socialTasks.twitter.userLinks.push(href);
+        if (action === 'do' && !isSuccess) this.undoneTasks.twitter.userLinks.push(href);
+        return;
+      }
+
+      if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
+        debug('添加 Discord 服务器任务');
+        this.socialTasks.discord.serverLinks.push(href);
+        if (action === 'do' && !isSuccess) this.undoneTasks.discord.serverLinks.push(href);
+        return;
+      }
+
+      debug('未识别的任务类型', { href, text });
+      echoLog({}).warning(`${__('unKnownTaskType')}: ${text}(${href})`);
+    } catch (error) {
+      debug('任务类型分类失败', { error });
+      throwError(error as Error, 'Givekey.classifyTaskByType');
     }
   }
 }

@@ -1,16 +1,12 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-14 20:22:33
- * @LastEditTime : 2022-02-06 11:39:14
+ * @LastEditTime : 2025-08-18 19:05:30
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/Prys.ts
+ * @FilePath     : /auto-task/src/scripts/website/Prys.ts
  * @Description  : https://prys.revadike.com/
  */
 
-// eslint-disable-next-line
-/// <reference path = "Prys.d.ts" />
-
-// todo: 未测试
 import Swal from 'sweetalert2';
 import Website from './Website';
 import throwError from '../tools/throwError';
@@ -18,11 +14,17 @@ import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 const defaultTasksTemplate: prysSocialTasks = {
   steam: {
     groupLinks: [],
-    curatorLinks: []
+    curatorLinks: [],
+    wishlistLinks: [],
+    followLinks: []
+  },
+  youtube: {
+    channelLinks: []
   }
 };
 const defaultTasks = JSON.stringify(defaultTasksTemplate);
@@ -107,7 +109,10 @@ class Prys extends Website {
    * 如果域名匹配，则返回 true；否则返回 false。
    */
   static test(): boolean {
-    return window.location.host === 'prys.revadike.com';
+    const { host } = window.location;
+    const isMatch = host === 'prys.revadike.com';
+    debug('检查网站匹配', { host, isMatch });
+    return isMatch;
   }
 
   /**
@@ -123,13 +128,17 @@ class Prys extends Website {
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       if (!this.#checkLogin()) {
+        debug('检查登录失败');
         echoLog({}).warning(__('checkLoginFailed'));
       }
       if (!await this.#checkLeftKey()) {
+        debug('检查剩余密钥失败');
         echoLog({}).warning(__('checkLeftKeyFailed'));
       }
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'Prys.after');
     }
   }
@@ -143,22 +152,29 @@ class Prys extends Website {
    *
    * @description
    * 该方法尝试初始化抽奖功能。
-   * 首先记录初始化状态。如果页面中存在“登录”按钮，则记录警告信息并返回 false。
+   * 首先记录初始化状态。如果页面中存在"登录"按钮，则记录警告信息并返回 false。
    * 然后调用私有方法获取抽奖ID，如果获取失败，则返回 false。
    * 如果成功获取抽奖ID，则将 `initialized` 属性设置为 true，并记录成功信息。
    */
   init(): boolean {
     try {
+      debug('开始初始化');
       const logStatus = echoLog({ text: __('initing') });
       if ($('button:contains("Sign")').length > 0) {
+        debug('需要登录');
         logStatus.warning(__('needLogin'));
         return false;
       }
-      if (!this.#getGiveawayId()) return false;
+      if (!this.#getGiveawayId()) {
+        debug('获取抽奖ID失败');
+        return false;
+      }
       this.initialized = true;
+      debug('初始化完成');
       logStatus.success();
       return true;
     } catch (error) {
+      debug('初始化失败', { error });
       throwError(error as Error, 'Prys.init');
       return false;
     }
@@ -181,44 +197,78 @@ class Prys extends Website {
    */
   async classifyTask(action: string): Promise<boolean> {
     try {
+      debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
+        debug('恢复已保存的任务信息');
         this.socialTasks = GM_getValue<prysGMTasks>(`prysTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
       }
 
       const steps = $('#steps tbody tr');
+      debug('找到任务步骤', { count: steps.length });
       for (let eq = 0; eq < steps.length; eq += 1) {
-        if (steps.eq(eq).find('span:contains(Success)').length === 0) checkClick(eq);
+        if (steps.eq(eq).find('span:contains(Success)').length === 0) {
+          debug('点击检查按钮', { step: eq });
+          checkClick(eq);
+        }
       }
 
       const pro = [];
       for (const step of steps) {
         const isSuccess = $(step).find('span:contains(Success)').length > 0;
-        if ($(step).find('a[href*=\'store.steampowered.com/curator/\']').length > 0) {
-          const link = $(step).find('a[href*=\'store.steampowered.com/curator/\']')
-            .attr('href');
-          if (!link) continue;
-          if (action === 'undo') this.socialTasks.steam.curatorLinks.push(link);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLinks.push(link);
-        } else if ($(step).find('a[href*=\'steampowered.com/groups/\']').length > 0) {
-          const link = $(step).find('a[href*=\'steampowered.com/groups/\']')
-            .attr('href');
-          if (!link) continue;
-          if (action === 'undo') this.socialTasks.steam.groupLinks.push(link);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.groupLinks.push(link);
-        } else if ($(step).find('a[href*=\'steamcommunity.com/gid\']').length > 0) {
-          const link = $(step).find('a[href*=\'steamcommunity.com/gid\']')
-            .attr('href');
-          if (!link) continue;
-          pro.push(getRedirectLink(link).then((finalUrl) => {
-            if (!finalUrl || !/^https?:\/\/steampowered\.com\/groups\//.test(finalUrl)) return false;
+        if (isSuccess && action === 'do') {
+          debug('跳过已完成的任务');
+          continue;
+        }
+
+        const appLink = $(step).find('a[href*=\'store.steampowered.com/app/\']')
+          .attr('href');
+        if (appLink) {
+          const taskType = $(step).find('a[href*=\'store.steampowered.com/app/\']')
+            .text()
+            .includes('wishlist') ? 'wishlistLinks' : 'followLinks';
+          debug('添加 Steam 应用任务', { type: taskType, link: appLink });
+          if (action === 'undo') this.socialTasks.steam[taskType].push(appLink);
+          if (action === 'do') this.undoneTasks.steam[taskType].push(appLink);
+          continue;
+        }
+
+        const curatorLink = $(step).find('a[href*=\'store.steampowered.com/curator/\']')
+          .attr('href');
+        if (curatorLink) {
+          debug('添加 Steam 鉴赏家任务', { link: curatorLink });
+          if (action === 'undo') this.socialTasks.steam.curatorLinks.push(curatorLink);
+          if (action === 'do') this.undoneTasks.steam.curatorLinks.push(curatorLink);
+          continue;
+        }
+
+        const groupLink = $(step).find('a[href*=\'steamcommunity.com/groups/\']')
+          .attr('href');
+        if (groupLink) {
+          debug('添加 Steam 组任务', { link: groupLink });
+          if (action === 'undo') this.socialTasks.steam.groupLinks.push(groupLink);
+          if (action === 'do') this.undoneTasks.steam.groupLinks.push(groupLink);
+          continue;
+        }
+
+        const gidLink = $(step).find('a[href*=\'steamcommunity.com/gid\']')
+          .attr('href');
+        if (gidLink) {
+          debug('处理 Steam GID 链接', { link: gidLink });
+          pro.push(getRedirectLink(gidLink).then((finalUrl) => {
+            if (!finalUrl || !/^https?:\/\/steamcommunity\.com\/groups\//.test(finalUrl)) {
+              debug('无效的 Steam 组链接', { finalUrl });
+              return false;
+            }
+            debug('添加 Steam 组任务（从 GID）', { link: finalUrl });
             if (action === 'undo') this.socialTasks.steam.groupLinks.push(finalUrl);
-            if (action === 'do' && !isSuccess) this.undoneTasks.steam.groupLinks.push(finalUrl);
+            if (action === 'do') this.undoneTasks.steam.groupLinks.push(finalUrl);
           }));
         }
       }
 
-      await Promise.all(pro);
+      await Promise.allSettled(pro);
+      debug('任务分类完成');
       logStatus.success();
       this.undoneTasks = this.uniqueTasks(this.undoneTasks) as prysSocialTasks;
       this.socialTasks = this.uniqueTasks(this.socialTasks) as prysSocialTasks;
@@ -226,6 +276,7 @@ class Prys extends Website {
       GM_setValue(`prysTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
       return true;
     } catch (error) {
+      debug('任务分类失败', { error });
       throwError(error as Error, 'Prys.classifyTask');
       return false;
     }
@@ -247,28 +298,39 @@ class Prys extends Website {
    */
   async verifyTask(): Promise<void> {
     try {
-      const pro = [];
+      debug('开始验证任务');
       const checks = $('#steps tbody a[id^=check]');
-      if (checks.length > 0) {
-        for (const check of checks) {
-          const id = $(check).attr('id')
-            ?.match(/[\d]+/)?.[0];
-          if (!id) continue;
-          const taskDes = $(check).parent()
-            ?.prev()
-            ?.html()
-            ?.trim();
-          const status = echoLog({ text: `${__('verifyingTask')}${taskDes}...` });
-          pro.push(new Promise((resolve) => {
-            this.#checkStep(id, resolve, status);
-          }));
-        }
-        await Promise.all(pro);
+      if (checks.length === 0) {
+        debug('没有需要验证的任务');
         echoLog({}).success(__('allTasksComplete'));
-      } else {
-        echoLog({}).success(__('allTasksComplete'));
+        return;
       }
+
+      const pro = [];
+      for (const check of checks) {
+        const id = $(check).attr('id')
+          ?.match(/[\d]+/)?.[0];
+        if (!id) {
+          debug('跳过无效任务ID');
+          continue;
+        }
+
+        const taskDes = $(check).parent()
+          ?.prev()
+          ?.html()
+          ?.trim();
+        debug('验证任务', { id, taskDes });
+        const status = echoLog({ text: `${__('verifyingTask')}${taskDes}...` });
+        pro.push(new Promise((resolve) => {
+          this.#checkStep(id, resolve, status);
+        }));
+      }
+
+      await Promise.all(pro);
+      debug('所有任务验证完成');
+      echoLog({}).success(__('allTasksComplete'));
     } catch (error) {
+      debug('验证任务失败', { error });
       throwError(error as Error, 'Prys.verifyTask');
     }
   }
@@ -288,14 +350,18 @@ class Prys extends Website {
    */
   #getGiveawayId(): boolean {
     try {
+      debug('开始获取抽奖ID');
       const giveawayId = window.location.search.match(/id=([\d]+)/)?.[1];
       if (giveawayId) {
         this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', { giveawayId });
         return true;
       }
+      debug('获取抽奖ID失败');
       echoLog({}).error(__('getFailed', 'GiveawayId'));
       return false;
     } catch (error) {
+      debug('获取抽奖ID出错', { error });
       throwError(error as Error, 'Prys.getGiveawayId');
       return false;
     }
@@ -316,25 +382,35 @@ class Prys extends Website {
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
-      if (!globalOptions.other.checkLeftKey) return true;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+
       const leftKey = $('#header').text()
         .match(/([\d]+).*?prize.*?left/)?.[1];
-      if (leftKey === '0') {
-        await Swal.fire({
-          icon: 'warning',
-          title: __('notice'),
-          text: __('noKeysLeft'),
-          confirmButtonText: __('confirm'),
-          cancelButtonText: __('cancel'),
-          showCancelButton: true
-        }).then(({ value }) => {
-          if (value) {
-            window.close();
-          }
-        });
+      debug('检查剩余密钥数量', { leftKey });
+      if (leftKey !== '0') return true;
+
+      debug('没有剩余密钥，显示确认对话框');
+      const { value } = await Swal.fire({
+        icon: 'warning',
+        title: __('notice'),
+        text: __('noKeysLeft'),
+        confirmButtonText: __('confirm'),
+        cancelButtonText: __('cancel'),
+        showCancelButton: true
+      });
+
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
       }
+
       return true;
     } catch (error) {
+      debug('检查剩余密钥失败', { error });
       throwError(error as Error, 'Prys.checkLeftKey');
       return false;
     }
@@ -349,17 +425,24 @@ class Prys extends Website {
    *
    * @description
    * 该方法检查全局选项中是否启用了登录检查功能。
-   * 如果启用且页面中存在“登录”按钮，则记录警告信息。
+   * 如果启用且页面中存在"登录"按钮，则记录警告信息。
    * 如果没有找到登录按钮，则返回 true，表示用户已登录或不需要登录。
    */
   #checkLogin(): boolean {
     try {
-      if (!globalOptions.other.checkLogin) return true;
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
       if ($('button:contains("Sign")').length > 0) {
+        debug('未登录');
         echoLog({}).warning(__('needLogin'));
       }
+      debug('登录检查完成');
       return true;
     } catch (error) {
+      debug('检查登录失败', { error });
       throwError(error as Error, 'Prys.checkLogin');
       return false;
     }
@@ -379,7 +462,7 @@ class Prys extends Website {
    *
    * @description
    * 该方法向服务器发送 POST 请求以检查指定步骤的状态。
-   * 如果步骤不是验证码，则更新步骤的状态为“正在检查”。
+   * 如果步骤不是验证码，则更新步骤的状态为"正在检查"。
    * 请求成功后，根据返回的 JSON 数据更新步骤的状态。
    * 如果成功，显示成功信息；如果失败，显示错误信息。
    * 如果返回的响应中包含验证码，则调用验证码检查函数。
@@ -387,40 +470,57 @@ class Prys extends Website {
    */
   #checkStep(step: string, resolve: (param?: boolean) => void, status: logStatus, captcha = null) {
     try {
+      debug('开始检查步骤', { step, hasCaptcha: !!captcha });
       if (step !== 'captcha') {
+        debug('更新步骤状态为检查中');
         $(`#check${step}`).replaceWith(`<span id="check${step}"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>`);
       }
+
+      debug('发送检查请求');
       $.post('/api/check_step', {
         step,
         id: getURLParameter('id'),
         'g-recaptcha-response': captcha
       }, (json) => {
         resolve();
-        if (json.success && step !== 'captcha') {
-          $(`#check${step}`).replaceWith(`<span class="text-success" id="check${step}"><i class="fa fa-check"></i> Success</span>`);
-          status.success();
-        } else if (step !== 'captcha') {
-          $(`#check${step}`).replaceWith(`<a id="check${step}" href="javascript:checkStep(${step})"><i class="fa fa-question"></i> Check</a>`);
-          status.error(json.response?.error || 'Error');
-        }
-        if (json.response) {
-          if (json.response.captcha && json.success) {
-            showAlert('info', json.response.captcha);
-            captchaCheck();
-          } else if (json.response.captcha) {
-            showAlert('warning', json.response.captcha);
-            captchaCheck();
-          }
-          if (json.response.prize) {
-            showAlert('success', `Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">${json.response.prize}</h2>`);
+        debug('收到检查响应', { success: json.success });
+
+        if (step !== 'captcha') {
+          if (json.success) {
+            debug('步骤检查成功');
+            $(`#check${step}`).replaceWith(`<span class="text-success" id="check${step}"><i class="fa fa-check"></i> Success</span>`);
+            status.success();
+          } else {
+            debug('步骤检查失败');
+            $(`#check${step}`).replaceWith(`<a id="check${step}" href="javascript:checkStep(${step})"><i class="fa fa-question"></i> Check</a>`);
+            status.error(json.response?.error || 'Error');
           }
         }
+
+        if (!json.response) return;
+
+        if (json.response.prize) {
+          debug('获得奖品', { prize: json.response.prize });
+          showAlert('success', `Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">${json.response.prize}</h2>`);
+        }
+
+        if (!json.response.captcha) return;
+
+        debug('需要验证码');
+        if (json.success) {
+          showAlert('info', json.response.captcha);
+        } else {
+          showAlert('warning', json.response.captcha);
+        }
+        captchaCheck();
       }).fail(() => {
         resolve();
+        debug('请求失败');
         $(`#check${step}`).replaceWith(`<a id="check${step}" href="javascript:checkStep(${step})"><i class="fa fa-question"></i> Check</a>`);
         status.error('Error:0');
       });
     } catch (error) {
+      debug('检查步骤失败', { error });
       throwError(error as Error, 'prys.checkStep');
       resolve(false);
     }

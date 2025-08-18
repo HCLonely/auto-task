@@ -1,18 +1,18 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-21 10:01:05
- * @LastEditTime : 2022-02-06 11:39:25
+ * @LastEditTime : 2025-08-18 19:05:12
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/SweepWidget.ts
+ * @FilePath     : /auto-task/src/scripts/website/SweepWidget.ts
  * @Description  : https://sweepwidget.com/
  */
 
 import throwError from '../tools/throwError';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
-// import { getRedirectLink } from '../tools/tools';
 import Website from './Website';
 import { delay } from '../tools/tools';
+import { debug } from '../tools/debug';
 
 interface options {
   username: string
@@ -93,6 +93,9 @@ class SweepWidget extends Website {
    * 格式为：以 "http://" 或 "https://" 开头，后跟 "sweepwidget.com/view/" 和一个数字ID。
    */
   static test(): boolean {
+    const { host } = window.location;
+    const isMatch = /^sweepwidget\.com$/.test(host);
+    debug('检查网站匹配', { host, isMatch });
     return /^https?:\/\/sweepwidget\.com\/view\/[\d]+/.test(window.location.href);
   }
 
@@ -109,10 +112,13 @@ class SweepWidget extends Website {
    */
   async after(): Promise<void> {
     try {
+      debug('开始执行后续操作');
       if (!this.#checkLogin()) {
+        debug('检查登录失败');
         echoLog({}).warning(__('checkLoginFailed'));
       }
     } catch (error) {
+      debug('后续操作失败', { error });
       throwError(error as Error, 'SweepWidget.after');
     }
   }
@@ -132,16 +138,23 @@ class SweepWidget extends Website {
    */
   init(): boolean {
     try {
+      debug('开始初始化');
       const logStatus = echoLog({ text: __('initing') });
       if (!this.#checkLogin()) {
+        debug('需要登录');
         logStatus.warning(__('needLogin'));
         return false;
       }
-      if (!this.#getGiveawayId()) return false;
+      if (!this.#getGiveawayId()) {
+        debug('获取抽奖ID失败');
+        return false;
+      }
       this.initialized = true;
+      debug('初始化完成');
       logStatus.success();
       return true;
     } catch (error) {
+      debug('初始化失败', { error });
       throwError(error as Error, 'SweepWidget.init');
       return false;
     }
@@ -156,6 +169,7 @@ class SweepWidget extends Website {
    * 该方法用于分类任务，当前实现仅返回 true，表示任务分类过程已完成。
    */
   classifyTask(): boolean {
+    debug('任务分类完成');
     return true;
   }
 
@@ -167,69 +181,100 @@ class SweepWidget extends Website {
    * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法首先检查是否存在解锁奖励的主包装器。
-   * 如果不存在，则填写用户名和电子邮件，并点击登录按钮。
-   * 如果登录成功，则继续执行任务。
-   * 遍历每个任务，点击任务标题以展开详细信息。
-   * 获取任务链接并点击，模拟输入并点击验证按钮。
-   * 最后，检查任务是否完成，并在每个任务之间添加随机延迟。
+   * 该方法按以下步骤执行任务：
+   * 1. 登录检查和处理：
+   *    - 如果未显示奖励界面，执行登录流程
+   *    - 检查并填写用户名和邮箱字段
+   *    - 点击登录按钮（如果可见）
+   *    - 等待进入状态确认，失败则提前返回
+   * 2. 任务处理流程：
+   *    - 获取所有任务列表
+   *    - 对每个未完成的任务：
+   *      * 跳过已完成的任务（提前返回）
+   *      * 处理任务链接和点击事件
+   *      * 填写测试文本
+   *      * 处理验证按钮状态
+   *      * 等待任务完成确认
+   *      * 添加随机延迟
+   * 3. 完成处理：
+   *    - 记录成功状态
+   *    - 返回执行结果
    */
   async doTask(): Promise<boolean> {
     try {
+      debug('开始执行任务');
       if ($('#unlock_rewards_main_wrapper').length === 0) {
+        debug('未显示奖励界面，尝试登录');
         if ($('input[name="sw__login_name"]:visible').length > 0) {
+          debug('填写用户名', { username: this.options.username });
           $('input[name="sw__login_name"]').val(this.options.username);
         }
         if ($('input[name="sw__login_email"]:visible').length > 0) {
+          debug('填写邮箱', { email: this.options.email });
           $('input[name="sw__login_email"]').val(this.options.email);
         }
         if ($('#sw_login_button:visible').length > 0) {
+          debug('点击登录按钮');
           $('#sw_login_button')[0].click();
         }
-        if (!(await this.#checkEnter())) {
+        const isEntered = await this.#checkEnter();
+        if (!isEntered) {
+          debug('进入抽奖失败');
           return false;
         }
       }
+
       const logStatus = echoLog({ text: __('SweepWidgetNotice') });
-
-      // this.socialTasks = GM_getValue<swSocialTasks>(`swTasks-${this.giveawayId}`) || defaultTasks;
-
       const tasks = $('#sw_inner_entry_methods_l2_wrapper>div.sw_entry');
+      debug('找到任务列表', { count: tasks.length });
+
       for (const task of tasks) {
         const $task = $(task);
         if ($task.find('i.fa-check:visible').length > 0) {
+          debug('跳过已完成的任务');
           continue;
         }
+
         const title = $task.find('.sw_text_inner');
-        title[0].click();
         const aElement = $task.find('a.sw_link');
         const link = aElement.attr('href');
+        if (!link) {
+          debug('跳过无效链接的任务');
+          continue;
+        }
+
+        debug('处理任务', { title: title.text(), link });
+        title[0].click();
         aElement.attr('href', '#a').attr('target', '_self');
         aElement[0]?.click();
         await delay(300);
-        aElement.attr('href', link as string).attr('target', '_blank');
+        aElement.attr('href', link).attr('target', '_blank');
+
+        debug('填写测试文本');
         $task.find('input[type="text"]').val('test');
         const verifyBtn = $task.find('input.sw_verify');
+
         if (verifyBtn.prop('disabled') === true) {
+          debug('验证按钮被禁用，尝试重新激活');
           title[0].click();
           await delay(300);
           title[0].click();
           await delay(300);
         }
+
+        debug('点击验证按钮');
         $task.find('input.sw_verify').removeAttr('disabled')[0]?.click();
         await this.#checkFinish($task);
-        await delay(parseInt(`${(Math.random() * (3000 - 1000 + 1)) + 1000}`, 10));
+        const randomDelay = parseInt(`${(Math.random() * (3000 - 1000 + 1)) + 1000}`, 10);
+        debug('等待随机延迟', { delay: randomDelay });
+        await delay(randomDelay);
       }
 
+      debug('所有任务执行完成');
       logStatus.success();
-      /*
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gasSocialTasks;
-      this.socialTasks = this.undoneTasks;
-      if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
-      GM_setValue(`swTasks-${this.giveawayId}`, this.socialTasks);
-      */
       return true;
     } catch (error) {
+      debug('执行任务失败', { error });
       throwError(error as Error, 'SweepWidget.doTask');
       return false;
     }
@@ -249,11 +294,15 @@ class SweepWidget extends Website {
    */
   #checkLogin(): boolean {
     try {
+      debug('检查登录状态');
       if ($('#twitter_login_button').length > 0) {
+        debug('点击 Twitter 登录按钮');
         $('#twitter_login_button')[0].click();
       }
+      debug('登录检查完成');
       return true;
     } catch (error) {
+      debug('检查登录失败', { error });
       throwError(error as Error, 'SweepWidget.checkLogin');
       return false;
     }
@@ -274,14 +323,19 @@ class SweepWidget extends Website {
    */
   #getGiveawayId(): boolean {
     try {
+      debug('开始获取抽奖ID');
       const giveawayId = window.location.href.match(/\/view\/([\d]+)/)?.[1];
-      if (giveawayId) {
-        this.giveawayId = giveawayId;
-        return true;
+      if (!giveawayId) {
+        debug('获取抽奖ID失败');
+        echoLog({ text: __('getFailed', 'GiveawayId') });
+        return false;
       }
-      echoLog({ text: __('getFailed', 'GiveawayId') });
-      return false;
+
+      this.giveawayId = giveawayId;
+      debug('获取抽奖ID成功', { giveawayId });
+      return true;
     } catch (error) {
+      debug('获取抽奖ID出错', { error });
       throwError(error as Error, 'SweepWidget.getGiveawayId');
       return false;
     }
@@ -295,21 +349,30 @@ class SweepWidget extends Website {
    * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法使用定时器检查页面中是否存在解锁奖励的主包装器。
-   * 如果找到该元素，则清除定时器并解析 Promise 为 true。
-   * 如果在过程中发生错误，则记录错误信息并返回 false。
+   * 该方法使用定时器检查页面状态：
+   * 1. 每500毫秒检查一次解锁奖励的主包装器
+   * 2. 使用提前返回模式：
+   *    - 如果主包装器不存在，直接返回继续等待
+   *    - 一旦检测到主包装器，立即清除定时器并返回成功
+   * 3. 如果发生错误，记录错误并返回 false
    */
   async #checkEnter(): Promise<boolean> {
     try {
+      debug('开始检查是否进入抽奖');
       return new Promise((resolve) => {
         const checker = setInterval(() => {
-          if ($('#unlock_rewards_main_wrapper').length > 0) {
-            clearInterval(checker);
-            resolve(true);
+          if ($('#unlock_rewards_main_wrapper').length === 0) {
+            debug('等待进入抽奖...');
+            return;
           }
-        }, 500); // 设置检查间隔为500毫秒
+
+          debug('成功进入抽奖');
+          clearInterval(checker);
+          resolve(true);
+        }, 500);
       });
     } catch (error) {
+      debug('检查进入抽奖失败', { error });
       throwError(error as Error, 'SweepWidget.checkEnter');
       return false;
     }
@@ -324,21 +387,34 @@ class SweepWidget extends Website {
    * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
    *
    * @description
-   * 该方法使用定时器检查指定任务的完成状态。
-   * 如果任务的检查图标可见或输入框不可见，则清除定时器并解析 Promise 为 true。
-   * 如果在过程中发生错误，则记录错误信息并返回 false。
+   * 该方法使用定时器检查任务状态：
+   * 1. 每500毫秒检查一次任务状态
+   * 2. 使用提前返回模式，如果任务未完成则继续等待
+   * 3. 任务完成的判断条件：
+   *    - 检查图标可见
+   *    - 或输入框不可见
+   * 4. 满足完成条件时，清除定时器并返回成功
    */
   async #checkFinish($task: JQuery): Promise<boolean> {
     try {
+      debug('开始检查任务完成状态');
       return new Promise((resolve) => {
         const checker = setInterval(() => {
-          if ($task.find('i.fa-check:visible').length > 0 || $task.find('.sw_entry_input:visible').length === 0) {
-            clearInterval(checker);
-            resolve(true);
+          const isCompleted = $task.find('i.fa-check:visible').length > 0 ||
+              $task.find('.sw_entry_input:visible').length === 0;
+
+          if (!isCompleted) {
+            debug('等待任务完成...');
+            return;
           }
-        }, 500); // 设置检查间隔为500毫秒
+
+          debug('任务完成');
+          clearInterval(checker);
+          resolve(true);
+        }, 500);
       });
     } catch (error) {
+      debug('检查任务完成状态失败', { error });
       throwError(error as Error, 'SweepWidget.checkFinish');
       return false;
     }

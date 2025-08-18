@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-30 17:08:27
- * @LastEditTime : 2025-05-30 10:42:22
+ * @LastEditTime : 2025-08-18 19:11:43
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v4/src/locales/en-US.js
+ * @FilePath     : /auto-task/src/locales/en-US.js
  * @Description  : i18n英文
  */
 const data = {
@@ -180,10 +180,16 @@ const data = {
   updateHistory: '<a class="high-light" href="https://auto-task-doc.js.org/logs/" target="_blank">Click here</a>' +
     ' to view the historical update record.',
   AsfEnabled: 'Use ASF to do Steam related tasks (requires <a href="https://github.com/chr233/ASFEnhance" target="_blank">ASFEnhance</a> plugin)',
+  steamWeb: 'Use Steam Web API to do Steam related tasks simultaneously',
+  preferASF: 'Prefer ASF to do Steam related tasks',
   AsfIpcUrl: 'ASF IPC URL',
   AsfIpcPassword: 'ASF IPC Password',
+  curatorLimitNotice: 'Failed: Maybe the curator follow limit is reached, please <a class="high-light" href="https://store.steampowered.com/curators/home/" target="_blank">unfollow some curators</a> and try again',
+  unknownScriptHandler: 'Unknown script handler, compatibility unknown',
+  debugModeNotice: 'Detected DEBUG mode enabled, please close it if it is not needed!',
+  steamWebApiKey: 'Steam Web API Key<br>Used to detect game idle status, <a href="https://steamcommunity.com/dev/apikey" target="_blank">click to apply</a>',
 
-  // Steam
+  // SteamWeb
   groups: 'Group',
   officialGroups: 'Official Group',
   wishlists: 'Wishlist',
@@ -232,15 +238,16 @@ const data = {
   missParams: 'Missing parameters',
   gettingLicenses: 'Getting licenses...',
   requestingPlayTestAccess: 'Requesting play test access',
+  gettingDemoAppid: 'Getting demo appid for steam game',
   tryChangeAreaNotice: 'This function cannot detect whether the game is limited, so it will try to change the area before entering the library' +
     '. Failure to change the area will not affect the subsequent storage.',
   versionNotMatched: 'The script manager version is too low, requiring TamperMonkey >= 5.2.0 or TamperMonkey Beta >= 5.2.6196',
-  gettingUserLink: 'Getting steam user community link...',
+  gettingUserInfo: 'Getting steam user community credentials...',
   retry: 'Retry',
   owned: 'Owned',
   redirect: 'Redirect',
   noSubid: 'skip due to unrecognized',
-  noASFInstance: 'ASF is not enabled',
+  noASFInstance: 'ASF is not enabled, skip idle time task',
 
   // Steam ASF
   initingASF: 'Initing ASF...',
@@ -248,6 +255,11 @@ const data = {
   stoppingPlayGames: 'Stopping play games...',
   stopPlayTimeTitle: 'The Steam game idle time has finished. Do you want to end it?',
   stopPlayTimeText: 'Time out: %0 minutes',
+  ASFNotSupportted: 'The current function (%0) cannot be implemented by ASF, skipping',
+  checkingPlayGamesStatus: 'Checking play games status...',
+  gettingSteamId: 'Getting Steam ID...',
+  checkingPlayStatus: 'Checking play status...',
+  noPlayStatus: 'Game not running',
 
   // Discord
   servers: 'Server',
@@ -257,9 +269,10 @@ const data = {
   getDiscordAuthFailed: 'Failed to get Discord token, please check whether the Discord account is logged in',
   discordImportantNotice: 'Important Reminder! ! !',
   discordImportantNoticeText: 'Due to the background update of the Discord website, currently using this script to join a group may cause the Discord account to be forcibly logged out, and two-step verification is required to log in normally, please use it with caution! ! !',
-  continue: 'Continue',
-  skipDiscordTask: 'Skip',
-  continueAndDontRemindAgain: 'Continue without Reminders',
+  continueDiscordTask: 'Do Discord tasks this time.',
+  skipDiscordTask: 'Skip Discord tasks this time.',
+  continueAndDontRemindAgain: 'Always do Discord tasks and do not remind again.',
+  gettingDiscordXContextProperties: 'Getting Discord X context properties...',
 
   // Instagram
   users: 'User',
@@ -331,7 +344,7 @@ const data = {
   gettingGleamLink: 'Getting Gleam task link...',
   gleamTaskNotice: 'If this page has not been closed for a long time, please close it yourself after completing any task!',
   verifiedGleamTasks: 'Attempted to verify all tasks. If the verification fails, please try to verify manually or complete it!',
-  campaign: 'ReCAPTCHA detected, please complete it and re-verify the tasks!',
+  campaign: 'ReCAPTCHA detected, please complete it manually! 3 seconds later, re-verify...',
 
   // GiveawaySu
   gsNotice: 'In order to avoid getting the "0000-0000-0000" key, the "Grab Key" button has been hidden,' +
@@ -350,11 +363,17 @@ const data = {
 
   // Freeanywhere
   tasksNotCompleted: 'Tasks Not Completed',
-  notConnect: 'Social platform is not connectted, skip',
+  notConnect: 'Social platform is not connectted, skip task: %0',
   tgTaskNotice: 'The telegram task is checked, need to do it yourself!',
+  updatingUserData: 'Updating user data...',
+  gettingUserGames: 'Getting user games...',
 
   // opquests
   confirmingTask: 'Confirming task...',
-  unSupporttedTaskType: 'Unsupportted task type'
+  unSupporttedTaskType: 'Unsupportted task type: %0',
+  taskNotFinished: 'There are tasks not completed, do not get the key',
+
+  // throwError
+  logCopied: 'Full log has been copied to the clipboard, please go to feedback!'
 };
 export default data;

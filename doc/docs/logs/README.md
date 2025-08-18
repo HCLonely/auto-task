@@ -3,6 +3,42 @@ title: 更新日志
 lang: zh-CN
 ---
 
+## V5.0
+
+### V5.0.0
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.0)
+
+- 新增：支持Steam ASF与Web API同时使用，可在设置中配置优先性
+- 新增：Gleam 挂游戏时长任务识别
+- 新增：Opquests 挂游戏时长任务识别
+- 新增：Freeanywhere赠key状态检测
+- 新增：支持Freeanywhere挂游戏时长任务
+- 新增：支持Freeanywhere Youtube任务
+- 新增：支持Freeanywhere扩展功能（可不安装扩展，扩展更新后可能会失效）
+- 新增：资源加载失败提示
+- 新增：调用ASF挂游戏时长时判断游戏是否运行（需配置Steam Web API 密钥）
+- 修复：Twitter用户ID识别
+- 修复：Prys网站支持
+- 修复：GiveeClub部分任务多次重定向链接识别
+- 优化：ASF挂时长识别Demo APP([#51](https://github.com/HCLonely/auto-task/issues/51))
+- 优化：Steam鉴赏家关注上限提示([#46](https://github.com/HCLonely/auto-task/issues/46))
+- 优化：Steam社区凭证更新方式，避免通过新弹窗更新
+- 优化：Twitter任务同步执行，避免并发
+- 优化：Twitter添加forwarded-for请求头(#45, #53)
+- 优化：Gleam相关任务逻辑
+- 优化：Gleam更多任务类型识别
+- 优化：Discord任务提示([#37](https://github.com/HCLonely/auto-task/issues/37))
+- 优化：Discord相关任务认证内容，减少被ban风险（未大量测试）([#8](https://github.com/HCLonely/auto-task/issues/8))
+- 优化：Keylol折叠任务识别([#54](https://github.com/HCLonely/auto-task/issues/54))
+- 优化：Opquests验证方式([#38](https://github.com/HCLonely/auto-task/issues/38))
+- 优化：日志区域样式
+- 优化：Debug日志
+- 优化：按钮样式优化
+- 优化：移除多余的依赖
+- 移除：GiveawaySu特供版（不便维护）
+- 移除：Instagram支持
+
 ## V4.7
 
 ### V4.7.10

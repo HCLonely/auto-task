@@ -1,14 +1,15 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-15 10:48:42
- * @LastEditTime : 2022-05-18 09:49:49
+ * @LastEditTime : 2025-08-18 19:09:20
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/social/Social.ts
+ * @FilePath     : /auto-task/src/scripts/social/Social.ts
  * @Description  : Social通用模板
  */
 
 import throwError from '../tools/throwError';
 import { unique } from '../tools/tools';
+import { debug } from '../tools/debug';
 
 interface toggleParams {
   [name:string]:unknown
@@ -27,7 +28,7 @@ abstract class Social {
    * @type {socialTasks}
    * @description 当前的社交任务列表。
    */
-  tasks!: socialTasks;
+  protected tasks!: socialTasks;
 
   /**
    * 初始化社交功能。
@@ -79,23 +80,33 @@ abstract class Social {
     link2param: (link: string) => string | undefined
   ): Array<string> {
     try {
+      debug('开始获取实际参数', { name, linksCount: links.length, doTask });
       let realParams: Array<string> = [];
+
+      // 处理链接参数
       if (links.length > 0) {
-        realParams = [
-          ...realParams,
-          ...links
-            .map((link) => link2param(link))
-            .filter((link) => link) as Array<string>
-        ];
+        debug('处理链接参数');
+        const convertedLinks = links
+          .map((link) => link2param(link))
+          .filter((link): link is string => link !== undefined);
+        debug('链接参数处理结果', { convertedLinksCount: convertedLinks.length });
+        realParams = [...realParams, ...convertedLinks];
       }
-      if (!doTask && (this.tasks[name] as Array<string>).length > 0) {
-        realParams = [
-          ...realParams,
-          ...this.tasks[name] as Array<string>
-        ];
+
+      // 处理任务参数
+      if (!doTask && this.tasks[name]?.length) {
+        debug('处理任务参数', { taskCount: this.tasks[name].length });
+        realParams = [...realParams, ...this.tasks[name]];
       }
-      return unique(realParams);
+
+      const uniqueParams = unique(realParams);
+      debug('参数处理完成', {
+        originalCount: realParams.length,
+        uniqueCount: uniqueParams.length
+      });
+      return uniqueParams;
     } catch (error) {
+      debug('获取实际参数时发生错误', { error });
       throwError(error as Error, 'Social.getRealParams');
       return [];
     }

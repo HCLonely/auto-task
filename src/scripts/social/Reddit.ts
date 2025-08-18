@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-09-30 09:43:32
- * @LastEditTime : 2022-02-06 11:48:28
+ * @LastEditTime : 2025-08-18 19:09:30
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/social/Reddit.ts
+ * @FilePath     : /auto-task/src/scripts/social/Reddit.ts
  * @Description  : Reddit 订阅&取消订阅
  */
 
@@ -14,6 +14,7 @@ import httpRequest from '../tools/httpRequest';
 import __ from '../tools/i18n';
 import { unique, delay } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
+import { debug } from '../tools/debug';
 
 /**
  * @class Reddit
@@ -79,6 +80,7 @@ class Reddit extends Social {
     const defaultTasksTemplate: redditTasks = {
       reddits: []
     };
+    debug('初始化Reddit实例');
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.reddit || {}) };
   }
@@ -100,18 +102,23 @@ class Reddit extends Social {
    */
   async init(): Promise<boolean> {
     try {
+      debug('开始初始化Reddit模块');
       if (this.#initialized) {
+        debug('Reddit模块已初始化');
         return true;
       }
       const isVerified: boolean = await this.#updateAuth();
       if (isVerified) {
-        echoLog({}).success(__('initSuccess', 'Reddit'));
+        debug('Reddit授权验证成功');
+        echoLog({ before: '[Reddit]' }).success(__('initSuccess', 'Reddit'));
         this.#initialized = true;
         return true;
       }
-      echoLog({}).error(__('initFailed', 'Reddit'));
+      debug('Reddit初始化失败');
+      echoLog({ before: '[Reddit]' }).error(__('initFailed', 'Reddit'));
       return false;
     } catch (error) {
+      debug('Reddit初始化发生错误', { error });
       throwError(error as Error, 'Reddit.init');
       return false;
     }
@@ -137,18 +144,21 @@ class Reddit extends Social {
      * @return true: 切换成功 | false: 切换失败
     */
     try {
-      const logStatus = echoLog({ text: __('changingRedditVersion') });
+      debug('开始切换Reddit为新版');
+      const logStatus = echoLog({ text: __('changingRedditVersion'), before: '[Reddit]' });
       return await new Promise((resolve) => {
         const newTab = GM_openInTab('https://www.reddit.com/',
           { active: true, insert: true, setParent: true });
         // @ts-ignore
         newTab.name = 'ATv4_redditAuth';
         newTab.onclose = async () => {
+          debug('新版Reddit标签页已关闭');
           logStatus.success();
           resolve(await this.#updateAuth(true));
         };
       });
     } catch (error) {
+      debug('切换Reddit版本时发生错误', { error });
       throwError(error as Error, 'Reddit.useBeta');
       return false;
     }
@@ -173,7 +183,8 @@ class Reddit extends Social {
    */
   async #updateAuth(beta = false): Promise<boolean> {
     try {
-      const logStatus = echoLog({ text: __('updatingAuth', 'Reddit') });
+      debug('开始更新Reddit授权', { beta });
+      const logStatus = echoLog({ text: __('updatingAuth', 'Reddit'), before: '[Reddit]' });
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://www.reddit.com/',
         method: 'GET',
@@ -182,30 +193,43 @@ class Reddit extends Social {
           'Cache-Control': 'no-cache'
         }
       });
-      if (result === 'Success') {
-        if (data?.responseText.includes('www.reddit.com/login/')) {
-          logStatus.error(`Error:${__('loginReddit')}`, true);
-          return false;
-        }
-        if (data?.status === 200) {
-          if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
-            return await this.#useBeta();
-          }
-          const accessToken = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)?.[1];
-          if (accessToken) {
-            this.#auth = { token: accessToken };
-            logStatus.success();
-            return true;
-          }
-          logStatus.error('Error: Parameter "accessToken" not found!');
-          return false;
-        }
+
+      if (result !== 'Success') {
+        debug('获取Reddit页面失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.responseText.includes('www.reddit.com/login/')) {
+        debug('需要登录Reddit');
+        logStatus.error(`Error:${__('loginReddit')}`, true);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Reddit页面状态码错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
+        debug('检测到旧版Reddit，需要切换到新版');
+        return await this.#useBeta();
+      }
+
+      const accessToken = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)?.[1];
+      if (!accessToken) {
+        debug('未找到Reddit访问令牌');
+        logStatus.error('Error: Parameter "accessToken" not found!');
+        return false;
+      }
+
+      debug('成功获取Reddit访问令牌');
+      this.#auth = { token: accessToken };
+      logStatus.success();
+      return true;
     } catch (error) {
+      debug('更新Reddit授权时发生错误', { error });
       throwError(error as Error, 'Reddit.updateAuth');
       return false;
     }
@@ -233,15 +257,19 @@ class Reddit extends Social {
    */
   async #toggleTask({ name, doTask = true }: { name: string, doTask: boolean }): Promise<boolean> {
     try {
+      debug('开始处理Reddit任务', { name, doTask });
       if (!doTask && this.whiteList.reddits.includes(name)) {
-        echoLog({ type: 'whiteList', text: 'Reddit.undoTask', id: name });
+        debug('Reddit在白名单中，跳过取消订阅', { name });
+        echoLog({ type: 'whiteList', text: 'Reddit.undoTask', id: name, before: '[Reddit]' });
         return true;
       }
+
       let type: string = doTask ? 'joiningReddit' : 'leavingReddit';
       if (/^u_/.test(name)) {
         type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
       }
-      const logStatus = echoLog({ type, text: name });
+      debug('任务类型', { type, name });
+      const logStatus = echoLog({ type, text: name, before: '[Reddit]' });
 
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
@@ -249,22 +277,31 @@ class Reddit extends Social {
         headers: { authorization: `Bearer ${this.#auth.token}`, 'content-type': 'application/x-www-form-urlencoded' },
         data: $.param({
           action: doTask ? 'sub' : 'unsub',
-          sr_name: name, // eslint-disable-line camelcase
-          api_type: 'json' // eslint-disable-line camelcase
+          sr_name: name,
+          api_type: 'json'
         })
       });
-      if (result === 'Success') {
-        if (data?.status === 200) {
-          logStatus.success();
-          if (doTask) this.tasks.reddits = unique([...this.tasks.reddits, name]);
-          return true;
-        }
+
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Reddit任务状态码错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
         return false;
       }
-      logStatus.error(`${result}:${statusText}(${status})`);
-      return false;
+
+      debug('Reddit任务处理成功', { name, doTask });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.reddits = unique([...this.tasks.reddits, name]);
+      }
+      return true;
     } catch (error) {
+      debug('处理Reddit任务时发生错误', { error });
       throwError(error as Error, 'Reddit.toggleTask');
       return false;
     }
@@ -293,37 +330,49 @@ class Reddit extends Social {
   }: {
     doTask: boolean,
     redditLinks?: Array<string>
-    }): Promise<boolean> {
+  }): Promise<boolean> {
     try {
+      debug('开始处理Reddit链接任务', { doTask, redditLinksCount: redditLinks.length });
       if (!this.#initialized) {
-        echoLog({ text: __('needInit') });
+        debug('Reddit模块未初始化');
+        echoLog({ text: __('needInit'), before: '[Reddit]' });
         return false;
       }
-      const prom: Array<Promise<boolean>> = [];
+
       if (
         (doTask && !globalOptions.doTask.reddit.reddits) ||
         (!doTask && !globalOptions.undoTask.reddit.reddits)
       ) {
-        echoLog({ type: 'globalOptionsSkip', text: 'reddit.reddits' });
-      } else {
-        const realReddits: Array<string> = this.getRealParams('reddits', redditLinks, doTask,
-          (link) => {
-            const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
-            const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
-            if (userName) {
-              return name || userName;
-            }
-            return name;
-          });
-        if (realReddits.length > 0) {
-          for (const name of realReddits) {
-            prom.push(this.#toggleTask({ name, doTask }));
-            await delay(1000);
-          }
-        }
+        debug('根据全局选项跳过Reddit任务', { doTask });
+        echoLog({ type: 'globalOptionsSkip', text: 'reddit.reddits', before: '[Reddit]' });
+        return true;
       }
+
+      const realReddits: Array<string> = this.getRealParams('reddits', redditLinks, doTask,
+        (link) => {
+          const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
+          const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
+          if (userName) {
+            return name || userName;
+          }
+          return name;
+        });
+      debug('处理后的Reddit列表', { count: realReddits.length, reddits: realReddits });
+
+      if (realReddits.length === 0) {
+        debug('没有需要处理的Reddit链接');
+        return true;
+      }
+
+      const prom: Array<Promise<boolean>> = [];
+      for (const name of realReddits) {
+        prom.push(this.#toggleTask({ name, doTask }));
+        await delay(1000);
+      }
+
       return await Promise.all(prom).then(() => true);
     } catch (error) {
+      debug('处理Reddit链接任务时发生错误', { error });
       throwError(error as Error, 'Reddit.toggle');
       return false;
     }

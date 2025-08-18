@@ -25,9 +25,9 @@
 
 ### V${version}
 
-[Release](https://github.com/HCLonely/auto-task-v4/releases/tag/v${version})
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v${version})
 
-- ${change.join('\n- ').replace(/\(#([\d]+?)\)/g, '([#$1](https://github.com/HCLonely/auto-task-v4/issues/$1))')}`));
+- ${change.join('\n- ').replace(/\(#([\d]+?)\)/g, '([#$1](https://github.com/HCLonely/auto-task/issues/$1))')}`));
   } else {
     fs.writeFileSync('./doc/docs/logs/README.md', currentContext.replace(/---[\s]+?##/, `---
 
@@ -35,9 +35,9 @@
 
 ### V${version}
 
-[Release](https://github.com/HCLonely/auto-task-v4/releases/tag/v${version})
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v${version})
 
-- ${change.join('\n- ').replace(/\(#([\d]+?)\)/g, '([#$1](https://github.com/HCLonely/auto-task-v4/issues/$1))')}
+- ${change.join('\n- ').replace(/\(#([\d]+?)\)/g, '([#$1](https://github.com/HCLonely/auto-task/issues/$1))')}
 
 ##`));
   }

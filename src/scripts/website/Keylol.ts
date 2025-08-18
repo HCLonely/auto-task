@@ -1,19 +1,17 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-15 13:58:41
- * @LastEditTime : 2022-02-10 19:41:42
+ * @LastEditTime : 2025-08-18 19:06:11
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-new/src/scripts/website/Keylol.ts
+ * @FilePath     : /auto-task/src/scripts/website/Keylol.ts
  * @Description  : https://keylol.com/f319-1
  */
-
-// eslint-disable-next-line
-/// <reference path = "Keylol.d.ts" />
 
 import throwError from '../tools/throwError';
 import Website from './Website';
 import leftKeyChecker from './leftKeyChecker';
 import __ from '../tools/i18n';
+import { debug } from '../tools/debug';
 
 const defaultTasksTemplate: keylolSocialTasks = {
   steam: {
@@ -30,9 +28,9 @@ const defaultTasksTemplate: keylolSocialTasks = {
   discord: {
     serverLinks: []
   },
-  instagram: {
-    userLinks: []
-  },
+  // instagram: {
+  //   userLinks: []
+  // },
   vk: {
     nameLinks: []
   },
@@ -52,6 +50,20 @@ const defaultTasksTemplate: keylolSocialTasks = {
   }
 };
 const defaultTasks = JSON.stringify(defaultTasksTemplate);
+
+// 添加更详细的类型定义
+type TaskAction = 'do' | 'undo';
+type SocialPlatform = keyof keylolSocialTasks;
+
+// 首先定义更精确的类型
+type TaskLinks = string[];
+
+interface TaskButton extends HTMLElement {
+  getAttribute(name: 'data-social'): SocialPlatform | null;
+  getAttribute(name: 'data-type'): string | null;
+  getAttribute(name: 'data-link'): string | null;
+  getAttribute(name: 'selected'): string | null;
+}
 
 /**
  * Keylol 类用于处理 Keylol 网站的自动任务。
@@ -111,6 +123,32 @@ class Keylol extends Website {
     'invertSelect'
   ];
 
+  // 首先添加配置常量
+  private static readonly CONFIG = {
+    LINK_PATTERNS: {
+      DISCORD: /^https?:\/\/discord\.com\/invite\/.+/,
+      REDDIT: /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/,
+      INSTAGRAM: /^https:\/\/www\.instagram\.com\/.+/,
+      TWITTER: /^https:\/\/(twitter|x)\.com\/.+/,
+      TWITTER_RETWEET: /https:\/\/(twitter|x)\.com\/.*?\/status\/[\d]+/,
+      TWITCH: /^https:\/\/(www\.)?twitch\.tv\/.+/,
+      VK: /^https:\/\/vk\.com\/.+/,
+      STEAM_CURATOR: /curator\/[\d]+/,
+      STEAM_PUBLISHER: /(publisher|developer|franchise)\/.+/,
+      STEAM_NEWS: /news(hub)?\/app\/[\d]+\/view\/[\d]+/,
+      STEAM_APP: /app\/[\d]+/,
+      STEAM_GROUP: /groups\/.+/,
+      STEAM_ANNOUNCEMENT: /announcements\/detail\/[\d]+/,
+      YOUTUBE: /youtube\.com/
+    },
+    SELECTORS: {
+      MAIN_POST: {
+        KEYLOL: '#postlist>div[id^="post_"]:first',
+        DEFAULT: 'div.container'
+      }
+    }
+  } as const;
+
   /**
    * 检查当前域名是否为 Keylol 网站的静态方法
    *
@@ -122,12 +160,12 @@ class Keylol extends Website {
    * 如果该链接的 href 属性包含 '319' 或 '234'，则返回 true；否则返回 false。
    */
   static test(): boolean {
-    return window.location.host === 'keylol.com' && (!!$('.subforum_left_title_left_up a').eq(3)
-      .attr('href')
-      ?.includes('319') ||
-        !!$('.subforum_left_title_left_up a').eq(3)
-          .attr('href')
-          ?.includes('234'));
+    const { host } = window.location;
+    const link = $('.subforum_left_title_left_up a').eq(3)
+      .attr('href');
+    const isMatch = host === 'keylol.com' && (!!link?.includes('319') || !!link?.includes('234'));
+    debug('检查网站匹配', { host, link, isMatch });
+    return isMatch;
   }
 
   /**
@@ -140,6 +178,7 @@ class Keylol extends Website {
    * 当前实现仅返回 true，表示初始化过程已完成。
    */
   init(): boolean {
+    debug('初始化 Keylol');
     return true;
   }
 
@@ -159,187 +198,259 @@ class Keylol extends Website {
    */
   after(): void {
     try {
-      // 筛选可见元素
-      const selector = this.name === 'Keylol' ? '#postlist>div[id^="post_"]:first' : 'div.container';
-      const mainPost = $(selector);
-      const discordLinks = mainPost.find('a[href*="discord.com"]:visible');
-      const redditLinks = mainPost.find('a[href*="reddit.com"]:visible');
-      const insLinks = mainPost.find('a[href*="instagram.com"]:visible');
-      const twitterLinks = mainPost.find('a[href*="twitter.com"]:visible,a[href*="x.com"]:visible');
-      const twitchLinks = mainPost.find('a[href*="twitch.tv"]:visible');
-      const vkLinks = mainPost.find('a[href*="vk.com"]:visible');
-      const steamStoreLinks = mainPost.find('a[href*="store.steampowered.com"]:visible');
-      const steamCommunityLinks = mainPost.find('a[href*="steamcommunity.com"]:visible');
-      const ytbLinks = mainPost.find('a[href*="youtube.com"]:visible');
+      debug('开始处理页面链接');
+      const mainPost = $(this.name === 'Keylol' ?
+        Keylol.CONFIG.SELECTORS.MAIN_POST.KEYLOL :
+        Keylol.CONFIG.SELECTORS.MAIN_POST.DEFAULT);
 
-      // 处理 Discord 链接
-      if (discordLinks.length > 0) {
-        for (const discordLink of discordLinks) {
-          const link = $(discordLink).attr('href');
-          if (!(link && /^https?:\/\/discord\.com\/invite\/.+/.test(link))) continue;
-          this.#addBtn(discordLink, 'discord', 'serverLinks', link);
-        }
-      }
+      // 一次性获取所有链接
+      const allLinks = mainPost.find('a');
+      debug('找到所有链接', { count: allLinks.length });
 
-      // 处理 Reddit 链接
-      if (redditLinks.length > 0) {
-        for (const redditLink of redditLinks) {
-          const link = $(redditLink).attr('href');
-          if (!(link && /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/.test(link))) continue;
-          this.#addBtn(redditLink, 'reddit', 'redditLinks', link);
-        }
-      }
+      // 一次性过滤所有链接
+      allLinks.each((_, link) => {
+        const $link = $(link);
+        const href = $link.attr('href');
+        if (!href) return;
 
-      // 处理 Instagram 链接
-      if (insLinks.length > 0) {
-        for (const insLink of insLinks) {
-          const link = $(insLink).attr('href');
-          if (!(link && /^https:\/\/www\.instagram\.com\/.+/.test(link))) continue;
-          this.#addBtn(insLink, 'instagram', 'userLinks', link);
-        }
-      }
-
-      // 处理 Twitter 链接
-      if (twitterLinks.length > 0) {
-        for (const twitterLink of twitterLinks) {
-          const link = $(twitterLink).attr('href');
-          if (!(link && /^https:\/\/twitter\.com\/.+/.test(link))) continue;
-          if (/https:\/\/twitter\.com\/.*?\/status\/[\d]+/.test(link)) {
-            this.#addBtn(twitterLink, 'twitter', 'retweetLinks', link);
-          } else {
-            this.#addBtn(twitterLink, 'twitter', 'userLinks', link);
-          }
-        }
-      }
-
-      // 处理 Twitch 链接
-      if (twitchLinks.length > 0) {
-        for (const twitchLink of twitchLinks) {
-          const link = $(twitchLink).attr('href');
-          if (!(link && /^https:\/\/(www\.)?twitch\.tv\/.+/.test(link))) continue;
-          this.#addBtn(twitchLink, 'twitch', 'channelLinks', link);
-        }
-      }
-
-      // 处理 VK 链接
-      if (vkLinks.length > 0) {
-        for (const vkLink of vkLinks) {
-          const link = $(vkLink).attr('href');
-          if (!(link && /^https:\/\/vk\.com\/.+/.test(link))) continue;
-          this.#addBtn(vkLink, 'vk', 'nameLinks', link);
-        }
-      }
-
-      // 处理 Steam 商店链接
-      if (steamStoreLinks.length > 0) {
-        for (const steamStoreLink of steamStoreLinks) {
-          const link = $(steamStoreLink).attr('href');
-          if (!link) continue;
-          if (/curator\/[\d]+/.test(link)) {
-            this.#addBtn(steamStoreLink, 'steam', 'curatorLinks', link);
-          } else if (/(publisher|developer|franchise)\/.+/.test(link)) {
-            this.#addBtn(steamStoreLink, 'steam', 'curatorLikeLinks', link);
-          } else if (/news(hub)?\/app\/[\d]+\/view\/[\d]+/.test(link)) {
-            this.#addBtn(steamStoreLink, 'steam', 'announcementLinks', link);
-          } else if (/app\/[\d]+/.test(link)) {
-            this.#addBtn(steamStoreLink, 'steam', 'followLinks', link);
-            this.#addBtn(steamStoreLink, 'steam', 'wishlistLinks', link);
-          }
-        }
-      }
-
-      // 处理 Steam 社区链接
-      if (steamCommunityLinks.length > 0) {
-        for (const steamCommunityLink of steamCommunityLinks) {
-          const link = $(steamCommunityLink).attr('href');
-          if (!link) continue;
-          if (/groups\/.+/.test(link)) {
-            this.#addBtn(steamCommunityLink, 'steam', 'groupLinks', link);
-          } else if (/announcements\/detail\/[\d]+/.test(link)) {
-            this.#addBtn(steamCommunityLink, 'steam', 'announcementLinks', link);
-          }
-        }
-      }
-
-      // 处理 YouTube 链接
-      if (ytbLinks.length > 0) {
-        for (const ytbLink of ytbLinks) {
-          const link = $(ytbLink).attr('href');
-          if (!link) continue;
-          this.#addBtn(ytbLink, 'youtube', 'channelLinks', link);
-          this.#addBtn(ytbLink, 'youtube', 'likeLinks', link);
-        }
-      }
+        this.#classifyAndProcessLink($link, href);
+      });
 
       // 处理抽奖链接
-      // eslint-disable-next-line max-len
-      const giveawayLinks = mainPost.find('a[href*="giveaway.su/giveaway/view/"]:visible,a[href*="givee.club/"]:visible,a[href*="gleam.io/"]:visible,a[href*="www.indiedb.com/giveaways/"]:visible,a[href*="key-hub.eu/giveaway/"]:visible,a[href*="opquests.com/quests/"]:visible,a[href*="itch.io/s/"]:visible');
-      if (giveawayLinks.length > 0) {
-        for (const giveawayLink of giveawayLinks) {
-          const link = $(giveawayLink).attr('href');
-          if (!link) continue;
-          leftKeyChecker.classify(link).then((status) => {
-            if (!status) return;
-            if (/^Active/.test(status)) {
-              $(`a[href="${link}"]`).after(`<font class="auto-task-giveaway-status active" title="${__('Active')}">${status}</font>`);
-              return;
-            }
-            $(`a[href="${link}"]`).after(`<font class="auto-task-giveaway-status not-active" title="${__(status)}">${status}</font>`);
-          })
-            .catch((error) => {
-              throwError(error, 'keylol.after -> leftKeyChecker');
-            });
-        }
-      }
+      debug('开始处理抽奖链接');
+      this.#processGiveawayLinks(mainPost);
 
-      // 处理 ASF 和 SteamDB 链接
+      // 处理 Keylol 特定的链接
       if (this.name === 'Keylol') {
-        const asfLinks = mainPost.find('a[href^="#asf"]:visible');
-        if (asfLinks.length > 0) {
-          for (const asfLink of asfLinks) {
-            const link = $(asfLink).attr('href');
-            if (!link) continue;
-            this.#addBtn($(`a[href="${link}"]`).after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>')
-              .next()[0], 'steam', 'licenseLinks', `appid-${link.replace('#asf', '')}`);
-          }
-        }
-        const subLinks = mainPost.find('a[href*="steamdb.info/sub/"]:visible');
-        if (subLinks.length > 0) {
-          for (const subLink of subLinks) {
-            const link = $(subLink).attr('href');
-            if (!link) continue;
-            const subid = link.match(/^https:\/\/steamdb\.info\/sub\/([\d]+)/)?.[1];
-            if (!subid) continue;
-            this.#addBtn(subLink, 'steam', 'licenseLinks', `subid-${subid}`);
-          }
-        }
-        const asfLinks2 = mainPost.find('.blockcode:contains("addlicense"):visible');
-        if (asfLinks2.length > 0) {
-          for (const asfLink of asfLinks2) {
-            // const subid = [...asfLink.innerText.matchAll(/s\/([\d]+)/g)].map((arr) => arr[1]);
-            const appid = [...asfLink.innerText.matchAll(/a(pp)?\/([\d]+)/g)].map((matched) => matched?.[2]).filter((id) => id) || [];
-            if (appid.length > 0) {
-              this.#addBtn($(asfLink).children('em')[0], 'steam', 'licenseLinks', `appid-${appid.join(',')}`);
-            }
-
-            const subid = asfLink.innerText.match(/[\d]+/g)?.filter((matched) => !appid.includes(matched));
-            if (!subid || subid.length === 0) continue;
-            this.#addBtn($(asfLink).children('em')[0], 'steam', 'licenseLinks', `subid-${subid.join(',')}`);
-          }
-        }
+        debug('开始处理 Keylol 特定链接');
+        this.#processKeylolSpecificLinks(mainPost);
       }
 
-      if ($('#threadindex').length > 0) {
-        const [targetNode] = $('#postlist').children('div[id^="post_"]');
-        const config = { childList: true };
-        const observer = new MutationObserver(() => {
-          observer.disconnect();
-          this.after();
-        });
-        observer.observe(targetNode, config);
-      }
+      // 设置 MutationObserver
+      debug('设置 MutationObserver');
+      this.#setupMutationObserver();
     } catch (error) {
+      debug('处理页面链接失败', { error });
       throwError(error as Error, 'keylol.after');
+    }
+  }
+
+  /**
+   * 分类并处理单个链接
+   */
+  #classifyAndProcessLink($link: JQuery<HTMLElement>, href: string): void {
+    debug('分类处理链接', { href });
+    const { LINK_PATTERNS } = Keylol.CONFIG;
+
+    // 使用 switch-case 替代多个 if-else，提高性能
+    switch (true) {
+        case LINK_PATTERNS.DISCORD.test(href):
+          debug('发现 Discord 链接');
+          this.#addBtn($link[0], 'discord', 'serverLinks', href);
+          break;
+
+        case LINK_PATTERNS.REDDIT.test(href):
+          debug('发现 Reddit 链接');
+          this.#addBtn($link[0], 'reddit', 'redditLinks', href);
+          break;
+
+          // case LINK_PATTERNS.INSTAGRAM.test(href):
+          //   debug('发现 Instagram 链接');
+          //   this.#addBtn($link[0], 'instagram', 'userLinks', href);
+          //   break;
+
+        case LINK_PATTERNS.TWITTER.test(href):
+          if (LINK_PATTERNS.TWITTER_RETWEET.test(href)) {
+            debug('发现 Twitter 转发链接');
+            this.#addBtn($link[0], 'twitter', 'retweetLinks', href);
+          } else {
+            debug('发现 Twitter 用户链接');
+            this.#addBtn($link[0], 'twitter', 'userLinks', href);
+          }
+          break;
+
+        case LINK_PATTERNS.TWITCH.test(href):
+          debug('发现 Twitch 链接');
+          this.#addBtn($link[0], 'twitch', 'channelLinks', href);
+          break;
+
+        case LINK_PATTERNS.VK.test(href):
+          debug('发现 VK 链接');
+          this.#addBtn($link[0], 'vk', 'nameLinks', href);
+          break;
+
+        case href.includes('store.steampowered.com'):
+          debug('发现 Steam 商店链接');
+          this.#processSteamStoreLink($link[0], href);
+          break;
+
+        case href.includes('steamcommunity.com'):
+          debug('发现 Steam 社区链接');
+          this.#processSteamCommunityLink($link[0], href);
+          break;
+
+        case LINK_PATTERNS.YOUTUBE.test(href):
+          debug('发现 YouTube 链接');
+          this.#addBtn($link[0], 'youtube', 'channelLinks', href);
+          this.#addBtn($link[0], 'youtube', 'likeLinks', href);
+          break;
+    }
+  }
+
+  /**
+   * 处理 Steam 商店链接
+   */
+  #processSteamStoreLink(element: HTMLElement, href: string): void {
+    debug('处理 Steam 商店链接', { href });
+    const { LINK_PATTERNS } = Keylol.CONFIG;
+
+    if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
+      debug('发现 Steam 鉴赏家链接');
+      this.#addBtn(element, 'steam', 'curatorLinks', href);
+    } else if (LINK_PATTERNS.STEAM_PUBLISHER.test(href)) {
+      debug('发现 Steam 发行商链接');
+      this.#addBtn(element, 'steam', 'curatorLikeLinks', href);
+    } else if (LINK_PATTERNS.STEAM_NEWS.test(href)) {
+      debug('发现 Steam 新闻链接');
+      this.#addBtn(element, 'steam', 'announcementLinks', href);
+    } else if (LINK_PATTERNS.STEAM_APP.test(href)) {
+      debug('发现 Steam 应用链接');
+      this.#addBtn(element, 'steam', 'followLinks', href);
+      this.#addBtn(element, 'steam', 'wishlistLinks', href);
+    }
+  }
+
+  /**
+   * 处理 Steam 社区链接
+   */
+  #processSteamCommunityLink(element: HTMLElement, href: string): void {
+    debug('处理 Steam 社区链接', { href });
+    const { LINK_PATTERNS } = Keylol.CONFIG;
+
+    if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
+      debug('发现 Steam 组链接');
+      this.#addBtn(element, 'steam', 'groupLinks', href);
+    } else if (LINK_PATTERNS.STEAM_ANNOUNCEMENT.test(href)) {
+      debug('发现 Steam 公告链接');
+      this.#addBtn(element, 'steam', 'announcementLinks', href);
+    }
+  }
+
+  /**
+   * 处理抽奖链接
+   */
+  #processGiveawayLinks(mainPost: JQuery<HTMLElement>): void {
+    debug('开始处理抽奖链接');
+    const giveawayLinks = mainPost.find(
+      'a[href*="giveaway.su/giveaway/view/"],' +
+      'a[href*="givee.club/"],' +
+      'a[href*="gleam.io/"],' +
+      'a[href*="www.indiedb.com/giveaways/"],' +
+      'a[href*="key-hub.eu/giveaway/"],' +
+      'a[href*="opquests.com/quests/"],' +
+      'a[href*="freeanywhere.net/game?n="],' +
+      'a[href*="itch.io/s/"]:visible'
+    );
+
+    debug('找到抽奖链接', { count: giveawayLinks.length });
+
+    giveawayLinks.each((_, link) => {
+      const href = $(link).attr('href');
+      if (!href) return;
+
+      debug('检查抽奖链接状态', { href });
+      leftKeyChecker.classify(href)
+        .then((status) => {
+          if (!status) return;
+
+          const statusClass = /^Active/.test(status) ? 'active' : 'not-active';
+          const statusTitle = /^Active/.test(status) ? __('Active') : __(status);
+
+          debug('更新抽奖链接状态', { href, status, statusClass });
+          $(`a[href="${href}"]`).after(
+            `<font class="auto-task-giveaway-status ${statusClass}" title="${statusTitle}">${status}</font>`
+          );
+        })
+        .catch((error) => {
+          debug('检查抽奖链接状态失败', { href, error });
+          throwError(error, 'keylol.after -> leftKeyChecker');
+        });
+    });
+  }
+
+  /**
+   * 处理 Keylol 特定的链接
+   */
+  #processKeylolSpecificLinks(mainPost: JQuery<HTMLElement>): void {
+    debug('开始处理 Keylol 特定链接');
+
+    // 处理 ASF 链接
+    const asfLinks = mainPost.find('a[href^="#asf"]:visible');
+    debug('找到 ASF 链接', { count: asfLinks.length });
+
+    asfLinks.each((_, link) => {
+      const href = $(link).attr('href');
+      if (!href) return;
+
+      debug('处理 ASF 链接', { href });
+      const $link = $(`a[href="${href}"]`);
+      $link.after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>');
+      this.#addBtn($link.next()[0], 'steam', 'licenseLinks', `appid-${href.replace('#asf', '')}`);
+    });
+
+    // 处理 SteamDB 链接
+    const steamDbLinks = mainPost.find('a[href*="steamdb.info/sub/"]:visible');
+    debug('找到 SteamDB 链接', { count: steamDbLinks.length });
+
+    steamDbLinks.each((_, link) => {
+      const href = $(link).attr('href');
+      if (!href) return;
+
+      const subid = href.match(/^https:\/\/steamdb\.info\/sub\/([\d]+)/)?.[1];
+      if (!subid) return;
+
+      debug('处理 SteamDB 链接', { href, subid });
+      this.#addBtn(link, 'steam', 'licenseLinks', `subid-${subid}`);
+    });
+
+    // 处理 ASF 代码块
+    const asfBlocks = mainPost.find('.blockcode:contains("addlicense"):visible');
+    debug('找到 ASF 代码块', { count: asfBlocks.length });
+
+    asfBlocks.each((_, block) => {
+      const appid = [...block.innerText.matchAll(/a(pp)?\/([\d]+)/g)]
+        .map((matched) => matched?.[2])
+        .filter((id) => id);
+
+      if (appid.length > 0) {
+        debug('处理 ASF 代码块 appid', { appid });
+        this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `appid-${appid.join(',')}`);
+      }
+
+      const subid = block.innerText.match(/[\d]+/g)?.filter((matched) => !appid.includes(matched));
+      if (subid?.length) {
+        debug('处理 ASF 代码块 subid', { subid });
+        this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `subid-${subid.join(',')}`);
+      }
+    });
+  }
+
+  /**
+   * 设置 MutationObserver
+   */
+  #setupMutationObserver(): void {
+    debug('设置 MutationObserver');
+    if ($('#threadindex').length > 0) {
+      const [elementTargetNode] = $('#postlist').children('div[id^="post_"]');
+      const elementObserver = new MutationObserver(() => {
+        debug('检测到 DOM 变化，重新处理页面');
+        elementObserver.disconnect();
+        this.after();
+      });
+      elementObserver.observe(elementTargetNode, {
+        childList: true
+      });
+      debug('MutationObserver 设置完成');
     }
   }
 
@@ -358,29 +469,46 @@ class Keylol extends Website {
    * 根据操作类型，将链接添加到相应的任务列表中。
    * 最后，去重任务列表并返回成功状态。
    */
-  classifyTask(action: 'do' | 'undo'): boolean {
+  classifyTask(action: TaskAction): boolean {
     try {
+      debug('开始分类任务', { action });
       this.socialTasks = JSON.parse(defaultTasks);
       this.undoneTasks = JSON.parse(defaultTasks);
-      const selectedBtns = $('.auto-task-keylol[selected="selected"]:visible');
-      for (const btn of selectedBtns) {
-        const button = $(btn);
-        const social = button.attr('data-social');
-        const type = button.attr('data-type');
-        const link = button.attr('data-link');
+      const selectedBtns = $('.auto-task-keylol[selected="selected"]:visible').get() as TaskButton[];
+      debug('找到选中的按钮', { count: selectedBtns.length });
 
-        if (!(social && type && link)) continue;
-        // @ts-ignore
-        if (action === 'do') this.undoneTasks[social][type].push(link);
-        // @ts-ignore
-        if (action === 'undo') this.socialTasks[social][type].push(link);
+      for (const btn of selectedBtns) {
+        const social = btn.getAttribute('data-social');
+        const type = btn.getAttribute('data-type');
+        const link = btn.getAttribute('data-link');
+
+        debug('处理任务按钮', { social, type, link });
+
+        if (!(social && type && link)) {
+          debug('跳过无效任务按钮');
+          continue;
+        }
+        if (!(social in this.undoneTasks)) {
+          debug('跳过未知社交平台', { social });
+          continue;
+        }
+
+        if (action === 'do' && type in this.undoneTasks[social as SocialPlatform]) {
+          debug('添加到未完成任务', { social, type, link });
+          (this.undoneTasks[social as SocialPlatform][type as keyof typeof this.undoneTasks[SocialPlatform]] as TaskLinks).push(link);
+        }
+        if (action === 'undo' && type in this.socialTasks[social as SocialPlatform]) {
+          debug('添加到社交任务', { social, type, link });
+          (this.socialTasks[social as SocialPlatform][type as keyof typeof this.socialTasks[SocialPlatform]] as TaskLinks).push(link);
+        }
       }
 
       this.undoneTasks = this.uniqueTasks(this.undoneTasks) as keylolSocialTasks;
       this.socialTasks = this.uniqueTasks(this.socialTasks) as keylolSocialTasks;
-      if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
+      debug('任务分类完成', { undoneTasks: this.undoneTasks, socialTasks: this.socialTasks });
       return true;
     } catch (error) {
+      debug('任务分类失败', { error });
       throwError(error as Error, 'Keylol.classifyTask');
       return false;
     }
@@ -399,8 +527,12 @@ class Keylol extends Website {
    */
   selectAll(): void {
     try {
-      $('.auto-task-keylol:visible').attr('selected', 'selected');
+      debug('选择所有可见任务');
+      const tasks = $('.auto-task-keylol:visible');
+      tasks.attr('selected', 'selected');
+      debug('选择完成', { count: tasks.length });
     } catch (error) {
+      debug('选择所有任务失败', { error });
       throwError(error as Error, 'Keylol.selectAll');
     }
   }
@@ -418,8 +550,12 @@ class Keylol extends Website {
    */
   selectNone(): void {
     try {
-      $('.auto-task-keylol:visible').removeAttr('selected');
+      debug('取消选择所有可见任务');
+      const tasks = $('.auto-task-keylol:visible');
+      tasks.removeAttr('selected');
+      debug('取消选择完成', { count: tasks.length });
     } catch (error) {
+      debug('取消选择所有任务失败', { error });
       throwError(error as Error, 'Keylol.selectNone');
     }
   }
@@ -437,10 +573,19 @@ class Keylol extends Website {
    */
   invertSelect(): void {
     try {
-      $('.auto-task-keylol:visible').each((index, element) => {
-        element.getAttribute('selected') ? element.removeAttribute('selected') : element.setAttribute('selected', 'selected');
+      debug('反转选择所有可见任务');
+      const tasks = $('.auto-task-keylol:visible');
+      tasks.each((_, element) => {
+        const $element = $(element);
+        if ($element.attr('selected')) {
+          $element.removeAttr('selected');
+        } else {
+          $element.attr('selected', 'selected');
+        }
       });
+      debug('反转选择完成', { count: tasks.length });
     } catch (error) {
+      debug('反转选择任务失败', { error });
       throwError(error as Error, 'Keylol.invertSelect');
     }
   }
@@ -463,11 +608,27 @@ class Keylol extends Website {
    */
   #addBtn(before: HTMLElement, social: string, linkType: string, link: string): void {
     try {
-      $(before).after('<a href="javascript:void(0);" class="auto-task-keylol" target="_self"' +
-        ' onclick="this.getAttribute(\'selected\') ? this.removeAttribute(\'selected\') : this.setAttribute(\'selected\', \'selected\')"' +
-        ` data-social="${social}" data-type="${linkType}" data-link="${link}">${linkType.replace('Links', '')}</a>`);
+      debug('添加任务按钮', { social, linkType, link });
+      if (!before || !social || !linkType || !link) {
+        debug('跳过无效按钮参数');
+        return;
+      }
+
+      const button = $('<a>', {
+        href: 'javascript:void(0);',
+        class: 'auto-task-keylol',
+        target: '_self',
+        'data-social': social,
+        'data-type': linkType,
+        'data-link': link,
+        text: linkType.replace('Links', ''),
+        onclick: 'this.getAttribute("selected") ? this.removeAttribute("selected") : this.setAttribute("selected", "selected")'
+      });
+      $(before).after(button);
+      debug('按钮添加成功');
     } catch (error) {
-      throwError(error as Error, 'keylol.addBtn');
+      debug('添加按钮失败', { error, social, linkType });
+      throwError(error as Error, `keylol.addBtn: ${social}/${linkType}`);
     }
   }
 }

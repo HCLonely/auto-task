@@ -1,6 +1,6 @@
 # Auto-Task
 
-[![License](https://img.shields.io/github/license/HCLonely/auto-task-v4?label=License)](LICENSE)
+[![License](https://img.shields.io/github/license/HCLonely/auto-task?label=License)](LICENSE)
 [![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0%20%3C%3D23.2.0-brightgreen)](package.json)
 
 一个功能强大的自动化任务处理脚本，专门用于处理各种赠Key站的任务。
@@ -71,7 +71,7 @@ npm run build
 
 ---
 
-[![Repobeats analytics image](https://repobeats.axiom.co/api/embed/e5c7c311a4d91763154bfbee13c9186759c29ae4.svg "Repobeats analytics image")](https://github.com/HCLonely/auto-task-v4/pulse)
+[![Repobeats analytics image](https://repobeats.axiom.co/api/embed/e5c7c311a4d91763154bfbee13c9186759c29ae4.svg "Repobeats analytics image")](https://github.com/HCLonely/auto-task/pulse)
 
 ---
 如果这个项目对您有帮助，请考虑给它一个 Star ⭐️

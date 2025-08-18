@@ -11,7 +11,7 @@ Please follow the [Feedback Suggestion Format](#Feedback-Format) for feedback in
 
 ## Feedback method
 
-- Feedback by [Github issues](https://github.com/HCLonely/auto-task-v4/issues/new/choose)
+- Feedback by [Github issues](https://github.com/HCLonely/auto-task/issues/new/choose)
 
 ## Feedback Format
 

@@ -7,7 +7,7 @@ lang: zh-CN
 
 ## 反馈方式
 
-- 通过[Github issues](https://github.com/HCLonely/auto-task-v4/issues/new)进行反馈
+- 通过[Github issues](https://github.com/HCLonely/auto-task/issues/new)进行反馈
 
 ## 反馈格式
 
@@ -17,7 +17,7 @@ lang: zh-CN
 
 - 提交 BUG 前请先确认：
   1. 提交 BUG 前已将脚本更新至最新版本但没有解决
-  2. 提交 BUG 前请确认已查看[常见问题](/FAQ/)，[Github issues](https://github.com/HCLonely/auto-task-v4/issues)但没有解决
+  2. 提交 BUG 前请确认已查看[常见问题](/FAQ/)，[Github issues](https://github.com/HCLonely/auto-task/issues)但没有解决
 - 提交 BUG 时请提供以下信息：
   1. 使用的浏览器和脚本管理器。例：`环境：Chrome + Tampermonkey`
   2. 出错的网站，最好提供具体网址。 例：`网址：https://gamehag.com/giveaway/918`

@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-26 15:44:54
- * @LastEditTime : 2025-08-18 19:02:12
+ * @LastEditTime : 2025-08-18 20:06:22
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/index.ts
  * @Description  : 入口文件
@@ -377,7 +377,7 @@ const loadScript = async (): Promise<void> => {
     debug('注册全局菜单命令');
     GM_registerMenuCommand(__('changeGlobalOptions'), () => { changeGlobalOptions('swal'); });
     GM_registerMenuCommand(__('settingPage'), () => {
-      GM_openInTab('https://auto-task-doc.js.org/setting.html', { active: true });
+      GM_openInTab('https://auto-task.hclonely.com/setting.html', { active: true });
     });
   }
 

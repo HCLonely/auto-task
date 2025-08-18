@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.0
-          name: 5.0.0
-          body: "- 新增：支持Steam ASF与Web API同时使用，可在设置中配置优先性\r\n- 新增：Gleam 挂游戏时长任务识别\r\n- 新增：Opquests 挂游戏时长任务识别\r\n- 新增：Freeanywhere赠key状态检测\r\n- 新增：支持Freeanywhere挂游戏时长任务\r\n- 新增：支持Freeanywhere Youtube任务\r\n- 新增：支持Freeanywhere扩展功能（可不安装扩展，扩展更新后可能会失效）\r\n- 新增：资源加载失败提示\r\n- 新增：调用ASF挂游戏时长时判断游戏是否运行（需配置Steam Web API 密钥）\r\n- 修复：Twitter用户ID识别\r\n- 修复：Prys网站支持\r\n- 修复：GiveeClub部分任务多次重定向链接识别\r\n- 优化：ASF挂时长识别Demo APP(#51)\r\n- 优化：Steam鉴赏家关注上限提示(#46)\r\n- 优化：Steam社区凭证更新方式，避免通过新弹窗更新\r\n- 优化：Twitter任务同步执行，避免并发\r\n- 优化：Twitter添加forwarded-for请求头(#45, #53)\r\n- 优化：Gleam相关任务逻辑\r\n- 优化：Gleam更多任务类型识别\r\n- 优化：Discord任务提示(#37)\r\n- 优化：Discord相关任务认证内容，减少被ban风险（未大量测试）(#8)\r\n- 优化：Keylol折叠任务识别(#54)\r\n- 优化：Opquests验证方式(#38)\r\n- 优化：日志区域样式\r\n- 优化：Debug日志\r\n- 优化：按钮样式优化\r\n- 优化：移除多余的依赖\r\n- 移除：GiveawaySu特供版（不便维护）\r\n- 移除：Instagram支持"
+          tag_name: v5.0.1
+          name: 5.0.1
+          body: '- 修复：部分v4链接更换'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

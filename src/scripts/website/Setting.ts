@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-25 19:00:53
- * @LastEditTime : 2025-08-18 19:05:24
+ * @LastEditTime : 2025-08-18 20:00:49
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Setting.ts
  * @Description  : 设置页面
@@ -87,7 +87,7 @@ class Setting {
   /**
    * 检查当前域名和路径是否为设置页面的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task.js.org' 且路径为 '/setting.html'，则返回 true；否则返回 false。
+   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/setting.html'，则返回 true；否则返回 false。
    *
    * @description
    * 该方法通过比较当前窗口的域名和路径来判断是否为设置页面。
@@ -95,7 +95,7 @@ class Setting {
    */
   static test(): boolean {
     const { host, pathname } = window.location;
-    const isMatch = ['auto-task.hclonely.com', 'auto-task.js.org'].includes(host) && pathname === '/setting.html';
+    const isMatch = ['auto-task.hclonely.com', 'auto-task-doc.js.org'].includes(host) && pathname === '/setting.html';
     debug('检查设置页面匹配', { host, pathname, isMatch });
     return isMatch;
   }

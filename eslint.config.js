@@ -1,9 +1,9 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2025-05-30 16:17:59
- * @LastEditTime : 2025-08-03 11:25:10
+ * @LastEditTime : 2025-08-18 19:57:26
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task-v5/eslint.config.js
+ * @FilePath     : /auto-task/eslint.config.js
  * @Description  :
  */
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -60,7 +60,7 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
         indent: ["error", 2, {
             SwitchCase: 2
         }],
-        "linebreak-style": ["error", "windows"],
+        "linebreak-style": "off",
         quotes: ["error", "single"],
         semi: ["error", "always"],
 

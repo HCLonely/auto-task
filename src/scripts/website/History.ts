@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-28 18:53:41
- * @LastEditTime : 2025-08-18 19:06:40
+ * @LastEditTime : 2025-08-18 20:00:58
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/History.ts
  * @Description  : 任务历史页面
@@ -24,7 +24,7 @@ import { debug } from '../tools/debug';
  * @property {Array<string>} buttons - 包含可用操作的按钮名称数组。
  *
  * @method static test - 检查当前域名和路径是否为历史记录页面。
- * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
+ * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
  *
  * @method before - 在执行操作之前清空页面的主体内容并添加类。
  * @returns {void} 无返回值。
@@ -56,7 +56,7 @@ class History extends Keylol {
   /**
    * 检查当前域名和路径是否为历史记录页面的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
+   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
    *
    * @description
    * 该方法通过比较当前窗口的域名和路径来判断是否为历史记录页面。
@@ -65,7 +65,7 @@ class History extends Keylol {
   static test(): boolean {
     try {
       const { host, pathname } = window.location;
-      const isMatch = ['auto-task.hclonely.com', 'auto-task.js.org'].includes(host) && pathname === '/history.html';
+      const isMatch = ['auto-task.hclonely.com', 'auto-task-doc.js.org'].includes(host) && pathname === '/history.html';
       debug('检查是否为历史记录页面', { host, pathname, isMatch });
       return isMatch;
     } catch (error) {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.0.0
+// @version            5.0.1
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -9,9 +9,9 @@
 // @run-at             document-start
 // @homepage           https://auto-task-doc.js.org/
 // @supportURL         https://github.com/HCLonely/auto-task/issues
-// @updateURL          https://github.com/HCLonely/auto-task-v4/raw/main/dist/auto-task.compatibility.user.js
-// @installURL         https://github.com/HCLonely/auto-task-v4/raw/main/dist/auto-task.compatibility.user.js
-// @downloadURL        https://github.com/HCLonely/auto-task-v4/raw/main/dist/auto-task.compatibility.user.js
+// @updateURL          https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.compatibility.user.js
+// @installURL         https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.compatibility.user.js
+// @downloadURL        https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.compatibility.user.js
 // @icon               https://auto-task.hclonely.com/favicon.ico
 // @tag                games
 
@@ -46,6 +46,8 @@
 
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/history.html
+// @include            https://auto-task-doc.js.org/setting.html
+// @include            https://auto-task-doc.js.org/history.html
 
 // @grant              GM_setValue
 // @grant              GM_getValue
@@ -175,7 +177,7 @@ const missingDependencies = neededDependencies.filter(dependency => typeof windo
 if (missingDependencies.length > 0) {
   console.log('%c%s', 'color:red', `[Auto-Task] 脚本加载失败，缺少的依赖：${missingDependencies.join(', ')}`);
   if (confirm(`[Auto-Task] 脚本依赖加载失败，请刷新重试或安装全依赖版本，是否前往安装全依赖版本？\n缺少的依赖：${missingDependencies.join(', ')}`)) {
-    GM_openInTab('https://github.com/HCLonely/auto-task-v4/raw/main/dist/auto-task.compatibility.all.user.js', { active: true });
+    GM_openInTab('https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.compatibility.all.user.js', { active: true });
   }
 }
 
@@ -15579,7 +15581,7 @@ if (missingDependencies.length > 0) {
     }
     static test() {
       const {host: host, pathname: pathname} = window.location;
-      const isMatch = [ 'auto-task.hclonely.com', 'auto-task.js.org' ].includes(host) && pathname === '/setting.html';
+      const isMatch = [ 'auto-task.hclonely.com', 'auto-task-doc.js.org' ].includes(host) && pathname === '/setting.html';
       debug('检查设置页面匹配', {
         host: host,
         pathname: pathname,
@@ -15873,7 +15875,7 @@ if (missingDependencies.length > 0) {
     static test() {
       try {
         const {host: host, pathname: pathname} = window.location;
-        const isMatch = [ 'auto-task.hclonely.com', 'auto-task.js.org' ].includes(host) && pathname === '/history.html';
+        const isMatch = [ 'auto-task.hclonely.com', 'auto-task-doc.js.org' ].includes(host) && pathname === '/history.html';
         debug('检查是否为历史记录页面', {
           host: host,
           pathname: pathname,
@@ -18106,7 +18108,7 @@ if (missingDependencies.length > 0) {
         changeGlobalOptions('swal');
       }));
       GM_registerMenuCommand(I18n('settingPage'), (() => {
-        GM_openInTab('https://auto-task-doc.js.org/setting.html', {
+        GM_openInTab('https://auto-task.hclonely.com/setting.html', {
           active: true
         });
       }));

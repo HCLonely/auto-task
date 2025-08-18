@@ -46,6 +46,8 @@
 
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/history.html
+// @include            https://auto-task-doc.js.org/setting.html
+// @include            https://auto-task-doc.js.org/history.html
 
 // @grant              GM_setValue
 // @grant              GM_getValue

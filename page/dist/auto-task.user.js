@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.0.1
+// @version            5.0.2
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -69,6 +69,8 @@
 // @grant              window.sessionStorage
 // @grant              window.focus
 
+// @connect            auto-task.hclonely.com
+// @connect            auto-task-doc.js.org
 // @connect            cdn.jsdelivr.net
 // @connect            store.steampowered.com
 // @connect            steamcommunity.com
@@ -105,6 +107,7 @@
 // @connect            itch.io
 // @connect            auto-task.hclonely.com
 // @connect            giveawayhopper.com
+// @connect            freeanywhere.net
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
@@ -577,6 +580,7 @@ if (missingDependencies.length > 0) {
     skipDiscordTask: '本次跳过Discord任务',
     continueAndDontRemindAgain: '总是执行Discord任务且不再提醒',
     gettingDiscordXContextProperties: '正在获取Discord加群参数',
+    captchaNeeded: '检测到人机验证，请手动完成！',
     users: '用户',
     loginIns: '请先<a href="https://www.instagram.com/accounts/login/" target="_blank">登录Instagram</a>',
     insBanned: '您的Instagram账户已被封禁',
@@ -888,6 +892,7 @@ if (missingDependencies.length > 0) {
     skipDiscordTask: 'Skip Discord tasks this time.',
     continueAndDontRemindAgain: 'Always do Discord tasks and do not remind again.',
     gettingDiscordXContextProperties: 'Getting Discord X context properties...',
+    captchaNeeded: 'Captcha detected, please complete it manually!',
     users: 'User',
     loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">log in to Instagram</a>',
     insBanned: 'Your Instagram account has been banned',
@@ -1983,6 +1988,11 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
+          if (status === 400) {
+            debug('加入Discord服务器失败，状态码为400，需完成人机验证');
+            logStatus.error(I18n('captchaNeeded'));
+            return false;
+          }
           logStatus.error(`${result}:${statusText}(${status})`);
           return false;
         }

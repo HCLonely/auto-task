@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-20 19:38:41
- * @LastEditTime : 2025-08-18 19:12:11
+ * @LastEditTime : 2025-08-20 09:21:16
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/locales/zh-CN.js
  * @Description  : i18n中文
@@ -256,6 +256,7 @@ const data = {
   skipDiscordTask: '本次跳过Discord任务',
   continueAndDontRemindAgain: '总是执行Discord任务且不再提醒',
   gettingDiscordXContextProperties: '正在获取Discord加群参数',
+  captchaNeeded: '检测到人机验证，请手动完成！',
 
   // Instagram
   users: '用户',

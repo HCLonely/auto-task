@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-09-28 15:03:10
- * @LastEditTime : 2025-08-18 19:09:50
+ * @LastEditTime : 2025-08-20 09:21:02
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/social/Discord.ts
  * @Description  : Discord 加入&移除服务器
@@ -292,6 +292,11 @@ class Discord extends Social {
 
       if (result !== 'Success' || data?.status !== 200) {
         debug('加入Discord服务器失败', { result, statusText, status });
+        if (status === 400) {
+          debug('加入Discord服务器失败，状态码为400，需完成人机验证');
+          logStatus.error(__('captchaNeeded'));
+          return false;
+        }
         logStatus.error(`${result}:${statusText}(${status})`);
         return false;
       }

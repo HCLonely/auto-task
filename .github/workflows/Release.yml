@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.1
-          name: 5.0.1
-          body: '- 修复：部分v4链接更换'
+          tag_name: v5.0.2
+          name: 5.0.2
+          body: '- 优化：Discord人机验证提示'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

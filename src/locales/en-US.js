@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-30 17:08:27
- * @LastEditTime : 2025-08-18 19:11:43
+ * @LastEditTime : 2025-08-20 09:21:42
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/locales/en-US.js
  * @Description  : i18n英文
@@ -273,6 +273,7 @@ const data = {
   skipDiscordTask: 'Skip Discord tasks this time.',
   continueAndDontRemindAgain: 'Always do Discord tasks and do not remind again.',
   gettingDiscordXContextProperties: 'Getting Discord X context properties...',
+  captchaNeeded: 'Captcha detected, please complete it manually!',
 
   // Instagram
   users: 'User',

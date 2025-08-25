@@ -69,6 +69,8 @@
 // @grant              window.sessionStorage
 // @grant              window.focus
 
+// @connect            auto-task.hclonely.com
+// @connect            auto-task-doc.js.org
 // @connect            cdn.jsdelivr.net
 // @connect            store.steampowered.com
 // @connect            steamcommunity.com
@@ -105,6 +107,7 @@
 // @connect            itch.io
 // @connect            auto-task.hclonely.com
 // @connect            giveawayhopper.com
+// @connect            freeanywhere.net
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js

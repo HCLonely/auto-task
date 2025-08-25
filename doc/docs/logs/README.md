@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.2
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.2)
+
+- 优化：Discord人机验证提示
+
 ### V5.0.1
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.1)

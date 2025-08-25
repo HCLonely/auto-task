@@ -1,8 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "change": [
-    "修复：部分v4链接更换"
+    "优化：Discord人机验证提示"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

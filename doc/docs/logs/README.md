@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.3
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.3)
+
+- 优化：Gleam人机验证完成后重新验证所有未完成的任务
+
 ### V5.0.2
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.2)

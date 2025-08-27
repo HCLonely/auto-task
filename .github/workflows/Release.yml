@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.2
-          name: 5.0.2
-          body: '- 优化：Discord人机验证提示'
+          tag_name: v5.0.3
+          name: 5.0.3
+          body: '- 优化：Gleam人机验证完成后重新验证所有未完成的任务'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

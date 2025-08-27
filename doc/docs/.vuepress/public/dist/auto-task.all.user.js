@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.0.2
+// @version            5.0.3
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -14246,14 +14246,16 @@ if (missingDependencies.length > 0) {
           await delay(3e3);
           logStatus.warning(I18n('retry'));
           await this.#checkCampaign();
-          return;
+          return true;
         }
         logStatus?.success();
+        return false;
       } catch (error) {
         debug('检测人机验证失败', {
           error: error
         });
         throwError(error, 'Gleam.checkCampaign');
+        return false;
       }
     }
     async verifyTask() {
@@ -14265,7 +14267,10 @@ if (missingDependencies.length > 0) {
         const tasks = $('.entry-content .entry-method');
         unsafeWindow._OxA = '_OxA';
         for (const task of tasks) {
-          await this.#checkCampaign();
+          const campaign = await this.#checkCampaign();
+          if (campaign) {
+            return this.verifyTask();
+          }
           const $task = $(task);
           if ($task.find('i.fa-check').length > 0) {
             debug('跳过已完成的任务');

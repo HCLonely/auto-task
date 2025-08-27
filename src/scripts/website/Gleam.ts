@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2025-08-18 19:06:46
+ * @LastEditTime : 2025-08-27 09:05:46
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Gleam.ts
  * @Description  : https://gleam.io
@@ -475,7 +475,7 @@ class Gleam extends Website {
   /**
    * 检查人机验证的私有异步方法
    *
-   * @returns {Promise<void>} 无返回值的Promise。
+   * @returns {Promise<boolean>} 如果检测到人机验证，则返回 true；否则返回 false。
    *
    * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
    *
@@ -487,7 +487,7 @@ class Gleam extends Website {
    * 3. 递归调用自身直到验证消失
    * 验证通过后记录成功状态。
    */
-  async #checkCampaign(): Promise<void> {
+  async #checkCampaign(): Promise<boolean> {
     try {
       debug('检测人机验证');
       let logStatus: logStatus | undefined;
@@ -497,12 +497,14 @@ class Gleam extends Website {
         await delay(3000);
         logStatus.warning(__('retry'));
         await this.#checkCampaign();
-        return;
+        return true;
       }
       logStatus?.success();
+      return false;
     } catch (error) {
       debug('检测人机验证失败', { error });
       throwError(error as Error, 'Gleam.checkCampaign');
+      return false;
     }
   }
 
@@ -535,7 +537,8 @@ class Gleam extends Website {
       unsafeWindow._OxA = '_OxA';
 
       for (const task of tasks) {
-        await this.#checkCampaign();
+        const campaign = await this.#checkCampaign();
+        if (campaign) return this.verifyTask();
 
         const $task = $(task);
         if ($task.find('i.fa-check').length > 0) {

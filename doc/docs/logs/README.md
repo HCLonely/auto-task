@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.4
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.4)
+
+- 修复：Twitter任务报错
+
 ### V5.0.3
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.3)

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.0.3
+// @version            5.0.4
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -3219,11 +3219,11 @@ if (missingDependencies.length > 0) {
       url: 'https://x.com',
       method: 'GET'
     });
-    return [ ...rawHtml.data.matchAll(/"(loader\.FwdForSdk-[^"]+?)":"([^"]+?)"/g) ];
+    return [ ...rawHtml.data.matchAll(/"(loader\.FwdForSdk)":"([^"]+?)"/g) ];
   };
   const fwdForSdkExpoter = async url => {
     const {data: data} = await axiosGM.get(url);
-    const regex = /Uint8Array\(n\)\.set\(\[(.*?)\]\)/;
+    const regex = /Uint8Array\(\w\)\.set\(\[(.*?)\]\)/;
     if (!regex.test(data)) {
       return false;
     }

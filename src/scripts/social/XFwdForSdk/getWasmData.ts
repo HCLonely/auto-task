@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2025-06-11 16:40:24
- * @LastEditTime : 2025-08-18 19:10:06
+ * @LastEditTime : 2025-09-18 11:26:43
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/social/XFwdForSdk/getWasmData.ts
  * @Description  : 获取 FwdForSdk 的 wasm 数据
@@ -13,11 +13,11 @@ const getFwdForSdkUrl = async () => {
     url: 'https://x.com',
     method: 'GET'
   });
-  return [...rawHtml.data.matchAll(/"(loader\.FwdForSdk-[^"]+?)":"([^"]+?)"/g)];
+  return [...rawHtml.data.matchAll(/"(loader\.FwdForSdk)":"([^"]+?)"/g)];
 };
 const fwdForSdkExpoter = async (url: string) => {
   const { data } = await axiosGM.get(url);
-  const regex = /Uint8Array\(n\)\.set\(\[(.*?)\]\)/;
+  const regex = /Uint8Array\(\w\)\.set\(\[(.*?)\]\)/;
   if (!regex.test(data)) {
     return false;
   }

@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2025-08-27 09:05:46
+ * @LastEditTime : 2025-10-02 23:11:23
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Gleam.ts
  * @Description  : https://gleam.io
@@ -376,12 +376,14 @@ class Gleam extends Website {
             continue;
           }
 
-          if (/play.*hours/gi.test(taskText)) {
+          if (/play[\w\W]*hours/gi.test(taskText)) {
             const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
-            if (!link) continue;
+            const time = [...taskText.matchAll(/(\d+?(\.\d+)?)\s*?hour/gi)];
+            if (!link || !time[0]?.[1]) continue;
 
-            if (action === 'undo') this.socialTasks.steam.playTimeLinks.push(link);
-            if (action === 'do') this.undoneTasks.steam.playTimeLinks.push(link);
+            const trueTime = parseFloat(time[0][1]) * 60;
+            // if (action === 'undo') this.socialTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
+            if (action === 'do') this.undoneTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
             continue;
           }
 

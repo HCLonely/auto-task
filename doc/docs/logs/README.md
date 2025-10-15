@@ -5,6 +5,14 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.5
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.5)
+
+- 新增：Opquests Discord任务支持
+- 修复：Gleam挂时长任务识别
+- 优化：ASF挂时长完成后的弹窗
+
 ### V5.0.4
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.4)

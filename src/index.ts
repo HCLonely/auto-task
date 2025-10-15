@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-26 15:44:54
- * @LastEditTime : 2025-08-18 20:06:22
+ * @LastEditTime : 2025-10-15 10:21:46
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/index.ts
  * @Description  : 入口文件
@@ -271,12 +271,16 @@ const checkSteamASFStatus = async (): Promise<void> => {
   }
 
   const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 60000);
-  await Swal.fire({
+  const { value } = await Swal.fire({
     title: __('stopPlayTimeTitle'),
     text: __('stopPlayTimeText', stopPlayTimeMinutes.toString()),
     icon: 'warning',
-    confirmButtonText: __('confirm')
+    confirmButtonText: __('confirm'),
+    cancelButtonText: __('cancel'),
+    showCancelButton: true
   });
+
+  if (!value) return;
 
   let steamASF: SteamASF | null = new SteamASF(globalOptions.ASF);
   try {

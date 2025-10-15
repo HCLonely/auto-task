@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-18 13:31:23
- * @LastEditTime : 2025-08-18 19:05:52
+ * @LastEditTime : 2025-10-02 22:42:10
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Opquests.ts
  * @Description  : https://opquests.com/
@@ -14,6 +14,7 @@ import __ from '../tools/i18n';
 import { globalOptions } from '../globalOptions';
 import httpRequest from '../tools/httpRequest';
 import { debug } from '../tools/debug';
+import { getRedirectLink } from '../tools/tools';
 
 const defaultTasks: oqSocialTasks = {
   steam: {
@@ -291,6 +292,17 @@ class Opquests extends Website {
             this.undoneTasks.discord.serverLinks.push(link);
             continue;
           }
+        }
+        if (link.includes('//discord.gg/') && /join/gim.test(taskDes)) {
+          debug('获取重定向链接', { link });
+          const taskLink = await getRedirectLink(link, false);
+          if (!taskLink) {
+            debug('获取重定向链接失败');
+            continue;
+          }
+          debug('添加 Discord 加入任务');
+          this.undoneTasks.discord.serverLinks.push(taskLink);
+          continue;
         }
 
         if (/clash\.gg/.test(link)) {

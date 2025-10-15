@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.0.4
+// @version            5.0.5
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -13778,6 +13778,19 @@ if (missingDependencies.length > 0) {
               continue;
             }
           }
+          if (link.includes('//discord.gg/') && /join/gim.test(taskDes)) {
+            debug('获取重定向链接', {
+              link: link
+            });
+            const taskLink = await getRedirectLink(link, false);
+            if (!taskLink) {
+              debug('获取重定向链接失败');
+              continue;
+            }
+            debug('添加 Discord 加入任务');
+            this.undoneTasks.discord.serverLinks.push(taskLink);
+            continue;
+          }
           if (/clash\.gg/.test(link)) {
             debug('跳过不支持的 Clash.gg 任务');
             echoLog({}).warning(`${I18n('unSupporttedTaskType')}: ${taskDes}(${link})`);
@@ -14214,16 +14227,15 @@ if (missingDependencies.length > 0) {
               }
               continue;
             }
-            if (/play.*hours/gi.test(taskText)) {
+            if (/play[\w\W]*hours/gi.test(taskText)) {
               const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
-              if (!link) {
+              const time = [ ...taskText.matchAll(/(\d+?(\.\d+)?)\s*?hour/gi) ];
+              if (!link || !time[0]?.[1]) {
                 continue;
               }
-              if (action === 'undo') {
-                this.socialTasks.steam.playTimeLinks.push(link);
-              }
+              const trueTime = parseFloat(time[0][1]) * 60;
               if (action === 'do') {
-                this.undoneTasks.steam.playTimeLinks.push(link);
+                this.undoneTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
               }
               continue;
             }
@@ -17979,12 +17991,17 @@ if (missingDependencies.length > 0) {
       return;
     }
     const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 6e4);
-    await Swal.fire({
+    const {value: value} = await Swal.fire({
       title: I18n('stopPlayTimeTitle'),
       text: I18n('stopPlayTimeText', stopPlayTimeMinutes.toString()),
       icon: 'warning',
-      confirmButtonText: I18n('confirm')
+      confirmButtonText: I18n('confirm'),
+      cancelButtonText: I18n('cancel'),
+      showCancelButton: true
     });
+    if (!value) {
+      return;
+    }
     let steamASF = new SteamASF(globalOptions.ASF);
     try {
       const isInitialized = await steamASF.init();

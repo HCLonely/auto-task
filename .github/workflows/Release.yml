@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.5
-          name: 5.0.5
-          body: "- 新增：Opquests Discord任务支持\r\n- 修复：Gleam挂时长任务识别\r\n- 优化：ASF挂时长完成后的弹窗"
+          tag_name: v5.0.6
+          name: 5.0.6
+          body: '- 修复：读取配置时增加类型检查(#57)'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

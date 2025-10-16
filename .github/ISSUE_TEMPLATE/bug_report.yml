@@ -9,15 +9,15 @@ body:
       options:
         - label: 我尝试了多次确认问题可以复现 | I tried several times to confirm that the problem can be reproduced.
           required: true
-        - label: 我已经将脚本更新到了[最新版](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task-v4.user.js) | I have updated this script to the [latest version](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task-v4.user.js).
+        - label: 我已经将脚本更新到了[最新版](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task.user.js) | I have updated this script to the [latest version](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task.user.js).
           required: true
-        - label: 我尝试过使用[兼容版](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task-v4.compatibility.user.js)但没有解决 | I have updated this script to the [compatible version](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task-v4.compatibility.user.js) but not solved.
+        - label: 我尝试过使用[兼容版](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task.compatibility.user.js)但没有解决 | I have updated this script to the [compatible version](https://github.com/HCLonely/auto-task-new/raw/main/dist/auto-task.compatibility.user.js) but not solved.
           required: true
         - label: 我已经查看了[常见问题解决办法](https://auto-task-doc.js.org/FAQ/)但没有解决 | I have seen [FAQ](https://auto-task-doc.js.org/en/FAQ/) but not solved.
           required: true
         - label: 我已经查看了[用前必读](https://auto-task-doc.js.org/guide/#用前必读)但没有解决 | I have seen [READ ME FIRST](https://auto-task-doc.js.org/en/guide/#read-me-first) but not solved.
           required: true
-        - label: 我已经查看了[issues](https://github.com/HCLonely/auto-task-v4/issues)但没有解决 | I have seen [issues](https://github.com/HCLonely/auto-task-v4/issues) but not solved.
+        - label: 我已经查看了[issues](https://github.com/HCLonely/auto-task/issues)但没有解决 | I have seen [issues](https://github.com/HCLonely/auto-task/issues) but not solved.
           required: true
     validations:
       required: true

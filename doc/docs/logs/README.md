@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.6
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.6)
+
+- 修复：读取配置时增加类型检查([#57](https://github.com/HCLonely/auto-task/issues/57))
+
 ### V5.0.5
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.5)

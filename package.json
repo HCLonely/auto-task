@@ -1,10 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.0.5",
+  "version": "5.0.6",
   "change": [
-    "新增：Opquests Discord任务支持",
-    "修复：Gleam挂时长任务识别",
-    "优化：ASF挂时长完成后的弹窗"
+    "修复：读取配置时增加类型检查(#57)"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.0.5
+// @version            5.0.6
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -364,7 +364,11 @@ if (missingDependencies.length > 0) {
         if (isObject(value) && isObject(targetValue)) {
           result[key] = deepMerge(targetValue, value);
         } else if (value !== undefined) {
-          result[key] = value;
+          if (typeof value === typeof targetValue) {
+            result[key] = value;
+          } else {
+            console.log('%c%s', 'color:yellow;background:black', `Auto-Task[Warning]: Type mismatch for key "${key}". Expected ${typeof targetValue}, got ${typeof value}. Using default value.`);
+          }
         }
       }
       return result;

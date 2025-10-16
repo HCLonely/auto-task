@@ -219,7 +219,12 @@ const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
       if (isObject(value) && isObject(targetValue)) {
         result[key as keyof T] = deepMerge(targetValue, value) as T[keyof T];
       } else if (value !== undefined) {
-        result[key as keyof T] = value as T[keyof T];
+        // 检查类型是否一致，如果不一致则使用target的值
+        if (typeof value === typeof targetValue) {
+          result[key as keyof T] = value as T[keyof T];
+        } else {
+          console.log('%c%s', 'color:yellow;background:black', `Auto-Task[Warning]: Type mismatch for key "${key}". Expected ${typeof targetValue}, got ${typeof value}. Using default value.`);
+        }
       }
     }
 

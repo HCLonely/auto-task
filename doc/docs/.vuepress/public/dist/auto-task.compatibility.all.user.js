@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.0.6
+// @version            5.0.7
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -14282,6 +14282,31 @@ if (missingDependencies.length > 0) {
               }
               continue;
             }
+            if (/wishlist/gi.test(taskText)) {
+              const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
+              if (!link) {
+                continue;
+              }
+              if (action === 'undo') {
+                this.socialTasks.steam.wishlistLinks.push(link);
+              }
+              if (action === 'do') {
+                this.undoneTasks.steam.wishlistLinks.push(link);
+              }
+            }
+            if (/follow/gi.test(taskText)) {
+              const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
+              if (!link) {
+                continue;
+              }
+              if (action === 'undo') {
+                this.socialTasks.steam.followLinks.push(link);
+              }
+              if (action === 'do') {
+                this.undoneTasks.steam.followLinks.push(link);
+              }
+              continue;
+            }
             if (/Sign up/gi.test(taskText)) {
               continue;
             }
@@ -14297,7 +14322,7 @@ if (missingDependencies.length > 0) {
             this.undoneTasks.extra.gleam.push(gleamLink);
             continue;
           }
-          if (socialIcon.hasClass('fa-question') || socialIcon.hasClass('fa-reddit') || socialIcon.hasClass('fa-instagram') || socialIcon.hasClass('fa-facebook-f') || socialIcon.hasClass('fa-telegram-plane') || socialIcon.hasClass('fa-telegram') || socialIcon.hasClass('fa-vk') || socialIcon.hasClass('fa-envelope') || socialIcon.hasClass('fa-gift') || socialIcon.hasClass('fa-square-up-right') || socialIcon.hasClass('fa-gamepad-modern') || socialIcon.hasClass('fa-dollar-sign') || socialIcon.hasClass('fa-tiktok') || socialIcon.hasClass('fa-gamepad-alt') || socialIcon.hasClass('fa-bag-shopping') || socialIcon.hasClass('fa-swords') || socialIcon.hasClass('fa-shield') && taskText.includes('one of our giveaways') || socialIcon.hasClass('fa-shield') && taskText.includes('Check out') || socialIcon.hasClass('fa-shield') && taskText.includes('vloot.io')) {
+          if (socialIcon.hasClass('fa-question') || socialIcon.hasClass('fa-reddit') || socialIcon.hasClass('fa-instagram') || socialIcon.hasClass('fa-facebook-f') || socialIcon.hasClass('fa-telegram-plane') || socialIcon.hasClass('fa-telegram') || socialIcon.hasClass('fa-vk') || socialIcon.hasClass('fa-envelope') || socialIcon.hasClass('fa-gift') || socialIcon.hasClass('fa-square-up-right') || socialIcon.hasClass('fa-gamepad-modern') || socialIcon.hasClass('fa-dollar-sign') || socialIcon.hasClass('fa-tiktok') || socialIcon.hasClass('fa-gamepad-alt') || socialIcon.hasClass('fa-bag-shopping') || socialIcon.hasClass('fa-swords') || socialIcon.hasClass('fa-dinosaur') || socialIcon.hasClass('fa-shield') && taskText.includes('one of our giveaways') || socialIcon.hasClass('fa-shield') && taskText.includes('Check out') || socialIcon.hasClass('fa-shield') && taskText.includes('vloot.io')) {
             continue;
           }
           echoLog({}).warning(`${I18n('unKnownTaskType')}: ${taskText}`);

@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2025-10-02 23:11:23
+ * @LastEditTime : 2025-10-31 09:11:11
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Gleam.ts
  * @Description  : https://gleam.io
@@ -387,6 +387,23 @@ class Gleam extends Website {
             continue;
           }
 
+          if (/wishlist/gi.test(taskText)) {
+            const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
+            if (!link) continue;
+
+            if (action === 'undo') this.socialTasks.steam.wishlistLinks.push(link);
+            if (action === 'do') this.undoneTasks.steam.wishlistLinks.push(link);
+          }
+
+          if (/follow/gi.test(taskText)) {
+            const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
+            if (!link) continue;
+
+            if (action === 'undo') this.socialTasks.steam.followLinks.push(link);
+            if (action === 'do') this.undoneTasks.steam.followLinks.push(link);
+            continue;
+          }
+
           if (/Sign up/gi.test(taskText)) {
             continue;
           }
@@ -421,6 +438,7 @@ class Gleam extends Website {
           socialIcon.hasClass('fa-gamepad-alt') ||
           socialIcon.hasClass('fa-bag-shopping') ||
           socialIcon.hasClass('fa-swords') ||
+          socialIcon.hasClass('fa-dinosaur') ||
           (socialIcon.hasClass('fa-shield') && taskText.includes('one of our giveaways')) ||
           (socialIcon.hasClass('fa-shield') && taskText.includes('Check out')) ||
           (socialIcon.hasClass('fa-shield') && taskText.includes('vloot.io'))

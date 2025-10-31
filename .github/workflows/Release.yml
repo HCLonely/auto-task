@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.6
-          name: 5.0.6
-          body: '- 修复：读取配置时增加类型检查(#57)'
+          tag_name: v5.0.7
+          name: 5.0.7
+          body: '- 新增：Gleam更多任务类型识别'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

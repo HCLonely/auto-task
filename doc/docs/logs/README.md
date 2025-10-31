@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.0
 
+### V5.0.7
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.7)
+
+- 新增：Gleam更多任务类型识别
+
 ### V5.0.6
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.0.6)

@@ -1,8 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.0.6",
+  "version": "5.0.7",
   "change": [
-    "修复：读取配置时增加类型检查(#57)"
+    "新增：Gleam更多任务类型识别"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

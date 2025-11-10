@@ -1,8 +1,9 @@
 {
   "name": "auto-task",
-  "version": "5.0.7",
+  "version": "5.1.0",
   "change": [
-    "新增：Gleam更多任务类型识别"
+    "新增：Freeanywhere识别鉴赏家任务",
+    "新增：FreeRu站点支持"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

@@ -237,6 +237,10 @@ class FreeAnyWhere extends Website {
             if (action === 'undo' && link) this.socialTasks.steam.groupLinks.push(link);
             if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.groupLinks.push(link);
             break;
+          case 'steam_curator_sub':
+            if (action === 'undo' && link) this.socialTasks.steam.curatorLinks.push(link);
+            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.curatorLinks.push(link);
+            break;
           case 'site_visit':
             if (action === 'do' && !isSuccess) this.undoneTasks.extra.website.push(`id=${id}&type=${type}&task=true`);
             break;

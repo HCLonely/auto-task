@@ -22,6 +22,7 @@ import Setting from './Setting';
 import History from './History';
 import GiveawayHopper from './GiveawayHopper';
 import Prys from './Prys';
+import FreeRu from './FreeRu';
 
 type WebsitesType = typeof FreeAnyWhere |
   typeof GiveawaySu |
@@ -37,7 +38,8 @@ type WebsitesType = typeof FreeAnyWhere |
   typeof Setting |
   typeof History |
   typeof GiveawayHopper |
-  typeof Prys;
+  typeof Prys |
+  typeof FreeRu;
 
 type WebsiteType = FreeAnyWhere |
   GiveawaySu |
@@ -53,7 +55,8 @@ type WebsiteType = FreeAnyWhere |
   Setting |
   History |
   GiveawayHopper |
-  Prys;
+  Prys |
+  FreeRu;
 
 /**
  * 网站类型数组
@@ -78,11 +81,12 @@ type WebsiteType = FreeAnyWhere |
  * - History
  * - GiveawayHopper
  * - Prys
+ * - FreeRu
  *
  * 这些网站类型用于后续的抽奖操作和管理。
  */
 const Websites: Array<WebsitesType> = [
-  FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys
+  FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys, FreeRu
 ];
 
 export { Websites, WebsiteType };

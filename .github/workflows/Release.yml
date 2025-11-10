@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.0.7
-          name: 5.0.7
-          body: '- 新增：Gleam更多任务类型识别'
+          tag_name: v5.1.0
+          name: 5.1.0
+          body: "- 新增：Freeanywhere识别鉴赏家任务\r\n- 新增：FreeRu站点支持"
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

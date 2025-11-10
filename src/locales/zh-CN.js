@@ -39,7 +39,7 @@ const data = {
   confirm: '确定',
   cancel: '取消',
   unKnown: '未知',
-  unKnownTaskType: '未识别的任务',
+  unKnownTaskType: '未识别的任务 %0',
   doing: '正在做任务',
   allTasksComplete: '所有任务已完成！',
   getTaskIdFailed: '获取任务Id失败！',

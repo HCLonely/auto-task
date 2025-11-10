@@ -3,6 +3,15 @@ title: 更新日志
 lang: zh-CN
 ---
 
+## V5.1
+
+### V5.1.0
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.0)
+
+- 新增：Freeanywhere识别鉴赏家任务
+- 新增：FreeRu站点支持
+
 ## V5.0
 
 ### V5.0.7

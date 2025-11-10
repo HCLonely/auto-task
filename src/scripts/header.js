@@ -28,6 +28,7 @@
 // @include            *://gleam.io/*
 // @include            *://sweepwidget.com/view/*
 // @include            *://giveawayhopper.com/c/*
+// @include            *://freeru.cc/en/games/giveaways/games/*
 
 // @include            *://discord.com/*
 // @include            *://www.twitch.tv/*

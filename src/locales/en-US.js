@@ -40,7 +40,7 @@ const data = {
   confirm: 'Confirm',
   cancel: 'Cancel',
   unKnown: 'Unknown',
-  unKnownTaskType: 'Unrecognized task',
+  unKnownTaskType: 'Unrecognized task %0',
   doing: 'Doing a task',
   allTasksComplete: 'All tasks have been completed!',
   getTaskIdFailed: 'Failed to obtain task Id!',

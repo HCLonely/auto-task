@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.0.7
+// @version            5.1.0
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -28,6 +28,7 @@
 // @include            *://gleam.io/*
 // @include            *://sweepwidget.com/view/*
 // @include            *://giveawayhopper.com/c/*
+// @include            *://freeru.cc/en/games/giveaways/games/*
 
 // @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
@@ -418,7 +419,7 @@ if (missingDependencies.length > 0) {
     confirm: '确定',
     cancel: '取消',
     unKnown: '未知',
-    unKnownTaskType: '未识别的任务',
+    unKnownTaskType: '未识别的任务 %0',
     doing: '正在做任务',
     allTasksComplete: '所有任务已完成！',
     getTaskIdFailed: '获取任务Id失败！',
@@ -731,7 +732,7 @@ if (missingDependencies.length > 0) {
     confirm: 'Confirm',
     cancel: 'Cancel',
     unKnown: 'Unknown',
-    unKnownTaskType: 'Unrecognized task',
+    unKnownTaskType: 'Unrecognized task %0',
     doing: 'Doing a task',
     allTasksComplete: 'All tasks have been completed!',
     getTaskIdFailed: 'Failed to obtain task Id!',
@@ -9820,7 +9821,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate$6 = {
+  const defaultTasksTemplate$7 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -9841,12 +9842,12 @@ if (missingDependencies.length > 0) {
       website: []
     }
   };
-  const defaultTasks$8 = JSON.stringify(defaultTasksTemplate$6);
+  const defaultTasks$9 = JSON.stringify(defaultTasksTemplate$7);
   class FreeAnyWhere extends Website {
     name='FreeAnyWhere';
     tasks=[];
-    socialTasks=(() => JSON.parse(defaultTasks$8))();
-    undoneTasks=(() => JSON.parse(defaultTasks$8))();
+    socialTasks=(() => JSON.parse(defaultTasks$9))();
+    undoneTasks=(() => JSON.parse(defaultTasks$9))();
     games;
     buttons=[ 'doTask', 'undoTask', 'verifyTask', 'getKey' ];
     static test() {
@@ -9907,7 +9908,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('获取已保存的任务信息');
-          this.socialTasks = GM_getValue(`fawTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$8);
+          this.socialTasks = GM_getValue(`fawTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$9);
         }
         const tasks = $('div.game__content-tasks__task').map(((index, element) => ({
           id: $(element).attr('data-id'),
@@ -10008,6 +10009,15 @@ if (missingDependencies.length > 0) {
           }
           if (action === 'do' && !isSuccess && link) {
             this.undoneTasks.steam.groupLinks.push(link);
+          }
+          break;
+
+         case 'steam_curator_sub':
+          if (action === 'undo' && link) {
+            this.socialTasks.steam.curatorLinks.push(link);
+          }
+          if (action === 'do' && !isSuccess && link) {
+            this.undoneTasks.steam.curatorLinks.push(link);
           }
           break;
 
@@ -10497,7 +10507,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasks$7 = {
+  const defaultTasks$8 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -10533,8 +10543,8 @@ if (missingDependencies.length > 0) {
   };
   class GiveawaySu extends Website {
     name='GiveawaySu';
-    socialTasks=(() => defaultTasks$7)();
-    undoneTasks=(() => defaultTasks$7)();
+    socialTasks=(() => defaultTasks$8)();
+    undoneTasks=(() => defaultTasks$8)();
     buttons=[ 'doTask', 'undoTask' ];
     static test() {
       const url = window.location.href;
@@ -10604,7 +10614,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gasTasks-${this.giveawayId}`)?.tasks || defaultTasks$7;
+          this.socialTasks = GM_getValue(`gasTasks-${this.giveawayId}`)?.tasks || defaultTasks$8;
           return true;
         }
         const tasks = $('#actions tr');
@@ -11445,7 +11455,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate$5 = {
+  const defaultTasksTemplate$6 = {
     steam: {
       groupLinks: [],
       officialGroupLinks: [],
@@ -11460,11 +11470,11 @@ if (missingDependencies.length > 0) {
     },
     links: []
   };
-  const defaultTasks$6 = JSON.stringify(defaultTasksTemplate$5);
+  const defaultTasks$7 = JSON.stringify(defaultTasksTemplate$6);
   class Keyhub extends Website {
     name='Keyhub';
-    socialTasks=(() => JSON.parse(defaultTasks$6))();
-    undoneTasks=(() => JSON.parse(defaultTasks$6))();
+    socialTasks=(() => JSON.parse(defaultTasks$7))();
+    undoneTasks=(() => JSON.parse(defaultTasks$7))();
     buttons=[ 'doTask', 'undoTask' ];
     static test() {
       const {host: host} = window.location;
@@ -11536,7 +11546,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`khTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$6);
+          this.socialTasks = GM_getValue(`khTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$7);
         }
         const tasks = $('.task:not(".googleads")').filter(((index, element) => action === 'do' ? $(element).find('i.fa-check-circle:visible').length === 0 : true)).find('a');
         debug('找到任务', {
@@ -11809,7 +11819,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate$4 = {
+  const defaultTasksTemplate$5 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -11826,12 +11836,12 @@ if (missingDependencies.length > 0) {
       serverLinks: []
     }
   };
-  const defaultTasks$5 = JSON.stringify(defaultTasksTemplate$4);
+  const defaultTasks$6 = JSON.stringify(defaultTasksTemplate$5);
   class Givekey extends Website {
     name='Givekey';
     tasks=[];
-    socialTasks=(() => JSON.parse(defaultTasks$5))();
-    undoneTasks=(() => JSON.parse(defaultTasks$5))();
+    socialTasks=(() => JSON.parse(defaultTasks$6))();
+    undoneTasks=(() => JSON.parse(defaultTasks$6))();
     userId;
     buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
     static test() {
@@ -11913,7 +11923,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gkTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$5);
+          this.socialTasks = GM_getValue(`gkTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$6);
         }
         const tasks = $('.card-body:has("button") .row');
         debug('找到任务元素', {
@@ -12286,11 +12296,11 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gcTasks-${this.giveawayId}`)?.tasks || defaultTasks$7;
+          this.socialTasks = GM_getValue(`gcTasks-${this.giveawayId}`)?.tasks || defaultTasks$8;
           return true;
         }
         debug('初始化未完成任务列表');
-        this.undoneTasks = defaultTasks$7;
+        this.undoneTasks = defaultTasks$8;
         const tasks = $('.event-actions tr');
         const processTask = async task => {
           const taskDes = $(task).find('.event-action-label a');
@@ -13199,7 +13209,7 @@ if (missingDependencies.length > 0) {
       }
     }
   };
-  const defaultTasksTemplate$3 = {
+  const defaultTasksTemplate$4 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -13232,11 +13242,11 @@ if (missingDependencies.length > 0) {
       likeLinks: []
     }
   };
-  const defaultTasks$4 = JSON.stringify(defaultTasksTemplate$3);
+  const defaultTasks$5 = JSON.stringify(defaultTasksTemplate$4);
   class Keylol extends Website {
     name='Keylol';
-    socialTasks=(() => JSON.parse(defaultTasks$4))();
-    undoneTasks=(() => JSON.parse(defaultTasks$4))();
+    socialTasks=(() => JSON.parse(defaultTasks$5))();
+    undoneTasks=(() => JSON.parse(defaultTasks$5))();
     buttons=[ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ];
     static CONFIG={
       LINK_PATTERNS: {
@@ -13507,8 +13517,8 @@ if (missingDependencies.length > 0) {
         debug('开始分类任务', {
           action: action
         });
-        this.socialTasks = JSON.parse(defaultTasks$4);
-        this.undoneTasks = JSON.parse(defaultTasks$4);
+        this.socialTasks = JSON.parse(defaultTasks$5);
+        this.undoneTasks = JSON.parse(defaultTasks$5);
         const selectedBtns = $('.auto-task-keylol[selected="selected"]:visible').get();
         debug('找到选中的按钮', {
           count: selectedBtns.length
@@ -13649,7 +13659,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasks$3 = {
+  const defaultTasks$4 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -13668,7 +13678,7 @@ if (missingDependencies.length > 0) {
   class Opquests extends Website {
     name='Opquests';
     undoneTasks={
-      ...defaultTasks$3
+      ...defaultTasks$4
     };
     buttons=[ 'doTask', 'verifyTask', 'getKey' ];
     static test() {
@@ -14031,7 +14041,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate$2 = {
+  const defaultTasksTemplate$3 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -14057,11 +14067,11 @@ if (missingDependencies.length > 0) {
       gleam: []
     }
   };
-  const defaultTasks$2 = JSON.stringify(defaultTasksTemplate$2);
+  const defaultTasks$3 = JSON.stringify(defaultTasksTemplate$3);
   class Gleam extends Website {
     name='Gleam';
-    undoneTasks=(() => JSON.parse(defaultTasks$2))();
-    socialTasks=(() => JSON.parse(defaultTasks$2))();
+    undoneTasks=(() => JSON.parse(defaultTasks$3))();
+    socialTasks=(() => JSON.parse(defaultTasks$3))();
     buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
     static test() {
       const {host: host} = window.location;
@@ -14142,7 +14152,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gleamTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$2);
+          this.socialTasks = GM_getValue(`gleamTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$3);
         }
         const tasks = $('.entry-content .entry-method');
         debug('找到任务元素', {
@@ -16182,7 +16192,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate$1 = {
+  const defaultTasksTemplate$2 = {
     steam: {
       groupLinks: [],
       wishlistLinks: [],
@@ -16207,11 +16217,11 @@ if (missingDependencies.length > 0) {
       giveawayHopper: []
     }
   };
-  const defaultTasks$1 = JSON.stringify(defaultTasksTemplate$1);
+  const defaultTasks$2 = JSON.stringify(defaultTasksTemplate$2);
   class GiveawayHopper extends Website {
     name='GiveawayHopper';
-    undoneTasks=(() => JSON.parse(defaultTasks$1))();
-    socialTasks=(() => JSON.parse(defaultTasks$1))();
+    undoneTasks=(() => JSON.parse(defaultTasks$2))();
+    socialTasks=(() => JSON.parse(defaultTasks$2))();
     tasks=[];
     buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
     static test() {
@@ -16279,7 +16289,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`giveawayHopperTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$1);
+          this.socialTasks = GM_getValue(`giveawayHopperTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$2);
         }
         debug('请求任务列表');
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
@@ -16620,7 +16630,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const defaultTasksTemplate = {
+  const defaultTasksTemplate$1 = {
     steam: {
       groupLinks: [],
       curatorLinks: [],
@@ -16631,11 +16641,11 @@ if (missingDependencies.length > 0) {
       channelLinks: []
     }
   };
-  const defaultTasks = JSON.stringify(defaultTasksTemplate);
+  const defaultTasks$1 = JSON.stringify(defaultTasksTemplate$1);
   class Prys extends Website {
     name='Prys';
-    socialTasks=(() => JSON.parse(defaultTasks))();
-    undoneTasks=(() => JSON.parse(defaultTasks))();
+    socialTasks=(() => JSON.parse(defaultTasks$1))();
+    undoneTasks=(() => JSON.parse(defaultTasks$1))();
     buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
     static test() {
       const {host: host} = window.location;
@@ -16701,7 +16711,7 @@ if (missingDependencies.length > 0) {
         });
         if (action === 'undo') {
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`prysTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+          this.socialTasks = GM_getValue(`prysTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$1);
         }
         const steps = $('#steps tbody tr');
         debug('找到任务步骤', {
@@ -16991,13 +17001,182 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  const Websites = [ FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys ];
+  const defaultTasksTemplate = {
+    extra: {
+      visitLink: []
+    }
+  };
+  const defaultTasks = JSON.stringify(defaultTasksTemplate);
+  class FreeRu extends Website {
+    name='FreeRu';
+    socialTasks=(() => JSON.parse(defaultTasks))();
+    undoneTasks=(() => JSON.parse(defaultTasks))();
+    games;
+    buttons=[ 'doTask', 'verifyTask' ];
+    static test() {
+      const isMatch = window.location.host === 'freeru.cc';
+      debug('检查网站匹配', {
+        host: window.location.host,
+        isMatch: isMatch
+      });
+      return isMatch;
+    }
+    async init() {
+      try {
+        debug('初始化 FreeRu', {
+          url: window.location.href
+        });
+        const logStatus = echoLog({
+          text: I18n('initing')
+        });
+        debug('检测登录状态');
+        if ($('.auth-button').length > 0) {
+          debug('未登录，准备跳转到登录页面');
+          $('.auth-button')[0].click();
+          logStatus.warning(I18n('needLogin'));
+          return false;
+        }
+        if (!await this.#checkLeftKey()) {
+          debug('检查剩余密钥失败');
+          echoLog({}).warning(I18n('checkLeftKeyFailed'));
+        }
+        this.initialized = true;
+        logStatus.success();
+        return true;
+      } catch (error) {
+        debug('初始化失败', {
+          error: error
+        });
+        throwError(error, 'FreeRu.init');
+        return false;
+      }
+    }
+    async classifyTask(action) {
+      try {
+        debug('开始分类任务', {
+          action: action
+        });
+        const logStatus = echoLog({
+          text: I18n('getTasksInfo')
+        });
+        $('.giveaway-tasks__list a.task-card__button').toArray().forEach((elem => {
+          this.undoneTasks.extra.visitLink.push(elem.getAttribute('href'));
+        }));
+        logStatus.success();
+        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
+        debug('任务分类结果', {
+          undoneTasks: this.undoneTasks
+        });
+        return true;
+      } catch (error) {
+        debug('任务分类失败', {
+          error: error
+        });
+        throwError(error, 'FreeRu.classifyTask');
+        return false;
+      }
+    }
+    async extraDoTask(_ref24) {
+      let {visitLink: visitLink} = _ref24;
+      try {
+        debug('执行额外任务', {
+          visitLink: visitLink
+        });
+        const logStatus = echoLog({
+          text: I18n('visitingLink')
+        });
+        const promises = visitLink.map((link => getRedirectLink(link)));
+        const results = await Promise.allSettled(promises);
+        logStatus.success();
+        debug('额外任务执行结果', {
+          results: results
+        });
+        return true;
+      } catch (error) {
+        debug('执行额外任务失败', {
+          error: error
+        });
+        throwError(error, 'FreeRu.extraDoTask');
+        return false;
+      }
+    }
+    async verifyTask() {
+      try {
+        debug('开始验证任务');
+        if (!this.initialized && !await this.init()) {
+          debug('未初始化');
+          return false;
+        }
+        const logStatus = echoLog({
+          text: I18n('giveeClubVerifyNotice')
+        });
+        const tasks = $('.giveaway-tasks__list button.task-card__button').toArray();
+        if (tasks.length === 0) {
+          debug('任务列表为空', tasks);
+          return false;
+        }
+        debug('开始验证任务列表', {
+          tasks: tasks
+        });
+        for (const task of tasks) {
+          task.click();
+          await delay(1e3);
+        }
+        logStatus.success();
+        echoLog({}).success(I18n('verifiedGleamTasks'));
+        return false;
+      } catch (error) {
+        debug('验证任务失败', {
+          error: error
+        });
+        throwError(error, 'FreeRu.verifyTask');
+        return false;
+      }
+    }
+    async #checkLeftKey() {
+      try {
+        debug('检查剩余密钥');
+        if (!globalOptions.other.checkLeftKey) {
+          debug('跳过密钥检查');
+          return true;
+        }
+        const giveawayStatus = $('.giveaway-summary__info-text')[0].innerText?.match(/\d+/)?.[0];
+        debug('Giveaway状态', {
+          giveawayStatus: giveawayStatus
+        });
+        if (giveawayStatus === '0') {
+          debug('没有剩余密钥，显示确认对话框');
+          const {value: value} = await Swal.fire({
+            icon: 'warning',
+            title: I18n('notice'),
+            text: I18n('giveawayEnded'),
+            confirmButtonText: I18n('confirm'),
+            cancelButtonText: I18n('cancel'),
+            showCancelButton: true
+          });
+          if (value) {
+            debug('用户确认关闭窗口');
+            window.close();
+          }
+          return true;
+        }
+        return true;
+      } catch (error) {
+        debug('检查剩余密钥失败', {
+          error: error
+        });
+        throwError(error, 'FreeRu.checkLeftKey');
+        return false;
+      }
+    }
+  }
+  const Websites = [ FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys, FreeRu ];
   const generateFormHtml = options => {
     debug('开始生成网站选项表单HTML', {
       options: options
     });
-    const tableRows = Object.entries(options).map((_ref24 => {
-      let [option, value] = _ref24;
+    const tableRows = Object.entries(options).map((_ref25 => {
+      let [option, value] = _ref25;
       return `\n      <tr>\n        <td>${option}</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="${option}"\n            value="${value}"\n          />\n        </td>\n      </tr>\n    `;
     })).join('');
     const formHtml = `\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>${I18n('option')}</td>\n            <td>${I18n('value')}</td>\n          </tr>\n        </thead>\n        <tbody>\n          ${tableRows}\n        </tbody>\n      </table>\n    </form>\n  `;
@@ -17009,8 +17188,8 @@ if (missingDependencies.length > 0) {
       website: website,
       formValues: formValues
     });
-    formValues.forEach((_ref25 => {
-      let {name: name, value: value} = _ref25;
+    formValues.forEach((_ref26 => {
+      let {name: name, value: value} = _ref26;
       options[name] = value;
       debug('更新选项值', {
         name: name,
@@ -17286,576 +17465,6 @@ if (missingDependencies.length > 0) {
     rnds[6] = rnds[6] & 15 | 64;
     rnds[8] = rnds[8] & 63 | 128;
     return unsafeStringify(rnds);
-  }
-  function fawExtension() {
-    const hostname = window.location.hostname;
-    function IsJsonString(str) {
-      try {
-        JSON.parse(str);
-      } catch (e) {
-        return false;
-      }
-      return true;
-    }
-    $(window).on('load', (function() {
-      console.log('👌 gamesforfarm extension');
-      if (hostname == 'freeanywhere.net' || hostname == 'give.gamesforfarm.local' || hostname == 'gamesforfarm-testing.ru') {
-        const steam = $('.games_for_farm_site').data('steam');
-        const avatar = $('.games_for_farm_site').data('avatar');
-        const name = $('.games_for_farm_site').data('name');
-        const lang = $('.games_for_farm_site').data('lang');
-        let need_update = true;
-        GM_addValueChangeListener('FAW_STORAGE', (function(newValue, oldValue) {
-          if (need_update == false) {
-            return;
-          }
-          GM_getValue('FAW_STORAGE', (function(STORAGE) {
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/user_data_update.php',
-              data: {
-                extension: JSON.stringify(STORAGE)
-              },
-              success: function(data) {}
-            });
-          }));
-        }));
-        const STORAGE = GM_getValue('FAW_STORAGE') || {};
-        if (Object.keys(STORAGE).length === 0 || !STORAGE['tasks'] || !STORAGE['user'] || !STORAGE['games'] || !STORAGE['settings']) {
-          GM_deleteValue('FAW_STORAGE');
-          let new_storage = {};
-          new_storage['tasks'] = {};
-          new_storage['user'] = {};
-          new_storage['games'] = {};
-          new_storage['settings'] = {};
-          if (steam) {
-            new_storage['user']['steam'] = steam;
-          }
-          if (avatar) {
-            new_storage['user']['avatar'] = avatar;
-          }
-          if (name) {
-            new_storage['user']['name'] = name;
-          }
-          if (lang) {
-            new_storage['user']['lang'] = lang;
-          }
-          if (steam) {
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/user_games_get.php',
-              data: {
-                steam: steam
-              },
-              success: function(data) {
-                if (data != '' && IsJsonString(data)) {
-                  const user_games = JSON.parse(data);
-                  new_storage['games'] = user_games;
-                  new_storage['settings']['game_update'] = parseInt(Date.now() / 1e3);
-                  GM_setValue('FAW_STORAGE', new_storage);
-                }
-              }
-            });
-          } else {
-            GM_setValue('FAW_STORAGE', new_storage);
-          }
-        }
-        if (STORAGE['user'] && STORAGE['settings'] && STORAGE['user']['steam']) {
-          if (!STORAGE['settings']['game_update']) {
-            STORAGE['settings']['game_update'] = 0;
-          }
-          let time_now = parseInt(Date.now() / 1e3);
-          let time_update = parseInt(STORAGE['settings']['game_update']);
-          if (time_now - time_update > 60 * 60 * 24) {
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/user_games_get.php',
-              data: {
-                steam: STORAGE['user']['steam']
-              },
-              success: function(data) {
-                if (data != '' && IsJsonString(data)) {
-                  const games = JSON.parse(data);
-                  STORAGE['games'] = games;
-                  STORAGE['settings']['game_update'] = parseInt(Date.now() / 1e3);
-                  GM_setValue('FAW_STORAGE', STORAGE);
-                }
-              }
-            });
-          }
-        }
-        if (steam && STORAGE['user']) {
-          if (!STORAGE['user']['steam']) {
-            STORAGE['user']['steam'] = steam;
-          }
-          if (STORAGE['user']['steam'] != steam) {
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/user_data_get.php',
-              data: {
-                steam: steam
-              },
-              success: function(data) {
-                if (!data) {
-                  return;
-                }
-                const db_storage = JSON.parse(data);
-                if (db_storage) {
-                  GM_deleteValue('FAW_STORAGE');
-                  need_update = false;
-                  GM_setValue('FAW_STORAGE', db_storage);
-                  setTimeout((function() {
-                    need_update = true;
-                  }), 100);
-                }
-              }
-            });
-          } else {
-            if (avatar) {
-              STORAGE['user']['avatar'] = avatar;
-            }
-            if (name) {
-              STORAGE['user']['name'] = name;
-            }
-            if (lang) {
-              STORAGE['user']['lang'] = lang;
-            }
-            GM_setValue('FAW_STORAGE', STORAGE);
-          }
-        }
-        if (STORAGE['tasks']) {
-          let update_tasks = [];
-          let is_update = false;
-          let time_now = parseInt(Date.now() / 1e3);
-          $.each(STORAGE['tasks'], (function(index, val) {
-            if (val['time'] && time_now - parseInt(val['time']) > 2 * 60 * 60) {
-              is_update = true;
-              return;
-            }
-            update_tasks.push(val);
-          }));
-          if (is_update == true) {
-            STORAGE['tasks'] = update_tasks;
-            GM_setValue('FAW_STORAGE', STORAGE);
-          }
-        }
-        if (STORAGE['discord']) {
-          if (STORAGE['discord'] && STORAGE['discord'].length > 0) {
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/discord_levels_update.php',
-              data: {
-                discord: JSON.stringify(STORAGE['discord'])
-              },
-              success: function(data) {
-                if (data.indexOf('success') != -1) {
-                  alert('Данные discord уровней обновлены');
-                  delete STORAGE['discord'];
-                  GM_setValue('FAW_STORAGE', STORAGE);
-                } else {
-                  alert('Возникла ошибка при обновлении discord уровней');
-                  delete STORAGE['discord'];
-                  GM_setValue('FAW_STORAGE', STORAGE);
-                }
-              },
-              error: function() {
-                alert('Возникла ошибка при обновлении discord уровней');
-                delete STORAGE['discord'];
-                GM_setValue('FAW_STORAGE', STORAGE);
-              }
-            });
-          }
-        }
-        function check_tasks_button() {
-          let tasks_done = true;
-          $('.game__content-tasks__task').each((function(index, el) {
-            if ($(this).hasClass('done') == false) {
-              tasks_done = false;
-            }
-          }));
-          if (tasks_done == true) {
-            $('.js-get-key').removeClass('inactive');
-          } else {
-            $('.js-get-key').addClass('inactive');
-          }
-        }
-        if ($('.games_for_farm_extension.work').length > 0) {
-          $('.games_for_farm_extension.not_work').remove();
-          $('.games_for_farm_extension.work').slideDown(200);
-        }
-        if ($('.game__content-tasks__task .task-check-extension').length > 0) {
-          $('.task-check-extension').removeClass('js-extentions-modal');
-          $('.game__content-tasks__task[data-extension=\'1\'] .task-link a').removeClass('js-extentions-modal');
-          $('.game__content-tasks__task .task-check-extension').on('click', (function(event) {
-            event.preventDefault();
-            let $button = $(this);
-            if ($button.hasClass('loading')) {
-              return;
-            }
-            let $parrent = $(this).parent('.game__content-tasks__task');
-            const type = $parrent.data('type');
-            const id = $parrent.data('id');
-            const data = $parrent.data('data');
-            const extension = $parrent.data('extension');
-            if (extension == false) {
-              return;
-            }
-            $button.addClass('loading');
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            $.ajax({
-              type: 'POST',
-              url: '/php/extension/user_data_update.php',
-              data: {
-                extension: JSON.stringify(STORAGE)
-              },
-              success: function(update) {
-                const getTime_start = (new Date).getTime();
-                $.ajax({
-                  type: 'POST',
-                  url: '/php/extension/user_task_update.php',
-                  data: {
-                    id: id,
-                    type: type,
-                    data: data
-                  },
-                  success: function(data) {
-                    const getTime_end = (new Date).getTime();
-                    console.log('👌 checking task in ' + (getTime_end - getTime_start) + ' ms');
-                    if (data.indexOf('good') != -1) {
-                      setTimeout((function() {
-                        $parrent.addClass('done');
-                        $parrent.removeClass('error');
-                        $button.removeClass('loading');
-                        check_tasks_button();
-                      }), 1250);
-                    } else if (data.indexOf('bad') != -1) {
-                      setTimeout((function() {
-                        $parrent.addClass('error');
-                        $parrent.removeClass('done');
-                        $button.removeClass('loading');
-                        check_tasks_button();
-                      }), 1250);
-                    } else {
-                      setTimeout((function() {
-                        $parrent.removeClass('error');
-                        $parrent.removeClass('done');
-                        $button.removeClass('loading');
-                        check_tasks_button();
-                      }), 1250);
-                    }
-                  },
-                  error: function() {
-                    setTimeout((function() {
-                      $parrent.removeClass('error');
-                      $parrent.removeClass('done');
-                      $button.removeClass('loading');
-                      check_tasks_button();
-                    }), 1250);
-                  }
-                });
-              },
-              error: function() {
-                setTimeout((function() {
-                  $parrent.removeClass('error');
-                  $parrent.removeClass('done');
-                  $button.removeClass('loading');
-                  check_tasks_button();
-                }), 1250);
-              }
-            });
-          }));
-        }
-      }
-      function storage_tasks_update(tasks, type, value, action) {
-        let result = [];
-        let is_find = false;
-        $.each(tasks, (function(index, val) {
-          if (!val['type'] || !val['data']) {
-            return;
-          }
-          if (val['type'] == type && val['data'] == value) {
-            is_find = true;
-            return;
-          }
-          result.push(val);
-        }));
-        const obj = {};
-        switch (action) {
-         case 'add':
-          if (is_find == true) {
-            return;
-          }
-          const task = {};
-          task['type'] = type;
-          task['data'] = value;
-          task['time'] = parseInt(Date.now() / 1e3);
-          result.push(task);
-          obj['tasks'] = result;
-          GM_setValue('FAW_STORAGE', obj);
-          break;
-
-         case 'remove':
-          if (is_find == false) {
-            return;
-          }
-          obj['tasks'] = result;
-          GM_setValue('FAW_STORAGE', obj);
-        }
-      }
-      if (hostname == 'store.steampowered.com' || hostname == 'steamcommunity.com') {
-        if (document.querySelector('span[id^=\'CuratorUnFollowBtn_\']')) {
-          const curator_id = $('span[id^=\'CuratorUnFollowBtn_\']').attr('id').split('_')[1];
-          const follow_btn = '#CuratorFollowBtn_' + curator_id;
-          const unfollow_btn = '#CuratorUnFollowBtn_' + curator_id;
-          const STORAGE = GM_getValue('FAW_STORAGE') || {};
-          if (!STORAGE['tasks']) {
-            return;
-          }
-          const follow = $(follow_btn).css('display');
-          const unfollow = $(unfollow_btn).css('display');
-          if (unfollow && unfollow == 'none') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_curator_sub', curator_id, 'remove');
-          }
-          if (follow && follow == 'none') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_curator_sub', curator_id, 'add');
-          }
-          $(follow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_curator_sub', curator_id, 'add');
-          }));
-          $(unfollow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_curator_sub', curator_id, 'remove');
-          }));
-        }
-        if (document.querySelector('.followStatsBlock')) {
-          const user_id = $('#HeaderUserInfoName a').attr('href').split('/').pop();
-          const follow_btn = '#FollowUserOptionAdd';
-          const unfollow_btn = '#FollowUserOptionFollowing, .followOption.remove';
-          const STORAGE = GM_getValue('FAW_STORAGE') || {};
-          if (!STORAGE['tasks']) {
-            return;
-          }
-          const follow = $(follow_btn).css('visibility');
-          const unfollow = $(unfollow_btn).css('visibility');
-          if (unfollow && unfollow == 'hidden') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_guides_sub', user_id, 'remove');
-          }
-          if (follow && follow == 'hidden') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_guides_sub', user_id, 'add');
-          }
-          $(follow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_guides_sub', user_id, 'add');
-          }));
-          $(unfollow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_guides_sub', user_id, 'remove');
-          }));
-        }
-        if (document.querySelector('#ScrollingItemControls')) {
-          const manual_id = $('#PublishedFileFavorite input[name=\'id\']').val();
-          const follow_btn = '#FavoriteItemOptionAdd';
-          const unfollow_btn = '#FavoriteItemOptionFavorited, .favoriteOption.removefavorite';
-          const STORAGE = GM_getValue('FAW_STORAGE') || {};
-          if (!STORAGE['tasks']) {
-            return;
-          }
-          const follow = $(follow_btn).css('visibility');
-          const unfollow = $(unfollow_btn).css('visibility');
-          if (unfollow && unfollow == 'hidden') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_manual_favourite', manual_id, 'remove');
-          }
-          if (follow && follow == 'hidden') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_manual_favourite', manual_id, 'add');
-          }
-          $(follow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_manual_favourite', manual_id, 'add');
-          }));
-          $(unfollow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_manual_favourite', manual_id, 'remove');
-          }));
-        }
-        if (document.querySelector('#queueBtnFollow')) {
-          const game_id = $('.game_page_background').data('miniprofile-appid');
-          const follow_btn = '#queueBtnFollow .queue_btn_inactive';
-          const unfollow_btn = '#queueBtnFollow .queue_btn_active';
-          const STORAGE = GM_getValue('FAW_STORAGE') || {};
-          if (!STORAGE['tasks']) {
-            return;
-          }
-          const follow = $(follow_btn).css('display');
-          const unfollow = $(unfollow_btn).css('display');
-          if (unfollow && unfollow == 'none') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_game_sub', game_id, 'remove');
-          }
-          if (follow && follow == 'none') {
-            storage_tasks_update(STORAGE['tasks'], 'steam_game_sub', game_id, 'add');
-          }
-          $(follow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_game_sub', game_id, 'add');
-          }));
-          $(unfollow_btn).on('click', (function(event) {
-            const STORAGE = GM_getValue('FAW_STORAGE') || {};
-            if (!STORAGE['tasks']) {
-              return;
-            }
-            storage_tasks_update(STORAGE['tasks'], 'steam_game_sub', game_id, 'remove');
-          }));
-        }
-      }
-      if (hostname == 'www.youtube.com' || hostname == 'm.youtube.com') {
-        setInterval((function() {
-          if (document.querySelector('yt-subscribe-button-view-model')) {
-            const channel_id = $('meta[itemprop="identifier"]').attr('content');
-            const subscribe = [ 'Подписаться', 'Падпісацца', 'Підписатися', 'Abonnieren', 'Subscribe', 'Suscribirse', 'Mag-subscribe', 'S\'abonner', 'Iscriviti', 'Subskrybuj', 'Subscrever', 'Abonează-te', '订阅', 'チャンネル登録', '訂閱' ];
-            const subscribed = [ 'Вы подписаны', 'Вы падпісаны', 'Ви підписалися', 'Abonniert', 'Subscribed', 'Suscrito', 'Naka-subscribe', 'Abonné', 'Iscritto', 'Subskrybujesz', 'Subscrito', 'Abonat(ă)', '已订阅', '登録済み', '已訂閱' ];
-            const $parent = $('yt-subscribe-button-view-model');
-            const text = $parent.text();
-            if (subscribe.indexOf(text) != -1 || subscribed.indexOf(text) != -1) {
-              if (subscribe.indexOf(text) != -1) {
-                const STORAGE = GM_getValue('FAW_STORAGE') || {};
-                if (!STORAGE['tasks']) {
-                  return;
-                }
-                storage_tasks_update(STORAGE['tasks'], 'youtube_channel_sub', channel_id, 'remove');
-              }
-              if (subscribed.indexOf(text) != -1) {
-                const STORAGE = GM_getValue('FAW_STORAGE') || {};
-                if (!STORAGE['tasks']) {
-                  return;
-                }
-                storage_tasks_update(STORAGE['tasks'], 'youtube_channel_sub', channel_id, 'add');
-              }
-            } else {
-              if ($('.ytSubscribePlusButtonViewModelHost').length != 0) {
-                const STORAGE = GM_getValue('FAW_STORAGE') || {};
-                if (!STORAGE['tasks']) {
-                  return;
-                }
-                storage_tasks_update(STORAGE['tasks'], 'youtube_channel_sub', channel_id, 'add');
-              } else {
-                const color = $parent.find('button').css('color');
-                if (color == '#0f0f0f' || color == 'rgb(15, 15, 15)') {
-                  const STORAGE = GM_getValue('FAW_STORAGE') || {};
-                  if (!STORAGE['tasks']) {
-                    return;
-                  }
-                  storage_tasks_update(STORAGE['tasks'], 'youtube_channel_sub', channel_id, 'remove');
-                }
-                if (color == '#f1f1f1' || color == 'rgb(241, 241, 241)') {
-                  const STORAGE = GM_getValue('FAW_STORAGE') || {};
-                  if (!STORAGE['tasks']) {
-                    return;
-                  }
-                  storage_tasks_update(STORAGE['tasks'], 'youtube_channel_sub', channel_id, 'add');
-                }
-              }
-            }
-          }
-          if (document.querySelector('.ytLikeButtonViewModelHost')) {
-            let video_id;
-            if (hostname == 'm.youtube.com') {
-              video_id = $('link[rel="canonical"]').attr('href').split('v=').pop();
-            } else {
-              video_id = $('meta[itemprop="identifier"]').attr('content');
-            }
-            if ($('.ytLikeButtonViewModelHost button').attr('aria-pressed') == 'false') {
-              const STORAGE = GM_getValue('FAW_STORAGE') || {};
-              if (!STORAGE['tasks']) {
-                return;
-              }
-              storage_tasks_update(STORAGE['tasks'], 'youtube_video_like', video_id, 'remove');
-            }
-            if ($('.ytLikeButtonViewModelHost button').attr('aria-pressed') == 'true') {
-              const STORAGE = GM_getValue('FAW_STORAGE') || {};
-              if (!STORAGE['tasks']) {
-                return;
-              }
-              storage_tasks_update(STORAGE['tasks'], 'youtube_video_like', video_id, 'add');
-            }
-          }
-        }), 600);
-      }
-    }));
-    if (hostname == 'mee6.xyz') {
-      var message = false;
-      $(document).on('keydown', '', (function(event) {
-        if (event.code == 'End') {
-          let USERS = [];
-          $('.md\\:block').each((function(index, el) {
-            const user = {};
-            user['name'] = $(this).find('.justify-start p').text();
-            user['level'] = $(this).find('.leaderboardPlayerStat .items-center').text();
-            USERS.push(user);
-            if (user['level'] == 0) {
-              const obj = {};
-              obj['discord'] = USERS;
-              GM_setValue('FAW_STORAGE', obj);
-              if (message == false) {
-                alert('Можно переходить на freeanywhere.net');
-                message = true;
-              }
-              return false;
-            }
-          }));
-        }
-      }));
-    }
-    if (hostname == 'gamesforfarm.com') {
-      const STORAGE = GM_getValue('FAW_STORAGE') || {};
-      if (!STORAGE['settings']) {
-        return;
-      }
-      if (!STORAGE['games']) {
-        return;
-      }
-      if (STORAGE['settings']['hide_games'] && STORAGE['settings']['hide_games'] == true) {
-        $('.product__item').each((function(index, el) {
-          const image = $(this).find('.product__box-image img').data('src');
-          const cart = $(this).find('.product__box-props a').attr('href');
-          if (image && image.indexOf('/apps/') != -1) {
-            const id = parseInt(image.split('/apps/')[1].split('/')[0]);
-            if (id && isNaN(id) == false) {
-              if (STORAGE['games'][id]) {
-                $(this).css('opacity', '.2');
-              }
-            }
-          } else if (cart && cart.indexOf('/app/') != -1) {
-            const id = parseInt(cart.split('/app/')[1].split('/')[0]);
-            if (id && isNaN(id) == false) {
-              if (STORAGE['games'][id]) {
-                $(this).css('opacity', '.2');
-              }
-            }
-          }
-        }));
-      }
-    }
   }
   try {
     consoleLogHook();
@@ -18188,10 +17797,6 @@ if (missingDependencies.length > 0) {
       hostname: window.location.hostname,
       windowName: window.name
     });
-    if ([ 'freeanywhere.net', 'give.gamesforfarm.local', 'gamesforfarm-testing.ru', 'store.steampowered.com', 'steamcommunity.com', 'www.youtube.com', 'm.youtube.com', 'mee6.xyz', 'gamesforfarm.com' ].includes(window.location.hostname) && $('.task-check-extension').length > 0) {
-      debug('检测到freeanywhere.com，加载扩展');
-      fawExtension();
-    }
     if (window.location.hostname === 'discord.com') {
       if (window.name === 'ATv4_discordAuth') {
         debug('检测到Discord认证窗口');

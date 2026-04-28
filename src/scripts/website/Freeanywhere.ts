@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:03
- * @LastEditTime : 2025-08-18 19:07:18
+ * @LastEditTime : 2026-04-28 09:17:42
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Freeanywhere.ts
  * @Description  : https://freeanywhere.net
@@ -63,6 +63,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  *
  */
 class FreeAnyWhere extends Website {
+  static type = 'website';
   name = 'FreeAnyWhere';
   tasks: Array<fawTaskInfo> = [];
   socialTasks: fawSocialTasks = JSON.parse(defaultTasks);
@@ -71,10 +72,9 @@ class FreeAnyWhere extends Website {
   buttons: Array<string> = [
     'doTask',
     'undoTask',
-    'verifyTask',
+    // 'verifyTask',
     'getKey'
   ];
-
   /**
    * 检查当前窗口的域名是否为 'freeanywhere.net'
    *
@@ -238,11 +238,12 @@ class FreeAnyWhere extends Website {
             if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.groupLinks.push(link);
             break;
           case 'steam_curator_sub':
+
             if (action === 'undo' && link) this.socialTasks.steam.curatorLinks.push(link);
             if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.curatorLinks.push(link);
             break;
           case 'site_visit':
-            if (action === 'do' && !isSuccess) this.undoneTasks.extra.website.push(`id=${id}&type=${type}&task=true`);
+            if (action === 'do' && !isSuccess) this.undoneTasks.extra.website.push(id);
             break;
           case 'vk_community_sub':
             if (action === 'undo' && link) this.socialTasks.vk.nameLinks.push(link);
@@ -253,8 +254,11 @@ class FreeAnyWhere extends Website {
             if (action === 'do' && !isSuccess && link) this.undoneTasks.vk.nameLinks.push(`${link}&action=like`);
             break;
           case 'discord_server_sub':
-            if (action === 'undo' && link) this.socialTasks.discord.serverLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.discord.serverLinks.push(link);
+            debug('跳过 Discord 任务');
+            echoLog({}).warning(`${__('discordTaskNotice')}`);
+            break;
+            // if (action === 'undo' && link) this.socialTasks.discord.serverLinks.push(link);
+            // if (action === 'do' && !isSuccess && link) this.undoneTasks.discord.serverLinks.push(link);
             break;
           case 'youtube_channel_sub':
             if (action === 'undo' && link) this.socialTasks.youtube.channelLinks.push(link);
@@ -349,7 +353,7 @@ class FreeAnyWhere extends Website {
   async extraDoTask({ website }: { website: Array<string> }): Promise<boolean> {
     try {
       debug('执行额外任务', { website });
-      const promises = website.map((link) => this.#doVisitWebsite(link));
+      const promises = website.map((id) => this.#doVisitWebsite(id));
       const results = await Promise.allSettled(promises);
       debug('额外任务执行结果', { results });
       return true;
@@ -363,23 +367,23 @@ class FreeAnyWhere extends Website {
   /**
    * 访问网站的私有异步方法
    *
-   * @param {string} link - 要访问的链接。
+   * @param {string} id - 任务id。
    * @returns {Promise<boolean>} 如果访问成功，则返回 true；否则返回 false。
    *
    * @throws {Error} 如果在访问过程中发生错误，将抛出错误。
    */
-  async #doVisitWebsite(link: string): Promise<boolean> {
+  async #doVisitWebsite(id: string): Promise<boolean> {
     try {
-      debug('访问网站', { link });
+      debug('访问网站任务', { id });
       const logStatus = echoLog({ text: __('visitingLink') });
 
       const { result, statusText, status, data } = await httpRequest({
-        url: 'https://freeanywhere.net/php/task_site_visit_done.php',
+        url: 'https://freeanywhere.net/php/user_task_site_visit.php',
         method: 'POST',
         headers: {
           'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
-        data: link
+        data: `id=${id}`
       });
 
       if (result !== 'Success') {
@@ -474,8 +478,12 @@ class FreeAnyWhere extends Website {
   async #verify(task: fawTaskInfo): Promise<boolean> {
     try {
       if ($('.task-check-extension').length > 0) {
-        return this.#verifyWithExtension(task);
+        debug('需要扩展，跳过验证', { task });
+        echoLog({}).warning(__('skipExtensionToVerifyTask'));
+        // return this.#verifyWithExtension(task);
+        return false;
       }
+      debug('使用普通方式验证任务', { task });
       return this.#verifyWithoutExtension(task);
     } catch (error) {
       debug('验证任务失败', { error });
@@ -501,43 +509,43 @@ class FreeAnyWhere extends Website {
  *    - 否则验证失败
  * 4. 记录验证过程的日志信息
  */
-  async #verifyWithExtension(task: fawTaskInfo): Promise<boolean> {
-    try {
-      await this.#updateUserData();
-      debug('验证任务', { task });
-      const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}...` });
+  // async #verifyWithExtension(task: fawTaskInfo): Promise<boolean> {
+  //   try {
+  //     await this.#updateUserData();
+  //     debug('验证任务', { task });
+  //     const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}...` });
 
-      const { result, statusText, status, data } = await httpRequest({
-        url: 'https://freeanywhere.net/php/extension/user_task_update.php',
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: `id=${task.id}&type=${task.type}${(task.data && task.data !== 'none') ? `&data=${task.data}` : ''}`
-      });
+  //     const { result, statusText, status, data } = await httpRequest({
+  //       url: 'https://freeanywhere.net/php/extension/user_task_update.php',
+  //       method: 'POST',
+  //       headers: {
+  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //       },
+  //       data: `id=${task.id}&type=${task.type}${(task.data && task.data !== 'none') ? `&data=${task.data}` : ''}`
+  //     });
 
-      if (result !== 'Success' || !data?.responseText) {
-        debug('验证请求失败', { result, statusText, status });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      }
+  //     if (result !== 'Success' || !data?.responseText) {
+  //       debug('验证请求失败', { result, statusText, status });
+  //       logStatus.error(`${result}:${statusText}(${status})`);
+  //       return false;
+  //     }
 
-      const response = data.responseText.trim();
-      if (response !== 'good') {
-        debug('验证响应异常', { response, statusText: data?.statusText, status: data?.status });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      }
+  //     const response = data.responseText.trim();
+  //     if (response !== 'good') {
+  //       debug('验证响应异常', { response, statusText: data?.statusText, status: data?.status });
+  //       logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+  //       return false;
+  //     }
 
-      debug('验证成功');
-      logStatus.success();
-      return true;
-    } catch (error) {
-      debug('验证任务失败', { error });
-      throwError(error as Error, 'Freeanywhere.verifyWithExtension');
-      return false;
-    }
-  }
+  //     debug('验证成功');
+  //     logStatus.success();
+  //     return true;
+  //   } catch (error) {
+  //     debug('验证任务失败', { error });
+  //     throwError(error as Error, 'Freeanywhere.verifyWithExtension');
+  //     return false;
+  //   }
+  // }
 
   /**
    * 验证任务的私有异步方法
@@ -606,62 +614,62 @@ class FreeAnyWhere extends Website {
  * 3. 将数据发送到服务器进行更新
  * 4. 验证更新结果并返回更新状态
  */
-  async #updateUserData(): Promise<boolean> {
-    try {
-      let postData = '';
-      const userData = GM_getValue<fawUserData>('FAW_STORAGE') || {};
-      if (Object.keys(userData).length === 0 || !userData.tasks || !userData.user || !userData.games || !userData.settings) {
-        if (!this.games) {
-          await this.#userGamesGet();
-        }
-        if (!this.games) {
-          debug('获取用户游戏失败');
-          return false;
-        }
-        postData = `extension=${encodeURIComponent(JSON.stringify({
-          games: this.games,
-          settings: {
-            game_update: Math.floor(Date.now() / 1000)
-          },
-          tasks: {},
-          user: {
-            avatar: $('header.games_for_farm_site').attr('data-avatar'),
-            lang: $('header.games_for_farm_site').attr('data-lang'),
-            name: $('header.games_for_farm_site').attr('data-name'),
-            steam: $('header.games_for_farm_site').attr('data-steam')
-          }
-        }))}`;
-      } else {
-        postData = `extension=${encodeURIComponent(JSON.stringify(userData))}`;
-      }
+  // async #updateUserData(): Promise<boolean> {
+  //   try {
+  //     let postData = '';
+  //     const userData = GM_getValue<fawUserData>('FAW_STORAGE') || {};
+  //     if (Object.keys(userData).length === 0 || !userData.tasks || !userData.user || !userData.games || !userData.settings) {
+  //       if (!this.games) {
+  //         await this.#userGamesGet();
+  //       }
+  //       if (!this.games) {
+  //         debug('获取用户游戏失败');
+  //         return false;
+  //       }
+  //       postData = `extension=${encodeURIComponent(JSON.stringify({
+  //         games: this.games,
+  //         settings: {
+  //           game_update: Math.floor(Date.now() / 1000)
+  //         },
+  //         tasks: {},
+  //         user: {
+  //           avatar: $('header.games_for_farm_site').attr('data-avatar'),
+  //           lang: $('header.games_for_farm_site').attr('data-lang'),
+  //           name: $('header.games_for_farm_site').attr('data-name'),
+  //           steam: $('header.games_for_farm_site').attr('data-steam')
+  //         }
+  //       }))}`;
+  //     } else {
+  //       postData = `extension=${encodeURIComponent(JSON.stringify(userData))}`;
+  //     }
 
-      debug('更新用户数据');
-      const logStatus = echoLog({ text: `${__('updatingUserData')}` });
+  //     debug('更新用户数据');
+  //     const logStatus = echoLog({ text: `${__('updatingUserData')}` });
 
-      const { result, statusText, status, data } = await httpRequest({
-        url: 'https://freeanywhere.net/php/extension/user_data_update.php',
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: postData
-      });
+  //     const { result, statusText, status, data } = await httpRequest({
+  //       url: 'https://freeanywhere.net/php/extension/user_data_update.php',
+  //       method: 'POST',
+  //       headers: {
+  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //       },
+  //       data: postData
+  //     });
 
-      if (data?.status !== 200) {
-        debug('验证请求失败', { result, statusText, status, data });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      }
+  //     if (data?.status !== 200) {
+  //       debug('验证请求失败', { result, statusText, status, data });
+  //       logStatus.error(`${result}:${statusText}(${status})`);
+  //       return false;
+  //     }
 
-      debug('验证成功');
-      logStatus.success();
-      return true;
-    } catch (error) {
-      debug('验证任务失败', { error });
-      throwError(error as Error, 'Freeanywhere.updateUserData');
-      return false;
-    }
-  }
+  //     debug('验证成功');
+  //     logStatus.success();
+  //     return true;
+  //   } catch (error) {
+  //     debug('验证任务失败', { error });
+  //     throwError(error as Error, 'Freeanywhere.updateUserData');
+  //     return false;
+  //   }
+  // }
 
   /**
  * 获取用户游戏列表的私有异步方法
@@ -678,37 +686,37 @@ class FreeAnyWhere extends Website {
  * 4. 将获取到的游戏列表保存到实例属性中
  * 5. 记录操作日志并返回获取状态
  */
-  async #userGamesGet(): Promise<boolean> {
-    try {
-      debug('获取用户游戏');
-      const logStatus = echoLog({ text: `${__('gettingUserGames')}` });
+  // async #userGamesGet(): Promise<boolean> {
+  //   try {
+  //     debug('获取用户游戏');
+  //     const logStatus = echoLog({ text: `${__('gettingUserGames')}` });
 
-      const { result, statusText, status, data } = await httpRequest({
-        url: 'https://freeanywhere.net/php/extension/user_games_get.php',
-        method: 'POST',
-        headers: {
-          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        data: `steam=${$('header.games_for_farm_site').attr('data-steam')}`,
-        dataType: 'json'
-      });
+  //     const { result, statusText, status, data } = await httpRequest({
+  //       url: 'https://freeanywhere.net/php/extension/user_games_get.php',
+  //       method: 'POST',
+  //       headers: {
+  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+  //       },
+  //       data: `steam=${$('header.games_for_farm_site').attr('data-steam')}`,
+  //       dataType: 'json'
+  //     });
 
-      if (result !== 'Success' || data?.status !== 200 || !data?.responseText) {
-        debug('验证请求失败', { result, statusText, status, data });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      }
+  //     if (result !== 'Success' || data?.status !== 200 || !data?.responseText) {
+  //       debug('验证请求失败', { result, statusText, status, data });
+  //       logStatus.error(`${result}:${statusText}(${status})`);
+  //       return false;
+  //     }
 
-      debug('验证成功');
-      this.games = data.response;
-      logStatus.success();
-      return true;
-    } catch (error) {
-      debug('验证任务失败', { error });
-      throwError(error as Error, 'Freeanywhere.userGamesGet');
-      return false;
-    }
-  }
+  //     debug('验证成功');
+  //     this.games = data.response;
+  //     logStatus.success();
+  //     return true;
+  //   } catch (error) {
+  //     debug('验证任务失败', { error });
+  //     throwError(error as Error, 'Freeanywhere.userGamesGet');
+  //     return false;
+  //   }
+  // }
   /**
    * 检查剩余密钥数量的私有异步方法
    *

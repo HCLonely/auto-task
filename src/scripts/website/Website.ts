@@ -1,14 +1,14 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:28
- * @LastEditTime : 2025-08-18 19:05:06
+ * @LastEditTime : 2026-04-28 09:13:42
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Website.ts
  * @Description  : 网站类
  */
 
 import throwError from '../tools/throwError';
-import Discord from '../social/Discord';
+// import Discord from '../social/Discord';
 // import Instagram from '../social/Instagram';
 import Reddit from '../social/Reddit';
 import Twitch from '../social/Twitch';
@@ -85,7 +85,7 @@ abstract class Website {
     steamCommunity: false
   };
   protected social: {
-    discord?: Discord
+    // discord?: Discord
     // instagram?: Instagram
     reddit?: Reddit
     twitch?: Twitch
@@ -173,16 +173,16 @@ abstract class Website {
       const pro = [];
       const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
 
-      // 检查 Discord 任务
-      if (tasks.discord) {
-        const hasDiscord = Object.values(tasks.discord).reduce((total, arr) => [...total, ...arr]).length > 0;
-        debug('检查 Discord 任务', { hasDiscord });
-        if (hasDiscord && (!this.socialInitialized.discord || !this.social.discord)) {
-          debug('初始化 Discord');
-          this.social.discord = new Discord();
-          pro.push(this.#bind('discord', this.social.discord.init(action)));
-        }
-      }
+      // // 检查 Discord 任务
+      // if (tasks.discord) {
+      //   const hasDiscord = Object.values(tasks.discord).reduce((total, arr) => [...total, ...arr]).length > 0;
+      //   debug('检查 Discord 任务', { hasDiscord });
+      //   if (hasDiscord && (!this.socialInitialized.discord || !this.social.discord)) {
+      //     debug('初始化 Discord');
+      //     this.social.discord = new Discord();
+      //     pro.push(this.#bind('discord', this.social.discord.init(action)));
+      //   }
+      // }
 
       // // 检查 Instagram 任务
       // if (tasks.instagram) {
@@ -381,10 +381,10 @@ abstract class Website {
       const tasks = doTask ? this.undoneTasks : this.socialTasks;
 
       // 处理各个社交媒体的任务
-      if (this.socialInitialized.discord === true && this.social.discord) {
-        debug('处理 Discord 任务');
-        pro.push(this.social.discord.toggle({ doTask, ...tasks.discord }));
-      }
+      // if (this.socialInitialized.discord === true && this.social.discord) {
+      //   debug('处理 Discord 任务');
+      //   pro.push(this.social.discord.toggle({ doTask, ...tasks.discord }));
+      // }
       // if (this.socialInitialized.instagram === true && this.social.instagram) {
       //   debug('处理 Instagram 任务');
       //   pro.push(this.social.instagram.toggle({ doTask, ...tasks.instagram }));

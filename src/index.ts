@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-26 15:44:54
- * @LastEditTime : 2025-10-15 10:21:46
+ * @LastEditTime : 2026-04-28 09:14:01
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/index.ts
  * @Description  : 入口文件
@@ -21,9 +21,9 @@ import updateChecker from './scripts/updateChecker';
 import echoLog from './scripts/echoLog';
 import SteamASF from './scripts/social/SteamASF';
 import { debug } from './scripts/tools/debug';
-import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
-import browser from 'browser-tool';
-import { v4 as uuidv4 } from 'uuid';
+// import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
+// import browser from 'browser-tool';
+// import { v4 as uuidv4 } from 'uuid';
 // import fawExtension from './scripts/website/freeanywhereExtension';
 
 try {
@@ -70,48 +70,48 @@ const handleRedditAuth = async (): Promise<void> => {
   await Swal.fire('', __('closePageNotice'));
 };
 
-// 处理Discord认证
-const handleDiscordAuth = async (): Promise<void> => {
-  debug('开始处理Discord认证');
-  const LocalStorage = window.localStorage;
-  const allLocalStorage = getAllLocalStorageAsObjects(LocalStorage);
-  const discordAuth = allLocalStorage.token as string;
+// // 处理Discord认证
+// const handleDiscordAuth = async (): Promise<void> => {
+//   debug('开始处理Discord认证');
+//   const LocalStorage = window.localStorage;
+//   const allLocalStorage = getAllLocalStorageAsObjects(LocalStorage);
+//   const discordAuth = allLocalStorage.token as string;
 
-  if (discordAuth && discordAuth.length > 0) {
-    const browserInfo = await browser.getInfo();
-    GM_setValue('discordAuth', {
-      auth: discordAuth,
-      xSuperProperties: window.btoa(JSON.stringify({
-        os: browserInfo.system,
-        browser: browserInfo.browser,
-        device: '',
-        system_locale: browserInfo.language,
-        ...((allLocalStorage.deviceProperties as Record<string, string>) || {}),
-        browser_user_agent: navigator.userAgent,
-        browser_version: browserInfo.browserVersion,
-        os_version: browserInfo.systemVersion,
-        referrer: '',
-        referring_domain: '',
-        referrer_current: '',
-        referring_domain_current: '',
-        release_channel: 'stable',
-        client_build_number: unsafeWindow.GLOBAL_ENV.BUILD_NUMBER,
-        client_event_source: null,
-        has_client_mods: false,
-        client_launch_id: uuidv4(),
-        client_heartbeat_session_id: (allLocalStorage.LAST_CLIENT_HEARTBEAT_SESSION as Record<string, string>)?.uuid,
-        client_app_state: 'focused'
-      }))
-    });
-    window.close();
-    Swal.fire('', __('closePageNotice'));
-  } else {
-    Swal.fire({
-      text: __('getDiscordAuthFailed'),
-      icon: 'error'
-    });
-  }
-};
+//   if (discordAuth && discordAuth.length > 0) {
+//     const browserInfo = await browser.getInfo();
+//     GM_setValue('discordAuth', {
+//       auth: discordAuth,
+//       xSuperProperties: window.btoa(JSON.stringify({
+//         os: browserInfo.system,
+//         browser: browserInfo.browser,
+//         device: '',
+//         system_locale: browserInfo.language,
+//         ...((allLocalStorage.deviceProperties as Record<string, string>) || {}),
+//         browser_user_agent: navigator.userAgent,
+//         browser_version: browserInfo.browserVersion,
+//         os_version: browserInfo.systemVersion,
+//         referrer: '',
+//         referring_domain: '',
+//         referrer_current: '',
+//         referring_domain_current: '',
+//         release_channel: 'stable',
+//         client_build_number: unsafeWindow.GLOBAL_ENV.BUILD_NUMBER,
+//         client_event_source: null,
+//         has_client_mods: false,
+//         client_launch_id: uuidv4(),
+//         client_heartbeat_session_id: (allLocalStorage.LAST_CLIENT_HEARTBEAT_SESSION as Record<string, string>)?.uuid,
+//         client_app_state: 'focused'
+//       }))
+//     });
+//     window.close();
+//     Swal.fire('', __('closePageNotice'));
+//   } else {
+//     Swal.fire({
+//       text: __('getDiscordAuthFailed'),
+//       icon: 'error'
+//     });
+//   }
+// };
 
 // 处理Steam商店认证
 const handleSteamStoreAuth = async (): Promise<void> => {
@@ -160,21 +160,31 @@ const initializeUI = (website: Website): void => {
     <div id="auto-task-info"
         style="display:${globalOptions.other.defaultShowLog ? 'block' : 'none'};
                 ${globalOptions.position.logSideX}:${globalOptions.position.logDistance.split(',')[0]}px;
-                ${globalOptions.position.logSideY}:${globalOptions.position.logDistance.split(',')[1]}px;">
+                ${globalOptions.position.logSideY}:${globalOptions.position.logDistance.split(',')[1]}px;
+                opacity: 0;
+                animation: fadeInUp 0.6s ease forwards;">
     </div>
     <div id="auto-task-buttons"
         style="display:${globalOptions.other.defaultShowButton ? 'block' : 'none'};
                 ${globalOptions.position.buttonSideX}:${globalOptions.position.buttonDistance.split(',')[0]}px;
-                ${globalOptions.position.buttonSideY}:${globalOptions.position.buttonDistance.split(',')[1]}px;">
+                ${globalOptions.position.buttonSideY}:${globalOptions.position.buttonDistance.split(',')[1]}px;
+                opacity: 0;
+                animation: fadeInUp 0.6s ease 0.2s forwards;">
     </div>
     <div class="show-button-div"
         style="display:${globalOptions.other.defaultShowButton ? 'none' : 'block'};
                 ${globalOptions.position.showButtonSideX}:${globalOptions.position.showButtonDistance.split(',')[0]}px;
-                ${globalOptions.position.showButtonSideY}:${globalOptions.position.showButtonDistance.split(',')[1]}px;">
-      <a class="auto-task-website-btn"
+                ${globalOptions.position.showButtonSideY}:${globalOptions.position.showButtonDistance.split(',')[1]}px;
+                opacity: 0;
+                animation: fadeInScale 0.5s ease 0.4s forwards;">
+      <a class="auto-task-website-btn show-button-link"
         href="javascript:void(0);"
         target="_self"
-        title="${__('showButton')}"> </a>
+        title="${__('showButton')}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </a>
     </div>
   `);
 
@@ -406,19 +416,20 @@ try {
   //   fawExtension();
   // }
 
-  if (window.location.hostname === 'discord.com') {
-    if (window.name === 'ATv4_discordAuth') {
-      debug('检测到Discord认证窗口');
-      handleDiscordAuth();
-    } else {
-      debug('检测到Discord主站');
-      const discordAuth = window.localStorage?.getItem('token')?.replace(/^"|"$/g, '');
-      if (discordAuth && discordAuth.length > 0) {
-        debug('获取到Discord认证token');
-        GM_setValue('discordAuth', { auth: discordAuth });
-      }
-    }
-  } else if (window.location.hostname === 'opquests.com') {
+  // if (window.location.hostname === 'discord.com') {
+  //   if (window.name === 'ATv4_discordAuth') {
+  //     debug('检测到Discord认证窗口');
+  //     handleDiscordAuth();
+  //   } else {
+  //     debug('检测到Discord主站');
+  //     const discordAuth = window.localStorage?.getItem('token')?.replace(/^"|"$/g, '');
+  //     if (discordAuth && discordAuth.length > 0) {
+  //       debug('获取到Discord认证token');
+  //       GM_setValue('discordAuth', { auth: discordAuth });
+  //     }
+  //   }
+  // } else
+  if (window.location.hostname === 'opquests.com') {
     debug('检测到opquests.com，加载主脚本');
     loadScript();
   } else if ((window.name === 'ATv4_updateStoreAuth' || GM_getValue('ATv4_updateStoreAuth')) && window.location.host === 'store.steampowered.com') {

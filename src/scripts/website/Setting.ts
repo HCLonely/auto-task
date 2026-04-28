@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-25 19:00:53
- * @LastEditTime : 2025-08-18 20:00:49
+ * @LastEditTime : 2026-01-22 15:15:26
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/website/Setting.ts
  * @Description  : 设置页面
@@ -17,6 +17,8 @@ import Swal from 'sweetalert2';
 import syncOptions from '../dataSync';
 import { debug } from '../tools/debug';
 import browser from 'browser-tool';
+// import { PluginManager } from '../tools/loadModules';
+// import { PluginPanel } from '../tools/pluginPanel';
 
 // 定义常量和类型
 const VALID_SIDES_X = ['right', 'left'] as const;
@@ -143,6 +145,19 @@ class Setting {
       this.#setupSocialButtons();
       this.#setupPositionHandlers();
       this.#setupHotKeyHandlers();
+
+      // // Create plugin manager instance
+      // const pluginManager = new PluginManager();
+
+      // // Create and initialize the UI panel
+      // unsafeWindow.pluginPanel = new PluginPanel(pluginManager);
+      // unsafeWindow.pluginPanel.init();
+
+      // // Initialize all enabled plugins
+      // await pluginManager.initializePlugins();
+
+      // console.log('Plugin system initialized successfully');
+
       debug('设置页面初始化完成');
     } catch (error) {
       debug('设置页面初始化失败', { error });

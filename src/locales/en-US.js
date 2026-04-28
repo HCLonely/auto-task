@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-30 17:08:27
- * @LastEditTime : 2025-08-20 09:21:42
+ * @LastEditTime : 2026-04-28 09:19:45
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/locales/en-US.js
  * @Description  : i18n英文
@@ -366,8 +366,10 @@ const data = {
   tasksNotCompleted: 'Tasks Not Completed',
   notConnect: 'Social platform is not connectted, skip task: %0',
   tgTaskNotice: 'The telegram task is checked, need to do it yourself!',
+  discordTaskNotice: 'The discord task is checked, need to do it yourself!',
   updatingUserData: 'Updating user data...',
   gettingUserGames: 'Getting user games...',
+  skipExtensionToVerifyTask: 'Need extension, skip automatic verification',
 
   // opquests
   confirmingTask: 'Confirming task...',

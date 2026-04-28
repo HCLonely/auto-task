@@ -1,11 +1,11 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-13 13:18:21
- * @LastEditTime : 2025-08-18 19:02:54
+ * @LastEditTime : 2026-01-19 14:41:30
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/types/global.d.ts
  */
-
+import { PluginPanel } from 'src/scripts/tools/pluginPanel';
 declare global {
 
   interface GlobalThis {
@@ -25,6 +25,7 @@ declare global {
     };
     __twilightBuildID: string;
     Twitter: any;
+    pluginPanel: PluginPanel
   }
 
   interface Array<T> {

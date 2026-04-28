@@ -141,7 +141,7 @@ class Opquests extends Website {
           .find('button[type="button"],button[type="submit"]')
           .has('i.fa-check');
         if (verifyBtn) {
-          debug('点击验证按钮');
+          debug('点击验证按钮', verifyBtn);
           verifyBtn.click();
           return;
         }

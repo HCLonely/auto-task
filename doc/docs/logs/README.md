@@ -5,6 +5,13 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.1
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.1)
+
+- 移除：Discord相关功能
+- 修复：Freeanywhere访问网页任务报错
+
 ### V5.1.0
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.0)

@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-20 19:38:41
- * @LastEditTime : 2025-08-20 09:21:16
+ * @LastEditTime : 2026-01-15 14:38:16
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/locales/zh-CN.js
  * @Description  : i18n中文
@@ -347,8 +347,10 @@ const data = {
   tasksNotCompleted: '任务未完成',
   notConnect: '社交平台未连接，跳过任务: %0',
   tgTaskNotice: '检测到Telegram任务，需要手动完成',
+  discordTaskNotice: '检测到Discord任务，需要手动完成',
   updatingUserData: '正在更新用户数据...',
   gettingUserGames: '正在获取用户游戏...',
+  skipExtensionToVerifyTask: '需要扩展，跳过自动验证',
 
   // opquests
   confirmingTask: '正在跳过警告页面...',

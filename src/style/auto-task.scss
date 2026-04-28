@@ -1,38 +1,90 @@
+// Animations
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 .colorful-button {
   position: relative !important;
-  padding: 14px 28px !important;
+  padding: 12px 24px !important;
   text-align: center !important;
   color: #fff !important;
   text-decoration: none !important;
-  background: #2196f3 !important;
-  border-radius: 30px !important;
+  background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+  border-radius: 12px !important;
   text-transform: capitalize !important;
   font-weight: 600 !important;
   letter-spacing: 0.5px !important;
   border: none !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
   display: inline-block !important;
   line-height: 1.5 !important;
-  margin: 8px !important;
-  margin-bottom: 12px !important;
+  margin: 6px !important;
+  margin-bottom: 10px !important;
   box-sizing: border-box !important;
-  min-height: 50px !important;
-  min-width: 140px !important;
+  min-height: 44px !important;
+  min-width: 120px !important;
   outline: none !important;
   vertical-align: middle !important;
   white-space: nowrap !important;
-  font-size: 18px !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3) !important;
+  backdrop-filter: blur(10px) !important;
+  overflow: hidden !important;
+
+  &::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+    transition: left 0.5s !important;
+  }
 
   &:hover {
-    background: #1976d2 !important;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+    box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4) !important;
+    transform: translateY(-2px) !important;
     cursor: pointer !important;
     color: #fff !important;
     text-decoration: none !important;
+
+    &::before {
+      left: 100% !important;
+    }
   }
 
   &:active {
-    transform: translateY(1px) !important;
+    transform: translateY(0px) !important;
+    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.3) !important;
     color: #fff !important;
     text-decoration: none !important;
   }
@@ -40,76 +92,224 @@
   &:focus {
     color: #fff !important;
     text-decoration: none !important;
-    outline: none !important;
+    outline: 2px solid rgba(30, 64, 175, 0.5) !important;
+    outline-offset: 2px !important;
   }
 }
 
 #auto-task-info {
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
-  width: 60%;
-  max-width: 500px;
-  max-height: 60%;
-  overflow-y: auto;
-  color: #000;
-  background-color: #fff;
-  padding-left: 5px;
+  position: fixed !important;
+  bottom: 20px !important;
+  right: 20px !important;
+  width: 60% !important;
+  max-width: 480px !important;
+  max-height: 50% !important;
+  overflow-y: auto !important;
+  color: #2d3748 !important;
+  background: linear-gradient(145deg, #ffffff 0%, #f7fafc 100%) !important;
+  padding: 8px 12px !important;
   z-index: 999999999 !important;
-  border: solid 2px #add8e6;
-  border-radius: 10px;
-  font-size: 14px !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 16px !important;
+  font-size: 13px !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  backdrop-filter: blur(20px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+
+  &:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 15px 15px -5px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(226, 232, 240, 0.3);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
+    border-radius: 3px !important;
+
+    &:hover {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+    }
+  }
 
   li {
     text-align: left;
     display: block !important;
     align-items: baseline !important;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(30, 64, 175, 0.05) !important;
+      border-radius: 8px !important;
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
 
     .before-icon {
       display: inline-block !important;
-      width: 14px !important;
-      height: 14px !important;
+      width: 16px !important;
+      height: 16px !important;
       position: relative !important;
-      top: 2px !important;
-      margin-right: 5px !important;
-      background-size: 14px !important;
+      top: 1px !important;
+      margin-right: 8px !important;
+      background-size: 16px !important;
       background-repeat: no-repeat !important;
       flex-shrink: 0 !important;
+      border-radius: 50%;
     }
 
     font.before {
-      color: #57bae8;
-      margin-right: 5px;
+      color: #1e40af !important;
+      margin-right: 8px !important;
+      font-weight: 600 !important;
+      font-size: 12px !important;
     }
 
     a.high-light {
-      color: #00aeff;
-      font-weight: bold;
+      color: #1e40af !important;
+      font-weight: 600 !important;
+      text-decoration: none !important;
+      border-bottom: 1px solid transparent !important;
+      transition: all 0.2s ease !important;
+
+      &:hover {
+        border-bottom-color: #1e40af !important;
+      }
     }
   }
 
   .success {
-    color: green;
+    color: #48bb78;
+    font-weight: 500;
   }
 
   .error {
-    color: red;
+    color: #f56565;
+    font-weight: 500;
   }
 
   .warning {
-    color: blue;
+    color: #ed8936;
+    font-weight: 500;
   }
 
   .info {
-    color: yellow;
+    color: #4299e1;
+    font-weight: 500;
   }
 
   .update-text {
-    color: green;
-    border: solid 2px #8dcb69;
-    margin: 5px 10px 5px 20px;
-    border-radius: 10px;
-    padding: 5px 20px;
+    color: #48bb78;
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+    margin: 12px 0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(72, 187, 120, 0.1);
+    transition: all 0.2s ease;
+
+    &:hover {
+      box-shadow: 0 4px 8px rgba(72, 187, 120, 0.15);
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// Button containers styling
+#auto-task-buttons {
+  position: fixed !important;
+  width: 168px !important;
+  min-width: 168px !important;
+  max-width: 168px !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  border-radius: 16px !important;
+  padding: 12px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 5px 10px -5px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 999999998 !important;
+
+  &:hover {
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 10px 15px -5px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+  }
+
+  p {
+    margin: 4px 0 !important;
+
+    &:first-child {
+      margin-top: 0 !important;
+    }
+
+    &:last-child {
+      margin-bottom: 0 !important;
+    }
+  }
+}
+
+.show-button-div {
+  position: fixed;
+  z-index: 999999998 !important;
+
+  .show-button-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 48px !important;
+    height: 48px !important;
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    text-decoration: none !important;
+    box-shadow: 0 8px 20px rgba(30, 64, 175, 0.4) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: none !important;
+    outline: none !important;
+
+    &:hover {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;
+      box-shadow: 0 12px 30px rgba(30, 64, 175, 0.5) !important;
+      transform: translateY(-3px) scale(1.05) !important;
+      animation: pulse 1.5s infinite !important;
+      color: #fff !important;
+      text-decoration: none !important;
+    }
+
+    &:active {
+      transform: translateY(-1px) scale(1.02) !important;
+      color: #fff !important;
+      text-decoration: none !important;
+    }
+
+    &:focus {
+      outline: 2px solid rgba(30, 64, 175, 0.5) !important;
+      outline-offset: 2px !important;
+      color: #fff !important;
+      text-decoration: none !important;
+    }
+
+    svg {
+      transition: transform 0.2s ease !important;
+    }
+
+    &:hover svg {
+      transform: translateX(2px) !important;
+    }
   }
 }
 
@@ -208,27 +408,12 @@ body.auto-task-options {
         @extend .colorful-button;
         z-index: 1;
         position: relative !important;
-        padding: 5px 20px !important;
-        text-align: center !important;
-        color: #fff !important;
-        text-decoration: none !important;
-        background: #2196f3 !important;
-        border-radius: 30px !important;
-        text-transform: capitalize !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.5px !important;
-        border: none !important;
-        transition: all 0.2s ease !important;
-        display: inline-block !important;
-        line-height: 1 !important;
-        margin: 8px !important;
-        box-sizing: border-box !important;
-        min-height: 30px !important;
-        min-width: 140px !important;
-        outline: none !important;
+        padding: 8px 16px !important;
+        font-size: 12px !important;
+        min-height: 36px !important;
+        min-width: 100px !important;
         vertical-align: middle !important;
         white-space: nowrap !important;
-        font-size: 15px !important;
       }
 
       input[type="text"] {

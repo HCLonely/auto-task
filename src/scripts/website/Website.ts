@@ -211,7 +211,7 @@ abstract class Website {
   }
 
   #isSocialInitializedTarget(target: EventTarget): target is keyof socialInitialized {
-    return target !== 'links';
+    return target !== 'links' && target !== 'extra';
   }
 
   async #bind(name: EventTarget, init: Promise<boolean | 'skip'>): Promise<bindReturn> {

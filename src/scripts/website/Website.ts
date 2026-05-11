@@ -164,6 +164,66 @@ abstract class Website {
     }
   }
 
+  async #waitForCompletedEvents(
+    eventName: 'social.init.completed' | 'social.toggle.completed' | 'task.links.completed',
+    runId: string,
+    expectedTargets: Set<EventTarget>,
+    timeoutMs: number
+  ): Promise<boolean> {
+    if (!this.eventBus || expectedTargets.size === 0) return true;
+
+    const completedTargets = new Set<EventTarget>();
+    const resultMap = new Map<EventTarget, boolean>();
+
+    return await new Promise<boolean>((resolve) => {
+      let cleaned = false;
+      const listener = (payload: CompletedPayload): void => {
+        if (payload.runId !== runId) return;
+        if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+          debug('忽略重复或无关的完成事件', { eventName, runId, target: payload.target });
+          return;
+        }
+
+        completedTargets.add(payload.target);
+        resultMap.set(payload.target, payload.ok);
+        debug('接收到完成事件', {
+          eventName,
+          runId,
+          target: payload.target,
+          ok: payload.ok,
+          completed: completedTargets.size,
+          total: expectedTargets.size
+        });
+
+        if (completedTargets.size === expectedTargets.size) {
+          cleanup();
+          resolve(Array.from(resultMap.values()).every(Boolean));
+        }
+      };
+
+      const cleanup = (): void => {
+        if (cleaned) return;
+        cleaned = true;
+        clearTimeout(timer);
+        this.eventBus?.off(eventName, listener);
+      };
+
+      const timer = setTimeout(() => {
+        debug('等待完成事件超时', {
+          eventName,
+          runId,
+          timeoutMs,
+          expected: Array.from(expectedTargets),
+          completed: Array.from(completedTargets)
+        });
+        cleanup();
+        resolve(false);
+      }, timeoutMs);
+
+      this.eventBus?.on(eventName, listener);
+    });
+  }
+
   /**
    * 初始化社交媒体的方法
    *
@@ -465,49 +525,127 @@ abstract class Website {
       const doTask = action === 'do';
       const tasks = doTask ? this.undoneTasks : this.socialTasks;
 
-      // 处理各个社交媒体的任务
-      // if (this.socialInitialized.discord === true && this.social.discord) {
-      //   debug('处理 Discord 任务');
-      //   pro.push(this.social.discord.toggle({ doTask, ...tasks.discord }));
-      // }
-      // if (this.socialInitialized.instagram === true && this.social.instagram) {
-      //   debug('处理 Instagram 任务');
-      //   pro.push(this.social.instagram.toggle({ doTask, ...tasks.instagram }));
-      // }
-      if (this.socialInitialized.reddit === true && this.social.reddit) {
-        debug('处理 Reddit 任务');
-        pro.push(this.social.reddit.toggle({ doTask, ...tasks.reddit }));
-      }
-      if (this.socialInitialized.twitch === true && this.social.twitch) {
-        debug('处理 Twitch 任务');
-        pro.push(this.social.twitch.toggle({ doTask, ...tasks.twitch }));
-      }
-      if (this.socialInitialized.twitter === true && this.social.twitter) {
-        debug('处理 Twitter 任务');
-        pro.push(this.social.twitter.toggle({ doTask, ...tasks.twitter }));
-      }
-      if (this.socialInitialized.vk === true && this.social.vk) {
-        debug('处理 VK 任务');
-        pro.push(this.social.vk.toggle({ doTask, ...tasks.vk }));
-      }
-      if (this.socialInitialized.youtube === true && this.social.youtube) {
-        debug('处理 YouTube 任务');
-        pro.push(this.social.youtube.toggle({ doTask, ...tasks.youtube }));
-      }
-      if (
-        (this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) &&
-        (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) &&
-        this.social.steam
-      ) {
-        debug('处理 Steam 任务');
-        pro.push(this.social.steam.toggle({ doTask, ...tasks.steam }));
-      }
+      if (this.eventBus) {
+        const runId = `toggle-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        const timestamp = Date.now();
+        const timeoutMs = 30000;
+        const toggleTasks: Array<{ target: EventTarget, payloadTasks: Record<string, Array<string>> }> = [];
 
-      // 处理链接任务
-      if (this.social.visitLink && tasks.links && doTask) {
-        debug('处理链接任务', { linksCount: tasks.links.length });
-        for (const link of tasks.links) {
-          pro.push(this.social.visitLink(link));
+        if (this.socialInitialized.reddit === true && this.social.reddit) {
+          debug('通过事件处理 Reddit 任务');
+          toggleTasks.push({ target: 'reddit', payloadTasks: tasks.reddit as Record<string, Array<string>> });
+        }
+        if (this.socialInitialized.twitch === true && this.social.twitch) {
+          debug('通过事件处理 Twitch 任务');
+          toggleTasks.push({ target: 'twitch', payloadTasks: tasks.twitch as Record<string, Array<string>> });
+        }
+        if (this.socialInitialized.twitter === true && this.social.twitter) {
+          debug('通过事件处理 Twitter 任务');
+          toggleTasks.push({ target: 'twitter', payloadTasks: tasks.twitter as Record<string, Array<string>> });
+        }
+        if (this.socialInitialized.vk === true && this.social.vk) {
+          debug('通过事件处理 VK 任务');
+          toggleTasks.push({ target: 'vk', payloadTasks: tasks.vk as Record<string, Array<string>> });
+        }
+        if (this.socialInitialized.youtube === true && this.social.youtube) {
+          debug('通过事件处理 YouTube 任务');
+          toggleTasks.push({ target: 'youtube', payloadTasks: tasks.youtube as Record<string, Array<string>> });
+        }
+        if (this.social.steam) {
+          const steamPayloadTasks = tasks.steam as Record<string, Array<string>>;
+          if (this.steamTaskType.steamStore && this.socialInitialized.steamStore === true) {
+            debug('通过事件处理 Steam 商店任务');
+            toggleTasks.push({ target: 'steamStore', payloadTasks: steamPayloadTasks });
+          }
+          if (this.steamTaskType.steamCommunity && this.socialInitialized.steamCommunity === true) {
+            debug('通过事件处理 Steam 社区任务');
+            toggleTasks.push({ target: 'steamCommunity', payloadTasks: steamPayloadTasks });
+          }
+          if (!this.steamTaskType.steamStore && !this.steamTaskType.steamCommunity && this.socialInitialized.steamStore === true) {
+            debug('通过事件处理 Steam 任务（默认商店目标）');
+            toggleTasks.push({ target: 'steamStore', payloadTasks: steamPayloadTasks });
+          }
+        }
+
+        const expectedToggleTargets = new Set(toggleTasks.map((task) => task.target));
+        for (const task of toggleTasks) {
+          void this.eventBus.emit('social.toggle.requested', {
+            runId,
+            timestamp,
+            source: 'website',
+            action,
+            target: task.target,
+            tasks: task.payloadTasks
+          }).catch((error) => {
+            debug('发送切换请求事件失败', { runId, target: task.target, error });
+          });
+        }
+
+        const toggleSuccess = await this.#waitForCompletedEvents('social.toggle.completed', runId, expectedToggleTargets, timeoutMs);
+        if (!toggleSuccess) {
+          debug('社交媒体切换失败或超时', { runId });
+          return false;
+        }
+
+        if (tasks.links && doTask && tasks.links.length > 0) {
+          debug('通过事件处理链接任务', { linksCount: tasks.links.length });
+          const linksRunId = `links-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+          void this.eventBus.emit('task.links.requested', {
+            runId: linksRunId,
+            timestamp: Date.now(),
+            source: 'website',
+            action,
+            target: 'links',
+            tasks: { links: tasks.links }
+          }).catch((error) => {
+            debug('发送链接任务请求事件失败', { runId: linksRunId, error });
+          });
+
+          const linkSuccess = await this.#waitForCompletedEvents('task.links.completed', linksRunId, new Set<EventTarget>(['links']), 10000);
+          if (!linkSuccess && this.social.visitLink) {
+            debug('链接事件处理失败或超时，回退到直接访问', { runId: linksRunId });
+            for (const link of tasks.links) {
+              pro.push(this.social.visitLink(link));
+            }
+          }
+        }
+      } else {
+        // 处理各个社交媒体的任务（兼容模式）
+        if (this.socialInitialized.reddit === true && this.social.reddit) {
+          debug('处理 Reddit 任务');
+          pro.push(this.social.reddit.toggle({ doTask, ...tasks.reddit }));
+        }
+        if (this.socialInitialized.twitch === true && this.social.twitch) {
+          debug('处理 Twitch 任务');
+          pro.push(this.social.twitch.toggle({ doTask, ...tasks.twitch }));
+        }
+        if (this.socialInitialized.twitter === true && this.social.twitter) {
+          debug('处理 Twitter 任务');
+          pro.push(this.social.twitter.toggle({ doTask, ...tasks.twitter }));
+        }
+        if (this.socialInitialized.vk === true && this.social.vk) {
+          debug('处理 VK 任务');
+          pro.push(this.social.vk.toggle({ doTask, ...tasks.vk }));
+        }
+        if (this.socialInitialized.youtube === true && this.social.youtube) {
+          debug('处理 YouTube 任务');
+          pro.push(this.social.youtube.toggle({ doTask, ...tasks.youtube }));
+        }
+        if (
+          (this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) &&
+          (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) &&
+          this.social.steam
+        ) {
+          debug('处理 Steam 任务');
+          pro.push(this.social.steam.toggle({ doTask, ...tasks.steam }));
+        }
+
+        // 处理链接任务（兼容模式）
+        if (this.social.visitLink && tasks.links && doTask) {
+          debug('处理链接任务', { linksCount: tasks.links.length });
+          for (const link of tasks.links) {
+            pro.push(this.social.visitLink(link));
+          }
         }
       }
 

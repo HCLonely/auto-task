@@ -15,7 +15,7 @@ import { unique, delay } from '../tools/tools';
 import __ from '../tools/i18n';
 import { globalOptions } from '../globalOptions';
 import getTID from './XTID/getTID.js';
-import { getFwdForSdk } from './XFwdForSdk/main';
+// import { getFwdForSdk } from './XFwdForSdk/main';
 import { debug } from '../tools/debug';
 /**
  * Twitter类用于处理与Twitter相关的任务，包括关注/取关用户和转推/取消转推推文。
@@ -70,10 +70,10 @@ class Twitter extends Social {
   #cache: cache = GM_getValue<cache>('twitterCache') || {};
   #initialized = false;
   #getTID!: (method: string, path: string) => Promise<string>;
-  #FwdForSdk!: {
-    str: string,
-    expiryTimeMillis: number
-  };
+  // #FwdForSdk!: {
+  //   str: string,
+  //   expiryTimeMillis: number
+  // };
   #headers: Record<string, string> = {};
 
   /**
@@ -138,7 +138,7 @@ class Twitter extends Social {
       debug('创建Twitter会话和SDK');
       // this.#session = await createSession();
       this.#getTID = await getTID();
-      this.#FwdForSdk = await getFwdForSdk();
+      // this.#FwdForSdk = await getFwdForSdk();
       const isVerified = await this.#verifyAuth();
 
       if (isVerified) {
@@ -291,8 +291,8 @@ class Twitter extends Social {
         headers: {
           ...this.#headers,
           'Content-Type': 'application/x-www-form-urlencoded',
-          'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`),
-          'x-xp-forwarded-for': this.#FwdForSdk.str
+          'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`)
+          // 'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         responseType: 'json',
         data: $.param({
@@ -395,8 +395,8 @@ class Twitter extends Social {
           'content-type': 'application/json',
           referer: `https://x.com/${name}`,
           'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' +
-            `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`),
-          'x-xp-forwarded-for': this.#FwdForSdk.str
+            `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`)
+          // 'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         responseType: 'json'
       });
@@ -480,8 +480,8 @@ class Twitter extends Social {
           'Content-Type': 'application/json',
           origin: 'https://x.com',
           referer: 'https://x.com/home',
-          'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`),
-          'x-xp-forwarded-for': this.#FwdForSdk.str
+          'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`)
+          // 'x-xp-forwarded-for': this.#FwdForSdk.str
         },
         data: `{"variables":{"${doTask ? '' : 'source_'}tweet_id":"${retweetId}","dark_request":false},"queryId":"${doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw'}"}`,
         responseType: 'json'
@@ -580,10 +580,10 @@ class Twitter extends Social {
         debug('处理后的Twitter用户列表', { count: realUsers.length, users: realUsers });
         if (realUsers.length > 0) {
           for (const user of realUsers) {
-            if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-              debug('Twitter SDK过期，重新获取', { expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis });
-              this.#FwdForSdk = await getFwdForSdk();
-            }
+            // if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
+            //   debug('Twitter SDK过期，重新获取', { expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis });
+            //   this.#FwdForSdk = await getFwdForSdk();
+            // }
             await this.#toggleUser({ name: user, doTask });
             await delay(1000);
           }
@@ -603,10 +603,10 @@ class Twitter extends Social {
         debug('处理后的Twitter转推列表', { count: realRetweets.length, retweets: realRetweets });
         if (realRetweets.length > 0) {
           for (const retweet of realRetweets) {
-            if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-              debug('Twitter SDK过期，重新获取');
-              this.#FwdForSdk = await getFwdForSdk();
-            }
+            // if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
+            //   debug('Twitter SDK过期，重新获取');
+            //   this.#FwdForSdk = await getFwdForSdk();
+            // }
             await this.#toggleRetweet({ retweetId: retweet, doTask });
             await delay(1000);
           }
@@ -644,5 +644,5 @@ class Twitter extends Social {
     }
   }
 }
-
+unsafeWindow.Twitter = Twitter;
 export default Twitter;

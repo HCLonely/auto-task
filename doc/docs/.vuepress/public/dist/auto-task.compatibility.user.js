@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.1.1
+// @version            5.1.2
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -147,7 +147,88 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(Swal, Cookies, browser, util, dayjs, keyboardJS) {
+function _classPrivateMethodInitSpec(e, a) {
+  _checkPrivateRedeclaration(e, a), a.add(e);
+}
+
+function _classPrivateFieldInitSpec(e, t, a) {
+  _checkPrivateRedeclaration(e, t), t.set(e, a);
+}
+
+function _checkPrivateRedeclaration(e, t) {
+  if (t.has(e)) {
+    throw new TypeError('Cannot initialize the same private elements twice on an object');
+  }
+}
+
+function _classPrivateFieldSet(s, a, r) {
+  return s.set(_assertClassBrand(s, a), r), r;
+}
+
+function _classPrivateFieldGet(s, a) {
+  return s.get(_assertClassBrand(s, a));
+}
+
+function _assertClassBrand(e, t, n) {
+  if ('function' == typeof e ? e === t : e.has(t)) {
+    return arguments.length < 3 ? t : n;
+  }
+  throw new TypeError('Private element is not present on this object');
+}
+
+function ownKeys(e, r) {
+  var t = Object.keys(e);
+  if (Object.getOwnPropertySymbols) {
+    var o = Object.getOwnPropertySymbols(e);
+    r && (o = o.filter((function(r) {
+      return Object.getOwnPropertyDescriptor(e, r).enumerable;
+    }))), t.push.apply(t, o);
+  }
+  return t;
+}
+
+function _objectSpread(e) {
+  for (var r = 1; r < arguments.length; r++) {
+    var t = null != arguments[r] ? arguments[r] : {};
+    r % 2 ? ownKeys(Object(t), !0).forEach((function(r) {
+      _defineProperty(e, r, t[r]);
+    })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach((function(r) {
+      Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
+    }));
+  }
+  return e;
+}
+
+function _defineProperty(e, r, t) {
+  return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+    value: t,
+    enumerable: !0,
+    configurable: !0,
+    writable: !0
+  }) : e[r] = t, e;
+}
+
+function _toPropertyKey(t) {
+  var i = _toPrimitive(t, 'string');
+  return 'symbol' == typeof i ? i : i + '';
+}
+
+function _toPrimitive(t, r) {
+  if ('object' != typeof t || !t) {
+    return t;
+  }
+  var e = t[Symbol.toPrimitive];
+  if (void 0 !== e) {
+    var i = e.call(t, r || 'default');
+    if ('object' != typeof i) {
+      return i;
+    }
+    throw new TypeError('@@toPrimitive must return a primitive value.');
+  }
+  return ('string' === r ? String : Number)(t);
+}
+
+(function(Swal, Cookies, browser, util, dayjs, keyboardJS, _GiveawaySu, _Keylol, _globalOptions$other, _globalOptions$other2) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -184,10 +265,10 @@ if (missingDependencies.length > 0) {
           groups[_key - 1] = arguments[_key];
         }
         if (groups.length >= 3 && match.includes('.')) {
-          return groups.map((seg => seg.length > 8 ? `${seg.slice(0, 4)}***${seg.slice(-4)}` : seg)).join('.');
+          return groups.map((seg => seg.length > 8 ? ''.concat(seg.slice(0, 4), '***').concat(seg.slice(-4)) : seg)).join('.');
         }
         if (match.length > 8) {
-          return `${match.slice(0, 4)}***${match.slice(-4)}`;
+          return ''.concat(match.slice(0, 4), '***').concat(match.slice(-4));
         }
         return match;
       }));
@@ -324,9 +405,7 @@ if (missingDependencies.length > 0) {
   const userDefinedGlobalOptions = GM_getValue('globalOptions') || {};
   const deepMerge = (target, source) => {
     try {
-      const result = {
-        ...target
-      };
+      const result = _objectSpread({}, target);
       for (const [key, value] of Object.entries(source)) {
         const targetValue = target[key];
         if (isObject(value) && isObject(targetValue)) {
@@ -335,19 +414,19 @@ if (missingDependencies.length > 0) {
           if (typeof value === typeof targetValue) {
             result[key] = value;
           } else {
-            console.log('%c%s', 'color:yellow;background:black', `Auto-Task[Warning]: Type mismatch for key "${key}". Expected ${typeof targetValue}, got ${typeof value}. Using default value.`);
+            console.log('%c%s', 'color:yellow;background:black', 'Auto-Task[Warning]: Type mismatch for key "'.concat(key, '". Expected ').concat(typeof targetValue, ', got ').concat(typeof value, '. Using default value.'));
           }
         }
       }
       return result;
     } catch (error) {
-      console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: deepMerge\n${error.stack}`);
+      console.log('%c%s', 'color:white;background:red', 'Auto-Task[Error]: deepMerge\n'.concat(error.stack));
       return target;
     }
   };
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
-  var style = '@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInScale{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.colorful-button,#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn,body.auto-task-options .auto-task-form table button{position:relative !important;padding:12px 24px !important;text-align:center !important;color:#fff !important;text-decoration:none !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:12px !important;text-transform:capitalize !important;font-weight:600 !important;letter-spacing:.5px !important;border:none !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;display:inline-block !important;line-height:1.5 !important;margin:6px !important;margin-bottom:10px !important;box-sizing:border-box !important;min-height:44px !important;min-width:120px !important;outline:none !important;vertical-align:middle !important;white-space:nowrap !important;font-size:14px !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;-webkit-backdrop-filter:blur(10px) !important;backdrop-filter:blur(10px) !important;overflow:hidden !important}.colorful-button::before,#auto-task-buttons a.auto-task-website-btn::before,.show-button-div a.auto-task-website-btn::before,body.auto-task-options .auto-task-form table button::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:100% !important;background:linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;transition:left .5s !important}.colorful-button:hover,#auto-task-buttons a.auto-task-website-btn:hover,.show-button-div a.auto-task-website-btn:hover,body.auto-task-options .auto-task-form table button:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 8px 25px rgba(30,64,175,.4) !important;transform:translateY(-2px) !important;cursor:pointer !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::before,#auto-task-buttons a.auto-task-website-btn:hover::before,.show-button-div a.auto-task-website-btn:hover::before,body.auto-task-options .auto-task-form table button:hover::before{left:100% !important}.colorful-button:active,#auto-task-buttons a.auto-task-website-btn:active,.show-button-div a.auto-task-website-btn:active,body.auto-task-options .auto-task-form table button:active{transform:translateY(0px) !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;color:#fff !important;text-decoration:none !important}.colorful-button:focus,#auto-task-buttons a.auto-task-website-btn:focus,.show-button-div a.auto-task-website-btn:focus,body.auto-task-options .auto-task-form table button:focus{color:#fff !important;text-decoration:none !important;outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:#2d3748 !important;background:linear-gradient(145deg, #ffffff 0%, #f7fafc 100%) !important;padding:8px 12px !important;z-index:999999999 !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;font-size:13px !important;box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.15),0 15px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-info::-webkit-scrollbar{width:6px}#auto-task-info::-webkit-scrollbar-track{background:rgba(226,232,240,.3);border-radius:3px}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(135deg, #1e40af, #3b82f6) !important;border-radius:3px !important}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb) !important}#auto-task-info li{text-align:left;display:block !important;align-items:baseline !important;padding:8px 0;border-bottom:1px solid rgba(226,232,240,.3);transition:all .2s ease}#auto-task-info li:hover{background:rgba(30,64,175,.05) !important;border-radius:8px !important;padding-left:8px !important;padding-right:8px !important}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:16px !important;height:16px !important;position:relative !important;top:1px !important;margin-right:8px !important;background-size:16px !important;background-repeat:no-repeat !important;flex-shrink:0 !important;border-radius:50%}#auto-task-info li font.before{color:#1e40af !important;margin-right:8px !important;font-weight:600 !important;font-size:12px !important}#auto-task-info li a.high-light{color:#1e40af !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1px solid rgba(0,0,0,0) !important;transition:all .2s ease !important}#auto-task-info li a.high-light:hover{border-bottom-color:#1e40af !important}#auto-task-info .success{color:#48bb78;font-weight:500}#auto-task-info .error{color:#f56565;font-weight:500}#auto-task-info .warning{color:#ed8936;font-weight:500}#auto-task-info .info{color:#4299e1;font-weight:500}#auto-task-info .update-text{color:#48bb78;background:linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);border:1px solid rgba(72,187,120,.3);margin:12px 0;border-radius:12px;padding:12px 16px;font-weight:500;box-shadow:0 2px 4px rgba(72,187,120,.1);transition:all .2s ease}#auto-task-info .update-text:hover{box-shadow:0 4px 8px rgba(72,187,120,.15);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;width:168px !important;min-width:168px !important;max-width:168px !important;background:linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;padding:12px !important;box-shadow:0 10px 25px -5px rgba(0,0,0,.1),0 5px 10px -5px rgba(0,0,0,.04) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;z-index:999999998 !important}#auto-task-buttons:hover{box-shadow:0 20px 40px -10px rgba(0,0,0,.15),0 10px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-buttons p{margin:4px 0 !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}.show-button-div{position:fixed;z-index:999999998 !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:48px !important;height:48px !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 8px 20px rgba(30,64,175,.4) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;border:none !important;outline:none !important}.show-button-div .show-button-link:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 12px 30px rgba(30,64,175,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:pulse 1.5s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus{outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .2s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:solid 1px;border-radius:5px;padding:0 2px}.auto-task-keylol[selected=selected]{background-color:blue !important;color:#fff !important}.auto-task-form table{font-family:verdana,arial,sans-serif;font-size:11px;color:#333;border-width:1px;border-color:#999;border-collapse:collapse;width:100%}.auto-task-form table thead td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;font-weight:bold;background-color:#fff}.auto-task-form table tbody tr{background-color:#d4e3e5}.auto-task-form table tbody tr:hover{background-color:#ff6 !important}.auto-task-form table tbody tr th{background-color:#c3dde0;border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;text-transform:capitalize}.auto-task-form table tbody tr td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9}.swal2-modal{width:70% !important;max-width:1000px !important}.swal2-modal #swal2-title{text-align:center !important}body.auto-task-options{padding-top:10px;text-align:center}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:20px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:5px}body.auto-task-options .auto-task-form table button{z-index:1;position:relative !important;padding:8px 16px !important;font-size:12px !important;min-height:36px !important;min-width:100px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline-style:none;border:1px solid #ccc;border-radius:3px;padding:5px 10px;font-size:14px}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}body.auto-task-options .auto-task-form table label{position:relative;width:160px;height:80px;cursor:pointer;transform:scale(0.25);margin:-25% 0;top:-30px;display:inline-block}body.auto-task-options .auto-task-form table label input{position:relative;z-index:1;appearance:none}body.auto-task-options .auto-task-form table label input:checked~span{background:#05be05;box-shadow:0 15px 25px rgba(5,190,5,.4)}body.auto-task-options .auto-task-form table label input:checked~span i{left:84px}body.auto-task-options .auto-task-form table label input:checked~span i::before{background:#05be05;box-shadow:35px 0 0 #05be05}body.auto-task-options .auto-task-form table label input:checked~span i::after{bottom:12px;height:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;background:#05be05}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#fe0000;border-radius:80px;transition:.5s;box-shadow:0 15px 25px rgba(254,0,0,.4)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:4px;left:4px;width:72px;height:72px;background:#fff;border-radius:50%}body.auto-task-options .auto-task-form table label span i::before{content:"";position:absolute;top:22px;left:12px;width:12px;height:12px;border-radius:50%;background:#fe0000;box-shadow:35px 0 0 #fe0000;transition:.5s}body.auto-task-options .auto-task-form table label span i::after{content:"";position:absolute;bottom:15px;left:calc(50% - 15px);width:30px;height:6px;border-radius:6px;background:#fe0000;transition:.5s}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.5}body.auto-task-history .container a{color:#007bff;text-decoration:none;background-color:rgba(0,0,0,0)}body.auto-task-history .container .card{width:80%;max-width:800px;border-radius:10px;background:rgba(118,118,118,.1019607843);border-top:1px solid hsla(0,0%,100%,.5019607843);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 15px 25px rgba(0,0,0,.1019607843);margin:20px auto;position:relative;display:flex;flex-direction:column;word-wrap:break-word;-webkit-background-clip:border-box;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}body.auto-task-history .container .card .title{text-align:center;font-size:30px;font-weight:bold;margin:5px 0}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:#93e1ff;border-radius:10px;padding:3px}body.auto-task-history .container .card ul{margin-bottom:25px}body.auto-task-history .container .card ul li{margin-bottom:5px;line-height:20px}body.auto-task-history .container .card ul a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{right:10px;width:38px;height:35px;position:absolute;font-size:24px;cursor:pointer;border-radius:10px}body.auto-task-history .container .card .delete-task:hover{background:#fff}body.auto-task-history .container .card .time{right:5px;position:absolute;bottom:0;color:#e83e8c;font-family:\'SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace\';font-size:15px}#auto-task-buttons,.show-button-div{position:fixed !important;top:30px;right:15px;width:150px !important;z-index:999999999 !important;padding:8px !important;border-radius:12px !important}#auto-task-buttons p,.show-button-div p{line-height:normal !important;height:auto !important;text-align:center !important;margin:8px 0 !important;padding:0 !important;font-size:16px !important;color:#333 !important}#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn{width:140px !important;min-height:30px !important;line-height:1.5 !important;font-size:16px !important;display:block !important;margin:0 auto !important;padding:8px 16px !important}.show-button-div{width:40px !important;cursor:pointer !important;padding:4px !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:12px !important;top:50% !important;transform:translateY(-50%) !important;font-size:18px !important;font-weight:bold !important;color:#fff !important}.auto-task-capitalize{text-transform:capitalize !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{box-shadow:inset 0px 0px 4px 1px rgba(100,150,200,.5) !important}.swal2-checkbox-custom{align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:10px;padding:0 5px;margin-left:5px}.auto-task-giveaway-status.active{background-color:#5cb85c}.auto-task-giveaway-status.not-active{background-color:#d9534f}';
+  var style = '@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInScale{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.colorful-button,#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn,body.auto-task-options .auto-task-form table button{position:relative !important;padding:12px 24px !important;text-align:center !important;color:#fff !important;text-decoration:none !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:12px !important;text-transform:capitalize !important;font-weight:600 !important;letter-spacing:.5px !important;border:none !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;display:inline-block !important;line-height:1.5 !important;margin:6px !important;margin-bottom:10px !important;box-sizing:border-box !important;min-height:44px !important;min-width:120px !important;outline:none !important;vertical-align:middle !important;white-space:nowrap !important;font-size:14px !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;-webkit-backdrop-filter:blur(10px) !important;backdrop-filter:blur(10px) !important;overflow:hidden !important}.colorful-button::before,#auto-task-buttons a.auto-task-website-btn::before,.show-button-div a.auto-task-website-btn::before,body.auto-task-options .auto-task-form table button::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:100% !important;background:linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;transition:left .5s !important}.colorful-button:hover,#auto-task-buttons a.auto-task-website-btn:hover,.show-button-div a.auto-task-website-btn:hover,body.auto-task-options .auto-task-form table button:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 8px 25px rgba(30,64,175,.4) !important;transform:translateY(-2px) !important;cursor:pointer !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::before,#auto-task-buttons a.auto-task-website-btn:hover::before,.show-button-div a.auto-task-website-btn:hover::before,body.auto-task-options .auto-task-form table button:hover::before{left:100% !important}.colorful-button:active,#auto-task-buttons a.auto-task-website-btn:active,.show-button-div a.auto-task-website-btn:active,body.auto-task-options .auto-task-form table button:active{transform:translateY(0px) !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;color:#fff !important;text-decoration:none !important}.colorful-button:focus,#auto-task-buttons a.auto-task-website-btn:focus,.show-button-div a.auto-task-website-btn:focus,body.auto-task-options .auto-task-form table button:focus{color:#fff !important;text-decoration:none !important;outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:#2d3748 !important;background:linear-gradient(145deg, #ffffff 0%, #f7fafc 100%) !important;padding:8px 12px !important;z-index:999999999 !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;font-size:13px !important;box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.15),0 15px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-info::-webkit-scrollbar{width:6px}#auto-task-info::-webkit-scrollbar-track{background:rgba(226,232,240,.3);border-radius:3px}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(135deg, #1e40af, #3b82f6) !important;border-radius:3px !important}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb) !important}#auto-task-info li{text-align:left;display:block !important;align-items:baseline !important;padding:8px 0;border-bottom:1px solid rgba(226,232,240,.3);transition:all .2s ease}#auto-task-info li:hover{background:rgba(30,64,175,.05) !important;border-radius:8px !important;padding-left:8px !important;padding-right:8px !important}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:16px !important;height:16px !important;position:relative !important;top:1px !important;margin-right:8px !important;background-size:16px !important;background-repeat:no-repeat !important;flex-shrink:0 !important;border-radius:50%}#auto-task-info li font.before{color:#1e40af !important;margin-right:8px !important;font-weight:600 !important;font-size:12px !important}#auto-task-info li a.high-light{color:#1e40af !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1px solid rgba(0,0,0,0) !important;transition:all .2s ease !important}#auto-task-info li a.high-light:hover{border-bottom-color:#1e40af !important}#auto-task-info .success{color:#48bb78;font-weight:500}#auto-task-info .error{color:#f56565;font-weight:500}#auto-task-info .warning{color:#ed8936;font-weight:500}#auto-task-info .info{color:#4299e1;font-weight:500}#auto-task-info .update-text{color:#48bb78;background:linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);border:1px solid rgba(72,187,120,.3);margin:12px 0;border-radius:12px;padding:12px 16px;font-weight:500;box-shadow:0 2px 4px rgba(72,187,120,.1);transition:all .2s ease}#auto-task-info .update-text:hover{box-shadow:0 4px 8px rgba(72,187,120,.15);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;width:168px !important;min-width:168px !important;max-width:168px !important;background:linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;padding:12px !important;box-shadow:0 10px 25px -5px rgba(0,0,0,.1),0 5px 10px -5px rgba(0,0,0,.04) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;z-index:999999998 !important}#auto-task-buttons:hover{box-shadow:0 20px 40px -10px rgba(0,0,0,.15),0 10px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-buttons p{margin:4px 0 !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}.show-button-div{position:fixed;z-index:999999998 !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:48px !important;height:48px !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 8px 20px rgba(30,64,175,.4) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;border:none !important;outline:none !important}.show-button-div .show-button-link:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 12px 30px rgba(30,64,175,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:pulse 1.5s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus{outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .2s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:solid 1px;border-radius:5px;padding:0 2px}.auto-task-keylol[selected=selected]{background-color:blue !important;color:#fff !important}.auto-task-form table{font-family:verdana,arial,sans-serif;font-size:11px;color:#333;border-width:1px;border-color:#999;border-collapse:collapse;width:100%}.auto-task-form table thead td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;font-weight:bold;background-color:#fff}.auto-task-form table tbody tr{background-color:#d4e3e5}.auto-task-form table tbody tr:hover{background-color:#ff6 !important}.auto-task-form table tbody tr th{background-color:#c3dde0;border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;text-transform:capitalize}.auto-task-form table tbody tr td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9}.swal2-modal{width:70% !important;max-width:1000px !important}.swal2-modal #swal2-title{text-align:center !important}body.auto-task-options{padding-top:10px;text-align:center}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:20px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:5px}body.auto-task-options .auto-task-form table button{z-index:1;position:relative !important;padding:8px 16px !important;font-size:12px !important;min-height:36px !important;min-width:100px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline-style:none;border:1px solid #ccc;border-radius:3px;padding:5px 10px;font-size:14px}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}body.auto-task-options .auto-task-form table label{position:relative;width:160px;height:80px;cursor:pointer;transform:scale(0.25);margin:-25% 0;top:-30px;display:inline-block}body.auto-task-options .auto-task-form table label input{position:relative;z-index:1;-webkit-appearance:none;appearance:none}body.auto-task-options .auto-task-form table label input:checked~span{background:#05be05;box-shadow:0 15px 25px rgba(5,190,5,.4)}body.auto-task-options .auto-task-form table label input:checked~span i{left:84px}body.auto-task-options .auto-task-form table label input:checked~span i::before{background:#05be05;box-shadow:35px 0 0 #05be05}body.auto-task-options .auto-task-form table label input:checked~span i::after{bottom:12px;height:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;background:#05be05}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#fe0000;border-radius:80px;transition:.5s;box-shadow:0 15px 25px rgba(254,0,0,.4)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:4px;left:4px;width:72px;height:72px;background:#fff;border-radius:50%}body.auto-task-options .auto-task-form table label span i::before{content:"";position:absolute;top:22px;left:12px;width:12px;height:12px;border-radius:50%;background:#fe0000;box-shadow:35px 0 0 #fe0000;transition:.5s}body.auto-task-options .auto-task-form table label span i::after{content:"";position:absolute;bottom:15px;left:calc(50% - 15px);width:30px;height:6px;border-radius:6px;background:#fe0000;transition:.5s}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.5}body.auto-task-history .container a{color:#007bff;text-decoration:none;background-color:rgba(0,0,0,0)}body.auto-task-history .container .card{width:80%;max-width:800px;border-radius:10px;background:rgba(118,118,118,.1019607843);border-top:1px solid hsla(0,0%,100%,.5019607843);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 15px 25px rgba(0,0,0,.1019607843);margin:20px auto;position:relative;display:flex;flex-direction:column;word-wrap:break-word;-webkit-background-clip:border-box;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}body.auto-task-history .container .card .title{text-align:center;font-size:30px;font-weight:bold;margin:5px 0}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:#93e1ff;border-radius:10px;padding:3px}body.auto-task-history .container .card ul{margin-bottom:25px}body.auto-task-history .container .card ul li{margin-bottom:5px;line-height:20px}body.auto-task-history .container .card ul a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{right:10px;width:38px;height:35px;position:absolute;font-size:24px;cursor:pointer;border-radius:10px}body.auto-task-history .container .card .delete-task:hover{background:#fff}body.auto-task-history .container .card .time{right:5px;position:absolute;bottom:0;color:#e83e8c;font-family:\'SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace\';font-size:15px}#auto-task-buttons,.show-button-div{position:fixed !important;top:30px;right:15px;width:150px !important;z-index:999999999 !important;padding:8px !important;border-radius:12px !important}#auto-task-buttons p,.show-button-div p{line-height:normal !important;height:auto !important;text-align:center !important;margin:8px 0 !important;padding:0 !important;font-size:16px !important;color:#333 !important}#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn{width:140px !important;min-height:30px !important;line-height:1.5 !important;font-size:16px !important;display:block !important;margin:0 auto !important;padding:8px 16px !important}.show-button-div{width:40px !important;cursor:pointer !important;padding:4px !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:12px !important;top:50% !important;transform:translateY(-50%) !important;font-size:18px !important;font-weight:bold !important;color:#fff !important}.auto-task-capitalize{text-transform:capitalize !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{box-shadow:inset 0px 0px 4px 1px rgba(100,150,200,.5) !important}.swal2-checkbox-custom{align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:10px;padding:0 5px;margin-left:5px}.auto-task-giveaway-status.active{background-color:#5cb85c}.auto-task-giveaway-status.not-active{background-color:#d9534f}';
   const data$1 = {
     website: '网站',
     type: '类型',
@@ -988,10 +1067,11 @@ if (missingDependencies.length > 0) {
   };
   const replacePlaceholders = (text, args) => text.replace(/%([\d]+)/g, ((_, index) => args[parseInt(index, 10)] || ''));
   const I18n = function(key) {
+    var _languages$currentLan;
     const currentLanguage = getCurrentLanguage();
-    const translation = languages[currentLanguage]?.[key];
+    const translation = (_languages$currentLan = languages[currentLanguage]) === null || _languages$currentLan === void 0 ? void 0 : _languages$currentLan[key];
     if (!translation) {
-      console.warn(`Missing translation for key: ${key} in language: ${currentLanguage}`);
+      console.warn('Missing translation for key: '.concat(key, ' in language: ').concat(currentLanguage));
       return key;
     }
     for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -1021,14 +1101,11 @@ if (missingDependencies.length > 0) {
     showTimestamp: true
   };
   class Debugger {
-    config;
-    levelPriority;
     constructor() {
       let config = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      this.config = {
-        ...defaultConfig,
-        ...config
-      };
+      _defineProperty(this, 'config', void 0);
+      _defineProperty(this, 'levelPriority', void 0);
+      this.config = _objectSpread(_objectSpread({}, defaultConfig), config);
       this.levelPriority = {
         error: 0,
         warn: 1,
@@ -1046,9 +1123,9 @@ if (missingDependencies.length > 0) {
     formatMessage(level, message) {
       const parts = [ this.config.prefix ];
       if (this.config.showTimestamp) {
-        parts.push(`[${this.getTimestamp()}]`);
+        parts.push('['.concat(this.getTimestamp(), ']'));
       }
-      parts.push(`[${level.toUpperCase()}]:`);
+      parts.push('['.concat(level.toUpperCase(), ']:'));
       parts.push(message);
       return parts.join(' ');
     }
@@ -1109,10 +1186,7 @@ if (missingDependencies.length > 0) {
       }
     }
     updateConfig(config) {
-      this.config = {
-        ...this.config,
-        ...config
-      };
+      this.config = _objectSpread(_objectSpread({}, this.config), config);
     }
     enable() {
       this.config.enabled = true;
@@ -1154,7 +1228,7 @@ if (missingDependencies.length > 0) {
     const envInfo = {
       website: window.location.href,
       browser: JSON.stringify(await browser.getInfo(), null, 2),
-      manager: `${GM_info.scriptHandler} ${GM_info.version}`,
+      manager: ''.concat(GM_info.scriptHandler, ' ').concat(GM_info.version),
       userScript: GM_info.script.version,
       logs: '',
       runLogs: getRunLogs()
@@ -1168,7 +1242,7 @@ if (missingDependencies.length > 0) {
       errorStackLength: errorStack.length
     });
     const params = {
-      title: `[BUG] 脚本报错: ${name}`,
+      title: '[BUG] 脚本报错: '.concat(name),
       labels: 'bug',
       template: 'bug_report.yml',
       website: envInfo.website,
@@ -1186,7 +1260,7 @@ if (missingDependencies.length > 0) {
   const generateGithubLink = async (name, errorStack, envInfo) => {
     debug('开始生成GitHub Issue链接');
     const params = new URLSearchParams(await buildGithubIssueParams(name, errorStack, envInfo));
-    const link = `https://github.com/HCLonely/auto-task/issues/new?${params.toString()}`;
+    const link = 'https://github.com/HCLonely/auto-task/issues/new?'.concat(params.toString());
     debug('GitHub Issue链接生成完成', {
       link: link
     });
@@ -1196,7 +1270,7 @@ if (missingDependencies.length > 0) {
     debug('记录错误日志', {
       name: name
     });
-    console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: ${name}\n${errorStack}`);
+    console.log('%c%s', 'color:white;background:red', 'Auto-Task[Error]: '.concat(name, '\n').concat(errorStack));
   };
   const handleErrorReport = async (platform, name, errorStack, envInfo) => {
     debug('开始处理错误报告', {
@@ -1289,12 +1363,12 @@ if (missingDependencies.length > 0) {
     debug('响应头处理完成', {
       finalUrl: data.finalUrl
     });
-    if (options.responseType === 'json' && data?.response && typeof data.response !== 'object') {
+    if (options.responseType === 'json' && data !== null && data !== void 0 && data.response && typeof data.response !== 'object') {
       debug('尝试解析JSON响应');
       try {
         data.response = JSON.parse(data.responseText);
         debug('JSON解析成功');
-      } catch {
+      } catch (_unused) {
         debug('JSON解析失败，保持原始响应');
       }
     }
@@ -1311,7 +1385,7 @@ if (missingDependencies.length > 0) {
     }
     try {
       const result = await new Promise((resolve => {
-        const requestObj = {
+        const requestObj = _objectSpread(_objectSpread({
           fetch: true,
           timeout: 3e4,
           ontimeout: data => {
@@ -1364,10 +1438,10 @@ if (missingDependencies.length > 0) {
               data: data,
               options: options
             });
-          },
-          ...options,
+          }
+        }, options), {}, {
           responseType: options.dataType || options.responseType
-        };
+        });
         debug('发送请求', {
           requestObj: requestObj
         });
@@ -1428,34 +1502,34 @@ if (missingDependencies.length > 0) {
     '[Vk]': Vk$1,
     '[AutoTask]': AutoTask
   };
-  const generateLink = (url, text) => `<a href="${url}" target="_blank">${text}</a>`;
-  const createBaseElement = content => $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
+  const generateLink = (url, text) => '<a href="'.concat(url, '" target="_blank">').concat(text, '</a>');
+  const createBaseElement = content => $('<li>'.concat(content, '<font class="log-status"></font></li>')).addClass('card-text');
   const createPlatformElement = (type, text, id) => {
     const urlGenerators = {
-      group: text => `https://steamcommunity.com/groups/${text}`,
-      officialGroup: text => `https://steamcommunity.com/games/${text}`,
-      forum: text => `https://steamcommunity.com/app/${text}/discussions/`,
-      curator: text => `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`,
-      app: text => `https://store.steampowered.com/app/${text}`,
-      sub: text => `https://steamdb.info/sub/${text}/`,
-      workshop: text => `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`,
-      announcement: (text, id) => `https://store.steampowered.com/news/app/${text}/view/${id}`,
+      group: text => 'https://steamcommunity.com/groups/'.concat(text),
+      officialGroup: text => 'https://steamcommunity.com/games/'.concat(text),
+      forum: text => 'https://steamcommunity.com/app/'.concat(text, '/discussions/'),
+      curator: text => 'https://store.steampowered.com/'.concat(text !== null && text !== void 0 && text.includes('/') ? text : 'curator/'.concat(text)),
+      app: text => 'https://store.steampowered.com/app/'.concat(text),
+      sub: text => 'https://steamdb.info/sub/'.concat(text, '/'),
+      workshop: text => 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(text),
+      announcement: (text, id) => 'https://store.steampowered.com/news/app/'.concat(text, '/view/').concat(id),
       discord: {
-        invite: text => `https://discord.com/invite/${text}`,
-        server: text => `https://discord.com/channels/@me/${text}`
+        invite: text => 'https://discord.com/invite/'.concat(text),
+        server: text => 'https://discord.com/channels/@me/'.concat(text)
       },
-      twitch: text => `https://www.twitch.tv/${text}`,
-      instagram: text => `https://www.instagram.com/${text}/`,
-      twitter: text => `https://x.com/${text}`,
+      twitch: text => 'https://www.twitch.tv/'.concat(text),
+      instagram: text => 'https://www.instagram.com/'.concat(text, '/'),
+      twitter: text => 'https://x.com/'.concat(text),
       reddit: {
-        subreddit: text => `https://www.reddit.com/r/${text}/`,
-        user: text => `https://www.reddit.com/user/${text?.replace('u_', '')}`
+        subreddit: text => 'https://www.reddit.com/r/'.concat(text, '/'),
+        user: text => 'https://www.reddit.com/user/'.concat(text === null || text === void 0 ? void 0 : text.replace('u_', ''))
       },
       youtube: {
-        channel: text => `https://www.youtube.com/channel/${text}`,
-        video: text => `https://www.youtube.com/watch?v=${text}`
+        channel: text => 'https://www.youtube.com/channel/'.concat(text),
+        video: text => 'https://www.youtube.com/watch?v='.concat(text)
       },
-      vk: text => `https://vk.com/${text}/`
+      vk: text => 'https://vk.com/'.concat(text, '/')
     };
     const typeMap = {
       joiningSteamGroup: [ 'group' ],
@@ -1522,13 +1596,13 @@ if (missingDependencies.length > 0) {
     if (typeof urlGenerator === 'function') {
       const url = urlGenerator(text, id);
       const displayText = platform === 'announcement' ? id || '' : text;
-      return createBaseElement(`${I18n(type)}[${generateLink(url, displayText)}]...`);
+      return createBaseElement(''.concat(I18n(type), '[').concat(generateLink(url, displayText), ']...'));
     }
     if (subType && typeof urlGenerator === 'object') {
       const subGenerator = urlGenerator[subType];
       if (typeof subGenerator === 'function') {
         const displayText = type.includes('RedditUser') ? text.replace('u_', '') : text;
-        return createBaseElement(`${I18n(type)}[${generateLink(subGenerator(text), displayText)}]...`);
+        return createBaseElement(''.concat(I18n(type), '[').concat(generateLink(subGenerator(text), displayText), ']...'));
       }
     }
     return null;
@@ -1537,10 +1611,10 @@ if (missingDependencies.length > 0) {
     switch (type) {
      case 'retweetting':
      case 'unretweetting':
-      return createBaseElement(`${I18n(type)}${text}...`);
+      return createBaseElement(''.concat(I18n(type)).concat(text, '...'));
 
      case 'visitingLink':
-      return createBaseElement(`${I18n('visitingLink')}[${generateLink(text || '', text || '')}]...`);
+      return createBaseElement(''.concat(I18n('visitingLink'), '[').concat(generateLink(text || '', text || ''), ']...'));
 
      case 'verifyingInsAuth':
      case 'text':
@@ -1550,13 +1624,13 @@ if (missingDependencies.length > 0) {
       return $(text || html || '');
 
      case 'whiteList':
-      return $(`<li><font class="warning">${I18n('skipTask')}[${text}(${id})](${I18n('whiteList')})</font></li>`);
+      return $('<li><font class="warning">'.concat(I18n('skipTask'), '[').concat(text, '(').concat(id, ')](').concat(I18n('whiteList'), ')</font></li>'));
 
      case 'globalOptionsSkip':
-      return $(`<li>${I18n('skipTaskOption')}<font class="warning">${text}</font></li>`);
+      return $('<li>'.concat(I18n('skipTaskOption'), '<font class="warning">').concat(text, '</font></li>'));
 
      default:
-      return createBaseElement(`${I18n('unKnown')}:${type}(${text})...`);
+      return createBaseElement(''.concat(I18n('unKnown'), ':').concat(type, '(').concat(text, ')...'));
     }
   };
   const echoLog = _ref => {
@@ -1570,6 +1644,7 @@ if (missingDependencies.length > 0) {
       remove: () => emptyStatus
     };
     try {
+      var _ele$;
       let ele;
       if (!type && !text && !html) {
         ele = createBaseElement('');
@@ -1588,54 +1663,60 @@ if (missingDependencies.length > 0) {
           const iconKey = before;
           const svgContent = ICONS[iconKey];
           const base64Svg = btoa(svgContent);
-          ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
+          ele.prepend('<font class="before-icon" style="background-image: url(\'data:image/svg+xml;base64,'.concat(base64Svg, '\')"></font>'));
         } else {
-          ele.prepend(`<font class="before">${before}</font>`);
+          ele.prepend('<font class="before">'.concat(before, '</font>'));
         }
       } else {
         const base64Svg = btoa(ICONS['[AutoTask]']);
-        ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
+        ele.prepend('<font class="before-icon" style="background-image: url(\'data:image/svg+xml;base64,'.concat(base64Svg, '\')"></font>'));
       }
       ele.addClass('card-text');
       $('#auto-task-info').append(ele);
-      ele[0]?.scrollIntoView();
+      (_ele$ = ele[0]) === null || _ele$ === void 0 || _ele$.scrollIntoView();
       const font = ele.find('font.log-status');
       const status = {
         font: font,
         success() {
+          var _this$font, _this$font2, _this$font3;
           let text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Success';
           let html = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          this.font?.attr('class', '').addClass('success');
-          html ? this.font?.html(text) : this.font?.text(text);
+          (_this$font = this.font) === null || _this$font === void 0 || _this$font.attr('class', '').addClass('success');
+          html ? (_this$font2 = this.font) === null || _this$font2 === void 0 ? void 0 : _this$font2.html(text) : (_this$font3 = this.font) === null || _this$font3 === void 0 ? void 0 : _this$font3.text(text);
           return this;
         },
         error() {
+          var _this$font4, _this$font5, _this$font6;
           let text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Error';
           let html = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          this.font?.attr('class', '').addClass('error');
-          html ? this.font?.html(text) : this.font?.text(text);
+          (_this$font4 = this.font) === null || _this$font4 === void 0 || _this$font4.attr('class', '').addClass('error');
+          html ? (_this$font5 = this.font) === null || _this$font5 === void 0 ? void 0 : _this$font5.html(text) : (_this$font6 = this.font) === null || _this$font6 === void 0 ? void 0 : _this$font6.text(text);
           return this;
         },
         warning() {
+          var _this$font7, _this$font8, _this$font9;
           let text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Warning';
           let html = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          this.font?.attr('class', '').addClass('warning');
-          html ? this.font?.html(text) : this.font?.text(text);
+          (_this$font7 = this.font) === null || _this$font7 === void 0 || _this$font7.attr('class', '').addClass('warning');
+          html ? (_this$font8 = this.font) === null || _this$font8 === void 0 ? void 0 : _this$font8.html(text) : (_this$font9 = this.font) === null || _this$font9 === void 0 ? void 0 : _this$font9.text(text);
           return this;
         },
         info() {
+          var _this$font0, _this$font1, _this$font10;
           let text = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Info';
           let html = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-          this.font?.attr('class', '').addClass('info');
-          html ? this.font?.html(text) : this.font?.text(text);
+          (_this$font0 = this.font) === null || _this$font0 === void 0 || _this$font0.attr('class', '').addClass('info');
+          html ? (_this$font1 = this.font) === null || _this$font1 === void 0 ? void 0 : _this$font1.html(text) : (_this$font10 = this.font) === null || _this$font10 === void 0 ? void 0 : _this$font10.text(text);
           return this;
         },
         view() {
-          this.font?.[0].scrollIntoView();
+          var _this$font11;
+          (_this$font11 = this.font) === null || _this$font11 === void 0 || _this$font11[0].scrollIntoView();
           return this;
         },
         remove() {
-          this.font?.parent().remove();
+          var _this$font12;
+          (_this$font12 = this.font) === null || _this$font12 === void 0 || _this$font12.parent().remove();
           return this;
         }
       };
@@ -1677,7 +1758,7 @@ if (missingDependencies.length > 0) {
         method: 'GET',
         redirect: redirectOnce ? 'manual' : 'follow'
       });
-      if (data?.finalUrl) {
+      if (data !== null && data !== void 0 && data.finalUrl) {
         redirectLinksCache[link] = data.finalUrl;
         GM_setValue('redirectLinks', redirectLinksCache);
         debug('获取新的重定向链接', {
@@ -1705,11 +1786,10 @@ if (missingDependencies.length > 0) {
         type: 'visitLink',
         text: link
       });
-      const {result: result, statusText: statusText, status: status} = await httpRequest({
+      const {result: result, statusText: statusText, status: status} = await httpRequest(_objectSpread({
         url: link,
-        method: 'GET',
-        ...options
-      });
+        method: 'GET'
+      }, options));
       if (result === 'Success') {
         debug('链接访问成功', {
           link: link
@@ -1723,7 +1803,7 @@ if (missingDependencies.length > 0) {
         statusText: statusText,
         status: status
       });
-      logStatus.error(`${result}:${statusText}(${status})`);
+      logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
       return false;
     } catch (error) {
       throwError(error, 'visitLink');
@@ -1759,7 +1839,7 @@ if (missingDependencies.length > 0) {
         const value = hash >> i * 8 & 255;
         return value.toString(16).padStart(2, '0');
       }));
-      const color = `#${rgb.join('')}`;
+      const color = '#'.concat(rgb.join(''));
       return color;
     } catch (error) {
       throwError(error, 'stringToColour');
@@ -1767,9 +1847,12 @@ if (missingDependencies.length > 0) {
     }
   };
   class Social {
-    tasks;
+    constructor() {
+      _defineProperty(this, 'tasks', void 0);
+    }
     getRealParams(name, links, doTask, link2param) {
       try {
+        var _this$tasks$name;
         debug('开始获取实际参数', {
           name: name,
           linksCount: links.length,
@@ -1784,7 +1867,7 @@ if (missingDependencies.length > 0) {
           });
           realParams = [ ...realParams, ...convertedLinks ];
         }
-        if (!doTask && this.tasks[name]?.length) {
+        if (!doTask && (_this$tasks$name = this.tasks[name]) !== null && _this$tasks$name !== void 0 && _this$tasks$name.length) {
           debug('处理任务参数', {
             taskCount: this.tasks[name].length
           });
@@ -1805,37 +1888,39 @@ if (missingDependencies.length > 0) {
       }
     }
   }
+  var _auth = new WeakMap;
+  var _initialized = new WeakMap;
+  var _Reddit_brand = new WeakSet;
   class Reddit extends Social {
-    tasks;
-    whiteList;
-    #auth;
-    #initialized=false;
     constructor() {
+      var _GM_getValue;
       super();
+      _classPrivateMethodInitSpec(this, _Reddit_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _auth, void 0);
+      _classPrivateFieldInitSpec(this, _initialized, false);
       const defaultTasksTemplate = {
         reddits: []
       };
       debug('初始化Reddit实例');
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.reddit || {}
-      };
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue = GM_getValue('whiteList')) === null || _GM_getValue === void 0 ? void 0 : _GM_getValue.reddit) || {});
     }
     async init() {
       try {
         debug('开始初始化Reddit模块');
-        if (this.#initialized) {
+        if (_classPrivateFieldGet(_initialized, this)) {
           debug('Reddit模块已初始化');
           return true;
         }
-        const isVerified = await this.#updateAuth();
+        const isVerified = await _assertClassBrand(_Reddit_brand, this, _updateAuth).call(this);
         if (isVerified) {
           debug('Reddit授权验证成功');
           echoLog({
             before: '[Reddit]'
           }).success(I18n('initSuccess', 'Reddit'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized, this, true);
           return true;
         }
         debug('Reddit初始化失败');
@@ -1851,185 +1936,14 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #useBeta() {
-      try {
-        debug('开始切换Reddit为新版');
-        const logStatus = echoLog({
-          text: I18n('changingRedditVersion'),
-          before: '[Reddit]'
-        });
-        return await new Promise((resolve => {
-          const newTab = GM_openInTab('https://www.reddit.com/', {
-            active: true,
-            insert: true,
-            setParent: true
-          });
-          newTab.name = 'ATv4_redditAuth';
-          newTab.onclose = async () => {
-            debug('新版Reddit标签页已关闭');
-            logStatus.success();
-            resolve(await this.#updateAuth(true));
-          };
-        }));
-      } catch (error) {
-        debug('切换Reddit版本时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.useBeta');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      let beta = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      try {
-        debug('开始更新Reddit授权', {
-          beta: beta
-        });
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Reddit'),
-          before: '[Reddit]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://www.reddit.com/',
-          method: 'GET',
-          nochche: true,
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-        });
-        if (result !== 'Success') {
-          debug('获取Reddit页面失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.responseText.includes('www.reddit.com/login/')) {
-          debug('需要登录Reddit');
-          logStatus.error(`Error:${I18n('loginReddit')}`, true);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit页面状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
-          debug('检测到旧版Reddit，需要切换到新版');
-          return await this.#useBeta();
-        }
-        const accessToken = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)?.[1];
-        if (!accessToken) {
-          debug('未找到Reddit访问令牌');
-          logStatus.error('Error: Parameter "accessToken" not found!');
-          return false;
-        }
-        debug('成功获取Reddit访问令牌');
-        this.#auth = {
-          token: accessToken
-        };
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Reddit授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.updateAuth');
-        return false;
-      }
-    }
-    async #toggleTask(_ref2) {
-      let {name: name, doTask: doTask = true} = _ref2;
-      try {
-        debug('开始处理Reddit任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.reddits.includes(name)) {
-          debug('Reddit在白名单中，跳过取消订阅', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Reddit.undoTask',
-            id: name,
-            before: '[Reddit]'
-          });
-          return true;
-        }
-        let type = doTask ? 'joiningReddit' : 'leavingReddit';
-        if (/^u_/.test(name)) {
-          type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
-        }
-        debug('任务类型', {
-          type: type,
-          name: name
-        });
-        const logStatus = echoLog({
-          type: type,
-          text: name,
-          before: '[Reddit]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${this.#auth.token}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param({
-            action: doTask ? 'sub' : 'unsub',
-            sr_name: name,
-            api_type: 'json'
-          })
-        });
-        if (result !== 'Success') {
-          debug('Reddit任务请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit任务状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Reddit任务处理成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.reddits = unique([ ...this.tasks.reddits, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Reddit任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.toggleTask');
-        return false;
-      }
-    }
-    async toggle(_ref3) {
-      let {doTask: doTask = true, redditLinks: redditLinks = []} = _ref3;
+    async toggle(_ref2) {
+      let {doTask: doTask = true, redditLinks: redditLinks = []} = _ref2;
       try {
         debug('开始处理Reddit链接任务', {
           doTask: doTask,
           redditLinksCount: redditLinks.length
         });
-        if (!this.#initialized) {
+        if (!_classPrivateFieldGet(_initialized, this)) {
           debug('Reddit模块未初始化');
           echoLog({
             text: I18n('needInit'),
@@ -2049,8 +1963,9 @@ if (missingDependencies.length > 0) {
           return true;
         }
         const realReddits = this.getRealParams('reddits', redditLinks, doTask, (link => {
-          const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
-          const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
+          var _link$match, _link$match2;
+          const name = (_link$match = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1];
+          const userName = (_link$match2 = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1];
           if (userName) {
             return name || userName;
           }
@@ -2066,7 +1981,7 @@ if (missingDependencies.length > 0) {
         }
         const prom = [];
         for (const name of realReddits) {
-          prom.push(this.#toggleTask({
+          prom.push(_assertClassBrand(_Reddit_brand, this, _toggleTask).call(this, {
             name: name,
             doTask: doTask
           }));
@@ -2082,55 +1997,231 @@ if (missingDependencies.length > 0) {
       }
     }
   }
+  async function _useBeta() {
+    try {
+      debug('开始切换Reddit为新版');
+      const logStatus = echoLog({
+        text: I18n('changingRedditVersion'),
+        before: '[Reddit]'
+      });
+      return await new Promise((resolve => {
+        const newTab = GM_openInTab('https://www.reddit.com/', {
+          active: true,
+          insert: true,
+          setParent: true
+        });
+        newTab.name = 'ATv4_redditAuth';
+        newTab.onclose = async () => {
+          debug('新版Reddit标签页已关闭');
+          logStatus.success();
+          resolve(await _assertClassBrand(_Reddit_brand, this, _updateAuth).call(this, true));
+        };
+      }));
+    } catch (error) {
+      debug('切换Reddit版本时发生错误', {
+        error: error
+      });
+      throwError(error, 'Reddit.useBeta');
+      return false;
+    }
+  }
+  async function _updateAuth() {
+    let beta = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    try {
+      var _data$responseText$ma10;
+      debug('开始更新Reddit授权', {
+        beta: beta
+      });
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', 'Reddit'),
+        before: '[Reddit]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.reddit.com/',
+        method: 'GET',
+        nochche: true,
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
+      if (result !== 'Success') {
+        debug('获取Reddit页面失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if (data !== null && data !== void 0 && data.responseText.includes('www.reddit.com/login/')) {
+        debug('需要登录Reddit');
+        logStatus.error('Error:'.concat(I18n('loginReddit')), true);
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Reddit页面状态码错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
+        debug('检测到旧版Reddit，需要切换到新版');
+        return await _assertClassBrand(_Reddit_brand, this, _useBeta).call(this);
+      }
+      const accessToken = (_data$responseText$ma10 = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1];
+      if (!accessToken) {
+        debug('未找到Reddit访问令牌');
+        logStatus.error('Error: Parameter "accessToken" not found!');
+        return false;
+      }
+      debug('成功获取Reddit访问令牌');
+      _classPrivateFieldSet(_auth, this, {
+        token: accessToken
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('更新Reddit授权时发生错误', {
+        error: error
+      });
+      throwError(error, 'Reddit.updateAuth');
+      return false;
+    }
+  }
+  async function _toggleTask(_ref19) {
+    let {name: name, doTask: doTask = true} = _ref19;
+    try {
+      debug('开始处理Reddit任务', {
+        name: name,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.reddits.includes(name)) {
+        debug('Reddit在白名单中，跳过取消订阅', {
+          name: name
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Reddit.undoTask',
+          id: name,
+          before: '[Reddit]'
+        });
+        return true;
+      }
+      let type = doTask ? 'joiningReddit' : 'leavingReddit';
+      if (/^u_/.test(name)) {
+        type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
+      }
+      debug('任务类型', {
+        type: type,
+        name: name
+      });
+      const logStatus = echoLog({
+        type: type,
+        text: name,
+        before: '[Reddit]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+        method: 'POST',
+        headers: {
+          authorization: 'Bearer '.concat(_classPrivateFieldGet(_auth, this).token),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          action: doTask ? 'sub' : 'unsub',
+          sr_name: name,
+          api_type: 'json'
+        })
+      });
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Reddit任务状态码错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('Reddit任务处理成功', {
+        name: name,
+        doTask: doTask
+      });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.reddits = unique([ ...this.tasks.reddits, name ]);
+      }
+      return true;
+    } catch (error) {
+      debug('处理Reddit任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Reddit.toggleTask');
+      return false;
+    }
+  }
+  var _auth2 = new WeakMap;
+  var _cache = new WeakMap;
+  var _initialized2 = new WeakMap;
+  var _integrityToken = new WeakMap;
+  var _Twitch_brand = new WeakSet;
   class Twitch extends Social {
-    tasks;
-    whiteList;
-    #auth=(() => GM_getValue('twitchAuth') || {})();
-    #cache=(() => GM_getValue('twitchCache') || {})();
-    #initialized=false;
-    #integrityToken;
     constructor() {
+      var _GM_getValue2;
       super();
+      _classPrivateMethodInitSpec(this, _Twitch_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _auth2, GM_getValue('twitchAuth') || {});
+      _classPrivateFieldInitSpec(this, _cache, GM_getValue('twitchCache') || {});
+      _classPrivateFieldInitSpec(this, _initialized2, false);
+      _classPrivateFieldInitSpec(this, _integrityToken, void 0);
       const defaultTasksTemplate = {
         channels: []
       };
       debug('初始化Twitch实例');
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.twitch || {}
-      };
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue2 = GM_getValue('whiteList')) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.twitch) || {});
     }
     async init() {
       try {
         debug('开始初始化Twitch模块');
-        if (this.#initialized) {
+        if (_classPrivateFieldGet(_initialized2, this)) {
           debug('Twitch模块已初始化');
           return true;
         }
-        if (!this.#auth.authToken || !this.#auth.clientId || !this.#auth.clientVersion || !this.#auth.deviceId || !this.#auth.clientSessionId) {
-          if (await this.#updateAuth()) {
-            this.#initialized = true;
+        if (!_classPrivateFieldGet(_auth2, this).authToken || !_classPrivateFieldGet(_auth2, this).clientId || !_classPrivateFieldGet(_auth2, this).clientVersion || !_classPrivateFieldGet(_auth2, this).deviceId || !_classPrivateFieldGet(_auth2, this).clientSessionId) {
+          if (await _assertClassBrand(_Twitch_brand, this, _updateAuth2).call(this)) {
+            _classPrivateFieldSet(_initialized2, this, true);
             return true;
           }
           return false;
         }
-        const isVerified = await this.#verifyAuth(true);
+        const isVerified = await _assertClassBrand(_Twitch_brand, this, _verifyAuth).call(this, true);
         if (isVerified) {
           debug('Twitch授权验证成功');
           echoLog({
             before: '[Twitch]'
           }).success(I18n('initSuccess', 'Twitch'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized2, this, true);
           return true;
         }
         GM_setValue('twitchAuth', null);
-        if (await this.#updateAuth()) {
+        if (await _assertClassBrand(_Twitch_brand, this, _updateAuth2).call(this)) {
           debug('Twitch重新授权成功');
           echoLog({
             before: '[Twitch]'
           }).success(I18n('initSuccess', 'Twitch'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized2, this, true);
           return true;
         }
         debug('Twitch初始化失败');
@@ -2146,314 +2237,14 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verifyAuth(isFirst) {
-      try {
-        debug('开始验证Twitch授权');
-        const logStatus = echoLog({
-          text: I18n('verifyingAuth', 'Twitch'),
-          before: '[Twitch]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          dataType: 'json',
-          headers: {
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId
-          },
-          data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,' + '"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]'
-        });
-        if (result !== 'Success') {
-          debug('Twitch授权验证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || !data.response?.[0]?.data?.currentUser) {
-          debug('Twitch授权验证状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        await this.#integrity(isFirst);
-        debug('Twitch授权验证成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Twitch授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.verifyAuth');
-        return false;
-      }
-    }
-    async #integrity() {
-      let isFirst = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      let ct = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-      try {
-        debug('开始检查Twitch完整性', {
-          isFirst: isFirst,
-          ct: ct
-        });
-        const logStatus = echoLog({
-          text: I18n('checkingTwitchIntegrity'),
-          before: '[Twitch]'
-        });
-        if (isFirst && (!this.#auth.authToken || !this.#auth.clientId || !this.#auth.clientVersion || !this.#auth.deviceId || !this.#auth.clientSessionId)) {
-          return await this.#updateAuth(false);
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/integrity',
-          method: 'POST',
-          dataType: 'json',
-          anonymous: true,
-          headers: {
-            Origin: 'https://www.twitch.tv',
-            Referer: 'https://www.twitch.tv/',
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId,
-            'Client-Version': this.#auth.clientVersion,
-            'X-Device-Id': this.#auth.deviceId,
-            'Client-Session-Id': this.#auth.clientSessionId,
-            'x-kpsdk-ct': ct
-          }
-        });
-        if (result !== 'Success') {
-          debug('Twitch完整性检查请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (!ct && data?.responseHeaders?.['x-kpsdk-ct']) {
-          debug('需要重新检查Twitch完整性');
-          return await this.#integrity(isFirst, data.responseHeaders['x-kpsdk-ct']);
-        }
-        if (data?.status !== 200 || !data.response?.token) {
-          debug('Twitch完整性检查状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        this.#integrityToken = data.response.token;
-        debug('Twitch完整性检查成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Twitch完整性检查发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.integrity');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      let isFirst = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-      try {
-        debug('开始更新Twitch授权', {
-          isFirst: isFirst
-        });
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Twitch'),
-          before: '[Twitch]'
-        });
-        return await new Promise((resolve => {
-          const newTab = GM_openInTab('https://www.twitch.tv/', {
-            active: true,
-            insert: true,
-            setParent: true
-          });
-          newTab.name = 'ATv4_twitchAuth';
-          newTab.onclose = async () => {
-            const auth = GM_getValue('twitchAuth');
-            if (auth) {
-              debug('成功获取新的Twitch授权');
-              this.#auth = auth;
-              logStatus.success();
-              resolve(await this.#verifyAuth(isFirst));
-            } else {
-              debug('获取Twitch授权失败');
-              logStatus.error('Error: Update twitch auth failed!');
-              resolve(false);
-            }
-          };
-        }));
-      } catch (error) {
-        debug('更新Twitch授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.updateAuth');
-        return false;
-      }
-    }
-    async #toggleChannel(_ref4) {
-      let {name: name, doTask: doTask = true} = _ref4;
-      try {
-        debug('开始处理Twitch频道任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.channels.includes(name)) {
-          debug('Twitch频道在白名单中，跳过取消关注', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitch.unfollowChannel',
-            id: name,
-            before: '[Twitch]'
-          });
-          return true;
-        }
-        const channelId = await this.#getChannelId(name);
-        if (!channelId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingTwitchChannel`,
-          text: name,
-          before: '[Twitch]'
-        });
-        const followData = `[{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":false,"targetID":"${channelId}` + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}]';
-        const unfollowData = `[{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"${channelId}"}},` + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}}]';
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          dataType: 'json',
-          anonymous: true,
-          headers: {
-            Origin: 'https://www.twitch.tv',
-            Referer: 'https://www.twitch.tv/',
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId,
-            'Client-Version': this.#auth.clientVersion,
-            'X-Device-Id': this.#auth.deviceId,
-            'Client-Session-Id': this.#auth.clientSessionId,
-            'Client-Integrity': this.#integrityToken
-          },
-          data: doTask ? followData : unfollowData
-        });
-        if (result !== 'Success') {
-          debug('Twitch频道操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.response?.[0] && data.response[0].errors) {
-          debug('Twitch频道操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            errors: data?.response?.[0].errors
-          });
-          logStatus.error(`Error:${data?.response?.[0].errors?.[0]?.message || `${data?.statusText}(${data?.status})`}`);
-          return false;
-        }
-        debug('Twitch频道操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.channels = unique([ ...this.tasks.channels, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Twitch频道任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.toggleChannel');
-        return false;
-      }
-    }
-    async #getChannelId(name) {
-      try {
-        debug('开始获取Twitch频道ID', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'gettingTwitchChannelId',
-          text: name,
-          before: '[Twitch]'
-        });
-        const cachedChannelId = this.#cache[name];
-        if (cachedChannelId) {
-          debug('从缓存获取到Twitch频道ID', {
-            name: name,
-            id: cachedChannelId
-          });
-          logStatus.success();
-          return cachedChannelId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          headers: {
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId
-          },
-          responseType: 'json',
-          data: `[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"${name}"},` + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]'
-        });
-        if (result !== 'Success') {
-          debug('获取Twitch频道ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取Twitch频道ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const newChannelId = data.response?.[0]?.data?.user?.id;
-        if (!newChannelId) {
-          debug('未找到Twitch频道ID', {
-            name: name
-          });
-          logStatus.error(`Error:${data?.statusText || 'Unknown'}(${data?.status || 'Unknown'})`);
-          return false;
-        }
-        debug('成功获取Twitch频道ID', {
-          name: name,
-          id: newChannelId
-        });
-        this.#setCache(name, newChannelId);
-        logStatus.success();
-        return newChannelId;
-      } catch (error) {
-        debug('获取Twitch频道ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.getChannelId');
-        return false;
-      }
-    }
-    async toggle(_ref5) {
-      let {doTask: doTask = true, channelLinks: channelLinks = []} = _ref5;
+    async toggle(_ref3) {
+      let {doTask: doTask = true, channelLinks: channelLinks = []} = _ref3;
       try {
         debug('开始处理Twitch链接任务', {
           doTask: doTask,
           channelLinksCount: channelLinks.length
         });
-        if (!this.#initialized) {
+        if (!_classPrivateFieldGet(_initialized2, this)) {
           debug('Twitch模块未初始化');
           echoLog({
             text: I18n('needInit'),
@@ -2472,14 +2263,17 @@ if (missingDependencies.length > 0) {
             before: '[Twitch]'
           });
         } else {
-          const realChannels = this.getRealParams('channels', channelLinks, doTask, (link => link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)?.[2]));
+          const realChannels = this.getRealParams('channels', channelLinks, doTask, (link => {
+            var _link$match3;
+            return (_link$match3 = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[2];
+          }));
           debug('处理后的Twitch频道列表', {
             count: realChannels.length,
             channels: realChannels
           });
           if (realChannels.length > 0) {
             for (const channel of realChannels) {
-              prom.push(this.#toggleChannel({
+              prom.push(_assertClassBrand(_Twitch_brand, this, _toggleChannel).call(this, {
                 name: channel,
                 doTask: doTask
               }));
@@ -2496,20 +2290,325 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #setCache(name, id) {
-      try {
-        debug('设置Twitch频道ID缓存', {
-          name: name,
-          id: id
+  }
+  async function _verifyAuth(isFirst) {
+    try {
+      var _data$response86;
+      debug('开始验证Twitch授权');
+      const logStatus = echoLog({
+        text: I18n('verifyingAuth', 'Twitch'),
+        before: '[Twitch]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://gql.twitch.tv/gql',
+        method: 'POST',
+        dataType: 'json',
+        headers: {
+          Authorization: 'OAuth '.concat(_classPrivateFieldGet(_auth2, this).authToken),
+          'Client-Id': _classPrivateFieldGet(_auth2, this).clientId
+        },
+        data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,' + '"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]'
+      });
+      if (result !== 'Success') {
+        debug('Twitch授权验证请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
         });
-        this.#cache[name] = id;
-        GM_setValue('twitchCache', this.#cache);
-      } catch (error) {
-        debug('设置Twitch频道ID缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.setCache');
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
       }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response86 = data.response) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86[0]) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86.data) !== null && _data$response86 !== void 0 && _data$response86.currentUser)) {
+        debug('Twitch授权验证状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      await _assertClassBrand(_Twitch_brand, this, _integrity).call(this, isFirst);
+      debug('Twitch授权验证成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('Twitch授权验证发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.verifyAuth');
+      return false;
+    }
+  }
+  async function _integrity() {
+    let isFirst = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+    let ct = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+    try {
+      var _data$responseHeaders, _data$response87;
+      debug('开始检查Twitch完整性', {
+        isFirst: isFirst,
+        ct: ct
+      });
+      const logStatus = echoLog({
+        text: I18n('checkingTwitchIntegrity'),
+        before: '[Twitch]'
+      });
+      if (isFirst && (!_classPrivateFieldGet(_auth2, this).authToken || !_classPrivateFieldGet(_auth2, this).clientId || !_classPrivateFieldGet(_auth2, this).clientVersion || !_classPrivateFieldGet(_auth2, this).deviceId || !_classPrivateFieldGet(_auth2, this).clientSessionId)) {
+        return await _assertClassBrand(_Twitch_brand, this, _updateAuth2).call(this, false);
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://gql.twitch.tv/integrity',
+        method: 'POST',
+        dataType: 'json',
+        anonymous: true,
+        headers: {
+          Origin: 'https://www.twitch.tv',
+          Referer: 'https://www.twitch.tv/',
+          Authorization: 'OAuth '.concat(_classPrivateFieldGet(_auth2, this).authToken),
+          'Client-Id': _classPrivateFieldGet(_auth2, this).clientId,
+          'Client-Version': _classPrivateFieldGet(_auth2, this).clientVersion,
+          'X-Device-Id': _classPrivateFieldGet(_auth2, this).deviceId,
+          'Client-Session-Id': _classPrivateFieldGet(_auth2, this).clientSessionId,
+          'x-kpsdk-ct': ct
+        }
+      });
+      if (result !== 'Success') {
+        debug('Twitch完整性检查请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if (!ct && data !== null && data !== void 0 && (_data$responseHeaders = data.responseHeaders) !== null && _data$responseHeaders !== void 0 && _data$responseHeaders['x-kpsdk-ct']) {
+        debug('需要重新检查Twitch完整性');
+        return await _assertClassBrand(_Twitch_brand, this, _integrity).call(this, isFirst, data.responseHeaders['x-kpsdk-ct']);
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response87 = data.response) !== null && _data$response87 !== void 0 && _data$response87.token)) {
+        debug('Twitch完整性检查状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      _classPrivateFieldSet(_integrityToken, this, data.response.token);
+      debug('Twitch完整性检查成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('Twitch完整性检查发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.integrity');
+      return false;
+    }
+  }
+  async function _updateAuth2() {
+    let isFirst = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+    try {
+      debug('开始更新Twitch授权', {
+        isFirst: isFirst
+      });
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', 'Twitch'),
+        before: '[Twitch]'
+      });
+      return await new Promise((resolve => {
+        const newTab = GM_openInTab('https://www.twitch.tv/', {
+          active: true,
+          insert: true,
+          setParent: true
+        });
+        newTab.name = 'ATv4_twitchAuth';
+        newTab.onclose = async () => {
+          const auth = GM_getValue('twitchAuth');
+          if (auth) {
+            debug('成功获取新的Twitch授权');
+            _classPrivateFieldSet(_auth2, this, auth);
+            logStatus.success();
+            resolve(await _assertClassBrand(_Twitch_brand, this, _verifyAuth).call(this, isFirst));
+          } else {
+            debug('获取Twitch授权失败');
+            logStatus.error('Error: Update twitch auth failed!');
+            resolve(false);
+          }
+        };
+      }));
+    } catch (error) {
+      debug('更新Twitch授权时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.updateAuth');
+      return false;
+    }
+  }
+  async function _toggleChannel(_ref20) {
+    let {name: name, doTask: doTask = true} = _ref20;
+    try {
+      var _data$response88;
+      debug('开始处理Twitch频道任务', {
+        name: name,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.channels.includes(name)) {
+        debug('Twitch频道在白名单中，跳过取消关注', {
+          name: name
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Twitch.unfollowChannel',
+          id: name,
+          before: '[Twitch]'
+        });
+        return true;
+      }
+      const channelId = await _assertClassBrand(_Twitch_brand, this, _getChannelId).call(this, name);
+      if (!channelId) {
+        return false;
+      }
+      const logStatus = echoLog({
+        type: ''.concat(doTask ? '' : 'un', 'followingTwitchChannel'),
+        text: name,
+        before: '[Twitch]'
+      });
+      const followData = '[{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":false,"targetID":"'.concat(channelId) + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}]';
+      const unfollowData = '[{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"'.concat(channelId, '"}},') + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}}]';
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://gql.twitch.tv/gql',
+        method: 'POST',
+        dataType: 'json',
+        anonymous: true,
+        headers: {
+          Origin: 'https://www.twitch.tv',
+          Referer: 'https://www.twitch.tv/',
+          Authorization: 'OAuth '.concat(_classPrivateFieldGet(_auth2, this).authToken),
+          'Client-Id': _classPrivateFieldGet(_auth2, this).clientId,
+          'Client-Version': _classPrivateFieldGet(_auth2, this).clientVersion,
+          'X-Device-Id': _classPrivateFieldGet(_auth2, this).deviceId,
+          'Client-Session-Id': _classPrivateFieldGet(_auth2, this).clientSessionId,
+          'Client-Integrity': _classPrivateFieldGet(_integrityToken, this)
+        },
+        data: doTask ? followData : unfollowData
+      });
+      if (result !== 'Success') {
+        debug('Twitch频道操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (_data$response88 = data.response) !== null && _data$response88 !== void 0 && _data$response88[0] && data.response[0].errors) {
+        var _data$response89, _data$response90;
+        debug('Twitch频道操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText,
+          errors: data === null || data === void 0 || (_data$response89 = data.response) === null || _data$response89 === void 0 ? void 0 : _data$response89[0].errors
+        });
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response90 = data.response) === null || _data$response90 === void 0 || (_data$response90 = _data$response90[0].errors) === null || _data$response90 === void 0 || (_data$response90 = _data$response90[0]) === null || _data$response90 === void 0 ? void 0 : _data$response90.message) || ''.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')')));
+        return false;
+      }
+      debug('Twitch频道操作成功', {
+        name: name,
+        doTask: doTask
+      });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.channels = unique([ ...this.tasks.channels, name ]);
+      }
+      return true;
+    } catch (error) {
+      debug('处理Twitch频道任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.toggleChannel');
+      return false;
+    }
+  }
+  async function _getChannelId(name) {
+    try {
+      var _data$response91;
+      debug('开始获取Twitch频道ID', {
+        name: name
+      });
+      const logStatus = echoLog({
+        type: 'gettingTwitchChannelId',
+        text: name,
+        before: '[Twitch]'
+      });
+      const cachedChannelId = _classPrivateFieldGet(_cache, this)[name];
+      if (cachedChannelId) {
+        debug('从缓存获取到Twitch频道ID', {
+          name: name,
+          id: cachedChannelId
+        });
+        logStatus.success();
+        return cachedChannelId;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://gql.twitch.tv/gql',
+        method: 'POST',
+        headers: {
+          Authorization: 'OAuth '.concat(_classPrivateFieldGet(_auth2, this).authToken),
+          'Client-Id': _classPrivateFieldGet(_auth2, this).clientId
+        },
+        responseType: 'json',
+        data: '[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"'.concat(name, '"},') + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]'
+      });
+      if (result !== 'Success') {
+        debug('获取Twitch频道ID请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取Twitch频道ID状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const newChannelId = (_data$response91 = data.response) === null || _data$response91 === void 0 || (_data$response91 = _data$response91[0]) === null || _data$response91 === void 0 || (_data$response91 = _data$response91.data) === null || _data$response91 === void 0 || (_data$response91 = _data$response91.user) === null || _data$response91 === void 0 ? void 0 : _data$response91.id;
+      if (!newChannelId) {
+        debug('未找到Twitch频道ID', {
+          name: name
+        });
+        logStatus.error('Error:'.concat((data === null || data === void 0 ? void 0 : data.statusText) || 'Unknown', '(').concat((data === null || data === void 0 ? void 0 : data.status) || 'Unknown', ')'));
+        return false;
+      }
+      debug('成功获取Twitch频道ID', {
+        name: name,
+        id: newChannelId
+      });
+      _assertClassBrand(_Twitch_brand, this, _setCache).call(this, name, newChannelId);
+      logStatus.success();
+      return newChannelId;
+    } catch (error) {
+      debug('获取Twitch频道ID时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.getChannelId');
+      return false;
+    }
+  }
+  function _setCache(name, id) {
+    try {
+      debug('设置Twitch频道ID缓存', {
+        name: name,
+        id: id
+      });
+      _classPrivateFieldGet(_cache, this)[name] = id;
+      GM_setValue('twitchCache', _classPrivateFieldGet(_cache, this));
+    } catch (error) {
+      debug('设置Twitch频道ID缓存时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitch.setCache');
     }
   }
   const encodeSha256 = async data => {
@@ -2541,7 +2640,7 @@ if (missingDependencies.length > 0) {
     const ADDITIONAL_RANDOM_NUMBER = 3;
     const timeNow = Math.floor((Date.now() - 1682924400 * 1e3) / 1e3);
     const timeNowBytes = [ timeNow & 255, timeNow >> 8 & 255, timeNow >> 16 & 255, timeNow >> 24 & 255 ];
-    const data = `${method}!${path}!${timeNow}${DEFAULT_KEYWORD}${animationKey}`;
+    const data = ''.concat(method, '!').concat(path, '!').concat(timeNow).concat(DEFAULT_KEYWORD).concat(animationKey);
     const hashBytes = await encodeSha256(data);
     const keyBytes = decodeBase64(key);
     const randomNum = Math.floor(Math.random() * 256);
@@ -2564,230 +2663,32 @@ if (missingDependencies.length > 0) {
       return tid;
     };
   };
-  const parseResponseHeaders = headerStr => {
-    const headers = {};
-    if (!headerStr) {
-      return headers;
-    }
-    headerStr.split('\r\n').forEach((line => {
-      if (line) {
-        const parts = line.split(':');
-        const key = parts.shift()?.trim();
-        const value = parts.join(':').trim();
-        if (key) {
-          if (key.toLowerCase() === 'set-cookie') {
-            if (headers[key]) {
-              if (Array.isArray(headers[key])) {
-                headers[key].push(value);
-              } else {
-                headers[key] = [ headers[key], value ];
-              }
-            } else {
-              headers[key] = value;
-            }
-          } else {
-            headers[key] = value;
-          }
-        }
-      }
-    }));
-    return headers;
-  };
-  const axiosGM = function(config) {
-    const finalConfig = {
-      ...axiosGM.defaults,
-      ...config
-    };
-    const retries = finalConfig.retry ?? 0;
-    const retryDelay = finalConfig.retryDelay ?? 0;
-    const requestAttempt = attempt => new Promise(((resolve, reject) => {
-      GM_xmlhttpRequest({
-        method: finalConfig.method ? finalConfig.method.toUpperCase() : 'GET',
-        url: finalConfig.url,
-        headers: finalConfig.headers,
-        data: finalConfig.data,
-        responseType: finalConfig.responseType || 'json',
-        timeout: finalConfig.timeout,
-        fetch: finalConfig.fetch ?? true,
-        onload(response) {
-          const axiosResponse = {
-            data: response.response || response.responseText,
-            status: response.status,
-            statusText: response.statusText,
-            headers: parseResponseHeaders(response.responseHeaders),
-            config: finalConfig,
-            request: response
-          };
-          resolve(axiosResponse);
-        },
-        onerror(error) {
-          if (attempt < retries) {
-            setTimeout((() => {
-              requestAttempt(attempt + 1).then(resolve).catch(reject);
-            }), retryDelay);
-          } else {
-            reject(error);
-          }
-        },
-        ontimeout() {
-          if (attempt < retries) {
-            setTimeout((() => {
-              requestAttempt(attempt + 1).then(resolve).catch(reject);
-            }), retryDelay);
-          } else {
-            reject('Error: timeout');
-          }
-        }
-      });
-    }));
-    return requestAttempt(0);
-  };
-  axiosGM.defaults = {};
-  axiosGM.get = function(url) {
-    let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return axiosGM({
-      ...config,
-      url: url,
-      method: 'GET'
-    });
-  };
-  axiosGM.post = function(url, data) {
-    let config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-    return axiosGM({
-      ...config,
-      url: url,
-      data: data,
-      method: 'POST'
-    });
-  };
-  axiosGM.head = function(url) {
-    let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    return axiosGM({
-      ...config,
-      url: url,
-      method: 'HEAD'
-    });
-  };
-  axiosGM.create = function() {
-    let instanceDefaults = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    const instance = config => {
-      const mergedConfig = {
-        ...axiosGM.defaults,
-        ...instanceDefaults,
-        ...config
-      };
-      return axiosGM(mergedConfig);
-    };
-    instance.defaults = {
-      ...axiosGM.defaults,
-      ...instanceDefaults
-    };
-    instance.get = function(url) {
-      let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      return instance({
-        ...config,
-        url: url,
-        method: 'GET'
-      });
-    };
-    instance.post = function(url, data) {
-      let config = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-      return instance({
-        ...config,
-        url: url,
-        data: data,
-        method: 'POST'
-      });
-    };
-    instance.head = function(url) {
-      let config = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-      return instance({
-        ...config,
-        url: url,
-        method: 'HEAD'
-      });
-    };
-    instance.create = axiosGM.create;
-    return instance;
-  };
-  const getFwdForSdkUrl = async () => {
-    const rawHtml = await axiosGM({
-      url: 'https://x.com',
-      method: 'GET'
-    });
-    return [ ...rawHtml.data.matchAll(/"(loader\.FwdForSdk)":"([^"]+?)"/g) ];
-  };
-  const fwdForSdkExpoter = async url => {
-    const {data: data} = await axiosGM.get(url);
-    const regex = /Uint8Array\(\w\)\.set\(\[(.*?)\]\)/;
-    if (!regex.test(data)) {
-      return false;
-    }
-    const json = `[${data.match(regex)?.[1]}]`;
-    const obj = JSON.parse(json);
-    return new Uint8Array(obj);
-  };
-  const getWasmData = async () => {
-    const fwdForSdkUrl = await getFwdForSdkUrl();
-    for (const url of fwdForSdkUrl) {
-      const sdkData = await fwdForSdkExpoter(`https://abs.twimg.com/responsive-web/client-web/${url[1]}.${url[2]}a.js`);
-      if (sdkData) {
-        return sdkData;
-      }
-    }
-    return false;
-  };
-  const getFwdForSdk = async () => {
-    debug('开始获取 XFwdForSdk');
-    const wasmData = await getWasmData();
-    debug('获取 wasmData 成功', {
-      wasmData: wasmData
-    });
-    const go = new Go;
-    const wasmModule = await WebAssembly.instantiate(wasmData, {
-      ...go.importObject,
-      env: {
-        ...go.importObject.env,
-        memory: new WebAssembly.Memory({
-          initial: 10
-        }),
-        table: new WebAssembly.Table({
-          initial: 0,
-          element: 'anyfunc'
-        })
-      }
-    });
-    debug('初始化 wasmModule 成功');
-    go.run(wasmModule.instance);
-    debug('运行 wasmModule 成功');
-    const {str: str, expiryTimeMillis: expiryTimeMillis} = await globalThis.getForwardedForStr();
-    debug('获取 XFwdForSdk 成功', {
-      str: str,
-      expiryTimeMillis: expiryTimeMillis
-    });
-    return {
-      str: str,
-      expiryTimeMillis: parseInt(expiryTimeMillis, 10)
-    };
-  };
   const generateSecCHUA = () => {
     if (navigator.userAgentData && navigator.userAgentData.brands) {
-      return navigator.userAgentData.brands.map((brand => `"${brand.brand}";v="${brand.version}"`)).join(', ');
+      return navigator.userAgentData.brands.map((brand => '"'.concat(brand.brand, '";v="').concat(brand.version, '"'))).join(', ');
     }
     return '"Google Chrome";v="125", "Chromium";v="125", "Not-A.Brand";v="99"';
   };
+  var _verifyId = new WeakMap;
+  var _auth3 = new WeakMap;
+  var _cache2 = new WeakMap;
+  var _initialized3 = new WeakMap;
+  var _getTID = new WeakMap;
+  var _headers = new WeakMap;
+  var _Twitter_brand = new WeakSet;
   class Twitter extends Social {
-    tasks;
-    whiteList;
-    #verifyId=(() => globalOptions.other.twitterVerifyId)();
-    #auth=(() => GM_getValue('twitterAuth') || {})();
-    #cache=(() => GM_getValue('twitterCache') || {})();
-    #initialized=false;
-    #getTID;
-    #FwdForSdk;
-    #headers={};
     constructor() {
+      var _GM_getValue3;
       super();
+      _classPrivateMethodInitSpec(this, _Twitter_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _verifyId, globalOptions.other.twitterVerifyId);
+      _classPrivateFieldInitSpec(this, _auth3, GM_getValue('twitterAuth') || {});
+      _classPrivateFieldInitSpec(this, _cache2, GM_getValue('twitterCache') || {});
+      _classPrivateFieldInitSpec(this, _initialized3, false);
+      _classPrivateFieldInitSpec(this, _getTID, void 0);
+      _classPrivateFieldInitSpec(this, _headers, {});
       const defaultTasksTemplate = {
         users: [],
         retweets: [],
@@ -2795,11 +2696,8 @@ if (missingDependencies.length > 0) {
       };
       debug('初始化Twitter实例');
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.twitter || {}
-      };
-      this.#headers = {
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue3 = GM_getValue('whiteList')) === null || _GM_getValue3 === void 0 ? void 0 : _GM_getValue3.twitter) || {});
+      _classPrivateFieldSet(_headers, this, {
         authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
         'X-Twitter-Auth-Type': 'OAuth2Session',
         'X-Twitter-Active-User': 'yes',
@@ -2809,39 +2707,38 @@ if (missingDependencies.length > 0) {
         'sec-ch-ua-platform': '"Windows"',
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua': generateSecCHUA()
-      };
+      });
     }
     async init() {
       try {
         debug('开始初始化Twitter模块');
-        if (this.#initialized) {
+        if (_classPrivateFieldGet(_initialized3, this)) {
           debug('Twitter模块已初始化');
           return true;
         }
         debug('获取Twitter授权信息');
-        if (!await this.#updateAuth()) {
+        if (!await _assertClassBrand(_Twitter_brand, this, _updateAuth3).call(this)) {
           return false;
         }
         debug('创建Twitter会话和SDK');
-        this.#getTID = await getTID();
-        this.#FwdForSdk = await getFwdForSdk();
-        const isVerified = await this.#verifyAuth();
+        _classPrivateFieldSet(_getTID, this, await getTID());
+        const isVerified = await _assertClassBrand(_Twitter_brand, this, _verifyAuth2).call(this);
         if (isVerified) {
           debug('Twitter授权验证成功');
           echoLog({
             before: '[Twitter]'
           }).success(I18n('initSuccess', 'Twitter'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized3, this, true);
           return true;
         }
         debug('Twitter授权失效，尝试重新获取');
         GM_setValue('twitterAuth', null);
-        if (await this.#updateAuth()) {
+        if (await _assertClassBrand(_Twitter_brand, this, _updateAuth3).call(this)) {
           debug('Twitter重新授权成功');
           echoLog({
             before: '[Twitter]'
           }).success(I18n('initSuccess', 'Twitter'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized3, this, true);
           return true;
         }
         debug('Twitter初始化失败');
@@ -2857,184 +2754,9 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verifyAuth() {
-      try {
-        debug('开始验证Twitter授权');
-        return await this.#toggleUser({
-          name: 'verify',
-          doTask: true,
-          verify: true
-        });
-      } catch (error) {
-        debug('Twitter授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.verifyAuth');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新Twitter授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Twitter'),
-          before: '[Twitter]'
-        });
-        return await new Promise((resolve => {
-          GM_cookie.list({
-            url: 'https://x.com/settings/account'
-          }, (async (cookies, error) => {
-            if (!error) {
-              const ct0 = cookies.find((cookie => cookie.name === 'ct0'))?.value;
-              const isLogin = cookies.find((cookie => cookie.name === 'twid'))?.value;
-              if (isLogin && ct0) {
-                debug('成功获取Twitter授权信息');
-                GM_setValue('twitterAuth', {
-                  ct0: ct0
-                });
-                this.#auth = {
-                  ct0: ct0
-                };
-                this.#headers['x-csrf-token'] = ct0;
-                this.#headers['x-twitter-client-language'] = cookies.find((cookie => cookie.name === 'lang'))?.value || 'en';
-                logStatus.success();
-                resolve(true);
-              } else {
-                debug('获取Twitter授权失败：未登录');
-                logStatus.error(I18n('needLogin'));
-                resolve(false);
-              }
-            } else {
-              debug('获取Twitter授权失败', {
-                error: error
-              });
-              logStatus.error('Error: Update twitter auth failed!');
-              resolve(false);
-            }
-          }));
-        }));
-      } catch (error) {
-        debug('更新Twitter授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.updateToken');
-        return false;
-      }
-    }
-    async #toggleUser(_ref6) {
-      let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref6;
-      try {
-        debug('开始处理Twitter用户任务', {
-          name: name,
-          doTask: doTask,
-          verify: verify,
-          retry: retry
-        });
-        if (!doTask && !verify && this.whiteList.users.includes(name)) {
-          debug('Twitter用户在白名单中，跳过取消关注', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitter.unfollowUser',
-            id: name,
-            before: '[Twitter]'
-          });
-          return true;
-        }
-        const userId = verify ? this.#verifyId : await this.userName2id(name);
-        if (!userId) {
-          return false;
-        }
-        const logStatus = verify ? echoLog({
-          text: I18n('verifyingAuth', 'Twitter'),
-          before: '[Twitter]'
-        }) : echoLog({
-          type: `${doTask ? '' : 'un'}followingTwitterUser`,
-          text: name,
-          before: '[Twitter]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://x.com/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`,
-          method: 'POST',
-          headers: {
-            ...this.#headers,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
-          },
-          responseType: 'json',
-          data: $.param({
-            include_profile_interstitial_type: 1,
-            include_blocking: 1,
-            include_blocked_by: 1,
-            include_followed_by: 1,
-            include_want_retweets: 1,
-            include_mute_edge: 1,
-            include_can_dm: 1,
-            include_can_media_tag: 1,
-            skip_status: 1,
-            id: userId
-          })
-        });
-        if (result !== 'Success') {
-          debug('Twitter用户操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200) {
-          debug('Twitter用户操作成功', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          if (doTask && !verify) {
-            this.tasks.users = unique([ ...this.tasks.users, name ]);
-          }
-          return true;
-        }
-        if (verify && data?.status === 403) {
-          if (data.response?.errors?.[0]?.code === 158) {
-            debug('Twitter授权验证成功（已关注）');
-            logStatus.success();
-            return true;
-          }
-          if (data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
-            const newCt0 = data.responseHeaders['set-cookie']?.find((cookie => cookie.includes('ct0=')))?.split(';')?.at(0)?.split('=')?.at(-1);
-            if (newCt0) {
-              debug('获取到新的Twitter授权Token，重试操作');
-              this.#auth.ct0 = newCt0;
-              GM_setValue('twitterAuth', this.#auth);
-              logStatus.warning(I18n('retry'));
-              return this.#toggleUser({
-                name: name,
-                doTask: doTask,
-                verify: verify,
-                retry: true
-              });
-            }
-          }
-        }
-        debug('Twitter用户操作失败', {
-          status: data?.status,
-          statusText: data?.statusText
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('处理Twitter用户任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.toggleUser');
-        return false;
-      }
-    }
     async userName2id(name) {
       try {
+        var _response;
         debug('开始获取Twitter用户ID', {
           name: name
         });
@@ -3043,7 +2765,7 @@ if (missingDependencies.length > 0) {
           text: name,
           before: '[Twitter]'
         });
-        const cachedUserId = this.#cache[name];
+        const cachedUserId = _classPrivateFieldGet(_cache2, this)[name];
         if (cachedUserId) {
           debug('从缓存获取到Twitter用户ID', {
             name: name,
@@ -3053,15 +2775,13 @@ if (missingDependencies.length > 0) {
           return cachedUserId;
         }
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://x.com/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`,
+          url: 'https://x.com/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + '?variables=%7B%22screen_name%22%3A%22'.concat(name, '%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D'),
           method: 'GET',
-          headers: {
-            ...this.#headers,
+          headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
             'content-type': 'application/json',
-            referer: `https://x.com/${name}`,
-            'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
-          },
+            referer: 'https://x.com/'.concat(name),
+            'x-client-transaction-id': await _classPrivateFieldGet(_getTID, this).call(this, 'GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + '?variables=%7B%22screen_name%22%3A%22'.concat(name, '%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D'))
+          }),
           responseType: 'json'
         });
         if (result !== 'Success') {
@@ -3070,15 +2790,15 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('获取Twitter用户ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
+            status: data === null || data === void 0 ? void 0 : data.status,
+            statusText: data === null || data === void 0 ? void 0 : data.statusText
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         let response = data.response || (typeof data.responseText === 'object' ? data.responseText : null);
@@ -3089,19 +2809,19 @@ if (missingDependencies.length > 0) {
             response = null;
           }
         }
-        const fetchedUserId = response?.data?.user?.result?.rest_id;
+        const fetchedUserId = (_response = response) === null || _response === void 0 || (_response = _response.data) === null || _response === void 0 || (_response = _response.user) === null || _response === void 0 || (_response = _response.result) === null || _response === void 0 ? void 0 : _response.rest_id;
         if (!fetchedUserId) {
           debug('未找到Twitter用户ID', {
             name: name
           });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
+          logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
           return false;
         }
         debug('成功获取Twitter用户ID', {
           name: name,
           id: fetchedUserId
         });
-        this.#setCache(name, fetchedUserId);
+        _assertClassBrand(_Twitter_brand, this, _setCache2).call(this, name, fetchedUserId);
         logStatus.success();
         return fetchedUserId;
       } catch (error) {
@@ -3112,109 +2832,15 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #toggleRetweet(_ref7) {
-      let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref7;
-      try {
-        debug('开始处理Twitter转推任务', {
-          retweetId: retweetId,
-          doTask: doTask,
-          retry: retry
-        });
-        if (!doTask && this.whiteList.retweets.includes(retweetId)) {
-          debug('Twitter转推在白名单中，跳过取消', {
-            retweetId: retweetId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitter.unretweet',
-            id: retweetId,
-            before: '[Twitter]'
-          });
-          return true;
-        }
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}retweetting`,
-          text: retweetId,
-          before: '[Twitter]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://x.com/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`,
-          method: 'POST',
-          headers: {
-            ...this.#headers,
-            'Content-Type': 'application/json',
-            origin: 'https://x.com',
-            referer: 'https://x.com/home',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
-          },
-          data: `{"variables":{"${doTask ? '' : 'source_'}tweet_id":"${retweetId}","dark_request":false},"queryId":"${doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw'}"}`,
-          responseType: 'json'
-        });
-        if (result !== 'Success') {
-          debug('Twitter转推操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 403 && data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
-          const newCt0 = data.responseHeaders['set-cookie']?.find((cookie => cookie.includes('ct0=')))?.split(';')?.at(0)?.split('=')?.at(-1);
-          if (newCt0) {
-            debug('获取到新的Twitter授权Token，重试操作');
-            this.#auth.ct0 = newCt0;
-            GM_setValue('twitterAuth', this.#auth);
-            logStatus.warning(I18n('retry'));
-            return this.#toggleRetweet({
-              retweetId: retweetId,
-              doTask: doTask,
-              retry: true
-            });
-          }
-        }
-        if (data?.status !== 200 && !(data?.status === 403 && data.response?.errors?.[0]?.code === 327)) {
-          debug('Twitter转推操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.response?.errors && data.response?.errors?.[0]?.code !== 327) {
-          debug('Twitter转推操作出错', {
-            error: data.response?.errors?.[0]?.message
-          });
-          logStatus.error(`Error:${data.response?.errors?.[0]?.message}`);
-          return false;
-        }
-        debug('Twitter转推操作成功', {
-          retweetId: retweetId,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.retweets = unique([ ...this.tasks.retweets, retweetId ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Twitter转推任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.toggleRetweet');
-        return false;
-      }
-    }
-    async toggle(_ref8) {
-      let {doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []} = _ref8;
+    async toggle(_ref4) {
+      let {doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []} = _ref4;
       try {
         debug('开始处理Twitter链接任务', {
           doTask: doTask,
           userLinksCount: userLinks.length,
           retweetLinksCount: retweetLinks.length
         });
-        if (!this.#initialized) {
+        if (!_classPrivateFieldGet(_initialized3, this)) {
           debug('Twitter模块未初始化');
           echoLog({
             text: I18n('needInit'),
@@ -3232,20 +2858,17 @@ if (missingDependencies.length > 0) {
             before: '[Twitter]'
           });
         } else {
-          const realUsers = this.getRealParams('users', userLinks, doTask, (link => link.match(/https:\/\/x\.com\/([^/]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/([^/]+)/)?.[1]));
+          const realUsers = this.getRealParams('users', userLinks, doTask, (link => {
+            var _link$match4, _link$match5;
+            return ((_link$match4 = link.match(/https:\/\/x\.com\/([^/]+)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]) || ((_link$match5 = link.match(/https:\/\/twitter\.com\/([^/]+)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]);
+          }));
           debug('处理后的Twitter用户列表', {
             count: realUsers.length,
             users: realUsers
           });
           if (realUsers.length > 0) {
             for (const user of realUsers) {
-              if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-                debug('Twitter SDK过期，重新获取', {
-                  expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis
-                });
-                this.#FwdForSdk = await getFwdForSdk();
-              }
-              await this.#toggleUser({
+              await _assertClassBrand(_Twitter_brand, this, _toggleUser).call(this, {
                 name: user,
                 doTask: doTask
               });
@@ -3263,18 +2886,17 @@ if (missingDependencies.length > 0) {
             before: '[Twitter]'
           });
         } else {
-          const realRetweets = this.getRealParams('retweets', retweetLinks, doTask, (link => link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]));
+          const realRetweets = this.getRealParams('retweets', retweetLinks, doTask, (link => {
+            var _link$match6, _link$match7;
+            return ((_link$match6 = link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]) || ((_link$match7 = link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]);
+          }));
           debug('处理后的Twitter转推列表', {
             count: realRetweets.length,
             retweets: realRetweets
           });
           if (realRetweets.length > 0) {
             for (const retweet of realRetweets) {
-              if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-                debug('Twitter SDK过期，重新获取');
-                this.#FwdForSdk = await getFwdForSdk();
-              }
-              await this.#toggleRetweet({
+              await _assertClassBrand(_Twitter_brand, this, _toggleRetweet).call(this, {
                 retweetId: retweet,
                 doTask: doTask
               });
@@ -3291,54 +2913,331 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #setCache(name, id) {
-      try {
-        debug('设置Twitter用户ID缓存', {
-          name: name,
-          id: id
-        });
-        this.#cache[name] = id;
-        GM_setValue('twitterCache', this.#cache);
-      } catch (error) {
-        debug('设置Twitter用户ID缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.setCache');
-      }
+  }
+  async function _verifyAuth2() {
+    try {
+      debug('开始验证Twitter授权');
+      return await _assertClassBrand(_Twitter_brand, this, _toggleUser).call(this, {
+        name: 'verify',
+        doTask: true,
+        verify: true
+      });
+    } catch (error) {
+      debug('Twitter授权验证发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitter.verifyAuth');
+      return false;
     }
   }
+  async function _updateAuth3() {
+    try {
+      debug('开始更新Twitter授权');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', 'Twitter'),
+        before: '[Twitter]'
+      });
+      return await new Promise((resolve => {
+        GM_cookie.list({
+          url: 'https://x.com/settings/account'
+        }, (async (cookies, error) => {
+          if (!error) {
+            var _cookies$find, _cookies$find2;
+            const ct0 = (_cookies$find = cookies.find((cookie => cookie.name === 'ct0'))) === null || _cookies$find === void 0 ? void 0 : _cookies$find.value;
+            const isLogin = (_cookies$find2 = cookies.find((cookie => cookie.name === 'twid'))) === null || _cookies$find2 === void 0 ? void 0 : _cookies$find2.value;
+            if (isLogin && ct0) {
+              var _cookies$find3;
+              debug('成功获取Twitter授权信息');
+              GM_setValue('twitterAuth', {
+                ct0: ct0
+              });
+              _classPrivateFieldSet(_auth3, this, {
+                ct0: ct0
+              });
+              _classPrivateFieldGet(_headers, this)['x-csrf-token'] = ct0;
+              _classPrivateFieldGet(_headers, this)['x-twitter-client-language'] = ((_cookies$find3 = cookies.find((cookie => cookie.name === 'lang'))) === null || _cookies$find3 === void 0 ? void 0 : _cookies$find3.value) || 'en';
+              logStatus.success();
+              resolve(true);
+            } else {
+              debug('获取Twitter授权失败：未登录');
+              logStatus.error(I18n('needLogin'));
+              resolve(false);
+            }
+          } else {
+            debug('获取Twitter授权失败', {
+              error: error
+            });
+            logStatus.error('Error: Update twitter auth failed!');
+            resolve(false);
+          }
+        }));
+      }));
+    } catch (error) {
+      debug('更新Twitter授权时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitter.updateToken');
+      return false;
+    }
+  }
+  async function _toggleUser(_ref21) {
+    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref21;
+    try {
+      debug('开始处理Twitter用户任务', {
+        name: name,
+        doTask: doTask,
+        verify: verify,
+        retry: retry
+      });
+      if (!doTask && !verify && this.whiteList.users.includes(name)) {
+        debug('Twitter用户在白名单中，跳过取消关注', {
+          name: name
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Twitter.unfollowUser',
+          id: name,
+          before: '[Twitter]'
+        });
+        return true;
+      }
+      const userId = verify ? _classPrivateFieldGet(_verifyId, this) : await this.userName2id(name);
+      if (!userId) {
+        return false;
+      }
+      const logStatus = verify ? echoLog({
+        text: I18n('verifyingAuth', 'Twitter'),
+        before: '[Twitter]'
+      }) : echoLog({
+        type: ''.concat(doTask ? '' : 'un', 'followingTwitterUser'),
+        text: name,
+        before: '[Twitter]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://x.com/i/api/1.1/friendships/'.concat(doTask ? 'create' : 'destroy', '.json'),
+        method: 'POST',
+        headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'x-client-transaction-id': await _classPrivateFieldGet(_getTID, this).call(this, 'POST', '/i/api/1.1/friendships/'.concat(doTask ? 'create' : 'destroy', '.json'))
+        }),
+        responseType: 'json',
+        data: $.param({
+          include_profile_interstitial_type: 1,
+          include_blocking: 1,
+          include_blocked_by: 1,
+          include_followed_by: 1,
+          include_want_retweets: 1,
+          include_mute_edge: 1,
+          include_can_dm: 1,
+          include_can_media_tag: 1,
+          skip_status: 1,
+          id: userId
+        })
+      });
+      if (result !== 'Success') {
+        debug('Twitter用户操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
+        debug('Twitter用户操作成功', {
+          name: name,
+          doTask: doTask
+        });
+        logStatus.success();
+        if (doTask && !verify) {
+          this.tasks.users = unique([ ...this.tasks.users, name ]);
+        }
+        return true;
+      }
+      if (verify && (data === null || data === void 0 ? void 0 : data.status) === 403) {
+        var _data$response92, _data$response93, _data$responseHeaders2;
+        if (((_data$response92 = data.response) === null || _data$response92 === void 0 || (_data$response92 = _data$response92.errors) === null || _data$response92 === void 0 || (_data$response92 = _data$response92[0]) === null || _data$response92 === void 0 ? void 0 : _data$response92.code) === 158) {
+          debug('Twitter授权验证成功（已关注）');
+          logStatus.success();
+          return true;
+        }
+        if (((_data$response93 = data.response) === null || _data$response93 === void 0 || (_data$response93 = _data$response93.errors) === null || _data$response93 === void 0 || (_data$response93 = _data$response93[0]) === null || _data$response93 === void 0 ? void 0 : _data$response93.code) === 353 && !retry && (_data$responseHeaders2 = data.responseHeaders) !== null && _data$responseHeaders2 !== void 0 && _data$responseHeaders2['set-cookie']) {
+          var _data$responseHeaders3;
+          const newCt0 = (_data$responseHeaders3 = data.responseHeaders['set-cookie']) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.find((cookie => cookie.includes('ct0=')))) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.split(';')) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.at(0)) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.split('=')) === null || _data$responseHeaders3 === void 0 ? void 0 : _data$responseHeaders3.at(-1);
+          if (newCt0) {
+            debug('获取到新的Twitter授权Token，重试操作');
+            _classPrivateFieldGet(_auth3, this).ct0 = newCt0;
+            GM_setValue('twitterAuth', _classPrivateFieldGet(_auth3, this));
+            logStatus.warning(I18n('retry'));
+            return _assertClassBrand(_Twitter_brand, this, _toggleUser).call(this, {
+              name: name,
+              doTask: doTask,
+              verify: verify,
+              retry: true
+            });
+          }
+        }
+      }
+      debug('Twitter用户操作失败', {
+        status: data === null || data === void 0 ? void 0 : data.status,
+        statusText: data === null || data === void 0 ? void 0 : data.statusText
+      });
+      logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      return false;
+    } catch (error) {
+      debug('处理Twitter用户任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitter.toggleUser');
+      return false;
+    }
+  }
+  async function _toggleRetweet(_ref22) {
+    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref22;
+    try {
+      var _data$response94, _data$responseHeaders4, _data$response95, _data$response96, _data$response97;
+      debug('开始处理Twitter转推任务', {
+        retweetId: retweetId,
+        doTask: doTask,
+        retry: retry
+      });
+      if (!doTask && this.whiteList.retweets.includes(retweetId)) {
+        debug('Twitter转推在白名单中，跳过取消', {
+          retweetId: retweetId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Twitter.unretweet',
+          id: retweetId,
+          before: '[Twitter]'
+        });
+        return true;
+      }
+      const logStatus = echoLog({
+        type: ''.concat(doTask ? '' : 'un', 'retweetting'),
+        text: retweetId,
+        before: '[Twitter]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://x.com/i/api/graphql/'.concat(doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'),
+        method: 'POST',
+        headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
+          'Content-Type': 'application/json',
+          origin: 'https://x.com',
+          referer: 'https://x.com/home',
+          'x-client-transaction-id': await _classPrivateFieldGet(_getTID, this).call(this, 'POST', '/i/api/graphql/'.concat(doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'))
+        }),
+        data: '{"variables":{"'.concat(doTask ? '' : 'source_', 'tweet_id":"').concat(retweetId, '","dark_request":false},"queryId":"').concat(doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw', '"}'),
+        responseType: 'json'
+      });
+      if (result !== 'Success') {
+        debug('Twitter转推操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response94 = data.response) === null || _data$response94 === void 0 || (_data$response94 = _data$response94.errors) === null || _data$response94 === void 0 || (_data$response94 = _data$response94[0]) === null || _data$response94 === void 0 ? void 0 : _data$response94.code) === 353 && !retry && (_data$responseHeaders4 = data.responseHeaders) !== null && _data$responseHeaders4 !== void 0 && _data$responseHeaders4['set-cookie']) {
+        var _data$responseHeaders5;
+        const newCt0 = (_data$responseHeaders5 = data.responseHeaders['set-cookie']) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.find((cookie => cookie.includes('ct0=')))) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.split(';')) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.at(0)) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.split('=')) === null || _data$responseHeaders5 === void 0 ? void 0 : _data$responseHeaders5.at(-1);
+        if (newCt0) {
+          debug('获取到新的Twitter授权Token，重试操作');
+          _classPrivateFieldGet(_auth3, this).ct0 = newCt0;
+          GM_setValue('twitterAuth', _classPrivateFieldGet(_auth3, this));
+          logStatus.warning(I18n('retry'));
+          return _assertClassBrand(_Twitter_brand, this, _toggleRetweet).call(this, {
+            retweetId: retweetId,
+            doTask: doTask,
+            retry: true
+          });
+        }
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 && !((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response95 = data.response) === null || _data$response95 === void 0 || (_data$response95 = _data$response95.errors) === null || _data$response95 === void 0 || (_data$response95 = _data$response95[0]) === null || _data$response95 === void 0 ? void 0 : _data$response95.code) === 327)) {
+        debug('Twitter转推操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if ((_data$response96 = data.response) !== null && _data$response96 !== void 0 && _data$response96.errors && ((_data$response97 = data.response) === null || _data$response97 === void 0 || (_data$response97 = _data$response97.errors) === null || _data$response97 === void 0 || (_data$response97 = _data$response97[0]) === null || _data$response97 === void 0 ? void 0 : _data$response97.code) !== 327) {
+        var _data$response98, _data$response99;
+        debug('Twitter转推操作出错', {
+          error: (_data$response98 = data.response) === null || _data$response98 === void 0 || (_data$response98 = _data$response98.errors) === null || _data$response98 === void 0 || (_data$response98 = _data$response98[0]) === null || _data$response98 === void 0 ? void 0 : _data$response98.message
+        });
+        logStatus.error('Error:'.concat((_data$response99 = data.response) === null || _data$response99 === void 0 || (_data$response99 = _data$response99.errors) === null || _data$response99 === void 0 || (_data$response99 = _data$response99[0]) === null || _data$response99 === void 0 ? void 0 : _data$response99.message));
+        return false;
+      }
+      debug('Twitter转推操作成功', {
+        retweetId: retweetId,
+        doTask: doTask
+      });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.retweets = unique([ ...this.tasks.retweets, retweetId ]);
+      }
+      return true;
+    } catch (error) {
+      debug('处理Twitter转推任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitter.toggleRetweet');
+      return false;
+    }
+  }
+  function _setCache2(name, id) {
+    try {
+      debug('设置Twitter用户ID缓存', {
+        name: name,
+        id: id
+      });
+      _classPrivateFieldGet(_cache2, this)[name] = id;
+      GM_setValue('twitterCache', _classPrivateFieldGet(_cache2, this));
+    } catch (error) {
+      debug('设置Twitter用户ID缓存时发生错误', {
+        error: error
+      });
+      throwError(error, 'Twitter.setCache');
+    }
+  }
+  unsafeWindow.Twitter = Twitter;
+  var _username = new WeakMap;
+  var _cache3 = new WeakMap;
+  var _initialized4 = new WeakMap;
+  var _Vk_brand = new WeakSet;
   class Vk extends Social {
-    tasks;
-    whiteList;
-    #username='';
-    #cache=(() => GM_getValue('vkCache') || {})();
-    #initialized=false;
     constructor() {
+      var _GM_getValue4;
       super();
+      _classPrivateMethodInitSpec(this, _Vk_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _username, '');
+      _classPrivateFieldInitSpec(this, _cache3, GM_getValue('vkCache') || {});
+      _classPrivateFieldInitSpec(this, _initialized4, false);
       const defaultTasksTemplate = {
         names: []
       };
       debug('初始化Vk实例');
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.vk || {}
-      };
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue4 = GM_getValue('whiteList')) === null || _GM_getValue4 === void 0 ? void 0 : _GM_getValue4.vk) || {});
     }
     async init() {
       try {
         debug('开始初始化Vk模块');
-        if (this.#initialized) {
+        if (_classPrivateFieldGet(_initialized4, this)) {
           debug('Vk模块已初始化');
           return true;
         }
-        const isVerified = await this.#verifyAuth();
+        const isVerified = await _assertClassBrand(_Vk_brand, this, _verifyAuth3).call(this);
         if (isVerified) {
           debug('Vk授权验证成功');
           echoLog({
             before: '[Vk]'
           }).success(I18n('initSuccess', 'Vk'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized4, this, true);
           return true;
         }
         debug('Vk初始化失败');
@@ -3354,630 +3253,14 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verifyAuth() {
-      try {
-        debug('开始验证Vk授权');
-        const logStatus = echoLog({
-          text: I18n('verifyAuth', 'Vk'),
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/im',
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('Vk授权验证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.finalUrl.includes('vk.com/login')) {
-          debug('Vk授权验证失败：需要登录');
-          logStatus.error(`Error:${I18n('loginVk')}`, true);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk授权验证状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        this.#username = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)?.[1] || '';
-        debug('Vk授权验证成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Vk授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.verifyAuth');
-        return false;
-      }
-    }
-    async #toggleGroup(name, dataParam) {
-      let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      try {
-        debug('开始处理Vk群组任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'joiningVkGroup' : 'leavingVkGroup',
-          text: name,
-          before: '[Vk]'
-        });
-        if (dataParam.groupAct === 'enter' && !doTask || dataParam.groupAct === 'leave' && doTask) {
-          debug('Vk群组操作已完成，跳过', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        const reqData = {
-          act: doTask ? 'enter' : 'leave',
-          al: 1,
-          gid: dataParam.groupId,
-          hash: dataParam.groupHash
-        };
-        if (doTask) {
-          reqData.context = '_';
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/al_groups.php',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param(reqData)
-        });
-        if (result !== 'Success') {
-          debug('Vk群组操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk群组操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Vk群组操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.names = unique([ ...this.tasks.names, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Vk群组任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggleGroup');
-        return false;
-      }
-    }
-    async #togglePublic(name, dataParam) {
-      let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      try {
-        debug('开始处理Vk公共页面任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'joiningVkPublic' : 'leavingVkPublic',
-          text: name,
-          before: '[Vk]'
-        });
-        if (dataParam.publicJoined && doTask || !dataParam.publicJoined && !doTask) {
-          debug('Vk公共页面操作已完成，跳过', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/al_public.php',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param({
-            act: doTask ? 'a_enter' : 'a_leave',
-            al: 1,
-            pid: dataParam.publicPid,
-            hash: dataParam.publicHash
-          })
-        });
-        if (result !== 'Success') {
-          debug('Vk公共页面操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk公共页面操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Vk公共页面操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.names = unique([ ...this.tasks.names, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Vk公共页面任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.togglePublic');
-        return false;
-      }
-    }
-    async #toggleLikeWall(name, dataParam) {
-      let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      try {
-        debug('开始处理Vk点赞任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'likingVkPublic' : 'unlikingVkPublic',
-          text: name,
-          before: '[Vk]'
-        });
-        const postData = {
-          act: 'a_set_reaction',
-          al: 1,
-          event_subtype: 'post_modal',
-          from: 'wall_page',
-          hash: dataParam.hash,
-          object: dataParam.object,
-          track_code: dataParam.trackCode,
-          wall: 2
-        };
-        if (doTask) {
-          postData.reaction_id = 0;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: 'https://vk.com/like.php?act=a_set_reaction',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param(postData)
-        });
-        if (resultR !== 'Success') {
-          debug('Vk点赞操作请求失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('Vk点赞操作状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        if (dataR.response?.payload?.[1]?.[1]?.like_my !== true) {
-          debug('Vk点赞操作验证失败');
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('Vk点赞操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理Vk点赞任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.sendWall');
-        return false;
-      }
-    }
-    async #sendWall(name) {
-      try {
-        debug('开始处理Vk转发任务', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'sendingVkWall',
-          text: name,
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/like.php',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param({
-            act: 'publish_box',
-            al: 1,
-            object: name
-          })
-        });
-        if (result !== 'Success') {
-          debug('Vk转发操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk转发操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const hash = data.responseText.match(/shHash:[\s]*'(.*?)'/)?.[1];
-        if (!hash) {
-          debug('获取Vk转发hash失败');
-          logStatus.error('Error: Get "hash" failed');
-          return false;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: 'https://vk.com/like.php',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param({
-            Message: '',
-            act: 'a_do_publish',
-            al: 1,
-            close_comments: 0,
-            friends_only: 0,
-            from: 'box',
-            hash: hash,
-            list: '',
-            mark_as_ads: 0,
-            mute_notifications: 0,
-            object: name,
-            ret_data: 1,
-            to: 0
-          })
-        });
-        if (resultR !== 'Success') {
-          debug('Vk转发确认请求失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('Vk转发确认状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        const jsonData = JSON.parse(dataR.responseText?.replace('\x3c!--', '') || '{}');
-        if (jsonData?.payload?.[1]?.[1]?.share_my !== true) {
-          debug('Vk转发确认验证失败');
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('Vk转发操作成功', {
-          name: name
-        });
-        logStatus.success();
-        const postId = jsonData?.payload?.[1]?.[1]?.post_id;
-        const ownerId = jsonData?.payload?.[1]?.[1]?.owner_id;
-        if (postId && ownerId) {
-          this.#setCache(name, `${ownerId}_${postId}`);
-        }
-        this.tasks.names = unique([ ...this.tasks.names, name ]);
-        return true;
-      } catch (error) {
-        debug('处理Vk转发任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.sendWall');
-        return false;
-      }
-    }
-    async #deleteWall(name, dataParams) {
-      try {
-        debug('开始处理Vk删除墙任务', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'deletingVkWall',
-          text: name,
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/al_wall.php?act=delete',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${this.#username}?w=wall${this.#cache[name]}%2Fall`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          data: $.param({
-            act: 'delete',
-            al: 1,
-            confirm: 0,
-            from: 'wkview',
-            hash: dataParams.wallHash,
-            post: this.#cache[name]
-          })
-        });
-        if (result !== 'Success') {
-          debug('Vk删除墙请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk删除墙状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const jsonData = JSON.parse(data.responseText?.replace('\x3c!--', '') || '{}');
-        if (!jsonData?.payload?.[1]?.[1]) {
-          debug('Vk删除墙验证失败');
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Vk删除墙操作成功', {
-          name: name
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理Vk删除墙任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.deleteWall');
-        return false;
-      }
-    }
-    async #getId(name, doTask) {
-      try {
-        debug('开始获取Vk ID', {
-          name: name,
-          doTask: doTask
-        });
-        let url = `https://vk.com/${name}`;
-        if (/^wall-/.test(name)) {
-          if (doTask) {
-            return {
-              type: 'sendWall'
-            };
-          }
-          if (!this.#cache[name]) {
-            return {
-              type: 'unSupport'
-            };
-          }
-          url = `https://vk.com/${this.#username}?w=wall${this.#cache[name]}`;
-        }
-        const logStatus = echoLog({
-          type: 'gettingVkId',
-          text: name,
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: url,
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('获取Vk ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取Vk ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
-        const publicHash = data.responseText.match(/"enterHash":"(.*?)"/)?.[1];
-        const publicPid = data.responseText.match(/"public_id":([\d]+?),/)?.[1];
-        const publicJoined = !data.responseText.includes('Public.subscribe');
-        if (groupAct && groupId && groupHash) {
-          debug('获取到Vk群组ID', {
-            groupAct: groupAct,
-            groupId: groupId,
-            groupHash: groupHash
-          });
-          logStatus.success();
-          return {
-            groupAct: groupAct,
-            groupId: groupId,
-            groupHash: groupHash,
-            type: 'group'
-          };
-        }
-        if (publicHash && publicPid) {
-          debug('获取到Vk公共页面ID', {
-            publicHash: publicHash,
-            publicPid: publicPid,
-            publicJoined: publicJoined
-          });
-          logStatus.success();
-          return {
-            publicHash: publicHash,
-            publicPid: publicPid,
-            publicJoined: publicJoined,
-            type: 'public'
-          };
-        }
-        if (name.includes('action=like')) {
-          const hash = data.responseText.match(/data-reaction-hash="(.*?)"/)?.[1];
-          const trackCode = data.responseText.match(/data-post-track-code="(.*?)"/)?.[1];
-          const object = name.match(/wall-[\w_]+/)?.[0];
-          if (hash && trackCode && object) {
-            debug('获取到Vk点赞ID', {
-              hash: hash,
-              trackCode: trackCode,
-              object: object
-            });
-            logStatus.success();
-            return {
-              type: 'likeWall',
-              hash: hash,
-              trackCode: trackCode,
-              object: object
-            };
-          }
-        }
-        if (data.responseText.includes('wall.deletePost') && !doTask) {
-          const wallHash = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)?.[1];
-          if (wallHash) {
-            debug('获取到Vk删除墙ID', {
-              wallHash: wallHash
-            });
-            logStatus.success();
-            return {
-              type: 'deleteWall',
-              wallHash: wallHash
-            };
-          }
-        }
-        if (name.includes('wall') && doTask) {
-          debug('获取到Vk墙ID');
-          logStatus.success();
-          return {
-            type: 'sendWall'
-          };
-        }
-        debug('未找到Vk ID参数');
-        logStatus.error('Error: Parameters not found!');
-        return false;
-      } catch (error) {
-        debug('获取Vk ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.getId');
-        return false;
-      }
-    }
-    async #toggleVk(_ref9) {
-      let {name: name, doTask: doTask = true} = _ref9;
-      try {
-        debug('开始处理Vk任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.names.includes(name)) {
-          debug('Vk任务在白名单中，跳过', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Vk.undoTask',
-            id: name,
-            before: '[Vk]'
-          });
-          return true;
-        }
-        const formatName = name.replace(/\/$/, '');
-        const data = await this.#getId(formatName, doTask);
-        if (!data) {
-          return false;
-        }
-        switch (data.type) {
-         case 'group':
-          return await this.#toggleGroup(formatName, data, doTask);
-
-         case 'public':
-          return await this.#togglePublic(formatName, data, doTask);
-
-         case 'likeWall':
-          return await this.#toggleLikeWall(formatName, data, doTask);
-
-         case 'sendWall':
-          return doTask ? await this.#sendWall(formatName) : true;
-
-         case 'deleteWall':
-          return doTask ? true : await this.#deleteWall(formatName, data);
-
-         default:
-          debug('未知的Vk任务类型', {
-            type: data.type
-          });
-          return false;
-        }
-      } catch (error) {
-        debug('处理Vk任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggleVk');
-        return false;
-      }
-    }
-    async toggle(_ref0) {
-      let {doTask: doTask = true, nameLinks: nameLinks = []} = _ref0;
+    async toggle(_ref5) {
+      let {doTask: doTask = true, nameLinks: nameLinks = []} = _ref5;
       try {
         debug('开始处理Vk链接任务', {
           doTask: doTask,
           nameLinksCount: nameLinks.length
         });
-        if (!this.#initialized) {
+        if (!_classPrivateFieldGet(_initialized4, this)) {
           debug('Vk模块未初始化');
           echoLog({
             text: I18n('needInit'),
@@ -3996,14 +3279,17 @@ if (missingDependencies.length > 0) {
             before: '[Vk]'
           });
         } else {
-          const realNames = this.getRealParams('names', nameLinks, doTask, (link => link.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]));
+          const realNames = this.getRealParams('names', nameLinks, doTask, (link => {
+            var _link$match8;
+            return (_link$match8 = link.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1];
+          }));
           debug('处理后的Vk链接列表', {
             count: realNames.length,
             names: realNames
           });
           if (realNames.length > 0) {
             for (const name of realNames) {
-              prom.push(this.#toggleVk({
+              prom.push(_assertClassBrand(_Vk_brand, this, _toggleVk).call(this, {
                 name: name,
                 doTask: doTask
               }));
@@ -4020,24 +3306,648 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #setCache(name, postId) {
-      try {
-        debug('设置Vk缓存', {
-          name: name,
-          postId: postId
+  }
+  async function _verifyAuth3() {
+    try {
+      var _data$responseText$ma11;
+      debug('开始验证Vk授权');
+      const logStatus = echoLog({
+        text: I18n('verifyAuth', 'Vk'),
+        before: '[Vk]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://vk.com/im',
+        method: 'GET'
+      });
+      if (result !== 'Success') {
+        debug('Vk授权验证请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
         });
-        this.#cache[name] = postId;
-        GM_setValue('vkCache', this.#cache);
-      } catch (error) {
-        debug('设置Vk缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.setCache');
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
       }
+      if (data !== null && data !== void 0 && data.finalUrl.includes('vk.com/login')) {
+        debug('Vk授权验证失败：需要登录');
+        logStatus.error('Error:'.concat(I18n('loginVk')), true);
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Vk授权验证状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      _classPrivateFieldSet(_username, this, ((_data$responseText$ma11 = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]) || '');
+      debug('Vk授权验证成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('Vk授权验证发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.verifyAuth');
+      return false;
+    }
+  }
+  async function _toggleGroup(name, dataParam) {
+    let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    try {
+      debug('开始处理Vk群组任务', {
+        name: name,
+        doTask: doTask
+      });
+      const logStatus = echoLog({
+        type: doTask ? 'joiningVkGroup' : 'leavingVkGroup',
+        text: name,
+        before: '[Vk]'
+      });
+      if (dataParam.groupAct === 'enter' && !doTask || dataParam.groupAct === 'leave' && doTask) {
+        debug('Vk群组操作已完成，跳过', {
+          name: name,
+          doTask: doTask
+        });
+        logStatus.success();
+        return true;
+      }
+      const reqData = {
+        act: doTask ? 'enter' : 'leave',
+        al: 1,
+        gid: dataParam.groupId,
+        hash: dataParam.groupHash
+      };
+      if (doTask) {
+        reqData.context = '_';
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://vk.com/al_groups.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param(reqData)
+      });
+      if (result !== 'Success') {
+        debug('Vk群组操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Vk群组操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('Vk群组操作成功', {
+        name: name,
+        doTask: doTask
+      });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.names = unique([ ...this.tasks.names, name ]);
+      }
+      return true;
+    } catch (error) {
+      debug('处理Vk群组任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.toggleGroup');
+      return false;
+    }
+  }
+  async function _togglePublic(name, dataParam) {
+    let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    try {
+      debug('开始处理Vk公共页面任务', {
+        name: name,
+        doTask: doTask
+      });
+      const logStatus = echoLog({
+        type: doTask ? 'joiningVkPublic' : 'leavingVkPublic',
+        text: name,
+        before: '[Vk]'
+      });
+      if (dataParam.publicJoined && doTask || !dataParam.publicJoined && !doTask) {
+        debug('Vk公共页面操作已完成，跳过', {
+          name: name,
+          doTask: doTask
+        });
+        logStatus.success();
+        return true;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://vk.com/al_public.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          act: doTask ? 'a_enter' : 'a_leave',
+          al: 1,
+          pid: dataParam.publicPid,
+          hash: dataParam.publicHash
+        })
+      });
+      if (result !== 'Success') {
+        debug('Vk公共页面操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Vk公共页面操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('Vk公共页面操作成功', {
+        name: name,
+        doTask: doTask
+      });
+      logStatus.success();
+      if (doTask) {
+        this.tasks.names = unique([ ...this.tasks.names, name ]);
+      }
+      return true;
+    } catch (error) {
+      debug('处理Vk公共页面任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.togglePublic');
+      return false;
+    }
+  }
+  async function _toggleLikeWall(name, dataParam) {
+    let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    try {
+      var _dataR$response;
+      debug('开始处理Vk点赞任务', {
+        name: name,
+        doTask: doTask
+      });
+      const logStatus = echoLog({
+        type: doTask ? 'likingVkPublic' : 'unlikingVkPublic',
+        text: name,
+        before: '[Vk]'
+      });
+      const postData = {
+        act: 'a_set_reaction',
+        al: 1,
+        event_subtype: 'post_modal',
+        from: 'wall_page',
+        hash: dataParam.hash,
+        object: dataParam.object,
+        track_code: dataParam.trackCode,
+        wall: 2
+      };
+      if (doTask) {
+        postData.reaction_id = 0;
+      }
+      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        url: 'https://vk.com/like.php?act=a_set_reaction',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param(postData)
+      });
+      if (resultR !== 'Success') {
+        debug('Vk点赞操作请求失败', {
+          result: resultR,
+          statusText: statusTextR,
+          status: statusR
+        });
+        logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
+        return false;
+      }
+      if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
+        debug('Vk点赞操作状态错误', {
+          status: dataR === null || dataR === void 0 ? void 0 : dataR.status,
+          statusText: dataR === null || dataR === void 0 ? void 0 : dataR.statusText
+        });
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      if (((_dataR$response = dataR.response) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response.payload) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response[1]) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response[1]) === null || _dataR$response === void 0 ? void 0 : _dataR$response.like_my) !== true) {
+        debug('Vk点赞操作验证失败');
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      debug('Vk点赞操作成功', {
+        name: name,
+        doTask: doTask
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('处理Vk点赞任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.sendWall');
+      return false;
+    }
+  }
+  async function _sendWall(name) {
+    try {
+      var _data$responseText$ma12, _dataR$responseText, _jsonData$payload, _jsonData$payload2, _jsonData$payload3;
+      debug('开始处理Vk转发任务', {
+        name: name
+      });
+      const logStatus = echoLog({
+        type: 'sendingVkWall',
+        text: name,
+        before: '[Vk]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://vk.com/like.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          act: 'publish_box',
+          al: 1,
+          object: name
+        })
+      });
+      if (result !== 'Success') {
+        debug('Vk转发操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Vk转发操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const hash = (_data$responseText$ma12 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1];
+      if (!hash) {
+        debug('获取Vk转发hash失败');
+        logStatus.error('Error: Get "hash" failed');
+        return false;
+      }
+      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        url: 'https://vk.com/like.php',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          Message: '',
+          act: 'a_do_publish',
+          al: 1,
+          close_comments: 0,
+          friends_only: 0,
+          from: 'box',
+          hash: hash,
+          list: '',
+          mark_as_ads: 0,
+          mute_notifications: 0,
+          object: name,
+          ret_data: 1,
+          to: 0
+        })
+      });
+      if (resultR !== 'Success') {
+        debug('Vk转发确认请求失败', {
+          result: resultR,
+          statusText: statusTextR,
+          status: statusR
+        });
+        logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
+        return false;
+      }
+      if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
+        debug('Vk转发确认状态错误', {
+          status: dataR === null || dataR === void 0 ? void 0 : dataR.status,
+          statusText: dataR === null || dataR === void 0 ? void 0 : dataR.statusText
+        });
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      const jsonData = JSON.parse(((_dataR$responseText = dataR.responseText) === null || _dataR$responseText === void 0 ? void 0 : _dataR$responseText.replace('\x3c!--', '')) || '{}');
+      if ((jsonData === null || jsonData === void 0 || (_jsonData$payload = jsonData.payload) === null || _jsonData$payload === void 0 || (_jsonData$payload = _jsonData$payload[1]) === null || _jsonData$payload === void 0 || (_jsonData$payload = _jsonData$payload[1]) === null || _jsonData$payload === void 0 ? void 0 : _jsonData$payload.share_my) !== true) {
+        debug('Vk转发确认验证失败');
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      debug('Vk转发操作成功', {
+        name: name
+      });
+      logStatus.success();
+      const postId = jsonData === null || jsonData === void 0 || (_jsonData$payload2 = jsonData.payload) === null || _jsonData$payload2 === void 0 || (_jsonData$payload2 = _jsonData$payload2[1]) === null || _jsonData$payload2 === void 0 || (_jsonData$payload2 = _jsonData$payload2[1]) === null || _jsonData$payload2 === void 0 ? void 0 : _jsonData$payload2.post_id;
+      const ownerId = jsonData === null || jsonData === void 0 || (_jsonData$payload3 = jsonData.payload) === null || _jsonData$payload3 === void 0 || (_jsonData$payload3 = _jsonData$payload3[1]) === null || _jsonData$payload3 === void 0 || (_jsonData$payload3 = _jsonData$payload3[1]) === null || _jsonData$payload3 === void 0 ? void 0 : _jsonData$payload3.owner_id;
+      if (postId && ownerId) {
+        _assertClassBrand(_Vk_brand, this, _setCache3).call(this, name, ''.concat(ownerId, '_').concat(postId));
+      }
+      this.tasks.names = unique([ ...this.tasks.names, name ]);
+      return true;
+    } catch (error) {
+      debug('处理Vk转发任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.sendWall');
+      return false;
+    }
+  }
+  async function _deleteWall(name, dataParams) {
+    try {
+      var _data$responseText2, _jsonData$payload4;
+      debug('开始处理Vk删除墙任务', {
+        name: name
+      });
+      const logStatus = echoLog({
+        type: 'deletingVkWall',
+        text: name,
+        before: '[Vk]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://vk.com/al_wall.php?act=delete',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(_classPrivateFieldGet(_username, this), '?w=wall').concat(_classPrivateFieldGet(_cache3, this)[name], '%2Fall'),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param({
+          act: 'delete',
+          al: 1,
+          confirm: 0,
+          from: 'wkview',
+          hash: dataParams.wallHash,
+          post: _classPrivateFieldGet(_cache3, this)[name]
+        })
+      });
+      if (result !== 'Success') {
+        debug('Vk删除墙请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Vk删除墙状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const jsonData = JSON.parse(((_data$responseText2 = data.responseText) === null || _data$responseText2 === void 0 ? void 0 : _data$responseText2.replace('\x3c!--', '')) || '{}');
+      if (!(jsonData !== null && jsonData !== void 0 && (_jsonData$payload4 = jsonData.payload) !== null && _jsonData$payload4 !== void 0 && (_jsonData$payload4 = _jsonData$payload4[1]) !== null && _jsonData$payload4 !== void 0 && _jsonData$payload4[1])) {
+        debug('Vk删除墙验证失败');
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('Vk删除墙操作成功', {
+        name: name
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('处理Vk删除墙任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.deleteWall');
+      return false;
+    }
+  }
+  async function _getId(name, doTask) {
+    try {
+      var _data$responseText$ma13, _data$responseText$ma14;
+      debug('开始获取Vk ID', {
+        name: name,
+        doTask: doTask
+      });
+      let url = 'https://vk.com/'.concat(name);
+      if (/^wall-/.test(name)) {
+        if (doTask) {
+          return {
+            type: 'sendWall'
+          };
+        }
+        if (!_classPrivateFieldGet(_cache3, this)[name]) {
+          return {
+            type: 'unSupport'
+          };
+        }
+        url = 'https://vk.com/'.concat(_classPrivateFieldGet(_username, this), '?w=wall').concat(_classPrivateFieldGet(_cache3, this)[name]);
+      }
+      const logStatus = echoLog({
+        type: 'gettingVkId',
+        text: name,
+        before: '[Vk]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: url,
+        method: 'GET'
+      });
+      if (result !== 'Success') {
+        debug('获取Vk ID请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取Vk ID状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
+      const publicHash = (_data$responseText$ma13 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1];
+      const publicPid = (_data$responseText$ma14 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1];
+      const publicJoined = !data.responseText.includes('Public.subscribe');
+      if (groupAct && groupId && groupHash) {
+        debug('获取到Vk群组ID', {
+          groupAct: groupAct,
+          groupId: groupId,
+          groupHash: groupHash
+        });
+        logStatus.success();
+        return {
+          groupAct: groupAct,
+          groupId: groupId,
+          groupHash: groupHash,
+          type: 'group'
+        };
+      }
+      if (publicHash && publicPid) {
+        debug('获取到Vk公共页面ID', {
+          publicHash: publicHash,
+          publicPid: publicPid,
+          publicJoined: publicJoined
+        });
+        logStatus.success();
+        return {
+          publicHash: publicHash,
+          publicPid: publicPid,
+          publicJoined: publicJoined,
+          type: 'public'
+        };
+      }
+      if (name.includes('action=like')) {
+        var _data$responseText$ma15, _data$responseText$ma16, _name$match;
+        const hash = (_data$responseText$ma15 = data.responseText.match(/data-reaction-hash="(.*?)"/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1];
+        const trackCode = (_data$responseText$ma16 = data.responseText.match(/data-post-track-code="(.*?)"/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1];
+        const object = (_name$match = name.match(/wall-[\w_]+/)) === null || _name$match === void 0 ? void 0 : _name$match[0];
+        if (hash && trackCode && object) {
+          debug('获取到Vk点赞ID', {
+            hash: hash,
+            trackCode: trackCode,
+            object: object
+          });
+          logStatus.success();
+          return {
+            type: 'likeWall',
+            hash: hash,
+            trackCode: trackCode,
+            object: object
+          };
+        }
+      }
+      if (data.responseText.includes('wall.deletePost') && !doTask) {
+        var _data$responseText$ma17;
+        const wallHash = (_data$responseText$ma17 = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1];
+        if (wallHash) {
+          debug('获取到Vk删除墙ID', {
+            wallHash: wallHash
+          });
+          logStatus.success();
+          return {
+            type: 'deleteWall',
+            wallHash: wallHash
+          };
+        }
+      }
+      if (name.includes('wall') && doTask) {
+        debug('获取到Vk墙ID');
+        logStatus.success();
+        return {
+          type: 'sendWall'
+        };
+      }
+      debug('未找到Vk ID参数');
+      logStatus.error('Error: Parameters not found!');
+      return false;
+    } catch (error) {
+      debug('获取Vk ID时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.getId');
+      return false;
+    }
+  }
+  async function _toggleVk(_ref23) {
+    let {name: name, doTask: doTask = true} = _ref23;
+    try {
+      debug('开始处理Vk任务', {
+        name: name,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.names.includes(name)) {
+        debug('Vk任务在白名单中，跳过', {
+          name: name
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Vk.undoTask',
+          id: name,
+          before: '[Vk]'
+        });
+        return true;
+      }
+      const formatName = name.replace(/\/$/, '');
+      const data = await _assertClassBrand(_Vk_brand, this, _getId).call(this, formatName, doTask);
+      if (!data) {
+        return false;
+      }
+      switch (data.type) {
+       case 'group':
+        return await _assertClassBrand(_Vk_brand, this, _toggleGroup).call(this, formatName, data, doTask);
+
+       case 'public':
+        return await _assertClassBrand(_Vk_brand, this, _togglePublic).call(this, formatName, data, doTask);
+
+       case 'likeWall':
+        return await _assertClassBrand(_Vk_brand, this, _toggleLikeWall).call(this, formatName, data, doTask);
+
+       case 'sendWall':
+        return doTask ? await _assertClassBrand(_Vk_brand, this, _sendWall).call(this, formatName) : true;
+
+       case 'deleteWall':
+        return doTask ? true : await _assertClassBrand(_Vk_brand, this, _deleteWall).call(this, formatName, data);
+
+       default:
+        debug('未知的Vk任务类型', {
+          type: data.type
+        });
+        return false;
+      }
+    } catch (error) {
+      debug('处理Vk任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.toggleVk');
+      return false;
+    }
+  }
+  function _setCache3(name, postId) {
+    try {
+      debug('设置Vk缓存', {
+        name: name,
+        postId: postId
+      });
+      _classPrivateFieldGet(_cache3, this)[name] = postId;
+      GM_setValue('vkCache', _classPrivateFieldGet(_cache3, this));
+    } catch (error) {
+      debug('设置Vk缓存时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.setCache');
     }
   }
   const getInfo = async function(link, type) {
     try {
+      var _data$responseText$ma, _ref6;
       debug('开始获取YouTube信息', {
         link: link,
         type: type
@@ -4056,26 +3966,26 @@ if (missingDependencies.length > 0) {
           statusText: statusText,
           status: status
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return {};
       }
-      if (data?.status !== 200) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
         debug('获取YouTube信息状态错误', {
-          status: data?.status,
-          statusText: data?.statusText
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return {};
       }
       if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
         debug('获取YouTube信息失败：需要登录');
-        logStatus.error(`Error:${I18n('loginYtb')}`, true);
+        logStatus.error('Error:'.concat(I18n('loginYtb')), true);
         return {
           needLogin: true
         };
       }
-      const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1];
-      const context = (data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/))?.[1] || '{}';
+      const apiKey = (_data$responseText$ma = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma === void 0 ? void 0 : _data$responseText$ma[1];
+      const context = ((_ref6 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref6 === void 0 ? void 0 : _ref6[1]) || '{}';
       const {client: client, request: request} = JSON.parse(context);
       if (!apiKey || !client || !request) {
         debug('获取YouTube信息失败：缺少必要参数');
@@ -4084,7 +3994,8 @@ if (missingDependencies.length > 0) {
       }
       client.hl = 'en';
       if (type === 'channel') {
-        const channelId = data.responseText.match(/"channelId":"(.+?)"/)?.[1];
+        var _data$responseText$ma2;
+        const channelId = (_data$responseText$ma2 = data.responseText.match(/"channelId":"(.+?)"/)) === null || _data$responseText$ma2 === void 0 ? void 0 : _data$responseText$ma2[1];
         if (!channelId) {
           debug('获取YouTube频道ID失败');
           logStatus.error('Error: Get "channelId" failed!');
@@ -4104,8 +4015,9 @@ if (missingDependencies.length > 0) {
         };
       }
       if (type === 'likeVideo') {
-        const videoId = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)?.[1];
-        const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1];
+        var _data$responseText$ma3, _data$responseText$ma4;
+        const videoId = (_data$responseText$ma3 = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)) === null || _data$responseText$ma3 === void 0 ? void 0 : _data$responseText$ma3[1];
+        const likeParams = (_data$responseText$ma4 = data.responseText.match(/"likeParams":"(.*?)"/)) === null || _data$responseText$ma4 === void 0 ? void 0 : _data$responseText$ma4[1];
         if (!videoId) {
           debug('获取YouTube视频ID失败');
           logStatus.error('Error: Get "videoId" failed!');
@@ -4138,57 +4050,60 @@ if (missingDependencies.length > 0) {
       return {};
     }
   };
+  var _auth4 = new WeakMap;
+  var _initialized5 = new WeakMap;
+  var _verifyChannel = new WeakMap;
+  var _Youtube_brand = new WeakSet;
   class Youtube extends Social {
-    tasks;
-    whiteList;
-    #auth=(() => GM_getValue('youtubeAuth') || {})();
-    #initialized=false;
-    #verifyChannel=(() => `https://www.youtube.com/channel/${globalOptions.other.youtubeVerifyChannel}`)();
     constructor() {
+      var _GM_getValue5;
       super();
+      _classPrivateMethodInitSpec(this, _Youtube_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _auth4, GM_getValue('youtubeAuth') || {});
+      _classPrivateFieldInitSpec(this, _initialized5, false);
+      _classPrivateFieldInitSpec(this, _verifyChannel, 'https://www.youtube.com/channel/'.concat(globalOptions.other.youtubeVerifyChannel));
       const defaultTasksTemplate = {
         channels: [],
         likes: []
       };
       debug('初始化YouTube实例');
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.youtube || {}
-      };
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue5 = GM_getValue('whiteList')) === null || _GM_getValue5 === void 0 ? void 0 : _GM_getValue5.youtube) || {});
     }
     async init() {
       try {
         debug('开始初始化YouTube模块');
-        if (this.#initialized) {
+        if (_classPrivateFieldGet(_initialized5, this)) {
           debug('YouTube模块已初始化');
           return true;
         }
-        if (!this.#auth.PAPISID) {
+        if (!_classPrivateFieldGet(_auth4, this).PAPISID) {
           debug('YouTube授权信息不完整，需要更新授权');
-          if (await this.#updateAuth()) {
-            this.#initialized = true;
+          if (await _assertClassBrand(_Youtube_brand, this, _updateAuth4).call(this)) {
+            _classPrivateFieldSet(_initialized5, this, true);
             return true;
           }
           return false;
         }
-        const isVerified = await this.#verifyAuth();
+        const isVerified = await _assertClassBrand(_Youtube_brand, this, _verifyAuth4).call(this);
         if (isVerified) {
           debug('YouTube授权验证成功');
           echoLog({
             before: '[Youtube]'
           }).success(I18n('initSuccess', 'Youtube'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized5, this, true);
           return true;
         }
         debug('YouTube授权失效，尝试重新获取');
         GM_setValue('youtubeAuth', null);
-        if (await this.#updateAuth()) {
+        if (await _assertClassBrand(_Youtube_brand, this, _updateAuth4).call(this)) {
           debug('YouTube重新授权成功');
           echoLog({
             before: '[Youtube]'
           }).success(I18n('initSuccess', 'Youtube'));
-          this.#initialized = true;
+          _classPrivateFieldSet(_initialized5, this, true);
           return true;
         }
         debug('YouTube初始化失败');
@@ -4204,317 +4119,15 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verifyAuth() {
-      try {
-        debug('开始验证YouTube授权');
-        return await this.#toggleChannel({
-          link: this.#verifyChannel,
-          doTask: true,
-          verify: true
-        });
-      } catch (error) {
-        debug('YouTube授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.verifyAuth');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新YouTube授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Youtube'),
-          before: '[Youtube]'
-        });
-        return await new Promise((resolve => {
-          GM_cookie.list({
-            url: 'https://www.youtube.com/@YouTube'
-          }, (async (cookies, error) => {
-            if (!error) {
-              const PAPISID = cookies.find((cookie => cookie.name === '__Secure-3PAPISID'))?.value;
-              if (PAPISID) {
-                debug('成功获取YouTube新授权信息');
-                GM_setValue('youtubeAuth', {
-                  PAPISID: PAPISID
-                });
-                this.#auth = {
-                  PAPISID: PAPISID
-                };
-                logStatus.success();
-                resolve(await this.#verifyAuth());
-              } else {
-                debug('获取YouTube授权失败：未登录');
-                logStatus.error(I18n('needLogin'));
-                resolve(false);
-              }
-            } else {
-              debug('获取YouTube授权失败', {
-                error: error
-              });
-              logStatus.error('Error: Update youtube auth failed!');
-              resolve(false);
-            }
-          }));
-        }));
-      } catch (error) {
-        debug('更新YouTube授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.updateAuth');
-        return false;
-      }
-    }
-    #getInfo(link, type) {
-      debug('调用获取YouTube信息方法', {
-        link: link,
-        type: type
-      });
-      return getInfo(link, type);
-    }
-    async #toggleChannel(_ref1) {
-      let {link: link, doTask: doTask = true, verify: verify = false} = _ref1;
-      try {
-        debug('开始处理YouTube频道任务', {
-          link: link,
-          doTask: doTask,
-          verify: verify
-        });
-        const {params: params, needLogin: needLogin} = await this.#getInfo(link, 'channel');
-        const {apiKey: apiKey, client: client, request: request, channelId: channelId} = params || {};
-        if (needLogin) {
-          debug('YouTube频道操作失败：需要登录');
-          echoLog({
-            html: I18n('loginYtb'),
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!(apiKey && client && request && channelId)) {
-          debug('YouTube频道操作失败：获取参数失败');
-          echoLog({
-            text: '"getYtbToken" failed',
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!doTask && !verify && this.whiteList.channels.includes(channelId)) {
-          debug('YouTube频道在白名单中，跳过取消订阅', {
-            channelId: channelId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Youtube.unfollowChannel',
-            id: channelId,
-            before: '[Youtube]'
-          });
-          return true;
-        }
-        const logStatus = verify ? echoLog({
-          text: I18n('verifyingAuth', 'Youtube'),
-          before: '[Youtube]'
-        }) : echoLog({
-          type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel',
-          text: channelId,
-          before: '[Youtube]'
-        });
-        const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.youtube.com/youtubei/v1/subscription/${doTask ? '' : 'un'}subscribe?key=${apiKey}&prettyPrint=false`,
-          method: 'POST',
-          headers: {
-            origin: 'https://www.youtube.com',
-            referer: `https://www.youtube.com/channel/${channelId}`,
-            'content-type': 'application/json',
-            'x-goog-authuser': '0',
-            'x-goog-visitor-id': client?.visitorData,
-            'x-origin': 'https://www.youtube.com',
-            authorization: `SAPISIDHASH ${nowTime}_${sha1(`${nowTime} ${this.#auth.PAPISID} https://www.youtube.com`)}`
-          },
-          data: JSON.stringify({
-            context: {
-              client: client,
-              request: {
-                sessionId: request?.sessionId,
-                internalExperimentFlags: [],
-                consistencyTokenJars: []
-              },
-              user: {}
-            },
-            channelIds: [ channelId ],
-            params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
-          })
-        });
-        if (result !== 'Success') {
-          debug('YouTube频道操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('YouTube频道操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const isSubscribed = doTask && (/"subscribed":true/.test(data.responseText) || data.responseText.includes('The subscription already exists'));
-        const isUnsubscribed = !doTask && /"subscribed":false/.test(data.responseText);
-        const isVerified = verify && data.responseText.includes('You may not subscribe to yourself');
-        if (isSubscribed || isUnsubscribed || isVerified) {
-          debug('YouTube频道操作成功', {
-            doTask: doTask,
-            verify: verify
-          });
-          logStatus.success();
-          if (doTask && !verify) {
-            this.tasks.channels = unique([ ...this.tasks.channels, link ]);
-          }
-          return true;
-        }
-        debug('YouTube频道操作失败，需要更新授权');
-        logStatus.error(I18n('tryUpdateYtbAuth'), true);
-        return false;
-      } catch (error) {
-        debug('处理YouTube频道任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.toggleChannel');
-        return false;
-      }
-    }
-    async #toggleLikeVideo(_ref10) {
-      let {link: link, doTask: doTask = true} = _ref10;
-      try {
-        debug('开始处理YouTube视频点赞任务', {
-          link: link,
-          doTask: doTask
-        });
-        const {params: params, needLogin: needLogin} = await this.#getInfo(link, 'likeVideo');
-        const {apiKey: apiKey, client: client, request: request, videoId: videoId, likeParams: likeParams} = params || {};
-        if (needLogin) {
-          debug('YouTube视频点赞失败：需要登录');
-          echoLog({
-            html: `${I18n('loginYtb')}`,
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!(apiKey && client && request && videoId && likeParams)) {
-          debug('YouTube视频点赞失败：获取参数失败');
-          echoLog({
-            text: '"getYtbToken" failed',
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!doTask && this.whiteList.likes.includes(videoId)) {
-          debug('YouTube视频在白名单中，跳过取消点赞', {
-            videoId: videoId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Youtube.unlikeVideo',
-            id: videoId,
-            before: '[Youtube]'
-          });
-          return true;
-        }
-        const logStatus = echoLog({
-          type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo',
-          text: videoId,
-          before: '[Youtube]'
-        });
-        const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
-        const likeVideoData = {
-          context: {
-            client: client,
-            request: {
-              sessionId: request.sessionId,
-              internalExperimentFlags: [],
-              consistencyTokenJars: []
-            },
-            user: {}
-          },
-          target: {
-            videoId: videoId
-          }
-        };
-        if (doTask && !likeParams) {
-          debug('YouTube视频点赞失败：缺少likeParams参数');
-          logStatus.error('Empty likeParams');
-          return false;
-        }
-        if (doTask) {
-          likeVideoData.params = likeParams;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.youtube.com/youtubei/v1/like/${doTask ? '' : 'remove'}like?key=${apiKey}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://www.youtube.com',
-            referer: `https://www.youtube.com/watch?v=${videoId}`,
-            'content-type': 'application/json',
-            'x-goog-authuser': '0',
-            'x-goog-visitor-id': client.visitorData,
-            'x-origin': 'https://www.youtube.com',
-            authorization: `SAPISIDHASH ${nowTime}_${sha1(`${nowTime} ${this.#auth.PAPISID} https://www.youtube.com`)}`
-          },
-          data: JSON.stringify(likeVideoData)
-        });
-        if (result !== 'Success') {
-          debug('YouTube视频点赞请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('YouTube视频点赞状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const isLiked = doTask && data.responseText.includes('Added to Liked videos');
-        const isUnliked = !doTask && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'));
-        if (isLiked || isUnliked) {
-          debug('YouTube视频点赞操作成功', {
-            doTask: doTask
-          });
-          logStatus.success();
-          if (doTask) {
-            this.tasks.likes = unique([ ...this.tasks.likes, link ]);
-          }
-          return true;
-        }
-        debug('YouTube视频点赞失败，需要更新授权');
-        logStatus.error(I18n('tryUpdateYtbAuth'), true);
-        return false;
-      } catch (error) {
-        debug('处理YouTube视频点赞任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.toggleLikeVideo');
-        return false;
-      }
-    }
-    async toggle(_ref11) {
-      let {doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []} = _ref11;
+    async toggle(_ref7) {
+      let {doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []} = _ref7;
       try {
         debug('开始处理YouTube链接任务', {
           doTask: doTask,
           channelLinksCount: channelLinks.length,
           videoLinksCount: videoLinks.length
         });
-        if (!this.#initialized) {
+        if (!_classPrivateFieldGet(_initialized5, this)) {
           debug('YouTube模块未初始化');
           echoLog({
             text: I18n('needInit'),
@@ -4537,7 +4150,8 @@ if (missingDependencies.length > 0) {
         } else {
           const realChannels = this.getRealParams('channels', channelLinks, doTask, (link => {
             if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
-              return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
+              var _link$match9;
+              return (_link$match9 = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1];
             }
             return link;
           }));
@@ -4547,7 +4161,7 @@ if (missingDependencies.length > 0) {
           });
           if (realChannels.length > 0) {
             for (const channel of realChannels) {
-              prom.push(this.#toggleChannel({
+              prom.push(_assertClassBrand(_Youtube_brand, this, _toggleChannel2).call(this, {
                 link: channel,
                 doTask: doTask
               }));
@@ -4567,7 +4181,8 @@ if (missingDependencies.length > 0) {
         } else {
           const realLikes = this.getRealParams('likes', videoLinks, doTask, (link => {
             if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
-              return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
+              var _link$match0;
+              return (_link$match0 = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)) === null || _link$match0 === void 0 ? void 0 : _link$match0[1];
             }
             return link;
           }));
@@ -4577,7 +4192,7 @@ if (missingDependencies.length > 0) {
           });
           if (realLikes.length > 0) {
             for (const video of realLikes) {
-              prom.push(this.#toggleLikeVideo({
+              prom.push(_assertClassBrand(_Youtube_brand, this, _toggleLikeVideo).call(this, {
                 link: video,
                 doTask: doTask
               }));
@@ -4595,20 +4210,332 @@ if (missingDependencies.length > 0) {
       }
     }
   }
+  async function _verifyAuth4() {
+    try {
+      debug('开始验证YouTube授权');
+      return await _assertClassBrand(_Youtube_brand, this, _toggleChannel2).call(this, {
+        link: _classPrivateFieldGet(_verifyChannel, this),
+        doTask: true,
+        verify: true
+      });
+    } catch (error) {
+      debug('YouTube授权验证发生错误', {
+        error: error
+      });
+      throwError(error, 'Youtube.verifyAuth');
+      return false;
+    }
+  }
+  async function _updateAuth4() {
+    try {
+      debug('开始更新YouTube授权');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', 'Youtube'),
+        before: '[Youtube]'
+      });
+      return await new Promise((resolve => {
+        GM_cookie.list({
+          url: 'https://www.youtube.com/@YouTube'
+        }, (async (cookies, error) => {
+          if (!error) {
+            var _cookies$find4;
+            const PAPISID = (_cookies$find4 = cookies.find((cookie => cookie.name === '__Secure-3PAPISID'))) === null || _cookies$find4 === void 0 ? void 0 : _cookies$find4.value;
+            if (PAPISID) {
+              debug('成功获取YouTube新授权信息');
+              GM_setValue('youtubeAuth', {
+                PAPISID: PAPISID
+              });
+              _classPrivateFieldSet(_auth4, this, {
+                PAPISID: PAPISID
+              });
+              logStatus.success();
+              resolve(await _assertClassBrand(_Youtube_brand, this, _verifyAuth4).call(this));
+            } else {
+              debug('获取YouTube授权失败：未登录');
+              logStatus.error(I18n('needLogin'));
+              resolve(false);
+            }
+          } else {
+            debug('获取YouTube授权失败', {
+              error: error
+            });
+            logStatus.error('Error: Update youtube auth failed!');
+            resolve(false);
+          }
+        }));
+      }));
+    } catch (error) {
+      debug('更新YouTube授权时发生错误', {
+        error: error
+      });
+      throwError(error, 'Youtube.updateAuth');
+      return false;
+    }
+  }
+  function _getInfo(link, type) {
+    debug('调用获取YouTube信息方法', {
+      link: link,
+      type: type
+    });
+    return getInfo(link, type);
+  }
+  async function _toggleChannel2(_ref24) {
+    let {link: link, doTask: doTask = true, verify: verify = false} = _ref24;
+    try {
+      debug('开始处理YouTube频道任务', {
+        link: link,
+        doTask: doTask,
+        verify: verify
+      });
+      const {params: params, needLogin: needLogin} = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'channel');
+      const {apiKey: apiKey, client: client, request: request, channelId: channelId} = params || {};
+      if (needLogin) {
+        debug('YouTube频道操作失败：需要登录');
+        echoLog({
+          html: I18n('loginYtb'),
+          before: '[Youtube]'
+        });
+        return false;
+      }
+      if (!(apiKey && client && request && channelId)) {
+        debug('YouTube频道操作失败：获取参数失败');
+        echoLog({
+          text: '"getYtbToken" failed',
+          before: '[Youtube]'
+        });
+        return false;
+      }
+      if (!doTask && !verify && this.whiteList.channels.includes(channelId)) {
+        debug('YouTube频道在白名单中，跳过取消订阅', {
+          channelId: channelId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Youtube.unfollowChannel',
+          id: channelId,
+          before: '[Youtube]'
+        });
+        return true;
+      }
+      const logStatus = verify ? echoLog({
+        text: I18n('verifyingAuth', 'Youtube'),
+        before: '[Youtube]'
+      }) : echoLog({
+        type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel',
+        text: channelId,
+        before: '[Youtube]'
+      });
+      const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.youtube.com/youtubei/v1/subscription/'.concat(doTask ? '' : 'un', 'subscribe?key=').concat(apiKey, '&prettyPrint=false'),
+        method: 'POST',
+        headers: {
+          origin: 'https://www.youtube.com',
+          referer: 'https://www.youtube.com/channel/'.concat(channelId),
+          'content-type': 'application/json',
+          'x-goog-authuser': '0',
+          'x-goog-visitor-id': client === null || client === void 0 ? void 0 : client.visitorData,
+          'x-origin': 'https://www.youtube.com',
+          authorization: 'SAPISIDHASH '.concat(nowTime, '_').concat(sha1(''.concat(nowTime, ' ').concat(_classPrivateFieldGet(_auth4, this).PAPISID, ' https://www.youtube.com')))
+        },
+        data: JSON.stringify({
+          context: {
+            client: client,
+            request: {
+              sessionId: request === null || request === void 0 ? void 0 : request.sessionId,
+              internalExperimentFlags: [],
+              consistencyTokenJars: []
+            },
+            user: {}
+          },
+          channelIds: [ channelId ],
+          params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
+        })
+      });
+      if (result !== 'Success') {
+        debug('YouTube频道操作请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('YouTube频道操作状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const isSubscribed = doTask && (/"subscribed":true/.test(data.responseText) || data.responseText.includes('The subscription already exists'));
+      const isUnsubscribed = !doTask && /"subscribed":false/.test(data.responseText);
+      const isVerified = verify && data.responseText.includes('You may not subscribe to yourself');
+      if (isSubscribed || isUnsubscribed || isVerified) {
+        debug('YouTube频道操作成功', {
+          doTask: doTask,
+          verify: verify
+        });
+        logStatus.success();
+        if (doTask && !verify) {
+          this.tasks.channels = unique([ ...this.tasks.channels, link ]);
+        }
+        return true;
+      }
+      debug('YouTube频道操作失败，需要更新授权');
+      logStatus.error(I18n('tryUpdateYtbAuth'), true);
+      return false;
+    } catch (error) {
+      debug('处理YouTube频道任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Youtube.toggleChannel');
+      return false;
+    }
+  }
+  async function _toggleLikeVideo(_ref25) {
+    let {link: link, doTask: doTask = true} = _ref25;
+    try {
+      debug('开始处理YouTube视频点赞任务', {
+        link: link,
+        doTask: doTask
+      });
+      const {params: params, needLogin: needLogin} = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'likeVideo');
+      const {apiKey: apiKey, client: client, request: request, videoId: videoId, likeParams: likeParams} = params || {};
+      if (needLogin) {
+        debug('YouTube视频点赞失败：需要登录');
+        echoLog({
+          html: ''.concat(I18n('loginYtb')),
+          before: '[Youtube]'
+        });
+        return false;
+      }
+      if (!(apiKey && client && request && videoId && likeParams)) {
+        debug('YouTube视频点赞失败：获取参数失败');
+        echoLog({
+          text: '"getYtbToken" failed',
+          before: '[Youtube]'
+        });
+        return false;
+      }
+      if (!doTask && this.whiteList.likes.includes(videoId)) {
+        debug('YouTube视频在白名单中，跳过取消点赞', {
+          videoId: videoId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Youtube.unlikeVideo',
+          id: videoId,
+          before: '[Youtube]'
+        });
+        return true;
+      }
+      const logStatus = echoLog({
+        type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo',
+        text: videoId,
+        before: '[Youtube]'
+      });
+      const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
+      const likeVideoData = {
+        context: {
+          client: client,
+          request: {
+            sessionId: request.sessionId,
+            internalExperimentFlags: [],
+            consistencyTokenJars: []
+          },
+          user: {}
+        },
+        target: {
+          videoId: videoId
+        }
+      };
+      if (doTask && !likeParams) {
+        debug('YouTube视频点赞失败：缺少likeParams参数');
+        logStatus.error('Empty likeParams');
+        return false;
+      }
+      if (doTask) {
+        likeVideoData.params = likeParams;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.youtube.com/youtubei/v1/like/'.concat(doTask ? '' : 'remove', 'like?key=').concat(apiKey),
+        method: 'POST',
+        headers: {
+          origin: 'https://www.youtube.com',
+          referer: 'https://www.youtube.com/watch?v='.concat(videoId),
+          'content-type': 'application/json',
+          'x-goog-authuser': '0',
+          'x-goog-visitor-id': client.visitorData,
+          'x-origin': 'https://www.youtube.com',
+          authorization: 'SAPISIDHASH '.concat(nowTime, '_').concat(sha1(''.concat(nowTime, ' ').concat(_classPrivateFieldGet(_auth4, this).PAPISID, ' https://www.youtube.com')))
+        },
+        data: JSON.stringify(likeVideoData)
+      });
+      if (result !== 'Success') {
+        debug('YouTube视频点赞请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('YouTube视频点赞状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const isLiked = doTask && data.responseText.includes('Added to Liked videos');
+      const isUnliked = !doTask && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'));
+      if (isLiked || isUnliked) {
+        debug('YouTube视频点赞操作成功', {
+          doTask: doTask
+        });
+        logStatus.success();
+        if (doTask) {
+          this.tasks.likes = unique([ ...this.tasks.likes, link ]);
+        }
+        return true;
+      }
+      debug('YouTube视频点赞失败，需要更新授权');
+      logStatus.error(I18n('tryUpdateYtbAuth'), true);
+      return false;
+    } catch (error) {
+      debug('处理YouTube视频点赞任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Youtube.toggleLikeVideo');
+      return false;
+    }
+  }
+  var _asfOptions = new WeakMap;
+  var _botName = new WeakMap;
+  var _groupInfo = new WeakMap;
+  var _steamWebApiKey = new WeakMap;
+  var _steamId = new WeakMap;
+  var _SteamASF_brand = new WeakSet;
   class SteamASF {
-    #asfOptions;
-    #botName='asf';
-    #groupInfo;
-    #steamWebApiKey;
-    #steamId;
-    constructor(_ref12) {
-      let {AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey} = _ref12;
+    constructor(_ref8) {
+      let {AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey} = _ref8;
+      _classPrivateMethodInitSpec(this, _SteamASF_brand);
+      _classPrivateFieldInitSpec(this, _asfOptions, void 0);
+      _classPrivateFieldInitSpec(this, _botName, 'asf');
+      _classPrivateFieldInitSpec(this, _groupInfo, void 0);
+      _classPrivateFieldInitSpec(this, _steamWebApiKey, void 0);
+      _classPrivateFieldInitSpec(this, _steamId, void 0);
+      _defineProperty(this, 'joinOfficialGroup', this.joinGroup);
+      _defineProperty(this, 'leaveOfficialGroup', this.leaveGroup);
       debug('初始化SteamASF实例', {
         AsfIpcUrl: AsfIpcUrl,
         AsfBotname: AsfBotname
       });
       const asfCommandsUrl = new URL('/Api/Command/', AsfIpcUrl);
-      this.#asfOptions = {
+      _classPrivateFieldSet(_asfOptions, this, {
         url: asfCommandsUrl.href,
         method: 'POST',
         responseType: 'json',
@@ -4620,55 +4547,56 @@ if (missingDependencies.length > 0) {
           Referer: asfCommandsUrl.href,
           Authentication: AsfIpcPassword
         }
-      };
+      });
       if (AsfBotname) {
-        this.#botName = AsfBotname;
+        _classPrivateFieldSet(_botName, this, AsfBotname);
       }
       if (steamWebApiKey) {
-        this.#steamWebApiKey = steamWebApiKey;
+        _classPrivateFieldSet(_steamWebApiKey, this, steamWebApiKey);
       }
       debug('SteamASF实例初始化完成', {
-        botName: this.#botName
+        botName: _classPrivateFieldGet(_botName, this)
       });
     }
     async init() {
       try {
+        var _data$response, _data$response2, _data$response3;
         debug('开始初始化ASF');
         const logStatus = echoLog({
           text: I18n('initingASF'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: '{"Command":"!stats"}'
-        });
+        }));
         if (result !== 'Success') {
           debug('ASF初始化请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.response?.Success === true && data.response.Message === 'OK' && data.response.Result) {
+        if ((data === null || data === void 0 || (_data$response = data.response) === null || _data$response === void 0 ? void 0 : _data$response.Success) === true && data.response.Message === 'OK' && data.response.Result) {
           debug('ASF初始化成功');
           logStatus.success();
           return true;
         }
-        if (data?.response?.Result || data?.response?.Message) {
+        if (data !== null && data !== void 0 && (_data$response2 = data.response) !== null && _data$response2 !== void 0 && _data$response2.Result || data !== null && data !== void 0 && (_data$response3 = data.response) !== null && _data$response3 !== void 0 && _data$response3.Message) {
+          var _data$response4, _data$response5, _data$response6;
           debug('ASF初始化失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
+            result: data === null || data === void 0 || (_data$response4 = data.response) === null || _data$response4 === void 0 ? void 0 : _data$response4.Result,
+            message: data === null || data === void 0 || (_data$response5 = data.response) === null || _data$response5 === void 0 ? void 0 : _data$response5.Message
           });
-          logStatus.error(data?.response?.Result || data.response.Message);
+          logStatus.error((data === null || data === void 0 || (_data$response6 = data.response) === null || _data$response6 === void 0 ? void 0 : _data$response6.Result) || data.response.Message);
           return false;
         }
         debug('ASF初始化失败', {
-          statusText: data?.statusText,
-          status: data?.status
+          statusText: data === null || data === void 0 ? void 0 : data.statusText,
+          status: data === null || data === void 0 ? void 0 : data.status
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('ASF初始化发生错误', {
@@ -4680,6 +4608,7 @@ if (missingDependencies.length > 0) {
     }
     async joinGroup(groupName) {
       try {
+        var _data$response8, _data$response9, _data$response0, _data$response1;
         debug('开始加入Steam组', {
           groupName: groupName
         });
@@ -4688,22 +4617,24 @@ if (missingDependencies.length > 0) {
           text: groupName,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!JOINGROUP ${this.#botName} ${groupName}`
+            Command: '!JOINGROUP '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(groupName)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('加入Steam组请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '已加入', '已申请', 'Joined', 'Applied', 'Присоединился', 'costs' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '已加入', '已申请', 'Joined', 'Applied', 'Присоединился', 'costs' ].find((text => {
+          var _data$response7;
+          return (_data$response7 = data.response) === null || _data$response7 === void 0 || (_data$response7 = _data$response7.Result) === null || _data$response7 === void 0 ? void 0 : _data$response7.includes(text);
+        }))) {
           debug('成功加入Steam组', {
             groupName: groupName
           });
@@ -4711,10 +4642,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('加入Steam组失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response8 = data.response) === null || _data$response8 === void 0 ? void 0 : _data$response8.Result,
+          message: data === null || data === void 0 || (_data$response9 = data.response) === null || _data$response9 === void 0 ? void 0 : _data$response9.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response0 = data.response) === null || _data$response0 === void 0 ? void 0 : _data$response0.Result) || (data === null || data === void 0 || (_data$response1 = data.response) === null || _data$response1 === void 0 ? void 0 : _data$response1.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('加入Steam组时发生错误', {
@@ -4725,20 +4656,19 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    joinOfficialGroup=this.joinGroup;
-    leaveOfficialGroup=this.leaveGroup;
     async leaveGroup(groupName) {
       try {
+        var _data$response11, _data$response12, _data$response13, _data$response14;
         debug('开始退出Steam组', {
           groupName: groupName
         });
-        if (!this.#groupInfo) {
+        if (!_classPrivateFieldGet(_groupInfo, this)) {
           debug('未找到组信息，尝试获取组ID');
-          if (!await this.#getGroupId()) {
+          if (!await _assertClassBrand(_SteamASF_brand, this, _getGroupId).call(this)) {
             return false;
           }
         }
-        const groupId = await this.#groupInfo[groupName];
+        const groupId = await _classPrivateFieldGet(_groupInfo, this)[groupName];
         if (!groupId) {
           debug('未找到组ID', {
             groupName: groupName
@@ -4750,22 +4680,24 @@ if (missingDependencies.length > 0) {
           text: groupName,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!LEAVEGROUP ${this.#botName} ${groupId}`
+            Command: '!LEAVEGROUP '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(groupId)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('退出Steam组请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response10;
+          return (_data$response10 = data.response) === null || _data$response10 === void 0 || (_data$response10 = _data$response10.Result) === null || _data$response10 === void 0 ? void 0 : _data$response10.includes(text);
+        }))) {
           debug('成功退出Steam组', {
             groupName: groupName
           });
@@ -4773,10 +4705,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('退出Steam组失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response11 = data.response) === null || _data$response11 === void 0 ? void 0 : _data$response11.Result,
+          message: data === null || data === void 0 || (_data$response12 = data.response) === null || _data$response12 === void 0 ? void 0 : _data$response12.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response13 = data.response) === null || _data$response13 === void 0 ? void 0 : _data$response13.Result) || (data === null || data === void 0 || (_data$response14 = data.response) === null || _data$response14 === void 0 ? void 0 : _data$response14.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('退出Steam组时发生错误', {
@@ -4787,59 +4719,9 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getGroupId() {
-      try {
-        debug('开始获取Steam组ID列表');
-        const logStatus = echoLog({
-          type: 'gettingSteamGroupId',
-          text: 'All',
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!GROUPLIST ${this.#botName}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('获取Steam组ID列表请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && data.response?.Result?.includes('|')) {
-          this.#groupInfo = Object.fromEntries(data.response.Result.split('\n').map((line => {
-            const [, name, id] = line.trim().split('|');
-            if (name && id) {
-              return [ name, id ];
-            }
-            return null;
-          })).filter((ele => ele)));
-          debug('成功获取Steam组ID列表', {
-            groupCount: Object.keys(this.#groupInfo).length
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('获取Steam组ID列表失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('获取Steam组ID列表时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.getGroupID');
-        return false;
-      }
-    }
     async addToWishlist(gameId) {
       try {
+        var _data$response16, _data$response17, _data$response18, _data$response19;
         debug('开始添加游戏到愿望单', {
           gameId: gameId
         });
@@ -4848,7 +4730,7 @@ if (missingDependencies.length > 0) {
           text: gameId,
           before: '[ASF]'
         });
-        const gameStatus = await this.#checkGame(gameId);
+        const gameStatus = await _assertClassBrand(_SteamASF_brand, this, _checkGame).call(this, gameId);
         if (gameStatus.wishlist === true) {
           debug('游戏已在愿望单中', {
             gameId: gameId
@@ -4856,22 +4738,24 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!ADDWISHLIST ${this.#botName} ${gameId}`
+            Command: '!ADDWISHLIST '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('添加游戏到愿望单请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response15;
+          return (_data$response15 = data.response) === null || _data$response15 === void 0 || (_data$response15 = _data$response15.Result) === null || _data$response15 === void 0 ? void 0 : _data$response15.includes(text);
+        }))) {
           debug('成功添加游戏到愿望单', {
             gameId: gameId
           });
@@ -4879,10 +4763,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('添加游戏到愿望单失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response16 = data.response) === null || _data$response16 === void 0 ? void 0 : _data$response16.Result,
+          message: data === null || data === void 0 || (_data$response17 = data.response) === null || _data$response17 === void 0 ? void 0 : _data$response17.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response18 = data.response) === null || _data$response18 === void 0 ? void 0 : _data$response18.Result) || (data === null || data === void 0 || (_data$response19 = data.response) === null || _data$response19 === void 0 ? void 0 : _data$response19.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('添加游戏到愿望单时发生错误', {
@@ -4895,6 +4779,7 @@ if (missingDependencies.length > 0) {
     }
     async removeFromWishlist(gameId) {
       try {
+        var _data$response21, _data$response22, _data$response23, _data$response24;
         debug('开始从愿望单移除游戏', {
           gameId: gameId
         });
@@ -4903,7 +4788,7 @@ if (missingDependencies.length > 0) {
           text: gameId,
           before: '[ASF]'
         });
-        const gameStatus = await this.#checkGame(gameId);
+        const gameStatus = await _assertClassBrand(_SteamASF_brand, this, _checkGame).call(this, gameId);
         if (gameStatus.wishlist === false) {
           debug('游戏已不在愿望单中', {
             gameId: gameId
@@ -4911,22 +4796,24 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!REMOVEWISHLIST ${this.#botName} ${gameId}`
+            Command: '!REMOVEWISHLIST '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('从愿望单移除游戏请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response20;
+          return (_data$response20 = data.response) === null || _data$response20 === void 0 || (_data$response20 = _data$response20.Result) === null || _data$response20 === void 0 ? void 0 : _data$response20.includes(text);
+        }))) {
           debug('成功从愿望单移除游戏', {
             gameId: gameId
           });
@@ -4934,10 +4821,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('从愿望单移除游戏失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response21 = data.response) === null || _data$response21 === void 0 ? void 0 : _data$response21.Result,
+          message: data === null || data === void 0 || (_data$response22 = data.response) === null || _data$response22 === void 0 ? void 0 : _data$response22.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response23 = data.response) === null || _data$response23 === void 0 ? void 0 : _data$response23.Result) || (data === null || data === void 0 || (_data$response24 = data.response) === null || _data$response24 === void 0 ? void 0 : _data$response24.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('从愿望单移除游戏时发生错误', {
@@ -4950,16 +4837,17 @@ if (missingDependencies.length > 0) {
     }
     async toggleFollowGame(gameId, doTask) {
       try {
+        var _data$response26, _data$response27, _data$response28, _data$response29;
         debug('开始处理游戏关注状态', {
           gameId: gameId,
           doTask: doTask
         });
         const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingGame`,
+          type: ''.concat(doTask ? '' : 'un', 'followingGame'),
           text: gameId,
           before: '[ASF]'
         });
-        const gameStatus = await this.#checkGame(gameId);
+        const gameStatus = await _assertClassBrand(_SteamASF_brand, this, _checkGame).call(this, gameId);
         if (doTask && gameStatus.followed === true || !doTask && gameStatus.followed === false) {
           debug('游戏关注状态已符合要求', {
             gameId: gameId,
@@ -4969,22 +4857,24 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!${doTask ? '' : 'UN'}FOLLOWGAME ${this.#botName} ${gameId}`
+            Command: '!'.concat(doTask ? '' : 'UN', 'FOLLOWGAME ').concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('处理游戏关注状态请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response25;
+          return (_data$response25 = data.response) === null || _data$response25 === void 0 || (_data$response25 = _data$response25.Result) === null || _data$response25 === void 0 ? void 0 : _data$response25.includes(text);
+        }))) {
           debug('成功处理游戏关注状态', {
             gameId: gameId,
             doTask: doTask
@@ -4993,10 +4883,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('处理游戏关注状态失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response26 = data.response) === null || _data$response26 === void 0 ? void 0 : _data$response26.Result,
+          message: data === null || data === void 0 || (_data$response27 = data.response) === null || _data$response27 === void 0 ? void 0 : _data$response27.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response28 = data.response) === null || _data$response28 === void 0 ? void 0 : _data$response28.Result) || (data === null || data === void 0 || (_data$response29 = data.response) === null || _data$response29 === void 0 ? void 0 : _data$response29.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('处理游戏关注状态时发生错误', {
@@ -5008,57 +4898,10 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #checkGame(gameId) {
-      try {
-        debug('开始检查游戏状态', {
-          gameId: gameId
-        });
-        const {result: result, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!CHECK ${this.#botName} ${gameId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('检查游戏状态请求失败', {
-            result: result
-          });
-          return {};
-        }
-        if (data?.status !== 200 || !data.response?.Result?.includes(gameId)) {
-          debug('检查游戏状态响应无效', {
-            status: data?.status
-          });
-          return {};
-        }
-        const matchedResult = data.response.Result.split('\n').find((result => result.includes(gameId)))?.split('|');
-        if (!matchedResult || matchedResult.length <= 3) {
-          debug('未找到游戏状态信息', {
-            gameId: gameId
-          });
-          return {};
-        }
-        const status = {
-          wishlist: matchedResult.at(-3).trim() === '√' || matchedResult.at(-2).trim() === '√',
-          followed: matchedResult.at(-1).trim() === '√'
-        };
-        debug('成功获取游戏状态', {
-          gameId: gameId,
-          status: status
-        });
-        return status;
-      } catch (error) {
-        debug('检查游戏状态时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamASF.checkGame');
-        return {};
-      }
-    }
     async toggleCurator(curatorId) {
       let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       try {
+        var _data$response33, _data$response34, _data$response35, _data$response36;
         debug('开始处理鉴赏家关注状态', {
           curatorId: curatorId,
           doTask: doTask
@@ -5068,22 +4911,24 @@ if (missingDependencies.length > 0) {
           text: curatorId,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!${doTask ? '' : 'UN'}FOLLOWCURATOR ${this.#botName} ${curatorId}`
+            Command: '!'.concat(doTask ? '' : 'UN', 'FOLLOWCURATOR ').concat(_classPrivateFieldGet(_botName, this), ' ').concat(curatorId)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('处理鉴赏家关注状态请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response30;
+          return (_data$response30 = data.response) === null || _data$response30 === void 0 || (_data$response30 = _data$response30.Result) === null || _data$response30 === void 0 ? void 0 : _data$response30.includes(text);
+        }))) {
           debug('成功处理鉴赏家关注状态', {
             curatorId: curatorId,
             doTask: doTask
@@ -5091,19 +4936,20 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        if (data?.status === 200) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
+          var _data$response31, _data$response32;
           debug('处理鉴赏家关注状态失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
+            result: data === null || data === void 0 || (_data$response31 = data.response) === null || _data$response31 === void 0 ? void 0 : _data$response31.Result,
+            message: data === null || data === void 0 || (_data$response32 = data.response) === null || _data$response32 === void 0 ? void 0 : _data$response32.Message
           });
           logStatus.error(I18n('curatorLimitNotice'));
           return false;
         }
         debug('处理鉴赏家关注状态失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response33 = data.response) === null || _data$response33 === void 0 ? void 0 : _data$response33.Result,
+          message: data === null || data === void 0 || (_data$response34 = data.response) === null || _data$response34 === void 0 ? void 0 : _data$response34.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response35 = data.response) === null || _data$response35 === void 0 ? void 0 : _data$response35.Result) || (data === null || data === void 0 || (_data$response36 = data.response) === null || _data$response36 === void 0 ? void 0 : _data$response36.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('处理鉴赏家关注状态时发生错误', {
@@ -5123,27 +4969,30 @@ if (missingDependencies.length > 0) {
         const [type, ids] = id.split('-');
         const idsArr = ids.split(',');
         if (type === 'appid') {
+          var _data$response38, _data$response39, _data$response40, _data$response41;
           const logStatus = echoLog({
             type: 'addingFreeLicense',
             text: ids,
             before: '[ASF]'
           });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            ...this.#asfOptions,
+          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
             data: JSON.stringify({
-              Command: `!addlicense ${this.#botName} ${idsArr.map((id => `app/${id}`)).join(',')}`
+              Command: '!addlicense '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(idsArr.map((id => 'app/'.concat(id))).join(','))
             })
-          });
+          }));
           if (result !== 'Success') {
             debug('添加应用许可证请求失败', {
               result: result,
               statusText: statusText,
               status: status
             });
-            logStatus.error(`${result}:${statusText}(${status})`);
+            logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
             return false;
           }
-          if (data?.status === 200 && [ 'AlreadyPurchased', 'OK' ].find((text => data.response?.Result?.includes(text)))) {
+          if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ 'AlreadyPurchased', 'OK' ].find((text => {
+            var _data$response37;
+            return (_data$response37 = data.response) === null || _data$response37 === void 0 || (_data$response37 = _data$response37.Result) === null || _data$response37 === void 0 ? void 0 : _data$response37.includes(text);
+          }))) {
             debug('成功添加应用许可证', {
               ids: ids
             });
@@ -5151,34 +5000,34 @@ if (missingDependencies.length > 0) {
             return true;
           }
           debug('添加应用许可证失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
+            result: data === null || data === void 0 || (_data$response38 = data.response) === null || _data$response38 === void 0 ? void 0 : _data$response38.Result,
+            message: data === null || data === void 0 || (_data$response39 = data.response) === null || _data$response39 === void 0 ? void 0 : _data$response39.Message
           });
-          logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response40 = data.response) === null || _data$response40 === void 0 ? void 0 : _data$response40.Result) || (data === null || data === void 0 || (_data$response41 = data.response) === null || _data$response41 === void 0 ? void 0 : _data$response41.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         if (type === 'subid') {
+          var _data$response42, _data$response43, _data$response44, _data$response45, _data$response46;
           const logStatus = echoLog({
             type: 'addingFreeLicenseSubid',
             text: ids,
             before: '[ASF]'
           });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            ...this.#asfOptions,
+          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
             data: JSON.stringify({
-              Command: `!addlicense ${this.#botName} ${idsArr.map((id => `sub/${id}`)).join(',')}`
+              Command: '!addlicense '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(idsArr.map((id => 'sub/'.concat(id))).join(','))
             })
-          });
+          }));
           if (result !== 'Success') {
             debug('添加订阅许可证请求失败', {
               result: result,
               statusText: statusText,
               status: status
             });
-            logStatus.error(`${result}:${statusText}(${status})`);
+            logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
             return false;
           }
-          if (data?.status === 200 && data.response?.Result) {
+          if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response42 = data.response) !== null && _data$response42 !== void 0 && _data$response42.Result) {
             const resultLines = data.response.Result.split('\n');
             debug('处理订阅许可证结果', {
               resultLines: resultLines
@@ -5205,10 +5054,10 @@ if (missingDependencies.length > 0) {
             return true;
           }
           debug('添加订阅许可证失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
+            result: data === null || data === void 0 || (_data$response43 = data.response) === null || _data$response43 === void 0 ? void 0 : _data$response43.Result,
+            message: data === null || data === void 0 || (_data$response44 = data.response) === null || _data$response44 === void 0 ? void 0 : _data$response44.Message
           });
-          logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response45 = data.response) === null || _data$response45 === void 0 ? void 0 : _data$response45.Result) || (data === null || data === void 0 || (_data$response46 = data.response) === null || _data$response46 === void 0 ? void 0 : _data$response46.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('无效的许可证类型', {
@@ -5226,6 +5075,7 @@ if (missingDependencies.length > 0) {
     }
     async requestPlayTestAccess(id) {
       try {
+        var _data$response48, _data$response49, _data$response50, _data$response51;
         debug('开始请求游戏试玩权限', {
           id: id
         });
@@ -5234,22 +5084,24 @@ if (missingDependencies.length > 0) {
           text: id,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!REQUESTACCESS ${this.#botName} ${id}`
+            Command: '!REQUESTACCESS '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(id)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('请求游戏试玩权限请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '成功', 'Success', 'Успех' ].find((text => {
+          var _data$response47;
+          return (_data$response47 = data.response) === null || _data$response47 === void 0 || (_data$response47 = _data$response47.Result) === null || _data$response47 === void 0 ? void 0 : _data$response47.includes(text);
+        }))) {
           debug('成功请求游戏试玩权限', {
             id: id
           });
@@ -5257,10 +5109,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('请求游戏试玩权限失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response48 = data.response) === null || _data$response48 === void 0 ? void 0 : _data$response48.Result,
+          message: data === null || data === void 0 || (_data$response49 = data.response) === null || _data$response49 === void 0 ? void 0 : _data$response49.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response50 = data.response) === null || _data$response50 === void 0 ? void 0 : _data$response50.Result) || (data === null || data === void 0 || (_data$response51 = data.response) === null || _data$response51 === void 0 ? void 0 : _data$response51.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('请求游戏试玩权限时发生错误', {
@@ -5273,6 +5125,7 @@ if (missingDependencies.length > 0) {
     }
     async playGames(ids) {
       try {
+        var _data$response53, _data$response54, _data$response55, _data$response56;
         debug('开始挂游戏时长', {
           ids: ids
         });
@@ -5280,22 +5133,24 @@ if (missingDependencies.length > 0) {
           text: I18n('playingGames', ids),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!play ${this.#botName} ${ids}`
+            Command: '!play '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(ids)
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('挂游戏时长请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '正在运行', '正在掛', 'Playing', 'Играет' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '正在运行', '正在掛', 'Playing', 'Играет' ].find((text => {
+          var _data$response52;
+          return (_data$response52 = data.response) === null || _data$response52 === void 0 || (_data$response52 = _data$response52.Result) === null || _data$response52 === void 0 ? void 0 : _data$response52.includes(text);
+        }))) {
           debug('成功开始挂游戏时长', {
             ids: ids
           });
@@ -5303,10 +5158,10 @@ if (missingDependencies.length > 0) {
           return true;
         }
         debug('开始挂游戏时长失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response53 = data.response) === null || _data$response53 === void 0 ? void 0 : _data$response53.Result,
+          message: data === null || data === void 0 || (_data$response54 = data.response) === null || _data$response54 === void 0 ? void 0 : _data$response54.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response55 = data.response) === null || _data$response55 === void 0 ? void 0 : _data$response55.Result) || (data === null || data === void 0 || (_data$response56 = data.response) === null || _data$response56 === void 0 ? void 0 : _data$response56.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('挂游戏时长时发生错误', {
@@ -5319,28 +5174,29 @@ if (missingDependencies.length > 0) {
     }
     async getSteamIdASF() {
       try {
+        var _data$response57, _data$response58, _data$response59, _data$response60, _data$response61;
         debug('开始获取Steam ID');
         const logStatus = echoLog({
           text: I18n('gettingSteamId'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!steamid ${this.#botName}`
+            Command: '!steamid '.concat(_classPrivateFieldGet(_botName, this))
           })
-        });
-        if (result !== 'Success' || data?.status !== 200) {
+        }));
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('获取Steam ID请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return '';
         }
-        if (data.response?.Result) {
-          const steamId = data.response.Result.trim()?.split(/\s+/)?.at(-1);
+        if ((_data$response57 = data.response) !== null && _data$response57 !== void 0 && _data$response57.Result) {
+          var _data$response$Result;
+          const steamId = (_data$response$Result = data.response.Result.trim()) === null || _data$response$Result === void 0 || (_data$response$Result = _data$response$Result.split(/\s+/)) === null || _data$response$Result === void 0 ? void 0 : _data$response$Result.at(-1);
           if (steamId) {
             debug('成功获取Steam ID', steamId);
             logStatus.success();
@@ -5348,10 +5204,10 @@ if (missingDependencies.length > 0) {
           }
         }
         debug('获取Steam ID失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response58 = data.response) === null || _data$response58 === void 0 ? void 0 : _data$response58.Result,
+          message: data === null || data === void 0 || (_data$response59 = data.response) === null || _data$response59 === void 0 ? void 0 : _data$response59.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response60 = data.response) === null || _data$response60 === void 0 ? void 0 : _data$response60.Result) || (data === null || data === void 0 || (_data$response61 = data.response) === null || _data$response61 === void 0 ? void 0 : _data$response61.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return '';
       } catch (error) {
         debug('获取Steam ID时发生错误', {
@@ -5363,6 +5219,7 @@ if (missingDependencies.length > 0) {
     }
     async getSteamIdWeb() {
       try {
+        var _data$responseText$ma5;
         debug('开始获取Steam ID');
         const logStatus = echoLog({
           text: I18n('gettingSteamId'),
@@ -5375,16 +5232,16 @@ if (missingDependencies.length > 0) {
             host: 'store.steampowered.com'
           }
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('获取Steam ID请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return '';
         }
-        const steamId = data.responseText.match(/steamid&quot;:&quot;(\d+)/)?.[1];
+        const steamId = (_data$responseText$ma5 = data.responseText.match(/steamid&quot;:&quot;(\d+)/)) === null || _data$responseText$ma5 === void 0 ? void 0 : _data$responseText$ma5[1];
         if (steamId) {
           debug('成功获取Steam ID', steamId);
           logStatus.success();
@@ -5393,7 +5250,7 @@ if (missingDependencies.length > 0) {
         debug('获取Steam ID失败', {
           data: data
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return '';
       } catch (error) {
         debug('获取Steam ID时发生错误', {
@@ -5413,24 +5270,24 @@ if (missingDependencies.length > 0) {
     async checkPlayStatus(ids) {
       try {
         debug('开始检查挂游戏时长状态');
-        if (!this.#steamWebApiKey) {
+        if (!_classPrivateFieldGet(_steamWebApiKey, this)) {
           debug('未设置Steam Web API Key');
           return 'skip';
         }
-        if (!this.#steamId) {
+        if (!_classPrivateFieldGet(_steamId, this)) {
           const steamId = await this.getSteamId();
           if (!steamId) {
             debug('未获取到Steam ID');
             return 'skip';
           }
-          this.#steamId = steamId;
+          _classPrivateFieldSet(_steamId, this, steamId);
         }
         const logStatus = echoLog({
           text: I18n('checkingPlayStatus'),
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${this.#steamWebApiKey}&steamids=${this.#steamId}`,
+          url: 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='.concat(_classPrivateFieldGet(_steamWebApiKey, this), '&steamids=').concat(_classPrivateFieldGet(_steamId, this)),
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
@@ -5442,14 +5299,15 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
+          var _data$responseText;
           debug('挂游戏时长状态正常', {
             data: data
           });
-          const playedIds = new Set(data.responseText?.match(/\d+/g));
+          const playedIds = new Set((_data$responseText = data.responseText) === null || _data$responseText === void 0 ? void 0 : _data$responseText.match(/\d+/g));
           const neededIds = new Set(ids.match(/\d+/g));
           if (neededIds.intersection(playedIds).size > 0) {
             logStatus.success();
@@ -5461,7 +5319,7 @@ if (missingDependencies.length > 0) {
         debug('挂游戏时长状态异常', {
           data: data
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('检查挂游戏时长状态时发生错误', {
@@ -5473,36 +5331,39 @@ if (missingDependencies.length > 0) {
     }
     async stopPlayGames() {
       try {
+        var _data$response63, _data$response64, _data$response65, _data$response66;
         debug('开始停止挂游戏时长');
         const logStatus = echoLog({
           text: I18n('stoppingPlayGames'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
-            Command: `!resume ${this.#botName}`
+            Command: '!resume '.concat(_classPrivateFieldGet(_botName, this))
           })
-        });
+        }));
         if (result !== 'Success') {
           debug('停止挂游戏时长请求失败', {
             result: result,
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status === 200 && [ '已经恢复', '已恢复', '已經繼續', '已繼續', 'resumed', 'возобновлён' ].find((text => data.response?.Result?.includes(text)))) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && [ '已经恢复', '已恢复', '已經繼續', '已繼續', 'resumed', 'возобновлён' ].find((text => {
+          var _data$response62;
+          return (_data$response62 = data.response) === null || _data$response62 === void 0 || (_data$response62 = _data$response62.Result) === null || _data$response62 === void 0 ? void 0 : _data$response62.includes(text);
+        }))) {
           debug('成功停止挂游戏时长');
           logStatus.success();
           return true;
         }
         debug('停止挂游戏时长失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
+          result: data === null || data === void 0 || (_data$response63 = data.response) === null || _data$response63 === void 0 ? void 0 : _data$response63.Result,
+          message: data === null || data === void 0 || (_data$response64 = data.response) === null || _data$response64 === void 0 ? void 0 : _data$response64.Message
         });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response65 = data.response) === null || _data$response65 === void 0 ? void 0 : _data$response65.Result) || (data === null || data === void 0 || (_data$response66 = data.response) === null || _data$response66 === void 0 ? void 0 : _data$response66.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('停止挂游戏时长时发生错误', {
@@ -5512,55 +5373,160 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #unsupportted(name) {
-      try {
-        debug('尝试使用不支持的功能', {
-          name: name
-        });
-        echoLog({
-          before: '[ASF]'
-        }).warning(I18n('ASFNotSupportted', name));
-        return false;
-      } catch (error) {
-        debug('处理不支持的功能时发生错误', {
-          error: error,
-          name: name
-        });
-        throwError(error, 'SteamASF.unsupportted');
-        return false;
-      }
-    }
     async toggleForum() {
-      return this.#unsupportted('toggleForum');
+      return _assertClassBrand(_SteamASF_brand, this, _unsupportted).call(this, 'toggleForum');
     }
     async toggleFavoriteWorkshop() {
-      return this.#unsupportted('toggleFavoriteWorkshop');
+      return _assertClassBrand(_SteamASF_brand, this, _unsupportted).call(this, 'toggleFavoriteWorkshop');
     }
     async voteUpWorkshop() {
-      return this.#unsupportted('voteUpWorkshop');
+      return _assertClassBrand(_SteamASF_brand, this, _unsupportted).call(this, 'voteUpWorkshop');
     }
     async likeAnnouncement() {
-      return this.#unsupportted('likeAnnouncement');
+      return _assertClassBrand(_SteamASF_brand, this, _unsupportted).call(this, 'likeAnnouncement');
     }
   }
+  async function _getGroupId() {
+    try {
+      var _data$response100, _data$response101, _data$response102, _data$response103, _data$response104;
+      debug('开始获取Steam组ID列表');
+      const logStatus = echoLog({
+        type: 'gettingSteamGroupId',
+        text: 'All',
+        before: '[ASF]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        data: JSON.stringify({
+          Command: '!GROUPLIST '.concat(_classPrivateFieldGet(_botName, this))
+        })
+      }));
+      if (result !== 'Success') {
+        debug('获取Steam组ID列表请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response100 = data.response) !== null && _data$response100 !== void 0 && (_data$response100 = _data$response100.Result) !== null && _data$response100 !== void 0 && _data$response100.includes('|')) {
+        _classPrivateFieldSet(_groupInfo, this, Object.fromEntries(data.response.Result.split('\n').map((line => {
+          const [, name, id] = line.trim().split('|');
+          if (name && id) {
+            return [ name, id ];
+          }
+          return null;
+        })).filter((ele => ele))));
+        debug('成功获取Steam组ID列表', {
+          groupCount: Object.keys(_classPrivateFieldGet(_groupInfo, this)).length
+        });
+        logStatus.success();
+        return true;
+      }
+      debug('获取Steam组ID列表失败', {
+        result: data === null || data === void 0 || (_data$response101 = data.response) === null || _data$response101 === void 0 ? void 0 : _data$response101.Result,
+        message: data === null || data === void 0 || (_data$response102 = data.response) === null || _data$response102 === void 0 ? void 0 : _data$response102.Message
+      });
+      logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response103 = data.response) === null || _data$response103 === void 0 ? void 0 : _data$response103.Result) || (data === null || data === void 0 || (_data$response104 = data.response) === null || _data$response104 === void 0 ? void 0 : _data$response104.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      return false;
+    } catch (error) {
+      debug('获取Steam组ID列表时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamASF.getGroupID');
+      return false;
+    }
+  }
+  async function _checkGame(gameId) {
+    try {
+      var _data$response105, _data$response$Result2;
+      debug('开始检查游戏状态', {
+        gameId: gameId
+      });
+      const {result: result, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        data: JSON.stringify({
+          Command: '!CHECK '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
+        })
+      }));
+      if (result !== 'Success') {
+        debug('检查游戏状态请求失败', {
+          result: result
+        });
+        return {};
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response105 = data.response) !== null && _data$response105 !== void 0 && (_data$response105 = _data$response105.Result) !== null && _data$response105 !== void 0 && _data$response105.includes(gameId))) {
+        debug('检查游戏状态响应无效', {
+          status: data === null || data === void 0 ? void 0 : data.status
+        });
+        return {};
+      }
+      const matchedResult = (_data$response$Result2 = data.response.Result.split('\n').find((result => result.includes(gameId)))) === null || _data$response$Result2 === void 0 ? void 0 : _data$response$Result2.split('|');
+      if (!matchedResult || matchedResult.length <= 3) {
+        debug('未找到游戏状态信息', {
+          gameId: gameId
+        });
+        return {};
+      }
+      const status = {
+        wishlist: matchedResult.at(-3).trim() === '√' || matchedResult.at(-2).trim() === '√',
+        followed: matchedResult.at(-1).trim() === '√'
+      };
+      debug('成功获取游戏状态', {
+        gameId: gameId,
+        status: status
+      });
+      return status;
+    } catch (error) {
+      debug('检查游戏状态时发生错误', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'SteamASF.checkGame');
+      return {};
+    }
+  }
+  async function _unsupportted(name) {
+    try {
+      debug('尝试使用不支持的功能', {
+        name: name
+      });
+      echoLog({
+        before: '[ASF]'
+      }).warning(I18n('ASFNotSupportted', name));
+      return false;
+    } catch (error) {
+      debug('处理不支持的功能时发生错误', {
+        error: error,
+        name: name
+      });
+      throwError(error, 'SteamASF.unsupportted');
+      return false;
+    }
+  }
+  var _cache4 = new WeakMap;
+  var _auth5 = new WeakMap;
+  var _storeInitialized = new WeakMap;
+  var _communityInitialized = new WeakMap;
+  var _area = new WeakMap;
+  var _oldArea = new WeakMap;
+  var _areaStatus = new WeakMap;
+  var _SteamWeb_brand = new WeakSet;
   class SteamWeb {
-    #cache={
-      ...{
+    constructor() {
+      _classPrivateMethodInitSpec(this, _SteamWeb_brand);
+      _classPrivateFieldInitSpec(this, _cache4, _objectSpread(_objectSpread({}, {
         group: {},
         officialGroup: {},
         forum: {},
         workshop: {},
         curator: {}
-      },
-      ...GM_getValue('steamCache')
-    };
-    #auth={};
-    #storeInitialized=false;
-    #communityInitialized=false;
-    #area='CN';
-    #oldArea;
-    #areaStatus='end';
-    constructor() {
+      }), GM_getValue('steamCache')));
+      _classPrivateFieldInitSpec(this, _auth5, {});
+      _classPrivateFieldInitSpec(this, _storeInitialized, false);
+      _classPrivateFieldInitSpec(this, _communityInitialized, false);
+      _classPrivateFieldInitSpec(this, _area, 'CN');
+      _classPrivateFieldInitSpec(this, _oldArea, void 0);
+      _classPrivateFieldInitSpec(this, _areaStatus, 'end');
       debug('初始化SteamWeb实例');
     }
     async init() {
@@ -5593,15 +5559,15 @@ if (missingDependencies.length > 0) {
     async initStore() {
       try {
         debug('开始初始化Steam商店');
-        if (this.#storeInitialized) {
+        if (_classPrivateFieldGet(_storeInitialized, this)) {
           return true;
         }
-        let storeInitialized = await this.#updateStoreAuth();
+        let storeInitialized = await _assertClassBrand(_SteamWeb_brand, this, _updateStoreAuth).call(this);
         if (!storeInitialized) {
-          storeInitialized = await this.#updateStoreAuthTab();
+          storeInitialized = await _assertClassBrand(_SteamWeb_brand, this, _updateStoreAuthTab).call(this);
         }
-        this.#storeInitialized = storeInitialized;
-        if (!this.#storeInitialized) {
+        _classPrivateFieldSet(_storeInitialized, this, storeInitialized);
+        if (!_classPrivateFieldGet(_storeInitialized, this)) {
           echoLog({
             before: '[Web]'
           }).error(I18n('initFailed', 'Steam'));
@@ -5623,16 +5589,16 @@ if (missingDependencies.length > 0) {
     async initCommunity(initStoreResult) {
       try {
         debug('开始初始化Steam社区');
-        if (this.#communityInitialized) {
+        if (_classPrivateFieldGet(_communityInitialized, this)) {
           return true;
         }
-        let communityInitialized = await this.#updateCommunityAuth(initStoreResult);
+        let communityInitialized = await _assertClassBrand(_SteamWeb_brand, this, _updateCommunityAuth).call(this, initStoreResult);
         if (!communityInitialized) {
-          communityInitialized = await this.#updateCommunityAuthTab();
+          communityInitialized = await _assertClassBrand(_SteamWeb_brand, this, _updateCommunityAuthTab).call(this);
           GM_setValue('steamCommunityAuth', null);
         }
-        this.#communityInitialized = communityInitialized;
-        if (!this.#communityInitialized) {
+        _classPrivateFieldSet(_communityInitialized, this, communityInitialized);
+        if (!_classPrivateFieldGet(_communityInitialized, this)) {
           echoLog({
             before: '[Web]'
           }).error(I18n('initFailed', 'Steam'));
@@ -5651,640 +5617,6 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #refreshToken() {
-      let type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'steamStore';
-      try {
-        debug('开始刷新令牌', {
-          type: type
-        });
-        const host = {
-          steamStore: 'store.steampowered.com',
-          steamCommunity: 'steamcommunity.com'
-        };
-        const logStatus = echoLog({
-          text: I18n('refreshingToken', I18n(type)),
-          before: '[Web]'
-        });
-        debug('准备刷新令牌请求数据');
-        const formData = new FormData;
-        formData.append('redir', `https://${host[type]}/`);
-        debug('发送刷新令牌请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://login.steampowered.com/jwt/ajaxrefresh',
-          method: 'POST',
-          responseType: 'json',
-          headers: {
-            Host: 'login.steampowered.com',
-            Origin: `https://${host[type]}`,
-            Referer: `https://${host[type]}/`
-          },
-          data: formData
-        });
-        debug('收到刷新令牌响应', {
-          result: result,
-          status: status,
-          statusText: statusText
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (!data?.response?.success) {
-          debug('响应不成功', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('开始设置新令牌');
-        if (!await this.#setToken(data.response, type)) {
-          debug('设置新令牌失败');
-          logStatus.error('Error');
-          return false;
-        }
-        debug('成功刷新令牌');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('刷新令牌时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.refreshToken');
-        return false;
-      }
-    }
-    async #setToken(param, type) {
-      try {
-        const host = {
-          steamStore: 'store.steampowered.com',
-          steamCommunity: 'steamcommunity.com'
-        };
-        debug('开始设置Steam令牌', {
-          type: type
-        });
-        const logStatus = echoLog({
-          text: I18n('settingToken', I18n(type)),
-          before: '[Web]'
-        });
-        debug('准备表单数据');
-        const formData = new FormData;
-        formData.append('steamID', param.steamID);
-        formData.append('nonce', param.nonce);
-        formData.append('redir', param.redir);
-        formData.append('auth', param.auth);
-        debug('表单数据准备完成', {
-          steamID: param.steamID,
-          nonce: param.nonce,
-          redir: param.redir
-        });
-        debug('发送设置令牌请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://${host[type]}/login/settoken`,
-          method: 'POST',
-          headers: {
-            Accept: 'application/json, text/plain, */*',
-            Host: host[type],
-            Origin: `https://${host[type]}`
-          },
-          data: formData
-        });
-        debug('收到设置令牌响应', {
-          result: result,
-          status: status,
-          statusText: statusText
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功设置令牌');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('设置令牌时发生错误', {
-          error: error,
-          type: type
-        });
-        throwError(error, 'SteamWeb.setToken');
-        return false;
-      }
-    }
-    async #updateStoreAuth() {
-      let retry = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-      try {
-        debug('开始更新Steam商店身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamStore')),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/',
-          method: 'GET',
-          headers: {
-            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Upgrade-Insecure-Requests': '1'
-          },
-          redirect: 'manual'
-        });
-        debug('收到Steam商店身份验证响应', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (data?.status !== 200) {
-          if (![ 301, 302 ].includes(data?.status)) {
-            debug('Steam商店身份验证状态错误', {
-              status: data?.status
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            return false;
-          }
-          if (!await this.#refreshToken('steamStore')) {
-            debug('Steam商店身份验证刷新失败');
-            logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-            return false;
-          }
-          if (retry) {
-            debug('Steam商店身份验证重试失败');
-            logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-            return false;
-          }
-          debug('Steam商店身份验证重试中');
-          logStatus.warning(I18n('retry'));
-          return this.#updateStoreAuth(true);
-        }
-        if (!data.responseText.includes('data-miniprofile=')) {
-          if (await this.#refreshToken('steamStore')) {
-            debug('Steam商店身份验证需要重试');
-            logStatus.warning(I18n('retry'));
-            if (retry) {
-              debug('Steam商店身份验证重试次数超限');
-              logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-              return false;
-            }
-            return this.#updateStoreAuth(true);
-          }
-          debug('Steam商店身份验证失败：需要登录');
-          logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-          return false;
-        }
-        const storeSessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
-        if (!storeSessionID) {
-          debug('Steam商店身份验证失败：获取sessionID失败');
-          logStatus.error('Error: Get "sessionID" failed');
-          return false;
-        }
-        this.#auth.storeSessionID = storeSessionID;
-        debug('Steam商店身份验证更新成功', {
-          storeSessionID: storeSessionID
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Steam商店身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateStoreAuth');
-        return false;
-      }
-    }
-    async #updateStoreAuthTab() {
-      try {
-        debug('开始通过新标签页更新Steam商店身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamStoreTab')),
-          before: '[Web]'
-        });
-        return await new Promise((resolve => {
-          GM_deleteValue('steamStoreAuth');
-          GM_setValue('ATv4_updateStoreAuth', true);
-          const newTab = GM_openInTab('https://store.steampowered.com/', {
-            active: true,
-            setParent: true
-          });
-          debug('打开Steam商店新标签页');
-          newTab.name = 'ATv4_updateStoreAuth';
-          const listenerId = GM_addValueChangeListener('steamStoreAuth', ((key, oldValue, newValue) => {
-            debug('监听到Steam商店身份验证值变化', {
-              oldValue: oldValue,
-              newValue: newValue
-            });
-            GM_removeValueChangeListener(listenerId);
-            GM_deleteValue('ATv4_updateStoreAuth');
-            newTab?.close();
-            window.focus();
-            if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-              this.#auth.storeSessionID = newValue.storeSessionID;
-              debug('Steam商店身份验证更新成功', {
-                storeSessionID: newValue.storeSessionID
-              });
-              logStatus.success();
-              resolve(true);
-              return;
-            }
-            debug('Steam商店身份验证更新失败');
-            logStatus.error('Failed');
-            resolve(false);
-          }));
-          newTab.onclose = () => {
-            debug('Steam商店新标签页已关闭');
-            GM_deleteValue('ATv4_updateStoreAuth');
-          };
-        }));
-      } catch (error) {
-        debug('通过新标签页更新Steam商店身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateStoreAuthTab');
-        return false;
-      }
-    }
-    async #updateCommunityAuthTab() {
-      try {
-        debug('开始通过新标签页更新Steam社区身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamCommunityTab')),
-          before: '[Web]'
-        });
-        return await new Promise((resolve => {
-          GM_deleteValue('steamCommunityAuth');
-          GM_setValue('ATv4_updateCommunityAuth', true);
-          const newTab = GM_openInTab('https://steamcommunity.com/my', {
-            active: true,
-            setParent: true
-          });
-          debug('打开Steam社区新标签页');
-          newTab.name = 'ATv4_updateCommunityAuth';
-          const listenerId = GM_addValueChangeListener('steamCommunityAuth', ((key, oldValue, newValue) => {
-            debug('监听到Steam社区身份验证值变化', {
-              oldValue: oldValue,
-              newValue: newValue
-            });
-            GM_removeValueChangeListener(listenerId);
-            GM_deleteValue('ATv4_updateCommunityAuth');
-            newTab?.close();
-            window.focus();
-            if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-              this.#auth.steam64Id = newValue.steam64Id;
-              this.#auth.communitySessionID = newValue.communitySessionID;
-              debug('Steam社区身份验证更新成功', {
-                steam64Id: newValue.steam64Id,
-                communitySessionID: newValue.communitySessionID
-              });
-              logStatus.success();
-              resolve(true);
-              return;
-            }
-            debug('Steam社区身份验证更新失败');
-            logStatus.error('Failed');
-            resolve(false);
-          }));
-          newTab.onclose = () => {
-            debug('Steam社区新标签页已关闭');
-            GM_deleteValue('ATv4_updateCommunityAuth');
-          };
-        }));
-      } catch (error) {
-        debug('通过新标签页更新Steam社区身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateCommunityAuthTab');
-        return false;
-      }
-    }
-    async #updateCommunityAuth(initStoreResult) {
-      let retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-      try {
-        debug('开始更新Steam社区身份验证');
-        const logStatus = echoLog({
-          text: I18n('gettingUserInfo'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://steamcommunity.com/my',
-          method: 'GET',
-          headers: {
-            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            Host: 'steamcommunity.com',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate'
-          },
-          redirect: 'follow'
-        });
-        debug('收到Steam社区身份验证响应', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (data?.status !== 200) {
-          debug('Steam社区身份验证状态错误', {
-            status: data?.status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data.finalUrl.includes('https://steamcommunity.com/login/home')) {
-          if (initStoreResult) {
-            if (await this.#refreshToken('steamCommunity')) {
-              debug('Steam社区身份验证需要重试');
-              logStatus.warning(I18n('retry'));
-              if (retry) {
-                debug('Steam社区身份验证重试次数超限');
-                logStatus.error(`Error:${I18n('needLoginSteamCommunity')}`, true);
-                return false;
-              }
-              return this.#updateCommunityAuth(initStoreResult, retry);
-            }
-          }
-          debug('Steam社区身份验证失败：需要登录');
-          logStatus.error(`Error:${I18n('needLoginSteamCommunity')}`, true);
-          return false;
-        }
-        const steam64Id = data.responseText.match(/g_steamID = "(.+?)";/)?.[1];
-        const communitySessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
-        if (!steam64Id || !communitySessionID) {
-          debug('Steam社区身份验证失败：获取身份信息失败');
-          logStatus.error('Error: Get "sessionID" failed');
-          return false;
-        }
-        this.#auth.steam64Id = steam64Id;
-        this.#auth.communitySessionID = communitySessionID;
-        debug('Steam社区身份验证更新成功', {
-          steam64Id: steam64Id,
-          communitySessionID: communitySessionID
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Steam社区身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateCommunityAuth');
-        return false;
-      }
-    }
-    async #getAreaInfo() {
-      try {
-        debug('开始获取Steam地区信息');
-        const logStatus = echoLog({
-          text: I18n('gettingAreaInfo'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/cart/',
-          method: 'GET'
-        });
-        debug('获取地区信息请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success' || data?.status !== 200) {
-          debug('获取地区信息失败', {
-            result: result,
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(result === 'Success' ? `Error:${data?.statusText}(${data?.status})` : `${result}:${statusText}(${status})`);
-          return {};
-        }
-        const cartConfigRaw = data.responseText.match(/data-cart_config="(.*?)"/)?.[1];
-        debug('cartConfigRaw提取结果', {
-          cartConfigRaw: cartConfigRaw
-        });
-        const temp = document.createElement('div');
-        temp.innerHTML = cartConfigRaw || '{}';
-        const cartConfigStr = temp.textContent || temp.innerText;
-        let cartConfig;
-        try {
-          cartConfig = JSON.parse(cartConfigStr);
-          debug('cartConfig解析成功', {
-            cartConfig: cartConfig
-          });
-        } catch (error) {
-          debug('cartConfig解析失败', {
-            error: error
-          });
-          logStatus.error('Error: get country info filed');
-          console.error(error);
-          return {};
-        }
-        if (!cartConfig.rgUserCountryOptions) {
-          debug('未找到可更换地区');
-          logStatus.warning('Warning: Area cannot be changed');
-          return {};
-        }
-        const userInfoRaw = data.responseText.match(/data-userinfo="(.*?)"/)?.[1];
-        debug('userInfoRaw提取结果', {
-          userInfoRaw: userInfoRaw
-        });
-        const temp1 = document.createElement('div');
-        temp1.innerHTML = userInfoRaw || '{}';
-        const userInfoStr = temp1.textContent || temp1.innerText;
-        let userInfo;
-        try {
-          userInfo = JSON.parse(userInfoStr);
-          debug('userInfo解析成功', {
-            userInfo: userInfo
-          });
-        } catch (error) {
-          debug('userInfo解析失败', {
-            error: error
-          });
-          logStatus.error('Error: get country info filed');
-          console.error(error);
-          return {};
-        }
-        const currentArea = userInfo.country_code;
-        const areas = Object.keys(cartConfig.rgUserCountryOptions).filter((area => area !== 'help'));
-        debug('地区信息提取', {
-          currentArea: currentArea,
-          areas: areas
-        });
-        if (!currentArea || areas.length === 0) {
-          debug('未获取到当前地区或可更换地区为空', {
-            currentArea: currentArea,
-            areas: areas
-          });
-          logStatus.error('Error: get country info filed');
-          return {};
-        }
-        this.#area = currentArea;
-        debug('获取地区信息成功', {
-          currentArea: currentArea,
-          areas: areas
-        });
-        logStatus.success();
-        return {
-          currentArea: currentArea,
-          areas: areas
-        };
-      } catch (error) {
-        debug('获取地区信息时发生异常', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.getAreaInfo');
-        return {};
-      }
-    }
-    async #changeArea(area) {
-      try {
-        debug('开始更换Steam地区', {
-          area: area
-        });
-        if (this.#areaStatus === 'waiting') {
-          debug('当前地区状态为waiting，等待状态改变');
-          await new Promise((resolve => {
-            const checker = setInterval((() => {
-              if (this.#areaStatus !== 'waiting') {
-                clearInterval(checker);
-                resolve(true);
-              }
-            }));
-          }));
-        }
-        if (this.#area === area || !area && this.#area !== 'CN') {
-          debug('无需更换地区', {
-            currentArea: this.#area,
-            targetArea: area
-          });
-          return true;
-        }
-        this.#areaStatus = 'waiting';
-        let aimedArea = area;
-        if (!aimedArea) {
-          debug('未指定目标地区，自动获取可用地区');
-          const {currentArea: currentArea, areas: areas} = await this.#getAreaInfo();
-          debug('获取到地区信息', {
-            currentArea: currentArea,
-            areas: areas
-          });
-          if (!currentArea || !areas) {
-            debug('获取地区信息失败', {
-              currentArea: currentArea,
-              areas: areas
-            });
-            this.#areaStatus = 'error';
-            return false;
-          }
-          if (currentArea !== 'CN') {
-            debug('当前地区不是CN，无需更换', {
-              currentArea: currentArea
-            });
-            this.#areaStatus = 'skip';
-            echoLog({
-              text: I18n('notNeededChangeArea'),
-              before: '[Web]'
-            });
-            return 'skip';
-          }
-          const anotherArea = areas.filter((area => area && area !== 'CN'));
-          debug('可更换的其他地区', {
-            anotherArea: anotherArea
-          });
-          if (!anotherArea || anotherArea.length === 0) {
-            debug('没有可用的其他地区');
-            this.#areaStatus = 'noAnotherArea';
-            echoLog({
-              text: I18n('noAnotherArea'),
-              before: '[Web]'
-            });
-            return false;
-          }
-          [aimedArea] = anotherArea;
-          debug('选定目标地区', {
-            aimedArea: aimedArea
-          });
-        }
-        const logStatus = echoLog({
-          text: I18n('changingArea', aimedArea),
-          before: '[Web]'
-        });
-        debug('发送更换地区请求', {
-          aimedArea: aimedArea
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/country/setcountry',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            cc: aimedArea,
-            sessionid: this.#auth.storeSessionID
-          })
-        });
-        debug('更换地区请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success' || data?.status !== 200 || data.responseText !== 'true') {
-          debug('更换地区失败', {
-            result: result,
-            status: data?.status,
-            statusText: data?.statusText,
-            responseText: data?.responseText
-          });
-          this.#areaStatus = 'error';
-          logStatus.error(result === 'Success' ? `Error:${data?.statusText}(${data?.status})` : `${result}:${statusText}(${status})`);
-          return 'CN';
-        }
-        const {currentArea: currentArea} = await this.#getAreaInfo();
-        debug('更换后获取到的当前地区', {
-          currentArea: currentArea
-        });
-        if (currentArea) {
-          this.#area = currentArea;
-          if (!this.#oldArea) {
-            this.#oldArea = currentArea;
-          }
-        }
-        if (currentArea !== aimedArea) {
-          debug('更换后当前地区与目标地区不符', {
-            currentArea: currentArea,
-            aimedArea: aimedArea
-          });
-          this.#areaStatus = 'error';
-          logStatus.error('Error: change country filed');
-          return 'CN';
-        }
-        this.#areaStatus = 'success';
-        debug('更换地区成功', {
-          currentArea: currentArea
-        });
-        logStatus.success();
-        return currentArea;
-      } catch (error) {
-        debug('更换地区时发生异常', {
-          error: error
-        });
-        this.#areaStatus = 'error';
-        throwError(error, 'SteamWeb.changeArea');
-        return false;
-      }
-    }
     async joinGroup(groupName) {
       try {
         debug('开始加入Steam组', {
@@ -6296,28 +5628,28 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/groups/${groupName}`,
+          url: 'https://steamcommunity.com/groups/'.concat(groupName),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
             action: 'join',
-            sessionID: this.#auth.communitySessionID
+            sessionID: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
         });
         if (result !== 'Success') {
           debug('加入Steam组请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || data.responseText.includes('grouppage_join_area')) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || data.responseText.includes('grouppage_join_area')) {
           debug('加入Steam组失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('成功加入Steam组', {
@@ -6339,7 +5671,7 @@ if (missingDependencies.length > 0) {
         debug('开始退出Steam组', {
           groupName: groupName
         });
-        const groupId = await this.#getGroupId(groupName);
+        const groupId = await _assertClassBrand(_SteamWeb_brand, this, _getGroupId2).call(this, groupName);
         if (!groupId) {
           return false;
         }
@@ -6349,13 +5681,13 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/profiles/${this.#auth.steam64Id}/home_process`,
+          url: 'https://steamcommunity.com/profiles/'.concat(_classPrivateFieldGet(_auth5, this).steam64Id, '/home_process'),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
-            sessionID: this.#auth.communitySessionID,
+            sessionID: _classPrivateFieldGet(_auth5, this).communitySessionID,
             action: 'leaveGroup',
             groupId: groupId
           })
@@ -6364,17 +5696,17 @@ if (missingDependencies.length > 0) {
           debug('退出Steam组请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || !data.finalUrl.includes('groups')) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !data.finalUrl.includes('groups')) {
           debug('退出Steam组失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
-        const hasGroupLink = $(data.responseText.replace(/<img.*?>/g, '').toLowerCase()).find(`a[href='https://steamcommunity.com/groups/${groupName.toLowerCase()}']`).length > 0;
+        const hasGroupLink = $(data.responseText.replace(/<img.*?>/g, '').toLowerCase()).find('a[href=\'https://steamcommunity.com/groups/'.concat(groupName.toLowerCase(), '\']')).length > 0;
         if (hasGroupLink) {
           debug('Error: Group link still exists');
           return false;
@@ -6393,81 +5725,9 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getGroupId(groupName) {
-      try {
-        debug('开始获取Steam组ID', {
-          groupName: groupName
-        });
-        const logStatus = echoLog({
-          type: 'gettingSteamGroupId',
-          text: groupName,
-          before: '[Web]'
-        });
-        const cachedGroupId = this.#cache.group[groupName];
-        if (cachedGroupId) {
-          debug('从缓存中获取到组ID', {
-            groupName: groupName,
-            cachedGroupId: cachedGroupId
-          });
-          logStatus.success();
-          return cachedGroupId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/groups/${groupName}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取组ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取组ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取组ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedGroupId = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)?.[1];
-        debug('正则提取组ID结果', {
-          matchedGroupId: matchedGroupId
-        });
-        if (!matchedGroupId) {
-          debug('未能提取到组ID', {
-            groupName: groupName
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('group', groupName, matchedGroupId);
-        debug('组ID已缓存', {
-          groupName: groupName,
-          matchedGroupId: matchedGroupId
-        });
-        logStatus.success();
-        return matchedGroupId;
-      } catch (error) {
-        debug('获取组ID时发生异常', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamWeb.getGroupID');
-        return false;
-      }
-    }
     async joinOfficialGroup(gameId) {
       try {
+        var _data$responseText$ma6;
         debug('开始加入Steam官方组', {
           gameId: gameId
         });
@@ -6477,7 +5737,7 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}?action=join&sessionID=${this.#auth.communitySessionID}`,
+          url: 'https://steamcommunity.com/games/'.concat(gameId, '?action=join&sessionID=').concat(_classPrivateFieldGet(_auth5, this).communitySessionID),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -6487,19 +5747,19 @@ if (missingDependencies.length > 0) {
           debug('加入Steam官方组请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || data.responseText.includes('id="publicGroupJoin"')) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || data.responseText.includes('id="publicGroupJoin"')) {
           debug('加入Steam官方组失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
-        const groupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
+        const groupId = (_data$responseText$ma6 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma6 === void 0 ? void 0 : _data$responseText$ma6[1];
         if (groupId) {
-          this.#setCache('officialGroup', gameId, groupId);
+          _assertClassBrand(_SteamWeb_brand, this, _setCache4).call(this, 'officialGroup', gameId, groupId);
         }
         debug('成功加入Steam官方组', {
           gameId: gameId
@@ -6520,7 +5780,7 @@ if (missingDependencies.length > 0) {
         debug('开始退出Steam官方组', {
           gameId: gameId
         });
-        const groupId = await this.#getOfficialGroupId(gameId);
+        const groupId = await _assertClassBrand(_SteamWeb_brand, this, _getOfficialGroupId).call(this, gameId);
         if (!groupId) {
           return false;
         }
@@ -6530,13 +5790,13 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/profiles/${this.#auth.steam64Id}/home_process`,
+          url: 'https://steamcommunity.com/profiles/'.concat(_classPrivateFieldGet(_auth5, this).steam64Id, '/home_process'),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
-            sessionID: this.#auth.communitySessionID,
+            sessionID: _classPrivateFieldGet(_auth5, this).communitySessionID,
             action: 'leaveGroup',
             groupId: groupId
           })
@@ -6545,18 +5805,18 @@ if (missingDependencies.length > 0) {
           debug('退出Steam官方组请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('退出Steam官方组失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}`,
+          url: 'https://steamcommunity.com/games/'.concat(gameId),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -6568,14 +5828,14 @@ if (missingDependencies.length > 0) {
             status: statusR,
             statusText: statusTextR
           });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
+          logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
           return false;
         }
-        if (dataR?.status !== 200 || !dataR.responseText.includes('id="publicGroupJoin"')) {
+        if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200 || !dataR.responseText.includes('id="publicGroupJoin"')) {
           debug('退出Steam官方组失败', {
-            status: dataR?.status
+            status: dataR === null || dataR === void 0 ? void 0 : dataR.status
           });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+          logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
           return false;
         }
         debug('成功退出Steam官方组', {
@@ -6592,81 +5852,9 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getOfficialGroupId(gameId) {
-      try {
-        debug('开始获取Steam官方群组ID', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'gettingSteamOfficialGroupId',
-          text: gameId,
-          before: '[Web]'
-        });
-        const cachedGroupId = this.#cache.officialGroup[gameId];
-        if (cachedGroupId) {
-          debug('从缓存中获取到官方群组ID', {
-            gameId: gameId,
-            cachedGroupId: cachedGroupId
-          });
-          logStatus.success();
-          return cachedGroupId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取官方群组ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取官方群组ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取官方群组ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedGroupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
-        debug('正则提取官方群组ID结果', {
-          matchedGroupId: matchedGroupId
-        });
-        if (!matchedGroupId) {
-          debug('未能提取到官方群组ID', {
-            gameId: gameId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('officialGroup', gameId, matchedGroupId);
-        debug('官方群组ID已缓存', {
-          gameId: gameId,
-          matchedGroupId: matchedGroupId
-        });
-        logStatus.success();
-        return matchedGroupId;
-      } catch (error) {
-        debug('获取官方群组ID时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.getGroupID');
-        return false;
-      }
-    }
     async addToWishlist(gameId) {
       try {
+        var _data$response67;
         debug('开始添加游戏到愿望单', {
           gameId: gameId
         });
@@ -6682,12 +5870,12 @@ if (missingDependencies.length > 0) {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
-            sessionid: this.#auth.storeSessionID,
+            sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID,
             appid: gameId
           }),
           dataType: 'json'
         });
-        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
+        if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && ((_data$response67 = data.response) === null || _data$response67 === void 0 ? void 0 : _data$response67.success) === true) {
           debug('成功添加游戏到愿望单', {
             gameId: gameId
           });
@@ -6695,7 +5883,7 @@ if (missingDependencies.length > 0) {
           return true;
         }
         const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
+          url: 'https://store.steampowered.com/app/'.concat(gameId),
           method: 'GET'
         });
         if (resultR !== 'Success') {
@@ -6704,19 +5892,19 @@ if (missingDependencies.length > 0) {
             status: statusR,
             statusText: statusTextR
           });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
+          logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
           return false;
         }
-        if (dataR?.status !== 200) {
+        if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
           debug('添加游戏到愿望单失败', {
-            status: dataR?.status
+            status: dataR === null || dataR === void 0 ? void 0 : dataR.status
           });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+          logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
           return false;
         }
-        if (this.#area === 'CN' && dataR.responseText.includes('id="error_box"')) {
+        if (_classPrivateFieldGet(_area, this) === 'CN' && dataR.responseText.includes('id="error_box"')) {
           debug('changeAreaNotice');
-          if (!await this.#changeArea()) {
+          if (!await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this)) {
             return false;
           }
           return await this.addToWishlist(gameId);
@@ -6732,7 +5920,7 @@ if (missingDependencies.length > 0) {
           debug('添加游戏到愿望单失败', {
             status: dataR.statusText
           });
-          logStatus.error(`Error:${dataR.statusText}(${dataR.status})`);
+          logStatus.error('Error:'.concat(dataR.statusText, '(').concat(dataR.status, ')'));
           return false;
         }
         debug('成功添加游戏到愿望单', {
@@ -6751,6 +5939,7 @@ if (missingDependencies.length > 0) {
     }
     async removeFromWishlist(gameId) {
       try {
+        var _data$response68;
         debug('开始从愿望单移除游戏', {
           gameId: gameId
         });
@@ -6766,12 +5955,12 @@ if (missingDependencies.length > 0) {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
-            sessionid: this.#auth.storeSessionID,
+            sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID,
             appid: gameId
           }),
           dataType: 'json'
         });
-        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
+        if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && ((_data$response68 = data.response) === null || _data$response68 === void 0 ? void 0 : _data$response68.success) === true) {
           debug('成功从愿望单移除游戏', {
             gameId: gameId
           });
@@ -6779,7 +5968,7 @@ if (missingDependencies.length > 0) {
           return true;
         }
         const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
+          url: 'https://store.steampowered.com/app/'.concat(gameId),
           method: 'GET'
         });
         if (resultR !== 'Success') {
@@ -6788,19 +5977,19 @@ if (missingDependencies.length > 0) {
             status: statusR,
             statusText: statusTextR
           });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
+          logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
           return false;
         }
-        if (dataR?.status !== 200) {
+        if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
           debug('从愿望单移除游戏失败', {
-            status: dataR?.status
+            status: dataR === null || dataR === void 0 ? void 0 : dataR.status
           });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
+          logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
           return false;
         }
-        if (this.#area === 'CN' && dataR.responseText.includes('id="error_box"')) {
+        if (_classPrivateFieldGet(_area, this) === 'CN' && dataR.responseText.includes('id="error_box"')) {
           debug('changeAreaNotice');
-          const result = await this.#changeArea();
+          const result = await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this);
           if (!result || result === 'CN' || result === 'skip') {
             return false;
           }
@@ -6818,7 +6007,7 @@ if (missingDependencies.length > 0) {
           status: statusR,
           statusText: statusTextR
         });
-        logStatus.error(`Error:${dataR.statusText}(${dataR.status})`);
+        logStatus.error('Error:'.concat(dataR.statusText, '(').concat(dataR.status, ')'));
         return false;
       } catch (error) {
         debug('从愿望单移除游戏时发生错误', {
@@ -6836,12 +6025,12 @@ if (missingDependencies.length > 0) {
           doTask: doTask
         });
         const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingGame`,
+          type: ''.concat(doTask ? '' : 'un', 'followingGame'),
           text: gameId,
           before: '[Web]'
         });
         const requestData = {
-          sessionid: this.#auth.storeSessionID,
+          sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID,
           appid: gameId
         };
         if (!doTask) {
@@ -6855,7 +6044,7 @@ if (missingDependencies.length > 0) {
           },
           data: $.param(requestData)
         });
-        if (result === 'Success' && data?.status === 200 && data.responseText === 'true') {
+        if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && data.responseText === 'true') {
           debug('成功处理游戏关注状态', {
             gameId: gameId,
             doTask: doTask
@@ -6863,10 +6052,10 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        const followed = await this.#isFollowedGame(gameId);
-        if (this.#area === 'CN' && followed === 'areaLocked') {
+        const followed = await _assertClassBrand(_SteamWeb_brand, this, _isFollowedGame).call(this, gameId);
+        if (_classPrivateFieldGet(_area, this) === 'CN' && followed === 'areaLocked') {
           debug('changeAreaNotice');
-          if (!await this.#changeArea()) {
+          if (!await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this)) {
             return false;
           }
           return await this.toggleFollowGame(gameId, doTask);
@@ -6882,7 +6071,7 @@ if (missingDependencies.length > 0) {
         debug('处理游戏关注状态请求失败', {
           result: result
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       } catch (error) {
         debug('处理游戏关注状态时发生错误', {
@@ -6894,91 +6083,47 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #isFollowedGame(gameId) {
-      try {
-        debug('开始判断Steam游戏是否已关注', {
-          gameId: gameId
-        });
-        const {result: result, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
-          method: 'GET'
-        });
-        debug('获取游戏页面请求结果', {
-          result: result,
-          status: data?.status
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result
-          });
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('响应状态错误', {
-            status: data?.status
-          });
-          return false;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，返回areaLocked', {
-            area: this.#area
-          });
-          return 'areaLocked';
-        }
-        const isFollowed = $(data.responseText.replace(/<img.*?>/g, '')).find('.queue_control_button.queue_btn_follow>.btnv6_blue_hoverfade.btn_medium.queue_btn_active').css('display') !== 'none';
-        debug('关注状态判断结果', {
-          isFollowed: isFollowed
-        });
-        return isFollowed;
-      } catch (error) {
-        debug('判断游戏关注状态时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.isFollowedGame');
-        return false;
-      }
-    }
     async toggleForum(gameId) {
       let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       try {
+        var _data$response69, _data$response70;
         debug('开始处理论坛订阅状态', {
           gameId: gameId,
           doTask: doTask
         });
-        const forumId = await this.#getForumId(gameId);
+        const forumId = await _assertClassBrand(_SteamWeb_brand, this, _getForumId).call(this, gameId);
         if (!forumId) {
           return false;
         }
         const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}subscribingForum`,
+          type: ''.concat(doTask ? '' : 'un', 'subscribingForum'),
           text: gameId,
           before: '[Web]'
         });
         const [id, feature] = forumId.split('_');
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/forum/${id}/General/${doTask ? '' : 'un'}subscribe/${feature || '0'}/`,
+          url: 'https://steamcommunity.com/forum/'.concat(id, '/General/').concat(doTask ? '' : 'un', 'subscribe/').concat(feature || '0', '/'),
           method: 'POST',
           responseType: 'json',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param({
-            sessionid: this.#auth.communitySessionID
+            sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
         });
         if (result !== 'Success') {
           debug('处理论坛订阅状态请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return true;
         }
-        if (data?.status !== 200 || data.response?.success !== 1 && data.response?.success !== 29) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || ((_data$response69 = data.response) === null || _data$response69 === void 0 ? void 0 : _data$response69.success) !== 1 && ((_data$response70 = data.response) === null || _data$response70 === void 0 ? void 0 : _data$response70.success) !== 29) {
           debug('处理论坛订阅状态失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return true;
         }
         debug('成功处理论坛订阅状态', {
@@ -6997,76 +6142,6 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getForumId(gameId) {
-      try {
-        debug('开始获取Steam论坛ID', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'gettingForumId',
-          text: gameId,
-          before: '[Web]'
-        });
-        const cachedForumId = this.#cache.forum[gameId];
-        if (cachedForumId) {
-          debug('从缓存中获取到论坛ID', {
-            gameId: gameId,
-            cachedForumId: cachedForumId
-          });
-          logStatus.success();
-          return cachedForumId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/app/${gameId}/discussions/`,
-          method: 'GET'
-        });
-        debug('获取论坛ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取论坛ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取论坛ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedForumId = data.responseText?.match(/General_([\d]+(_[\d]+)?)/)?.[1];
-        debug('正则提取论坛ID结果', {
-          matchedForumId: matchedForumId
-        });
-        if (!matchedForumId) {
-          debug('未能提取到论坛ID', {
-            gameId: gameId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('forum', gameId, matchedForumId);
-        debug('论坛ID已缓存', {
-          gameId: gameId,
-          matchedForumId: matchedForumId
-        });
-        logStatus.success();
-        return matchedForumId;
-      } catch (error) {
-        debug('获取论坛ID时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.getForumId');
-        return false;
-      }
-    }
     async toggleFavoriteWorkshop(id) {
       let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       try {
@@ -7074,7 +6149,7 @@ if (missingDependencies.length > 0) {
           id: id,
           doTask: doTask
         });
-        const appid = await this.#getWorkshopAppId(id);
+        const appid = await _assertClassBrand(_SteamWeb_brand, this, _getWorkshopAppId).call(this, id);
         if (!appid) {
           return false;
         }
@@ -7084,7 +6159,7 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/sharedfiles/${doTask ? '' : 'un'}favorite`,
+          url: 'https://steamcommunity.com/sharedfiles/'.concat(doTask ? '' : 'un', 'favorite'),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -7092,21 +6167,21 @@ if (missingDependencies.length > 0) {
           data: $.param({
             id: id,
             appid: appid,
-            sessionid: this.#auth.communitySessionID
+            sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
         });
         if (result !== 'Success') {
           debug('处理创意工坊收藏状态请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || data.responseText) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || data.responseText) {
           debug('处理创意工坊收藏状态失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('成功处理创意工坊收藏状态', {
@@ -7125,76 +6200,9 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getWorkshopAppId(id) {
-      try {
-        debug('开始获取Steam创意工坊AppId', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingWorkshopAppId',
-          text: id,
-          before: '[Web]'
-        });
-        const cachedAppId = this.#cache.workshop[id];
-        if (cachedAppId) {
-          debug('从缓存中获取到AppId', {
-            id: id,
-            cachedAppId: cachedAppId
-          });
-          logStatus.success();
-          return cachedAppId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`,
-          method: 'GET'
-        });
-        debug('获取创意工坊AppId请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取创意工坊AppId请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取创意工坊AppId响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedAppId = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)?.[1];
-        debug('正则提取AppId结果', {
-          matchedAppId: matchedAppId
-        });
-        if (!matchedAppId) {
-          debug('未能提取到AppId', {
-            id: id
-          });
-          logStatus.error('Error: getWorkshopAppId failed');
-          return false;
-        }
-        debug('AppId已缓存', {
-          id: id,
-          matchedAppId: matchedAppId
-        });
-        return matchedAppId;
-      } catch (error) {
-        debug('获取创意工坊AppId时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.getWorkshopAppId');
-        return false;
-      }
-    }
     async voteUpWorkshop(id) {
       try {
+        var _data$response71;
         debug('开始点赞创意工坊物品', {
           id: id
         });
@@ -7212,21 +6220,21 @@ if (missingDependencies.length > 0) {
           },
           data: $.param({
             id: id,
-            sessionid: this.#auth.communitySessionID
+            sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
         });
         if (result !== 'Success') {
           debug('点赞创意工坊物品请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return true;
         }
-        if (data?.status !== 200 || data.response?.success !== 1) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || ((_data$response71 = data.response) === null || _data$response71 === void 0 ? void 0 : _data$response71.success) !== 1) {
           debug('点赞创意工坊物品失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return true;
         }
         debug('成功点赞创意工坊物品', {
@@ -7246,6 +6254,7 @@ if (missingDependencies.length > 0) {
     async toggleCurator(curatorId) {
       let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
       try {
+        var _data$response72, _data$response75;
         debug('开始处理鉴赏家关注状态', {
           curatorId: curatorId,
           doTask: doTask
@@ -7263,7 +6272,7 @@ if (missingDependencies.length > 0) {
           },
           data: $.param({
             clanid: curatorId,
-            sessionid: this.#auth.storeSessionID,
+            sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID,
             follow: doTask
           }),
           dataType: 'json'
@@ -7272,24 +6281,26 @@ if (missingDependencies.length > 0) {
           debug('处理鉴赏家关注状态请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.response?.success?.success === 25) {
+        if ((data === null || data === void 0 || (_data$response72 = data.response) === null || _data$response72 === void 0 || (_data$response72 = _data$response72.success) === null || _data$response72 === void 0 ? void 0 : _data$response72.success) === 25) {
+          var _data$response73, _data$response74;
           debug('处理鉴赏家关注状态失败', {
-            status: data?.status,
-            success: data?.response?.success,
-            message: data?.response?.msg
+            status: data === null || data === void 0 ? void 0 : data.status,
+            success: data === null || data === void 0 || (_data$response73 = data.response) === null || _data$response73 === void 0 ? void 0 : _data$response73.success,
+            message: data === null || data === void 0 || (_data$response74 = data.response) === null || _data$response74 === void 0 ? void 0 : _data$response74.msg
           });
           logStatus.error(I18n('curatorLimitNotice'));
           return false;
         }
-        if (data?.status !== 200 || data.response?.success?.success !== 1) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || ((_data$response75 = data.response) === null || _data$response75 === void 0 || (_data$response75 = _data$response75.success) === null || _data$response75 === void 0 ? void 0 : _data$response75.success) !== 1) {
+          var _data$response76, _data$response77;
           debug('处理鉴赏家关注状态失败', {
-            status: data?.status,
-            success: data?.response?.success
+            status: data === null || data === void 0 ? void 0 : data.status,
+            success: data === null || data === void 0 || (_data$response76 = data.response) === null || _data$response76 === void 0 ? void 0 : _data$response76.success
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.response?.success}` || `${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 || (_data$response77 = data.response) === null || _data$response77 === void 0 ? void 0 : _data$response77.success) || ''.concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('成功处理鉴赏家关注状态', {
@@ -7308,80 +6319,6 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #getAnnouncementParams(appId, viewId) {
-      try {
-        debug('开始获取Steam公告参数', {
-          appId: appId,
-          viewId: viewId
-        });
-        const logStatus = echoLog({
-          type: 'gettingAnnouncementParams',
-          text: appId,
-          id: viewId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/events/ajaxgetpartnerevent?appid=${appId}&announcement_gid=${viewId}&lang_list=6_0&last_modified_time=0&origin=https:%2F%2Fstore.steampowered.com&for_edit=false`,
-          method: 'GET',
-          responseType: 'json',
-          headers: {
-            Host: 'store.steampowered.com',
-            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
-          }
-        });
-        debug('获取公告参数请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取公告参数请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return {};
-        }
-        if (data?.status !== 200 || data?.response?.success !== 1) {
-          debug('获取公告参数响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            response: data?.response
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return {};
-        }
-        const {clanid: clanid, gid: gid} = data.response.event?.announcement_body || {};
-        debug('公告参数提取', {
-          clanid: clanid,
-          gid: gid
-        });
-        if (!clanid) {
-          debug('未能提取到clanid', {
-            appId: appId,
-            viewId: viewId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return {};
-        }
-        logStatus.success();
-        debug('获取公告参数成功', {
-          clanId: clanid,
-          gid: gid
-        });
-        return {
-          clanId: clanid,
-          gid: gid
-        };
-      } catch (error) {
-        debug('获取公告参数时发生异常', {
-          error: error,
-          appId: appId,
-          viewId: viewId
-        });
-        throwError(error, 'SteamWeb.likeAnnouncement');
-        return {};
-      }
-    }
     async likeAnnouncement(id) {
       try {
         debug('开始点赞公告', {
@@ -7391,10 +6328,10 @@ if (missingDependencies.length > 0) {
         if (!(appId && viewId)) {
           echoLog({
             before: '[Web]'
-          }).error(`${I18n('missParams')}(id)`);
+          }).error(''.concat(I18n('missParams'), '(id)'));
           return false;
         }
-        const {clanId: clanId, gid: gid} = await this.#getAnnouncementParams(appId, viewId);
+        const {clanId: clanId, gid: gid} = await _assertClassBrand(_SteamWeb_brand, this, _getAnnouncementParams).call(this, appId, viewId);
         if (!clanId) {
           return false;
         }
@@ -7405,16 +6342,16 @@ if (missingDependencies.length > 0) {
           before: '[Web]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/updated/ajaxrateupdate/${gid || viewId}`,
+          url: 'https://store.steampowered.com/updated/ajaxrateupdate/'.concat(gid || viewId),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             Host: 'store.steampowered.com',
             Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
+            Referer: 'https://store.steampowered.com/news/app/'.concat(appId, '/view/').concat(viewId)
           },
           data: $.param({
-            sessionid: this.#auth.storeSessionID,
+            sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID,
             voteup: 1,
             clanid: clanId,
             ajax: 1
@@ -7425,14 +6362,14 @@ if (missingDependencies.length > 0) {
           debug('点赞公告请求失败', {
             result: result
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || data.response.success !== 1) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || data.response.success !== 1) {
           debug('点赞公告失败', {
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('成功点赞公告', {
@@ -7446,141 +6383,6 @@ if (missingDependencies.length > 0) {
           id: id
         });
         throwError(error, 'SteamWeb.likeAnnouncement');
-        return false;
-      }
-    }
-    async #appid2subid(id) {
-      try {
-        debug('开始将AppId转换为SubId', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingSubid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${id}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取App页面请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取App页面请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取App页面响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.responseText.includes('ds_owned_flag ds_flag') || data.responseText.includes('class="already_in_library"')) {
-          debug('App已拥有', {
-            id: id
-          });
-          logStatus.success(I18n('owned'));
-          return true;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，尝试更换地区', {
-            area: this.#area
-          });
-          logStatus.warning(I18n('changeAreaNotice'));
-          const result = await this.#changeArea();
-          if (!result || result === 'CN' || result === 'skip') {
-            debug('更换地区失败或未更换', {
-              result: result
-            });
-            return false;
-          }
-          return await this.#appid2subid(id);
-        }
-        let subid = data.responseText.match(/name="subid" value="([\d]+?)"/)?.[1];
-        debug('正则提取subid结果1', {
-          subid: subid
-        });
-        if (subid) {
-          logStatus.success();
-          return subid;
-        }
-        subid = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)?.[1];
-        debug('正则提取subid结果2', {
-          subid: subid
-        });
-        if (subid) {
-          logStatus.success();
-          return subid;
-        }
-        debug('未能提取到subid', {
-          id: id
-        });
-        logStatus.error(`Error:${I18n('noSubid')}`);
-        return false;
-      } catch (error) {
-        debug('AppId转SubId时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.appid2subid');
-        return false;
-      }
-    }
-    async #getLicenses() {
-      try {
-        debug('开始获取Steam用户许可证信息');
-        const logStatus = echoLog({
-          text: I18n('gettingLicenses'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/dynamicstore/userdata/?t=${(new Date).getTime()}`,
-          method: 'GET',
-          responseType: 'json'
-        });
-        debug('获取许可证请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取许可证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取许可证响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('获取到的许可证列表', {
-          licenses: data.response?.rgOwnedPackages
-        });
-        logStatus.remove();
-        return data.response?.rgOwnedPackages;
-      } catch (error) {
-        debug('获取许可证时发生异常', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.getLicenses');
         return false;
       }
     }
@@ -7604,7 +6406,7 @@ if (missingDependencies.length > 0) {
           debug('处理appid类型许可证', {
             ids: ids
           });
-          const subid = await this.#appid2subid(ids);
+          const subid = await _assertClassBrand(_SteamWeb_brand, this, _appid2subid).call(this, ids);
           debug('appid转换为subid结果', {
             appid: ids,
             subid: subid
@@ -7629,14 +6431,14 @@ if (missingDependencies.length > 0) {
           debug('开始添加免费许可证', {
             subid: subid
           });
-          if (!await this.#addFreeLicense(subid, logStatus)) {
+          if (!await _assertClassBrand(_SteamWeb_brand, this, _addFreeLicense).call(this, subid, logStatus)) {
             debug('添加免费许可证失败', {
               subid: subid
             });
             return false;
           }
           const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            url: `https://store.steampowered.com/app/${ids}`,
+            url: 'https://store.steampowered.com/app/'.concat(ids),
             method: 'GET'
           });
           debug('验证许可证添加状态', {
@@ -7650,15 +6452,15 @@ if (missingDependencies.length > 0) {
               status: status,
               statusText: statusText
             });
-            logStatus.error(`${result}:${statusText}(${status})`);
+            logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
             return false;
           }
-          if (data?.status !== 200) {
+          if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
             debug('验证响应状态错误', {
-              status: data?.status,
-              statusText: data?.statusText
+              status: data === null || data === void 0 ? void 0 : data.status,
+              statusText: data === null || data === void 0 ? void 0 : data.statusText
             });
-            logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+            logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
             return false;
           }
           if (!data.responseText.includes('ds_owned_flag ds_flag') && !data.responseText.includes('class="already_in_library"')) {
@@ -7666,7 +6468,7 @@ if (missingDependencies.length > 0) {
               status: data.status,
               statusText: data.statusText
             });
-            logStatus.error(`Error:${data.statusText}(${data.status})`);
+            logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
             return false;
           }
           debug('appid许可证添加成功', {
@@ -7675,14 +6477,14 @@ if (missingDependencies.length > 0) {
           logStatus.success();
           return true;
         }
-        if (this.#area === 'CN') {
+        if (_classPrivateFieldGet(_area, this) === 'CN') {
           debug('当前区域为CN，尝试更改区域', {
-            currentArea: this.#area
+            currentArea: _classPrivateFieldGet(_area, this)
           });
           echoLog({
             before: '[Web]'
           }).success(I18n('tryChangeAreaNotice'));
-          await this.#changeArea();
+          await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this);
         }
         const logStatusArr = {};
         const idsArr = ids.split(',');
@@ -7698,7 +6500,7 @@ if (missingDependencies.length > 0) {
             text: subid,
             before: '[Web]'
           });
-          if (!await this.#addFreeLicense(subid, logStatus)) {
+          if (!await _assertClassBrand(_SteamWeb_brand, this, _addFreeLicense).call(this, subid, logStatus)) {
             debug('添加subid许可证失败', {
               subid: subid
             });
@@ -7706,7 +6508,7 @@ if (missingDependencies.length > 0) {
           }
           logStatusArr[subid] = logStatus;
         }
-        const licenses = await this.#getLicenses();
+        const licenses = await _assertClassBrand(_SteamWeb_brand, this, _getLicenses).call(this);
         debug('获取许可证列表', {
           licenses: licenses
         });
@@ -7739,86 +6541,12 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #addFreeLicense(id, logStatusPre) {
-      try {
-        debug('开始添加免费Steam游戏许可证', {
-          id: id
-        });
-        const logStatus = logStatusPre || echoLog({
-          type: 'addingFreeLicenseSubid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/freelicense/addfreelicense/${id}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: 'https://store.steampowered.com/account/licenses/'
-          },
-          data: $.param({
-            ajax: true,
-            sessionid: this.#auth.storeSessionID
-          }),
-          dataType: 'json'
-        });
-        debug('添加免费许可证请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('添加免费许可证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('添加免费许可证响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，尝试更换地区', {
-            area: this.#area
-          });
-          logStatus.warning(I18n('changeAreaNotice'));
-          const result = await this.#changeArea();
-          if (!result || [ 'CN', 'skip' ].includes(result)) {
-            debug('更换地区失败或未更换', {
-              result: result
-            });
-            return false;
-          }
-          return await this.#addFreeLicense(id);
-        }
-        debug('成功添加免费许可证', {
-          id: id
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('添加免费许可证时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.addFreeLicense');
-        return false;
-      }
-    }
     async requestPlayTestAccess(id) {
       debug('开始请求游戏试玩权限', {
         id: id
       });
       try {
+        var _data$response78;
         debug('开始请求游戏试玩权限', {
           id: id
         });
@@ -7831,16 +6559,16 @@ if (missingDependencies.length > 0) {
           id: id
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/ajaxrequestplaytestaccess/${id}`,
+          url: 'https://store.steampowered.com/ajaxrequestplaytestaccess/'.concat(id),
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             Host: 'store.steampowered.com',
             Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/app/${id}`
+            Referer: 'https://store.steampowered.com/app/'.concat(id)
           },
           data: $.param({
-            sessionid: this.#auth.storeSessionID
+            sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
           }),
           dataType: 'json'
         });
@@ -7856,16 +6584,17 @@ if (missingDependencies.length > 0) {
             status: status,
             statusText: statusText
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || data?.response?.success !== 1) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response78 = data.response) === null || _data$response78 === void 0 ? void 0 : _data$response78.success) !== 1) {
+          var _data$response79;
           debug('响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            success: data?.response?.success
+            status: data === null || data === void 0 ? void 0 : data.status,
+            statusText: data === null || data === void 0 ? void 0 : data.statusText,
+            success: data === null || data === void 0 || (_data$response79 = data.response) === null || _data$response79 === void 0 ? void 0 : _data$response79.success
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('成功请求游戏试玩权限', {
@@ -7885,27 +6614,27 @@ if (missingDependencies.length > 0) {
     async resetArea() {
       try {
         debug('检查区域设置状态', {
-          currentArea: this.#area,
-          oldArea: this.#oldArea,
-          needReset: Boolean(this.#oldArea && this.#area !== this.#oldArea)
+          currentArea: _classPrivateFieldGet(_area, this),
+          oldArea: _classPrivateFieldGet(_oldArea, this),
+          needReset: Boolean(_classPrivateFieldGet(_oldArea, this) && _classPrivateFieldGet(_area, this) !== _classPrivateFieldGet(_oldArea, this))
         });
-        if (this.#oldArea && this.#area !== this.#oldArea) {
+        if (_classPrivateFieldGet(_oldArea, this) && _classPrivateFieldGet(_area, this) !== _classPrivateFieldGet(_oldArea, this)) {
           debug('需要重置区域', {
-            fromArea: this.#area,
-            toArea: this.#oldArea
+            fromArea: _classPrivateFieldGet(_area, this),
+            toArea: _classPrivateFieldGet(_oldArea, this)
           });
           echoLog({
             before: '[Web]'
-          }).warning(I18n('steamFinishNotice') + this.#oldArea);
-          const changeResult = await this.#changeArea(this.#oldArea);
+          }).warning(I18n('steamFinishNotice') + _classPrivateFieldGet(_oldArea, this));
+          const changeResult = await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this, _classPrivateFieldGet(_oldArea, this));
           debug('区域重置结果', {
             success: changeResult,
-            targetArea: this.#oldArea
+            targetArea: _classPrivateFieldGet(_oldArea, this)
           });
         } else {
           debug('无需重置区域', {
-            currentArea: this.#area,
-            oldArea: this.#oldArea
+            currentArea: _classPrivateFieldGet(_area, this),
+            oldArea: _classPrivateFieldGet(_oldArea, this)
           });
         }
         debug('区域重置流程完成');
@@ -7918,47 +6647,1307 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #setCache(type, name, id) {
-      try {
-        debug('开始设置缓存', {
-          type: type,
-          name: name,
-          id: id
+  }
+  async function _refreshToken() {
+    let type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'steamStore';
+    try {
+      var _data$response106;
+      debug('开始刷新令牌', {
+        type: type
+      });
+      const host = {
+        steamStore: 'store.steampowered.com',
+        steamCommunity: 'steamcommunity.com'
+      };
+      const logStatus = echoLog({
+        text: I18n('refreshingToken', I18n(type)),
+        before: '[Web]'
+      });
+      debug('准备刷新令牌请求数据');
+      const formData = new FormData;
+      formData.append('redir', 'https://'.concat(host[type], '/'));
+      debug('发送刷新令牌请求');
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://login.steampowered.com/jwt/ajaxrefresh',
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          Host: 'login.steampowered.com',
+          Origin: 'https://'.concat(host[type]),
+          Referer: 'https://'.concat(host[type], '/')
+        },
+        data: formData
+      });
+      debug('收到刷新令牌响应', {
+        result: result,
+        status: status,
+        statusText: statusText
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
         });
-        this.#cache[type][name] = id;
-        GM_setValue('steamCache', this.#cache);
-        debug('设置缓存成功', {
-          type: type,
-          name: name,
-          id: id
-        });
-      } catch (error) {
-        debug('设置缓存时发生异常', {
-          error: error,
-          type: type,
-          name: name,
-          id: id
-        });
-        throwError(error, 'SteamWeb.setCache');
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
       }
+      if (!(data !== null && data !== void 0 && (_data$response106 = data.response) !== null && _data$response106 !== void 0 && _data$response106.success)) {
+        debug('响应不成功', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('开始设置新令牌');
+      if (!await _assertClassBrand(_SteamWeb_brand, this, _setToken).call(this, data.response, type)) {
+        debug('设置新令牌失败');
+        logStatus.error('Error');
+        return false;
+      }
+      debug('成功刷新令牌');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('刷新令牌时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.refreshToken');
+      return false;
     }
   }
+  async function _setToken(param, type) {
+    try {
+      const host = {
+        steamStore: 'store.steampowered.com',
+        steamCommunity: 'steamcommunity.com'
+      };
+      debug('开始设置Steam令牌', {
+        type: type
+      });
+      const logStatus = echoLog({
+        text: I18n('settingToken', I18n(type)),
+        before: '[Web]'
+      });
+      debug('准备表单数据');
+      const formData = new FormData;
+      formData.append('steamID', param.steamID);
+      formData.append('nonce', param.nonce);
+      formData.append('redir', param.redir);
+      formData.append('auth', param.auth);
+      debug('表单数据准备完成', {
+        steamID: param.steamID,
+        nonce: param.nonce,
+        redir: param.redir
+      });
+      debug('发送设置令牌请求');
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://'.concat(host[type], '/login/settoken'),
+        method: 'POST',
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          Host: host[type],
+          Origin: 'https://'.concat(host[type])
+        },
+        data: formData
+      });
+      debug('收到设置令牌响应', {
+        result: result,
+        status: status,
+        statusText: statusText
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('成功设置令牌');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('设置令牌时发生错误', {
+        error: error,
+        type: type
+      });
+      throwError(error, 'SteamWeb.setToken');
+      return false;
+    }
+  }
+  async function _updateStoreAuth() {
+    let retry = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    try {
+      var _data$responseText$ma18;
+      debug('开始更新Steam商店身份验证');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', I18n('steamStore')),
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/',
+        method: 'GET',
+        headers: {
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate',
+          'Upgrade-Insecure-Requests': '1'
+        },
+        redirect: 'manual'
+      });
+      debug('收到Steam商店身份验证响应', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        if (![ 301, 302 ].includes(data === null || data === void 0 ? void 0 : data.status)) {
+          debug('Steam商店身份验证状态错误', {
+            status: data === null || data === void 0 ? void 0 : data.status
+          });
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+          return false;
+        }
+        if (!await _assertClassBrand(_SteamWeb_brand, this, _refreshToken).call(this, 'steamStore')) {
+          debug('Steam商店身份验证刷新失败');
+          logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
+          return false;
+        }
+        if (retry) {
+          debug('Steam商店身份验证重试失败');
+          logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
+          return false;
+        }
+        debug('Steam商店身份验证重试中');
+        logStatus.warning(I18n('retry'));
+        return _assertClassBrand(_SteamWeb_brand, this, _updateStoreAuth).call(this, true);
+      }
+      if (!data.responseText.includes('data-miniprofile=')) {
+        if (await _assertClassBrand(_SteamWeb_brand, this, _refreshToken).call(this, 'steamStore')) {
+          debug('Steam商店身份验证需要重试');
+          logStatus.warning(I18n('retry'));
+          if (retry) {
+            debug('Steam商店身份验证重试次数超限');
+            logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
+            return false;
+          }
+          return _assertClassBrand(_SteamWeb_brand, this, _updateStoreAuth).call(this, true);
+        }
+        debug('Steam商店身份验证失败：需要登录');
+        logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
+        return false;
+      }
+      const storeSessionID = (_data$responseText$ma18 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1];
+      if (!storeSessionID) {
+        debug('Steam商店身份验证失败：获取sessionID失败');
+        logStatus.error('Error: Get "sessionID" failed');
+        return false;
+      }
+      _classPrivateFieldGet(_auth5, this).storeSessionID = storeSessionID;
+      debug('Steam商店身份验证更新成功', {
+        storeSessionID: storeSessionID
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('更新Steam商店身份验证时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.updateStoreAuth');
+      return false;
+    }
+  }
+  async function _updateStoreAuthTab() {
+    try {
+      debug('开始通过新标签页更新Steam商店身份验证');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', I18n('steamStoreTab')),
+        before: '[Web]'
+      });
+      return await new Promise((resolve => {
+        GM_deleteValue('steamStoreAuth');
+        GM_setValue('ATv4_updateStoreAuth', true);
+        const newTab = GM_openInTab('https://store.steampowered.com/', {
+          active: true,
+          setParent: true
+        });
+        debug('打开Steam商店新标签页');
+        newTab.name = 'ATv4_updateStoreAuth';
+        const listenerId = GM_addValueChangeListener('steamStoreAuth', ((key, oldValue, newValue) => {
+          debug('监听到Steam商店身份验证值变化', {
+            oldValue: oldValue,
+            newValue: newValue
+          });
+          GM_removeValueChangeListener(listenerId);
+          GM_deleteValue('ATv4_updateStoreAuth');
+          newTab === null || newTab === void 0 || newTab.close();
+          window.focus();
+          if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
+            _classPrivateFieldGet(_auth5, this).storeSessionID = newValue.storeSessionID;
+            debug('Steam商店身份验证更新成功', {
+              storeSessionID: newValue.storeSessionID
+            });
+            logStatus.success();
+            resolve(true);
+            return;
+          }
+          debug('Steam商店身份验证更新失败');
+          logStatus.error('Failed');
+          resolve(false);
+        }));
+        newTab.onclose = () => {
+          debug('Steam商店新标签页已关闭');
+          GM_deleteValue('ATv4_updateStoreAuth');
+        };
+      }));
+    } catch (error) {
+      debug('通过新标签页更新Steam商店身份验证时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.updateStoreAuthTab');
+      return false;
+    }
+  }
+  async function _updateCommunityAuthTab() {
+    try {
+      debug('开始通过新标签页更新Steam社区身份验证');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', I18n('steamCommunityTab')),
+        before: '[Web]'
+      });
+      return await new Promise((resolve => {
+        GM_deleteValue('steamCommunityAuth');
+        GM_setValue('ATv4_updateCommunityAuth', true);
+        const newTab = GM_openInTab('https://steamcommunity.com/my', {
+          active: true,
+          setParent: true
+        });
+        debug('打开Steam社区新标签页');
+        newTab.name = 'ATv4_updateCommunityAuth';
+        const listenerId = GM_addValueChangeListener('steamCommunityAuth', ((key, oldValue, newValue) => {
+          debug('监听到Steam社区身份验证值变化', {
+            oldValue: oldValue,
+            newValue: newValue
+          });
+          GM_removeValueChangeListener(listenerId);
+          GM_deleteValue('ATv4_updateCommunityAuth');
+          newTab === null || newTab === void 0 || newTab.close();
+          window.focus();
+          if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
+            _classPrivateFieldGet(_auth5, this).steam64Id = newValue.steam64Id;
+            _classPrivateFieldGet(_auth5, this).communitySessionID = newValue.communitySessionID;
+            debug('Steam社区身份验证更新成功', {
+              steam64Id: newValue.steam64Id,
+              communitySessionID: newValue.communitySessionID
+            });
+            logStatus.success();
+            resolve(true);
+            return;
+          }
+          debug('Steam社区身份验证更新失败');
+          logStatus.error('Failed');
+          resolve(false);
+        }));
+        newTab.onclose = () => {
+          debug('Steam社区新标签页已关闭');
+          GM_deleteValue('ATv4_updateCommunityAuth');
+        };
+      }));
+    } catch (error) {
+      debug('通过新标签页更新Steam社区身份验证时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.updateCommunityAuthTab');
+      return false;
+    }
+  }
+  async function _updateCommunityAuth(initStoreResult) {
+    let retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    try {
+      var _data$responseText$ma19, _data$responseText$ma20;
+      debug('开始更新Steam社区身份验证');
+      const logStatus = echoLog({
+        text: I18n('gettingUserInfo'),
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://steamcommunity.com/my',
+        method: 'GET',
+        headers: {
+          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+          Host: 'steamcommunity.com',
+          'Sec-Fetch-Dest': 'document',
+          'Sec-Fetch-Mode': 'navigate'
+        },
+        redirect: 'follow'
+      });
+      debug('收到Steam社区身份验证响应', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Steam社区身份验证状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if (data.finalUrl.includes('https://steamcommunity.com/login/home')) {
+        if (initStoreResult) {
+          if (await _assertClassBrand(_SteamWeb_brand, this, _refreshToken).call(this, 'steamCommunity')) {
+            debug('Steam社区身份验证需要重试');
+            logStatus.warning(I18n('retry'));
+            if (retry) {
+              debug('Steam社区身份验证重试次数超限');
+              logStatus.error('Error:'.concat(I18n('needLoginSteamCommunity')), true);
+              return false;
+            }
+            return _assertClassBrand(_SteamWeb_brand, this, _updateCommunityAuth).call(this, initStoreResult, retry);
+          }
+        }
+        debug('Steam社区身份验证失败：需要登录');
+        logStatus.error('Error:'.concat(I18n('needLoginSteamCommunity')), true);
+        return false;
+      }
+      const steam64Id = (_data$responseText$ma19 = data.responseText.match(/g_steamID = "(.+?)";/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1];
+      const communitySessionID = (_data$responseText$ma20 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1];
+      if (!steam64Id || !communitySessionID) {
+        debug('Steam社区身份验证失败：获取身份信息失败');
+        logStatus.error('Error: Get "sessionID" failed');
+        return false;
+      }
+      _classPrivateFieldGet(_auth5, this).steam64Id = steam64Id;
+      _classPrivateFieldGet(_auth5, this).communitySessionID = communitySessionID;
+      debug('Steam社区身份验证更新成功', {
+        steam64Id: steam64Id,
+        communitySessionID: communitySessionID
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('更新Steam社区身份验证时发生错误', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.updateCommunityAuth');
+      return false;
+    }
+  }
+  async function _getAreaInfo() {
+    try {
+      var _data$responseText$ma21, _data$responseText$ma22;
+      debug('开始获取Steam地区信息');
+      const logStatus = echoLog({
+        text: I18n('gettingAreaInfo'),
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/cart/',
+        method: 'GET'
+      });
+      debug('获取地区信息请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取地区信息失败', {
+          result: result,
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error(result === 'Success' ? 'Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')') : ''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return {};
+      }
+      const cartConfigRaw = (_data$responseText$ma21 = data.responseText.match(/data-cart_config="(.*?)"/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[1];
+      debug('cartConfigRaw提取结果', {
+        cartConfigRaw: cartConfigRaw
+      });
+      const temp = document.createElement('div');
+      temp.innerHTML = cartConfigRaw || '{}';
+      const cartConfigStr = temp.textContent || temp.innerText;
+      let cartConfig;
+      try {
+        cartConfig = JSON.parse(cartConfigStr);
+        debug('cartConfig解析成功', {
+          cartConfig: cartConfig
+        });
+      } catch (error) {
+        debug('cartConfig解析失败', {
+          error: error
+        });
+        logStatus.error('Error: get country info filed');
+        console.error(error);
+        return {};
+      }
+      if (!cartConfig.rgUserCountryOptions) {
+        debug('未找到可更换地区');
+        logStatus.warning('Warning: Area cannot be changed');
+        return {};
+      }
+      const userInfoRaw = (_data$responseText$ma22 = data.responseText.match(/data-userinfo="(.*?)"/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1];
+      debug('userInfoRaw提取结果', {
+        userInfoRaw: userInfoRaw
+      });
+      const temp1 = document.createElement('div');
+      temp1.innerHTML = userInfoRaw || '{}';
+      const userInfoStr = temp1.textContent || temp1.innerText;
+      let userInfo;
+      try {
+        userInfo = JSON.parse(userInfoStr);
+        debug('userInfo解析成功', {
+          userInfo: userInfo
+        });
+      } catch (error) {
+        debug('userInfo解析失败', {
+          error: error
+        });
+        logStatus.error('Error: get country info filed');
+        console.error(error);
+        return {};
+      }
+      const currentArea = userInfo.country_code;
+      const areas = Object.keys(cartConfig.rgUserCountryOptions).filter((area => area !== 'help'));
+      debug('地区信息提取', {
+        currentArea: currentArea,
+        areas: areas
+      });
+      if (!currentArea || areas.length === 0) {
+        debug('未获取到当前地区或可更换地区为空', {
+          currentArea: currentArea,
+          areas: areas
+        });
+        logStatus.error('Error: get country info filed');
+        return {};
+      }
+      _classPrivateFieldSet(_area, this, currentArea);
+      debug('获取地区信息成功', {
+        currentArea: currentArea,
+        areas: areas
+      });
+      logStatus.success();
+      return {
+        currentArea: currentArea,
+        areas: areas
+      };
+    } catch (error) {
+      debug('获取地区信息时发生异常', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.getAreaInfo');
+      return {};
+    }
+  }
+  async function _changeArea(area) {
+    try {
+      debug('开始更换Steam地区', {
+        area: area
+      });
+      if (_classPrivateFieldGet(_areaStatus, this) === 'waiting') {
+        debug('当前地区状态为waiting，等待状态改变');
+        await new Promise((resolve => {
+          const checker = setInterval((() => {
+            if (_classPrivateFieldGet(_areaStatus, this) !== 'waiting') {
+              clearInterval(checker);
+              resolve(true);
+            }
+          }));
+        }));
+      }
+      if (_classPrivateFieldGet(_area, this) === area || !area && _classPrivateFieldGet(_area, this) !== 'CN') {
+        debug('无需更换地区', {
+          currentArea: _classPrivateFieldGet(_area, this),
+          targetArea: area
+        });
+        return true;
+      }
+      _classPrivateFieldSet(_areaStatus, this, 'waiting');
+      let aimedArea = area;
+      if (!aimedArea) {
+        debug('未指定目标地区，自动获取可用地区');
+        const {currentArea: currentArea, areas: areas} = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this);
+        debug('获取到地区信息', {
+          currentArea: currentArea,
+          areas: areas
+        });
+        if (!currentArea || !areas) {
+          debug('获取地区信息失败', {
+            currentArea: currentArea,
+            areas: areas
+          });
+          _classPrivateFieldSet(_areaStatus, this, 'error');
+          return false;
+        }
+        if (currentArea !== 'CN') {
+          debug('当前地区不是CN，无需更换', {
+            currentArea: currentArea
+          });
+          _classPrivateFieldSet(_areaStatus, this, 'skip');
+          echoLog({
+            text: I18n('notNeededChangeArea'),
+            before: '[Web]'
+          });
+          return 'skip';
+        }
+        const anotherArea = areas.filter((area => area && area !== 'CN'));
+        debug('可更换的其他地区', {
+          anotherArea: anotherArea
+        });
+        if (!anotherArea || anotherArea.length === 0) {
+          debug('没有可用的其他地区');
+          _classPrivateFieldSet(_areaStatus, this, 'noAnotherArea');
+          echoLog({
+            text: I18n('noAnotherArea'),
+            before: '[Web]'
+          });
+          return false;
+        }
+        [aimedArea] = anotherArea;
+        debug('选定目标地区', {
+          aimedArea: aimedArea
+        });
+      }
+      const logStatus = echoLog({
+        text: I18n('changingArea', aimedArea),
+        before: '[Web]'
+      });
+      debug('发送更换地区请求', {
+        aimedArea: aimedArea
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/country/setcountry',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: $.param({
+          cc: aimedArea,
+          sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
+        })
+      });
+      debug('更换地区请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200 || data.responseText !== 'true') {
+        debug('更换地区失败', {
+          result: result,
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText,
+          responseText: data === null || data === void 0 ? void 0 : data.responseText
+        });
+        _classPrivateFieldSet(_areaStatus, this, 'error');
+        logStatus.error(result === 'Success' ? 'Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')') : ''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return 'CN';
+      }
+      const {currentArea: currentArea} = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this);
+      debug('更换后获取到的当前地区', {
+        currentArea: currentArea
+      });
+      if (currentArea) {
+        _classPrivateFieldSet(_area, this, currentArea);
+        if (!_classPrivateFieldGet(_oldArea, this)) {
+          _classPrivateFieldSet(_oldArea, this, currentArea);
+        }
+      }
+      if (currentArea !== aimedArea) {
+        debug('更换后当前地区与目标地区不符', {
+          currentArea: currentArea,
+          aimedArea: aimedArea
+        });
+        _classPrivateFieldSet(_areaStatus, this, 'error');
+        logStatus.error('Error: change country filed');
+        return 'CN';
+      }
+      _classPrivateFieldSet(_areaStatus, this, 'success');
+      debug('更换地区成功', {
+        currentArea: currentArea
+      });
+      logStatus.success();
+      return currentArea;
+    } catch (error) {
+      debug('更换地区时发生异常', {
+        error: error
+      });
+      _classPrivateFieldSet(_areaStatus, this, 'error');
+      throwError(error, 'SteamWeb.changeArea');
+      return false;
+    }
+  }
+  async function _getGroupId2(groupName) {
+    try {
+      var _data$responseText$ma23;
+      debug('开始获取Steam组ID', {
+        groupName: groupName
+      });
+      const logStatus = echoLog({
+        type: 'gettingSteamGroupId',
+        text: groupName,
+        before: '[Web]'
+      });
+      const cachedGroupId = _classPrivateFieldGet(_cache4, this).group[groupName];
+      if (cachedGroupId) {
+        debug('从缓存中获取到组ID', {
+          groupName: groupName,
+          cachedGroupId: cachedGroupId
+        });
+        logStatus.success();
+        return cachedGroupId;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://steamcommunity.com/groups/'.concat(groupName),
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+      });
+      debug('获取组ID请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取组ID请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取组ID响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const matchedGroupId = (_data$responseText$ma23 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma23 === void 0 ? void 0 : _data$responseText$ma23[1];
+      debug('正则提取组ID结果', {
+        matchedGroupId: matchedGroupId
+      });
+      if (!matchedGroupId) {
+        debug('未能提取到组ID', {
+          groupName: groupName
+        });
+        logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
+        return false;
+      }
+      _assertClassBrand(_SteamWeb_brand, this, _setCache4).call(this, 'group', groupName, matchedGroupId);
+      debug('组ID已缓存', {
+        groupName: groupName,
+        matchedGroupId: matchedGroupId
+      });
+      logStatus.success();
+      return matchedGroupId;
+    } catch (error) {
+      debug('获取组ID时发生异常', {
+        error: error,
+        groupName: groupName
+      });
+      throwError(error, 'SteamWeb.getGroupID');
+      return false;
+    }
+  }
+  async function _getOfficialGroupId(gameId) {
+    try {
+      var _data$responseText$ma24;
+      debug('开始获取Steam官方群组ID', {
+        gameId: gameId
+      });
+      const logStatus = echoLog({
+        type: 'gettingSteamOfficialGroupId',
+        text: gameId,
+        before: '[Web]'
+      });
+      const cachedGroupId = _classPrivateFieldGet(_cache4, this).officialGroup[gameId];
+      if (cachedGroupId) {
+        debug('从缓存中获取到官方群组ID', {
+          gameId: gameId,
+          cachedGroupId: cachedGroupId
+        });
+        logStatus.success();
+        return cachedGroupId;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://steamcommunity.com/games/'.concat(gameId),
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+      });
+      debug('获取官方群组ID请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取官方群组ID请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取官方群组ID响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const matchedGroupId = (_data$responseText$ma24 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma24 === void 0 ? void 0 : _data$responseText$ma24[1];
+      debug('正则提取官方群组ID结果', {
+        matchedGroupId: matchedGroupId
+      });
+      if (!matchedGroupId) {
+        debug('未能提取到官方群组ID', {
+          gameId: gameId
+        });
+        logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
+        return false;
+      }
+      _assertClassBrand(_SteamWeb_brand, this, _setCache4).call(this, 'officialGroup', gameId, matchedGroupId);
+      debug('官方群组ID已缓存', {
+        gameId: gameId,
+        matchedGroupId: matchedGroupId
+      });
+      logStatus.success();
+      return matchedGroupId;
+    } catch (error) {
+      debug('获取官方群组ID时发生异常', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'SteamWeb.getGroupID');
+      return false;
+    }
+  }
+  async function _isFollowedGame(gameId) {
+    try {
+      debug('开始判断Steam游戏是否已关注', {
+        gameId: gameId
+      });
+      const {result: result, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/app/'.concat(gameId),
+        method: 'GET'
+      });
+      debug('获取游戏页面请求结果', {
+        result: result,
+        status: data === null || data === void 0 ? void 0 : data.status
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result
+        });
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status
+        });
+        return false;
+      }
+      if (_classPrivateFieldGet(_area, this) === 'CN' && data.responseText.includes('id="error_box"')) {
+        debug('地区锁定，返回areaLocked', {
+          area: _classPrivateFieldGet(_area, this)
+        });
+        return 'areaLocked';
+      }
+      const isFollowed = $(data.responseText.replace(/<img.*?>/g, '')).find('.queue_control_button.queue_btn_follow>.btnv6_blue_hoverfade.btn_medium.queue_btn_active').css('display') !== 'none';
+      debug('关注状态判断结果', {
+        isFollowed: isFollowed
+      });
+      return isFollowed;
+    } catch (error) {
+      debug('判断游戏关注状态时发生异常', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'SteamWeb.isFollowedGame');
+      return false;
+    }
+  }
+  async function _getForumId(gameId) {
+    try {
+      var _data$responseText3;
+      debug('开始获取Steam论坛ID', {
+        gameId: gameId
+      });
+      const logStatus = echoLog({
+        type: 'gettingForumId',
+        text: gameId,
+        before: '[Web]'
+      });
+      const cachedForumId = _classPrivateFieldGet(_cache4, this).forum[gameId];
+      if (cachedForumId) {
+        debug('从缓存中获取到论坛ID', {
+          gameId: gameId,
+          cachedForumId: cachedForumId
+        });
+        logStatus.success();
+        return cachedForumId;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://steamcommunity.com/app/'.concat(gameId, '/discussions/'),
+        method: 'GET'
+      });
+      debug('获取论坛ID请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取论坛ID请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取论坛ID响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const matchedForumId = (_data$responseText3 = data.responseText) === null || _data$responseText3 === void 0 || (_data$responseText3 = _data$responseText3.match(/General_([\d]+(_[\d]+)?)/)) === null || _data$responseText3 === void 0 ? void 0 : _data$responseText3[1];
+      debug('正则提取论坛ID结果', {
+        matchedForumId: matchedForumId
+      });
+      if (!matchedForumId) {
+        debug('未能提取到论坛ID', {
+          gameId: gameId
+        });
+        logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
+        return false;
+      }
+      _assertClassBrand(_SteamWeb_brand, this, _setCache4).call(this, 'forum', gameId, matchedForumId);
+      debug('论坛ID已缓存', {
+        gameId: gameId,
+        matchedForumId: matchedForumId
+      });
+      logStatus.success();
+      return matchedForumId;
+    } catch (error) {
+      debug('获取论坛ID时发生异常', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'SteamWeb.getForumId');
+      return false;
+    }
+  }
+  async function _getWorkshopAppId(id) {
+    try {
+      var _data$responseText$ma25;
+      debug('开始获取Steam创意工坊AppId', {
+        id: id
+      });
+      const logStatus = echoLog({
+        type: 'gettingWorkshopAppId',
+        text: id,
+        before: '[Web]'
+      });
+      const cachedAppId = _classPrivateFieldGet(_cache4, this).workshop[id];
+      if (cachedAppId) {
+        debug('从缓存中获取到AppId', {
+          id: id,
+          cachedAppId: cachedAppId
+        });
+        logStatus.success();
+        return cachedAppId;
+      }
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(id),
+        method: 'GET'
+      });
+      debug('获取创意工坊AppId请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取创意工坊AppId请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取创意工坊AppId响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const matchedAppId = (_data$responseText$ma25 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma25 === void 0 ? void 0 : _data$responseText$ma25[1];
+      debug('正则提取AppId结果', {
+        matchedAppId: matchedAppId
+      });
+      if (!matchedAppId) {
+        debug('未能提取到AppId', {
+          id: id
+        });
+        logStatus.error('Error: getWorkshopAppId failed');
+        return false;
+      }
+      debug('AppId已缓存', {
+        id: id,
+        matchedAppId: matchedAppId
+      });
+      return matchedAppId;
+    } catch (error) {
+      debug('获取创意工坊AppId时发生异常', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'SteamWeb.getWorkshopAppId');
+      return false;
+    }
+  }
+  async function _getAnnouncementParams(appId, viewId) {
+    try {
+      var _data$response107, _data$response$event;
+      debug('开始获取Steam公告参数', {
+        appId: appId,
+        viewId: viewId
+      });
+      const logStatus = echoLog({
+        type: 'gettingAnnouncementParams',
+        text: appId,
+        id: viewId,
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/events/ajaxgetpartnerevent?appid='.concat(appId, '&announcement_gid=').concat(viewId, '&lang_list=6_0&last_modified_time=0&origin=https:%2F%2Fstore.steampowered.com&for_edit=false'),
+        method: 'GET',
+        responseType: 'json',
+        headers: {
+          Host: 'store.steampowered.com',
+          Referer: 'https://store.steampowered.com/news/app/'.concat(appId, '/view/').concat(viewId)
+        }
+      });
+      debug('获取公告参数请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取公告参数请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return {};
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response107 = data.response) === null || _data$response107 === void 0 ? void 0 : _data$response107.success) !== 1) {
+        debug('获取公告参数响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText,
+          response: data === null || data === void 0 ? void 0 : data.response
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return {};
+      }
+      const {clanid: clanid, gid: gid} = ((_data$response$event = data.response.event) === null || _data$response$event === void 0 ? void 0 : _data$response$event.announcement_body) || {};
+      debug('公告参数提取', {
+        clanid: clanid,
+        gid: gid
+      });
+      if (!clanid) {
+        debug('未能提取到clanid', {
+          appId: appId,
+          viewId: viewId
+        });
+        logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
+        return {};
+      }
+      logStatus.success();
+      debug('获取公告参数成功', {
+        clanId: clanid,
+        gid: gid
+      });
+      return {
+        clanId: clanid,
+        gid: gid
+      };
+    } catch (error) {
+      debug('获取公告参数时发生异常', {
+        error: error,
+        appId: appId,
+        viewId: viewId
+      });
+      throwError(error, 'SteamWeb.likeAnnouncement');
+      return {};
+    }
+  }
+  async function _appid2subid(id) {
+    try {
+      var _data$responseText$ma26, _data$responseText$ma27;
+      debug('开始将AppId转换为SubId', {
+        id: id
+      });
+      const logStatus = echoLog({
+        type: 'gettingSubid',
+        text: id,
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/app/'.concat(id),
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+      });
+      debug('获取App页面请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取App页面请求失败', {
+          result: result
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取App页面响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if (data.responseText.includes('ds_owned_flag ds_flag') || data.responseText.includes('class="already_in_library"')) {
+        debug('App已拥有', {
+          id: id
+        });
+        logStatus.success(I18n('owned'));
+        return true;
+      }
+      if (_classPrivateFieldGet(_area, this) === 'CN' && data.responseText.includes('id="error_box"')) {
+        debug('地区锁定，尝试更换地区', {
+          area: _classPrivateFieldGet(_area, this)
+        });
+        logStatus.warning(I18n('changeAreaNotice'));
+        const result = await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this);
+        if (!result || result === 'CN' || result === 'skip') {
+          debug('更换地区失败或未更换', {
+            result: result
+          });
+          return false;
+        }
+        return await _assertClassBrand(_SteamWeb_brand, this, _appid2subid).call(this, id);
+      }
+      let subid = (_data$responseText$ma26 = data.responseText.match(/name="subid" value="([\d]+?)"/)) === null || _data$responseText$ma26 === void 0 ? void 0 : _data$responseText$ma26[1];
+      debug('正则提取subid结果1', {
+        subid: subid
+      });
+      if (subid) {
+        logStatus.success();
+        return subid;
+      }
+      subid = (_data$responseText$ma27 = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)) === null || _data$responseText$ma27 === void 0 ? void 0 : _data$responseText$ma27[1];
+      debug('正则提取subid结果2', {
+        subid: subid
+      });
+      if (subid) {
+        logStatus.success();
+        return subid;
+      }
+      debug('未能提取到subid', {
+        id: id
+      });
+      logStatus.error('Error:'.concat(I18n('noSubid')));
+      return false;
+    } catch (error) {
+      debug('AppId转SubId时发生异常', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'SteamWeb.appid2subid');
+      return false;
+    }
+  }
+  async function _getLicenses() {
+    try {
+      var _data$response108, _data$response109;
+      debug('开始获取Steam用户许可证信息');
+      const logStatus = echoLog({
+        text: I18n('gettingLicenses'),
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/dynamicstore/userdata/?t='.concat((new Date).getTime()),
+        method: 'GET',
+        responseType: 'json'
+      });
+      debug('获取许可证请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('获取许可证请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('获取许可证响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('获取到的许可证列表', {
+        licenses: (_data$response108 = data.response) === null || _data$response108 === void 0 ? void 0 : _data$response108.rgOwnedPackages
+      });
+      logStatus.remove();
+      return (_data$response109 = data.response) === null || _data$response109 === void 0 ? void 0 : _data$response109.rgOwnedPackages;
+    } catch (error) {
+      debug('获取许可证时发生异常', {
+        error: error
+      });
+      throwError(error, 'SteamWeb.getLicenses');
+      return false;
+    }
+  }
+  async function _addFreeLicense(id, logStatusPre) {
+    try {
+      debug('开始添加免费Steam游戏许可证', {
+        id: id
+      });
+      const logStatus = logStatusPre || echoLog({
+        type: 'addingFreeLicenseSubid',
+        text: id,
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/freelicense/addfreelicense/'.concat(id),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Host: 'store.steampowered.com',
+          Origin: 'https://store.steampowered.com',
+          Referer: 'https://store.steampowered.com/account/licenses/'
+        },
+        data: $.param({
+          ajax: true,
+          sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
+        }),
+        dataType: 'json'
+      });
+      debug('添加免费许可证请求结果', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      if (result !== 'Success') {
+        debug('添加免费许可证请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('添加免费许可证响应状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if (_classPrivateFieldGet(_area, this) === 'CN' && data.responseText.includes('id="error_box"')) {
+        debug('地区锁定，尝试更换地区', {
+          area: _classPrivateFieldGet(_area, this)
+        });
+        logStatus.warning(I18n('changeAreaNotice'));
+        const result = await _assertClassBrand(_SteamWeb_brand, this, _changeArea).call(this);
+        if (!result || [ 'CN', 'skip' ].includes(result)) {
+          debug('更换地区失败或未更换', {
+            result: result
+          });
+          return false;
+        }
+        return await _assertClassBrand(_SteamWeb_brand, this, _addFreeLicense).call(this, id);
+      }
+      debug('成功添加免费许可证', {
+        id: id
+      });
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('添加免费许可证时发生异常', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'SteamWeb.addFreeLicense');
+      return false;
+    }
+  }
+  function _setCache4(type, name, id) {
+    try {
+      debug('开始设置缓存', {
+        type: type,
+        name: name,
+        id: id
+      });
+      _classPrivateFieldGet(_cache4, this)[type][name] = id;
+      GM_setValue('steamCache', _classPrivateFieldGet(_cache4, this));
+      debug('设置缓存成功', {
+        type: type,
+        name: name,
+        id: id
+      });
+    } catch (error) {
+      debug('设置缓存时发生异常', {
+        error: error,
+        type: type,
+        name: name,
+        id: id
+      });
+      throwError(error, 'SteamWeb.setCache');
+    }
+  }
+  var _cache5 = new WeakMap;
+  var _TaskExecutor = new WeakMap;
+  var _Steam_brand = new WeakSet;
   class Steam extends Social {
-    tasks;
-    whiteList;
-    #cache={
-      ...{
+    constructor() {
+      var _GM_getValue6;
+      super();
+      _classPrivateMethodInitSpec(this, _Steam_brand);
+      _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'whiteList', void 0);
+      _classPrivateFieldInitSpec(this, _cache5, _objectSpread(_objectSpread({}, {
         group: {},
         officialGroup: {},
         forum: {},
         workshop: {},
         curator: {}
-      },
-      ...GM_getValue('steamCache')
-    };
-    #TaskExecutor=[];
-    constructor() {
-      super();
+      }), GM_getValue('steamCache')));
+      _classPrivateFieldInitSpec(this, _TaskExecutor, []);
       debug('初始化Steam实例');
       const defaultTasksTemplate = {
         groups: [],
@@ -7976,13 +7965,10 @@ if (missingDependencies.length > 0) {
         playTime: []
       };
       this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.steam || {}
-      };
-      this.#TaskExecutor = this.#getTaskExecutionOrder(globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF);
+      this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue6 = GM_getValue('whiteList')) === null || _GM_getValue6 === void 0 ? void 0 : _GM_getValue6.steam) || {});
+      _classPrivateFieldSet(_TaskExecutor, this, _assertClassBrand(_Steam_brand, this, _getTaskExecutionOrder).call(this, globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF));
       debug('Steam实例初始化完成', {
-        taskExecutorCount: this.#TaskExecutor.length
+        taskExecutorCount: _classPrivateFieldGet(_TaskExecutor, this).length
       });
     }
     async init() {
@@ -7991,431 +7977,22 @@ if (missingDependencies.length > 0) {
         debug('开始初始化Steam模块', {
           type: type
         });
-        for (let i = 0; i < this.#TaskExecutor.length; i++) {
-          debug(`初始化执行器 ${i + 1}/${this.#TaskExecutor.length}`);
-          if (!await this.#TaskExecutor[i].init(type)) {
-            debug(`执行器 ${i + 1} 初始化失败，移除该执行器`);
-            this.#TaskExecutor.splice(i, 1);
+        for (let i = 0; i < _classPrivateFieldGet(_TaskExecutor, this).length; i++) {
+          debug('初始化执行器 '.concat(i + 1, '/').concat(_classPrivateFieldGet(_TaskExecutor, this).length));
+          if (!await _classPrivateFieldGet(_TaskExecutor, this)[i].init(type)) {
+            debug('执行器 '.concat(i + 1, ' 初始化失败，移除该执行器'));
+            _classPrivateFieldGet(_TaskExecutor, this).splice(i, 1);
           }
         }
         debug('Steam模块初始化完成', {
-          remainingExecutors: this.#TaskExecutor.length
+          remainingExecutors: _classPrivateFieldGet(_TaskExecutor, this).length
         });
-        return this.#TaskExecutor.length > 0;
+        return _classPrivateFieldGet(_TaskExecutor, this).length > 0;
       } catch (error) {
         debug('Steam初始化发生错误', {
           error: error
         });
         throwError(error, 'Steam.init');
-        return false;
-      }
-    }
-    async #joinGroup(groupName) {
-      try {
-        debug('开始加入Steam组', {
-          groupName: groupName
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.joinGroup(groupName)) {
-            debug('成功加入Steam组', {
-              groupName: groupName
-            });
-            this.tasks.groups = unique([ ...this.tasks.groups, groupName ]);
-            return true;
-          }
-        }
-        debug('加入Steam组失败', {
-          groupName: groupName
-        });
-        return false;
-      } catch (error) {
-        debug('加入Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'Steam.joinGroup');
-        return false;
-      }
-    }
-    async #leaveGroup(groupName) {
-      try {
-        debug('开始退出Steam组', {
-          groupName: groupName
-        });
-        if (this.whiteList.groups.includes(groupName)) {
-          debug('Steam组在白名单中，跳过退出', {
-            groupName: groupName
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.leaveGroup',
-            id: groupName
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.leaveGroup(groupName)) {
-            debug('成功退出Steam组', {
-              groupName: groupName
-            });
-            return true;
-          }
-        }
-        debug('退出Steam组失败', {
-          groupName: groupName
-        });
-        return false;
-      } catch (error) {
-        debug('退出Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'Steam.leaveGroup');
-        return false;
-      }
-    }
-    async #joinOfficialGroup(gameId) {
-      try {
-        debug('开始加入Steam官方组', {
-          gameId: gameId
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.joinOfficialGroup(gameId)) {
-            debug('成功加入Steam官方组', {
-              gameId: gameId
-            });
-            return true;
-          }
-        }
-        debug('加入Steam官方组失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('加入Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.joinOfficialGroup');
-        return false;
-      }
-    }
-    async #leaveOfficialGroup(gameId) {
-      try {
-        debug('开始退出Steam官方组', {
-          gameId: gameId
-        });
-        if (this.whiteList.officialGroups.includes(gameId)) {
-          debug('Steam官方组在白名单中，跳过退出', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.leaveOfficialGroup',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.leaveOfficialGroup(gameId)) {
-            debug('成功退出Steam官方组', {
-              gameId: gameId
-            });
-            this.tasks.officialGroups = unique([ ...this.tasks.officialGroups, gameId ]);
-            return true;
-          }
-        }
-        debug('退出Steam官方组失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('退出Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.leaveOfficialGroup');
-        return false;
-      }
-    }
-    async #addToWishlist(gameId) {
-      try {
-        debug('开始添加游戏到愿望单', {
-          gameId: gameId
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.addToWishlist(gameId)) {
-            debug('成功添加游戏到愿望单', {
-              gameId: gameId
-            });
-            this.tasks.wishlists = unique([ ...this.tasks.wishlists, gameId ]);
-            return true;
-          }
-        }
-        debug('添加游戏到愿望单失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('添加游戏到愿望单时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.addToWishlist');
-        return false;
-      }
-    }
-    async #removeFromWishlist(gameId) {
-      try {
-        debug('开始从愿望单移除游戏', {
-          gameId: gameId
-        });
-        if (this.whiteList.wishlists.includes(gameId)) {
-          debug('游戏在愿望单白名单中，跳过移除', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.removeFromWishlist',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.removeFromWishlist(gameId)) {
-            debug('成功从愿望单移除游戏', {
-              gameId: gameId
-            });
-            return true;
-          }
-        }
-        debug('从愿望单移除游戏失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('从愿望单移除游戏时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.removeFromWishlist');
-        return false;
-      }
-    }
-    async #toggleFollowGame(gameId, doTask) {
-      try {
-        debug('开始处理游戏关注状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.follows.includes(gameId)) {
-          debug('游戏在关注白名单中，跳过取关', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfollowGame',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleFollowGame(gameId, doTask)) {
-            if (doTask) {
-              debug('成功关注游戏', {
-                gameId: gameId
-              });
-              this.tasks.follows = unique([ ...this.tasks.follows, gameId ]);
-            } else {
-              debug('成功取关游戏', {
-                gameId: gameId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理游戏关注状态失败', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理游戏关注状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleFollowGame');
-        return false;
-      }
-    }
-    async #toggleForum(gameId) {
-      let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      try {
-        debug('开始处理论坛订阅状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.forums.includes(gameId)) {
-          debug('论坛在白名单中，跳过取消订阅', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unsubscribeForum',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleForum(gameId, doTask)) {
-            if (doTask) {
-              debug('成功订阅论坛', {
-                gameId: gameId
-              });
-              this.tasks.forums = unique([ ...this.tasks.forums, gameId ]);
-            } else {
-              debug('成功取消订阅论坛', {
-                gameId: gameId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理论坛订阅状态失败', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理论坛订阅状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleForum');
-        return true;
-      }
-    }
-    async #toggleFavoriteWorkshop(id) {
-      let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      try {
-        debug('开始处理创意工坊收藏状态', {
-          id: id,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.workshops.includes(id)) {
-          debug('创意工坊物品在白名单中，跳过取消收藏', {
-            id: id
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfavoriteWorkshop',
-            id: id
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleFavoriteWorkshop(id)) {
-            if (doTask) {
-              debug('成功收藏创意工坊物品', {
-                id: id
-              });
-              this.tasks.workshops = unique([ ...this.tasks.workshops, id ]);
-            } else {
-              debug('成功取消收藏创意工坊物品', {
-                id: id
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理创意工坊收藏状态失败', {
-          id: id,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理创意工坊收藏状态时发生错误', {
-          error: error,
-          id: id,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleFavoriteWorkshop');
-        return false;
-      }
-    }
-    async #voteUpWorkshop(id) {
-      try {
-        debug('开始点赞创意工坊物品', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.voteUpWorkshop(id)) {
-            debug('成功点赞创意工坊物品', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('点赞创意工坊物品失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('点赞创意工坊物品时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.voteupWorkshop');
-        return true;
-      }
-    }
-    async #toggleCurator(curatorId) {
-      let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-      try {
-        debug('开始处理鉴赏家关注状态', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.curators.includes(curatorId)) {
-          debug('鉴赏家在白名单中，跳过取关', {
-            curatorId: curatorId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfollowCurator',
-            id: curatorId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleCurator(curatorId, doTask)) {
-            if (doTask) {
-              debug('成功关注鉴赏家', {
-                curatorId: curatorId
-              });
-              this.tasks.curators = unique([ ...this.tasks.curators, curatorId ]);
-            } else {
-              debug('成功取关鉴赏家', {
-                curatorId: curatorId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理鉴赏家关注状态失败', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理鉴赏家关注状态时发生错误', {
-          error: error,
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleCurator');
         return false;
       }
     }
@@ -8427,10 +8004,10 @@ if (missingDependencies.length > 0) {
         });
         const logStatus = echoLog({
           type: 'gettingCuratorId',
-          text: `${path}/${name}`,
+          text: ''.concat(path, '/').concat(name),
           before: '[Web]'
         });
-        const curatorId = this.#cache.curator[`${path}/${name}`];
+        const curatorId = _classPrivateFieldGet(_cache5, this).curator[''.concat(path, '/').concat(name)];
         if (curatorId) {
           debug('从缓存获取到鉴赏家ID', {
             path: path,
@@ -8441,22 +8018,23 @@ if (missingDependencies.length > 0) {
           return curatorId;
         }
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/${path}/${name}`,
+          url: 'https://store.steampowered.com/'.concat(path, '/').concat(name),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
         });
         if (result === 'Success') {
-          if (data?.status === 200) {
-            const curatorId = data.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)?.[1];
+          if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
+            var _data$responseText$ma7;
+            const curatorId = (_data$responseText$ma7 = data.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)) === null || _data$responseText$ma7 === void 0 ? void 0 : _data$responseText$ma7[1];
             if (curatorId) {
               debug('成功获取鉴赏家ID', {
                 path: path,
                 name: name,
                 curatorId: curatorId
               });
-              this.#setCache('curator', `${path}/${name}`, curatorId);
+              _assertClassBrand(_Steam_brand, this, _setCache5).call(this, 'curator', ''.concat(path, '/').concat(name), curatorId);
               logStatus.success();
               return curatorId;
             }
@@ -8465,15 +8043,15 @@ if (missingDependencies.length > 0) {
               name: name,
               status: data.status
             });
-            logStatus.error(`Error:${data.statusText}(${data.status})`);
+            logStatus.error('Error:'.concat(data.statusText, '(').concat(data.status, ')'));
             return false;
           }
           debug('获取鉴赏家页面失败', {
             path: path,
             name: name,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('请求鉴赏家页面失败', {
@@ -8482,7 +8060,7 @@ if (missingDependencies.length > 0) {
           result: result,
           status: status
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       } catch (error) {
         debug('获取鉴赏家ID时发生错误', {
@@ -8494,262 +8072,10 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #toggleCuratorLike(link) {
-      let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    async toggle(_ref9) {
+      let {doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []} = _ref9;
       try {
-        debug('开始处理鉴赏家点赞状态', {
-          link: link,
-          doTask: doTask
-        });
-        const [path, name] = link.split('/');
-        if (!(path && name)) {
-          debug('无效的鉴赏家链接', {
-            link: link
-          });
-          echoLog({
-            text: I18n('errorLink', link),
-            before: '[Web]'
-          });
-          return false;
-        }
-        const curatorId = await this.getCuratorId(path, name);
-        if (curatorId) {
-          debug('获取到鉴赏家ID，开始处理点赞', {
-            curatorId: curatorId,
-            doTask: doTask
-          });
-          return await this.#toggleCurator(curatorId, doTask);
-        }
-        debug('未获取到鉴赏家ID', {
-          link: link
-        });
-        return false;
-      } catch (error) {
-        debug('处理鉴赏家点赞状态时发生错误', {
-          error: error,
-          link: link,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleCuratorLike');
-        return false;
-      }
-    }
-    async #likeAnnouncement(id) {
-      try {
-        debug('开始点赞公告', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.likeAnnouncement(id)) {
-            debug('成功点赞公告', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('点赞公告失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('点赞公告时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.likeAnnouncement');
-        return false;
-      }
-    }
-    async #addLicense(id) {
-      try {
-        debug('开始添加许可证', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.addLicense(id)) {
-            debug('成功添加许可证', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('添加许可证失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('添加许可证时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.addLicense');
-        return false;
-      }
-    }
-    async #requestPlayTestAccess(id) {
-      try {
-        debug('开始请求游戏试玩权限', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.requestPlayTestAccess(id)) {
-            debug('成功请求游戏试玩权限', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('请求游戏试玩权限失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('请求游戏试玩权限时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.requestPlayTestAccess');
-        return false;
-      }
-    }
-    async #getDemoAppid(id) {
-      try {
-        debug('开始获取游戏试玩ID', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingDemoAppid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${id}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/app/${id}`
-          }
-        });
-        if (result === 'Success') {
-          if (data?.status === 200) {
-            const demoAppid = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)?.[2];
-            debug('成功获取游戏试玩ID', {
-              id: id,
-              demoAppid: demoAppid
-            });
-            logStatus.success();
-            return demoAppid || false;
-          }
-          debug('获取游戏页面失败', {
-            id: id,
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('请求游戏页面失败', {
-          id: id,
-          result: result,
-          status: status
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      } catch (error) {
-        debug('获取游戏试玩ID时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.getDemoAppid');
-        return false;
-      }
-    }
-    async #playGames(ids, playTime) {
-      let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-      try {
-        debug('开始处理游戏挂时长', {
-          ids: ids,
-          playTime: playTime,
-          doTask: doTask
-        });
-        if (playTime <= 0) {
-          debug('游戏时长小于等于0，跳过挂时长');
-          return true;
-        }
-        const asf = this.#TaskExecutor.find((e => e instanceof SteamASF));
-        if (!asf) {
-          debug('未找到ASF实例');
-          echoLog({}).warning(I18n('noASFInstance'));
-          return false;
-        }
-        if (!doTask) {
-          debug('停止挂时长');
-          return await asf.stopPlayGames();
-        }
-        const idsArr = await Promise.all(ids.split(',').map((async id => {
-          try {
-            const demoAppid = await this.#getDemoAppid(id);
-            return demoAppid ? `${id},${demoAppid}` : id;
-          } catch (error) {
-            debug('获取游戏试玩ID失败', {
-              error: error,
-              id: id
-            });
-            return id;
-          }
-        })));
-        const uniqueIds = unique(idsArr.join(',').split(','));
-        debug('处理后的游戏ID列表', {
-          uniqueIds: uniqueIds
-        });
-        debug('开始尝试入库游戏', {
-          uniqueIds: uniqueIds
-        });
-        await Promise.all(uniqueIds.map((async id => {
-          for (const taskExecutor of this.#TaskExecutor) {
-            if (await taskExecutor.addLicense(`appid-${id}`)) {
-              debug('成功入库游戏', {
-                id: id
-              });
-              return true;
-            }
-          }
-          return false;
-        })));
-        await asf.playGames(uniqueIds.join(','));
-        const status = await asf.checkPlayStatus(uniqueIds.join(','));
-        if (status !== true) {
-          await delay(3e3);
-          await asf.playGames(uniqueIds.join(','));
-          const status = await asf.checkPlayStatus(uniqueIds.join(','));
-          if (!status) {
-            debug('启动游戏失败');
-            return false;
-          }
-        }
-        const stopPlayTime = Date.now() + (playTime + 10) * 60 * 1e3;
-        const stopPlayTimeOld = GM_getValue('stopPlayTime', 0) || 0;
-        GM_setValue('stopPlayTime', Math.max(stopPlayTime, stopPlayTimeOld));
-        const playedGames = GM_getValue('playedGames', []) || [];
-        GM_setValue('playedGames', unique([ ...playedGames, ...uniqueIds ]));
-        const taskLink = GM_getValue('taskLink', []) || [];
-        GM_setValue('taskLink', unique([ ...taskLink, window.location.href ]));
-        debug('游戏挂时长状态更新完成');
-        return true;
-      } catch (error) {
-        debug('处理游戏挂时长时发生错误', {
-          error: error,
-          ids: ids,
-          playTime: playTime
-        });
-        throwError(error, 'Steam.playGames');
-        return false;
-      }
-    }
-    async toggle(_ref13) {
-      let {doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []} = _ref13;
-      try {
+        var _classPrivateFieldGet2;
         debug('开始处理Steam任务', {
           doTask: doTask,
           linksCount: {
@@ -8769,7 +8095,7 @@ if (missingDependencies.length > 0) {
           }
         });
         const allLinks = [ ...groupLinks, ...officialGroupLinks, ...forumLinks, ...workshopLinks, ...workshopVoteLinks, ...wishlistLinks, ...followLinks, ...curatorLinks, ...curatorLikeLinks, ...announcementLinks, ...licenseLinks, ...playtestLinks, ...playTimeLinks ];
-        if (allLinks.length > 0 && this.#TaskExecutor.length === 0) {
+        if (allLinks.length > 0 && _classPrivateFieldGet(_TaskExecutor, this).length === 0) {
           debug('Steam模块未初始化');
           echoLog({
             text: I18n('needInit')
@@ -8779,91 +8105,123 @@ if (missingDependencies.length > 0) {
         const tasks = [];
         if (this.shouldProcessTask('groups', doTask)) {
           debug('开始处理群组任务');
-          const realGroups = this.getRealParams('groups', groupLinks, doTask, (link => link.match(/groups\/(.+)\/?/)?.[1]?.split('/')?.[0]));
+          const realGroups = this.getRealParams('groups', groupLinks, doTask, (link => {
+            var _link$match1;
+            return (_link$match1 = link.match(/groups\/(.+)\/?/)) === null || _link$match1 === void 0 || (_link$match1 = _link$match1[1]) === null || _link$match1 === void 0 || (_link$match1 = _link$match1.split('/')) === null || _link$match1 === void 0 ? void 0 : _link$match1[0];
+          }));
           debug('处理后的群组列表', {
             count: realGroups.length,
             groups: realGroups
           });
           for (const group of realGroups) {
-            tasks.push(doTask ? this.#joinGroup(group) : this.#leaveGroup(group));
+            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _joinGroup).call(this, group) : _assertClassBrand(_Steam_brand, this, _leaveGroup).call(this, group));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('officialGroups', doTask)) {
-          const realOfficialGroups = this.getRealParams('officialGroups', officialGroupLinks, doTask, (link => link.match(/games\/(.+)\/?/)?.[1]));
+          const realOfficialGroups = this.getRealParams('officialGroups', officialGroupLinks, doTask, (link => {
+            var _link$match10;
+            return (_link$match10 = link.match(/games\/(.+)\/?/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1];
+          }));
           for (const officialGroup of realOfficialGroups) {
-            tasks.push(doTask ? this.#joinOfficialGroup(officialGroup) : this.#leaveOfficialGroup(officialGroup));
+            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _joinOfficialGroup).call(this, officialGroup) : _assertClassBrand(_Steam_brand, this, _leaveOfficialGroup).call(this, officialGroup));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('wishlists', doTask)) {
-          const realWishlists = this.getRealParams('wishlists', wishlistLinks, doTask, (link => link.match(/app\/([\d]+)/)?.[1]));
+          const realWishlists = this.getRealParams('wishlists', wishlistLinks, doTask, (link => {
+            var _link$match11;
+            return (_link$match11 = link.match(/app\/([\d]+)/)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1];
+          }));
           for (const game of realWishlists) {
-            tasks.push(doTask ? this.#addToWishlist(game) : this.#removeFromWishlist(game));
+            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _addToWishlist).call(this, game) : _assertClassBrand(_Steam_brand, this, _removeFromWishlist).call(this, game));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('follows', doTask)) {
-          const realFollows = this.getRealParams('follows', followLinks, doTask, (link => link.match(/app\/([\d]+)/)?.[1]));
+          const realFollows = this.getRealParams('follows', followLinks, doTask, (link => {
+            var _link$match12;
+            return (_link$match12 = link.match(/app\/([\d]+)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1];
+          }));
           for (const game of realFollows) {
-            tasks.push(this.#toggleFollowGame(game, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleFollowGame).call(this, game, doTask));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('playTime', doTask)) {
-          const realGames = this.getRealParams('playTime', playTimeLinks, doTask, (link => `${link.split('-')[0]}-${link.match(/app\/([\d]+)/)?.[1] || ''}`));
+          const realGames = this.getRealParams('playTime', playTimeLinks, doTask, (link => {
+            var _link$match13;
+            return ''.concat(link.split('-')[0], '-').concat(((_link$match13 = link.match(/app\/([\d]+)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]) || '');
+          }));
           if (realGames.length > 0) {
             const maxTime = Math.max(...realGames.map((info => parseInt(info.split('-')[0], 10) || 0)));
             const games = realGames.filter((info => {
               const [time, game] = info.split('-');
               return (parseInt(time, 10) || 0) > 0 && game;
             })).map((info => info.split('-')[1]));
-            tasks.push(this.#playGames(games.join(','), maxTime, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _playGames).call(this, games.join(','), maxTime, doTask));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('forums', doTask)) {
-          const realForums = this.getRealParams('forums', forumLinks, doTask, (link => link.match(/app\/([\d]+)/)?.[1]));
+          const realForums = this.getRealParams('forums', forumLinks, doTask, (link => {
+            var _link$match14;
+            return (_link$match14 = link.match(/app\/([\d]+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1];
+          }));
           for (const forum of realForums) {
-            tasks.push(this.#toggleForum(forum, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleForum).call(this, forum, doTask));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('workshops', doTask)) {
-          const realWorkshops = this.getRealParams('workshops', workshopLinks, doTask, (link => link.match(/\?id=([\d]+)/)?.[1]));
+          const realWorkshops = this.getRealParams('workshops', workshopLinks, doTask, (link => {
+            var _link$match15;
+            return (_link$match15 = link.match(/\?id=([\d]+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1];
+          }));
           for (const workshop of realWorkshops) {
-            tasks.push(this.#toggleFavoriteWorkshop(workshop, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleFavoriteWorkshop).call(this, workshop, doTask));
             await delay(1e3);
           }
         }
         if (doTask && globalOptions.doTask.steam.workshopVotes) {
-          const realworkshopVotes = this.getRealParams('workshopVotes', workshopVoteLinks, doTask, (link => link.match(/\?id=([\d]+)/)?.[1]));
+          const realworkshopVotes = this.getRealParams('workshopVotes', workshopVoteLinks, doTask, (link => {
+            var _link$match16;
+            return (_link$match16 = link.match(/\?id=([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1];
+          }));
           for (const workshop of realworkshopVotes) {
-            tasks.push(this.#voteUpWorkshop(workshop));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _voteUpWorkshop).call(this, workshop));
             await delay(1e3);
           }
         }
         if (this.shouldProcessTask('curators', doTask)) {
-          const realCurators = this.getRealParams('curators', curatorLinks, doTask, (link => link.match(/curator\/([\d]+)/)?.[1]));
-          const realCuratorLikes = this.getRealParams('curatorLikes', curatorLikeLinks, doTask, (link => link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)?.slice(1, 3).join('/')));
+          const realCurators = this.getRealParams('curators', curatorLinks, doTask, (link => {
+            var _link$match17;
+            return (_link$match17 = link.match(/curator\/([\d]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1];
+          }));
+          const realCuratorLikes = this.getRealParams('curatorLikes', curatorLikeLinks, doTask, (link => {
+            var _link$match18;
+            return (_link$match18 = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)) === null || _link$match18 === void 0 ? void 0 : _link$match18.slice(1, 3).join('/');
+          }));
           for (const curator of realCurators) {
-            tasks.push(this.#toggleCurator(curator, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleCurator).call(this, curator, doTask));
             await delay(1e3);
           }
           for (const curatorLike of realCuratorLikes) {
-            tasks.push(this.#toggleCuratorLike(curatorLike, doTask));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleCuratorLike).call(this, curatorLike, doTask));
             await delay(1e3);
           }
         }
         if (doTask && globalOptions.doTask.steam.announcements) {
           const realAnnouncements = this.getRealParams('announcements', announcementLinks, doTask, (link => {
+            var _link$match20;
             if (link.includes('store.steampowered.com')) {
-              return link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)?.slice(1, 3).join('/');
+              var _link$match19;
+              return (_link$match19 = link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)) === null || _link$match19 === void 0 ? void 0 : _link$match19.slice(1, 3).join('/');
             }
-            return link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)?.slice(1, 3).join('/');
+            return (_link$match20 = link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)) === null || _link$match20 === void 0 ? void 0 : _link$match20.slice(1, 3).join('/');
           }));
           for (const id of realAnnouncements) {
-            tasks.push(this.#likeAnnouncement(id));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _likeAnnouncement).call(this, id));
             await delay(1e3);
           }
         }
@@ -8872,21 +8230,24 @@ if (missingDependencies.length > 0) {
             const [type, idsStr] = ids.split('-');
             const idsArr = idsStr.split(',');
             for (const id of idsArr) {
-              tasks.push(this.#addLicense(`${type}-${id}`));
+              tasks.push(_assertClassBrand(_Steam_brand, this, _addLicense).call(this, ''.concat(type, '-').concat(id)));
               await delay(1e3);
             }
           }
         }
         if (doTask && globalOptions.doTask.steam.playtests) {
-          const realPlaytests = this.getRealParams('playtests', playtestLinks, doTask, (link => link.match(/app\/([\d]+)/)?.[1]));
+          const realPlaytests = this.getRealParams('playtests', playtestLinks, doTask, (link => {
+            var _link$match21;
+            return (_link$match21 = link.match(/app\/([\d]+)/)) === null || _link$match21 === void 0 ? void 0 : _link$match21[1];
+          }));
           for (const id of realPlaytests) {
-            tasks.push(this.#requestPlayTestAccess(id));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _requestPlayTestAccess).call(this, id));
             await delay(1e3);
           }
         }
         debug('开始执行所有任务');
         const results = await Promise.all(tasks);
-        this.#TaskExecutor.find((e => e instanceof SteamWeb))?.resetArea();
+        (_classPrivateFieldGet2 = _classPrivateFieldGet(_TaskExecutor, this).find((e => e instanceof SteamWeb))) === null || _classPrivateFieldGet2 === void 0 || _classPrivateFieldGet2.resetArea();
         debug('所有任务执行完成', {
           success: results.every((result => result))
         });
@@ -8915,70 +8276,711 @@ if (missingDependencies.length > 0) {
       const undoTaskType = taskType;
       return undoTaskType in globalOptions.undoTask.steam && globalOptions.undoTask.steam[undoTaskType];
     }
-    #setCache(type, name, id) {
-      try {
-        this.#cache[type][name] = id;
-        GM_setValue('steamCache', this.#cache);
-      } catch (error) {
-        throwError(error, 'SteamWeb.setCache');
+  }
+  async function _joinGroup(groupName) {
+    try {
+      debug('开始加入Steam组', {
+        groupName: groupName
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.joinGroup(groupName)) {
+          debug('成功加入Steam组', {
+            groupName: groupName
+          });
+          this.tasks.groups = unique([ ...this.tasks.groups, groupName ]);
+          return true;
+        }
       }
-    }
-    #getTaskExecutionOrder(asfEnabled, steamWebEnabled, preferASF) {
-      if (!asfEnabled) {
-        return [ new SteamWeb ];
-      }
-      if (!steamWebEnabled) {
-        return [ new SteamASF(globalOptions.ASF) ];
-      }
-      return preferASF ? [ new SteamASF(globalOptions.ASF), new SteamWeb ] : [ new SteamWeb, new SteamASF(globalOptions.ASF) ];
+      debug('加入Steam组失败', {
+        groupName: groupName
+      });
+      return false;
+    } catch (error) {
+      debug('加入Steam组时发生错误', {
+        error: error,
+        groupName: groupName
+      });
+      throwError(error, 'Steam.joinGroup');
+      return false;
     }
   }
-  class Website {
-    undoneTasks;
-    socialTasks;
-    giveawayId;
-    socialInitialized={
-      discord: false,
-      instagram: false,
-      reddit: false,
-      twitch: false,
-      twitter: false,
-      vk: false,
-      youtube: false,
-      steamStore: false,
-      steamCommunity: false
-    };
-    initialized=false;
-    steamTaskType={
-      steamStore: false,
-      steamCommunity: false
-    };
-    social={};
-    async #bind(name, init) {
-      try {
-        debug('开始绑定社交媒体', {
-          name: name
+  async function _leaveGroup(groupName) {
+    try {
+      debug('开始退出Steam组', {
+        groupName: groupName
+      });
+      if (this.whiteList.groups.includes(groupName)) {
+        debug('Steam组在白名单中，跳过退出', {
+          groupName: groupName
         });
-        const result = await init;
-        debug('绑定结果', {
-          name: name,
-          result: result
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.leaveGroup',
+          id: groupName
         });
-        return {
-          name: name,
-          result: result
-        };
-      } catch (error) {
-        debug('绑定失败', {
-          name: name,
-          error: error
-        });
-        throwError(error, 'Website.bind');
-        return {
-          name: name,
-          result: false
-        };
+        return true;
       }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.leaveGroup(groupName)) {
+          debug('成功退出Steam组', {
+            groupName: groupName
+          });
+          return true;
+        }
+      }
+      debug('退出Steam组失败', {
+        groupName: groupName
+      });
+      return false;
+    } catch (error) {
+      debug('退出Steam组时发生错误', {
+        error: error,
+        groupName: groupName
+      });
+      throwError(error, 'Steam.leaveGroup');
+      return false;
+    }
+  }
+  async function _joinOfficialGroup(gameId) {
+    try {
+      debug('开始加入Steam官方组', {
+        gameId: gameId
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.joinOfficialGroup(gameId)) {
+          debug('成功加入Steam官方组', {
+            gameId: gameId
+          });
+          return true;
+        }
+      }
+      debug('加入Steam官方组失败', {
+        gameId: gameId
+      });
+      return false;
+    } catch (error) {
+      debug('加入Steam官方组时发生错误', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'Steam.joinOfficialGroup');
+      return false;
+    }
+  }
+  async function _leaveOfficialGroup(gameId) {
+    try {
+      debug('开始退出Steam官方组', {
+        gameId: gameId
+      });
+      if (this.whiteList.officialGroups.includes(gameId)) {
+        debug('Steam官方组在白名单中，跳过退出', {
+          gameId: gameId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.leaveOfficialGroup',
+          id: gameId
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.leaveOfficialGroup(gameId)) {
+          debug('成功退出Steam官方组', {
+            gameId: gameId
+          });
+          this.tasks.officialGroups = unique([ ...this.tasks.officialGroups, gameId ]);
+          return true;
+        }
+      }
+      debug('退出Steam官方组失败', {
+        gameId: gameId
+      });
+      return false;
+    } catch (error) {
+      debug('退出Steam官方组时发生错误', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'Steam.leaveOfficialGroup');
+      return false;
+    }
+  }
+  async function _addToWishlist(gameId) {
+    try {
+      debug('开始添加游戏到愿望单', {
+        gameId: gameId
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.addToWishlist(gameId)) {
+          debug('成功添加游戏到愿望单', {
+            gameId: gameId
+          });
+          this.tasks.wishlists = unique([ ...this.tasks.wishlists, gameId ]);
+          return true;
+        }
+      }
+      debug('添加游戏到愿望单失败', {
+        gameId: gameId
+      });
+      return false;
+    } catch (error) {
+      debug('添加游戏到愿望单时发生错误', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'Steam.addToWishlist');
+      return false;
+    }
+  }
+  async function _removeFromWishlist(gameId) {
+    try {
+      debug('开始从愿望单移除游戏', {
+        gameId: gameId
+      });
+      if (this.whiteList.wishlists.includes(gameId)) {
+        debug('游戏在愿望单白名单中，跳过移除', {
+          gameId: gameId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.removeFromWishlist',
+          id: gameId
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.removeFromWishlist(gameId)) {
+          debug('成功从愿望单移除游戏', {
+            gameId: gameId
+          });
+          return true;
+        }
+      }
+      debug('从愿望单移除游戏失败', {
+        gameId: gameId
+      });
+      return false;
+    } catch (error) {
+      debug('从愿望单移除游戏时发生错误', {
+        error: error,
+        gameId: gameId
+      });
+      throwError(error, 'Steam.removeFromWishlist');
+      return false;
+    }
+  }
+  async function _toggleFollowGame(gameId, doTask) {
+    try {
+      debug('开始处理游戏关注状态', {
+        gameId: gameId,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.follows.includes(gameId)) {
+        debug('游戏在关注白名单中，跳过取关', {
+          gameId: gameId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.unfollowGame',
+          id: gameId
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.toggleFollowGame(gameId, doTask)) {
+          if (doTask) {
+            debug('成功关注游戏', {
+              gameId: gameId
+            });
+            this.tasks.follows = unique([ ...this.tasks.follows, gameId ]);
+          } else {
+            debug('成功取关游戏', {
+              gameId: gameId
+            });
+          }
+          return true;
+        }
+      }
+      debug('处理游戏关注状态失败', {
+        gameId: gameId,
+        doTask: doTask
+      });
+      return false;
+    } catch (error) {
+      debug('处理游戏关注状态时发生错误', {
+        error: error,
+        gameId: gameId,
+        doTask: doTask
+      });
+      throwError(error, 'Steam.toggleFollowGame');
+      return false;
+    }
+  }
+  async function _toggleForum(gameId) {
+    let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    try {
+      debug('开始处理论坛订阅状态', {
+        gameId: gameId,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.forums.includes(gameId)) {
+        debug('论坛在白名单中，跳过取消订阅', {
+          gameId: gameId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.unsubscribeForum',
+          id: gameId
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.toggleForum(gameId, doTask)) {
+          if (doTask) {
+            debug('成功订阅论坛', {
+              gameId: gameId
+            });
+            this.tasks.forums = unique([ ...this.tasks.forums, gameId ]);
+          } else {
+            debug('成功取消订阅论坛', {
+              gameId: gameId
+            });
+          }
+          return true;
+        }
+      }
+      debug('处理论坛订阅状态失败', {
+        gameId: gameId,
+        doTask: doTask
+      });
+      return false;
+    } catch (error) {
+      debug('处理论坛订阅状态时发生错误', {
+        error: error,
+        gameId: gameId,
+        doTask: doTask
+      });
+      throwError(error, 'Steam.toggleForum');
+      return true;
+    }
+  }
+  async function _toggleFavoriteWorkshop(id) {
+    let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    try {
+      debug('开始处理创意工坊收藏状态', {
+        id: id,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.workshops.includes(id)) {
+        debug('创意工坊物品在白名单中，跳过取消收藏', {
+          id: id
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.unfavoriteWorkshop',
+          id: id
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.toggleFavoriteWorkshop(id)) {
+          if (doTask) {
+            debug('成功收藏创意工坊物品', {
+              id: id
+            });
+            this.tasks.workshops = unique([ ...this.tasks.workshops, id ]);
+          } else {
+            debug('成功取消收藏创意工坊物品', {
+              id: id
+            });
+          }
+          return true;
+        }
+      }
+      debug('处理创意工坊收藏状态失败', {
+        id: id,
+        doTask: doTask
+      });
+      return false;
+    } catch (error) {
+      debug('处理创意工坊收藏状态时发生错误', {
+        error: error,
+        id: id,
+        doTask: doTask
+      });
+      throwError(error, 'Steam.toggleFavoriteWorkshop');
+      return false;
+    }
+  }
+  async function _voteUpWorkshop(id) {
+    try {
+      debug('开始点赞创意工坊物品', {
+        id: id
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.voteUpWorkshop(id)) {
+          debug('成功点赞创意工坊物品', {
+            id: id
+          });
+          return true;
+        }
+      }
+      debug('点赞创意工坊物品失败', {
+        id: id
+      });
+      return false;
+    } catch (error) {
+      debug('点赞创意工坊物品时发生错误', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'Steam.voteupWorkshop');
+      return true;
+    }
+  }
+  async function _toggleCurator(curatorId) {
+    let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    try {
+      debug('开始处理鉴赏家关注状态', {
+        curatorId: curatorId,
+        doTask: doTask
+      });
+      if (!doTask && this.whiteList.curators.includes(curatorId)) {
+        debug('鉴赏家在白名单中，跳过取关', {
+          curatorId: curatorId
+        });
+        echoLog({
+          type: 'whiteList',
+          text: 'Steam.unfollowCurator',
+          id: curatorId
+        });
+        return true;
+      }
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.toggleCurator(curatorId, doTask)) {
+          if (doTask) {
+            debug('成功关注鉴赏家', {
+              curatorId: curatorId
+            });
+            this.tasks.curators = unique([ ...this.tasks.curators, curatorId ]);
+          } else {
+            debug('成功取关鉴赏家', {
+              curatorId: curatorId
+            });
+          }
+          return true;
+        }
+      }
+      debug('处理鉴赏家关注状态失败', {
+        curatorId: curatorId,
+        doTask: doTask
+      });
+      return false;
+    } catch (error) {
+      debug('处理鉴赏家关注状态时发生错误', {
+        error: error,
+        curatorId: curatorId,
+        doTask: doTask
+      });
+      throwError(error, 'Steam.toggleCurator');
+      return false;
+    }
+  }
+  async function _toggleCuratorLike(link) {
+    let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    try {
+      debug('开始处理鉴赏家点赞状态', {
+        link: link,
+        doTask: doTask
+      });
+      const [path, name] = link.split('/');
+      if (!(path && name)) {
+        debug('无效的鉴赏家链接', {
+          link: link
+        });
+        echoLog({
+          text: I18n('errorLink', link),
+          before: '[Web]'
+        });
+        return false;
+      }
+      const curatorId = await this.getCuratorId(path, name);
+      if (curatorId) {
+        debug('获取到鉴赏家ID，开始处理点赞', {
+          curatorId: curatorId,
+          doTask: doTask
+        });
+        return await _assertClassBrand(_Steam_brand, this, _toggleCurator).call(this, curatorId, doTask);
+      }
+      debug('未获取到鉴赏家ID', {
+        link: link
+      });
+      return false;
+    } catch (error) {
+      debug('处理鉴赏家点赞状态时发生错误', {
+        error: error,
+        link: link,
+        doTask: doTask
+      });
+      throwError(error, 'Steam.toggleCuratorLike');
+      return false;
+    }
+  }
+  async function _likeAnnouncement(id) {
+    try {
+      debug('开始点赞公告', {
+        id: id
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.likeAnnouncement(id)) {
+          debug('成功点赞公告', {
+            id: id
+          });
+          return true;
+        }
+      }
+      debug('点赞公告失败', {
+        id: id
+      });
+      return false;
+    } catch (error) {
+      debug('点赞公告时发生错误', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'Steam.likeAnnouncement');
+      return false;
+    }
+  }
+  async function _addLicense(id) {
+    try {
+      debug('开始添加许可证', {
+        id: id
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.addLicense(id)) {
+          debug('成功添加许可证', {
+            id: id
+          });
+          return true;
+        }
+      }
+      debug('添加许可证失败', {
+        id: id
+      });
+      return false;
+    } catch (error) {
+      debug('添加许可证时发生错误', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'Steam.addLicense');
+      return false;
+    }
+  }
+  async function _requestPlayTestAccess(id) {
+    try {
+      debug('开始请求游戏试玩权限', {
+        id: id
+      });
+      for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+        if (await taskExecutor.requestPlayTestAccess(id)) {
+          debug('成功请求游戏试玩权限', {
+            id: id
+          });
+          return true;
+        }
+      }
+      debug('请求游戏试玩权限失败', {
+        id: id
+      });
+      return false;
+    } catch (error) {
+      debug('请求游戏试玩权限时发生错误', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'Steam.requestPlayTestAccess');
+      return false;
+    }
+  }
+  async function _getDemoAppid(id) {
+    try {
+      debug('开始获取游戏试玩ID', {
+        id: id
+      });
+      const logStatus = echoLog({
+        type: 'gettingDemoAppid',
+        text: id,
+        before: '[Web]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://store.steampowered.com/app/'.concat(id),
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Host: 'store.steampowered.com',
+          Origin: 'https://store.steampowered.com',
+          Referer: 'https://store.steampowered.com/app/'.concat(id)
+        }
+      });
+      if (result === 'Success') {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
+          var _data$responseText$ma28;
+          const demoAppid = (_data$responseText$ma28 = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)) === null || _data$responseText$ma28 === void 0 ? void 0 : _data$responseText$ma28[2];
+          debug('成功获取游戏试玩ID', {
+            id: id,
+            demoAppid: demoAppid
+          });
+          logStatus.success();
+          return demoAppid || false;
+        }
+        debug('获取游戏页面失败', {
+          id: id,
+          status: data === null || data === void 0 ? void 0 : data.status
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('请求游戏页面失败', {
+        id: id,
+        result: result,
+        status: status
+      });
+      logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+      return false;
+    } catch (error) {
+      debug('获取游戏试玩ID时发生错误', {
+        error: error,
+        id: id
+      });
+      throwError(error, 'Steam.getDemoAppid');
+      return false;
+    }
+  }
+  async function _playGames(ids, playTime) {
+    let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    try {
+      debug('开始处理游戏挂时长', {
+        ids: ids,
+        playTime: playTime,
+        doTask: doTask
+      });
+      if (playTime <= 0) {
+        debug('游戏时长小于等于0，跳过挂时长');
+        return true;
+      }
+      const asf = _classPrivateFieldGet(_TaskExecutor, this).find((e => e instanceof SteamASF));
+      if (!asf) {
+        debug('未找到ASF实例');
+        echoLog({}).warning(I18n('noASFInstance'));
+        return false;
+      }
+      if (!doTask) {
+        debug('停止挂时长');
+        return await asf.stopPlayGames();
+      }
+      const idsArr = await Promise.all(ids.split(',').map((async id => {
+        try {
+          const demoAppid = await _assertClassBrand(_Steam_brand, this, _getDemoAppid).call(this, id);
+          return demoAppid ? ''.concat(id, ',').concat(demoAppid) : id;
+        } catch (error) {
+          debug('获取游戏试玩ID失败', {
+            error: error,
+            id: id
+          });
+          return id;
+        }
+      })));
+      const uniqueIds = unique(idsArr.join(',').split(','));
+      debug('处理后的游戏ID列表', {
+        uniqueIds: uniqueIds
+      });
+      debug('开始尝试入库游戏', {
+        uniqueIds: uniqueIds
+      });
+      await Promise.all(uniqueIds.map((async id => {
+        for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
+          if (await taskExecutor.addLicense('appid-'.concat(id))) {
+            debug('成功入库游戏', {
+              id: id
+            });
+            return true;
+          }
+        }
+        return false;
+      })));
+      await asf.playGames(uniqueIds.join(','));
+      const status = await asf.checkPlayStatus(uniqueIds.join(','));
+      if (status !== true) {
+        await delay(3e3);
+        await asf.playGames(uniqueIds.join(','));
+        const status = await asf.checkPlayStatus(uniqueIds.join(','));
+        if (!status) {
+          debug('启动游戏失败');
+          return false;
+        }
+      }
+      const stopPlayTime = Date.now() + (playTime + 10) * 60 * 1e3;
+      const stopPlayTimeOld = GM_getValue('stopPlayTime', 0) || 0;
+      GM_setValue('stopPlayTime', Math.max(stopPlayTime, stopPlayTimeOld));
+      const playedGames = GM_getValue('playedGames', []) || [];
+      GM_setValue('playedGames', unique([ ...playedGames, ...uniqueIds ]));
+      const taskLink = GM_getValue('taskLink', []) || [];
+      GM_setValue('taskLink', unique([ ...taskLink, window.location.href ]));
+      debug('游戏挂时长状态更新完成');
+      return true;
+    } catch (error) {
+      debug('处理游戏挂时长时发生错误', {
+        error: error,
+        ids: ids,
+        playTime: playTime
+      });
+      throwError(error, 'Steam.playGames');
+      return false;
+    }
+  }
+  function _setCache5(type, name, id) {
+    try {
+      _classPrivateFieldGet(_cache5, this)[type][name] = id;
+      GM_setValue('steamCache', _classPrivateFieldGet(_cache5, this));
+    } catch (error) {
+      throwError(error, 'SteamWeb.setCache');
+    }
+  }
+  function _getTaskExecutionOrder(asfEnabled, steamWebEnabled, preferASF) {
+    if (!asfEnabled) {
+      return [ new SteamWeb ];
+    }
+    if (!steamWebEnabled) {
+      return [ new SteamASF(globalOptions.ASF) ];
+    }
+    return preferASF ? [ new SteamASF(globalOptions.ASF), new SteamWeb ] : [ new SteamWeb, new SteamASF(globalOptions.ASF) ];
+  }
+  var _Website_brand = new WeakSet;
+  class Website {
+    constructor() {
+      _classPrivateMethodInitSpec(this, _Website_brand);
+      _defineProperty(this, 'undoneTasks', void 0);
+      _defineProperty(this, 'socialTasks', void 0);
+      _defineProperty(this, 'giveawayId', void 0);
+      _defineProperty(this, 'socialInitialized', {
+        discord: false,
+        instagram: false,
+        reddit: false,
+        twitch: false,
+        twitter: false,
+        vk: false,
+        youtube: false,
+        steamStore: false,
+        steamCommunity: false
+      });
+      _defineProperty(this, 'initialized', false);
+      _defineProperty(this, 'steamTaskType', {
+        steamStore: false,
+        steamCommunity: false
+      });
+      _defineProperty(this, 'social', {});
     }
     async initSocial(action) {
       try {
@@ -8995,7 +8997,7 @@ if (missingDependencies.length > 0) {
           if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
             debug('初始化 Reddit');
             this.social.reddit = new Reddit;
-            pro.push(this.#bind('reddit', this.social.reddit.init()));
+            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'reddit', this.social.reddit.init()));
           }
         }
         if (tasks.twitch) {
@@ -9006,7 +9008,7 @@ if (missingDependencies.length > 0) {
           if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
             debug('初始化 Twitch');
             this.social.twitch = new Twitch;
-            pro.push(this.#bind('twitch', this.social.twitch.init()));
+            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitch', this.social.twitch.init()));
           }
         }
         if (tasks.twitter) {
@@ -9017,7 +9019,7 @@ if (missingDependencies.length > 0) {
           if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
             debug('初始化 Twitter');
             this.social.twitter = new Twitter;
-            pro.push(this.#bind('twitter', this.social.twitter.init()));
+            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitter', this.social.twitter.init()));
           }
         }
         if (tasks.vk) {
@@ -9028,7 +9030,7 @@ if (missingDependencies.length > 0) {
           if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
             debug('初始化 VK');
             this.social.vk = new Vk;
-            pro.push(this.#bind('vk', this.social.vk.init()));
+            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'vk', this.social.vk.init()));
           }
         }
         if (tasks.youtube) {
@@ -9039,7 +9041,7 @@ if (missingDependencies.length > 0) {
           if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
             debug('初始化 YouTube');
             this.social.youtube = new Youtube;
-            pro.push(this.#bind('youtube', this.social.youtube.init()));
+            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'youtube', this.social.youtube.init()));
           }
         }
         if (tasks.steam) {
@@ -9052,7 +9054,10 @@ if (missingDependencies.length > 0) {
               debug('创建 Steam 实例');
               this.social.steam = new Steam;
             }
-            const steamCommunityLength = Object.keys(tasks.steam).map((type => [ 'groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks' ].includes(type) ? tasks.steam?.[type]?.length || 0 : 0)).reduce(((total, number) => total + number), 0);
+            const steamCommunityLength = Object.keys(tasks.steam).map((type => {
+              var _tasks$steam;
+              return [ 'groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks' ].includes(type) ? ((_tasks$steam = tasks.steam) === null || _tasks$steam === void 0 || (_tasks$steam = _tasks$steam[type]) === null || _tasks$steam === void 0 ? void 0 : _tasks$steam.length) || 0 : 0;
+            })).reduce(((total, number) => total + number), 0);
             debug('Steam 社区任务数量', {
               steamCommunityLength: steamCommunityLength
             });
@@ -9060,14 +9065,14 @@ if (missingDependencies.length > 0) {
               this.steamTaskType.steamStore = true;
               if (!this.socialInitialized.steamStore) {
                 debug('初始化 Steam 商店');
-                pro.push(this.#bind('steamStore', this.social.steam.init('store')));
+                pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'steamStore', this.social.steam.init('store')));
               }
             }
             if (steamCommunityLength > 0) {
               if (!this.socialInitialized.steamCommunity) {
                 this.steamTaskType.steamCommunity = true;
                 debug('初始化 Steam 社区');
-                pro.push(this.#bind('steamCommunity', this.social.steam.init('community')));
+                pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'steamCommunity', this.social.steam.init('community')));
               }
             }
           }
@@ -9154,45 +9159,39 @@ if (missingDependencies.length > 0) {
         const tasks = doTask ? this.undoneTasks : this.socialTasks;
         if (this.socialInitialized.reddit === true && this.social.reddit) {
           debug('处理 Reddit 任务');
-          pro.push(this.social.reddit.toggle({
-            doTask: doTask,
-            ...tasks.reddit
-          }));
+          pro.push(this.social.reddit.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.reddit)));
         }
         if (this.socialInitialized.twitch === true && this.social.twitch) {
           debug('处理 Twitch 任务');
-          pro.push(this.social.twitch.toggle({
-            doTask: doTask,
-            ...tasks.twitch
-          }));
+          pro.push(this.social.twitch.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.twitch)));
         }
         if (this.socialInitialized.twitter === true && this.social.twitter) {
           debug('处理 Twitter 任务');
-          pro.push(this.social.twitter.toggle({
-            doTask: doTask,
-            ...tasks.twitter
-          }));
+          pro.push(this.social.twitter.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.twitter)));
         }
         if (this.socialInitialized.vk === true && this.social.vk) {
           debug('处理 VK 任务');
-          pro.push(this.social.vk.toggle({
-            doTask: doTask,
-            ...tasks.vk
-          }));
+          pro.push(this.social.vk.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.vk)));
         }
         if (this.socialInitialized.youtube === true && this.social.youtube) {
           debug('处理 YouTube 任务');
-          pro.push(this.social.youtube.toggle({
-            doTask: doTask,
-            ...tasks.youtube
-          }));
+          pro.push(this.social.youtube.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.youtube)));
         }
         if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
           debug('处理 Steam 任务');
-          pro.push(this.social.steam.toggle({
-            doTask: doTask,
-            ...tasks.steam
-          }));
+          pro.push(this.social.steam.toggle(_objectSpread({
+            doTask: doTask
+          }, tasks.steam)));
         }
         if (this.social.visitLink && tasks.links && doTask) {
           debug('处理链接任务', {
@@ -9255,6 +9254,32 @@ if (missingDependencies.length > 0) {
       }
     }
   }
+  async function _bind(name, init) {
+    try {
+      debug('开始绑定社交媒体', {
+        name: name
+      });
+      const result = await init;
+      debug('绑定结果', {
+        name: name,
+        result: result
+      });
+      return {
+        name: name,
+        result: result
+      };
+    } catch (error) {
+      debug('绑定失败', {
+        name: name,
+        error: error
+      });
+      throwError(error, 'Website.bind');
+      return {
+        name: name,
+        result: false
+      };
+    }
+  }
   const defaultTasksTemplate$7 = {
     steam: {
       groupLinks: [],
@@ -9277,14 +9302,18 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$9 = JSON.stringify(defaultTasksTemplate$7);
+  var _FreeAnyWhere_brand = new WeakSet;
   class FreeAnyWhere extends Website {
-    static type='website';
-    name='FreeAnyWhere';
-    tasks=[];
-    socialTasks=(() => JSON.parse(defaultTasks$9))();
-    undoneTasks=(() => JSON.parse(defaultTasks$9))();
-    games;
-    buttons=[ 'doTask', 'undoTask', 'getKey' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _FreeAnyWhere_brand);
+      _defineProperty(this, 'name', 'FreeAnyWhere');
+      _defineProperty(this, 'tasks', []);
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$9));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$9));
+      _defineProperty(this, 'games', void 0);
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'getKey' ]);
+    }
     static test() {
       const isMatch = window.location.host === 'freeanywhere.net';
       debug('检查网站匹配', {
@@ -9313,11 +9342,11 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_FreeAnyWhere_brand, this, _checkLeftKey).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
-        const giveawayIdSuccess = this.#getGiveawayId();
+        const giveawayIdSuccess = _assertClassBrand(_FreeAnyWhere_brand, this, _getGiveawayId).call(this);
         debug('获取抽奖ID结果', {
           success: giveawayIdSuccess,
           id: this.giveawayId
@@ -9342,8 +9371,9 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue7;
           debug('获取已保存的任务信息');
-          this.socialTasks = GM_getValue(`fawTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$9);
+          this.socialTasks = ((_GM_getValue7 = GM_getValue('fawTasks-'.concat(this.giveawayId))) === null || _GM_getValue7 === void 0 ? void 0 : _GM_getValue7.tasks) || JSON.parse(defaultTasks$9);
         }
         const tasks = $('div.game__content-tasks__task').map(((index, element) => ({
           id: $(element).attr('data-id'),
@@ -9366,7 +9396,7 @@ if (missingDependencies.length > 0) {
           this.tasks = [];
         }
         for (const task of tasks) {
-          await this.#processTask(task, action);
+          await _assertClassBrand(_FreeAnyWhere_brand, this, _processTask).call(this, task, action);
         }
         logStatus.success();
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
@@ -9375,7 +9405,7 @@ if (missingDependencies.length > 0) {
           undoneTasks: this.undoneTasks,
           socialTasks: this.socialTasks
         });
-        GM_setValue(`fawTasks-${this.giveawayId}`, {
+        GM_setValue('fawTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -9386,148 +9416,6 @@ if (missingDependencies.length > 0) {
         });
         throwError(error, 'Freeanywhere.classifyTask');
         return false;
-      }
-    }
-    async #processTask(task, action) {
-      try {
-        debug('处理任务', {
-          task: task,
-          action: action
-        });
-        const {id: id, social: social, title: title, type: type, link: link, data: data, isSuccess: isSuccess} = task;
-        const taskInfo = {
-          id: id,
-          title: title,
-          social: social,
-          type: type,
-          data: data
-        };
-        if (action === 'verify' && !isSuccess) {
-          debug('添加到验证任务列表', taskInfo);
-          this.tasks.push(taskInfo);
-          return;
-        }
-        debug('处理特定类型任务', {
-          type: type,
-          action: action,
-          isSuccess: isSuccess
-        });
-        switch (type) {
-         case 'steam_account_verify':
-         case 'site_email_verify':
-          debug('跳过任务', {
-            type: type
-          });
-          break;
-
-         case 'steam_game_sub':
-          if (action === 'undo' && link) {
-            this.socialTasks.steam.followLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.steam.followLinks.push(link);
-          }
-          break;
-
-         case 'steam_game_wishlist':
-          if (action === 'undo' && link) {
-            this.socialTasks.steam.wishlistLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.steam.wishlistLinks.push(link);
-          }
-          break;
-
-         case 'steam_group_sub':
-          if (action === 'undo' && link) {
-            this.socialTasks.steam.groupLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.steam.groupLinks.push(link);
-          }
-          break;
-
-         case 'steam_curator_sub':
-          if (action === 'undo' && link) {
-            this.socialTasks.steam.curatorLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.steam.curatorLinks.push(link);
-          }
-          break;
-
-         case 'site_visit':
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.extra.website.push(id);
-          }
-          break;
-
-         case 'vk_community_sub':
-          if (action === 'undo' && link) {
-            this.socialTasks.vk.nameLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.vk.nameLinks.push(link);
-          }
-          break;
-
-         case 'vk_post_like':
-          if (action === 'undo' && link) {
-            this.socialTasks.vk.nameLinks.push(`${link}&action=like`);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.vk.nameLinks.push(`${link}&action=like`);
-          }
-          break;
-
-         case 'discord_server_sub':
-          debug('跳过 Discord 任务');
-          echoLog({}).warning(`${I18n('discordTaskNotice')}`);
-          break;
-          break;
-
-         case 'youtube_channel_sub':
-          if (action === 'undo' && link) {
-            this.socialTasks.youtube.channelLinks.push(link);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.youtube.channelLinks.push(link);
-          }
-          break;
-
-         case 'steam_game_playtime':
-          if (action === 'undo' && link) {
-            this.socialTasks.steam.playTimeLinks.push(`${title.match(/(\d+)\s*min/)?.[1] || '0'}-${link}`);
-          }
-          if (action === 'do' && !isSuccess && link) {
-            this.undoneTasks.steam.playTimeLinks.push(`${title.match(/(\d+)\s*min/)?.[1] || '0'}-${link}`);
-          }
-          break;
-
-         case 'telegram_channel_sub':
-          debug('跳过 Telegram 任务');
-          echoLog({}).warning(`${I18n('tgTaskNotice')}`);
-          break;
-
-         case 'none':
-          debug('跳过未连接的任务', {
-            type: type
-          });
-          echoLog({}).warning(`${I18n('notConnect', type)}`);
-          break;
-
-         default:
-          debug('未知任务类型', {
-            type: type
-          });
-          echoLog({}).warning(`${I18n('unKnownTaskType', type)}`);
-          break;
-        }
-      } catch (error) {
-        debug('处理任务失败', {
-          error: error
-        });
-        throwError(error, 'FreeAnyWhere.processTask');
       }
     }
     async verifyTask() {
@@ -9546,7 +9434,7 @@ if (missingDependencies.length > 0) {
         });
         const pro = [];
         for (const task of this.tasks) {
-          pro.push(this.#verify(task));
+          pro.push(_assertClassBrand(_FreeAnyWhere_brand, this, _verify).call(this, task));
           await delay(1e3);
         }
         const result = await Promise.allSettled(pro);
@@ -9566,13 +9454,13 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async extraDoTask(_ref14) {
-      let {website: website} = _ref14;
+    async extraDoTask(_ref0) {
+      let {website: website} = _ref0;
       try {
         debug('执行额外任务', {
           website: website
         });
-        const promises = website.map((id => this.#doVisitWebsite(id)));
+        const promises = website.map((id => _assertClassBrand(_FreeAnyWhere_brand, this, _doVisitWebsite).call(this, id)));
         const results = await Promise.allSettled(promises);
         debug('额外任务执行结果', {
           results: results
@@ -9583,49 +9471,6 @@ if (missingDependencies.length > 0) {
           error: error
         });
         throwError(error, 'FreeAnyWhere.extraDoTask');
-        return false;
-      }
-    }
-    async #doVisitWebsite(id) {
-      try {
-        debug('访问网站任务', {
-          id: id
-        });
-        const logStatus = echoLog({
-          text: I18n('visitingLink')
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://freeanywhere.net/php/user_task_site_visit.php',
-          method: 'POST',
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: `id=${id}`
-        });
-        if (result !== 'Success') {
-          debug('访问失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.responseText.indexOf('bad') !== -1 || data?.responseText.length > 50) {
-          debug('访问响应异常', {
-            responseText: data?.responseText
-          });
-          logStatus.error(data?.responseText);
-          return false;
-        }
-        debug('访问成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('访问网站失败', {
-          error: error
-        });
-        throwError(error, 'FreeAnyWhere.doVisitWebsite');
         return false;
       }
     }
@@ -9651,14 +9496,14 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.responseText.indexOf('bad') !== -1 || data?.responseText.length > 50) {
+        if ((data === null || data === void 0 ? void 0 : data.responseText.indexOf('bad')) !== -1 || (data === null || data === void 0 ? void 0 : data.responseText.length) > 50) {
           debug('密钥响应异常', {
-            responseText: data?.responseText
+            responseText: data === null || data === void 0 ? void 0 : data.responseText
           });
-          logStatus.error(data?.responseText);
+          logStatus.error(data === null || data === void 0 ? void 0 : data.responseText);
           return false;
         }
         debug('获取密钥成功', {
@@ -9675,132 +9520,321 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verify(task) {
-      try {
-        if ($('.task-check-extension').length > 0) {
-          debug('需要扩展，跳过验证', {
-            task: task
-          });
-          echoLog({}).warning(I18n('skipExtensionToVerifyTask'));
-          return false;
-        }
-        debug('使用普通方式验证任务', {
-          task: task
-        });
-        return this.#verifyWithoutExtension(task);
-      } catch (error) {
-        debug('验证任务失败', {
-          error: error
-        });
-        throwError(error, 'Freeanywhere.verify');
-        return false;
+  }
+  async function _processTask(task, action) {
+    var _title$match, _title$match2;
+    try {
+      debug('处理任务', {
+        task: task,
+        action: action
+      });
+      const {id: id, social: social, title: title, type: type, link: link, data: data, isSuccess: isSuccess} = task;
+      const taskInfo = {
+        id: id,
+        title: title,
+        social: social,
+        type: type,
+        data: data
+      };
+      if (action === 'verify' && !isSuccess) {
+        debug('添加到验证任务列表', taskInfo);
+        this.tasks.push(taskInfo);
+        return;
       }
-    }
-    async #verifyWithoutExtension(task) {
-      try {
-        debug('验证任务', {
-          task: task
+      debug('处理特定类型任务', {
+        type: type,
+        action: action,
+        isSuccess: isSuccess
+      });
+      switch (type) {
+       case 'steam_account_verify':
+       case 'site_email_verify':
+        debug('跳过任务', {
+          type: type
         });
-        const logStatus = echoLog({
-          text: `${I18n('verifyingTask')}${task.title.trim()}...`
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://freeanywhere.net/php/user_task_update.php',
-          method: 'POST',
-          headers: {
-            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: `id=${task.id}&type=${task.type}${task.data && task.data !== 'none' ? `&data=${task.data}` : ''}`
-        });
-        if (result !== 'Success' || !data?.responseText) {
-          debug('验证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
+        break;
+
+       case 'steam_game_sub':
+        if (action === 'undo' && link) {
+          this.socialTasks.steam.followLinks.push(link);
         }
-        const response = data.responseText.trim();
-        if (response !== 'good') {
-          debug('验证响应异常', {
-            response: response,
-            statusText: data?.statusText,
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.steam.followLinks.push(link);
         }
-        debug('验证成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('验证任务失败', {
-          error: error
+        break;
+
+       case 'steam_game_wishlist':
+        if (action === 'undo' && link) {
+          this.socialTasks.steam.wishlistLinks.push(link);
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.steam.wishlistLinks.push(link);
+        }
+        break;
+
+       case 'steam_group_sub':
+        if (action === 'undo' && link) {
+          this.socialTasks.steam.groupLinks.push(link);
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.steam.groupLinks.push(link);
+        }
+        break;
+
+       case 'steam_curator_sub':
+        if (action === 'undo' && link) {
+          this.socialTasks.steam.curatorLinks.push(link);
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.steam.curatorLinks.push(link);
+        }
+        break;
+
+       case 'site_visit':
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.extra.website.push(id);
+        }
+        break;
+
+       case 'vk_community_sub':
+        if (action === 'undo' && link) {
+          this.socialTasks.vk.nameLinks.push(link);
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.vk.nameLinks.push(link);
+        }
+        break;
+
+       case 'vk_post_like':
+        if (action === 'undo' && link) {
+          this.socialTasks.vk.nameLinks.push(''.concat(link, '&action=like'));
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.vk.nameLinks.push(''.concat(link, '&action=like'));
+        }
+        break;
+
+       case 'discord_server_sub':
+        debug('跳过 Discord 任务');
+        echoLog({}).warning(''.concat(I18n('discordTaskNotice')));
+        break;
+        break;
+
+       case 'youtube_channel_sub':
+        if (action === 'undo' && link) {
+          this.socialTasks.youtube.channelLinks.push(link);
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.youtube.channelLinks.push(link);
+        }
+        break;
+
+       case 'steam_game_playtime':
+        if (action === 'undo' && link) {
+          this.socialTasks.steam.playTimeLinks.push(''.concat(((_title$match = title.match(/(\d+)\s*min/)) === null || _title$match === void 0 ? void 0 : _title$match[1]) || '0', '-').concat(link));
+        }
+        if (action === 'do' && !isSuccess && link) {
+          this.undoneTasks.steam.playTimeLinks.push(''.concat(((_title$match2 = title.match(/(\d+)\s*min/)) === null || _title$match2 === void 0 ? void 0 : _title$match2[1]) || '0', '-').concat(link));
+        }
+        break;
+
+       case 'telegram_channel_sub':
+        debug('跳过 Telegram 任务');
+        echoLog({}).warning(''.concat(I18n('tgTaskNotice')));
+        break;
+
+       case 'none':
+        debug('跳过未连接的任务', {
+          type: type
         });
-        throwError(error, 'Freeanywhere.verifyWithoutExtension');
-        return false;
+        echoLog({}).warning(''.concat(I18n('notConnect', type)));
+        break;
+
+       default:
+        debug('未知任务类型', {
+          type: type
+        });
+        echoLog({}).warning(''.concat(I18n('unKnownTaskType', type)));
+        break;
       }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const giveawayStatus = $('div.card-info__lable-info').text()?.includes('Giveaway ended');
-        debug('Giveaway状态', {
-          giveawayStatus: giveawayStatus
-        });
-        if (!giveawayStatus) {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('giveawayEnded'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
-        return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'FreeAnyWhere.checkLeftKey');
-        return false;
-      }
-    }
-    #getGiveawayId() {
-      try {
-        debug('开始获取抽奖ID');
-        const giveawayId = $('link[rel="canonical"]').attr('href')?.match(/n=([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
-        }
-        debug('获取抽奖ID失败');
-        echoLog({}).error(I18n('getFailed', 'GiveawayId'));
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'FreeAnyWhere.getGiveawayId');
-        return false;
-      }
+    } catch (error) {
+      debug('处理任务失败', {
+        error: error
+      });
+      throwError(error, 'FreeAnyWhere.processTask');
     }
   }
+  async function _doVisitWebsite(id) {
+    try {
+      debug('访问网站任务', {
+        id: id
+      });
+      const logStatus = echoLog({
+        text: I18n('visitingLink')
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://freeanywhere.net/php/user_task_site_visit.php',
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: 'id='.concat(id)
+      });
+      if (result !== 'Success') {
+        debug('访问失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.responseText.indexOf('bad')) !== -1 || (data === null || data === void 0 ? void 0 : data.responseText.length) > 50) {
+        debug('访问响应异常', {
+          responseText: data === null || data === void 0 ? void 0 : data.responseText
+        });
+        logStatus.error(data === null || data === void 0 ? void 0 : data.responseText);
+        return false;
+      }
+      debug('访问成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('访问网站失败', {
+        error: error
+      });
+      throwError(error, 'FreeAnyWhere.doVisitWebsite');
+      return false;
+    }
+  }
+  async function _verify(task) {
+    try {
+      if ($('.task-check-extension').length > 0) {
+        debug('需要扩展，跳过验证', {
+          task: task
+        });
+        echoLog({}).warning(I18n('skipExtensionToVerifyTask'));
+        return false;
+      }
+      debug('使用普通方式验证任务', {
+        task: task
+      });
+      return _assertClassBrand(_FreeAnyWhere_brand, this, _verifyWithoutExtension).call(this, task);
+    } catch (error) {
+      debug('验证任务失败', {
+        error: error
+      });
+      throwError(error, 'Freeanywhere.verify');
+      return false;
+    }
+  }
+  async function _verifyWithoutExtension(task) {
+    try {
+      debug('验证任务', {
+        task: task
+      });
+      const logStatus = echoLog({
+        text: ''.concat(I18n('verifyingTask')).concat(task.title.trim(), '...')
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://freeanywhere.net/php/user_task_update.php',
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        data: 'id='.concat(task.id, '&type=').concat(task.type).concat(task.data && task.data !== 'none' ? '&data='.concat(task.data) : '')
+      });
+      if (result !== 'Success' || !(data !== null && data !== void 0 && data.responseText)) {
+        debug('验证请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      const response = data.responseText.trim();
+      if (response !== 'good') {
+        debug('验证响应异常', {
+          response: response,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText,
+          status: data === null || data === void 0 ? void 0 : data.status
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('验证成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('验证任务失败', {
+        error: error
+      });
+      throwError(error, 'Freeanywhere.verifyWithoutExtension');
+      return false;
+    }
+  }
+  async function _checkLeftKey() {
+    try {
+      var _$$text;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const giveawayStatus = (_$$text = $('div.card-info__lable-info').text()) === null || _$$text === void 0 ? void 0 : _$$text.includes('Giveaway ended');
+      debug('Giveaway状态', {
+        giveawayStatus: giveawayStatus
+      });
+      if (!giveawayStatus) {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('giveawayEnded'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'FreeAnyWhere.checkLeftKey');
+      return false;
+    }
+  }
+  function _getGiveawayId() {
+    try {
+      var _$$attr3;
+      debug('开始获取抽奖ID');
+      const giveawayId = (_$$attr3 = $('link[rel="canonical"]').attr('href')) === null || _$$attr3 === void 0 || (_$$attr3 = _$$attr3.match(/n=([\d]+)/)) === null || _$$attr3 === void 0 ? void 0 : _$$attr3[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
+        });
+        return true;
+      }
+      debug('获取抽奖ID失败');
+      echoLog({}).error(I18n('getFailed', 'GiveawayId'));
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'FreeAnyWhere.getGiveawayId');
+      return false;
+    }
+  }
+  _defineProperty(FreeAnyWhere, 'type', 'website');
   const defaultTasks$8 = {
     steam: {
       groupLinks: [],
@@ -9835,11 +9869,16 @@ if (missingDependencies.length > 0) {
       retweetLinks: []
     }
   };
+  var _GiveawaySu_brand = new WeakSet;
   class GiveawaySu extends Website {
-    name='GiveawaySu';
-    socialTasks=(() => defaultTasks$8)();
-    undoneTasks=(() => defaultTasks$8)();
-    buttons=[ 'doTask', 'undoTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _GiveawaySu_brand);
+      _defineProperty(this, 'name', 'GiveawaySu');
+      _defineProperty(this, 'socialTasks', defaultTasks$8);
+      _defineProperty(this, 'undoneTasks', defaultTasks$8);
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask' ]);
+    }
     static test() {
       const url = window.location.href;
       const isMatch = /^https?:\/\/giveaway\.su\/giveaway\/view\/[\d]+/.test(url);
@@ -9852,11 +9891,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_GiveawaySu_brand, this, _checkLogin).call(this)) {
           debug('登录检查失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_GiveawaySu_brand, this, _checkLeftKey2).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -9881,7 +9920,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        const giveawayIdResult = this.#getGiveawayId();
+        const giveawayIdResult = _assertClassBrand(_GiveawaySu_brand, this, _getGiveawayId2).call(this);
         if (!giveawayIdResult) {
           debug('获取抽奖ID失败');
           return false;
@@ -9907,8 +9946,9 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue8;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gasTasks-${this.giveawayId}`)?.tasks || defaultTasks$8;
+          this.socialTasks = ((_GM_getValue8 = GM_getValue('gasTasks-'.concat(this.giveawayId))) === null || _GM_getValue8 === void 0 ? void 0 : _GM_getValue8.tasks) || defaultTasks$8;
           return true;
         }
         const tasks = $('#actions tr');
@@ -9919,12 +9959,14 @@ if (missingDependencies.length > 0) {
         }
         debug('检查并处理 Discord 和 Twitch 绑定');
         if ($('div.bind-discord').is(':visible')) {
+          var _$$;
           debug('点击 Discord 绑定按钮');
-          $('div.bind-discord a')[0]?.click();
+          (_$$ = $('div.bind-discord a')[0]) === null || _$$ === void 0 || _$$.click();
         }
         if ($('div.bind-twitch').is(':visible')) {
+          var _$$2;
           debug('点击 Twitch 绑定按钮');
-          $('div.bind-twitch a')[0]?.click();
+          (_$$2 = $('div.bind-twitch a')[0]) === null || _$$2 === void 0 || _$$2.click();
         }
         const processTask = async task => {
           const td = $(task).find('td:not(".hidden")');
@@ -9963,7 +10005,7 @@ if (missingDependencies.length > 0) {
               taskIcon: taskIcon,
               taskName: taskName
             });
-            this.#classifyTaskByType(taskLink, taskIcon, taskName);
+            _assertClassBrand(_GiveawaySu_brand, this, _classifyTaskByType).call(this, taskLink, taskIcon, taskName);
             return true;
           } catch (error) {
             debug('获取重定向链接失败', {
@@ -9986,7 +10028,7 @@ if (missingDependencies.length > 0) {
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
         this.socialTasks = this.undoneTasks;
         debug('保存任务信息');
-        GM_setValue(`gasTasks-${this.giveawayId}`, {
+        GM_setValue('gasTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -9999,222 +10041,228 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    static TASK_PATTERNS={
-      wishlist: /wishlist.*game|add.*wishlist/gim,
-      follow: /follow.*button/gim,
-      twitter: /(on twitter)|(Follow.*on.*Facebook)/gim,
-      vkGroup: /join.*vk.*group/gim,
-      youtubeVideo: /(watch|like).*video/gim,
-      youtubeChannel: /subscribe.*youtube.*channel/gim,
-      watchArt: /watch.*art/gim,
-      reddit: /subscribe.*subreddit|follow.*reddit/gim,
-      twitchChannel: /follow.*twitch.*channel/gim,
-      instagram: /follow.*instagram/gim,
-      discord: /join.*discord/gim,
-      playtest: /request.*playtest/gim,
-      steamForum: /subscribe.*steam.*forum/gim,
-      curator: /(follow|subscribe).*curator/gim,
-      curatorLink: /^https?:\/\/store\.steampowered\.com\/curator\//,
-      announcement: /like.*announcement/gim,
-      steamGroup: /join/gi
-    };
-    #classifyTaskByType(taskLink, taskIcon, taskName) {
-      try {
-        debug('开始分类任务', {
-          taskLink: taskLink,
-          taskIcon: taskIcon,
-          taskName: taskName
-        });
-        const {TASK_PATTERNS: TASK_PATTERNS} = GiveawaySu;
-        if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
-          debug('添加 Steam 组任务');
-          this.undoneTasks.steam.groupLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.announcement.test(taskName)) {
-          debug('添加 Steam 公告任务');
-          this.undoneTasks.steam.announcementLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.curator.test(taskName) && TASK_PATTERNS.curatorLink.test(taskLink)) {
-          debug('添加 Steam 鉴赏家关注任务');
-          this.undoneTasks.steam.curatorLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
-          debug('添加 Steam 鉴赏家点赞任务');
-          this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.steamForum.test(taskName)) {
-          debug('添加 Steam 论坛任务');
-          this.undoneTasks.steam.forumLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
-          debug('添加 Steam 创意工坊投票任务');
-          this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('plus') && TASK_PATTERNS.playtest.test(taskName)) {
-          debug('添加 Steam 游戏测试任务');
-          this.undoneTasks.steam.playtestLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
-          debug('添加 Discord 服务器任务');
-          this.undoneTasks.discord.serverLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
-          debug('跳过 Instagram 任务');
-          return;
-        }
-        if (taskIcon.includes('twitch') || TASK_PATTERNS.twitchChannel.test(taskName)) {
-          debug('添加 Twitch 频道任务');
-          this.undoneTasks.twitch.channelLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('reddit') || TASK_PATTERNS.reddit.test(taskName)) {
-          debug('添加 Reddit 任务');
-          this.undoneTasks.reddit.redditLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.watchArt.test(taskName)) {
-          debug('添加创意工坊物品任务');
-          this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.youtubeChannel.test(taskName)) {
-          debug('添加 YouTube 频道任务');
-          this.undoneTasks.youtube.channelLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.youtubeVideo.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && TASK_PATTERNS.youtubeVideo.test(taskName)) {
-          debug('添加 YouTube 视频任务');
-          this.undoneTasks.youtube.likeLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('vk') || TASK_PATTERNS.vkGroup.test(taskName)) {
-          debug('添加 VK 任务');
-          this.undoneTasks.vk.nameLinks.push(taskLink);
-          return;
-        }
-        if (TASK_PATTERNS.twitter.test(taskName)) {
-          debug('跳过 Twitter 任务');
-          return;
-        }
-        if (TASK_PATTERNS.wishlist.test(taskName)) {
-          debug('添加 Steam 愿望单任务');
-          this.undoneTasks.steam.wishlistLinks.push(taskLink);
-        }
-        if (TASK_PATTERNS.follow.test(taskName)) {
-          debug('添加 Steam 关注任务');
-          this.undoneTasks.steam.followLinks.push(taskLink);
-          return;
-        }
-        debug('未识别的任务类型', {
-          taskLink: taskLink,
-          taskIcon: taskIcon,
-          taskName: taskName
-        });
-      } catch (error) {
-        debug('任务分类失败', {
-          error: error
-        });
-        throwError(error, 'Giveawaysu.classifyTaskByType');
+  }
+  _GiveawaySu = GiveawaySu;
+  function _classifyTaskByType(taskLink, taskIcon, taskName) {
+    try {
+      debug('开始分类任务', {
+        taskLink: taskLink,
+        taskIcon: taskIcon,
+        taskName: taskName
+      });
+      const {TASK_PATTERNS: TASK_PATTERNS} = _GiveawaySu;
+      if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
+        debug('添加 Steam 组任务');
+        this.undoneTasks.steam.groupLinks.push(taskLink);
+        return;
       }
-    }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        const needLogin = $('a.steam-login').length > 0;
-        if (needLogin) {
-          debug('未登录，重定向到 Steam 登录');
-          window.open('/steam/redirect', '_self');
-        }
-        debug('登录检查完成', {
-          needLogin: needLogin
-        });
-        return true;
-      } catch (error) {
-        debug('登录检查失败', {
-          error: error
-        });
-        throwError(error, 'Giveawaysu.checkLogin');
-        return false;
+      if (TASK_PATTERNS.announcement.test(taskName)) {
+        debug('添加 Steam 公告任务');
+        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        return;
       }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const isEnded = $('.giveaway-ended').length > 0;
-        const hasNoKeys = $('.giveaway-key').length === 0;
-        debug('检查抽奖状态', {
-          isEnded: isEnded,
-          hasNoKeys: hasNoKeys
-        });
-        if (!(isEnded && hasNoKeys)) {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('noKeysLeft'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
-        return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'Giveawaysu.checkLeftKey');
-        return false;
+      if (TASK_PATTERNS.curator.test(taskName) && TASK_PATTERNS.curatorLink.test(taskLink)) {
+        debug('添加 Steam 鉴赏家关注任务');
+        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        return;
       }
-    }
-    #getGiveawayId() {
-      try {
-        debug('从URL获取抽奖ID');
-        const giveawayId = window.location.href.match(/\/view\/([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
-        }
-        debug('获取抽奖ID失败');
-        echoLog({
-          text: I18n('getFailed', 'GiveawayId')
-        });
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'Giveawaysu.getGiveawayId');
-        return false;
+      if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
+        debug('添加 Steam 鉴赏家点赞任务');
+        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        return;
       }
+      if (TASK_PATTERNS.steamForum.test(taskName)) {
+        debug('添加 Steam 论坛任务');
+        this.undoneTasks.steam.forumLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
+        debug('添加 Steam 创意工坊投票任务');
+        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('plus') && TASK_PATTERNS.playtest.test(taskName)) {
+        debug('添加 Steam 游戏测试任务');
+        this.undoneTasks.steam.playtestLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
+        debug('添加 Discord 服务器任务');
+        this.undoneTasks.discord.serverLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
+        debug('跳过 Instagram 任务');
+        return;
+      }
+      if (taskIcon.includes('twitch') || TASK_PATTERNS.twitchChannel.test(taskName)) {
+        debug('添加 Twitch 频道任务');
+        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('reddit') || TASK_PATTERNS.reddit.test(taskName)) {
+        debug('添加 Reddit 任务');
+        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        return;
+      }
+      if (TASK_PATTERNS.watchArt.test(taskName)) {
+        debug('添加创意工坊物品任务');
+        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        return;
+      }
+      if (TASK_PATTERNS.youtubeChannel.test(taskName)) {
+        debug('添加 YouTube 频道任务');
+        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        return;
+      }
+      if (TASK_PATTERNS.youtubeVideo.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && TASK_PATTERNS.youtubeVideo.test(taskName)) {
+        debug('添加 YouTube 视频任务');
+        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('vk') || TASK_PATTERNS.vkGroup.test(taskName)) {
+        debug('添加 VK 任务');
+        this.undoneTasks.vk.nameLinks.push(taskLink);
+        return;
+      }
+      if (TASK_PATTERNS.twitter.test(taskName)) {
+        debug('跳过 Twitter 任务');
+        return;
+      }
+      if (TASK_PATTERNS.wishlist.test(taskName)) {
+        debug('添加 Steam 愿望单任务');
+        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+      }
+      if (TASK_PATTERNS.follow.test(taskName)) {
+        debug('添加 Steam 关注任务');
+        this.undoneTasks.steam.followLinks.push(taskLink);
+        return;
+      }
+      debug('未识别的任务类型', {
+        taskLink: taskLink,
+        taskIcon: taskIcon,
+        taskName: taskName
+      });
+    } catch (error) {
+      debug('任务分类失败', {
+        error: error
+      });
+      throwError(error, 'Giveawaysu.classifyTaskByType');
     }
   }
+  function _checkLogin() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      const needLogin = $('a.steam-login').length > 0;
+      if (needLogin) {
+        debug('未登录，重定向到 Steam 登录');
+        window.open('/steam/redirect', '_self');
+      }
+      debug('登录检查完成', {
+        needLogin: needLogin
+      });
+      return true;
+    } catch (error) {
+      debug('登录检查失败', {
+        error: error
+      });
+      throwError(error, 'Giveawaysu.checkLogin');
+      return false;
+    }
+  }
+  async function _checkLeftKey2() {
+    try {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const isEnded = $('.giveaway-ended').length > 0;
+      const hasNoKeys = $('.giveaway-key').length === 0;
+      debug('检查抽奖状态', {
+        isEnded: isEnded,
+        hasNoKeys: hasNoKeys
+      });
+      if (!(isEnded && hasNoKeys)) {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('noKeysLeft'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Giveawaysu.checkLeftKey');
+      return false;
+    }
+  }
+  function _getGiveawayId2() {
+    try {
+      var _window$location$href;
+      debug('从URL获取抽奖ID');
+      const giveawayId = (_window$location$href = window.location.href.match(/\/view\/([\d]+)/)) === null || _window$location$href === void 0 ? void 0 : _window$location$href[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
+        });
+        return true;
+      }
+      debug('获取抽奖ID失败');
+      echoLog({
+        text: I18n('getFailed', 'GiveawayId')
+      });
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Giveawaysu.getGiveawayId');
+      return false;
+    }
+  }
+  _defineProperty(GiveawaySu, 'TASK_PATTERNS', {
+    wishlist: /wishlist.*game|add.*wishlist/gim,
+    follow: /follow.*button/gim,
+    twitter: /(on twitter)|(Follow.*on.*Facebook)/gim,
+    vkGroup: /join.*vk.*group/gim,
+    youtubeVideo: /(watch|like).*video/gim,
+    youtubeChannel: /subscribe.*youtube.*channel/gim,
+    watchArt: /watch.*art/gim,
+    reddit: /subscribe.*subreddit|follow.*reddit/gim,
+    twitchChannel: /follow.*twitch.*channel/gim,
+    instagram: /follow.*instagram/gim,
+    discord: /join.*discord/gim,
+    playtest: /request.*playtest/gim,
+    steamForum: /subscribe.*steam.*forum/gim,
+    curator: /(follow|subscribe).*curator/gim,
+    curatorLink: /^https?:\/\/store\.steampowered\.com\/curator\//,
+    announcement: /like.*announcement/gim,
+    steamGroup: /join/gi
+  });
+  var _Indiedb_brand = new WeakSet;
   class Indiedb {
-    name='Indiedb';
-    buttons=[ 'doTask' ];
+    constructor() {
+      _classPrivateMethodInitSpec(this, _Indiedb_brand);
+      _defineProperty(this, 'name', 'Indiedb');
+      _defineProperty(this, 'buttons', [ 'doTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'www.indiedb.com';
@@ -10227,11 +10275,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_Indiedb_brand, this, _checkLogin2).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_Indiedb_brand, this, _checkLeftKey3).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -10245,11 +10293,11 @@ if (missingDependencies.length > 0) {
     async doTask() {
       try {
         debug('开始执行任务');
-        if (!await this.#join()) {
+        if (!await _assertClassBrand(_Indiedb_brand, this, _join).call(this)) {
           debug('加入抽奖失败');
           return false;
         }
-        return await this.#do();
+        return await _assertClassBrand(_Indiedb_brand, this, _do).call(this);
       } catch (error) {
         debug('执行任务失败', {
           error: error
@@ -10258,495 +10306,499 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #join() {
-      try {
-        debug('开始加入抽奖');
-        if ($('a.buttonenter:contains(Register to join)').length > 0) {
-          debug('需要登录');
-          echoLog({}).error(I18n('needLogin'));
-          return false;
-        }
-        const currentoption = $('a.buttonenter.buttongiveaway');
-        const buttonText = currentoption.text();
-        debug('检查按钮状态', {
-          buttonText: buttonText
-        });
-        if (/success/gim.test($('a.buttonenter.buttongiveaway').text())) {
-          debug('已成功加入抽奖');
-          return true;
-        }
-        if (!/join giveaway/gim.test(buttonText)) {
-          debug('需要加入抽奖');
-          echoLog({}).warning(I18n('needJoinGiveaway'));
-          return false;
-        }
-        const logStatus = echoLog({
-          text: `${I18n('joiningGiveaway')}...`
-        });
-        debug('发送加入请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: currentoption.attr('href'),
-          method: 'POST',
-          data: 'ajax=t',
-          dataType: 'json',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Accept: 'application/json, text/javascript, */*; q=0.01',
-            Origin: window.location.origin,
-            referer: window.location.href
-          }
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('尝试备用加入方法');
-          if (await this.#join2()) {
-            debug('备用加入方法成功');
-            logStatus.success('Success');
-            return true;
-          }
-          debug('加入失败', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (!data.response?.success) {
-          debug('响应失败', {
-            text: data.response?.text
-          });
-          logStatus.error(`Error${data.response?.text ? `:${data.response?.text}` : ''}`);
-          return false;
-        }
-        debug('加入成功');
-        currentoption.addClass('buttonentered').text('Success - Giveaway joined');
-        $('#giveawaysjoined').slideDown();
-        $('#giveawaysrecommend').slideDown();
-        logStatus.success(`Success${data.response?.text ? `:${data.response?.text}` : ''}`);
-        return true;
-      } catch (error) {
-        debug('加入抽奖失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.join');
+  }
+  async function _join() {
+    try {
+      var _data$response110, _data$response114, _data$response115;
+      debug('开始加入抽奖');
+      if ($('a.buttonenter:contains(Register to join)').length > 0) {
+        debug('需要登录');
+        echoLog({}).error(I18n('needLogin'));
         return false;
       }
+      const currentoption = $('a.buttonenter.buttongiveaway');
+      const buttonText = currentoption.text();
+      debug('检查按钮状态', {
+        buttonText: buttonText
+      });
+      if (/success/gim.test($('a.buttonenter.buttongiveaway').text())) {
+        debug('已成功加入抽奖');
+        return true;
+      }
+      if (!/join giveaway/gim.test(buttonText)) {
+        debug('需要加入抽奖');
+        echoLog({}).warning(I18n('needJoinGiveaway'));
+        return false;
+      }
+      const logStatus = echoLog({
+        text: ''.concat(I18n('joiningGiveaway'), '...')
+      });
+      debug('发送加入请求');
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: currentoption.attr('href'),
+        method: 'POST',
+        data: 'ajax=t',
+        dataType: 'json',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Accept: 'application/json, text/javascript, */*; q=0.01',
+          Origin: window.location.origin,
+          referer: window.location.href
+        }
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('尝试备用加入方法');
+        if (await _assertClassBrand(_Indiedb_brand, this, _join2).call(this)) {
+          debug('备用加入方法成功');
+          logStatus.success('Success');
+          return true;
+        }
+        debug('加入失败', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if (!((_data$response110 = data.response) !== null && _data$response110 !== void 0 && _data$response110.success)) {
+        var _data$response111, _data$response112, _data$response113;
+        debug('响应失败', {
+          text: (_data$response111 = data.response) === null || _data$response111 === void 0 ? void 0 : _data$response111.text
+        });
+        logStatus.error('Error'.concat((_data$response112 = data.response) !== null && _data$response112 !== void 0 && _data$response112.text ? ':'.concat((_data$response113 = data.response) === null || _data$response113 === void 0 ? void 0 : _data$response113.text) : ''));
+        return false;
+      }
+      debug('加入成功');
+      currentoption.addClass('buttonentered').text('Success - Giveaway joined');
+      $('#giveawaysjoined').slideDown();
+      $('#giveawaysrecommend').slideDown();
+      logStatus.success('Success'.concat((_data$response114 = data.response) !== null && _data$response114 !== void 0 && _data$response114.text ? ':'.concat((_data$response115 = data.response) === null || _data$response115 === void 0 ? void 0 : _data$response115.text) : ''));
+      return true;
+    } catch (error) {
+      debug('加入抽奖失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.join');
+      return false;
     }
-    async #join2() {
-      try {
-        debug('开始备用加入方法');
-        return await new Promise((resolve => {
-          const targetNode = document.getElementById('giveawaysjoined');
-          const config = {
-            attributes: true
-          };
-          const observer = new MutationObserver((() => {
-            if ($('#giveawaysjoined').is(':visible')) {
-              debug('检测到加入成功');
-              resolve(true);
-              observer.disconnect();
-            }
-          }));
-          observer.observe(targetNode, config);
-          debug('点击加入按钮');
-          $('a.buttonenter.buttongiveaway')[0]?.click();
-          setTimeout((() => {
-            debug('加入超时');
-            resolve(false);
+  }
+  async function _join2() {
+    try {
+      debug('开始备用加入方法');
+      return await new Promise((resolve => {
+        var _$$3;
+        const targetNode = document.getElementById('giveawaysjoined');
+        const config = {
+          attributes: true
+        };
+        const observer = new MutationObserver((() => {
+          if ($('#giveawaysjoined').is(':visible')) {
+            debug('检测到加入成功');
+            resolve(true);
             observer.disconnect();
-          }), 3e4);
+          }
         }));
-      } catch (error) {
-        debug('备用加入方法失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.join2');
+        observer.observe(targetNode, config);
+        debug('点击加入按钮');
+        (_$$3 = $('a.buttonenter.buttongiveaway')[0]) === null || _$$3 === void 0 || _$$3.click();
+        setTimeout((() => {
+          debug('加入超时');
+          resolve(false);
+          observer.disconnect();
+        }), 3e4);
+      }));
+    } catch (error) {
+      debug('备用加入方法失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.join2');
+      return false;
+    }
+  }
+  async function _do() {
+    try {
+      debug('开始执行任务');
+      const id = $('script').map(((index, script) => {
+        var _script$innerHTML$mat, _script$innerHTML$mat2;
+        if (!/\$\(document\)/gim.test(script.innerHTML)) {
+          return null;
+        }
+        return [ (_script$innerHTML$mat = script.innerHTML.match(/"\/[\d]+"/gim)) === null || _script$innerHTML$mat === void 0 || (_script$innerHTML$mat = _script$innerHTML$mat[0]) === null || _script$innerHTML$mat === void 0 || (_script$innerHTML$mat = _script$innerHTML$mat.match(/[\d]+/)) === null || _script$innerHTML$mat === void 0 ? void 0 : _script$innerHTML$mat[0], (_script$innerHTML$mat2 = script.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)) === null || _script$innerHTML$mat2 === void 0 || (_script$innerHTML$mat2 = _script$innerHTML$mat2[0]) === null || _script$innerHTML$mat2 === void 0 || (_script$innerHTML$mat2 = _script$innerHTML$mat2.match(/[\d]+/)) === null || _script$innerHTML$mat2 === void 0 ? void 0 : _script$innerHTML$mat2[0] ];
+      }));
+      if (id.length < 2) {
+        debug('获取任务ID失败');
+        echoLog({}).error(I18n('getFailed', 'TaskId'));
         return false;
       }
-    }
-    async #do() {
-      try {
-        debug('开始执行任务');
-        const id = $('script').map(((index, script) => {
-          if (!/\$\(document\)/gim.test(script.innerHTML)) {
-            return null;
-          }
-          return [ script.innerHTML.match(/"\/[\d]+"/gim)?.[0]?.match(/[\d]+/)?.[0], script.innerHTML.match(/"\/newsletter\/ajax\/subscribeprofile\/optin\/[\d]+"/gim)?.[0]?.match(/[\d]+/)?.[0] ];
-        }));
-        if (id.length < 2) {
-          debug('获取任务ID失败');
-          echoLog({}).error(I18n('getFailed', 'TaskId'));
-          return false;
+      const pro = [];
+      const tasks = $('#giveawaysjoined a[class*=promo]');
+      debug('找到任务', {
+        count: tasks.length
+      });
+      for (const task of tasks) {
+        const promo = $(task);
+        if (promo.hasClass('buttonentered')) {
+          debug('跳过已完成任务');
+          continue;
         }
-        const pro = [];
-        const tasks = $('#giveawaysjoined a[class*=promo]');
-        debug('找到任务', {
-          count: tasks.length
+        const taskText = promo.parents('p').text();
+        debug('处理任务', {
+          taskText: taskText
         });
-        for (const task of tasks) {
-          const promo = $(task);
-          if (promo.hasClass('buttonentered')) {
-            debug('跳过已完成任务');
-            continue;
-          }
-          const taskText = promo.parents('p').text();
-          debug('处理任务', {
-            taskText: taskText
-          });
-          const status = echoLog({
-            text: `${I18n('doing')}:${taskText}...`
-          });
-          if (/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
-            debug('跳过未知任务类型');
-            status.error(`Error:${I18n('unKnownTaskType')}`);
-            continue;
-          }
-          if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
-            let text = '';
-            if (promo.hasClass('facebookpromo')) {
-              text = 'facebookpromo';
-            } else if (promo.hasClass('twitterpromo')) {
-              text = 'twitterpromo';
-            } else {
-              text = 'visitpromo';
-            }
-            debug('处理社交媒体任务', {
-              type: text
-            });
-            pro.push(this.#handleSocialPromo(text, id[0], status, promo));
-          } else if (promo.hasClass('emailoptinpromo')) {
-            debug('处理邮件订阅任务');
-            pro.push(this.#handleEmailPromo(id[1], status, promo));
-          } else if (promo.hasClass('watchingpromo')) {
-            debug('处理关注任务');
-            pro.push(this.#handleWatchingPromo(promo, status));
+        const status = echoLog({
+          text: ''.concat(I18n('doing'), ':').concat(taskText, '...')
+        });
+        if (/the-challenge-of-adblock/gim.test(promo.attr('href'))) {
+          debug('跳过未知任务类型');
+          status.error('Error:'.concat(I18n('unKnownTaskType')));
+          continue;
+        }
+        if (/facebookpromo|twitterpromo|visitpromo/gim.test(task.className)) {
+          let text = '';
+          if (promo.hasClass('facebookpromo')) {
+            text = 'facebookpromo';
+          } else if (promo.hasClass('twitterpromo')) {
+            text = 'twitterpromo';
           } else {
-            debug('处理默认任务');
-            pro.push(this.#handleDefaultPromo(promo, status));
+            text = 'visitpromo';
           }
+          debug('处理社交媒体任务', {
+            type: text
+          });
+          pro.push(_assertClassBrand(_Indiedb_brand, this, _handleSocialPromo).call(this, text, id[0], status, promo));
+        } else if (promo.hasClass('emailoptinpromo')) {
+          debug('处理邮件订阅任务');
+          pro.push(_assertClassBrand(_Indiedb_brand, this, _handleEmailPromo).call(this, id[1], status, promo));
+        } else if (promo.hasClass('watchingpromo')) {
+          debug('处理关注任务');
+          pro.push(_assertClassBrand(_Indiedb_brand, this, _handleWatchingPromo).call(this, promo, status));
+        } else {
+          debug('处理默认任务');
+          pro.push(_assertClassBrand(_Indiedb_brand, this, _handleDefaultPromo).call(this, promo, status));
         }
-        await Promise.all(pro);
-        debug('所有任务完成');
-        echoLog({}).success(I18n('allTasksComplete'));
-        return true;
-      } catch (error) {
-        debug('执行任务失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.do');
-        return false;
       }
+      await Promise.all(pro);
+      debug('所有任务完成');
+      echoLog({}).success(I18n('allTasksComplete'));
+      return true;
+    } catch (error) {
+      debug('执行任务失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.do');
+      return false;
     }
-    async #handleSocialPromo(text, id, status, promo) {
-      try {
-        debug('处理社交媒体任务', {
-          text: text,
-          id: id
-        });
-        return await new Promise((resolve => {
-          $.ajax({
-            type: 'POST',
-            url: urlPath(`/giveaways/ajax/${text}/${id}`),
-            timeout: 6e4,
-            dataType: 'json',
-            data: {
-              ajax: 't'
-            },
-            error(response, error, exception) {
-              debug('请求失败', {
+  }
+  async function _handleSocialPromo(text, id, status, promo) {
+    try {
+      debug('处理社交媒体任务', {
+        text: text,
+        id: id
+      });
+      return await new Promise((resolve => {
+        $.ajax({
+          type: 'POST',
+          url: urlPath('/giveaways/ajax/'.concat(text, '/').concat(id)),
+          timeout: 6e4,
+          dataType: 'json',
+          data: {
+            ajax: 't'
+          },
+          error(response, error, exception) {
+            debug('请求失败', {
+              response: response,
+              error: error,
+              exception: exception
+            });
+            if (window.DEBUG) {
+              console.log('%cAuto-Task[Debug]:', 'color:red', {
                 response: response,
                 error: error,
                 exception: exception
               });
-              if (window.DEBUG) {
-                console.log('%cAuto-Task[Debug]:', 'color:red', {
-                  response: response,
-                  error: error,
-                  exception: exception
-                });
-              }
-              status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
-              resolve(true);
-            },
-            success(response) {
-              if (response.success) {
-                debug('任务完成', {
-                  response: response
-                });
-                status.success(`Success:${response.text}`);
-                promo.addClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
-              } else {
-                debug('任务失败', {
-                  response: response
-                });
-                status.error(`Error:${response.text}`);
-              }
-              resolve(true);
             }
-          });
-        }));
-      } catch (error) {
-        debug('处理社交媒体任务失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.handleSocialPromo');
-        return false;
-      }
-    }
-    async #handleEmailPromo(id, status, promo) {
-      try {
-        debug('处理邮件订阅任务', {
-          id: id
-        });
-        return await new Promise((resolve => {
-          $.ajax({
-            type: 'POST',
-            url: urlPath(`/newsletter/ajax/subscribeprofile/optin/${id}`),
-            timeout: 6e4,
-            dataType: 'json',
-            data: {
-              ajax: 't',
-              emailsystoggle: 4
-            },
-            error(response, error, exception) {
-              debug('请求失败', {
-                response: response,
-                error: error,
-                exception: exception
-              });
-              if (window.DEBUG) {
-                console.log('%cAuto-Task[Debug]:', 'color:red', {
-                  response: response,
-                  error: error,
-                  exception: exception
-                });
-              }
-              status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
-              resolve(true);
-            },
-            success(response) {
-              if (response.success) {
-                debug('任务完成', {
-                  response: response
-                });
-                status.success(`Success:${response.text}`);
-                promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
-              } else {
-                debug('任务失败', {
-                  response: response
-                });
-                status.error(`Error:${response.text}`);
-              }
-              resolve(true);
-            }
-          });
-        }));
-      } catch (error) {
-        debug('处理邮件订阅任务失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.handleEmailPromo');
-        return false;
-      }
-    }
-    async #handleWatchingPromo(promo, status) {
-      try {
-        debug('处理关注任务');
-        return await new Promise((resolve => {
-          const href = promo.attr('href');
-          if (!href) {
-            debug('无效的链接');
-            status.error('Error: Invalid href');
+            status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
-            return;
-          }
-          const data = getUrlQuery(href);
-          data.ajax = 't';
-          const [baseUrl] = href.split(/[?#]/);
-          if (!baseUrl) {
-            debug('无效的URL');
-            status.error('Error: Invalid URL');
+          },
+          success(response) {
+            if (response.success) {
+              debug('任务完成', {
+                response: response
+              });
+              status.success('Success:'.concat(response.text));
+              promo.addClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
+            } else {
+              debug('任务失败', {
+                response: response
+              });
+              status.error('Error:'.concat(response.text));
+            }
             resolve(true);
-            return;
           }
-          debug('发送请求', {
-            url: baseUrl,
-            data: data
-          });
-          $.ajax({
-            type: 'POST',
-            url: urlPath(baseUrl),
-            timeout: 6e4,
-            dataType: 'json',
-            data: data,
-            error(response, error, exception) {
-              debug('请求失败', {
+        });
+      }));
+    } catch (error) {
+      debug('处理社交媒体任务失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.handleSocialPromo');
+      return false;
+    }
+  }
+  async function _handleEmailPromo(id, status, promo) {
+    try {
+      debug('处理邮件订阅任务', {
+        id: id
+      });
+      return await new Promise((resolve => {
+        $.ajax({
+          type: 'POST',
+          url: urlPath('/newsletter/ajax/subscribeprofile/optin/'.concat(id)),
+          timeout: 6e4,
+          dataType: 'json',
+          data: {
+            ajax: 't',
+            emailsystoggle: 4
+          },
+          error(response, error, exception) {
+            debug('请求失败', {
+              response: response,
+              error: error,
+              exception: exception
+            });
+            if (window.DEBUG) {
+              console.log('%cAuto-Task[Debug]:', 'color:red', {
                 response: response,
                 error: error,
                 exception: exception
               });
-              if (window.DEBUG) {
-                console.log('%cAuto-Task[Debug]:', 'color:red', {
-                  response: response,
-                  error: error,
-                  exception: exception
-                });
-              }
-              status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
-              resolve(true);
-            },
-            success(response) {
-              if (response.success) {
-                debug('任务完成', {
-                  response: response
-                });
-                status.success(`Success:${response.text}`);
-                promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
-              } else {
-                debug('任务失败', {
-                  response: response
-                });
-                status.error(`Error:${response.text}`);
-              }
-              resolve(true);
             }
-          });
-        }));
-      } catch (error) {
-        debug('处理关注任务失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.handleWatchingPromo');
-        return false;
-      }
-    }
-    async #handleDefaultPromo(promo, status) {
-      try {
-        debug('处理默认任务');
-        return await new Promise((resolve => {
-          const href = promo.attr('href');
-          if (!href) {
-            debug('无效的链接');
-            status.error('Error: Invalid href');
+            status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
-            return;
+          },
+          success(response) {
+            if (response.success) {
+              debug('任务完成', {
+                response: response
+              });
+              status.success('Success:'.concat(response.text));
+              promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
+            } else {
+              debug('任务失败', {
+                response: response
+              });
+              status.error('Error:'.concat(response.text));
+            }
+            resolve(true);
           }
-          debug('发送请求', {
-            url: href
-          });
-          $.ajax({
-            type: 'POST',
-            url: urlPath(href),
-            timeout: 6e4,
-            dataType: 'json',
-            data: {
-              ajax: 't'
-            },
-            error(response, error, exception) {
-              debug('请求失败', {
+        });
+      }));
+    } catch (error) {
+      debug('处理邮件订阅任务失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.handleEmailPromo');
+      return false;
+    }
+  }
+  async function _handleWatchingPromo(promo, status) {
+    try {
+      debug('处理关注任务');
+      return await new Promise((resolve => {
+        const href = promo.attr('href');
+        if (!href) {
+          debug('无效的链接');
+          status.error('Error: Invalid href');
+          resolve(true);
+          return;
+        }
+        const data = getUrlQuery(href);
+        data.ajax = 't';
+        const [baseUrl] = href.split(/[?#]/);
+        if (!baseUrl) {
+          debug('无效的URL');
+          status.error('Error: Invalid URL');
+          resolve(true);
+          return;
+        }
+        debug('发送请求', {
+          url: baseUrl,
+          data: data
+        });
+        $.ajax({
+          type: 'POST',
+          url: urlPath(baseUrl),
+          timeout: 6e4,
+          dataType: 'json',
+          data: data,
+          error(response, error, exception) {
+            debug('请求失败', {
+              response: response,
+              error: error,
+              exception: exception
+            });
+            if (window.DEBUG) {
+              console.log('%cAuto-Task[Debug]:', 'color:red', {
                 response: response,
                 error: error,
                 exception: exception
               });
-              if (window.DEBUG) {
-                console.log('%cAuto-Task[Debug]:', 'color:red', {
-                  response: response,
-                  error: error,
-                  exception: exception
-                });
-              }
-              status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
-              resolve(true);
-            },
-            success(response) {
-              if (response.success) {
-                debug('任务完成', {
-                  response: response
-                });
-                status.success(`Success:${response.text}`);
-                promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
-              } else {
-                debug('任务失败', {
-                  response: response
-                });
-                status.error(`Error:${response.text}`);
-              }
-              resolve(true);
             }
-          });
-        }));
-      } catch (error) {
-        debug('处理默认任务失败', {
-          error: error
+            status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
+            resolve(true);
+          },
+          success(response) {
+            if (response.success) {
+              debug('任务完成', {
+                response: response
+              });
+              status.success('Success:'.concat(response.text));
+              promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
+            } else {
+              debug('任务失败', {
+                response: response
+              });
+              status.error('Error:'.concat(response.text));
+            }
+            resolve(true);
+          }
         });
-        throwError(error, 'Indiedb.handleDefaultPromo');
-        return false;
-      }
+      }));
+    } catch (error) {
+      debug('处理关注任务失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.handleWatchingPromo');
+      return false;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
+  }
+  async function _handleDefaultPromo(promo, status) {
+    try {
+      debug('处理默认任务');
+      return await new Promise((resolve => {
+        const href = promo.attr('href');
+        if (!href) {
+          debug('无效的链接');
+          status.error('Error: Invalid href');
+          resolve(true);
+          return;
         }
-        if ($('a.buttonenter:contains(Register to join)').length > 0) {
-          debug('未登录，重定向到登录页面');
-          window.open('/members/login', '_self');
-        }
-        debug('登录检查完成');
-        return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
+        debug('发送请求', {
+          url: href
         });
-        throwError(error, 'Indiedb.checkLogin');
-        return false;
-      }
+        $.ajax({
+          type: 'POST',
+          url: urlPath(href),
+          timeout: 6e4,
+          dataType: 'json',
+          data: {
+            ajax: 't'
+          },
+          error(response, error, exception) {
+            debug('请求失败', {
+              response: response,
+              error: error,
+              exception: exception
+            });
+            if (window.DEBUG) {
+              console.log('%cAuto-Task[Debug]:', 'color:red', {
+                response: response,
+                error: error,
+                exception: exception
+              });
+            }
+            status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
+            resolve(true);
+          },
+          success(response) {
+            if (response.success) {
+              debug('任务完成', {
+                response: response
+              });
+              status.success('Success:'.concat(response.text));
+              promo.toggleClass('buttonentered').closest('p').html(promo.closest('p').find('span').html());
+            } else {
+              debug('任务失败', {
+                response: response
+              });
+              status.error('Error:'.concat(response.text));
+            }
+            resolve(true);
+          }
+        });
+      }));
+    } catch (error) {
+      debug('处理默认任务失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.handleDefaultPromo');
+      return false;
     }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const hasEndedButton = $('a.buttonenter:contains("next time"), a.buttonenter:contains("Giveaway is closed")').length > 0;
-        debug('检查抽奖状态', {
-          hasEndedButton: hasEndedButton
-        });
-        if (!hasEndedButton) {
-          return true;
-        }
-        debug('抽奖已结束，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('giveawayEnded'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
+  }
+  function _checkLogin2() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'Indiedb.checkLeftKey');
-        return false;
       }
+      if ($('a.buttonenter:contains(Register to join)').length > 0) {
+        debug('未登录，重定向到登录页面');
+        window.open('/members/login', '_self');
+      }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.checkLogin');
+      return false;
+    }
+  }
+  async function _checkLeftKey3() {
+    try {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const hasEndedButton = $('a.buttonenter:contains("next time"), a.buttonenter:contains("Giveaway is closed")').length > 0;
+      debug('检查抽奖状态', {
+        hasEndedButton: hasEndedButton
+      });
+      if (!hasEndedButton) {
+        return true;
+      }
+      debug('抽奖已结束，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('giveawayEnded'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Indiedb.checkLeftKey');
+      return false;
     }
   }
   const defaultTasksTemplate$6 = {
@@ -10765,11 +10817,16 @@ if (missingDependencies.length > 0) {
     links: []
   };
   const defaultTasks$7 = JSON.stringify(defaultTasksTemplate$6);
+  var _Keyhub_brand = new WeakSet;
   class Keyhub extends Website {
-    name='Keyhub';
-    socialTasks=(() => JSON.parse(defaultTasks$7))();
-    undoneTasks=(() => JSON.parse(defaultTasks$7))();
-    buttons=[ 'doTask', 'undoTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Keyhub_brand);
+      _defineProperty(this, 'name', 'Keyhub');
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$7));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$7));
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'key-hub.eu';
@@ -10782,11 +10839,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_Keyhub_brand, this, _checkLogin3).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_Keyhub_brand, this, _checkLeftKey4).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -10811,7 +10868,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_Keyhub_brand, this, _getGiveawayId3).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -10839,8 +10896,9 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue9;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`khTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$7);
+          this.socialTasks = ((_GM_getValue9 = GM_getValue('khTasks-'.concat(this.giveawayId))) === null || _GM_getValue9 === void 0 ? void 0 : _GM_getValue9.tasks) || JSON.parse(defaultTasks$7);
         }
         const tasks = $('.task:not(".googleads")').filter(((index, element) => action === 'do' ? $(element).find('i.fa-check-circle:visible').length === 0 : true)).find('a');
         debug('找到任务', {
@@ -10921,7 +10979,8 @@ if (missingDependencies.length > 0) {
           if (/^javascript:videoTask.+/.test(link)) {
             debug('处理视频任务');
             if (action === 'do') {
-              const taskData = link.match(/javascript:videoTask\('.+?','(.+?)'/)?.[1];
+              var _link$match22;
+              const taskData = (_link$match22 = link.match(/javascript:videoTask\('.+?','(.+?)'/)) === null || _link$match22 === void 0 ? void 0 : _link$match22[1];
               if (taskData) {
                 debug('添加视频任务', {
                   taskData: taskData
@@ -10931,7 +10990,7 @@ if (missingDependencies.length > 0) {
             }
             continue;
           }
-          if (this.#isSkippableLink(link)) {
+          if (_assertClassBrand(_Keyhub_brand, this, _isSkippableLink).call(this, link)) {
             debug('跳过可忽略的链接', {
               link: link
             });
@@ -10941,7 +11000,7 @@ if (missingDependencies.length > 0) {
             taskDes: taskDes,
             link: link
           });
-          echoLog({}).warning(`${I18n('unKnownTaskType')}: ${taskDes}(${link})`);
+          echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(taskDes, '(').concat(link, ')'));
         }
         debug('任务分类完成');
         logStatus.success();
@@ -10951,7 +11010,7 @@ if (missingDependencies.length > 0) {
           console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
         }
         debug('保存任务信息');
-        GM_setValue(`khTasks-${this.giveawayId}`, {
+        GM_setValue('khTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -10964,62 +11023,15 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #isSkippableLink(link) {
-      return /^https?:\/\/www\.instagram\.com\/.*/.test(link) || /^https?:\/\/twitter\.com\/.*/.test(link) || /^https?:\/\/www\.twitch\.tv\/.*/.test(link) || /^https?:\/\/www\.facebook\.com\/.*/.test(link) || /^https?:\/\/www\.youtube\.com\/.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/developer\//.test(link) || /^https?:\/\/.*?\.itch\.io\/.*/.test(link) || /^https?:\/\/key-hub\.eu.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/app\/.*/.test(link) || /^https?:\/\/qr\.streamelements\.com\/.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/news\/app\/.*/.test(link);
-    }
-    async #doScriptTask(data) {
-      try {
-        debug('执行脚本任务', {
-          data: data
-        });
-        const logStatus = echoLog({
-          text: I18n('doingKeyhubTask')
-        });
-        const {result: result, statusText: statusText, status: status, data: response} = await httpRequest({
-          url: `/away?data=${data}`,
-          method: 'GET',
-          headers: {
-            origin: 'https://key-hub.eu',
-            referer: 'https://key-hub.eu/'
-          }
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (response?.status !== 200) {
-          debug('响应错误', {
-            status: response?.status,
-            statusText: response?.statusText
-          });
-          logStatus.error(`Error:${response?.statusText}(${response?.status})`);
-          return false;
-        }
-        debug('任务完成');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('执行脚本任务失败', {
-          error: error
-        });
-        throwError(error, 'Keyhub.doScriptTask');
-        return false;
-      }
-    }
-    async extraDoTask(_ref15) {
-      let {videoTasks: videoTasks} = _ref15;
+    async extraDoTask(_ref1) {
+      let {videoTasks: videoTasks} = _ref1;
       try {
         debug('开始执行额外任务', {
           count: videoTasks.length
         });
         const pro = [];
         for (const data of videoTasks) {
-          pro.push(this.#doScriptTask(data));
+          pro.push(_assertClassBrand(_Keyhub_brand, this, _doScriptTask).call(this, data));
         }
         return Promise.all(pro).then((() => {
           debug('所有额外任务完成');
@@ -11033,84 +11045,132 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #getGiveawayId() {
-      try {
-        debug('获取抽奖ID');
-        const giveawayId = window.location.href.match(/giveaway\/([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
+  }
+  function _isSkippableLink(link) {
+    return /^https?:\/\/www\.instagram\.com\/.*/.test(link) || /^https?:\/\/twitter\.com\/.*/.test(link) || /^https?:\/\/www\.twitch\.tv\/.*/.test(link) || /^https?:\/\/www\.facebook\.com\/.*/.test(link) || /^https?:\/\/www\.youtube\.com\/.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/developer\//.test(link) || /^https?:\/\/.*?\.itch\.io\/.*/.test(link) || /^https?:\/\/key-hub\.eu.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/app\/.*/.test(link) || /^https?:\/\/qr\.streamelements\.com\/.*/.test(link) || /^https?:\/\/store\.steampowered\.com\/news\/app\/.*/.test(link);
+  }
+  async function _doScriptTask(data) {
+    try {
+      debug('执行脚本任务', {
+        data: data
+      });
+      const logStatus = echoLog({
+        text: I18n('doingKeyhubTask')
+      });
+      const {result: result, statusText: statusText, status: status, data: response} = await httpRequest({
+        url: '/away?data='.concat(data),
+        method: 'GET',
+        headers: {
+          origin: 'https://key-hub.eu',
+          referer: 'https://key-hub.eu/'
         }
-        debug('获取抽奖ID失败');
-        echoLog({}).error(I18n('getFailed', 'GiveawayId'));
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
         });
-        throwError(error, 'Keyhub.getGiveawayId');
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
+      if ((response === null || response === void 0 ? void 0 : response.status) !== 200) {
+        debug('响应错误', {
+          status: response === null || response === void 0 ? void 0 : response.status,
+          statusText: response === null || response === void 0 ? void 0 : response.statusText
+        });
+        logStatus.error('Error:'.concat(response === null || response === void 0 ? void 0 : response.statusText, '(').concat(response === null || response === void 0 ? void 0 : response.status, ')'));
+        return false;
+      }
+      debug('任务完成');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('执行脚本任务失败', {
+        error: error
+      });
+      throwError(error, 'Keyhub.doScriptTask');
+      return false;
     }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const leftKey = $('#keysleft').text().trim();
-        debug('检查剩余密钥数量', {
-          leftKey: leftKey
+  }
+  function _getGiveawayId3() {
+    try {
+      var _window$location$href2;
+      debug('获取抽奖ID');
+      const giveawayId = (_window$location$href2 = window.location.href.match(/giveaway\/([\d]+)/)) === null || _window$location$href2 === void 0 ? void 0 : _window$location$href2[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
         });
-        if (leftKey !== '0') {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('noKeysLeft'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'Keyhub.checkLeftKey');
-        return false;
       }
+      debug('获取抽奖ID失败');
+      echoLog({}).error(I18n('getFailed', 'GiveawayId'));
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Keyhub.getGiveawayId');
+      return false;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        if ($('a[href*="/connect/steam"]').length > 0) {
-          debug('未登录，重定向到 Steam 登录页面');
-          window.open('/connect/steam', '_self');
-        }
-        debug('登录检查完成');
+  }
+  async function _checkLeftKey4() {
+    try {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
         return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
-        });
-        throwError(error, 'Keyhub.checkLogin');
-        return false;
       }
+      const leftKey = $('#keysleft').text().trim();
+      debug('检查剩余密钥数量', {
+        leftKey: leftKey
+      });
+      if (leftKey !== '0') {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('noKeysLeft'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Keyhub.checkLeftKey');
+      return false;
+    }
+  }
+  function _checkLogin3() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      if ($('a[href*="/connect/steam"]').length > 0) {
+        debug('未登录，重定向到 Steam 登录页面');
+        window.open('/connect/steam', '_self');
+      }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'Keyhub.checkLogin');
+      return false;
     }
   }
   const defaultTasksTemplate$5 = {
@@ -11131,13 +11191,18 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$6 = JSON.stringify(defaultTasksTemplate$5);
+  var _Givekey_brand = new WeakSet;
   class Givekey extends Website {
-    name='Givekey';
-    tasks=[];
-    socialTasks=(() => JSON.parse(defaultTasks$6))();
-    undoneTasks=(() => JSON.parse(defaultTasks$6))();
-    userId;
-    buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Givekey_brand);
+      _defineProperty(this, 'name', 'Givekey');
+      _defineProperty(this, 'tasks', []);
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$6));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$6));
+      _defineProperty(this, 'userId', void 0);
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
+    }
     static test() {
       const url = window.location.host;
       const isMatch = url === 'givekey.ru';
@@ -11159,7 +11224,7 @@ if (missingDependencies.length > 0) {
             }
           }), 500);
         }));
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_Givekey_brand, this, _checkLeftKey5).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -11182,7 +11247,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_Givekey_brand, this, _getGiveawayId4).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -11216,8 +11281,9 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue0;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gkTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$6);
+          this.socialTasks = ((_GM_getValue0 = GM_getValue('gkTasks-'.concat(this.giveawayId))) === null || _GM_getValue0 === void 0 ? void 0 : _GM_getValue0.tasks) || JSON.parse(defaultTasks$6);
         }
         const tasks = $('.card-body:has("button") .row');
         debug('找到任务元素', {
@@ -11267,7 +11333,7 @@ if (missingDependencies.length > 0) {
             continue;
           }
           const icon = taskEle.find('i');
-          await this.#classifyTaskByType(href, text, icon, isSuccess, action);
+          await _assertClassBrand(_Givekey_brand, this, _classifyTaskByType2).call(this, href, text, icon, isSuccess, action);
         }
         debug('任务分类完成');
         logStatus.success();
@@ -11275,7 +11341,7 @@ if (missingDependencies.length > 0) {
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
         this.socialTasks = this.uniqueTasks(this.socialTasks);
         debug('保存任务信息');
-        GM_setValue(`gkTasks-${this.giveawayId}`, {
+        GM_setValue('gkTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -11305,7 +11371,7 @@ if (missingDependencies.length > 0) {
           taskCount: taskLength
         });
         for (let i = 0; i < taskLength; i++) {
-          await this.#verify(this.tasks[i]);
+          await _assertClassBrand(_Givekey_brand, this, _verify2).call(this, this.tasks[i]);
           if (i < taskLength - 1) {
             debug('等待15秒');
             await delay(15e3);
@@ -11314,7 +11380,7 @@ if (missingDependencies.length > 0) {
         debug('所有任务验证完成');
         echoLog({}).success(I18n('allTasksComplete'));
         echoLog({
-          html: `<li><font class="warning">${I18n('giveKeyNoticeAfter')}</font></li>`
+          html: '<li><font class="warning">'.concat(I18n('giveKeyNoticeAfter'), '</font></li>')
         });
         return true;
       } catch (error) {
@@ -11325,206 +11391,212 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #verify(task) {
-      try {
-        debug('验证任务', {
-          taskId: task
-        });
-        const logStatus = echoLog({
-          html: `<li>${I18n('verifyingTask')}${task}...<font></font></li>`
-        });
-        const csrfToken = $('meta[name="csrf-token"]').attr('content');
-        if (!csrfToken) {
-          debug('CSRF token 未找到');
-          logStatus.error('CSRF token not found');
-          return false;
-        }
-        debug('发送验证请求');
-        const response = await $.ajax({
-          url: 'https://givekey.ru/giveaway/task',
-          method: 'POST',
-          data: `id=${task}&user_id=${this.userId}`,
-          dataType: 'json',
-          headers: {
-            'X-CSRF-TOKEN': csrfToken
-          }
-        });
-        if (!response) {
-          debug('未收到响应');
-          logStatus.error('No response received');
-          return false;
-        }
-        debug('处理响应', {
-          response: response
-        });
-        if (response.btn) {
-          $(`button[data-id=${this.userId}]`).html(response.btn);
-        }
-        if (response.status === 'ok') {
-          $(`.task_check_${response.id}`).html(`<button class="btn btn-success mb-2 btn-block" disabled>${response.btn}</button>`);
-          debug('任务验证成功');
-          logStatus.success();
-          return true;
-        }
-        if (response.status === 'end') {
-          debug('获得密钥');
-          logStatus.success();
-          echoLog({}).success(response.key);
-          return true;
-        }
-        debug('验证失败', {
-          error: response.msg
-        });
-        logStatus.error(`Error:${response.msg}`);
-        return false;
-      } catch (error) {
-        debug('验证过程出错', {
-          error: error
-        });
-        throwError(error, 'Givekey.verify');
+  }
+  async function _verify2(task) {
+    try {
+      debug('验证任务', {
+        taskId: task
+      });
+      const logStatus = echoLog({
+        html: '<li>'.concat(I18n('verifyingTask')).concat(task, '...<font></font></li>')
+      });
+      const csrfToken = $('meta[name="csrf-token"]').attr('content');
+      if (!csrfToken) {
+        debug('CSRF token 未找到');
+        logStatus.error('CSRF token not found');
         return false;
       }
-    }
-    #getGiveawayId() {
-      try {
-        debug('从URL获取抽奖ID');
-        const giveawayId = window.location.href.match(/giveaway\/([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
+      debug('发送验证请求');
+      const response = await $.ajax({
+        url: 'https://givekey.ru/giveaway/task',
+        method: 'POST',
+        data: 'id='.concat(task, '&user_id=').concat(this.userId),
+        dataType: 'json',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
         }
-        debug('获取抽奖ID失败');
-        echoLog({
-          text: I18n('getFailed', 'GiveawayId')
-        });
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'Givekey.getGiveawayId');
+      });
+      if (!response) {
+        debug('未收到响应');
+        logStatus.error('No response received');
         return false;
       }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const keysCount = $('#keys_count').text();
-        debug('检查密钥数量', {
-          keysCount: keysCount
-        });
-        if (keysCount) {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('noKeysLeft'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
+      debug('处理响应', {
+        response: response
+      });
+      if (response.btn) {
+        $('button[data-id='.concat(this.userId, ']')).html(response.btn);
+      }
+      if (response.status === 'ok') {
+        $('.task_check_'.concat(response.id)).html('<button class="btn btn-success mb-2 btn-block" disabled>'.concat(response.btn, '</button>'));
+        debug('任务验证成功');
+        logStatus.success();
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'Givekey.checkLeftKey');
-        return false;
       }
-    }
-    async #classifyTaskByType(href, text, icon, isSuccess, action) {
-      try {
-        debug('开始分类任务类型', {
-          href: href,
-          text: text,
-          isSuccess: isSuccess,
-          action: action
-        });
-        if (/^https?:\/\/vk\.com\//.test(href)) {
-          debug('添加 VK 任务');
-          this.socialTasks.vk.nameLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.vk.nameLinks.push(href);
-          }
-          return;
-        }
-        if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
-          debug('添加 Steam 组任务');
-          this.socialTasks.steam.groupLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.steam.groupLinks.push(href);
-          }
-          return;
-        }
-        if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
-          debug('添加 Steam 愿望单任务');
-          this.socialTasks.steam.wishlistLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.steam.wishlistLinks.push(href);
-          }
-          return;
-        }
-        if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
-          if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
-            debug('添加 Steam 鉴赏家关注任务');
-            this.socialTasks.steam.curatorLinks.push(href);
-            if (action === 'do' && !isSuccess) {
-              this.undoneTasks.steam.curatorLinks.push(href);
-            }
-          } else {
-            debug('添加 Steam 鉴赏家点赞任务');
-            this.socialTasks.steam.curatorLikeLinks.push(href);
-            if (action === 'do' && !isSuccess) {
-              this.undoneTasks.steam.curatorLikeLinks.push(href);
-            }
-          }
-          return;
-        }
-        if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
-          debug('添加 Twitter 关注任务');
-          this.socialTasks.twitter.userLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.twitter.userLinks.push(href);
-          }
-          return;
-        }
-        if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
-          debug('添加 Discord 服务器任务');
-          this.socialTasks.discord.serverLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.discord.serverLinks.push(href);
-          }
-          return;
-        }
-        debug('未识别的任务类型', {
-          href: href,
-          text: text
-        });
-        echoLog({}).warning(`${I18n('unKnownTaskType')}: ${text}(${href})`);
-      } catch (error) {
-        debug('任务类型分类失败', {
-          error: error
-        });
-        throwError(error, 'Givekey.classifyTaskByType');
+      if (response.status === 'end') {
+        debug('获得密钥');
+        logStatus.success();
+        echoLog({}).success(response.key);
+        return true;
       }
+      debug('验证失败', {
+        error: response.msg
+      });
+      logStatus.error('Error:'.concat(response.msg));
+      return false;
+    } catch (error) {
+      debug('验证过程出错', {
+        error: error
+      });
+      throwError(error, 'Givekey.verify');
+      return false;
     }
   }
+  function _getGiveawayId4() {
+    try {
+      var _window$location$href3;
+      debug('从URL获取抽奖ID');
+      const giveawayId = (_window$location$href3 = window.location.href.match(/giveaway\/([\d]+)/)) === null || _window$location$href3 === void 0 ? void 0 : _window$location$href3[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
+        });
+        return true;
+      }
+      debug('获取抽奖ID失败');
+      echoLog({
+        text: I18n('getFailed', 'GiveawayId')
+      });
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Givekey.getGiveawayId');
+      return false;
+    }
+  }
+  async function _checkLeftKey5() {
+    try {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const keysCount = $('#keys_count').text();
+      debug('检查密钥数量', {
+        keysCount: keysCount
+      });
+      if (keysCount) {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('noKeysLeft'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Givekey.checkLeftKey');
+      return false;
+    }
+  }
+  async function _classifyTaskByType2(href, text, icon, isSuccess, action) {
+    try {
+      debug('开始分类任务类型', {
+        href: href,
+        text: text,
+        isSuccess: isSuccess,
+        action: action
+      });
+      if (/^https?:\/\/vk\.com\//.test(href)) {
+        debug('添加 VK 任务');
+        this.socialTasks.vk.nameLinks.push(href);
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.vk.nameLinks.push(href);
+        }
+        return;
+      }
+      if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
+        debug('添加 Steam 组任务');
+        this.socialTasks.steam.groupLinks.push(href);
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.steam.groupLinks.push(href);
+        }
+        return;
+      }
+      if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
+        debug('添加 Steam 愿望单任务');
+        this.socialTasks.steam.wishlistLinks.push(href);
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.steam.wishlistLinks.push(href);
+        }
+        return;
+      }
+      if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
+        if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
+          debug('添加 Steam 鉴赏家关注任务');
+          this.socialTasks.steam.curatorLinks.push(href);
+          if (action === 'do' && !isSuccess) {
+            this.undoneTasks.steam.curatorLinks.push(href);
+          }
+        } else {
+          debug('添加 Steam 鉴赏家点赞任务');
+          this.socialTasks.steam.curatorLikeLinks.push(href);
+          if (action === 'do' && !isSuccess) {
+            this.undoneTasks.steam.curatorLikeLinks.push(href);
+          }
+        }
+        return;
+      }
+      if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
+        debug('添加 Twitter 关注任务');
+        this.socialTasks.twitter.userLinks.push(href);
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.twitter.userLinks.push(href);
+        }
+        return;
+      }
+      if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
+        debug('添加 Discord 服务器任务');
+        this.socialTasks.discord.serverLinks.push(href);
+        if (action === 'do' && !isSuccess) {
+          this.undoneTasks.discord.serverLinks.push(href);
+        }
+        return;
+      }
+      debug('未识别的任务类型', {
+        href: href,
+        text: text
+      });
+      echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(text, '(').concat(href, ')'));
+    } catch (error) {
+      debug('任务类型分类失败', {
+        error: error
+      });
+      throwError(error, 'Givekey.classifyTaskByType');
+    }
+  }
+  var _GiveeClub_brand = new WeakSet;
   class GiveeClub extends GiveawaySu {
-    name='GiveeClub';
-    buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _GiveeClub_brand);
+      _defineProperty(this, 'name', 'GiveeClub');
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
+    }
     static test() {
       const url = window.location.href;
       const isMatch = /^https?:\/\/givee\.club\/.*?\/event\/[\d]+/.test(url);
@@ -11537,11 +11609,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_GiveeClub_brand, this, _checkLogin4).call(this)) {
           debug('登录检查失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_GiveeClub_brand, this, _checkLeftKey6).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -11558,12 +11630,12 @@ if (missingDependencies.length > 0) {
         const logStatus = echoLog({
           text: I18n('initing')
         });
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_GiveeClub_brand, this, _checkLogin4).call(this)) {
           debug('登录检查失败');
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        const giveawayIdResult = this.#getGiveawayId();
+        const giveawayIdResult = _assertClassBrand(_GiveeClub_brand, this, _getGiveawayId5).call(this);
         if (!giveawayIdResult) {
           debug('获取抽奖ID失败');
           return false;
@@ -11589,19 +11661,21 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue1;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gcTasks-${this.giveawayId}`)?.tasks || defaultTasks$8;
+          this.socialTasks = ((_GM_getValue1 = GM_getValue('gcTasks-'.concat(this.giveawayId))) === null || _GM_getValue1 === void 0 ? void 0 : _GM_getValue1.tasks) || defaultTasks$8;
           return true;
         }
         debug('初始化未完成任务列表');
         this.undoneTasks = defaultTasks$8;
         const tasks = $('.event-actions tr');
         const processTask = async task => {
+          var _$$find, _$$find2;
           const taskDes = $(task).find('.event-action-label a');
           const taskIcon = $(task).find('.event-action-icon i').attr('class') || '';
           const taskName = taskDes.text().trim();
-          const taskType = $(task).find('button[data-type]')?.attr('data-type') || '';
-          const taskFinished = $(task).find('.event-action-buttons .btn-success')?.length;
+          const taskType = ((_$$find = $(task).find('button[data-type]')) === null || _$$find === void 0 ? void 0 : _$$find.attr('data-type')) || '';
+          const taskFinished = (_$$find2 = $(task).find('.event-action-buttons .btn-success')) === null || _$$find2 === void 0 ? void 0 : _$$find2.length;
           const appId = taskDes.attr('data-steam-wishlist-appid');
           debug('处理任务', {
             taskName: taskName,
@@ -11632,14 +11706,14 @@ if (missingDependencies.length > 0) {
               debug('添加 Steam 愿望单任务', {
                 appId: appId
               });
-              this.undoneTasks.steam.wishlistLinks.push(`https://store.steampowered.com/app/${appId}`);
+              this.undoneTasks.steam.wishlistLinks.push('https://store.steampowered.com/app/'.concat(appId));
               return true;
             }
             debug('分类任务', {
               taskLink: taskLink,
               taskType: taskType
             });
-            this.#classifyTaskByType(taskLink, taskType, taskIcon, taskName, taskDes);
+            _assertClassBrand(_GiveeClub_brand, this, _classifyTaskByType3).call(this, taskLink, taskType, taskIcon, taskName, taskDes);
             return true;
           } catch (error) {
             debug('获取重定向链接失败', {
@@ -11656,7 +11730,7 @@ if (missingDependencies.length > 0) {
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
         this.socialTasks = this.undoneTasks;
         debug('保存任务信息');
-        GM_setValue(`gcTasks-${this.giveawayId}`, {
+        GM_setValue('gcTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -11667,136 +11741,6 @@ if (missingDependencies.length > 0) {
         });
         throwError(error, 'GiveeClub.classifyTask');
         return false;
-      }
-    }
-    #classifyTaskByType(taskLink, taskType, taskIcon, taskName, taskDes) {
-      try {
-        debug('开始分类任务', {
-          taskLink: taskLink,
-          taskType: taskType,
-          taskIcon: taskIcon,
-          taskName: taskName
-        });
-        if (taskType === 'steam.group.join' && /^https?:\/\/steamcommunity\.com\/groups/.test(taskLink)) {
-          debug('添加 Steam 组任务');
-          this.undoneTasks.steam.groupLinks.push(taskLink);
-          return;
-        }
-        if (/like.*announcement/gi.test(taskName)) {
-          debug('添加 Steam 公告任务');
-          this.undoneTasks.steam.announcementLinks.push(taskLink);
-          return;
-        }
-        if (taskType === 'steam.game.wishlist' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
-          debug('添加 Steam 愿望单任务');
-          this.undoneTasks.steam.wishlistLinks.push(taskLink);
-          return;
-        }
-        if (taskType === 'steam.game.wishlist' && taskDes.attr('data-steam-wishlist-appid')) {
-          debug('添加 Steam 愿望单任务（通过 appId）');
-          this.undoneTasks.steam.wishlistLinks.push(`https://store.steampowered.com/app/${taskDes.attr('data-steam-wishlist-appid')}`);
-          return;
-        }
-        if (taskType === 'steam.game.follow' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
-          debug('添加 Steam 游戏关注任务');
-          this.undoneTasks.steam.followLinks.push(taskLink);
-          return;
-        }
-        if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(taskLink)) {
-          debug('添加 Steam 鉴赏家关注任务');
-          this.undoneTasks.steam.curatorLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
-          debug('添加 Steam 鉴赏家点赞任务');
-          this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
-          return;
-        }
-        if (/subscribe.*steam.*forum/gim.test(taskName)) {
-          debug('添加 Steam 论坛任务');
-          this.undoneTasks.steam.forumLinks.push(taskLink);
-          return;
-        }
-        if (taskType === 'steam.game.playtime' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
-          const time = taskDes.text().match(/(\d+)(?:\.\d+)?/gim)?.[0] || '0';
-          debug('添加 Steam 游戏时长任务', {
-            time: time
-          });
-          this.undoneTasks.steam.playTimeLinks.push(`${time}-${taskLink}`);
-          return;
-        }
-        if (taskIcon.includes('discord')) {
-          debug('添加 Discord 服务器任务');
-          this.undoneTasks.discord.serverLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('instagram')) {
-          debug('跳过 Instagram 任务');
-          return;
-        }
-        if (taskIcon.includes('twitch')) {
-          debug('添加 Twitch 频道任务');
-          this.undoneTasks.twitch.channelLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('reddit')) {
-          debug('添加 Reddit 任务');
-          this.undoneTasks.reddit.redditLinks.push(taskLink);
-          return;
-        }
-        if (/watch.*art/gim.test(taskName)) {
-          debug('添加创意工坊物品任务');
-          this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
-          return;
-        }
-        if (/subscribe.*youtube.*channel/gim.test(taskName)) {
-          debug('添加 YouTube 频道任务');
-          this.undoneTasks.youtube.channelLinks.push(taskLink);
-          return;
-        }
-        if (/(watch|like).*youtube.*video/gim.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName)) {
-          debug('添加 YouTube 视频任务');
-          this.undoneTasks.youtube.likeLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
-          debug('添加 VK 任务');
-          this.undoneTasks.vk.nameLinks.push(taskLink);
-          return;
-        }
-        if (taskIcon.includes('twitter')) {
-          if (/https?:\/\/(twitter|x)\.com\/[^/]+\/?$/gim.test(taskLink)) {
-            debug('添加 Twitter 用户关注任务');
-            this.undoneTasks.twitter.userLinks.push(taskLink);
-            return;
-          }
-          if (/https?:\/\/(twitter|x)\.com\/[^/]+?\/status\/[\d]+/gim.test(taskLink)) {
-            debug('添加 Twitter 转发任务');
-            this.undoneTasks.twitter.retweetLinks.push(taskLink);
-            return;
-          }
-        }
-        if (/(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
-          debug('跳过 Twitter/Facebook 任务');
-          return;
-        }
-        if (/follow.*button/gim.test(taskName)) {
-          debug('添加 Steam 关注任务');
-          this.undoneTasks.steam.followLinks.push(taskLink);
-          return;
-        }
-        debug('未识别的任务类型', {
-          taskLink: taskLink,
-          taskType: taskType,
-          taskIcon: taskIcon,
-          taskName: taskName
-        });
-      } catch (error) {
-        debug('任务分类失败', {
-          error: error
-        });
-        throwError(error, 'GiveeClub.classifyTaskByType');
-        return;
       }
     }
     async verifyTask() {
@@ -11830,105 +11774,238 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
+  }
+  function _classifyTaskByType3(taskLink, taskType, taskIcon, taskName, taskDes) {
+    try {
+      debug('开始分类任务', {
+        taskLink: taskLink,
+        taskType: taskType,
+        taskIcon: taskIcon,
+        taskName: taskName
+      });
+      if (taskType === 'steam.group.join' && /^https?:\/\/steamcommunity\.com\/groups/.test(taskLink)) {
+        debug('添加 Steam 组任务');
+        this.undoneTasks.steam.groupLinks.push(taskLink);
+        return;
+      }
+      if (/like.*announcement/gi.test(taskName)) {
+        debug('添加 Steam 公告任务');
+        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        return;
+      }
+      if (taskType === 'steam.game.wishlist' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
+        debug('添加 Steam 愿望单任务');
+        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+        return;
+      }
+      if (taskType === 'steam.game.wishlist' && taskDes.attr('data-steam-wishlist-appid')) {
+        debug('添加 Steam 愿望单任务（通过 appId）');
+        this.undoneTasks.steam.wishlistLinks.push('https://store.steampowered.com/app/'.concat(taskDes.attr('data-steam-wishlist-appid')));
+        return;
+      }
+      if (taskType === 'steam.game.follow' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
+        debug('添加 Steam 游戏关注任务');
+        this.undoneTasks.steam.followLinks.push(taskLink);
+        return;
+      }
+      if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(taskLink)) {
+        debug('添加 Steam 鉴赏家关注任务');
+        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
+        debug('添加 Steam 鉴赏家点赞任务');
+        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        return;
+      }
+      if (/subscribe.*steam.*forum/gim.test(taskName)) {
+        debug('添加 Steam 论坛任务');
+        this.undoneTasks.steam.forumLinks.push(taskLink);
+        return;
+      }
+      if (taskType === 'steam.game.playtime' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
+        var _taskDes$text$match;
+        const time = ((_taskDes$text$match = taskDes.text().match(/(\d+)(?:\.\d+)?/gim)) === null || _taskDes$text$match === void 0 ? void 0 : _taskDes$text$match[0]) || '0';
+        debug('添加 Steam 游戏时长任务', {
+          time: time
+        });
+        this.undoneTasks.steam.playTimeLinks.push(''.concat(time, '-').concat(taskLink));
+        return;
+      }
+      if (taskIcon.includes('discord')) {
+        debug('添加 Discord 服务器任务');
+        this.undoneTasks.discord.serverLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('instagram')) {
+        debug('跳过 Instagram 任务');
+        return;
+      }
+      if (taskIcon.includes('twitch')) {
+        debug('添加 Twitch 频道任务');
+        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('reddit')) {
+        debug('添加 Reddit 任务');
+        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        return;
+      }
+      if (/watch.*art/gim.test(taskName)) {
+        debug('添加创意工坊物品任务');
+        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        return;
+      }
+      if (/subscribe.*youtube.*channel/gim.test(taskName)) {
+        debug('添加 YouTube 频道任务');
+        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        return;
+      }
+      if (/(watch|like).*youtube.*video/gim.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName)) {
+        debug('添加 YouTube 视频任务');
+        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
+        debug('添加 VK 任务');
+        this.undoneTasks.vk.nameLinks.push(taskLink);
+        return;
+      }
+      if (taskIcon.includes('twitter')) {
+        if (/https?:\/\/(twitter|x)\.com\/[^/]+\/?$/gim.test(taskLink)) {
+          debug('添加 Twitter 用户关注任务');
+          this.undoneTasks.twitter.userLinks.push(taskLink);
+          return;
         }
-        const needLogin = $('a[href*="/account/auth"]').length > 0;
-        if (needLogin) {
-          debug('未登录，重定向到登录页面');
-          window.open($('a[href*="/account/auth"]').attr('href'), '_self');
+        if (/https?:\/\/(twitter|x)\.com\/[^/]+?\/status\/[\d]+/gim.test(taskLink)) {
+          debug('添加 Twitter 转发任务');
+          this.undoneTasks.twitter.retweetLinks.push(taskLink);
+          return;
         }
-        debug('登录检查完成', {
-          needLogin: needLogin
+      }
+      if (/(on twitter)|(Follow.*on.*Facebook)/gim.test(taskName)) {
+        debug('跳过 Twitter/Facebook 任务');
+        return;
+      }
+      if (/follow.*button/gim.test(taskName)) {
+        debug('添加 Steam 关注任务');
+        this.undoneTasks.steam.followLinks.push(taskLink);
+        return;
+      }
+      debug('未识别的任务类型', {
+        taskLink: taskLink,
+        taskType: taskType,
+        taskIcon: taskIcon,
+        taskName: taskName
+      });
+    } catch (error) {
+      debug('任务分类失败', {
+        error: error
+      });
+      throwError(error, 'GiveeClub.classifyTaskByType');
+      return;
+    }
+  }
+  function _checkLogin4() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      const needLogin = $('a[href*="/account/auth"]').length > 0;
+      if (needLogin) {
+        debug('未登录，重定向到登录页面');
+        window.open($('a[href*="/account/auth"]').attr('href'), '_self');
+      }
+      debug('登录检查完成', {
+        needLogin: needLogin
+      });
+      return true;
+    } catch (error) {
+      debug('登录检查失败', {
+        error: error
+      });
+      throwError(error, 'GiveeClub.checkLogin');
+      return false;
+    }
+  }
+  function _getGiveawayId5() {
+    try {
+      var _window$location$href4;
+      debug('从URL获取抽奖ID');
+      const giveawayId = (_window$location$href4 = window.location.href.match(/\/event\/([\d]+)/)) === null || _window$location$href4 === void 0 ? void 0 : _window$location$href4[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
         });
         return true;
-      } catch (error) {
-        debug('登录检查失败', {
-          error: error
-        });
-        throwError(error, 'GiveeClub.checkLogin');
-        return false;
       }
+      debug('获取抽奖ID失败');
+      echoLog({
+        text: I18n('getFailed', 'GiveawayId')
+      });
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'GiveeClub.getGiveawayId');
+      return false;
     }
-    #getGiveawayId() {
-      try {
-        debug('从URL获取抽奖ID');
-        const giveawayId = window.location.href.match(/\/event\/([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
-        }
-        debug('获取抽奖ID失败');
-        echoLog({
-          text: I18n('getFailed', 'GiveawayId')
-        });
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'GiveeClub.getGiveawayId');
-        return false;
-      }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const isEnded = $('.event-ended').length > 0;
-        const hasNoWinner = $('.event-winner').length === 0;
-        debug('检查抽奖状态', {
-          isEnded: isEnded,
-          hasNoWinner: hasNoWinner
-        });
-        if (!(isEnded && hasNoWinner)) {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('giveawayEnded'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
+  }
+  async function _checkLeftKey6() {
+    try {
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'GiveeClub.checkLeftKey');
-        return false;
       }
+      const isEnded = $('.event-ended').length > 0;
+      const hasNoWinner = $('.event-winner').length === 0;
+      debug('检查抽奖状态', {
+        isEnded: isEnded,
+        hasNoWinner: hasNoWinner
+      });
+      if (!(isEnded && hasNoWinner)) {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('giveawayEnded'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'GiveeClub.checkLeftKey');
+      return false;
     }
   }
   const defaultOptions$1 = {
     maxPoint: '99999999'
   };
+  var _OpiumPulses_brand = new WeakSet;
   class OpiumPulses {
-    name='OpiumPulses';
-    options={
-      ...defaultOptions$1,
-      ...GM_getValue('OpiumPulsesOptions')
-    };
-    maxPoints=99999999;
-    myPoints=0;
-    buttons=[ 'doFreeTask', 'doPointTask' ];
+    constructor() {
+      _classPrivateMethodInitSpec(this, _OpiumPulses_brand);
+      _defineProperty(this, 'name', 'OpiumPulses');
+      _defineProperty(this, 'options', _objectSpread(_objectSpread({}, defaultOptions$1), GM_getValue('OpiumPulsesOptions')));
+      _defineProperty(this, 'maxPoints', 99999999);
+      _defineProperty(this, 'myPoints', 0);
+      _defineProperty(this, 'buttons', [ 'doFreeTask', 'doPointTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'www.opiumpulses.com';
@@ -11941,7 +12018,7 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_OpiumPulses_brand, this, _checkLogin5).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
@@ -11959,7 +12036,7 @@ if (missingDependencies.length > 0) {
     async doFreeTask() {
       try {
         debug('开始执行免费任务');
-        this.#toggleTask('FREE');
+        _assertClassBrand(_OpiumPulses_brand, this, _toggleTask2).call(this, 'FREE');
       } catch (error) {
         debug('执行免费任务失败', {
           error: error
@@ -11969,147 +12046,22 @@ if (missingDependencies.length > 0) {
     }
     async doPointTask() {
       try {
+        var _pointsText$match;
         debug('开始执行积分任务');
         const pointsText = $('.page-header__nav-func-user-nav-items.points-items').text();
-        const pointsMatch = pointsText.match(/[\d]+/gim)?.[0] || '0';
+        const pointsMatch = ((_pointsText$match = pointsText.match(/[\d]+/gim)) === null || _pointsText$match === void 0 ? void 0 : _pointsText$match[0]) || '0';
         this.myPoints = parseInt(pointsMatch, 10);
         debug('获取当前积分', {
           pointsText: pointsText,
           pointsMatch: pointsMatch,
           myPoints: this.myPoints
         });
-        this.#toggleTask('points');
+        _assertClassBrand(_OpiumPulses_brand, this, _toggleTask2).call(this, 'points');
       } catch (error) {
         debug('执行积分任务失败', {
           error: error
         });
         throwError(error, 'OpiumPulses.doPointTask');
-      }
-    }
-    async #toggleTask(type) {
-      try {
-        debug('开始切换任务', {
-          type: type
-        });
-        const items = $(`.giveaways-page-item:contains('${type}'):not(:contains('ENTERED'))`);
-        debug('找到未参与的抽奖项目', {
-          count: items.length
-        });
-        for (const item of items) {
-          const pointsText = $(item).find('.giveaways-page-item-header-points').text();
-          const needPoints = parseInt(pointsText.match(/[\d]+/gim)?.[0] || '999999', 10);
-          const name = $(item).find('.giveaways-page-item-footer-name').text().trim();
-          debug('处理抽奖项目', {
-            name: name,
-            needPoints: needPoints
-          });
-          if (type === 'points') {
-            if (needPoints > this.myPoints) {
-              debug('积分不足', {
-                needPoints: needPoints,
-                myPoints: this.myPoints
-              });
-              echoLog({}).warning(`${I18n('noPoints')}: ${name}`);
-              continue;
-            }
-            if (!needPoints) {
-              debug('获取所需积分失败');
-              echoLog({}).warning(`${I18n('getNeedPointsFailed')}: ${name}`);
-              continue;
-            }
-            if (needPoints > this.maxPoints) {
-              debug('超过最大积分限制', {
-                needPoints: needPoints,
-                maxPoints: this.maxPoints
-              });
-              continue;
-            }
-          }
-          const logStatus = echoLog({
-            text: `${I18n('joiningLottery')}<a href="${$(item).find('a.giveaways-page-item-img-btn-more').attr('href')}" target="_blank">${name}</a>...`
-          });
-          const aElement = $(item).find('a.giveaways-page-item-img-btn-enter:contains(\'enter\')');
-          if (aElement?.attr('onclick')?.includes('checkUser')) {
-            const giveawayId = aElement.attr('onclick')?.match(/[\d]+/)?.[0];
-            if (giveawayId) {
-              debug('执行用户检查', {
-                giveawayId: giveawayId
-              });
-              checkUser(giveawayId);
-            }
-          }
-          if (!aElement.attr('href')) {
-            debug('无效的链接');
-            logStatus.error('Error: No "href".');
-            continue;
-          }
-          debug('发送加入请求', {
-            url: aElement.attr('href')
-          });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            url: aElement.attr('href'),
-            method: 'GET'
-          });
-          if (result !== 'Success') {
-            debug('请求失败', {
-              result: result,
-              statusText: statusText,
-              status: status
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            continue;
-          }
-          debug('发送最终请求', {
-            url: data?.finalUrl
-          });
-          const {result: result0, statusText: statusText0, status: status0, data: data0} = await httpRequest({
-            url: data?.finalUrl,
-            method: 'GET'
-          });
-          if (!data0?.responseText) {
-            debug('响应无效', {
-              result: result0,
-              statusText: statusText0,
-              status: status0
-            });
-            logStatus.error(`${result0}:${statusText0}(${status0})`);
-            continue;
-          }
-          if (/You're not eligible to enter/gim.test(data0.responseText)) {
-            debug('用户不符合参与条件');
-            logStatus.error('You\'re not eligible to enter');
-            continue;
-          }
-          if (!/You've entered this giveaway/gim.test(data0.responseText)) {
-            debug('加入抽奖失败', {
-              result: result0,
-              statusText: statusText0,
-              status: status0
-            });
-            logStatus.error(`${result0}:${statusText0}(${status0})`);
-            continue;
-          }
-          debug('加入抽奖成功');
-          logStatus.success();
-          if (type === 'points') {
-            const points = data0.responseText.match(/Points:[\s]*?([\d]+)/)?.[1];
-            if (points) {
-              debug('更新用户积分', {
-                points: points
-              });
-              this.myPoints = parseInt(points, 10);
-            }
-          }
-        }
-        debug('任务处理完成');
-        echoLog({
-          text: '-----END-----'
-        });
-      } catch (error) {
-        debug('切换任务失败', {
-          error: error
-        });
-        throwError(error, 'OpiumPulses.toggleTask');
       }
     }
     init() {
@@ -12120,26 +12072,155 @@ if (missingDependencies.length > 0) {
       debug('任务分类完成');
       return true;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        if ($('a[href*="/site/login"]').length > 1) {
-          debug('未登录，重定向到登录页面');
-          window.open('/site/login', '_self');
-        }
-        debug('登录检查完成');
-        return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
+  }
+  async function _toggleTask2(type) {
+    try {
+      debug('开始切换任务', {
+        type: type
+      });
+      const items = $('.giveaways-page-item:contains(\''.concat(type, '\'):not(:contains(\'ENTERED\'))'));
+      debug('找到未参与的抽奖项目', {
+        count: items.length
+      });
+      for (const item of items) {
+        var _pointsText$match2, _aElement$attr;
+        const pointsText = $(item).find('.giveaways-page-item-header-points').text();
+        const needPoints = parseInt(((_pointsText$match2 = pointsText.match(/[\d]+/gim)) === null || _pointsText$match2 === void 0 ? void 0 : _pointsText$match2[0]) || '999999', 10);
+        const name = $(item).find('.giveaways-page-item-footer-name').text().trim();
+        debug('处理抽奖项目', {
+          name: name,
+          needPoints: needPoints
         });
-        throwError(error, 'OpiumPulses.checkLogin');
-        return false;
+        if (type === 'points') {
+          if (needPoints > this.myPoints) {
+            debug('积分不足', {
+              needPoints: needPoints,
+              myPoints: this.myPoints
+            });
+            echoLog({}).warning(''.concat(I18n('noPoints'), ': ').concat(name));
+            continue;
+          }
+          if (!needPoints) {
+            debug('获取所需积分失败');
+            echoLog({}).warning(''.concat(I18n('getNeedPointsFailed'), ': ').concat(name));
+            continue;
+          }
+          if (needPoints > this.maxPoints) {
+            debug('超过最大积分限制', {
+              needPoints: needPoints,
+              maxPoints: this.maxPoints
+            });
+            continue;
+          }
+        }
+        const logStatus = echoLog({
+          text: ''.concat(I18n('joiningLottery'), '<a href="').concat($(item).find('a.giveaways-page-item-img-btn-more').attr('href'), '" target="_blank">').concat(name, '</a>...')
+        });
+        const aElement = $(item).find('a.giveaways-page-item-img-btn-enter:contains(\'enter\')');
+        if (aElement !== null && aElement !== void 0 && (_aElement$attr = aElement.attr('onclick')) !== null && _aElement$attr !== void 0 && _aElement$attr.includes('checkUser')) {
+          var _aElement$attr2;
+          const giveawayId = (_aElement$attr2 = aElement.attr('onclick')) === null || _aElement$attr2 === void 0 || (_aElement$attr2 = _aElement$attr2.match(/[\d]+/)) === null || _aElement$attr2 === void 0 ? void 0 : _aElement$attr2[0];
+          if (giveawayId) {
+            debug('执行用户检查', {
+              giveawayId: giveawayId
+            });
+            checkUser(giveawayId);
+          }
+        }
+        if (!aElement.attr('href')) {
+          debug('无效的链接');
+          logStatus.error('Error: No "href".');
+          continue;
+        }
+        debug('发送加入请求', {
+          url: aElement.attr('href')
+        });
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+          url: aElement.attr('href'),
+          method: 'GET'
+        });
+        if (result !== 'Success') {
+          debug('请求失败', {
+            result: result,
+            statusText: statusText,
+            status: status
+          });
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+          continue;
+        }
+        debug('发送最终请求', {
+          url: data === null || data === void 0 ? void 0 : data.finalUrl
+        });
+        const {result: result0, statusText: statusText0, status: status0, data: data0} = await httpRequest({
+          url: data === null || data === void 0 ? void 0 : data.finalUrl,
+          method: 'GET'
+        });
+        if (!(data0 !== null && data0 !== void 0 && data0.responseText)) {
+          debug('响应无效', {
+            result: result0,
+            statusText: statusText0,
+            status: status0
+          });
+          logStatus.error(''.concat(result0, ':').concat(statusText0, '(').concat(status0, ')'));
+          continue;
+        }
+        if (/You're not eligible to enter/gim.test(data0.responseText)) {
+          debug('用户不符合参与条件');
+          logStatus.error('You\'re not eligible to enter');
+          continue;
+        }
+        if (!/You've entered this giveaway/gim.test(data0.responseText)) {
+          debug('加入抽奖失败', {
+            result: result0,
+            statusText: statusText0,
+            status: status0
+          });
+          logStatus.error(''.concat(result0, ':').concat(statusText0, '(').concat(status0, ')'));
+          continue;
+        }
+        debug('加入抽奖成功');
+        logStatus.success();
+        if (type === 'points') {
+          var _data0$responseText$m;
+          const points = (_data0$responseText$m = data0.responseText.match(/Points:[\s]*?([\d]+)/)) === null || _data0$responseText$m === void 0 ? void 0 : _data0$responseText$m[1];
+          if (points) {
+            debug('更新用户积分', {
+              points: points
+            });
+            this.myPoints = parseInt(points, 10);
+          }
+        }
       }
+      debug('任务处理完成');
+      echoLog({
+        text: '-----END-----'
+      });
+    } catch (error) {
+      debug('切换任务失败', {
+        error: error
+      });
+      throwError(error, 'OpiumPulses.toggleTask');
+    }
+  }
+  function _checkLogin5() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      if ($('a[href*="/site/login"]').length > 1) {
+        debug('未登录，重定向到登录页面');
+        window.open('/site/login', '_self');
+      }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'OpiumPulses.checkLogin');
+      return false;
     }
   }
   const leftKeyChecker = {
@@ -12197,10 +12278,10 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
@@ -12231,10 +12312,10 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
@@ -12258,6 +12339,7 @@ if (missingDependencies.length > 0) {
     },
     async gleam(link) {
       try {
+        var _data$responseText$ma8, _$$attr;
         debug('开始检查 gleam.io 链接', {
           link: link
         });
@@ -12265,10 +12347,10 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
@@ -12276,12 +12358,12 @@ if (missingDependencies.length > 0) {
           debug('检测到已中奖');
           return 'Won';
         }
-        const campaignDiv = data.responseText.match(/<div class='popup-blocks-container'[\w\W]+?'>/)?.[0];
+        const campaignDiv = (_data$responseText$ma8 = data.responseText.match(/<div class='popup-blocks-container'[\w\W]+?'>/)) === null || _data$responseText$ma8 === void 0 ? void 0 : _data$responseText$ma8[0];
         if (!campaignDiv) {
           debug('未找到活动信息');
           return false;
         }
-        const campaignString = $(campaignDiv).attr('ng-init')?.match(/initCampaign\(([\w\W]+?)\)$/)?.[1];
+        const campaignString = (_$$attr = $(campaignDiv).attr('ng-init')) === null || _$$attr === void 0 || (_$$attr = _$$attr.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr === void 0 ? void 0 : _$$attr[1];
         if (!campaignString) {
           debug('未找到活动初始化数据');
           return false;
@@ -12325,10 +12407,10 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
@@ -12352,6 +12434,7 @@ if (missingDependencies.length > 0) {
     },
     async keyhub(link) {
       try {
+        var _data$responseText$ma9;
         debug('开始检查 key-hub.eu 链接', {
           link: link
         });
@@ -12359,14 +12442,14 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
-        const keysleft = data.responseText.match(/<span id="keysleft">([\d]+?)<\/span>/)?.[1];
+        const keysleft = (_data$responseText$ma9 = data.responseText.match(/<span id="keysleft">([\d]+?)<\/span>/)) === null || _data$responseText$ma9 === void 0 ? void 0 : _data$responseText$ma9[1];
         if (!keysleft) {
           debug('未找到剩余密钥信息');
           return false;
@@ -12379,7 +12462,7 @@ if (missingDependencies.length > 0) {
           return 'Ended';
         }
         debug('检测到活动进行中');
-        return `Active(${keysleft})`;
+        return 'Active('.concat(keysleft, ')');
       } catch (error) {
         debug('检查 key-hub.eu 链接出错', {
           error: error
@@ -12390,6 +12473,7 @@ if (missingDependencies.length > 0) {
     },
     async opquests(link) {
       try {
+        var _data$responseText$ma0;
         debug('开始检查 opquests.com 链接', {
           link: link
         });
@@ -12397,18 +12481,18 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (data?.status === 404) {
+        if ((data === null || data === void 0 ? void 0 : data.status) === 404) {
           debug('检测到活动不存在');
           return 'Ended';
         }
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
-        const keysleft = data.responseText.match(/<div class="">[\s]*?([\d]+?)[\s]*?of/)?.[1];
+        const keysleft = (_data$responseText$ma0 = data.responseText.match(/<div class="">[\s]*?([\d]+?)[\s]*?of/)) === null || _data$responseText$ma0 === void 0 ? void 0 : _data$responseText$ma0[1];
         if (!keysleft) {
           debug('未找到剩余密钥信息');
           return false;
@@ -12421,7 +12505,7 @@ if (missingDependencies.length > 0) {
           return 'Ended';
         }
         debug('检测到活动进行中');
-        return `Active(${keysleft})`;
+        return 'Active('.concat(keysleft, ')');
       } catch (error) {
         debug('检查 opquests.com 链接出错', {
           error: error
@@ -12432,6 +12516,7 @@ if (missingDependencies.length > 0) {
     },
     async itch(link) {
       try {
+        var _data$responseText$ma1;
         debug('开始检查 itch.io 链接', {
           link: link
         });
@@ -12439,14 +12524,14 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
-        const endDate = data.responseText.match(/{"start_date":"[0-9A-Z-:]+?".*?"end_date":"([0-9A-Z-:]+?)".*?}/)?.[1];
+        const endDate = (_data$responseText$ma1 = data.responseText.match(/{"start_date":"[0-9A-Z-:]+?".*?"end_date":"([0-9A-Z-:]+?)".*?}/)) === null || _data$responseText$ma1 === void 0 ? void 0 : _data$responseText$ma1[1];
         if (!endDate) {
           debug('未找到结束日期信息');
           return false;
@@ -12462,7 +12547,7 @@ if (missingDependencies.length > 0) {
         debug('检测到活动进行中', {
           formattedEndDate: formattedEndDate
         });
-        return `Active(${formattedEndDate})`;
+        return 'Active('.concat(formattedEndDate, ')');
       } catch (error) {
         debug('检查 itch.io 链接出错', {
           error: error
@@ -12480,10 +12565,10 @@ if (missingDependencies.length > 0) {
           url: link,
           method: 'GET'
         });
-        if (result !== 'Success' || data?.status !== 200) {
+        if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
-            status: data?.status
+            status: data === null || data === void 0 ? void 0 : data.status
           });
           return false;
         }
@@ -12537,39 +12622,20 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$5 = JSON.stringify(defaultTasksTemplate$4);
+  var _Keylol_brand = new WeakSet;
   class Keylol extends Website {
-    name='Keylol';
-    socialTasks=(() => JSON.parse(defaultTasks$5))();
-    undoneTasks=(() => JSON.parse(defaultTasks$5))();
-    buttons=[ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ];
-    static CONFIG={
-      LINK_PATTERNS: {
-        DISCORD: /^https?:\/\/discord\.com\/invite\/.+/,
-        REDDIT: /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/,
-        INSTAGRAM: /^https:\/\/www\.instagram\.com\/.+/,
-        TWITTER: /^https:\/\/(twitter|x)\.com\/.+/,
-        TWITTER_RETWEET: /https:\/\/(twitter|x)\.com\/.*?\/status\/[\d]+/,
-        TWITCH: /^https:\/\/(www\.)?twitch\.tv\/.+/,
-        VK: /^https:\/\/vk\.com\/.+/,
-        STEAM_CURATOR: /curator\/[\d]+/,
-        STEAM_PUBLISHER: /(publisher|developer|franchise)\/.+/,
-        STEAM_NEWS: /news(hub)?\/app\/[\d]+\/view\/[\d]+/,
-        STEAM_APP: /app\/[\d]+/,
-        STEAM_GROUP: /groups\/.+/,
-        STEAM_ANNOUNCEMENT: /announcements\/detail\/[\d]+/,
-        YOUTUBE: /youtube\.com/
-      },
-      SELECTORS: {
-        MAIN_POST: {
-          KEYLOL: '#postlist>div[id^="post_"]:first',
-          DEFAULT: 'div.container'
-        }
-      }
-    };
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Keylol_brand);
+      _defineProperty(this, 'name', 'Keylol');
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$5));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$5));
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const link = $('.subforum_left_title_left_up a').eq(3).attr('href');
-      const isMatch = host === 'keylol.com' && (!!link?.includes('319') || !!link?.includes('234'));
+      const isMatch = host === 'keylol.com' && (!!(link !== null && link !== void 0 && link.includes('319')) || !!(link !== null && link !== void 0 && link.includes('234')));
       debug('检查网站匹配', {
         host: host,
         link: link,
@@ -12595,215 +12661,21 @@ if (missingDependencies.length > 0) {
           if (!href) {
             return;
           }
-          this.#classifyAndProcessLink($link, href);
+          _assertClassBrand(_Keylol_brand, this, _classifyAndProcessLink).call(this, $link, href);
         }));
         debug('开始处理抽奖链接');
-        this.#processGiveawayLinks(mainPost);
+        _assertClassBrand(_Keylol_brand, this, _processGiveawayLinks).call(this, mainPost);
         if (this.name === 'Keylol') {
           debug('开始处理 Keylol 特定链接');
-          this.#processKeylolSpecificLinks(mainPost);
+          _assertClassBrand(_Keylol_brand, this, _processKeylolSpecificLinks).call(this, mainPost);
         }
         debug('设置 MutationObserver');
-        this.#setupMutationObserver();
+        _assertClassBrand(_Keylol_brand, this, _setupMutationObserver).call(this);
       } catch (error) {
         debug('处理页面链接失败', {
           error: error
         });
         throwError(error, 'keylol.after');
-      }
-    }
-    #classifyAndProcessLink($link, href) {
-      debug('分类处理链接', {
-        href: href
-      });
-      const {LINK_PATTERNS: LINK_PATTERNS} = Keylol.CONFIG;
-      switch (true) {
-       case LINK_PATTERNS.DISCORD.test(href):
-        debug('发现 Discord 链接');
-        this.#addBtn($link[0], 'discord', 'serverLinks', href);
-        break;
-
-       case LINK_PATTERNS.REDDIT.test(href):
-        debug('发现 Reddit 链接');
-        this.#addBtn($link[0], 'reddit', 'redditLinks', href);
-        break;
-
-       case LINK_PATTERNS.TWITTER.test(href):
-        if (LINK_PATTERNS.TWITTER_RETWEET.test(href)) {
-          debug('发现 Twitter 转发链接');
-          this.#addBtn($link[0], 'twitter', 'retweetLinks', href);
-        } else {
-          debug('发现 Twitter 用户链接');
-          this.#addBtn($link[0], 'twitter', 'userLinks', href);
-        }
-        break;
-
-       case LINK_PATTERNS.TWITCH.test(href):
-        debug('发现 Twitch 链接');
-        this.#addBtn($link[0], 'twitch', 'channelLinks', href);
-        break;
-
-       case LINK_PATTERNS.VK.test(href):
-        debug('发现 VK 链接');
-        this.#addBtn($link[0], 'vk', 'nameLinks', href);
-        break;
-
-       case href.includes('store.steampowered.com'):
-        debug('发现 Steam 商店链接');
-        this.#processSteamStoreLink($link[0], href);
-        break;
-
-       case href.includes('steamcommunity.com'):
-        debug('发现 Steam 社区链接');
-        this.#processSteamCommunityLink($link[0], href);
-        break;
-
-       case LINK_PATTERNS.YOUTUBE.test(href):
-        debug('发现 YouTube 链接');
-        this.#addBtn($link[0], 'youtube', 'channelLinks', href);
-        this.#addBtn($link[0], 'youtube', 'likeLinks', href);
-        break;
-      }
-    }
-    #processSteamStoreLink(element, href) {
-      debug('处理 Steam 商店链接', {
-        href: href
-      });
-      const {LINK_PATTERNS: LINK_PATTERNS} = Keylol.CONFIG;
-      if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
-        debug('发现 Steam 鉴赏家链接');
-        this.#addBtn(element, 'steam', 'curatorLinks', href);
-      } else if (LINK_PATTERNS.STEAM_PUBLISHER.test(href)) {
-        debug('发现 Steam 发行商链接');
-        this.#addBtn(element, 'steam', 'curatorLikeLinks', href);
-      } else if (LINK_PATTERNS.STEAM_NEWS.test(href)) {
-        debug('发现 Steam 新闻链接');
-        this.#addBtn(element, 'steam', 'announcementLinks', href);
-      } else if (LINK_PATTERNS.STEAM_APP.test(href)) {
-        debug('发现 Steam 应用链接');
-        this.#addBtn(element, 'steam', 'followLinks', href);
-        this.#addBtn(element, 'steam', 'wishlistLinks', href);
-      }
-    }
-    #processSteamCommunityLink(element, href) {
-      debug('处理 Steam 社区链接', {
-        href: href
-      });
-      const {LINK_PATTERNS: LINK_PATTERNS} = Keylol.CONFIG;
-      if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
-        debug('发现 Steam 组链接');
-        this.#addBtn(element, 'steam', 'groupLinks', href);
-      } else if (LINK_PATTERNS.STEAM_ANNOUNCEMENT.test(href)) {
-        debug('发现 Steam 公告链接');
-        this.#addBtn(element, 'steam', 'announcementLinks', href);
-      }
-    }
-    #processGiveawayLinks(mainPost) {
-      debug('开始处理抽奖链接');
-      const giveawayLinks = mainPost.find('a[href*="giveaway.su/giveaway/view/"],' + 'a[href*="givee.club/"],' + 'a[href*="gleam.io/"],' + 'a[href*="www.indiedb.com/giveaways/"],' + 'a[href*="key-hub.eu/giveaway/"],' + 'a[href*="opquests.com/quests/"],' + 'a[href*="freeanywhere.net/game?n="],' + 'a[href*="itch.io/s/"]:visible');
-      debug('找到抽奖链接', {
-        count: giveawayLinks.length
-      });
-      giveawayLinks.each(((_, link) => {
-        const href = $(link).attr('href');
-        if (!href) {
-          return;
-        }
-        debug('检查抽奖链接状态', {
-          href: href
-        });
-        leftKeyChecker.classify(href).then((status => {
-          if (!status) {
-            return;
-          }
-          const statusClass = /^Active/.test(status) ? 'active' : 'not-active';
-          const statusTitle = /^Active/.test(status) ? I18n('Active') : I18n(status);
-          debug('更新抽奖链接状态', {
-            href: href,
-            status: status,
-            statusClass: statusClass
-          });
-          $(`a[href="${href}"]`).after(`<font class="auto-task-giveaway-status ${statusClass}" title="${statusTitle}">${status}</font>`);
-        })).catch((error => {
-          debug('检查抽奖链接状态失败', {
-            href: href,
-            error: error
-          });
-          throwError(error, 'keylol.after -> leftKeyChecker');
-        }));
-      }));
-    }
-    #processKeylolSpecificLinks(mainPost) {
-      debug('开始处理 Keylol 特定链接');
-      const asfLinks = mainPost.find('a[href^="#asf"]:visible');
-      debug('找到 ASF 链接', {
-        count: asfLinks.length
-      });
-      asfLinks.each(((_, link) => {
-        const href = $(link).attr('href');
-        if (!href) {
-          return;
-        }
-        debug('处理 ASF 链接', {
-          href: href
-        });
-        const $link = $(`a[href="${href}"]`);
-        $link.after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>');
-        this.#addBtn($link.next()[0], 'steam', 'licenseLinks', `appid-${href.replace('#asf', '')}`);
-      }));
-      const steamDbLinks = mainPost.find('a[href*="steamdb.info/sub/"]:visible');
-      debug('找到 SteamDB 链接', {
-        count: steamDbLinks.length
-      });
-      steamDbLinks.each(((_, link) => {
-        const href = $(link).attr('href');
-        if (!href) {
-          return;
-        }
-        const subid = href.match(/^https:\/\/steamdb\.info\/sub\/([\d]+)/)?.[1];
-        if (!subid) {
-          return;
-        }
-        debug('处理 SteamDB 链接', {
-          href: href,
-          subid: subid
-        });
-        this.#addBtn(link, 'steam', 'licenseLinks', `subid-${subid}`);
-      }));
-      const asfBlocks = mainPost.find('.blockcode:contains("addlicense"):visible');
-      debug('找到 ASF 代码块', {
-        count: asfBlocks.length
-      });
-      asfBlocks.each(((_, block) => {
-        const appid = [ ...block.innerText.matchAll(/a(pp)?\/([\d]+)/g) ].map((matched => matched?.[2])).filter((id => id));
-        if (appid.length > 0) {
-          debug('处理 ASF 代码块 appid', {
-            appid: appid
-          });
-          this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `appid-${appid.join(',')}`);
-        }
-        const subid = block.innerText.match(/[\d]+/g)?.filter((matched => !appid.includes(matched)));
-        if (subid?.length) {
-          debug('处理 ASF 代码块 subid', {
-            subid: subid
-          });
-          this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `subid-${subid.join(',')}`);
-        }
-      }));
-    }
-    #setupMutationObserver() {
-      debug('设置 MutationObserver');
-      if ($('#threadindex').length > 0) {
-        const [elementTargetNode] = $('#postlist').children('div[id^="post_"]');
-        const elementObserver = new MutationObserver((() => {
-          debug('检测到 DOM 变化，重新处理页面');
-          elementObserver.disconnect();
-          this.after();
-        }));
-        elementObserver.observe(elementTargetNode, {
-          childList: true
-        });
-        debug('MutationObserver 设置完成');
       }
     }
     classifyTask(action) {
@@ -12920,39 +12792,260 @@ if (missingDependencies.length > 0) {
         throwError(error, 'Keylol.invertSelect');
       }
     }
-    #addBtn(before, social, linkType, link) {
-      try {
-        debug('添加任务按钮', {
-          social: social,
-          linkType: linkType,
-          link: link
-        });
-        if (!before || !social || !linkType || !link) {
-          debug('跳过无效按钮参数');
-          return;
-        }
-        const button = $('<a>', {
-          href: 'javascript:void(0);',
-          class: 'auto-task-keylol',
-          target: '_self',
-          'data-social': social,
-          'data-type': linkType,
-          'data-link': link,
-          text: linkType.replace('Links', ''),
-          onclick: 'this.getAttribute("selected") ? this.removeAttribute("selected") : this.setAttribute("selected", "selected")'
-        });
-        $(before).after(button);
-        debug('按钮添加成功');
-      } catch (error) {
-        debug('添加按钮失败', {
-          error: error,
-          social: social,
-          linkType: linkType
-        });
-        throwError(error, `keylol.addBtn: ${social}/${linkType}`);
+  }
+  _Keylol = Keylol;
+  function _classifyAndProcessLink($link, href) {
+    debug('分类处理链接', {
+      href: href
+    });
+    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    switch (true) {
+     case LINK_PATTERNS.DISCORD.test(href):
+      debug('发现 Discord 链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'discord', 'serverLinks', href);
+      break;
+
+     case LINK_PATTERNS.REDDIT.test(href):
+      debug('发现 Reddit 链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'reddit', 'redditLinks', href);
+      break;
+
+     case LINK_PATTERNS.TWITTER.test(href):
+      if (LINK_PATTERNS.TWITTER_RETWEET.test(href)) {
+        debug('发现 Twitter 转发链接');
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'retweetLinks', href);
+      } else {
+        debug('发现 Twitter 用户链接');
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'userLinks', href);
       }
+      break;
+
+     case LINK_PATTERNS.TWITCH.test(href):
+      debug('发现 Twitch 链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitch', 'channelLinks', href);
+      break;
+
+     case LINK_PATTERNS.VK.test(href):
+      debug('发现 VK 链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'vk', 'nameLinks', href);
+      break;
+
+     case href.includes('store.steampowered.com'):
+      debug('发现 Steam 商店链接');
+      _assertClassBrand(_Keylol_brand, this, _processSteamStoreLink).call(this, $link[0], href);
+      break;
+
+     case href.includes('steamcommunity.com'):
+      debug('发现 Steam 社区链接');
+      _assertClassBrand(_Keylol_brand, this, _processSteamCommunityLink).call(this, $link[0], href);
+      break;
+
+     case LINK_PATTERNS.YOUTUBE.test(href):
+      debug('发现 YouTube 链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'channelLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'likeLinks', href);
+      break;
     }
   }
+  function _processSteamStoreLink(element, href) {
+    debug('处理 Steam 商店链接', {
+      href: href
+    });
+    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
+      debug('发现 Steam 鉴赏家链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curatorLinks', href);
+    } else if (LINK_PATTERNS.STEAM_PUBLISHER.test(href)) {
+      debug('发现 Steam 发行商链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curatorLikeLinks', href);
+    } else if (LINK_PATTERNS.STEAM_NEWS.test(href)) {
+      debug('发现 Steam 新闻链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcementLinks', href);
+    } else if (LINK_PATTERNS.STEAM_APP.test(href)) {
+      debug('发现 Steam 应用链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'followLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'wishlistLinks', href);
+    }
+  }
+  function _processSteamCommunityLink(element, href) {
+    debug('处理 Steam 社区链接', {
+      href: href
+    });
+    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
+      debug('发现 Steam 组链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'groupLinks', href);
+    } else if (LINK_PATTERNS.STEAM_ANNOUNCEMENT.test(href)) {
+      debug('发现 Steam 公告链接');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcementLinks', href);
+    }
+  }
+  function _processGiveawayLinks(mainPost) {
+    debug('开始处理抽奖链接');
+    const giveawayLinks = mainPost.find('a[href*="giveaway.su/giveaway/view/"],' + 'a[href*="givee.club/"],' + 'a[href*="gleam.io/"],' + 'a[href*="www.indiedb.com/giveaways/"],' + 'a[href*="key-hub.eu/giveaway/"],' + 'a[href*="opquests.com/quests/"],' + 'a[href*="freeanywhere.net/game?n="],' + 'a[href*="itch.io/s/"]:visible');
+    debug('找到抽奖链接', {
+      count: giveawayLinks.length
+    });
+    giveawayLinks.each(((_, link) => {
+      const href = $(link).attr('href');
+      if (!href) {
+        return;
+      }
+      debug('检查抽奖链接状态', {
+        href: href
+      });
+      leftKeyChecker.classify(href).then((status => {
+        if (!status) {
+          return;
+        }
+        const statusClass = /^Active/.test(status) ? 'active' : 'not-active';
+        const statusTitle = /^Active/.test(status) ? I18n('Active') : I18n(status);
+        debug('更新抽奖链接状态', {
+          href: href,
+          status: status,
+          statusClass: statusClass
+        });
+        $('a[href="'.concat(href, '"]')).after('<font class="auto-task-giveaway-status '.concat(statusClass, '" title="').concat(statusTitle, '">').concat(status, '</font>'));
+      })).catch((error => {
+        debug('检查抽奖链接状态失败', {
+          href: href,
+          error: error
+        });
+        throwError(error, 'keylol.after -> leftKeyChecker');
+      }));
+    }));
+  }
+  function _processKeylolSpecificLinks(mainPost) {
+    debug('开始处理 Keylol 特定链接');
+    const asfLinks = mainPost.find('a[href^="#asf"]:visible');
+    debug('找到 ASF 链接', {
+      count: asfLinks.length
+    });
+    asfLinks.each(((_, link) => {
+      const href = $(link).attr('href');
+      if (!href) {
+        return;
+      }
+      debug('处理 ASF 链接', {
+        href: href
+      });
+      const $link = $('a[href="'.concat(href, '"]'));
+      $link.after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>');
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link.next()[0], 'steam', 'licenseLinks', 'appid-'.concat(href.replace('#asf', '')));
+    }));
+    const steamDbLinks = mainPost.find('a[href*="steamdb.info/sub/"]:visible');
+    debug('找到 SteamDB 链接', {
+      count: steamDbLinks.length
+    });
+    steamDbLinks.each(((_, link) => {
+      var _href$match;
+      const href = $(link).attr('href');
+      if (!href) {
+        return;
+      }
+      const subid = (_href$match = href.match(/^https:\/\/steamdb\.info\/sub\/([\d]+)/)) === null || _href$match === void 0 ? void 0 : _href$match[1];
+      if (!subid) {
+        return;
+      }
+      debug('处理 SteamDB 链接', {
+        href: href,
+        subid: subid
+      });
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, link, 'steam', 'licenseLinks', 'subid-'.concat(subid));
+    }));
+    const asfBlocks = mainPost.find('.blockcode:contains("addlicense"):visible');
+    debug('找到 ASF 代码块', {
+      count: asfBlocks.length
+    });
+    asfBlocks.each(((_, block) => {
+      var _block$innerText$matc;
+      const appid = [ ...block.innerText.matchAll(/a(pp)?\/([\d]+)/g) ].map((matched => matched === null || matched === void 0 ? void 0 : matched[2])).filter((id => id));
+      if (appid.length > 0) {
+        debug('处理 ASF 代码块 appid', {
+          appid: appid
+        });
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'licenseLinks', 'appid-'.concat(appid.join(',')));
+      }
+      const subid = (_block$innerText$matc = block.innerText.match(/[\d]+/g)) === null || _block$innerText$matc === void 0 ? void 0 : _block$innerText$matc.filter((matched => !appid.includes(matched)));
+      if (subid !== null && subid !== void 0 && subid.length) {
+        debug('处理 ASF 代码块 subid', {
+          subid: subid
+        });
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'licenseLinks', 'subid-'.concat(subid.join(',')));
+      }
+    }));
+  }
+  function _setupMutationObserver() {
+    debug('设置 MutationObserver');
+    if ($('#threadindex').length > 0) {
+      const [elementTargetNode] = $('#postlist').children('div[id^="post_"]');
+      const elementObserver = new MutationObserver((() => {
+        debug('检测到 DOM 变化，重新处理页面');
+        elementObserver.disconnect();
+        this.after();
+      }));
+      elementObserver.observe(elementTargetNode, {
+        childList: true
+      });
+      debug('MutationObserver 设置完成');
+    }
+  }
+  function _addBtn(before, social, linkType, link) {
+    try {
+      debug('添加任务按钮', {
+        social: social,
+        linkType: linkType,
+        link: link
+      });
+      if (!before || !social || !linkType || !link) {
+        debug('跳过无效按钮参数');
+        return;
+      }
+      const button = $('<a>', {
+        href: 'javascript:void(0);',
+        class: 'auto-task-keylol',
+        target: '_self',
+        'data-social': social,
+        'data-type': linkType,
+        'data-link': link,
+        text: linkType.replace('Links', ''),
+        onclick: 'this.getAttribute("selected") ? this.removeAttribute("selected") : this.setAttribute("selected", "selected")'
+      });
+      $(before).after(button);
+      debug('按钮添加成功');
+    } catch (error) {
+      debug('添加按钮失败', {
+        error: error,
+        social: social,
+        linkType: linkType
+      });
+      throwError(error, 'keylol.addBtn: '.concat(social, '/').concat(linkType));
+    }
+  }
+  _defineProperty(Keylol, 'CONFIG', {
+    LINK_PATTERNS: {
+      DISCORD: /^https?:\/\/discord\.com\/invite\/.+/,
+      REDDIT: /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/,
+      INSTAGRAM: /^https:\/\/www\.instagram\.com\/.+/,
+      TWITTER: /^https:\/\/(twitter|x)\.com\/.+/,
+      TWITTER_RETWEET: /https:\/\/(twitter|x)\.com\/.*?\/status\/[\d]+/,
+      TWITCH: /^https:\/\/(www\.)?twitch\.tv\/.+/,
+      VK: /^https:\/\/vk\.com\/.+/,
+      STEAM_CURATOR: /curator\/[\d]+/,
+      STEAM_PUBLISHER: /(publisher|developer|franchise)\/.+/,
+      STEAM_NEWS: /news(hub)?\/app\/[\d]+\/view\/[\d]+/,
+      STEAM_APP: /app\/[\d]+/,
+      STEAM_GROUP: /groups\/.+/,
+      STEAM_ANNOUNCEMENT: /announcements\/detail\/[\d]+/,
+      YOUTUBE: /youtube\.com/
+    },
+    SELECTORS: {
+      MAIN_POST: {
+        KEYLOL: '#postlist>div[id^="post_"]:first',
+        DEFAULT: 'div.container'
+      }
+    }
+  });
   const defaultTasks$4 = {
     steam: {
       groupLinks: [],
@@ -12969,12 +13062,15 @@ if (missingDependencies.length > 0) {
       serverLinks: []
     }
   };
+  var _Opquests_brand = new WeakSet;
   class Opquests extends Website {
-    name='Opquests';
-    undoneTasks={
-      ...defaultTasks$4
-    };
-    buttons=[ 'doTask', 'verifyTask', 'getKey' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Opquests_brand);
+      _defineProperty(this, 'name', 'Opquests');
+      _defineProperty(this, 'undoneTasks', _objectSpread({}, defaultTasks$4));
+      _defineProperty(this, 'buttons', [ 'doTask', 'verifyTask', 'getKey' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'opquests.com';
@@ -12987,7 +13083,7 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_Opquests_brand, this, _checkLogin6).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
@@ -13001,7 +13097,7 @@ if (missingDependencies.length > 0) {
             taskId: taskId
           });
           GM_setValue('opquestsVerifyTasks', opquestsVerifyTasks);
-          const [verifyBtn] = $(`#task_id[value="${taskId}"]`).parent().find('button[type="button"],button[type="submit"]').has('i.fa-check');
+          const [verifyBtn] = $('#task_id[value="'.concat(taskId, '"]')).parent().find('button[type="button"],button[type="submit"]').has('i.fa-check');
           if (verifyBtn) {
             debug('点击验证按钮', verifyBtn);
             verifyBtn.click();
@@ -13034,7 +13130,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_Opquests_brand, this, _getGiveawayId6).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -13093,11 +13189,12 @@ if (missingDependencies.length > 0) {
               debug('添加 Steam 关注任务');
               this.undoneTasks.steam.followLinks.push(link);
             } else if (/play/gim.test(taskDes)) {
-              const time = parseInt(taskDes.replace(/\s/gim, '').match(/(\d+)hours/im)?.[1] || '0', 10) * 60;
+              var _taskDes$replace$matc;
+              const time = parseInt(((_taskDes$replace$matc = taskDes.replace(/\s/gim, '').match(/(\d+)hours/im)) === null || _taskDes$replace$matc === void 0 ? void 0 : _taskDes$replace$matc[1]) || '0', 10) * 60;
               debug('添加 Steam 游戏时长任务', {
                 time: time
               });
-              this.undoneTasks.steam.playTimeLinks.push(`${time}-${link}`);
+              this.undoneTasks.steam.playTimeLinks.push(''.concat(time, '-').concat(link));
             }
             continue;
           }
@@ -13140,11 +13237,11 @@ if (missingDependencies.length > 0) {
           }
           if (/clash\.gg/.test(link)) {
             debug('跳过不支持的 Clash.gg 任务');
-            echoLog({}).warning(`${I18n('unSupporttedTaskType')}: ${taskDes}(${link})`);
+            echoLog({}).warning(''.concat(I18n('unSupporttedTaskType'), ': ').concat(taskDes, '(').concat(link, ')'));
             continue;
           }
           debug('未知任务类型');
-          echoLog({}).warning(`${I18n('unKnownTaskType')}: ${taskDes}(${link})`);
+          echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(taskDes, '(').concat(link, ')'));
         }
         debug('任务分类完成');
         logStatus.success();
@@ -13173,7 +13270,7 @@ if (missingDependencies.length > 0) {
           count: tasks.length
         });
         GM_setValue('opquestsVerifyTasks', tasks);
-        await this.#confirm();
+        await _assertClassBrand(_Opquests_brand, this, _confirm).call(this);
         debug('执行后续操作');
         this.after();
         return true;
@@ -13182,50 +13279,6 @@ if (missingDependencies.length > 0) {
           error: error
         });
         throwError(error, 'Opquests.verifyTask');
-        return false;
-      }
-    }
-    async #confirm() {
-      try {
-        debug('开始确认任务');
-        const logStatus = echoLog({
-          html: `<li>${I18n('confirmingTask')}...<font></font></li>`
-        });
-        debug('发送确认请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://opquests.com/quests/${this.giveawayId}?confirm=1`,
-          method: 'GET',
-          nochche: true,
-          headers: {
-            origin: 'https://opquests.com',
-            referer: `https://opquests.com/warning?id=${this.giveawayId}`
-          }
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('响应错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('确认成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('确认任务失败', {
-          error: error
-        });
-        throwError(error, 'Opquests.confirm');
         return false;
       }
     }
@@ -13253,19 +13306,19 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (!data?.responseText) {
+        if (!(data !== null && data !== void 0 && data.responseText)) {
           debug('响应无效', {
-            status: data?.status,
-            statusText: data?.statusText
+            status: data === null || data === void 0 ? void 0 : data.status,
+            statusText: data === null || data === void 0 ? void 0 : data.statusText
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         const questTitle = $('h1.font-bold').text().trim().replace(' Quest', '');
-        const key = $(data.responseText).find(`div.items-center:contains("${questTitle}")`).find('div.font-bold').next().text();
+        const key = $(data.responseText).find('div.items-center:contains("'.concat(questTitle, '")')).find('div.font-bold').next().text();
         debug('查找密钥', {
           questTitle: questTitle,
           hasKey: !!key
@@ -13291,48 +13344,93 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #getGiveawayId() {
-      try {
-        debug('开始获取抽奖ID');
-        const giveawayId = window.location.href.match(/quests\/([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
+  }
+  async function _confirm() {
+    try {
+      debug('开始确认任务');
+      const logStatus = echoLog({
+        html: '<li>'.concat(I18n('confirmingTask'), '...<font></font></li>')
+      });
+      debug('发送确认请求');
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://opquests.com/quests/'.concat(this.giveawayId, '?confirm=1'),
+        method: 'GET',
+        nochche: true,
+        headers: {
+          origin: 'https://opquests.com',
+          referer: 'https://opquests.com/warning?id='.concat(this.giveawayId)
         }
-        debug('获取抽奖ID失败');
-        echoLog({}).error(I18n('getFailed', 'GiveawayId'));
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
+      });
+      if (result !== 'Success') {
+        debug('请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
         });
-        throwError(error, 'Opquests.getGiveawayId');
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('响应错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('确认成功');
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('确认任务失败', {
+        error: error
+      });
+      throwError(error, 'Opquests.confirm');
+      return false;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        if ($('a[href*="/auth/redirect"]').length > 0) {
-          debug('未登录，重定向到登录页面');
-          window.open('/auth/redirect', '_self');
-        }
-        debug('登录检查完成');
-        return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
+  }
+  function _getGiveawayId6() {
+    try {
+      var _window$location$href5;
+      debug('开始获取抽奖ID');
+      const giveawayId = (_window$location$href5 = window.location.href.match(/quests\/([\d]+)/)) === null || _window$location$href5 === void 0 ? void 0 : _window$location$href5[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
         });
-        throwError(error, 'Opquests.checkLogin');
-        return false;
+        return true;
       }
+      debug('获取抽奖ID失败');
+      echoLog({}).error(I18n('getFailed', 'GiveawayId'));
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Opquests.getGiveawayId');
+      return false;
+    }
+  }
+  function _checkLogin6() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      if ($('a[href*="/auth/redirect"]').length > 0) {
+        debug('未登录，重定向到登录页面');
+        window.open('/auth/redirect', '_self');
+      }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'Opquests.checkLogin');
+      return false;
     }
   }
   const defaultTasksTemplate$3 = {
@@ -13362,11 +13460,16 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$3 = JSON.stringify(defaultTasksTemplate$3);
+  var _Gleam_brand = new WeakSet;
   class Gleam extends Website {
-    name='Gleam';
-    undoneTasks=(() => JSON.parse(defaultTasks$3))();
-    socialTasks=(() => JSON.parse(defaultTasks$3))();
-    buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Gleam_brand);
+      _defineProperty(this, 'name', 'Gleam');
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$3));
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$3));
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'gleam.io';
@@ -13403,7 +13506,7 @@ if (missingDependencies.length > 0) {
           }));
           await this.verifyTask();
           echoLog({}).warning(I18n('gleamTaskNotice'));
-        } else if (!await this.#checkLeftKey()) {
+        } else if (!await _assertClassBrand(_Gleam_brand, this, _checkLeftKey7).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -13420,7 +13523,7 @@ if (missingDependencies.length > 0) {
         const logStatus = echoLog({
           text: I18n('initing')
         });
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_Gleam_brand, this, _getGiveawayId7).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -13445,14 +13548,16 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue10;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`gleamTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$3);
+          this.socialTasks = ((_GM_getValue10 = GM_getValue('gleamTasks-'.concat(this.giveawayId))) === null || _GM_getValue10 === void 0 ? void 0 : _GM_getValue10.tasks) || JSON.parse(defaultTasks$3);
         }
         const tasks = $('.entry-content .entry-method');
         debug('找到任务元素', {
           count: tasks.length
         });
         for (const task of tasks) {
+          var _socialIcon$attr;
           const $task = $(task);
           if (action === 'do' && $task.find('i.fa-question').length === 0) {
             debug('跳过已完成的任务');
@@ -13517,11 +13622,12 @@ if (missingDependencies.length > 0) {
           if (socialIcon.hasClass('fa-discord') && /join/gim.test(taskText)) {
             let link = $task.find('a[href^="https://discord.com/invite/"]').attr('href');
             if (!link) {
-              const ggLink = $task.find('a[href^="https://discord.gg/"]').attr('href')?.match(/discord\.gg\/([^/]+)/)?.[1];
+              var _$task$find$attr;
+              const ggLink = (_$task$find$attr = $task.find('a[href^="https://discord.gg/"]').attr('href')) === null || _$task$find$attr === void 0 || (_$task$find$attr = _$task$find$attr.match(/discord\.gg\/([^/]+)/)) === null || _$task$find$attr === void 0 ? void 0 : _$task$find$attr[1];
               if (!ggLink) {
                 continue;
               }
-              link = `https://discord.com/invite/${ggLink}`;
+              link = 'https://discord.com/invite/'.concat(ggLink);
             }
             if (action === 'undo') {
               this.socialTasks.discord.serverLinks.push(link);
@@ -13547,7 +13653,7 @@ if (missingDependencies.length > 0) {
             }
             continue;
           }
-          if (socialIcon.attr('class')?.includes('steam')) {
+          if ((_socialIcon$attr = socialIcon.attr('class')) !== null && _socialIcon$attr !== void 0 && _socialIcon$attr.includes('steam')) {
             if (/join.*group/gi.test(taskText)) {
               const link = $task.find('a[href^="https://steamcommunity.com/groups/"]').attr('href');
               if (!link) {
@@ -13575,14 +13681,15 @@ if (missingDependencies.length > 0) {
               continue;
             }
             if (/play[\w\W]*hours/gi.test(taskText)) {
+              var _time$;
               const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
               const time = [ ...taskText.matchAll(/(\d+?(\.\d+)?)\s*?hour/gi) ];
-              if (!link || !time[0]?.[1]) {
+              if (!link || !((_time$ = time[0]) !== null && _time$ !== void 0 && _time$[1])) {
                 continue;
               }
               const trueTime = parseFloat(time[0][1]) * 60;
               if (action === 'do') {
-                this.undoneTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
+                this.undoneTasks.steam.playTimeLinks.push(''.concat(trueTime, '-').concat(link));
               }
               continue;
             }
@@ -13619,7 +13726,7 @@ if (missingDependencies.length > 0) {
             if (action !== 'do') {
               continue;
             }
-            const gleamLink = await this.#getGleamLink(taskText);
+            const gleamLink = await _assertClassBrand(_Gleam_brand, this, _getGleamLink).call(this, taskText);
             if (!gleamLink) {
               continue;
             }
@@ -13629,14 +13736,14 @@ if (missingDependencies.length > 0) {
           if (socialIcon.hasClass('fa-question') || socialIcon.hasClass('fa-reddit') || socialIcon.hasClass('fa-instagram') || socialIcon.hasClass('fa-facebook-f') || socialIcon.hasClass('fa-telegram-plane') || socialIcon.hasClass('fa-telegram') || socialIcon.hasClass('fa-vk') || socialIcon.hasClass('fa-envelope') || socialIcon.hasClass('fa-gift') || socialIcon.hasClass('fa-square-up-right') || socialIcon.hasClass('fa-gamepad-modern') || socialIcon.hasClass('fa-dollar-sign') || socialIcon.hasClass('fa-tiktok') || socialIcon.hasClass('fa-gamepad-alt') || socialIcon.hasClass('fa-bag-shopping') || socialIcon.hasClass('fa-swords') || socialIcon.hasClass('fa-dinosaur') || socialIcon.hasClass('fa-shield') && taskText.includes('one of our giveaways') || socialIcon.hasClass('fa-shield') && taskText.includes('Check out') || socialIcon.hasClass('fa-shield') && taskText.includes('vloot.io')) {
             continue;
           }
-          echoLog({}).warning(`${I18n('unKnownTaskType')}: ${taskText}`);
+          echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(taskText));
         }
         debug('任务分类完成');
         logStatus.success();
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
         this.socialTasks = this.uniqueTasks(this.socialTasks);
         debug('保存任务信息');
-        GM_setValue(`gleamTasks-${this.giveawayId}`, {
+        GM_setValue('gleamTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -13649,15 +13756,15 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async extraDoTask(_ref16) {
-      let {gleam: gleam} = _ref16;
+    async extraDoTask(_ref10) {
+      let {gleam: gleam} = _ref10;
       try {
         debug('开始执行额外任务', {
           count: gleam.length
         });
         const pro = [];
         for (const link of gleam) {
-          pro.push(this.#doGleamTask(link));
+          pro.push(_assertClassBrand(_Gleam_brand, this, _doGleamTask).call(this, link));
         }
         return Promise.all(pro).then((() => true));
       } catch (error) {
@@ -13668,40 +13775,17 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #checkCampaign() {
-      try {
-        debug('检测人机验证');
-        let logStatus;
-        if ($('[campaign-key="campaign.key"]').length > 0) {
-          logStatus = echoLog({
-            text: I18n('campaign')
-          });
-          debug('检测到人机验证');
-          await delay(3e3);
-          logStatus.warning(I18n('retry'));
-          await this.#checkCampaign();
-          return true;
-        }
-        logStatus?.success();
-        return false;
-      } catch (error) {
-        debug('检测人机验证失败', {
-          error: error
-        });
-        throwError(error, 'Gleam.checkCampaign');
-        return false;
-      }
-    }
     async verifyTask() {
       try {
         debug('开始验证任务');
         echoLog({
-          text: `${I18n('verifyingTask')}...`
+          text: ''.concat(I18n('verifyingTask'), '...')
         });
         const tasks = $('.entry-content .entry-method');
         unsafeWindow._OxA = '_OxA';
         for (const task of tasks) {
-          const campaign = await this.#checkCampaign();
+          var _unsafeWindow$$hookTi, _unsafeWindow$$hookTi2;
+          const campaign = await _assertClassBrand(_Gleam_brand, this, _checkCampaign).call(this);
           if (campaign) {
             return this.verifyTask();
           }
@@ -13726,7 +13810,7 @@ if (missingDependencies.length > 0) {
             }
           }
           debug('处理计时器');
-          unsafeWindow.$hookTimer?.setSpeed(1e3);
+          (_unsafeWindow$$hookTi = unsafeWindow.$hookTimer) === null || _unsafeWindow$$hookTi === void 0 || _unsafeWindow$$hookTi.setSpeed(1e3);
           const visitBtn = $task.find('.expandable').find('span:contains(more seconds),button:contains(more seconds)').filter(':visible');
           if (visitBtn.length > 0 && unsafeWindow.$hookTimer) {
             debug('处理访问按钮');
@@ -13734,32 +13818,33 @@ if (missingDependencies.length > 0) {
               active: true
             });
             await delay(1e3);
-            newTab?.close();
+            newTab === null || newTab === void 0 || newTab.close();
             window.focus();
           }
           await delay(3e3);
-          unsafeWindow.$hookTimer?.setSpeed(1);
+          (_unsafeWindow$$hookTi2 = unsafeWindow.$hookTimer) === null || _unsafeWindow$$hookTi2 === void 0 || _unsafeWindow$$hookTi2.setSpeed(1);
           const expandInfo = $task.find('.expandable');
           const [input] = expandInfo.find('input');
           if (input) {
+            var _at;
             debug('处理输入框');
             const evt = new Event('input', {
               bubbles: true,
               cancelable: true,
               composed: true
             });
-            const valuelimit = [ ...expandInfo.text().matchAll(/"(.+?)"/g) ].at(-1)?.[1];
+            const valuelimit = (_at = [ ...expandInfo.text().matchAll(/"(.+?)"/g) ].at(-1)) === null || _at === void 0 ? void 0 : _at[1];
             input.value = valuelimit || 'vloot';
             input.dispatchEvent(evt);
             await delay(1e3);
           }
-          await this.#checkSync();
+          await _assertClassBrand(_Gleam_brand, this, _checkSync).call(this);
           const continueBtn = $task.find('.expandable').find('span:contains(Continue),button:contains(Continue),a:contains(Continue)');
           for (const button of continueBtn) {
             debug('点击继续按钮');
             button.click();
             await delay(500);
-            await this.#checkSync();
+            await _assertClassBrand(_Gleam_brand, this, _checkSync).call(this);
           }
         }
         debug('任务验证完成');
@@ -13775,192 +13860,222 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #checkSync() {
-      try {
-        debug('开始检查同步状态');
-        return await new Promise((resolve => {
-          const checker = setInterval((() => {
-            if ($('.entry-content .entry-method i.fa-sync').length === 0) {
-              debug('同步完成');
-              clearInterval(checker);
-              resolve(true);
-            }
-          }), 500);
-        }));
-      } catch (error) {
-        debug('检查同步状态失败', {
-          error: error
+  }
+  async function _checkCampaign() {
+    try {
+      var _logStatus;
+      debug('检测人机验证');
+      let logStatus;
+      if ($('[campaign-key="campaign.key"]').length > 0) {
+        logStatus = echoLog({
+          text: I18n('campaign')
         });
-        throwError(error, 'Gleam.checkSync');
-        return false;
-      }
-    }
-    async #doGleamTask(link) {
-      try {
-        debug('执行 Gleam 任务', {
-          link: link
-        });
-        const logStatus = echoLog({
-          text: I18n('doingGleamTask')
-        });
-        return await new Promise((resolve => {
-          GM_openInTab(`${link}?8b07d23f4bfa65f9`, {
-            active: true,
-            insert: true,
-            setParent: true
-          }).onclose = () => {
-            debug('任务完成');
-            logStatus.success();
-            resolve(true);
-          };
-        }));
-      } catch (error) {
-        debug('执行 Gleam 任务失败', {
-          error: error
-        });
-        throwError(error, 'Gleam.doGleamTask');
-        return false;
-      }
-    }
-    #getGiveawayId() {
-      try {
-        debug('获取抽奖ID');
-        const giveawayId = window.location.pathname;
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
-        }
-        debug('获取抽奖ID失败');
-        echoLog({
-          text: I18n('getFailed', 'GiveawayId')
-        });
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'Gleam.getGiveawayId');
-        return false;
-      }
-    }
-    async #getGleamLink(title) {
-      try {
-        debug('获取 Gleam 链接', {
-          title: title
-        });
-        const logStatus = echoLog({
-          text: I18n('gettingGleamLink')
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://www.vloot.io/api/v1/giveaways',
-          method: 'GET',
-          responseType: 'json'
-        });
-        if (result === 'Success') {
-          if (data?.status === 200 && data?.response?.Success === true && data?.response?.Data) {
-            const {link: link} = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {};
-            if (link) {
-              debug('获取链接成功', {
-                link: link
-              });
-              logStatus.success();
-              return link;
-            }
-            debug('获取链接失败');
-            logStatus.error(`Error:${I18n('getLinkFailed')}`);
-            return false;
-          }
-          debug('API响应错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('请求失败', {
-          result: result,
-          status: status,
-          statusText: statusText
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      } catch (error) {
-        debug('获取 Gleam 链接失败', {
-          error: error
-        });
-        throwError(error, 'Gleam.getGleamLink');
-        return false;
-      }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const campaignString = $('div.popup-blocks-container').attr('ng-init')?.match(/initCampaign\(([\w\W]+?)\)$/)?.[1];
-        if (!campaignString) {
-          debug('未找到活动配置信息');
-          return false;
-        }
-        const {campaign: campaign, incentive: incentive} = JSON.parse(campaignString);
-        const controllerString = $('div.campaign.reward').attr('ng-init')?.match(/initContestant\(([\w\W]+?)\);/)?.[1];
-        let ownedKey = false;
-        if (controllerString) {
-          if (JSON.parse(controllerString).contestant?.claims?.incentives?.[incentive.id]?.length) {
-            debug('用户已拥有密钥');
-            ownedKey = true;
-          }
-        }
-        const isGiveawayInvalid = campaign.banned || campaign.finished && !ownedKey || campaign.paused || (new Date).getTime() < campaign.starts_at * 1e3;
-        debug('检查抽奖状态', {
-          banned: campaign.banned,
-          finished: campaign.finished,
-          ownedKey: ownedKey,
-          paused: campaign.paused,
-          notStarted: (new Date).getTime() < campaign.starts_at * 1e3
-        });
-        if (!isGiveawayInvalid) {
-          return true;
-        }
-        debug('抽奖无效，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('giveawayNotWork'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
+        debug('检测到人机验证');
+        await delay(3e3);
+        logStatus.warning(I18n('retry'));
+        await _assertClassBrand(_Gleam_brand, this, _checkCampaign).call(this);
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
+      }
+      (_logStatus = logStatus) === null || _logStatus === void 0 || _logStatus.success();
+      return false;
+    } catch (error) {
+      debug('检测人机验证失败', {
+        error: error
+      });
+      throwError(error, 'Gleam.checkCampaign');
+      return false;
+    }
+  }
+  async function _checkSync() {
+    try {
+      debug('开始检查同步状态');
+      return await new Promise((resolve => {
+        const checker = setInterval((() => {
+          if ($('.entry-content .entry-method i.fa-sync').length === 0) {
+            debug('同步完成');
+            clearInterval(checker);
+            resolve(true);
+          }
+        }), 500);
+      }));
+    } catch (error) {
+      debug('检查同步状态失败', {
+        error: error
+      });
+      throwError(error, 'Gleam.checkSync');
+      return false;
+    }
+  }
+  async function _doGleamTask(link) {
+    try {
+      debug('执行 Gleam 任务', {
+        link: link
+      });
+      const logStatus = echoLog({
+        text: I18n('doingGleamTask')
+      });
+      return await new Promise((resolve => {
+        GM_openInTab(''.concat(link, '?8b07d23f4bfa65f9'), {
+          active: true,
+          insert: true,
+          setParent: true
+        }).onclose = () => {
+          debug('任务完成');
+          logStatus.success();
+          resolve(true);
+        };
+      }));
+    } catch (error) {
+      debug('执行 Gleam 任务失败', {
+        error: error
+      });
+      throwError(error, 'Gleam.doGleamTask');
+      return false;
+    }
+  }
+  function _getGiveawayId7() {
+    try {
+      debug('获取抽奖ID');
+      const giveawayId = window.location.pathname;
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
         });
-        throwError(error, 'Gleam.checkLeftKey');
+        return true;
+      }
+      debug('获取抽奖ID失败');
+      echoLog({
+        text: I18n('getFailed', 'GiveawayId')
+      });
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Gleam.getGiveawayId');
+      return false;
+    }
+  }
+  async function _getGleamLink(title) {
+    try {
+      debug('获取 Gleam 链接', {
+        title: title
+      });
+      const logStatus = echoLog({
+        text: I18n('gettingGleamLink')
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.vloot.io/api/v1/giveaways',
+        method: 'GET',
+        responseType: 'json'
+      });
+      if (result === 'Success') {
+        var _data$response116, _data$response117;
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response116 = data.response) === null || _data$response116 === void 0 ? void 0 : _data$response116.Success) === true && data !== null && data !== void 0 && (_data$response117 = data.response) !== null && _data$response117 !== void 0 && _data$response117.Data) {
+          const {link: link} = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {};
+          if (link) {
+            debug('获取链接成功', {
+              link: link
+            });
+            logStatus.success();
+            return link;
+          }
+          debug('获取链接失败');
+          logStatus.error('Error:'.concat(I18n('getLinkFailed')));
+          return false;
+        }
+        debug('API响应错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
+      debug('请求失败', {
+        result: result,
+        status: status,
+        statusText: statusText
+      });
+      logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+      return false;
+    } catch (error) {
+      debug('获取 Gleam 链接失败', {
+        error: error
+      });
+      throwError(error, 'Gleam.getGleamLink');
+      return false;
+    }
+  }
+  async function _checkLeftKey7() {
+    try {
+      var _$$attr4, _$$attr5;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const campaignString = (_$$attr4 = $('div.popup-blocks-container').attr('ng-init')) === null || _$$attr4 === void 0 || (_$$attr4 = _$$attr4.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr4 === void 0 ? void 0 : _$$attr4[1];
+      if (!campaignString) {
+        debug('未找到活动配置信息');
+        return false;
+      }
+      const {campaign: campaign, incentive: incentive} = JSON.parse(campaignString);
+      const controllerString = (_$$attr5 = $('div.campaign.reward').attr('ng-init')) === null || _$$attr5 === void 0 || (_$$attr5 = _$$attr5.match(/initContestant\(([\w\W]+?)\);/)) === null || _$$attr5 === void 0 ? void 0 : _$$attr5[1];
+      let ownedKey = false;
+      if (controllerString) {
+        var _JSON$parse$contestan;
+        if ((_JSON$parse$contestan = JSON.parse(controllerString).contestant) !== null && _JSON$parse$contestan !== void 0 && (_JSON$parse$contestan = _JSON$parse$contestan.claims) !== null && _JSON$parse$contestan !== void 0 && (_JSON$parse$contestan = _JSON$parse$contestan.incentives) !== null && _JSON$parse$contestan !== void 0 && (_JSON$parse$contestan = _JSON$parse$contestan[incentive.id]) !== null && _JSON$parse$contestan !== void 0 && _JSON$parse$contestan.length) {
+          debug('用户已拥有密钥');
+          ownedKey = true;
+        }
+      }
+      const isGiveawayInvalid = campaign.banned || campaign.finished && !ownedKey || campaign.paused || (new Date).getTime() < campaign.starts_at * 1e3;
+      debug('检查抽奖状态', {
+        banned: campaign.banned,
+        finished: campaign.finished,
+        ownedKey: ownedKey,
+        paused: campaign.paused,
+        notStarted: (new Date).getTime() < campaign.starts_at * 1e3
+      });
+      if (!isGiveawayInvalid) {
+        return true;
+      }
+      debug('抽奖无效，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('giveawayNotWork'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Gleam.checkLeftKey');
+      return false;
     }
   }
   const defaultOptions = {
     username: '',
     email: ''
   };
+  var _SweepWidget_brand = new WeakSet;
   class SweepWidget extends Website {
-    name='SweepWidget';
-    options={
-      ...defaultOptions,
-      ...GM_getValue('SweepWidgetOptions')
-    };
-    buttons=[ 'doTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _SweepWidget_brand);
+      _defineProperty(this, 'name', 'SweepWidget');
+      _defineProperty(this, 'options', _objectSpread(_objectSpread({}, defaultOptions), GM_getValue('SweepWidgetOptions')));
+      _defineProperty(this, 'buttons', [ 'doTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = /^sweepwidget\.com$/.test(host);
@@ -13973,7 +14088,7 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_SweepWidget_brand, this, _checkLogin7).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
@@ -13990,12 +14105,12 @@ if (missingDependencies.length > 0) {
         const logStatus = echoLog({
           text: I18n('initing')
         });
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_SweepWidget_brand, this, _checkLogin7).call(this)) {
           debug('需要登录');
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_SweepWidget_brand, this, _getGiveawayId8).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -14036,7 +14151,7 @@ if (missingDependencies.length > 0) {
             debug('点击登录按钮');
             $('#sw_login_button')[0].click();
           }
-          const isEntered = await this.#checkEnter();
+          const isEntered = await _assertClassBrand(_SweepWidget_brand, this, _checkEnter).call(this);
           if (!isEntered) {
             debug('进入抽奖失败');
             return false;
@@ -14050,6 +14165,7 @@ if (missingDependencies.length > 0) {
           count: tasks.length
         });
         for (const task of tasks) {
+          var _aElement$, _$task$find$removeAtt;
           const $task = $(task);
           if ($task.find('i.fa-check:visible').length > 0) {
             debug('跳过已完成的任务');
@@ -14068,7 +14184,7 @@ if (missingDependencies.length > 0) {
           });
           title[0].click();
           aElement.attr('href', '#a').attr('target', '_self');
-          aElement[0]?.click();
+          (_aElement$ = aElement[0]) === null || _aElement$ === void 0 || _aElement$.click();
           await delay(300);
           aElement.attr('href', link).attr('target', '_blank');
           debug('填写测试文本');
@@ -14082,9 +14198,9 @@ if (missingDependencies.length > 0) {
             await delay(300);
           }
           debug('点击验证按钮');
-          $task.find('input.sw_verify').removeAttr('disabled')[0]?.click();
-          await this.#checkFinish($task);
-          const randomDelay = parseInt(`${Math.random() * (3e3 - 1e3 + 1) + 1e3}`, 10);
+          (_$task$find$removeAtt = $task.find('input.sw_verify').removeAttr('disabled')[0]) === null || _$task$find$removeAtt === void 0 || _$task$find$removeAtt.click();
+          await _assertClassBrand(_SweepWidget_brand, this, _checkFinish).call(this, $task);
+          const randomDelay = parseInt(''.concat(Math.random() * (3e3 - 1e3 + 1) + 1e3), 10);
           debug('等待随机延迟', {
             delay: randomDelay
           });
@@ -14101,91 +14217,92 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if ($('#twitter_login_button').length > 0) {
-          debug('点击 Twitter 登录按钮');
-          $('#twitter_login_button')[0].click();
-        }
-        debug('登录检查完成');
-        return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
-        });
-        throwError(error, 'SweepWidget.checkLogin');
-        return false;
+  }
+  function _checkLogin7() {
+    try {
+      debug('检查登录状态');
+      if ($('#twitter_login_button').length > 0) {
+        debug('点击 Twitter 登录按钮');
+        $('#twitter_login_button')[0].click();
       }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'SweepWidget.checkLogin');
+      return false;
     }
-    #getGiveawayId() {
-      try {
-        debug('开始获取抽奖ID');
-        const giveawayId = window.location.href.match(/\/view\/([\d]+)/)?.[1];
-        if (!giveawayId) {
-          debug('获取抽奖ID失败');
-          echoLog({
-            text: I18n('getFailed', 'GiveawayId')
-          });
-          return false;
-        }
-        this.giveawayId = giveawayId;
-        debug('获取抽奖ID成功', {
-          giveawayId: giveawayId
+  }
+  function _getGiveawayId8() {
+    try {
+      var _window$location$href6;
+      debug('开始获取抽奖ID');
+      const giveawayId = (_window$location$href6 = window.location.href.match(/\/view\/([\d]+)/)) === null || _window$location$href6 === void 0 ? void 0 : _window$location$href6[1];
+      if (!giveawayId) {
+        debug('获取抽奖ID失败');
+        echoLog({
+          text: I18n('getFailed', 'GiveawayId')
         });
-        return true;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'SweepWidget.getGiveawayId');
         return false;
       }
+      this.giveawayId = giveawayId;
+      debug('获取抽奖ID成功', {
+        giveawayId: giveawayId
+      });
+      return true;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'SweepWidget.getGiveawayId');
+      return false;
     }
-    async #checkEnter() {
-      try {
-        debug('开始检查是否进入抽奖');
-        return new Promise((resolve => {
-          const checker = setInterval((() => {
-            if ($('#unlock_rewards_main_wrapper').length === 0) {
-              debug('等待进入抽奖...');
-              return;
-            }
-            debug('成功进入抽奖');
-            clearInterval(checker);
-            resolve(true);
-          }), 500);
-        }));
-      } catch (error) {
-        debug('检查进入抽奖失败', {
-          error: error
-        });
-        throwError(error, 'SweepWidget.checkEnter');
-        return false;
-      }
+  }
+  async function _checkEnter() {
+    try {
+      debug('开始检查是否进入抽奖');
+      return new Promise((resolve => {
+        const checker = setInterval((() => {
+          if ($('#unlock_rewards_main_wrapper').length === 0) {
+            debug('等待进入抽奖...');
+            return;
+          }
+          debug('成功进入抽奖');
+          clearInterval(checker);
+          resolve(true);
+        }), 500);
+      }));
+    } catch (error) {
+      debug('检查进入抽奖失败', {
+        error: error
+      });
+      throwError(error, 'SweepWidget.checkEnter');
+      return false;
     }
-    async #checkFinish($task) {
-      try {
-        debug('开始检查任务完成状态');
-        return new Promise((resolve => {
-          const checker = setInterval((() => {
-            const isCompleted = $task.find('i.fa-check:visible').length > 0 || $task.find('.sw_entry_input:visible').length === 0;
-            if (!isCompleted) {
-              debug('等待任务完成...');
-              return;
-            }
-            debug('任务完成');
-            clearInterval(checker);
-            resolve(true);
-          }), 500);
-        }));
-      } catch (error) {
-        debug('检查任务完成状态失败', {
-          error: error
-        });
-        throwError(error, 'SweepWidget.checkFinish');
-        return false;
-      }
+  }
+  async function _checkFinish($task) {
+    try {
+      debug('开始检查任务完成状态');
+      return new Promise((resolve => {
+        const checker = setInterval((() => {
+          const isCompleted = $task.find('i.fa-check:visible').length > 0 || $task.find('.sw_entry_input:visible').length === 0;
+          if (!isCompleted) {
+            debug('等待任务完成...');
+            return;
+          }
+          debug('任务完成');
+          clearInterval(checker);
+          resolve(true);
+        }), 500);
+      }));
+    } catch (error) {
+      debug('检查任务完成状态失败', {
+        error: error
+      });
+      throwError(error, 'SweepWidget.checkFinish');
+      return false;
     }
   }
   const processFormData = formData => {
@@ -14214,7 +14331,7 @@ if (missingDependencies.length > 0) {
     });
     const keys = name.split('.');
     const value = data[name];
-    const processedValue = value ? value === 'on' ? true : value : value ?? false;
+    const processedValue = value ? value === 'on' ? true : value : value !== null && value !== void 0 ? value : false;
     debug('处理选项值', {
       keys: keys,
       originalValue: value,
@@ -14241,51 +14358,51 @@ if (missingDependencies.length > 0) {
       isFirstOption: isFirstOption,
       totalOptions: totalOptions
     });
-    const backgroundColor = `${stringToColour(type)}44`;
-    const headerBackgroundColor = `${stringToColour(type)}66`;
+    const backgroundColor = ''.concat(stringToColour(type), '44');
+    const headerBackgroundColor = ''.concat(stringToColour(type), '66');
     if ([ 'other', 'position', 'hotKey', 'ASF' ].includes(type)) {
-      const header = isFirstOption ? `<th rowspan="${totalOptions}" style="background-color: ${headerBackgroundColor}">${I18n(type)}</th>` : '';
+      const header = isFirstOption ? '<th rowspan="'.concat(totalOptions, '" style="background-color: ').concat(headerBackgroundColor, '">').concat(I18n(type), '</th>') : '';
       if (typeof data === 'boolean') {
         debug('生成布尔类型选项行', {
           type: type,
           option: option,
           value: data
         });
-        return `\n        <tr style="background-color: ${backgroundColor}">\n          ${header}\n          <td>${I18n(option)}</td>\n          <td>\n            <label>\n              <input type="checkbox" name="${type}.${option}"${data ? ' checked="checked"' : ''}/>\n              <span><i></i></span>\n            </label>\n          </td>\n        </tr>`;
+        return '\n        <tr style="background-color: '.concat(backgroundColor, '">\n          ').concat(header, '\n          <td>').concat(I18n(option), '</td>\n          <td>\n            <label>\n              <input type="checkbox" name="').concat(type, '.').concat(option, '"').concat(data ? ' checked="checked"' : '', '/>\n              <span><i></i></span>\n            </label>\n          </td>\n        </tr>');
       }
       debug('生成文本类型选项行', {
         type: type,
         option: option,
         value: data
       });
-      return `\n      <tr style="background-color: ${backgroundColor}">\n        ${header}\n        <td>${I18n(option)}</td>\n        <td>\n          <input class="editOption" type="text" name="${type}.${option}" value="${data}"/>\n        </td>\n      </tr>`;
+      return '\n      <tr style="background-color: '.concat(backgroundColor, '">\n        ').concat(header, '\n        <td>').concat(I18n(option), '</td>\n        <td>\n          <input class="editOption" type="text" name="').concat(type, '.').concat(option, '" value="').concat(data, '"/>\n        </td>\n      </tr>');
     }
     debug('生成社交媒体选项行', {
       type: type,
       option: option,
       dataKeys: Object.keys(data)
     });
-    return Object.entries(data).map((_ref17 => {
-      let [socialType, value] = _ref17;
-      return `\n    <tr style="background-color: ${stringToColour(option)}66">\n      ${isFirstOption ? `<th rowspan="${totalOptions}" style="background-color: ${headerBackgroundColor}">${I18n(type)}</th>` : ''}\n      <td>${option}.${I18n(socialType)}</td>\n      <td>\n        <label>\n          <input type="checkbox" name="${type}.${option}.${socialType}"${value ? ' checked="checked"' : ''}/>\n          <span><i></i></span>\n        </label>\n      </td>\n    </tr>`;
+    return Object.entries(data).map((_ref11 => {
+      let [socialType, value] = _ref11;
+      return '\n    <tr style="background-color: '.concat(stringToColour(option), '66">\n      ').concat(isFirstOption ? '<th rowspan="'.concat(totalOptions, '" style="background-color: ').concat(headerBackgroundColor, '">').concat(I18n(type), '</th>') : '', '\n      <td>').concat(option, '.').concat(I18n(socialType), '</td>\n      <td>\n        <label>\n          <input type="checkbox" name="').concat(type, '.').concat(option, '.').concat(socialType, '"').concat(value ? ' checked="checked"' : '', '/>\n          <span><i></i></span>\n        </label>\n      </td>\n    </tr>');
     })).join('');
   };
   const generateGlobalOptionsForm = () => {
     debug('开始生成全局选项表单');
-    const formRows = Object.entries(globalOptions).map((_ref18 => {
-      let [type, data1] = _ref18;
+    const formRows = Object.entries(globalOptions).map((_ref12 => {
+      let [type, data1] = _ref12;
       debug('处理选项类型', {
         type: type,
         optionsCount: Object.keys(data1).length
       });
-      return Object.entries(data1).map(((_ref19, index) => {
-        let [option, data2] = _ref19;
+      return Object.entries(data1).map(((_ref13, index) => {
+        let [option, data2] = _ref13;
         const totalOptions = [ 'other', 'position', 'hotKey', 'ASF' ].includes(type) ? Object.keys(data1).length : Object.values(data1).reduce(((acc, cur) => acc + Object.keys(cur).length), 0);
         return generateFormRow(type, option, data2, index === 0, totalOptions);
       })).join('');
     })).join('');
     debug('表单生成完成');
-    return `\n    <form id="globalOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>${I18n('type')}</td>\n            <td>${I18n('option')}</td>\n            <td>${I18n('value')}</td>\n          </tr>\n        </thead>\n        <tbody>\n          ${formRows}\n        </tbody>\n      </table>\n    </form>`;
+    return '\n    <form id="globalOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('type'), '</td>\n            <td>').concat(I18n('option'), '</td>\n            <td>').concat(I18n('value'), '</td>\n          </tr>\n        </thead>\n        <tbody>\n          ').concat(formRows, '\n        </tbody>\n      </table>\n    </form>');
   };
   const saveData = () => {
     try {
@@ -14327,8 +14444,8 @@ if (missingDependencies.length > 0) {
           confirmButtonText: I18n('save'),
           showCancelButton: true,
           cancelButtonText: I18n('close')
-        }).then((_ref20 => {
-          let {isConfirmed: isConfirmed} = _ref20;
+        }).then((_ref14 => {
+          let {isConfirmed: isConfirmed} = _ref14;
           if (isConfirmed) {
             debug('用户确认保存选项');
             saveData();
@@ -14338,7 +14455,7 @@ if (missingDependencies.length > 0) {
         }));
       } else {
         debug('使用页面内显示选项');
-        $('body').append(`<h2>${I18n('globalOptions')}</h2>${formHtml}`);
+        $('body').append('<h2>'.concat(I18n('globalOptions'), '</h2>').concat(formHtml));
       }
     } catch (error) {
       debug('显示全局选项配置界面时发生错误', {
@@ -14404,6 +14521,7 @@ if (missingDependencies.length > 0) {
     STEAM_STORE: /https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/
   };
   const link2id = async function(type) {
+    var _REGEX_PATTERNS$DISCO, _REGEX_PATTERNS$INSTA, _REGEX_PATTERNS$TWITC, _REGEX_PATTERNS$TWITT, _REGEX_PATTERNS$TWITT2, _REGEX_PATTERNS$VK_NA, _await$getInfo, _await$getInfo2, _REGEX_PATTERNS$STEAM, _REGEX_PATTERNS$STEAM2, _REGEX_PATTERNS$STEAM3;
     try {
       debug('开始从链接获取ID', {
         type: type
@@ -14412,47 +14530,47 @@ if (missingDependencies.length > 0) {
       let id = '';
       switch (type) {
        case 'discord.servers':
-        id = REGEX_PATTERNS.DISCORD_INVITE.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$DISCO = REGEX_PATTERNS.DISCORD_INVITE.exec(link)) === null || _REGEX_PATTERNS$DISCO === void 0 ? void 0 : _REGEX_PATTERNS$DISCO[1]) || '';
         break;
 
        case 'instagram.users':
-        id = REGEX_PATTERNS.INSTAGRAM_USER.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$INSTA = REGEX_PATTERNS.INSTAGRAM_USER.exec(link)) === null || _REGEX_PATTERNS$INSTA === void 0 ? void 0 : _REGEX_PATTERNS$INSTA[1]) || '';
         break;
 
        case 'twitch.channels':
-        id = REGEX_PATTERNS.TWITCH_CHANNEL.exec(link)?.[2] || '';
+        id = ((_REGEX_PATTERNS$TWITC = REGEX_PATTERNS.TWITCH_CHANNEL.exec(link)) === null || _REGEX_PATTERNS$TWITC === void 0 ? void 0 : _REGEX_PATTERNS$TWITC[2]) || '';
         break;
 
        case 'twitter.users':
-        id = REGEX_PATTERNS.TWITTER_USER.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$TWITT = REGEX_PATTERNS.TWITTER_USER.exec(link)) === null || _REGEX_PATTERNS$TWITT === void 0 ? void 0 : _REGEX_PATTERNS$TWITT[1]) || '';
         break;
 
        case 'twitter.retweets':
-        id = REGEX_PATTERNS.TWITTER_STATUS.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$TWITT2 = REGEX_PATTERNS.TWITTER_STATUS.exec(link)) === null || _REGEX_PATTERNS$TWITT2 === void 0 ? void 0 : _REGEX_PATTERNS$TWITT2[1]) || '';
         break;
 
        case 'vk.names':
-        id = REGEX_PATTERNS.VK_NAME.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$VK_NA = REGEX_PATTERNS.VK_NAME.exec(link)) === null || _REGEX_PATTERNS$VK_NA === void 0 ? void 0 : _REGEX_PATTERNS$VK_NA[1]) || '';
         break;
 
        case 'youtube.channels':
-        id = (await getInfo(link, 'channel'))?.params?.channelId || '';
+        id = ((_await$getInfo = await getInfo(link, 'channel')) === null || _await$getInfo === void 0 || (_await$getInfo = _await$getInfo.params) === null || _await$getInfo === void 0 ? void 0 : _await$getInfo.channelId) || '';
         break;
 
        case 'youtube.likes':
-        id = (await getInfo(link, 'likeVideo'))?.params?.videoId || '';
+        id = ((_await$getInfo2 = await getInfo(link, 'likeVideo')) === null || _await$getInfo2 === void 0 || (_await$getInfo2 = _await$getInfo2.params) === null || _await$getInfo2 === void 0 ? void 0 : _await$getInfo2.videoId) || '';
         break;
 
        case 'reddit.reddits':
         {
           const userMatch = REGEX_PATTERNS.REDDIT_USER.exec(link);
           const subredditMatch = REGEX_PATTERNS.REDDIT_SUBREDDIT.exec(link);
-          id = userMatch?.[1] || subredditMatch?.[1] || '';
+          id = (userMatch === null || userMatch === void 0 ? void 0 : userMatch[1]) || (subredditMatch === null || subredditMatch === void 0 ? void 0 : subredditMatch[1]) || '';
           break;
         }
 
        case 'steam.groups':
-        id = REGEX_PATTERNS.STEAM_GROUP.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$STEAM = REGEX_PATTERNS.STEAM_GROUP.exec(link)) === null || _REGEX_PATTERNS$STEAM === void 0 ? void 0 : _REGEX_PATTERNS$STEAM[1]) || '';
         break;
 
        case 'steam.wishlists':
@@ -14460,17 +14578,18 @@ if (missingDependencies.length > 0) {
        case 'steam.forums':
        case 'steam.playtests':
        case 'steam.playTime':
-        id = REGEX_PATTERNS.STEAM_APP.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$STEAM2 = REGEX_PATTERNS.STEAM_APP.exec(link)) === null || _REGEX_PATTERNS$STEAM2 === void 0 ? void 0 : _REGEX_PATTERNS$STEAM2[1]) || '';
         break;
 
        case 'steam.workshops':
-        id = REGEX_PATTERNS.STEAM_WORKSHOP.exec(link)?.[1] || '';
+        id = ((_REGEX_PATTERNS$STEAM3 = REGEX_PATTERNS.STEAM_WORKSHOP.exec(link)) === null || _REGEX_PATTERNS$STEAM3 === void 0 ? void 0 : _REGEX_PATTERNS$STEAM3[1]) || '';
         break;
 
        case 'steam.curators':
         {
           if (link.includes('curator')) {
-            id = REGEX_PATTERNS.STEAM_CURATOR.exec(link)?.[1] || '';
+            var _REGEX_PATTERNS$STEAM4;
+            id = ((_REGEX_PATTERNS$STEAM4 = REGEX_PATTERNS.STEAM_CURATOR.exec(link)) === null || _REGEX_PATTERNS$STEAM4 === void 0 ? void 0 : _REGEX_PATTERNS$STEAM4[1]) || '';
           } else {
             const storeMatch = REGEX_PATTERNS.STEAM_STORE.exec(link);
             if (!storeMatch) {
@@ -14507,10 +14626,7 @@ if (missingDependencies.length > 0) {
       debug('开始合并白名单');
       const newWhiteList = {};
       for (const [key, value] of Object.entries(defaultWhiteList)) {
-        newWhiteList[key] = {
-          ...value,
-          ...whiteList[key]
-        };
+        newWhiteList[key] = _objectSpread(_objectSpread({}, value), whiteList[key]);
       }
       debug('白名单合并完成');
       return newWhiteList;
@@ -14528,26 +14644,30 @@ if (missingDependencies.length > 0) {
         showType: showType
       });
       const whiteList = assignWhiteList(GM_getValue('whiteList') || {});
-      let whiteListOptionsForm = `<form id="whiteListForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>${I18n('website')}</td>\n            <td>${I18n('type')}</td>\n            <td>${I18n('edit')}</td>\n          </tr>\n        </thead>\n        <tbody>`;
+      let whiteListOptionsForm = '<form id="whiteListForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('website'), '</td>\n            <td>').concat(I18n('type'), '</td>\n            <td>').concat(I18n('edit'), '</td>\n          </tr>\n        </thead>\n        <tbody>');
       for (const [social, types] of Object.entries(whiteList)) {
-        const validTypes = Object.keys(types).filter((type => !disabledType[social]?.includes(type)));
+        const validTypes = Object.keys(types).filter((type => {
+          var _disabledType$social;
+          return !((_disabledType$social = disabledType[social]) !== null && _disabledType$social !== void 0 && _disabledType$social.includes(type));
+        }));
         whiteListOptionsForm += validTypes.map(((type, index) => {
-          const bgColor = `${stringToColour(social)}66`;
-          return `\n          <tr style="background-color: ${bgColor}">\n            ${index === 0 ? `<th rowspan="${validTypes.length}" style="background-color: ${bgColor}">${social}</th>` : ''}\n            <td>${I18n(type)}</td>\n            <td><button type="button" class="editWhiteList" data-value="${social}.${type}">${I18n('edit')}</button></td>\n          </tr>`;
+          const bgColor = ''.concat(stringToColour(social), '66');
+          return '\n          <tr style="background-color: '.concat(bgColor, '">\n            ').concat(index === 0 ? '<th rowspan="'.concat(validTypes.length, '" style="background-color: ').concat(bgColor, '">').concat(social, '</th>') : '', '\n            <td>').concat(I18n(type), '</td>\n            <td><button type="button" class="editWhiteList" data-value="').concat(social, '.').concat(type, '">').concat(I18n('edit'), '</button></td>\n          </tr>');
         })).join('');
       }
       whiteListOptionsForm += '</tbody></table></form>';
       if (showType === 'swal') {} else {
         debug('使用页面显示白名单选项');
-        $('body').append(`<h2>${I18n('whiteList')}</h2>${whiteListOptionsForm}`);
+        $('body').append('<h2>'.concat(I18n('whiteList'), '</h2>').concat(whiteListOptionsForm));
       }
       $('.editWhiteList').on('click', (function() {
+        var _whiteList$social;
         const value = $(this).attr('data-value');
         if (!value) {
           return;
         }
         const [social, type] = value.split('.');
-        const currentList = whiteList[social]?.[type];
+        const currentList = (_whiteList$social = whiteList[social]) === null || _whiteList$social === void 0 ? void 0 : _whiteList$social[type];
         if (!currentList) {
           debug('未找到白名单配置', {
             social: social,
@@ -14563,7 +14683,7 @@ if (missingDependencies.length > 0) {
         Swal.fire({
           title: I18n('changeWhiteListOption', value),
           input: 'textarea',
-          html: `\n          <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">\n          <button id="link2id" data-type="${value}" class="swal2-confirm swal2-styled">获取id</button>\n          <p style="margin-bottom:0 !important;">在下方填写白名单，每行一个</p>\n        `,
+          html: '\n          <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">\n          <button id="link2id" data-type="'.concat(value, '" class="swal2-confirm swal2-styled">获取id</button>\n          <p style="margin-bottom:0 !important;">在下方填写白名单，每行一个</p>\n        '),
           inputValue: currentList.join('\n'),
           showConfirmButton: true,
           confirmButtonText: I18n('save'),
@@ -14571,8 +14691,8 @@ if (missingDependencies.length > 0) {
           cancelButtonText: I18n('close'),
           showDenyButton: true,
           denyButtonText: I18n('return')
-        }).then((_ref21 => {
-          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref21;
+        }).then((_ref15 => {
+          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref15;
           if (isDenied) {
             debug('返回白名单选项');
             if (showType === 'swal') {}
@@ -14613,6 +14733,7 @@ if (missingDependencies.length > 0) {
   };
   const setGistData = async (token, gistId, fileName, content) => {
     try {
+      var _data$response80;
       debug('开始设置Gist数据', {
         gistId: gistId,
         fileName: fileName
@@ -14631,10 +14752,10 @@ if (missingDependencies.length > 0) {
         contentData: contentData
       });
       const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: `https://api.github.com/gists/${gistId}`,
+        url: 'https://api.github.com/gists/'.concat(gistId),
         headers: {
           Accept: 'application/vnd.github.v3+json',
-          Authorization: `token ${token}`
+          Authorization: 'token '.concat(token)
         },
         data: contentData,
         responseType: 'json',
@@ -14647,16 +14768,17 @@ if (missingDependencies.length > 0) {
           statusText: statusText,
           status: status
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
       const expectedContent = JSON.stringify(content);
-      if (data?.status !== 200 || data?.response?.files?.[fileName]?.content !== expectedContent) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response80 = data.response) === null || _data$response80 === void 0 || (_data$response80 = _data$response80.files) === null || _data$response80 === void 0 || (_data$response80 = _data$response80[fileName]) === null || _data$response80 === void 0 ? void 0 : _data$response80.content) !== expectedContent) {
+        var _data$response81;
         debug('设置Gist数据验证失败', {
-          status: data?.status,
-          content: data?.response?.files?.[fileName]?.content
+          status: data === null || data === void 0 ? void 0 : data.status,
+          content: data === null || data === void 0 || (_data$response81 = data.response) === null || _data$response81 === void 0 || (_data$response81 = _data$response81.files) === null || _data$response81 === void 0 || (_data$response81 = _data$response81[fileName]) === null || _data$response81 === void 0 ? void 0 : _data$response81.content
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
       debug('设置Gist数据成功');
@@ -14673,6 +14795,7 @@ if (missingDependencies.length > 0) {
   const getGistData = async function(token, gistId, fileName) {
     let test = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     try {
+      var _data$response82;
       debug('开始获取Gist数据', {
         gistId: gistId,
         fileName: fileName,
@@ -14682,10 +14805,10 @@ if (missingDependencies.length > 0) {
         text: I18n('gettingData')
       });
       const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: `https://api.github.com/gists/${gistId}`,
+        url: 'https://api.github.com/gists/'.concat(gistId),
         headers: {
           Accept: 'application/vnd.github.v3+json',
-          Authorization: `token ${token}`
+          Authorization: 'token '.concat(token)
         },
         responseType: 'json',
         method: 'GET',
@@ -14697,20 +14820,20 @@ if (missingDependencies.length > 0) {
           statusText: statusText,
           status: status
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if (data?.status !== 200) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
         debug('获取Gist数据状态码错误', {
-          status: data?.status
+          status: data === null || data === void 0 ? void 0 : data.status
         });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const content = data.response?.files?.[fileName]?.content;
+      const content = (_data$response82 = data.response) === null || _data$response82 === void 0 || (_data$response82 = _data$response82.files) === null || _data$response82 === void 0 || (_data$response82 = _data$response82[fileName]) === null || _data$response82 === void 0 ? void 0 : _data$response82.content;
       if (!content) {
         debug('获取的Gist数据为空');
-        logStatus.error(`Error:${I18n('noRemoteData')}`);
+        logStatus.error('Error:'.concat(I18n('noRemoteData')));
         return false;
       }
       if (test) {
@@ -14729,8 +14852,8 @@ if (missingDependencies.length > 0) {
         debug('Gist数据解析失败', {
           error: error
         });
-        logStatus.error(`Error:${I18n('errorRemoteDataFormat')}`);
-        console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: getGistData\n${error.stack}`);
+        logStatus.error('Error:'.concat(I18n('errorRemoteDataFormat')));
+        console.log('%c%s', 'color:white;background:red', 'Auto-Task[Error]: getGistData\n'.concat(error.stack));
         return false;
       }
     } catch (error) {
@@ -14752,7 +14875,7 @@ if (missingDependencies.length > 0) {
       };
       let syncOptions = GM_getValue('gistOptions') || defaultOptions;
       debug('获取已保存的同步选项', syncOptions);
-      const createForm = options => `\n      <div class="gist-options-form">\n        <p>\n          <label for="github-token">Github Token</label>\n          <input\n            id="github-token"\n            class="swal2-input"\n            placeholder="Github Token"\n            value="${options.TOKEN}"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p>\n          <label for="gist-id">Gist ID</label>\n          <input\n            id="gist-id"\n            class="swal2-input"\n            placeholder="Gist ID"\n            value="${options.GIST_ID}"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p>\n          <label for="file-name">${I18n('fileName')}</label>\n          <input\n            id="file-name"\n            class="swal2-input"\n            placeholder="${I18n('fileName')}"\n            value="${options.FILE_NAME}"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p class="sync-history-wrapper">\n          <label for="sync-history" class="swal2-checkbox-custom">\n            <input\n              id="sync-history"\n              type="checkbox"\n              ${options.SYNC_HISTORY ? 'checked="checked"' : ''}\n            />\n            <span class="swal2-label">${I18n('syncHistory')}</span>\n          </label>\n        </p>\n        <div class="button-group">\n          <button id="upload-data" type="button" class="swal2-confirm swal2-styled" onclick="handleUpload()">\n            ${I18n('upload2gist')}\n          </button>\n          <button id="download-data" type="button" class="swal2-confirm swal2-styled" onclick="handleDownload()">\n            ${I18n('downloadFromGist')}\n          </button>\n        </div>\n      </div>\n    `;
+      const createForm = options => '\n      <div class="gist-options-form">\n        <p>\n          <label for="github-token">Github Token</label>\n          <input\n            id="github-token"\n            class="swal2-input"\n            placeholder="Github Token"\n            value="'.concat(options.TOKEN, '"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p>\n          <label for="gist-id">Gist ID</label>\n          <input\n            id="gist-id"\n            class="swal2-input"\n            placeholder="Gist ID"\n            value="').concat(options.GIST_ID, '"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p>\n          <label for="file-name">').concat(I18n('fileName'), '</label>\n          <input\n            id="file-name"\n            class="swal2-input"\n            placeholder="').concat(I18n('fileName'), '"\n            value="').concat(options.FILE_NAME, '"\n            autocomplete="off"\n            spellcheck="false"\n          />\n        </p>\n        <p class="sync-history-wrapper">\n          <label for="sync-history" class="swal2-checkbox-custom">\n            <input\n              id="sync-history"\n              type="checkbox"\n              ').concat(options.SYNC_HISTORY ? 'checked="checked"' : '', '\n            />\n            <span class="swal2-label">').concat(I18n('syncHistory'), '</span>\n          </label>\n        </p>\n        <div class="button-group">\n          <button id="upload-data" type="button" class="swal2-confirm swal2-styled" onclick="handleUpload()">\n            ').concat(I18n('upload2gist'), '\n          </button>\n          <button id="download-data" type="button" class="swal2-confirm swal2-styled" onclick="handleDownload()">\n            ').concat(I18n('downloadFromGist'), '\n          </button>\n        </div>\n      </div>\n    ');
       const showConfigDialog = async () => {
         debug('显示配置对话框');
         const result = await Swal.fire({
@@ -14760,7 +14883,7 @@ if (missingDependencies.length > 0) {
           html: createForm(syncOptions),
           focusConfirm: false,
           showLoaderOnConfirm: true,
-          footer: `<a href="https://auto-task-doc.js.org/guide/#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5" target="_blank">${I18n('help')}</a>`,
+          footer: '<a href="https://auto-task-doc.js.org/guide/#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5" target="_blank">'.concat(I18n('help'), '</a>'),
           preConfirm: async () => {
             const options = {
               TOKEN: $('#github-token').val().trim(),
@@ -14801,7 +14924,7 @@ if (missingDependencies.length > 0) {
       const handleUpload = async () => {
         debug('开始处理数据上传');
         const options = GM_getValue('gistOptions');
-        if (!options?.TOKEN || !options?.GIST_ID || !options?.FILE_NAME) {
+        if (!(options !== null && options !== void 0 && options.TOKEN) || !(options !== null && options !== void 0 && options.GIST_ID) || !(options !== null && options !== void 0 && options.FILE_NAME)) {
           debug('配置信息不完整');
           await Swal.fire({
             icon: 'error',
@@ -14853,7 +14976,7 @@ if (missingDependencies.length > 0) {
       const handleDownload = async () => {
         debug('开始处理数据下载');
         const options = GM_getValue('gistOptions');
-        if (!options?.TOKEN || !options?.GIST_ID || !options?.FILE_NAME) {
+        if (!(options !== null && options !== void 0 && options.TOKEN) || !(options !== null && options !== void 0 && options.GIST_ID) || !(options !== null && options !== void 0 && options.FILE_NAME)) {
           debug('配置信息不完整');
           await Swal.fire({
             icon: 'error',
@@ -14921,18 +15044,22 @@ if (missingDependencies.length > 0) {
   };
   const VALID_SIDES_X = [ 'right', 'left' ];
   const VALID_SIDES_Y = [ 'top', 'bottom' ];
+  var _Setting_brand = new WeakSet;
   class Setting {
-    name='Setting';
-    buttons=[ 'saveGlobalOptions', 'syncData', 'tasksHistory' ];
-    syncData=(() => syncOptions)();
-    selectors={
-      body: 'body',
-      autoTaskInfo: '#auto-task-info',
-      autoTaskButtons: '#auto-task-buttons',
-      showButtonDiv: 'div.show-button-div',
-      positionInputs: 'input[name^="position"]',
-      hotKeyInputs: 'input[name^="hotKey"]'
-    };
+    constructor() {
+      _classPrivateMethodInitSpec(this, _Setting_brand);
+      _defineProperty(this, 'name', 'Setting');
+      _defineProperty(this, 'buttons', [ 'saveGlobalOptions', 'syncData', 'tasksHistory' ]);
+      _defineProperty(this, 'syncData', syncOptions);
+      _defineProperty(this, 'selectors', {
+        body: 'body',
+        autoTaskInfo: '#auto-task-info',
+        autoTaskButtons: '#auto-task-buttons',
+        showButtonDiv: 'div.show-button-div',
+        positionInputs: 'input[name^="position"]',
+        hotKeyInputs: 'input[name^="hotKey"]'
+      });
+    }
     tasksHistory() {
       debug('打开任务历史记录页面');
       GM_openInTab('https://auto-task.hclonely.com/history.html', {
@@ -14964,11 +15091,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始初始化设置页面');
-        await this.#initializeEnvironment();
-        this.#initializeGlobalSettings();
-        this.#setupSocialButtons();
-        this.#setupPositionHandlers();
-        this.#setupHotKeyHandlers();
+        await _assertClassBrand(_Setting_brand, this, _initializeEnvironment).call(this);
+        _assertClassBrand(_Setting_brand, this, _initializeGlobalSettings).call(this);
+        _assertClassBrand(_Setting_brand, this, _setupSocialButtons).call(this);
+        _assertClassBrand(_Setting_brand, this, _setupPositionHandlers).call(this);
+        _assertClassBrand(_Setting_brand, this, _setupHotKeyHandlers).call(this);
         debug('设置页面初始化完成');
       } catch (error) {
         debug('设置页面初始化失败', {
@@ -14989,249 +15116,258 @@ if (missingDependencies.length > 0) {
         throwError(error, 'Setting.saveGlobalOptions');
       }
     }
-    async #initializeEnvironment() {
-      try {
-        debug('开始初始化环境信息');
-        const userAgent = await browser.getInfo();
-        debug('获取用户代理信息', {
-          userAgent: userAgent
-        });
-        const environmentHtml = this.#generateEnvironmentHtml(userAgent);
-        $(this.selectors.body).append(`<h2>${I18n('environment')}</h2>${environmentHtml}`);
-        debug('环境信息初始化完成');
-      } catch (error) {
-        debug('初始化环境信息失败', {
-          error: error
-        });
-        throwError(error, 'Setting.initializeEnvironment');
-      }
-    }
-    #generateEnvironmentHtml(userAgent) {
-      return `\n      <form id="environmentForm" class="auto-task-form">\n        <table class="auto-task-table">\n          <thead>\n            <tr>\n              <td>${I18n('type')}</td>\n              <td>${I18n('name')}</td>\n              <td>${I18n('version')}</td>\n            </tr>\n          </thead>\n          <tbody>\n            <tr>\n              <td>${I18n('os')}</td>\n              <td>${userAgent.system}</td>\n              <td>${userAgent.systemVersion}</td>\n            </tr>\n            <tr>\n              <td>${I18n('browser')}</td>\n              <td>${userAgent.browser}</td>\n              <td>${userAgent.browserVersion}</td>\n            </tr>\n            <tr>\n              <td>${I18n('scriptManager')}</td>\n              <td>${GM_info.scriptHandler}</td>\n              <td>${GM_info.version}</td>\n            </tr>\n            <tr>\n              <td>${I18n('script')}</td>\n              <td>${GM_info.script.name}</td>\n              <td>${GM_info.script.version}</td>\n            </tr>\n          </tbody>\n        </table>\n      </form>\n    `;
-    }
-    #initializeGlobalSettings() {
-      debug('开始初始化全局设置');
-      changeGlobalOptions('page');
-      whiteListOptions('page');
-      debug('全局设置初始化完成');
-    }
-    #setupSocialButtons() {
-      debug('开始设置社交媒体按钮');
-      this.#addSocialButton('other.twitterVerifyId', 'getTwitterUserId', 'twitterUser');
-      this.#addSocialButton('other.youtubeVerifyChannel', 'getYoutubeChannelId', 'youtubeChannel');
-      debug('社交媒体按钮设置完成');
-    }
-    #addSocialButton(inputName, buttonId, socialType) {
-      debug('添加社交媒体按钮', {
-        inputName: inputName,
-        buttonId: buttonId,
-        socialType: socialType
+  }
+  async function _initializeEnvironment() {
+    try {
+      debug('开始初始化环境信息');
+      const userAgent = await browser.getInfo();
+      debug('获取用户代理信息', {
+        userAgent: userAgent
       });
-      $(`input[name="${inputName}"]`).after(`<button id="${buttonId}" type="button">${I18n(`get${buttonId}`)}</button>`);
-      $(`#${buttonId}`).on('click', (() => this.#getId(socialType)));
-      debug('社交媒体按钮添加完成');
+      const environmentHtml = _assertClassBrand(_Setting_brand, this, _generateEnvironmentHtml).call(this, userAgent);
+      $(this.selectors.body).append('<h2>'.concat(I18n('environment'), '</h2>').concat(environmentHtml));
+      debug('环境信息初始化完成');
+    } catch (error) {
+      debug('初始化环境信息失败', {
+        error: error
+      });
+      throwError(error, 'Setting.initializeEnvironment');
     }
-    #setupPositionHandlers() {
-      debug('开始设置位置处理器');
-      $(this.selectors.positionInputs).on('input', (event => {
-        const input = $(event.target);
-        const type = input.attr('name')?.replace('position.', '');
-        if (!type) {
-          debug('无效的位置类型');
-          return;
-        }
-        debug('处理位置变化', {
-          type: type
-        });
-        this.#handlePositionChange(type);
-      }));
-      debug('位置处理器设置完成');
-    }
-    #handlePositionChange(type) {
-      debug('开始处理位置变化', {
+  }
+  function _generateEnvironmentHtml(userAgent) {
+    return '\n      <form id="environmentForm" class="auto-task-form">\n        <table class="auto-task-table">\n          <thead>\n            <tr>\n              <td>'.concat(I18n('type'), '</td>\n              <td>').concat(I18n('name'), '</td>\n              <td>').concat(I18n('version'), '</td>\n            </tr>\n          </thead>\n          <tbody>\n            <tr>\n              <td>').concat(I18n('os'), '</td>\n              <td>').concat(userAgent.system, '</td>\n              <td>').concat(userAgent.systemVersion, '</td>\n            </tr>\n            <tr>\n              <td>').concat(I18n('browser'), '</td>\n              <td>').concat(userAgent.browser, '</td>\n              <td>').concat(userAgent.browserVersion, '</td>\n            </tr>\n            <tr>\n              <td>').concat(I18n('scriptManager'), '</td>\n              <td>').concat(GM_info.scriptHandler, '</td>\n              <td>').concat(GM_info.version, '</td>\n            </tr>\n            <tr>\n              <td>').concat(I18n('script'), '</td>\n              <td>').concat(GM_info.script.name, '</td>\n              <td>').concat(GM_info.script.version, '</td>\n            </tr>\n          </tbody>\n        </table>\n      </form>\n    ');
+  }
+  function _initializeGlobalSettings() {
+    debug('开始初始化全局设置');
+    changeGlobalOptions('page');
+    whiteListOptions('page');
+    debug('全局设置初始化完成');
+  }
+  function _setupSocialButtons() {
+    debug('开始设置社交媒体按钮');
+    _assertClassBrand(_Setting_brand, this, _addSocialButton).call(this, 'other.twitterVerifyId', 'getTwitterUserId', 'twitterUser');
+    _assertClassBrand(_Setting_brand, this, _addSocialButton).call(this, 'other.youtubeVerifyChannel', 'getYoutubeChannelId', 'youtubeChannel');
+    debug('社交媒体按钮设置完成');
+  }
+  function _addSocialButton(inputName, buttonId, socialType) {
+    debug('添加社交媒体按钮', {
+      inputName: inputName,
+      buttonId: buttonId,
+      socialType: socialType
+    });
+    $('input[name="'.concat(inputName, '"]')).after('<button id="'.concat(buttonId, '" type="button">').concat(I18n('get'.concat(buttonId)), '</button>'));
+    $('#'.concat(buttonId)).on('click', (() => _assertClassBrand(_Setting_brand, this, _getId2).call(this, socialType)));
+    debug('社交媒体按钮添加完成');
+  }
+  function _setupPositionHandlers() {
+    debug('开始设置位置处理器');
+    $(this.selectors.positionInputs).on('input', (event => {
+      var _input$attr;
+      const input = $(event.target);
+      const type = (_input$attr = input.attr('name')) === null || _input$attr === void 0 ? void 0 : _input$attr.replace('position.', '');
+      if (!type) {
+        debug('无效的位置类型');
+        return;
+      }
+      debug('处理位置变化', {
         type: type
       });
-      const config = this.#getPositionConfig(type);
-      if (!config) {
-        debug('获取位置配置失败');
-        return;
-      }
-      const {distance: distance, sideX: sideX, sideY: sideY} = config;
-      if (!this.#isValidPosition(distance, sideX, sideY)) {
-        debug('无效的位置配置', {
-          distance: distance,
-          sideX: sideX,
-          sideY: sideY
-        });
-        return;
-      }
-      const [x, y] = distance.split(',');
-      const target = this.#getPositionTarget(type);
-      if (!target) {
-        debug('获取目标元素失败');
-        return;
-      }
-      debug('更新元素位置', {
-        target: target,
-        sideX: sideX,
-        sideY: sideY,
-        x: x,
-        y: y
-      });
-      this.#updateElementPosition(target, sideX, sideY, x, y);
+      _assertClassBrand(_Setting_brand, this, _handlePositionChange).call(this, type);
+    }));
+    debug('位置处理器设置完成');
+  }
+  function _handlePositionChange(type) {
+    debug('开始处理位置变化', {
+      type: type
+    });
+    const config = _assertClassBrand(_Setting_brand, this, _getPositionConfig).call(this, type);
+    if (!config) {
+      debug('获取位置配置失败');
+      return;
     }
-    #getPositionConfig(type) {
-      debug('获取位置配置', {
-        type: type
-      });
-      const baseType = type.replace(/(?:button|log|show)(?:SideX|SideY|Distance)$/, '');
-      const distance = $(`input[name="position.${baseType}Distance"]`).val();
-      const sideX = $(`input[name="position.${baseType}SideX"]`).val();
-      const sideY = $(`input[name="position.${baseType}SideY"]`).val();
-      const config = {
+    const {distance: distance, sideX: sideX, sideY: sideY} = config;
+    if (!_assertClassBrand(_Setting_brand, this, _isValidPosition).call(this, distance, sideX, sideY)) {
+      debug('无效的位置配置', {
         distance: distance,
         sideX: sideX,
         sideY: sideY
-      };
-      debug('位置配置', config);
-      return config;
-    }
-    #isValidPosition(distance, sideX, sideY) {
-      const isValid = VALID_SIDES_X.includes(sideX) && VALID_SIDES_Y.includes(sideY) && /^[\d]+?,[\d]+$/.test(distance);
-      debug('验证位置配置', {
-        distance: distance,
-        sideX: sideX,
-        sideY: sideY,
-        isValid: isValid
       });
-      return isValid;
+      return;
     }
-    #getPositionTarget(type) {
-      const targetMap = {
-        button: this.selectors.autoTaskButtons,
-        showButton: this.selectors.showButtonDiv,
-        log: this.selectors.autoTaskInfo
-      };
-      const baseType = type.replace(/(?:SideX|SideY|Distance)$/, '');
-      return targetMap[baseType];
+    const [x, y] = distance.split(',');
+    const target = _assertClassBrand(_Setting_brand, this, _getPositionTarget).call(this, type);
+    if (!target) {
+      debug('获取目标元素失败');
+      return;
     }
-    #updateElementPosition(selector, sideX, sideY, x, y) {
-      debug('更新元素位置', {
-        selector: selector,
-        sideX: sideX,
-        sideY: sideY,
-        x: x,
-        y: y
+    debug('更新元素位置', {
+      target: target,
+      sideX: sideX,
+      sideY: sideY,
+      x: x,
+      y: y
+    });
+    _assertClassBrand(_Setting_brand, this, _updateElementPosition).call(this, target, sideX, sideY, x, y);
+  }
+  function _getPositionConfig(type) {
+    debug('获取位置配置', {
+      type: type
+    });
+    const baseType = type.replace(/(?:button|log|show)(?:SideX|SideY|Distance)$/, '');
+    const distance = $('input[name="position.'.concat(baseType, 'Distance"]')).val();
+    const sideX = $('input[name="position.'.concat(baseType, 'SideX"]')).val();
+    const sideY = $('input[name="position.'.concat(baseType, 'SideY"]')).val();
+    const config = {
+      distance: distance,
+      sideX: sideX,
+      sideY: sideY
+    };
+    debug('位置配置', config);
+    return config;
+  }
+  function _isValidPosition(distance, sideX, sideY) {
+    const isValid = VALID_SIDES_X.includes(sideX) && VALID_SIDES_Y.includes(sideY) && /^[\d]+?,[\d]+$/.test(distance);
+    debug('验证位置配置', {
+      distance: distance,
+      sideX: sideX,
+      sideY: sideY,
+      isValid: isValid
+    });
+    return isValid;
+  }
+  function _getPositionTarget(type) {
+    const targetMap = {
+      button: this.selectors.autoTaskButtons,
+      showButton: this.selectors.showButtonDiv,
+      log: this.selectors.autoTaskInfo
+    };
+    const baseType = type.replace(/(?:SideX|SideY|Distance)$/, '');
+    return targetMap[baseType];
+  }
+  function _updateElementPosition(selector, sideX, sideY, x, y) {
+    debug('更新元素位置', {
+      selector: selector,
+      sideX: sideX,
+      sideY: sideY,
+      x: x,
+      y: y
+    });
+    const $element = $(selector);
+    const oppositeX = sideX === 'right' ? 'left' : 'right';
+    const oppositeY = sideY === 'top' ? 'bottom' : 'top';
+    $element.css(sideX, ''.concat(x, 'px')).css(sideY, ''.concat(y, 'px')).css(oppositeX, '').css(oppositeY, '');
+    debug('元素位置更新完成');
+  }
+  function _setupHotKeyHandlers() {
+    debug('开始设置热键处理器');
+    $(this.selectors.hotKeyInputs).attr('readonly', 'readonly').off('keydown').on('keydown', _assertClassBrand(_Setting_brand, this, _handleHotKeyPress));
+    debug('热键处理器设置完成');
+  }
+  function _handleHotKeyPress(event) {
+    debug('处理热键按下事件', {
+      key: event.key
+    });
+    const functionKeys = [];
+    if (event.altKey) {
+      functionKeys.push('alt');
+    }
+    if (event.ctrlKey) {
+      functionKeys.push('ctrl');
+    }
+    if (event.shiftKey) {
+      functionKeys.push('shift');
+    }
+    const key = event.key.length === 1 ? event.key.toLowerCase() : '';
+    const value = functionKeys.length ? ''.concat(functionKeys.join(' + '), ' + ').concat(key) : key;
+    debug('设置热键值', {
+      functionKeys: functionKeys,
+      key: key,
+      value: value
+    });
+    $(event.target).val(value);
+  }
+  async function _getId2(social) {
+    try {
+      debug('开始获取社交媒体ID', {
+        social: social
       });
-      const $element = $(selector);
-      const oppositeX = sideX === 'right' ? 'left' : 'right';
-      const oppositeY = sideY === 'top' ? 'bottom' : 'top';
-      $element.css(sideX, `${x}px`).css(sideY, `${y}px`).css(oppositeX, '').css(oppositeY, '');
-      debug('元素位置更新完成');
-    }
-    #setupHotKeyHandlers() {
-      debug('开始设置热键处理器');
-      $(this.selectors.hotKeyInputs).attr('readonly', 'readonly').off('keydown').on('keydown', this.#handleHotKeyPress);
-      debug('热键处理器设置完成');
-    }
-    #handleHotKeyPress(event) {
-      debug('处理热键按下事件', {
-        key: event.key
+      const result = await Swal.fire({
+        title: I18n('getId', I18n(social)),
+        html: _assertClassBrand(_Setting_brand, this, _generateIdInputHtml).call(this, social),
+        showCancelButton: true,
+        cancelButtonText: I18n('close'),
+        showConfirmButton: false
       });
-      const functionKeys = [];
-      if (event.altKey) {
-        functionKeys.push('alt');
+      if (!result.isDismissed) {
+        debug('用户确认获取ID');
+        await _assertClassBrand(_Setting_brand, this, _handleIdRetrieval).call(this, social);
+      } else {
+        debug('用户取消获取ID');
       }
-      if (event.ctrlKey) {
-        functionKeys.push('ctrl');
-      }
-      if (event.shiftKey) {
-        functionKeys.push('shift');
-      }
-      const key = event.key.length === 1 ? event.key.toLowerCase() : '';
-      const value = functionKeys.length ? `${functionKeys.join(' + ')} + ${key}` : key;
-      debug('设置热键值', {
-        functionKeys: functionKeys,
-        key: key,
-        value: value
+    } catch (error) {
+      debug('获取社交媒体ID失败', {
+        error: error
       });
-      $(event.target).val(value);
-    }
-    async #getId(social) {
-      try {
-        debug('开始获取社交媒体ID', {
-          social: social
-        });
-        const result = await Swal.fire({
-          title: I18n('getId', I18n(social)),
-          html: this.#generateIdInputHtml(social),
-          showCancelButton: true,
-          cancelButtonText: I18n('close'),
-          showConfirmButton: false
-        });
-        if (!result.isDismissed) {
-          debug('用户确认获取ID');
-          await this.#handleIdRetrieval(social);
-        } else {
-          debug('用户取消获取ID');
-        }
-      } catch (error) {
-        debug('获取社交媒体ID失败', {
-          error: error
-        });
-        throwError(error, 'Setting.getId');
-      }
-    }
-    #generateIdInputHtml(social) {
-      return `\n      <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">\n      <button id="link2id" data-type="${social}" class="swal2-confirm swal2-styled">获取id</button>\n    `;
-    }
-    async #handleIdRetrieval(social) {
-      const link = $('#socialLink').val();
-      if (!link) {
-        debug('链接为空');
-        return;
-      }
-      debug('开始处理ID获取', {
-        social: social,
-        link: link
-      });
-      let id = '';
-      if (social === 'twitterUser') {
-        const name = link.match(/https:\/\/twitter\.com\/(.+)/)?.[1] || link;
-        debug('获取Twitter用户ID', {
-          name: name
-        });
-        id = await (new Twitter).userName2id(name) || '';
-      } else if (social === 'youtubeChannel') {
-        const name = this.#extractYoutubeUrl(link);
-        debug('获取YouTube频道信息', {
-          name: name
-        });
-        const info = await getInfo(name, 'channel');
-        id = info?.params?.channelId || '';
-      }
-      debug('ID获取结果', {
-        id: id
-      });
-      $('#socialLink').val(id);
-    }
-    #extractYoutubeUrl(link) {
-      debug('提取YouTube URL', {
-        link: link
-      });
-      if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
-        const extractedUrl = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1] || link;
-        debug('从Google搜索结果提取URL', {
-          extractedUrl: extractedUrl
-        });
-        return extractedUrl;
-      }
-      return link;
+      throwError(error, 'Setting.getId');
     }
   }
+  function _generateIdInputHtml(social) {
+    return '\n      <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">\n      <button id="link2id" data-type="'.concat(social, '" class="swal2-confirm swal2-styled">获取id</button>\n    ');
+  }
+  async function _handleIdRetrieval(social) {
+    const link = $('#socialLink').val();
+    if (!link) {
+      debug('链接为空');
+      return;
+    }
+    debug('开始处理ID获取', {
+      social: social,
+      link: link
+    });
+    let id = '';
+    if (social === 'twitterUser') {
+      var _link$match23;
+      const name = ((_link$match23 = link.match(/https:\/\/twitter\.com\/(.+)/)) === null || _link$match23 === void 0 ? void 0 : _link$match23[1]) || link;
+      debug('获取Twitter用户ID', {
+        name: name
+      });
+      id = await (new Twitter).userName2id(name) || '';
+    } else if (social === 'youtubeChannel') {
+      var _info$params;
+      const name = _assertClassBrand(_Setting_brand, this, _extractYoutubeUrl).call(this, link);
+      debug('获取YouTube频道信息', {
+        name: name
+      });
+      const info = await getInfo(name, 'channel');
+      id = (info === null || info === void 0 || (_info$params = info.params) === null || _info$params === void 0 ? void 0 : _info$params.channelId) || '';
+    }
+    debug('ID获取结果', {
+      id: id
+    });
+    $('#socialLink').val(id);
+  }
+  function _extractYoutubeUrl(link) {
+    debug('提取YouTube URL', {
+      link: link
+    });
+    if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www.youtube.com\/.*/.test(link)) {
+      var _link$match24;
+      const extractedUrl = ((_link$match24 = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)) === null || _link$match24 === void 0 ? void 0 : _link$match24[1]) || link;
+      debug('从Google搜索结果提取URL', {
+        extractedUrl: extractedUrl
+      });
+      return extractedUrl;
+    }
+    return link;
+  }
+  var _History_brand = new WeakSet;
   class History extends Keylol {
-    name='History';
-    buttons=[ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect', 'clearHistory' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _History_brand);
+      _defineProperty(this, 'name', 'History');
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect', 'clearHistory' ]);
+    }
     static test() {
       try {
         const {host: host, pathname: pathname} = window.location;
@@ -15267,7 +15403,7 @@ if (missingDependencies.length > 0) {
           debug('处理任务项', {
             item: item
           });
-          this.#addItem(item);
+          _assertClassBrand(_History_brand, this, _addItem).call(this, item);
         }));
         debug('历史记录页面初始化完成');
       } catch (error) {
@@ -15306,184 +15442,184 @@ if (missingDependencies.length > 0) {
         throwError(error, 'History.clearHistory');
       }
     }
-    #addItem(item) {
-      try {
-        debug('开始添加任务项', {
+  }
+  function _addItem(item) {
+    try {
+      debug('开始添加任务项', {
+        item: item
+      });
+      const tasksData = GM_getValue(item);
+      if (!(tasksData !== null && tasksData !== void 0 && tasksData.tasks)) {
+        debug('任务数据无效', {
           item: item
         });
-        const tasksData = GM_getValue(item);
-        if (!tasksData?.tasks) {
-          debug('任务数据无效', {
-            item: item
-          });
-          return;
+        return;
+      }
+      const {title: title, link: link} = _assertClassBrand(_History_brand, this, _getTaskInfo).call(this, item);
+      if (!title || !link) {
+        debug('获取任务信息失败', {
+          item: item
+        });
+        return;
+      }
+      debug('生成任务HTML', {
+        item: item,
+        title: title,
+        link: link
+      });
+      const html = _assertClassBrand(_History_brand, this, _generateTaskHtml).call(this, tasksData.tasks);
+      _assertClassBrand(_History_brand, this, _appendTaskToContainer).call(this, item, title, link, html, tasksData.time);
+      _assertClassBrand(_History_brand, this, _bindDeleteEvent).call(this);
+      debug('任务项添加完成', {
+        item: item
+      });
+    } catch (error) {
+      debug('添加任务项时出错', {
+        error: error,
+        item: item
+      });
+      throwError(error, 'History.addItem');
+    }
+  }
+  function _getTaskInfo(item) {
+    try {
+      debug('开始获取任务信息', {
+        item: item
+      });
+      const [website, id] = item.split('-');
+      debug('解析任务标识符', {
+        website: website,
+        id: id
+      });
+      const taskInfoMap = {
+        fawTasks: {
+          title: 'Freeanywhere['.concat(id, ']'),
+          link: 'https://freeanywhere.net/#/giveaway/'.concat(id)
+        },
+        gasTasks: {
+          title: 'Giveawaysu['.concat(id, ']'),
+          link: 'https://giveaway.su/giveaway/view/'.concat(id)
+        },
+        gcTasks: {
+          title: 'GiveeClub['.concat(id, ']'),
+          link: 'https://givee.club/event/'.concat(id)
+        },
+        gkTasks: {
+          title: 'Givekey['.concat(id, ']'),
+          link: 'https://givekey.ru/giveaway/'.concat(id)
+        },
+        gleamTasks: {
+          title: 'Gleam['.concat(id, ']'),
+          link: 'https://gleam.io'.concat(id)
+        },
+        khTasks: {
+          title: 'keyhub['.concat(id, ']'),
+          link: 'https://key-hub.eu/giveaway/'.concat(id)
+        },
+        prysTasks: {
+          title: 'Prys['.concat(id, ']'),
+          link: 'https://prys.revadike.com/giveaway/?id='.concat(id)
         }
-        const {title: title, link: link} = this.#getTaskInfo(item);
-        if (!title || !link) {
-          debug('获取任务信息失败', {
-            item: item
-          });
-          return;
-        }
-        debug('生成任务HTML', {
-          item: item,
-          title: title,
-          link: link
-        });
-        const html = this.#generateTaskHtml(tasksData.tasks);
-        this.#appendTaskToContainer(item, title, link, html, tasksData.time);
-        this.#bindDeleteEvent();
-        debug('任务项添加完成', {
-          item: item
-        });
-      } catch (error) {
-        debug('添加任务项时出错', {
-          error: error,
-          item: item
-        });
-        throwError(error, 'History.addItem');
-      }
+      };
+      const result = taskInfoMap[website] || {
+        title: '',
+        link: ''
+      };
+      debug('获取任务信息结果', {
+        result: result
+      });
+      return result;
+    } catch (error) {
+      debug('获取任务信息时出错', {
+        error: error,
+        item: item
+      });
+      throwError(error, 'History.getTaskInfo');
+      return {
+        title: '',
+        link: ''
+      };
     }
-    #getTaskInfo(item) {
-      try {
-        debug('开始获取任务信息', {
-          item: item
-        });
-        const [website, id] = item.split('-');
-        debug('解析任务标识符', {
-          website: website,
-          id: id
-        });
-        const taskInfoMap = {
-          fawTasks: {
-            title: `Freeanywhere[${id}]`,
-            link: `https://freeanywhere.net/#/giveaway/${id}`
-          },
-          gasTasks: {
-            title: `Giveawaysu[${id}]`,
-            link: `https://giveaway.su/giveaway/view/${id}`
-          },
-          gcTasks: {
-            title: `GiveeClub[${id}]`,
-            link: `https://givee.club/event/${id}`
-          },
-          gkTasks: {
-            title: `Givekey[${id}]`,
-            link: `https://givekey.ru/giveaway/${id}`
-          },
-          gleamTasks: {
-            title: `Gleam[${id}]`,
-            link: `https://gleam.io${id}`
-          },
-          khTasks: {
-            title: `keyhub[${id}]`,
-            link: `https://key-hub.eu/giveaway/${id}`
-          },
-          prysTasks: {
-            title: `Prys[${id}]`,
-            link: `https://prys.revadike.com/giveaway/?id=${id}`
-          }
-        };
-        const result = taskInfoMap[website] || {
-          title: '',
-          link: ''
-        };
-        debug('获取任务信息结果', {
-          result: result
-        });
-        return result;
-      } catch (error) {
-        debug('获取任务信息时出错', {
-          error: error,
-          item: item
-        });
-        throwError(error, 'History.getTaskInfo');
-        return {
-          title: '',
-          link: ''
-        };
-      }
-    }
-    #generateTaskHtml(tasks) {
-      try {
-        debug('开始生成任务HTML');
-        let html = '';
-        for (const [social, types] of Object.entries(tasks)) {
-          for (const [type, taskList] of Object.entries(types)) {
-            for (const task of taskList) {
-              debug('处理任务', {
-                social: social,
-                type: type,
-                task: task
-              });
-              const displayTask = task.length > 55 ? `${task.slice(0, 55)}...` : task;
-              html += `<li>\n              <font class="auto-task-capitalize">${social}.${I18n(type.replace('Link', ''))}: </font>\n              <a href="${task}" target="_blank">${displayTask}</a>\n            </li>`;
-            }
-          }
-        }
-        debug('任务HTML生成完成');
-        return html;
-      } catch (error) {
-        debug('生成任务HTML时出错', {
-          error: error
-        });
-        throwError(error, 'History.generateTaskHtml');
-        return '';
-      }
-    }
-    #appendTaskToContainer(item, title, link, html, time) {
-      try {
-        debug('开始添加任务到容器', {
-          item: item,
-          title: title,
-          link: link
-        });
-        $('.container').append(`\n        <div class="card" data-name="${item}">\n          <div class="title">\n            <a href="${link}" target="_blank">${title}</a>\n            <span class="delete-task" data-name="${item}" title="${I18n('deleteTask')}">\n              <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2734" width="32" height="32">\n                <path d="M607.897867 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L575.903242 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 351.94087C639.892491 753.593818 625.61532 768.043004 607.897867 768.043004z" p-id="2735" fill="#d81e06"></path>\n                <path d="M415.930119 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L383.935495 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625 17.717453 0 31.994625 14.277171 31.994625 31.994625l0 351.94087C447.924744 753.593818 433.647573 768.043004 415.930119 768.043004z" p-id="2736" fill="#d81e06"></path>\n                <path d="M928.016126 223.962372l-159.973123 0L768.043004 159.973123c0-52.980346-42.659499-95.983874-95.295817-95.983874L351.94087 63.989249c-52.980346 0-95.983874 43.003528-95.983874 95.983874l0 63.989249-159.973123 0c-17.717453 0-31.994625 14.277171-31.994625 31.994625s14.277171 31.994625 31.994625 31.994625l832.032253 0c17.717453 0 31.994625-14.277171 31.994625-31.994625S945.73358 223.962372 928.016126 223.962372zM319.946246 159.973123c0-17.545439 14.449185-31.994625 31.994625-31.994625l320.806316 0c17.545439 0 31.306568 14.105157 31.306568 31.994625l0 63.989249L319.946246 223.962372 319.946246 159.973123 319.946246 159.973123z" p-id="2737" fill="#d81e06"></path>\n                <path d="M736.048379 960.010751 288.123635 960.010751c-52.980346 0-95.983874-43.003528-95.983874-95.983874L192.139761 383.591466c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 480.435411c0 17.717453 14.449185 31.994625 31.994625 31.994625l448.096758 0c17.717453 0 31.994625-14.277171 31.994625-31.994625L768.215018 384.795565c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 479.231312C832.032253 916.835209 789.028725 960.010751 736.048379 960.010751z" p-id="2738" fill="#d81e06"></path>\n              </svg>\n            </span>\n          </div>\n          <ul>${html}</ul>\n          <span class="time">${I18n('lastChangeTime')}: ${dayjs(time).format('YYYY-MM-DD HH:mm:ss')}</span>\n        </div>\n      `);
-        debug('任务已添加到容器', {
-          item: item
-        });
-      } catch (error) {
-        debug('添加任务到容器时出错', {
-          error: error,
-          item: item
-        });
-        throwError(error, 'History.appendTaskToContainer');
-      }
-    }
-    #bindDeleteEvent() {
-      try {
-        debug('开始绑定删除事件');
-        $('span.delete-task').on('click', (function() {
-          const itemName = $(this).attr('data-name');
-          debug('点击删除按钮', {
-            itemName: itemName
-          });
-          if (!itemName) {
-            debug('删除失败：未找到任务名称');
-            Swal.fire({
-              title: I18n('clearTaskFailed'),
-              icon: 'error'
+  }
+  function _generateTaskHtml(tasks) {
+    try {
+      debug('开始生成任务HTML');
+      let html = '';
+      for (const [social, types] of Object.entries(tasks)) {
+        for (const [type, taskList] of Object.entries(types)) {
+          for (const task of taskList) {
+            debug('处理任务', {
+              social: social,
+              type: type,
+              task: task
             });
-            return;
+            const displayTask = task.length > 55 ? ''.concat(task.slice(0, 55), '...') : task;
+            html += '<li>\n              <font class="auto-task-capitalize">'.concat(social, '.').concat(I18n(type.replace('Link', '')), ': </font>\n              <a href="').concat(task, '" target="_blank">').concat(displayTask, '</a>\n            </li>');
           }
-          GM_deleteValue(itemName);
-          $(`div.card[data-name="${itemName}"]`).remove();
-          debug('任务删除成功', {
-            itemName: itemName
-          });
-          Swal.fire({
-            title: I18n('clearTaskFinished'),
-            text: itemName,
-            icon: 'success'
-          });
-        }));
-        debug('删除事件绑定完成');
-      } catch (error) {
-        debug('绑定删除事件时出错', {
-          error: error
-        });
-        throwError(error, 'History.bindDeleteEvent');
+        }
       }
+      debug('任务HTML生成完成');
+      return html;
+    } catch (error) {
+      debug('生成任务HTML时出错', {
+        error: error
+      });
+      throwError(error, 'History.generateTaskHtml');
+      return '';
+    }
+  }
+  function _appendTaskToContainer(item, title, link, html, time) {
+    try {
+      debug('开始添加任务到容器', {
+        item: item,
+        title: title,
+        link: link
+      });
+      $('.container').append('\n        <div class="card" data-name="'.concat(item, '">\n          <div class="title">\n            <a href="').concat(link, '" target="_blank">').concat(title, '</a>\n            <span class="delete-task" data-name="').concat(item, '" title="').concat(I18n('deleteTask'), '">\n              <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2734" width="32" height="32">\n                <path d="M607.897867 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L575.903242 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 351.94087C639.892491 753.593818 625.61532 768.043004 607.897867 768.043004z" p-id="2735" fill="#d81e06"></path>\n                <path d="M415.930119 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L383.935495 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625 17.717453 0 31.994625 14.277171 31.994625 31.994625l0 351.94087C447.924744 753.593818 433.647573 768.043004 415.930119 768.043004z" p-id="2736" fill="#d81e06"></path>\n                <path d="M928.016126 223.962372l-159.973123 0L768.043004 159.973123c0-52.980346-42.659499-95.983874-95.295817-95.983874L351.94087 63.989249c-52.980346 0-95.983874 43.003528-95.983874 95.983874l0 63.989249-159.973123 0c-17.717453 0-31.994625 14.277171-31.994625 31.994625s14.277171 31.994625 31.994625 31.994625l832.032253 0c17.717453 0 31.994625-14.277171 31.994625-31.994625S945.73358 223.962372 928.016126 223.962372zM319.946246 159.973123c0-17.545439 14.449185-31.994625 31.994625-31.994625l320.806316 0c17.545439 0 31.306568 14.105157 31.306568 31.994625l0 63.989249L319.946246 223.962372 319.946246 159.973123 319.946246 159.973123z" p-id="2737" fill="#d81e06"></path>\n                <path d="M736.048379 960.010751 288.123635 960.010751c-52.980346 0-95.983874-43.003528-95.983874-95.983874L192.139761 383.591466c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 480.435411c0 17.717453 14.449185 31.994625 31.994625 31.994625l448.096758 0c17.717453 0 31.994625-14.277171 31.994625-31.994625L768.215018 384.795565c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 479.231312C832.032253 916.835209 789.028725 960.010751 736.048379 960.010751z" p-id="2738" fill="#d81e06"></path>\n              </svg>\n            </span>\n          </div>\n          <ul>').concat(html, '</ul>\n          <span class="time">').concat(I18n('lastChangeTime'), ': ').concat(dayjs(time).format('YYYY-MM-DD HH:mm:ss'), '</span>\n        </div>\n      '));
+      debug('任务已添加到容器', {
+        item: item
+      });
+    } catch (error) {
+      debug('添加任务到容器时出错', {
+        error: error,
+        item: item
+      });
+      throwError(error, 'History.appendTaskToContainer');
+    }
+  }
+  function _bindDeleteEvent() {
+    try {
+      debug('开始绑定删除事件');
+      $('span.delete-task').on('click', (function() {
+        const itemName = $(this).attr('data-name');
+        debug('点击删除按钮', {
+          itemName: itemName
+        });
+        if (!itemName) {
+          debug('删除失败：未找到任务名称');
+          Swal.fire({
+            title: I18n('clearTaskFailed'),
+            icon: 'error'
+          });
+          return;
+        }
+        GM_deleteValue(itemName);
+        $('div.card[data-name="'.concat(itemName, '"]')).remove();
+        debug('任务删除成功', {
+          itemName: itemName
+        });
+        Swal.fire({
+          title: I18n('clearTaskFinished'),
+          text: itemName,
+          icon: 'success'
+        });
+      }));
+      debug('删除事件绑定完成');
+    } catch (error) {
+      debug('绑定删除事件时出错', {
+        error: error
+      });
+      throwError(error, 'History.bindDeleteEvent');
     }
   }
   const defaultTasksTemplate$2 = {
@@ -15512,12 +15648,17 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$2 = JSON.stringify(defaultTasksTemplate$2);
+  var _GiveawayHopper_brand = new WeakSet;
   class GiveawayHopper extends Website {
-    name='GiveawayHopper';
-    undoneTasks=(() => JSON.parse(defaultTasks$2))();
-    socialTasks=(() => JSON.parse(defaultTasks$2))();
-    tasks=[];
-    buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _GiveawayHopper_brand);
+      _defineProperty(this, 'name', 'GiveawayHopper');
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$2));
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$2));
+      _defineProperty(this, 'tasks', []);
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'giveawayhopper.com';
@@ -15530,11 +15671,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_GiveawayHopper_brand, this, _checkLogin8).call(this)) {
           debug('登录检查失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        const giveawayIdResult = this.#getGiveawayId();
+        const giveawayIdResult = _assertClassBrand(_GiveawayHopper_brand, this, _getGiveawayId9).call(this);
         debug('获取抽奖ID', {
           success: giveawayIdResult,
           id: this.giveawayId
@@ -15552,7 +15693,7 @@ if (missingDependencies.length > 0) {
         const logStatus = echoLog({
           text: I18n('initing')
         });
-        const leftKeyResult = await this.#checkLeftKey();
+        const leftKeyResult = await _assertClassBrand(_GiveawayHopper_brand, this, _checkLeftKey8).call(this);
         if (!leftKeyResult) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
@@ -15571,28 +15712,30 @@ if (missingDependencies.length > 0) {
     }
     async classifyTask(action) {
       try {
+        var _document$cookie$matc, _data$response83;
         debug('开始分类任务', {
           action: action
         });
         if (!this.giveawayId) {
           debug('未找到抽奖ID，尝试获取');
-          await this.#getGiveawayId();
+          await _assertClassBrand(_GiveawayHopper_brand, this, _getGiveawayId9).call(this);
         }
         const logStatus = echoLog({
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue11;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`giveawayHopperTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$2);
+          this.socialTasks = ((_GM_getValue11 = GM_getValue('giveawayHopperTasks-'.concat(this.giveawayId))) === null || _GM_getValue11 === void 0 ? void 0 : _GM_getValue11.tasks) || JSON.parse(defaultTasks$2);
         }
         debug('请求任务列表');
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/with-auth`,
+          url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/with-auth'),
           method: 'GET',
           responseType: 'json',
           headers: {
-            authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-            'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1])
+            authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
+            'x-xsrf-token': decodeURIComponent((_document$cookie$matc = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc === void 0 ? void 0 : _document$cookie$matc[1])
           }
         });
         if (result !== 'Success') {
@@ -15601,15 +15744,15 @@ if (missingDependencies.length > 0) {
             statusText: statusText,
             status: status
           });
-          logStatus.error(`${result}:${statusText}(${status})`);
+          logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
           return false;
         }
-        if (data?.status !== 200 || !data?.response?.tasks) {
+        if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response83 = data.response) !== null && _data$response83 !== void 0 && _data$response83.tasks)) {
           debug('任务列表数据异常', {
-            status: data?.status,
-            response: data?.response
+            status: data === null || data === void 0 ? void 0 : data.status,
+            response: data === null || data === void 0 ? void 0 : data.response
           });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
         debug('获取到任务列表', {
@@ -15617,6 +15760,7 @@ if (missingDependencies.length > 0) {
         });
         this.tasks = data.response.tasks;
         for (const task of data.response.tasks) {
+          var _document$cookie$matc2;
           if (task.isDone) {
             debug('跳过已完成任务', {
               taskId: task.id,
@@ -15630,17 +15774,17 @@ if (missingDependencies.length > 0) {
             type: task.type
           });
           await httpRequest({
-            url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/visited`,
+            url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/tasks/').concat(task.id, '/visited'),
             method: 'GET',
             responseType: 'json',
             headers: {
-              authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-              'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1])
+              authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
+              'x-xsrf-token': decodeURIComponent((_document$cookie$matc2 = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc2 === void 0 ? void 0 : _document$cookie$matc2[1])
             }
           });
           if (task.category === 'Steam' && task.type === 'JoinGroup') {
             debug('处理 Steam 组任务');
-            const steamGroupLink = await getRedirectLink(`https://steamcommunity.com/gid/${task.group_id}`);
+            const steamGroupLink = await getRedirectLink('https://steamcommunity.com/gid/'.concat(task.group_id));
             if (!steamGroupLink) {
               debug('获取 Steam 组链接失败');
               continue;
@@ -15658,7 +15802,7 @@ if (missingDependencies.length > 0) {
             continue;
           }
           if (task.category === 'Discord' && task.type === 'JoinServer') {
-            const discordLink = `https://discord.gg/${task.invite_code}`;
+            const discordLink = 'https://discord.gg/'.concat(task.invite_code);
             debug('添加 Discord 服务器链接', {
               action: action,
               link: discordLink
@@ -15681,7 +15825,7 @@ if (missingDependencies.length > 0) {
             category: task.category,
             type: task.type
           });
-          echoLog({}).warning(`${I18n('unKnownTaskType')}: ${task.category}-${task.type}`);
+          echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(task.category, '-').concat(task.type));
         }
         logStatus.success();
         this.undoneTasks = this.uniqueTasks(this.undoneTasks);
@@ -15690,7 +15834,7 @@ if (missingDependencies.length > 0) {
           undoneTasks: this.undoneTasks,
           socialTasks: this.socialTasks
         });
-        GM_setValue(`giveawayHopperTasks-${this.giveawayId}`, {
+        GM_setValue('giveawayHopperTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -15707,6 +15851,7 @@ if (missingDependencies.length > 0) {
       try {
         debug('开始验证任务');
         for (const task of this.tasks) {
+          var _task$displayName, _task$displayName2;
           if (task.isDone) {
             debug('跳过已完成任务', {
               taskId: task.id
@@ -15715,23 +15860,23 @@ if (missingDependencies.length > 0) {
           }
           debug('验证任务', {
             taskId: task.id,
-            name: task.displayName?.replace(':target', task.targetName) || task.name
+            name: ((_task$displayName = task.displayName) === null || _task$displayName === void 0 ? void 0 : _task$displayName.replace(':target', task.targetName)) || task.name
           });
           const logStatus = echoLog({
-            text: `${I18n('verifyingTask')}[${task.displayName?.replace(':target', task.targetName) || task.name}]...`
+            text: ''.concat(I18n('verifyingTask'), '[').concat(((_task$displayName2 = task.displayName) === null || _task$displayName2 === void 0 ? void 0 : _task$displayName2.replace(':target', task.targetName)) || task.name, ']...')
           });
           if (!task.link) {
             debug('获取任务链接');
-            task.link = this.#getTaskLink(task);
+            task.link = _assertClassBrand(_GiveawayHopper_brand, this, _getTaskLink).call(this, task);
           }
           if (task.link) {
             debug('访问任务链接', {
               link: task.link
             });
-            await this.#visitTaskLink(task);
+            await _assertClassBrand(_GiveawayHopper_brand, this, _visitTaskLink).call(this, task);
           }
           await delay(1e3);
-          const verifyResult = await this.#verifyTask(task, logStatus);
+          const verifyResult = await _assertClassBrand(_GiveawayHopper_brand, this, _verifyTask).call(this, task, logStatus);
           debug('任务验证结果', {
             taskId: task.id,
             success: verifyResult
@@ -15750,178 +15895,181 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    #getTaskLink(task) {
-      try {
-        debug('生成任务链接', {
-          category: task.category,
-          type: task.type
-        });
-        let link = '';
-        if (task.category === 'YouTube' && task.type === 'FollowAccount') {
-          link = `https://www.youtube.com/@${task.targetName}`;
-        } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
-          link = `https://www.tiktok.com/@${task.targetName}`;
-        } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
-          link = '';
-        } else if (task.category === 'Discord' && task.type === 'JoinServer') {
-          link = '';
-        }
-        debug('生成的任务链接', {
-          link: link
-        });
-        return link;
-      } catch (error) {
-        debug('生成任务链接失败', {
-          error: error
-        });
-        throwError(error, 'GiveawayHopper.getTaskLink');
-        return '';
-      }
-    }
-    async #visitTaskLink(task) {
-      debug('访问任务链接', {
-        taskId: task.id,
-        link: task.link
-      });
-      await httpRequest({
-        url: `https://giveawayhopper.com/fw?url=${encodeURIComponent(task.link)}&src=campaign&src_id=${this.giveawayId}&ref=task&ref_id=${task.id}&token=${window.sessionStorage.gw_auth}`,
-        method: 'GET',
-        headers: {
-          authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-          'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1])
-        }
-      });
-    }
-    async #verifyTask(task, logStatus) {
-      debug('验证任务', {
-        taskId: task.id,
+  }
+  function _getTaskLink(task) {
+    try {
+      debug('生成任务链接', {
         category: task.category,
         type: task.type
       });
-      const postData = {
-        taskcategory: task.category,
-        taskname: task.type
-      };
-      if ([ 'YouTube', 'TikTok' ].includes(task.category)) {
-        postData.username = '1';
+      let link = '';
+      if (task.category === 'YouTube' && task.type === 'FollowAccount') {
+        link = 'https://www.youtube.com/@'.concat(task.targetName);
+      } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
+        link = 'https://www.tiktok.com/@'.concat(task.targetName);
+      } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
+        link = '';
+      } else if (task.category === 'Discord' && task.type === 'JoinServer') {
+        link = '';
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/complete`,
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-          'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1]),
-          'content-type': 'application/json'
-        },
-        dataType: 'json',
-        data: JSON.stringify(postData)
+      debug('生成的任务链接', {
+        link: link
       });
-      if (result !== 'Success') {
-        debug('任务验证请求失败', {
-          result: result,
-          statusText: statusText,
-          status: status
+      return link;
+    } catch (error) {
+      debug('生成任务链接失败', {
+        error: error
+      });
+      throwError(error, 'GiveawayHopper.getTaskLink');
+      return '';
+    }
+  }
+  async function _visitTaskLink(task) {
+    var _document$cookie$matc3;
+    debug('访问任务链接', {
+      taskId: task.id,
+      link: task.link
+    });
+    await httpRequest({
+      url: 'https://giveawayhopper.com/fw?url='.concat(encodeURIComponent(task.link), '&src=campaign&src_id=').concat(this.giveawayId, '&ref=task&ref_id=').concat(task.id, '&token=').concat(window.sessionStorage.gw_auth),
+      method: 'GET',
+      headers: {
+        authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
+        'x-xsrf-token': decodeURIComponent((_document$cookie$matc3 = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc3 === void 0 ? void 0 : _document$cookie$matc3[1])
+      }
+    });
+  }
+  async function _verifyTask(task, logStatus) {
+    var _document$cookie$matc4, _data$response118;
+    debug('验证任务', {
+      taskId: task.id,
+      category: task.category,
+      type: task.type
+    });
+    const postData = {
+      taskcategory: task.category,
+      taskname: task.type
+    };
+    if ([ 'YouTube', 'TikTok' ].includes(task.category)) {
+      postData.username = '1';
+    }
+    const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/tasks/').concat(task.id, '/complete'),
+      method: 'POST',
+      headers: {
+        authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
+        'x-xsrf-token': decodeURIComponent((_document$cookie$matc4 = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc4 === void 0 ? void 0 : _document$cookie$matc4[1]),
+        'content-type': 'application/json'
+      },
+      dataType: 'json',
+      data: JSON.stringify(postData)
+    });
+    if (result !== 'Success') {
+      debug('任务验证请求失败', {
+        result: result,
+        statusText: statusText,
+        status: status
+      });
+      logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+      return false;
+    }
+    if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response118 = data.response) !== null && _data$response118 !== void 0 && _data$response118.completed)) {
+      debug('任务验证响应异常', {
+        status: data === null || data === void 0 ? void 0 : data.status,
+        response: data === null || data === void 0 ? void 0 : data.response
+      });
+      logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      return false;
+    }
+    debug('任务验证成功', {
+      taskId: task.id
+    });
+    logStatus.success();
+    return true;
+  }
+  function _getGiveawayId9() {
+    try {
+      debug('从URL获取抽奖ID');
+      const giveawayId = window.location.pathname.split('/').at(-1);
+      if (!giveawayId) {
+        debug('获取抽奖ID失败');
+        echoLog({
+          text: I18n('getFailed', 'GiveawayId')
         });
-        logStatus.error(`${result}:${statusText}(${status})`);
         return false;
       }
-      if (data?.status !== 200 || !data?.response?.completed) {
-        debug('任务验证响应异常', {
-          status: data?.status,
-          response: data?.response
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      }
-      debug('任务验证成功', {
-        taskId: task.id
+      this.giveawayId = giveawayId;
+      debug('获取抽奖ID成功', {
+        giveawayId: giveawayId
       });
-      logStatus.success();
       return true;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'GiveawayHopper.getGiveawayId');
+      return false;
     }
-    #getGiveawayId() {
-      try {
-        debug('从URL获取抽奖ID');
-        const giveawayId = window.location.pathname.split('/').at(-1);
-        if (!giveawayId) {
-          debug('获取抽奖ID失败');
-          echoLog({
-            text: I18n('getFailed', 'GiveawayId')
-          });
-          return false;
-        }
-        this.giveawayId = giveawayId;
-        debug('获取抽奖ID成功', {
-          giveawayId: giveawayId
-        });
+  }
+  function _checkLogin8() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
         return true;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
-        });
-        throwError(error, 'GiveawayHopper.getGiveawayId');
-        return false;
       }
+      const needLogin = $('div.widget-connections-edit:contains("Log in")').length > 0;
+      if (needLogin) {
+        debug('未登录，自动点击登录按钮');
+        $('div.widget-connections-edit:contains("Log in") a')[0].click();
+      }
+      debug('登录检查完成', {
+        needLogin: needLogin
+      });
+      return true;
+    } catch (error) {
+      debug('登录检查失败', {
+        error: error
+      });
+      throwError(error, 'GiveawayHopper.checkLogin');
+      return false;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        const needLogin = $('div.widget-connections-edit:contains("Log in")').length > 0;
-        if (needLogin) {
-          debug('未登录，自动点击登录按钮');
-          $('div.widget-connections-edit:contains("Log in") a')[0].click();
-        }
-        debug('登录检查完成', {
-          needLogin: needLogin
-        });
+  }
+  async function _checkLeftKey8() {
+    try {
+      var _$$text2;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
         return true;
-      } catch (error) {
-        debug('登录检查失败', {
-          error: error
-        });
-        throwError(error, 'GiveawayHopper.checkLogin');
-        return false;
       }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const keyCount = parseInt($('p.widget-single-prize span').text()?.match(/\d+/)?.[0] || '0', 10);
-        debug('剩余密钥数量', {
-          keyCount: keyCount
-        });
-        if (keyCount > 0) {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('noKeysLeft'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
+      const keyCount = parseInt(((_$$text2 = $('p.widget-single-prize span').text()) === null || _$$text2 === void 0 || (_$$text2 = _$$text2.match(/\d+/)) === null || _$$text2 === void 0 ? void 0 : _$$text2[0]) || '0', 10);
+      debug('剩余密钥数量', {
+        keyCount: keyCount
+      });
+      if (keyCount > 0) {
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'GiveawayHopper.checkLeftKey');
-        return false;
       }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('noKeysLeft'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'GiveawayHopper.checkLeftKey');
+      return false;
     }
   }
   const defaultTasksTemplate$1 = {
@@ -15936,11 +16084,16 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks$1 = JSON.stringify(defaultTasksTemplate$1);
+  var _Prys_brand = new WeakSet;
   class Prys extends Website {
-    name='Prys';
-    socialTasks=(() => JSON.parse(defaultTasks$1))();
-    undoneTasks=(() => JSON.parse(defaultTasks$1))();
-    buttons=[ 'doTask', 'undoTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _Prys_brand);
+      _defineProperty(this, 'name', 'Prys');
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$1));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$1));
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
+    }
     static test() {
       const {host: host} = window.location;
       const isMatch = host === 'prys.revadike.com';
@@ -15953,11 +16106,11 @@ if (missingDependencies.length > 0) {
     async after() {
       try {
         debug('开始执行后续操作');
-        if (!this.#checkLogin()) {
+        if (!_assertClassBrand(_Prys_brand, this, _checkLogin9).call(this)) {
           debug('检查登录失败');
           echoLog({}).warning(I18n('checkLoginFailed'));
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_Prys_brand, this, _checkLeftKey9).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -15979,7 +16132,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!this.#getGiveawayId()) {
+        if (!_assertClassBrand(_Prys_brand, this, _getGiveawayId0).call(this)) {
           debug('获取抽奖ID失败');
           return false;
         }
@@ -16004,8 +16157,9 @@ if (missingDependencies.length > 0) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
+          var _GM_getValue12;
           debug('恢复已保存的任务信息');
-          this.socialTasks = GM_getValue(`prysTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks$1);
+          this.socialTasks = ((_GM_getValue12 = GM_getValue('prysTasks-'.concat(this.giveawayId))) === null || _GM_getValue12 === void 0 ? void 0 : _GM_getValue12.tasks) || JSON.parse(defaultTasks$1);
         }
         const steps = $('#steps tbody tr');
         debug('找到任务步骤', {
@@ -16099,7 +16253,7 @@ if (missingDependencies.length > 0) {
         if (window.DEBUG) {
           console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
         }
-        GM_setValue(`prysTasks-${this.giveawayId}`, {
+        GM_setValue('prysTasks-'.concat(this.giveawayId), {
           tasks: this.socialTasks,
           time: (new Date).getTime()
         });
@@ -16123,21 +16277,22 @@ if (missingDependencies.length > 0) {
         }
         const pro = [];
         for (const check of checks) {
-          const id = $(check).attr('id')?.match(/[\d]+/)?.[0];
+          var _$$attr2, _$$parent;
+          const id = (_$$attr2 = $(check).attr('id')) === null || _$$attr2 === void 0 || (_$$attr2 = _$$attr2.match(/[\d]+/)) === null || _$$attr2 === void 0 ? void 0 : _$$attr2[0];
           if (!id) {
             debug('跳过无效任务ID');
             continue;
           }
-          const taskDes = $(check).parent()?.prev()?.html()?.trim();
+          const taskDes = (_$$parent = $(check).parent()) === null || _$$parent === void 0 || (_$$parent = _$$parent.prev()) === null || _$$parent === void 0 || (_$$parent = _$$parent.html()) === null || _$$parent === void 0 ? void 0 : _$$parent.trim();
           debug('验证任务', {
             id: id,
             taskDes: taskDes
           });
           const status = echoLog({
-            text: `${I18n('verifyingTask')}${taskDes}...`
+            text: ''.concat(I18n('verifyingTask')).concat(taskDes, '...')
           });
           pro.push(new Promise((resolve => {
-            this.#checkStep(id, resolve, status);
+            _assertClassBrand(_Prys_brand, this, _checkStep).call(this, id, resolve, status);
           })));
         }
         await Promise.all(pro);
@@ -16150,149 +16305,152 @@ if (missingDependencies.length > 0) {
         throwError(error, 'Prys.verifyTask');
       }
     }
-    #getGiveawayId() {
-      try {
-        debug('开始获取抽奖ID');
-        const giveawayId = window.location.search.match(/id=([\d]+)/)?.[1];
-        if (giveawayId) {
-          this.giveawayId = giveawayId;
-          debug('获取抽奖ID成功', {
-            giveawayId: giveawayId
-          });
-          return true;
-        }
-        debug('获取抽奖ID失败');
-        echoLog({}).error(I18n('getFailed', 'GiveawayId'));
-        return false;
-      } catch (error) {
-        debug('获取抽奖ID出错', {
-          error: error
+  }
+  function _getGiveawayId0() {
+    try {
+      var _window$location$sear;
+      debug('开始获取抽奖ID');
+      const giveawayId = (_window$location$sear = window.location.search.match(/id=([\d]+)/)) === null || _window$location$sear === void 0 ? void 0 : _window$location$sear[1];
+      if (giveawayId) {
+        this.giveawayId = giveawayId;
+        debug('获取抽奖ID成功', {
+          giveawayId: giveawayId
         });
-        throwError(error, 'Prys.getGiveawayId');
-        return false;
-      }
-    }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const leftKey = $('#header').text().match(/([\d]+).*?prize.*?left/)?.[1];
-        debug('检查剩余密钥数量', {
-          leftKey: leftKey
-        });
-        if (leftKey !== '0') {
-          return true;
-        }
-        debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
-          icon: 'warning',
-          title: I18n('notice'),
-          text: I18n('noKeysLeft'),
-          confirmButtonText: I18n('confirm'),
-          cancelButtonText: I18n('cancel'),
-          showCancelButton: true
-        });
-        if (value) {
-          debug('用户确认关闭窗口');
-          window.close();
-        }
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'Prys.checkLeftKey');
-        return false;
       }
+      debug('获取抽奖ID失败');
+      echoLog({}).error(I18n('getFailed', 'GiveawayId'));
+      return false;
+    } catch (error) {
+      debug('获取抽奖ID出错', {
+        error: error
+      });
+      throwError(error, 'Prys.getGiveawayId');
+      return false;
     }
-    #checkLogin() {
-      try {
-        debug('检查登录状态');
-        if (!globalOptions.other.checkLogin) {
-          debug('跳过登录检查');
-          return true;
-        }
-        if ($('button:contains("Sign")').length > 0) {
-          debug('未登录');
-          echoLog({}).warning(I18n('needLogin'));
-        }
-        debug('登录检查完成');
+  }
+  async function _checkLeftKey9() {
+    try {
+      var _$$text$match;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
         return true;
-      } catch (error) {
-        debug('检查登录失败', {
-          error: error
-        });
-        throwError(error, 'Prys.checkLogin');
-        return false;
       }
+      const leftKey = (_$$text$match = $('#header').text().match(/([\d]+).*?prize.*?left/)) === null || _$$text$match === void 0 ? void 0 : _$$text$match[1];
+      debug('检查剩余密钥数量', {
+        leftKey: leftKey
+      });
+      if (leftKey !== '0') {
+        return true;
+      }
+      debug('没有剩余密钥，显示确认对话框');
+      const {value: value} = await Swal.fire({
+        icon: 'warning',
+        title: I18n('notice'),
+        text: I18n('noKeysLeft'),
+        confirmButtonText: I18n('confirm'),
+        cancelButtonText: I18n('cancel'),
+        showCancelButton: true
+      });
+      if (value) {
+        debug('用户确认关闭窗口');
+        window.close();
+      }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'Prys.checkLeftKey');
+      return false;
     }
-    #checkStep(step, resolve, status) {
-      let captcha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-      try {
-        debug('开始检查步骤', {
-          step: step,
-          hasCaptcha: !!captcha
+  }
+  function _checkLogin9() {
+    try {
+      debug('检查登录状态');
+      if (!globalOptions.other.checkLogin) {
+        debug('跳过登录检查');
+        return true;
+      }
+      if ($('button:contains("Sign")').length > 0) {
+        debug('未登录');
+        echoLog({}).warning(I18n('needLogin'));
+      }
+      debug('登录检查完成');
+      return true;
+    } catch (error) {
+      debug('检查登录失败', {
+        error: error
+      });
+      throwError(error, 'Prys.checkLogin');
+      return false;
+    }
+  }
+  function _checkStep(step, resolve, status) {
+    let captcha = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+    try {
+      debug('开始检查步骤', {
+        step: step,
+        hasCaptcha: !!captcha
+      });
+      if (step !== 'captcha') {
+        debug('更新步骤状态为检查中');
+        $('#check'.concat(step)).replaceWith('<span id="check'.concat(step, '"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>'));
+      }
+      debug('发送检查请求');
+      $.post('/api/check_step', {
+        step: step,
+        id: getURLParameter('id'),
+        'g-recaptcha-response': captcha
+      }, (json => {
+        resolve();
+        debug('收到检查响应', {
+          success: json.success
         });
         if (step !== 'captcha') {
-          debug('更新步骤状态为检查中');
-          $(`#check${step}`).replaceWith(`<span id="check${step}"><i class="fa fa-refresh fa-spin fa-fw"></i> Checking...</span>`);
-        }
-        debug('发送检查请求');
-        $.post('/api/check_step', {
-          step: step,
-          id: getURLParameter('id'),
-          'g-recaptcha-response': captcha
-        }, (json => {
-          resolve();
-          debug('收到检查响应', {
-            success: json.success
-          });
-          if (step !== 'captcha') {
-            if (json.success) {
-              debug('步骤检查成功');
-              $(`#check${step}`).replaceWith(`<span class="text-success" id="check${step}"><i class="fa fa-check"></i> Success</span>`);
-              status.success();
-            } else {
-              debug('步骤检查失败');
-              $(`#check${step}`).replaceWith(`<a id="check${step}" href="javascript:checkStep(${step})"><i class="fa fa-question"></i> Check</a>`);
-              status.error(json.response?.error || 'Error');
-            }
-          }
-          if (!json.response) {
-            return;
-          }
-          if (json.response.prize) {
-            debug('获得奖品', {
-              prize: json.response.prize
-            });
-            showAlert('success', `Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">${json.response.prize}</h2>`);
-          }
-          if (!json.response.captcha) {
-            return;
-          }
-          debug('需要验证码');
           if (json.success) {
-            showAlert('info', json.response.captcha);
+            debug('步骤检查成功');
+            $('#check'.concat(step)).replaceWith('<span class="text-success" id="check'.concat(step, '"><i class="fa fa-check"></i> Success</span>'));
+            status.success();
           } else {
-            showAlert('warning', json.response.captcha);
+            var _json$response;
+            debug('步骤检查失败');
+            $('#check'.concat(step)).replaceWith('<a id="check'.concat(step, '" href="javascript:checkStep(').concat(step, ')"><i class="fa fa-question"></i> Check</a>'));
+            status.error(((_json$response = json.response) === null || _json$response === void 0 ? void 0 : _json$response.error) || 'Error');
           }
-          captchaCheck();
-        })).fail((() => {
-          resolve();
-          debug('请求失败');
-          $(`#check${step}`).replaceWith(`<a id="check${step}" href="javascript:checkStep(${step})"><i class="fa fa-question"></i> Check</a>`);
-          status.error('Error:0');
-        }));
-      } catch (error) {
-        debug('检查步骤失败', {
-          error: error
-        });
-        throwError(error, 'prys.checkStep');
-        resolve(false);
-      }
+        }
+        if (!json.response) {
+          return;
+        }
+        if (json.response.prize) {
+          debug('获得奖品', {
+            prize: json.response.prize
+          });
+          showAlert('success', 'Here is your prize:<h1 role="button" align="middle" style="word-wrap: break-word;">'.concat(json.response.prize, '</h2>'));
+        }
+        if (!json.response.captcha) {
+          return;
+        }
+        debug('需要验证码');
+        if (json.success) {
+          showAlert('info', json.response.captcha);
+        } else {
+          showAlert('warning', json.response.captcha);
+        }
+        captchaCheck();
+      })).fail((() => {
+        resolve();
+        debug('请求失败');
+        $('#check'.concat(step)).replaceWith('<a id="check'.concat(step, '" href="javascript:checkStep(').concat(step, ')"><i class="fa fa-question"></i> Check</a>'));
+        status.error('Error:0');
+      }));
+    } catch (error) {
+      debug('检查步骤失败', {
+        error: error
+      });
+      throwError(error, 'prys.checkStep');
+      resolve(false);
     }
   }
   const defaultTasksTemplate = {
@@ -16301,12 +16459,17 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultTasks = JSON.stringify(defaultTasksTemplate);
+  var _FreeRu_brand = new WeakSet;
   class FreeRu extends Website {
-    name='FreeRu';
-    socialTasks=(() => JSON.parse(defaultTasks))();
-    undoneTasks=(() => JSON.parse(defaultTasks))();
-    games;
-    buttons=[ 'doTask', 'verifyTask' ];
+    constructor() {
+      super(...arguments);
+      _classPrivateMethodInitSpec(this, _FreeRu_brand);
+      _defineProperty(this, 'name', 'FreeRu');
+      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks));
+      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks));
+      _defineProperty(this, 'games', void 0);
+      _defineProperty(this, 'buttons', [ 'doTask', 'verifyTask' ]);
+    }
     static test() {
       const isMatch = window.location.host === 'freeru.cc';
       debug('检查网站匹配', {
@@ -16330,7 +16493,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('needLogin'));
           return false;
         }
-        if (!await this.#checkLeftKey()) {
+        if (!await _assertClassBrand(_FreeRu_brand, this, _checkLeftKey0).call(this)) {
           debug('检查剩余密钥失败');
           echoLog({}).warning(I18n('checkLeftKeyFailed'));
         }
@@ -16370,8 +16533,8 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async extraDoTask(_ref22) {
-      let {visitLink: visitLink} = _ref22;
+    async extraDoTask(_ref16) {
+      let {visitLink: visitLink} = _ref16;
       try {
         debug('执行额外任务', {
           visitLink: visitLink
@@ -16427,41 +16590,42 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #checkLeftKey() {
-      try {
-        debug('检查剩余密钥');
-        if (!globalOptions.other.checkLeftKey) {
-          debug('跳过密钥检查');
-          return true;
-        }
-        const giveawayStatus = $('.giveaway-summary__info-text')[0].innerText?.match(/\d+/)?.[0];
-        debug('Giveaway状态', {
-          giveawayStatus: giveawayStatus
+  }
+  async function _checkLeftKey0() {
+    try {
+      var _$$0$innerText;
+      debug('检查剩余密钥');
+      if (!globalOptions.other.checkLeftKey) {
+        debug('跳过密钥检查');
+        return true;
+      }
+      const giveawayStatus = (_$$0$innerText = $('.giveaway-summary__info-text')[0].innerText) === null || _$$0$innerText === void 0 || (_$$0$innerText = _$$0$innerText.match(/\d+/)) === null || _$$0$innerText === void 0 ? void 0 : _$$0$innerText[0];
+      debug('Giveaway状态', {
+        giveawayStatus: giveawayStatus
+      });
+      if (giveawayStatus === '0') {
+        debug('没有剩余密钥，显示确认对话框');
+        const {value: value} = await Swal.fire({
+          icon: 'warning',
+          title: I18n('notice'),
+          text: I18n('giveawayEnded'),
+          confirmButtonText: I18n('confirm'),
+          cancelButtonText: I18n('cancel'),
+          showCancelButton: true
         });
-        if (giveawayStatus === '0') {
-          debug('没有剩余密钥，显示确认对话框');
-          const {value: value} = await Swal.fire({
-            icon: 'warning',
-            title: I18n('notice'),
-            text: I18n('giveawayEnded'),
-            confirmButtonText: I18n('confirm'),
-            cancelButtonText: I18n('cancel'),
-            showCancelButton: true
-          });
-          if (value) {
-            debug('用户确认关闭窗口');
-            window.close();
-          }
-          return true;
+        if (value) {
+          debug('用户确认关闭窗口');
+          window.close();
         }
         return true;
-      } catch (error) {
-        debug('检查剩余密钥失败', {
-          error: error
-        });
-        throwError(error, 'FreeRu.checkLeftKey');
-        return false;
       }
+      return true;
+    } catch (error) {
+      debug('检查剩余密钥失败', {
+        error: error
+      });
+      throwError(error, 'FreeRu.checkLeftKey');
+      return false;
     }
   }
   const Websites = [ FreeAnyWhere, GiveawaySu, Indiedb, Keyhub, Givekey, GiveeClub, OpiumPulses, Keylol, Opquests, Gleam, SweepWidget, Setting, History, GiveawayHopper, Prys, FreeRu ];
@@ -16469,11 +16633,11 @@ if (missingDependencies.length > 0) {
     debug('开始生成网站选项表单HTML', {
       options: options
     });
-    const tableRows = Object.entries(options).map((_ref23 => {
-      let [option, value] = _ref23;
-      return `\n      <tr>\n        <td>${option}</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="${option}"\n            value="${value}"\n          />\n        </td>\n      </tr>\n    `;
+    const tableRows = Object.entries(options).map((_ref17 => {
+      let [option, value] = _ref17;
+      return '\n      <tr>\n        <td>'.concat(option, '</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="').concat(option, '"\n            value="').concat(value, '"\n          />\n        </td>\n      </tr>\n    ');
     })).join('');
-    const formHtml = `\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>${I18n('option')}</td>\n            <td>${I18n('value')}</td>\n          </tr>\n        </thead>\n        <tbody>\n          ${tableRows}\n        </tbody>\n      </table>\n    </form>\n  `;
+    const formHtml = '\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('option'), '</td>\n            <td>').concat(I18n('value'), '</td>\n          </tr>\n        </thead>\n        <tbody>\n          ').concat(tableRows, '\n        </tbody>\n      </table>\n    </form>\n  ');
     debug('表单HTML生成完成');
     return formHtml;
   };
@@ -16482,15 +16646,15 @@ if (missingDependencies.length > 0) {
       website: website,
       formValues: formValues
     });
-    formValues.forEach((_ref24 => {
-      let {name: name, value: value} = _ref24;
+    formValues.forEach((_ref18 => {
+      let {name: name, value: value} = _ref18;
       options[name] = value;
       debug('更新选项值', {
         name: name,
         value: value
       });
     }));
-    GM_setValue(`${website}Options`, options);
+    GM_setValue(''.concat(website, 'Options'), options);
     debug('选项已保存到存储', {
       website: website
     });
@@ -16554,11 +16718,12 @@ if (missingDependencies.length > 0) {
   };
   const checkUpdate = async (updateLink, auto) => {
     try {
+      var _data$response84;
       debug('开始检查更新', {
         updateLink: updateLink,
         auto: auto
       });
-      const checkUrl = `${updateLink}package.json?time=${Date.now()}`;
+      const checkUrl = ''.concat(updateLink, 'package.json?time=').concat(Date.now());
       debug('构建检查URL', {
         checkUrl: checkUrl
       });
@@ -16568,14 +16733,15 @@ if (missingDependencies.length > 0) {
         method: 'GET',
         timeout: 3e4
       });
-      if (result === 'Success' && data?.response?.version) {
+      if (result === 'Success' && data !== null && data !== void 0 && (_data$response84 = data.response) !== null && _data$response84 !== void 0 && _data$response84.version) {
         debug('成功获取更新信息', {
           version: data.response.version
         });
         return data.response;
       }
       if (!auto) {
-        const errorMessage = data?.response?.version ? `${I18n('checkUpdateFailed')}[${data?.statusText}(${data?.status})]` : `${I18n('checkUpdateFailed')}[${result}:${statusText}(${status})]`;
+        var _data$response85;
+        const errorMessage = data !== null && data !== void 0 && (_data$response85 = data.response) !== null && _data$response85 !== void 0 && _data$response85.version ? ''.concat(I18n('checkUpdateFailed'), '[').concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')]') : ''.concat(I18n('checkUpdateFailed'), '[').concat(result, ':').concat(statusText, '(').concat(status, ')]');
         debug('检查更新失败', {
           errorMessage: errorMessage
         });
@@ -16662,19 +16828,20 @@ if (missingDependencies.length > 0) {
       newVersion: packageData.version
     });
     if (hasNewVersion(currentVersion, packageData.version)) {
-      const scriptUrl = `${updateLink}dist/${GM_info.script.name}.user.js`;
+      var _packageData$change, _packageData$change2;
+      const scriptUrl = ''.concat(updateLink, 'dist/').concat(GM_info.script.name, '.user.js');
       debug('发现新版本，显示更新通知', {
         scriptUrl: scriptUrl
       });
       echoLog({
-        html: `<li><font>${I18n('newVersionNotice', packageData.version, scriptUrl)}</font></li>`
+        html: '<li><font>'.concat(I18n('newVersionNotice', packageData.version, scriptUrl), '</font></li>')
       });
-      const changeList = packageData.change?.map((change => `<li>${change}</li>`)).join('') || '';
+      const changeList = ((_packageData$change = packageData.change) === null || _packageData$change === void 0 ? void 0 : _packageData$change.map((change => '<li>'.concat(change, '</li>'))).join('')) || '';
       debug('显示更新日志', {
-        changeListLength: packageData.change?.length
+        changeListLength: (_packageData$change2 = packageData.change) === null || _packageData$change2 === void 0 ? void 0 : _packageData$change2.length
       });
       echoLog({
-        html: `<li>${I18n('updateText', packageData.version)}</li><ol class="update-text">${changeList}<li>${I18n('updateHistory')}</li></ol>`
+        html: '<li>'.concat(I18n('updateText', packageData.version), '</li><ol class="update-text">').concat(changeList, '<li>').concat(I18n('updateHistory'), '</li></ol>')
       });
     } else {
       debug('当前已是最新版本');
@@ -16730,18 +16897,19 @@ if (missingDependencies.length > 0) {
     console.error('Auto-Task[Warning]: consoleLogHook 初始化失败', error);
   }
   window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
-  window.DEBUG = !!globalOptions.other?.debug;
-  window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'function';
+  window.DEBUG = !!((_globalOptions$other = globalOptions.other) !== null && _globalOptions$other !== void 0 && _globalOptions$other.debug);
+  window.TRACE = !!((_globalOptions$other2 = globalOptions.other) !== null && _globalOptions$other2 !== void 0 && _globalOptions$other2.debug) && typeof console.trace === 'function';
   const handleTwitchAuth = async () => {
     debug('开始处理Twitch认证');
     const authToken = Cookies.get('auth-token');
     const isLogin = !!Cookies.get('login');
     if (isLogin) {
+      var _window$commonOptions, _window$commonOptions2;
       const authData = {
         authToken: authToken,
         clientVersion: window.__twilightBuildID,
-        clientId: window.commonOptions?.headers?.['Client-ID'],
-        deviceId: window.commonOptions?.headers?.['Device-ID'],
+        clientId: (_window$commonOptions = window.commonOptions) === null || _window$commonOptions === void 0 || (_window$commonOptions = _window$commonOptions.headers) === null || _window$commonOptions === void 0 ? void 0 : _window$commonOptions['Client-ID'],
+        deviceId: (_window$commonOptions2 = window.commonOptions) === null || _window$commonOptions2 === void 0 || (_window$commonOptions2 = _window$commonOptions2.headers) === null || _window$commonOptions2 === void 0 ? void 0 : _window$commonOptions2['Device-ID'],
         clientSessionId: window.localStorage.local_storage_app_session_id.replace(/"/g, '')
       };
       GM_setValue('twitchAuth', authData);
@@ -16762,8 +16930,9 @@ if (missingDependencies.length > 0) {
     await Swal.fire('', I18n('closePageNotice'));
   };
   const handleSteamStoreAuth = async () => {
+    var _document$body$innerH;
     debug('开始处理Steam商店认证');
-    const storeSessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
+    const storeSessionID = (_document$body$innerH = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)) === null || _document$body$innerH === void 0 ? void 0 : _document$body$innerH[1];
     if (storeSessionID) {
       GM_deleteValue('ATv4_updateStoreAuth');
       GM_setValue('steamStoreAuth', {
@@ -16779,9 +16948,10 @@ if (missingDependencies.length > 0) {
     }
   };
   const handleSteamCommunityAuth = async () => {
+    var _document$body$innerH2, _document$body$innerH3;
     debug('开始处理Steam社区认证');
-    const steam64Id = document.body.innerHTML.match(/g_steamID = "(.+?)";/)?.[1];
-    const communitySessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
+    const steam64Id = (_document$body$innerH2 = document.body.innerHTML.match(/g_steamID = "(.+?)";/)) === null || _document$body$innerH2 === void 0 ? void 0 : _document$body$innerH2[1];
+    const communitySessionID = (_document$body$innerH3 = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)) === null || _document$body$innerH3 === void 0 ? void 0 : _document$body$innerH3[1];
     if (steam64Id && communitySessionID) {
       GM_deleteValue('ATv4_updateCommunityAuth');
       GM_setValue('steamCommunityAuth', {
@@ -16804,7 +16974,7 @@ if (missingDependencies.length > 0) {
       website: website.name
     });
     const $body = $('body');
-    $body.append(`\n    <div id="auto-task-info"\n        style="display:${globalOptions.other.defaultShowLog ? 'block' : 'none'};\n                ${globalOptions.position.logSideX}:${globalOptions.position.logDistance.split(',')[0]}px;\n                ${globalOptions.position.logSideY}:${globalOptions.position.logDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease forwards;">\n    </div>\n    <div id="auto-task-buttons"\n        style="display:${globalOptions.other.defaultShowButton ? 'block' : 'none'};\n                ${globalOptions.position.buttonSideX}:${globalOptions.position.buttonDistance.split(',')[0]}px;\n                ${globalOptions.position.buttonSideY}:${globalOptions.position.buttonDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease 0.2s forwards;">\n    </div>\n    <div class="show-button-div"\n        style="display:${globalOptions.other.defaultShowButton ? 'none' : 'block'};\n                ${globalOptions.position.showButtonSideX}:${globalOptions.position.showButtonDistance.split(',')[0]}px;\n                ${globalOptions.position.showButtonSideY}:${globalOptions.position.showButtonDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInScale 0.5s ease 0.4s forwards;">\n      <a class="auto-task-website-btn show-button-link"\n        href="javascript:void(0);"\n        target="_self"\n        title="${I18n('showButton')}">\n        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">\n          <path d="M9 18l6-6-6-6"/>\n        </svg>\n      </a>\n    </div>\n  `);
+    $body.append('\n    <div id="auto-task-info"\n        style="display:'.concat(globalOptions.other.defaultShowLog ? 'block' : 'none', ';\n                ').concat(globalOptions.position.logSideX, ':').concat(globalOptions.position.logDistance.split(',')[0], 'px;\n                ').concat(globalOptions.position.logSideY, ':').concat(globalOptions.position.logDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease forwards;">\n    </div>\n    <div id="auto-task-buttons"\n        style="display:').concat(globalOptions.other.defaultShowButton ? 'block' : 'none', ';\n                ').concat(globalOptions.position.buttonSideX, ':').concat(globalOptions.position.buttonDistance.split(',')[0], 'px;\n                ').concat(globalOptions.position.buttonSideY, ':').concat(globalOptions.position.buttonDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease 0.2s forwards;">\n    </div>\n    <div class="show-button-div"\n        style="display:').concat(globalOptions.other.defaultShowButton ? 'none' : 'block', ';\n                ').concat(globalOptions.position.showButtonSideX, ':').concat(globalOptions.position.showButtonDistance.split(',')[0], 'px;\n                ').concat(globalOptions.position.showButtonSideY, ':').concat(globalOptions.position.showButtonDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInScale 0.5s ease 0.4s forwards;">\n      <a class="auto-task-website-btn show-button-link"\n        href="javascript:void(0);"\n        target="_self"\n        title="').concat(I18n('showButton'), '">\n        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">\n          <path d="M9 18l6-6-6-6"/>\n        </svg>\n      </a>\n    </div>\n  '));
     const $autoTaskInfo = $('#auto-task-info');
     const $autoTaskButtons = $('#auto-task-buttons');
     const $showButtonDiv = $('div.show-button-div');
@@ -16813,10 +16983,10 @@ if (missingDependencies.length > 0) {
       $showButtonDiv.hide();
     }));
     if (website.buttons && $autoTaskButtons.children().length === 0) {
-      $autoTaskButtons.addClass(`${website.name}-buttons`);
+      $autoTaskButtons.addClass(''.concat(website.name, '-buttons'));
       for (const button of website.buttons) {
         if (website[button]) {
-          const btnElement = $(`<p><a class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self">${I18n(button)}</a></p>`);
+          const btnElement = $('<p><a class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self">').concat(I18n(button), '</a></p>'));
           btnElement.find('a.auto-task-website-btn').on('click', (() => {
             website[button]();
           }));
@@ -16824,12 +16994,12 @@ if (missingDependencies.length > 0) {
         }
       }
     }
-    const hideButtonElement = $(`<p><a class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self">${I18n('hideButton')}</a></p>`);
+    const hideButtonElement = $('<p><a class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self">').concat(I18n('hideButton'), '</a></p>'));
     hideButtonElement.find('a.auto-task-website-btn').on('click', (() => {
       $autoTaskButtons.hide();
       $showButtonDiv.show();
     }));
-    const toggleLogElement = $(`<p><a id="toggle-log" class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self" data-status="${globalOptions.other.defaultShowLog ? 'show' : 'hide'}">${globalOptions.other.defaultShowLog ? I18n('hideLog') : I18n('showLog')}</a></p>`);
+    const toggleLogElement = $('<p><a id="toggle-log" class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self" data-status="').concat(globalOptions.other.defaultShowLog ? 'show' : 'hide', '">').concat(globalOptions.other.defaultShowLog ? I18n('hideLog') : I18n('showLog'), '</a></p>'));
     const toggleLog = () => {
       const $toggleLog = $('#toggle-log');
       const status = $toggleLog.attr('data-status');
@@ -16923,6 +17093,7 @@ if (missingDependencies.length > 0) {
     }
   };
   const checkVersionAndNotice = () => {
+    var _GM_info$version;
     debug('检查版本和通知');
     const {scriptHandler: scriptHandler} = GM_info;
     if (scriptHandler !== 'Tampermonkey') {
@@ -16932,11 +17103,12 @@ if (missingDependencies.length > 0) {
       echoLog({}).warning(I18n('unknownScriptHandler'));
       return;
     }
-    const [v1, v2] = GM_info.version?.split('.') || [];
+    const [v1, v2] = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [];
     if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
       echoLog({}).error(I18n('versionNotMatched'));
     }
     if (!GM_getValue('notice')) {
+      var _echoLog$font;
       Swal.fire({
         title: I18n('swalNotice'),
         icon: 'warning'
@@ -16946,9 +17118,9 @@ if (missingDependencies.length > 0) {
         });
         GM_setValue('notice', (new Date).getTime());
       }));
-      echoLog({
-        html: `<li><font class="warning">${I18n('echoNotice', I18n('noticeLink'))}</font></li>`
-      }).font?.find('a').on('click', (() => {
+      (_echoLog$font = echoLog({
+        html: '<li><font class="warning">'.concat(I18n('echoNotice', I18n('noticeLink')), '</font></li>')
+      }).font) === null || _echoLog$font === void 0 || _echoLog$font.find('a').on('click', (() => {
         GM_setValue('notice', (new Date).getTime());
       }));
     }

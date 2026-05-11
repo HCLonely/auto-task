@@ -1,9 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "change": [
-    "移除：Discord相关功能",
-    "修复：Freeanywhere访问网页任务报错"
+    "修复：Twitter/X初始化报错(#72)"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

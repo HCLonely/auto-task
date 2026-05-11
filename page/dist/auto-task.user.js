@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.1.1
+// @version            5.1.2
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -341,7 +341,7 @@ if (missingDependencies.length > 0) {
   };
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
-  var style = '@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInScale{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.colorful-button,#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn,body.auto-task-options .auto-task-form table button{position:relative !important;padding:12px 24px !important;text-align:center !important;color:#fff !important;text-decoration:none !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:12px !important;text-transform:capitalize !important;font-weight:600 !important;letter-spacing:.5px !important;border:none !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;display:inline-block !important;line-height:1.5 !important;margin:6px !important;margin-bottom:10px !important;box-sizing:border-box !important;min-height:44px !important;min-width:120px !important;outline:none !important;vertical-align:middle !important;white-space:nowrap !important;font-size:14px !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;-webkit-backdrop-filter:blur(10px) !important;backdrop-filter:blur(10px) !important;overflow:hidden !important}.colorful-button::before,#auto-task-buttons a.auto-task-website-btn::before,.show-button-div a.auto-task-website-btn::before,body.auto-task-options .auto-task-form table button::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:100% !important;background:linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;transition:left .5s !important}.colorful-button:hover,#auto-task-buttons a.auto-task-website-btn:hover,.show-button-div a.auto-task-website-btn:hover,body.auto-task-options .auto-task-form table button:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 8px 25px rgba(30,64,175,.4) !important;transform:translateY(-2px) !important;cursor:pointer !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::before,#auto-task-buttons a.auto-task-website-btn:hover::before,.show-button-div a.auto-task-website-btn:hover::before,body.auto-task-options .auto-task-form table button:hover::before{left:100% !important}.colorful-button:active,#auto-task-buttons a.auto-task-website-btn:active,.show-button-div a.auto-task-website-btn:active,body.auto-task-options .auto-task-form table button:active{transform:translateY(0px) !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;color:#fff !important;text-decoration:none !important}.colorful-button:focus,#auto-task-buttons a.auto-task-website-btn:focus,.show-button-div a.auto-task-website-btn:focus,body.auto-task-options .auto-task-form table button:focus{color:#fff !important;text-decoration:none !important;outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:#2d3748 !important;background:linear-gradient(145deg, #ffffff 0%, #f7fafc 100%) !important;padding:8px 12px !important;z-index:999999999 !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;font-size:13px !important;box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.15),0 15px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-info::-webkit-scrollbar{width:6px}#auto-task-info::-webkit-scrollbar-track{background:rgba(226,232,240,.3);border-radius:3px}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(135deg, #1e40af, #3b82f6) !important;border-radius:3px !important}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb) !important}#auto-task-info li{text-align:left;display:block !important;align-items:baseline !important;padding:8px 0;border-bottom:1px solid rgba(226,232,240,.3);transition:all .2s ease}#auto-task-info li:hover{background:rgba(30,64,175,.05) !important;border-radius:8px !important;padding-left:8px !important;padding-right:8px !important}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:16px !important;height:16px !important;position:relative !important;top:1px !important;margin-right:8px !important;background-size:16px !important;background-repeat:no-repeat !important;flex-shrink:0 !important;border-radius:50%}#auto-task-info li font.before{color:#1e40af !important;margin-right:8px !important;font-weight:600 !important;font-size:12px !important}#auto-task-info li a.high-light{color:#1e40af !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1px solid rgba(0,0,0,0) !important;transition:all .2s ease !important}#auto-task-info li a.high-light:hover{border-bottom-color:#1e40af !important}#auto-task-info .success{color:#48bb78;font-weight:500}#auto-task-info .error{color:#f56565;font-weight:500}#auto-task-info .warning{color:#ed8936;font-weight:500}#auto-task-info .info{color:#4299e1;font-weight:500}#auto-task-info .update-text{color:#48bb78;background:linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);border:1px solid rgba(72,187,120,.3);margin:12px 0;border-radius:12px;padding:12px 16px;font-weight:500;box-shadow:0 2px 4px rgba(72,187,120,.1);transition:all .2s ease}#auto-task-info .update-text:hover{box-shadow:0 4px 8px rgba(72,187,120,.15);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;width:168px !important;min-width:168px !important;max-width:168px !important;background:linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;padding:12px !important;box-shadow:0 10px 25px -5px rgba(0,0,0,.1),0 5px 10px -5px rgba(0,0,0,.04) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;z-index:999999998 !important}#auto-task-buttons:hover{box-shadow:0 20px 40px -10px rgba(0,0,0,.15),0 10px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-buttons p{margin:4px 0 !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}.show-button-div{position:fixed;z-index:999999998 !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:48px !important;height:48px !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 8px 20px rgba(30,64,175,.4) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;border:none !important;outline:none !important}.show-button-div .show-button-link:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 12px 30px rgba(30,64,175,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:pulse 1.5s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus{outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .2s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:solid 1px;border-radius:5px;padding:0 2px}.auto-task-keylol[selected=selected]{background-color:blue !important;color:#fff !important}.auto-task-form table{font-family:verdana,arial,sans-serif;font-size:11px;color:#333;border-width:1px;border-color:#999;border-collapse:collapse;width:100%}.auto-task-form table thead td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;font-weight:bold;background-color:#fff}.auto-task-form table tbody tr{background-color:#d4e3e5}.auto-task-form table tbody tr:hover{background-color:#ff6 !important}.auto-task-form table tbody tr th{background-color:#c3dde0;border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;text-transform:capitalize}.auto-task-form table tbody tr td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9}.swal2-modal{width:70% !important;max-width:1000px !important}.swal2-modal #swal2-title{text-align:center !important}body.auto-task-options{padding-top:10px;text-align:center}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:20px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:5px}body.auto-task-options .auto-task-form table button{z-index:1;position:relative !important;padding:8px 16px !important;font-size:12px !important;min-height:36px !important;min-width:100px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline-style:none;border:1px solid #ccc;border-radius:3px;padding:5px 10px;font-size:14px}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}body.auto-task-options .auto-task-form table label{position:relative;width:160px;height:80px;cursor:pointer;transform:scale(0.25);margin:-25% 0;top:-30px;display:inline-block}body.auto-task-options .auto-task-form table label input{position:relative;z-index:1;appearance:none}body.auto-task-options .auto-task-form table label input:checked~span{background:#05be05;box-shadow:0 15px 25px rgba(5,190,5,.4)}body.auto-task-options .auto-task-form table label input:checked~span i{left:84px}body.auto-task-options .auto-task-form table label input:checked~span i::before{background:#05be05;box-shadow:35px 0 0 #05be05}body.auto-task-options .auto-task-form table label input:checked~span i::after{bottom:12px;height:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;background:#05be05}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#fe0000;border-radius:80px;transition:.5s;box-shadow:0 15px 25px rgba(254,0,0,.4)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:4px;left:4px;width:72px;height:72px;background:#fff;border-radius:50%}body.auto-task-options .auto-task-form table label span i::before{content:"";position:absolute;top:22px;left:12px;width:12px;height:12px;border-radius:50%;background:#fe0000;box-shadow:35px 0 0 #fe0000;transition:.5s}body.auto-task-options .auto-task-form table label span i::after{content:"";position:absolute;bottom:15px;left:calc(50% - 15px);width:30px;height:6px;border-radius:6px;background:#fe0000;transition:.5s}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.5}body.auto-task-history .container a{color:#007bff;text-decoration:none;background-color:rgba(0,0,0,0)}body.auto-task-history .container .card{width:80%;max-width:800px;border-radius:10px;background:rgba(118,118,118,.1019607843);border-top:1px solid hsla(0,0%,100%,.5019607843);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 15px 25px rgba(0,0,0,.1019607843);margin:20px auto;position:relative;display:flex;flex-direction:column;word-wrap:break-word;-webkit-background-clip:border-box;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}body.auto-task-history .container .card .title{text-align:center;font-size:30px;font-weight:bold;margin:5px 0}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:#93e1ff;border-radius:10px;padding:3px}body.auto-task-history .container .card ul{margin-bottom:25px}body.auto-task-history .container .card ul li{margin-bottom:5px;line-height:20px}body.auto-task-history .container .card ul a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{right:10px;width:38px;height:35px;position:absolute;font-size:24px;cursor:pointer;border-radius:10px}body.auto-task-history .container .card .delete-task:hover{background:#fff}body.auto-task-history .container .card .time{right:5px;position:absolute;bottom:0;color:#e83e8c;font-family:\'SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace\';font-size:15px}#auto-task-buttons,.show-button-div{position:fixed !important;top:30px;right:15px;width:150px !important;z-index:999999999 !important;padding:8px !important;border-radius:12px !important}#auto-task-buttons p,.show-button-div p{line-height:normal !important;height:auto !important;text-align:center !important;margin:8px 0 !important;padding:0 !important;font-size:16px !important;color:#333 !important}#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn{width:140px !important;min-height:30px !important;line-height:1.5 !important;font-size:16px !important;display:block !important;margin:0 auto !important;padding:8px 16px !important}.show-button-div{width:40px !important;cursor:pointer !important;padding:4px !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:12px !important;top:50% !important;transform:translateY(-50%) !important;font-size:18px !important;font-weight:bold !important;color:#fff !important}.auto-task-capitalize{text-transform:capitalize !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{box-shadow:inset 0px 0px 4px 1px rgba(100,150,200,.5) !important}.swal2-checkbox-custom{align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:10px;padding:0 5px;margin-left:5px}.auto-task-giveaway-status.active{background-color:#5cb85c}.auto-task-giveaway-status.not-active{background-color:#d9534f}';
+  var style = '@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeInScale{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.colorful-button,#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn,body.auto-task-options .auto-task-form table button{position:relative !important;padding:12px 24px !important;text-align:center !important;color:#fff !important;text-decoration:none !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:12px !important;text-transform:capitalize !important;font-weight:600 !important;letter-spacing:.5px !important;border:none !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;display:inline-block !important;line-height:1.5 !important;margin:6px !important;margin-bottom:10px !important;box-sizing:border-box !important;min-height:44px !important;min-width:120px !important;outline:none !important;vertical-align:middle !important;white-space:nowrap !important;font-size:14px !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;-webkit-backdrop-filter:blur(10px) !important;backdrop-filter:blur(10px) !important;overflow:hidden !important}.colorful-button::before,#auto-task-buttons a.auto-task-website-btn::before,.show-button-div a.auto-task-website-btn::before,body.auto-task-options .auto-task-form table button::before{content:"" !important;position:absolute !important;top:0 !important;left:-100% !important;width:100% !important;height:100% !important;background:linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;transition:left .5s !important}.colorful-button:hover,#auto-task-buttons a.auto-task-website-btn:hover,.show-button-div a.auto-task-website-btn:hover,body.auto-task-options .auto-task-form table button:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 8px 25px rgba(30,64,175,.4) !important;transform:translateY(-2px) !important;cursor:pointer !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::before,#auto-task-buttons a.auto-task-website-btn:hover::before,.show-button-div a.auto-task-website-btn:hover::before,body.auto-task-options .auto-task-form table button:hover::before{left:100% !important}.colorful-button:active,#auto-task-buttons a.auto-task-website-btn:active,.show-button-div a.auto-task-website-btn:active,body.auto-task-options .auto-task-form table button:active{transform:translateY(0px) !important;box-shadow:0 4px 15px rgba(30,64,175,.3) !important;color:#fff !important;text-decoration:none !important}.colorful-button:focus,#auto-task-buttons a.auto-task-website-btn:focus,.show-button-div a.auto-task-website-btn:focus,body.auto-task-options .auto-task-form table button:focus{color:#fff !important;text-decoration:none !important;outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:#2d3748 !important;background:linear-gradient(145deg, #ffffff 0%, #f7fafc 100%) !important;padding:8px 12px !important;z-index:999999999 !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;font-size:13px !important;box-shadow:0 20px 25px -5px rgba(0,0,0,.1),0 10px 10px -5px rgba(0,0,0,.04) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.15),0 15px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-info::-webkit-scrollbar{width:6px}#auto-task-info::-webkit-scrollbar-track{background:rgba(226,232,240,.3);border-radius:3px}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(135deg, #1e40af, #3b82f6) !important;border-radius:3px !important}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(135deg, #1d4ed8, #2563eb) !important}#auto-task-info li{text-align:left;display:block !important;align-items:baseline !important;padding:8px 0;border-bottom:1px solid rgba(226,232,240,.3);transition:all .2s ease}#auto-task-info li:hover{background:rgba(30,64,175,.05) !important;border-radius:8px !important;padding-left:8px !important;padding-right:8px !important}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:16px !important;height:16px !important;position:relative !important;top:1px !important;margin-right:8px !important;background-size:16px !important;background-repeat:no-repeat !important;flex-shrink:0 !important;border-radius:50%}#auto-task-info li font.before{color:#1e40af !important;margin-right:8px !important;font-weight:600 !important;font-size:12px !important}#auto-task-info li a.high-light{color:#1e40af !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1px solid rgba(0,0,0,0) !important;transition:all .2s ease !important}#auto-task-info li a.high-light:hover{border-bottom-color:#1e40af !important}#auto-task-info .success{color:#48bb78;font-weight:500}#auto-task-info .error{color:#f56565;font-weight:500}#auto-task-info .warning{color:#ed8936;font-weight:500}#auto-task-info .info{color:#4299e1;font-weight:500}#auto-task-info .update-text{color:#48bb78;background:linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);border:1px solid rgba(72,187,120,.3);margin:12px 0;border-radius:12px;padding:12px 16px;font-weight:500;box-shadow:0 2px 4px rgba(72,187,120,.1);transition:all .2s ease}#auto-task-info .update-text:hover{box-shadow:0 4px 8px rgba(72,187,120,.15);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;width:168px !important;min-width:168px !important;max-width:168px !important;background:linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 250, 252, 0.95) 100%) !important;-webkit-backdrop-filter:blur(20px) !important;backdrop-filter:blur(20px) !important;border:1px solid rgba(226,232,240,.8) !important;border-radius:16px !important;padding:12px !important;box-shadow:0 10px 25px -5px rgba(0,0,0,.1),0 5px 10px -5px rgba(0,0,0,.04) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;z-index:999999998 !important}#auto-task-buttons:hover{box-shadow:0 20px 40px -10px rgba(0,0,0,.15),0 10px 15px -5px rgba(0,0,0,.06);transform:translateY(-2px)}#auto-task-buttons p{margin:4px 0 !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}.show-button-div{position:fixed;z-index:999999998 !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:48px !important;height:48px !important;background:linear-gradient(135deg, #1e40af 0%, #3b82f6 100%) !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 8px 20px rgba(30,64,175,.4) !important;transition:all .3s cubic-bezier(0.4, 0, 0.2, 1) !important;border:none !important;outline:none !important}.show-button-div .show-button-link:hover{background:linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%) !important;box-shadow:0 12px 30px rgba(30,64,175,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:pulse 1.5s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus{outline:2px solid rgba(30,64,175,.5) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .2s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:solid 1px;border-radius:5px;padding:0 2px}.auto-task-keylol[selected=selected]{background-color:blue !important;color:#fff !important}.auto-task-form table{font-family:verdana,arial,sans-serif;font-size:11px;color:#333;border-width:1px;border-color:#999;border-collapse:collapse;width:100%}.auto-task-form table thead td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;font-weight:bold;background-color:#fff}.auto-task-form table tbody tr{background-color:#d4e3e5}.auto-task-form table tbody tr:hover{background-color:#ff6 !important}.auto-task-form table tbody tr th{background-color:#c3dde0;border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9;text-transform:capitalize}.auto-task-form table tbody tr td{border-width:1px;padding:8px;border-style:solid;border-color:#a9c6c9}.swal2-modal{width:70% !important;max-width:1000px !important}.swal2-modal #swal2-title{text-align:center !important}body.auto-task-options{padding-top:10px;text-align:center}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:20px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:5px}body.auto-task-options .auto-task-form table button{z-index:1;position:relative !important;padding:8px 16px !important;font-size:12px !important;min-height:36px !important;min-width:100px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline-style:none;border:1px solid #ccc;border-radius:3px;padding:5px 10px;font-size:14px}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:#66afe9;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)}body.auto-task-options .auto-task-form table label{position:relative;width:160px;height:80px;cursor:pointer;transform:scale(0.25);margin:-25% 0;top:-30px;display:inline-block}body.auto-task-options .auto-task-form table label input{position:relative;z-index:1;-webkit-appearance:none;appearance:none}body.auto-task-options .auto-task-form table label input:checked~span{background:#05be05;box-shadow:0 15px 25px rgba(5,190,5,.4)}body.auto-task-options .auto-task-form table label input:checked~span i{left:84px}body.auto-task-options .auto-task-form table label input:checked~span i::before{background:#05be05;box-shadow:35px 0 0 #05be05}body.auto-task-options .auto-task-form table label input:checked~span i::after{bottom:12px;height:15px;border-bottom-left-radius:15px;border-bottom-right-radius:15px;background:#05be05}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#fe0000;border-radius:80px;transition:.5s;box-shadow:0 15px 25px rgba(254,0,0,.4)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:4px;left:4px;width:72px;height:72px;background:#fff;border-radius:50%}body.auto-task-options .auto-task-form table label span i::before{content:"";position:absolute;top:22px;left:12px;width:12px;height:12px;border-radius:50%;background:#fe0000;box-shadow:35px 0 0 #fe0000;transition:.5s}body.auto-task-options .auto-task-form table label span i::after{content:"";position:absolute;bottom:15px;left:calc(50% - 15px);width:30px;height:6px;border-radius:6px;background:#fe0000;transition:.5s}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.5}body.auto-task-history .container a{color:#007bff;text-decoration:none;background-color:rgba(0,0,0,0)}body.auto-task-history .container .card{width:80%;max-width:800px;border-radius:10px;background:rgba(118,118,118,.1019607843);border-top:1px solid hsla(0,0%,100%,.5019607843);-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:0 15px 25px rgba(0,0,0,.1019607843);margin:20px auto;position:relative;display:flex;flex-direction:column;word-wrap:break-word;-webkit-background-clip:border-box;background-clip:border-box;border:1px solid rgba(0,0,0,.125);border-radius:.25rem}body.auto-task-history .container .card .title{text-align:center;font-size:30px;font-weight:bold;margin:5px 0}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:#93e1ff;border-radius:10px;padding:3px}body.auto-task-history .container .card ul{margin-bottom:25px}body.auto-task-history .container .card ul li{margin-bottom:5px;line-height:20px}body.auto-task-history .container .card ul a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{right:10px;width:38px;height:35px;position:absolute;font-size:24px;cursor:pointer;border-radius:10px}body.auto-task-history .container .card .delete-task:hover{background:#fff}body.auto-task-history .container .card .time{right:5px;position:absolute;bottom:0;color:#e83e8c;font-family:\'SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace\';font-size:15px}#auto-task-buttons,.show-button-div{position:fixed !important;top:30px;right:15px;width:150px !important;z-index:999999999 !important;padding:8px !important;border-radius:12px !important}#auto-task-buttons p,.show-button-div p{line-height:normal !important;height:auto !important;text-align:center !important;margin:8px 0 !important;padding:0 !important;font-size:16px !important;color:#333 !important}#auto-task-buttons a.auto-task-website-btn,.show-button-div a.auto-task-website-btn{width:140px !important;min-height:30px !important;line-height:1.5 !important;font-size:16px !important;display:block !important;margin:0 auto !important;padding:8px 16px !important}.show-button-div{width:40px !important;cursor:pointer !important;padding:4px !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:12px !important;top:50% !important;transform:translateY(-50%) !important;font-size:18px !important;font-weight:bold !important;color:#fff !important}.auto-task-capitalize{text-transform:capitalize !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{box-shadow:inset 0px 0px 4px 1px rgba(100,150,200,.5) !important}.swal2-checkbox-custom{align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:10px;padding:0 5px;margin-left:5px}.auto-task-giveaway-status.active{background-color:#5cb85c}.auto-task-giveaway-status.not-active{background-color:#d9534f}';
   const data$1 = {
     website: '网站',
     type: '类型',
@@ -2514,205 +2514,6 @@ if (missingDependencies.length > 0) {
       return tid;
     };
   };
-  const parseResponseHeaders = headerStr => {
-    const headers = {};
-    if (!headerStr) {
-      return headers;
-    }
-    headerStr.split('\r\n').forEach((line => {
-      if (line) {
-        const parts = line.split(':');
-        const key = parts.shift()?.trim();
-        const value = parts.join(':').trim();
-        if (key) {
-          if (key.toLowerCase() === 'set-cookie') {
-            if (headers[key]) {
-              if (Array.isArray(headers[key])) {
-                headers[key].push(value);
-              } else {
-                headers[key] = [ headers[key], value ];
-              }
-            } else {
-              headers[key] = value;
-            }
-          } else {
-            headers[key] = value;
-          }
-        }
-      }
-    }));
-    return headers;
-  };
-  const axiosGM = function(config) {
-    const finalConfig = {
-      ...axiosGM.defaults,
-      ...config
-    };
-    const retries = finalConfig.retry ?? 0;
-    const retryDelay = finalConfig.retryDelay ?? 0;
-    const requestAttempt = attempt => new Promise(((resolve, reject) => {
-      GM_xmlhttpRequest({
-        method: finalConfig.method ? finalConfig.method.toUpperCase() : 'GET',
-        url: finalConfig.url,
-        headers: finalConfig.headers,
-        data: finalConfig.data,
-        responseType: finalConfig.responseType || 'json',
-        timeout: finalConfig.timeout,
-        fetch: finalConfig.fetch ?? true,
-        onload(response) {
-          const axiosResponse = {
-            data: response.response || response.responseText,
-            status: response.status,
-            statusText: response.statusText,
-            headers: parseResponseHeaders(response.responseHeaders),
-            config: finalConfig,
-            request: response
-          };
-          resolve(axiosResponse);
-        },
-        onerror(error) {
-          if (attempt < retries) {
-            setTimeout((() => {
-              requestAttempt(attempt + 1).then(resolve).catch(reject);
-            }), retryDelay);
-          } else {
-            reject(error);
-          }
-        },
-        ontimeout() {
-          if (attempt < retries) {
-            setTimeout((() => {
-              requestAttempt(attempt + 1).then(resolve).catch(reject);
-            }), retryDelay);
-          } else {
-            reject('Error: timeout');
-          }
-        }
-      });
-    }));
-    return requestAttempt(0);
-  };
-  axiosGM.defaults = {};
-  axiosGM.get = function(url, config = {}) {
-    return axiosGM({
-      ...config,
-      url: url,
-      method: 'GET'
-    });
-  };
-  axiosGM.post = function(url, data, config = {}) {
-    return axiosGM({
-      ...config,
-      url: url,
-      data: data,
-      method: 'POST'
-    });
-  };
-  axiosGM.head = function(url, config = {}) {
-    return axiosGM({
-      ...config,
-      url: url,
-      method: 'HEAD'
-    });
-  };
-  axiosGM.create = function(instanceDefaults = {}) {
-    const instance = config => {
-      const mergedConfig = {
-        ...axiosGM.defaults,
-        ...instanceDefaults,
-        ...config
-      };
-      return axiosGM(mergedConfig);
-    };
-    instance.defaults = {
-      ...axiosGM.defaults,
-      ...instanceDefaults
-    };
-    instance.get = function(url, config = {}) {
-      return instance({
-        ...config,
-        url: url,
-        method: 'GET'
-      });
-    };
-    instance.post = function(url, data, config = {}) {
-      return instance({
-        ...config,
-        url: url,
-        data: data,
-        method: 'POST'
-      });
-    };
-    instance.head = function(url, config = {}) {
-      return instance({
-        ...config,
-        url: url,
-        method: 'HEAD'
-      });
-    };
-    instance.create = axiosGM.create;
-    return instance;
-  };
-  const getFwdForSdkUrl = async () => {
-    const rawHtml = await axiosGM({
-      url: 'https://x.com',
-      method: 'GET'
-    });
-    return [ ...rawHtml.data.matchAll(/"(loader\.FwdForSdk)":"([^"]+?)"/g) ];
-  };
-  const fwdForSdkExpoter = async url => {
-    const {data: data} = await axiosGM.get(url);
-    const regex = /Uint8Array\(\w\)\.set\(\[(.*?)\]\)/;
-    if (!regex.test(data)) {
-      return false;
-    }
-    const json = `[${data.match(regex)?.[1]}]`;
-    const obj = JSON.parse(json);
-    return new Uint8Array(obj);
-  };
-  const getWasmData = async () => {
-    const fwdForSdkUrl = await getFwdForSdkUrl();
-    for (const url of fwdForSdkUrl) {
-      const sdkData = await fwdForSdkExpoter(`https://abs.twimg.com/responsive-web/client-web/${url[1]}.${url[2]}a.js`);
-      if (sdkData) {
-        return sdkData;
-      }
-    }
-    return false;
-  };
-  const getFwdForSdk = async () => {
-    debug('开始获取 XFwdForSdk');
-    const wasmData = await getWasmData();
-    debug('获取 wasmData 成功', {
-      wasmData: wasmData
-    });
-    const go = new Go;
-    const wasmModule = await WebAssembly.instantiate(wasmData, {
-      ...go.importObject,
-      env: {
-        ...go.importObject.env,
-        memory: new WebAssembly.Memory({
-          initial: 10
-        }),
-        table: new WebAssembly.Table({
-          initial: 0,
-          element: 'anyfunc'
-        })
-      }
-    });
-    debug('初始化 wasmModule 成功');
-    go.run(wasmModule.instance);
-    debug('运行 wasmModule 成功');
-    const {str: str, expiryTimeMillis: expiryTimeMillis} = await globalThis.getForwardedForStr();
-    debug('获取 XFwdForSdk 成功', {
-      str: str,
-      expiryTimeMillis: expiryTimeMillis
-    });
-    return {
-      str: str,
-      expiryTimeMillis: parseInt(expiryTimeMillis, 10)
-    };
-  };
   const generateSecCHUA = () => {
     if (navigator.userAgentData && navigator.userAgentData.brands) {
       return navigator.userAgentData.brands.map((brand => `"${brand.brand}";v="${brand.version}"`)).join(', ');
@@ -2727,7 +2528,6 @@ if (missingDependencies.length > 0) {
     #cache=GM_getValue('twitterCache') || {};
     #initialized=false;
     #getTID;
-    #FwdForSdk;
     #headers={};
     constructor() {
       super();
@@ -2767,7 +2567,6 @@ if (missingDependencies.length > 0) {
         }
         debug('创建Twitter会话和SDK');
         this.#getTID = await getTID();
-        this.#FwdForSdk = await getFwdForSdk();
         const isVerified = await this.#verifyAuth();
         if (isVerified) {
           debug('Twitter授权验证成功');
@@ -2902,8 +2701,7 @@ if (missingDependencies.length > 0) {
           headers: {
             ...this.#headers,
             'Content-Type': 'application/x-www-form-urlencoded',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
+            'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`)
           },
           responseType: 'json',
           data: $.param({
@@ -3001,8 +2799,7 @@ if (missingDependencies.length > 0) {
             ...this.#headers,
             'content-type': 'application/json',
             referer: `https://x.com/${name}`,
-            'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
+            'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`)
           },
           responseType: 'json'
         });
@@ -3086,8 +2883,7 @@ if (missingDependencies.length > 0) {
             'Content-Type': 'application/json',
             origin: 'https://x.com',
             referer: 'https://x.com/home',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`),
-            'x-xp-forwarded-for': this.#FwdForSdk.str
+            'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`)
           },
           data: `{"variables":{"${doTask ? '' : 'source_'}tweet_id":"${retweetId}","dark_request":false},"queryId":"${doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw'}"}`,
           responseType: 'json'
@@ -3179,12 +2975,6 @@ if (missingDependencies.length > 0) {
           });
           if (realUsers.length > 0) {
             for (const user of realUsers) {
-              if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-                debug('Twitter SDK过期，重新获取', {
-                  expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis
-                });
-                this.#FwdForSdk = await getFwdForSdk();
-              }
               await this.#toggleUser({
                 name: user,
                 doTask: doTask
@@ -3210,10 +3000,6 @@ if (missingDependencies.length > 0) {
           });
           if (realRetweets.length > 0) {
             for (const retweet of realRetweets) {
-              if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-                debug('Twitter SDK过期，重新获取');
-                this.#FwdForSdk = await getFwdForSdk();
-              }
               await this.#toggleRetweet({
                 retweetId: retweet,
                 doTask: doTask
@@ -3247,6 +3033,7 @@ if (missingDependencies.length > 0) {
       }
     }
   }
+  unsafeWindow.Twitter = Twitter;
   class Vk extends Social {
     tasks;
     whiteList;

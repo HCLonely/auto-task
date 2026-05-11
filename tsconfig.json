@@ -6,12 +6,9 @@
     "strict": true,
     "declaration": false, // 是否生成声明文件
     "declarationMap": false, // 是否生成声明文件map文件（便于调试）
-    "moduleResolution": "node",
     "module": "esnext",
     "target": "esnext", // 转化成的目标语言
-    "baseUrl": "./",
     "allowJs": true,
-    "downlevelIteration":true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },

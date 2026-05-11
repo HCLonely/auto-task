@@ -1,6 +1,6 @@
 {
   "name": "auto-task",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "change": [
     "移除：Discord相关功能",
     "修复：Freeanywhere访问网页任务报错"

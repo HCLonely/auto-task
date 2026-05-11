@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.2
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.2)
+
+- 修复：Twitter/X初始化报错([#72](https://github.com/HCLonely/auto-task/issues/72))
+
 ### V5.1.1
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.1)

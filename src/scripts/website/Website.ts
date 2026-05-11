@@ -212,6 +212,7 @@ abstract class Website {
         if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
           debug('初始化 Reddit');
           this.social.reddit = new Reddit();
+          if (this.eventBus) this.social.reddit.setEventBus(this.eventBus);
           initTasks.push({ target: 'reddit', run: () => this.social.reddit!.init(), payloadTasks: tasks.reddit as Record<string, Array<string>> });
         }
       }
@@ -222,6 +223,7 @@ abstract class Website {
         if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
           debug('初始化 Twitch');
           this.social.twitch = new Twitch();
+          if (this.eventBus) this.social.twitch.setEventBus(this.eventBus);
           initTasks.push({ target: 'twitch', run: () => this.social.twitch!.init(), payloadTasks: tasks.twitch as Record<string, Array<string>> });
         }
       }
@@ -232,6 +234,7 @@ abstract class Website {
         if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
           debug('初始化 Twitter');
           this.social.twitter = new Twitter();
+          if (this.eventBus) this.social.twitter.setEventBus(this.eventBus);
           initTasks.push({ target: 'twitter', run: () => this.social.twitter!.init(), payloadTasks: tasks.twitter as Record<string, Array<string>> });
         }
       }
@@ -242,6 +245,7 @@ abstract class Website {
         if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
           debug('初始化 VK');
           this.social.vk = new Vk();
+          if (this.eventBus) this.social.vk.setEventBus(this.eventBus);
           initTasks.push({ target: 'vk', run: () => this.social.vk!.init(), payloadTasks: tasks.vk as Record<string, Array<string>> });
         }
       }
@@ -252,6 +256,7 @@ abstract class Website {
         if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
           debug('初始化 YouTube');
           this.social.youtube = new Youtube();
+          if (this.eventBus) this.social.youtube.setEventBus(this.eventBus);
           initTasks.push({ target: 'youtube', run: () => this.social.youtube!.init(), payloadTasks: tasks.youtube as Record<string, Array<string>> });
         }
       }
@@ -263,6 +268,7 @@ abstract class Website {
           if (!this.social.steam) {
             debug('创建 Steam 实例');
             this.social.steam = new Steam();
+            if (this.eventBus) this.social.steam.setEventBus(this.eventBus);
           }
           const steamCommunityLength = Object.keys(tasks.steam).map((type) => (
             ['groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks'].includes(type) ?
@@ -371,25 +377,6 @@ abstract class Website {
           debug('发送初始化请求事件失败', { runId, target: task.target, error });
         });
 
-        this.#bind(task.target, task.run()).then(async (result) => {
-          await this.eventBus?.emit('social.init.completed', {
-            runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: task.target,
-            ok: !!result.result,
-            processedCount: result.result ? 1 : 0
-          });
-        }).catch(async () => {
-          await this.eventBus?.emit('social.init.completed', {
-            runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: task.target,
-            ok: false,
-            processedCount: 0
-          });
-        });
       }
 
       const allSuccess = await waitCompleted;

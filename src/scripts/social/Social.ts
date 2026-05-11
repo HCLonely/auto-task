@@ -40,6 +40,61 @@ abstract class Social {
   protected eventBus?: EventBus;
   private readonly eventHandlers: Array<SocialEventHandlers> = [];
   private listenersAttached = false;
+  private readonly handleInitRequested = async (payload: RequestedPayload): Promise<void> => {
+    for (const handler of this.eventHandlers) {
+      if (!handler.init || payload.target !== handler.target) continue;
+      try {
+        const result = await handler.init(payload);
+        const isSkip = result === 'skip';
+        const isSuccess = result === true || isSkip;
+        await this.eventBus?.emit('social.init.completed', {
+          runId: payload.runId,
+          timestamp: Date.now(),
+          source: 'social',
+          target: handler.target,
+          ok: isSuccess,
+          processedCount: result === true ? 1 : 0
+        });
+      } catch (error) {
+        await this.eventBus?.emit('social.init.completed', {
+          runId: payload.runId,
+          timestamp: Date.now(),
+          source: 'social',
+          target: handler.target,
+          ok: false,
+          processedCount: 0,
+          error: (error as Error)?.message || String(error)
+        });
+      }
+    }
+  };
+  private readonly handleToggleRequested = async (payload: RequestedPayload): Promise<void> => {
+    const sanitizedPayload = this.sanitizeRequestedPayload(payload);
+    for (const handler of this.eventHandlers) {
+      if (!handler.toggle || sanitizedPayload.target !== handler.target) continue;
+      try {
+        const result = await handler.toggle(sanitizedPayload);
+        await this.eventBus?.emit('social.toggle.completed', {
+          runId: sanitizedPayload.runId,
+          timestamp: Date.now(),
+          source: 'social',
+          target: handler.target,
+          ok: !!result,
+          processedCount: result ? 1 : 0
+        });
+      } catch (error) {
+        await this.eventBus?.emit('social.toggle.completed', {
+          runId: sanitizedPayload.runId,
+          timestamp: Date.now(),
+          source: 'social',
+          target: handler.target,
+          ok: false,
+          processedCount: 0,
+          error: (error as Error)?.message || String(error)
+        });
+      }
+    }
+  };
 
   /**
    * 初始化社交功能。
@@ -67,6 +122,11 @@ abstract class Social {
   abstract toggle(toggleParams: toggleParams): Promise<boolean>;
 
   setEventBus(eventBus: EventBus): void {
+    if (this.eventBus && this.listenersAttached) {
+      this.eventBus.off('social.init.requested', this.handleInitRequested);
+      this.eventBus.off('social.toggle.requested', this.handleToggleRequested);
+      this.listenersAttached = false;
+    }
     this.eventBus = eventBus;
     this.attachEventBusListeners();
   }
@@ -79,60 +139,29 @@ abstract class Social {
   private attachEventBusListeners(): void {
     if (!this.eventBus || this.listenersAttached || this.eventHandlers.length === 0) return;
     this.listenersAttached = true;
+    this.eventBus.on('social.init.requested', this.handleInitRequested);
+    this.eventBus.on('social.toggle.requested', this.handleToggleRequested);
+  }
 
-    this.eventBus.on('social.init.requested', async (payload) => {
-      for (const handler of this.eventHandlers) {
-        if (!handler.init || payload.target !== handler.target) continue;
-        try {
-          const result = await handler.init(payload);
-          await this.eventBus?.emit('social.init.completed', {
-            runId: payload.runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: handler.target,
-            ok: !!result,
-            processedCount: result ? 1 : 0
-          });
-        } catch (error) {
-          await this.eventBus?.emit('social.init.completed', {
-            runId: payload.runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: handler.target,
-            ok: false,
-            processedCount: 0,
-            error: (error as Error)?.message || String(error)
-          });
-        }
-      }
-    });
+  private sanitizeRequestedPayload(payload: RequestedPayload): RequestedPayload {
+    const rawTasks = payload.tasks as Record<string, unknown> | undefined;
+    if (!rawTasks || typeof rawTasks !== 'object') {
+      return {
+        ...payload,
+        tasks: {}
+      };
+    }
 
-    this.eventBus.on('social.toggle.requested', async (payload) => {
-      for (const handler of this.eventHandlers) {
-        if (!handler.toggle || payload.target !== handler.target) continue;
-        try {
-          const result = await handler.toggle(payload);
-          await this.eventBus?.emit('social.toggle.completed', {
-            runId: payload.runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: handler.target,
-            ok: !!result,
-            processedCount: result ? 1 : 0
-          });
-        } catch (error) {
-          await this.eventBus?.emit('social.toggle.completed', {
-            runId: payload.runId,
-            timestamp: Date.now(),
-            source: 'social',
-            target: handler.target,
-            ok: false,
-            processedCount: 0,
-            error: (error as Error)?.message || String(error)
-          });
-        }
-      }
-    });
+    const tasks = Object.entries(rawTasks).reduce<Record<string, Array<string>>>((acc, [key, value]) => {
+      if (!Array.isArray(value)) return acc;
+      acc[key] = value.filter((item): item is string => typeof item === 'string');
+      return acc;
+    }, {});
+
+    return {
+      ...payload,
+      tasks
+    };
   }
 
   /**

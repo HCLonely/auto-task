@@ -644,5 +644,5 @@ class Twitter extends Social {
     }
   }
 }
-unsafeWindow.Twitter = Twitter;
+
 export default Twitter;

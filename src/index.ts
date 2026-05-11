@@ -319,14 +319,20 @@ const checkSteamASFStatus = async (): Promise<void> => {
 const checkVersionAndNotice = (): void => {
   debug('检查版本和通知');
   const { scriptHandler } = GM_info;
-  if (scriptHandler !== 'Tampermonkey') {
+  if (scriptHandler === 'Tampermonkey') {
+    const [v1, v2] = GM_info.version?.split('.') || [];
+    if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
+      echoLog({}).error(__('versionNotMatched'));
+    }
+  } else if (scriptHandler !== 'Violentmonkey') {
+    const [v1, v2] = GM_info.version?.split('.') || [];
+    if (!(parseInt(v1, 10) >= 2 && parseInt(v2, 10) >= 36)) {
+      echoLog({}).error(__('versionNotMatched'));
+    }
+  } else {
     debug('未知脚本管理器', { scriptHandler });
     echoLog({}).warning(__('unknownScriptHandler'));
     return;
-  }
-  const [v1, v2] = GM_info.version?.split('.') || [];
-  if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
-    echoLog({}).error(__('versionNotMatched'));
   }
 
   if (!GM_getValue<number>('notice')) {

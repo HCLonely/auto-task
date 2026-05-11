@@ -1888,6 +1888,112 @@ function _toPrimitive(t, r) {
   class Social {
     constructor() {
       _defineProperty(this, 'tasks', void 0);
+      _defineProperty(this, 'eventBus', void 0);
+      _defineProperty(this, 'eventHandlers', []);
+      _defineProperty(this, 'listenersAttached', false);
+      _defineProperty(this, 'handleInitRequested', (async payload => {
+        for (const handler of this.eventHandlers) {
+          if (!handler.init || payload.target !== handler.target) {
+            continue;
+          }
+          try {
+            var _this$eventBus;
+            const result = await handler.init(payload);
+            const isSkip = result === 'skip';
+            const isSuccess = result === true || isSkip;
+            await ((_this$eventBus = this.eventBus) === null || _this$eventBus === void 0 ? void 0 : _this$eventBus.emit('social.init.completed', {
+              runId: payload.runId,
+              timestamp: Date.now(),
+              source: 'social',
+              target: handler.target,
+              ok: isSuccess,
+              processedCount: result === true ? 1 : 0
+            }));
+          } catch (error) {
+            var _this$eventBus2;
+            await ((_this$eventBus2 = this.eventBus) === null || _this$eventBus2 === void 0 ? void 0 : _this$eventBus2.emit('social.init.completed', {
+              runId: payload.runId,
+              timestamp: Date.now(),
+              source: 'social',
+              target: handler.target,
+              ok: false,
+              processedCount: 0,
+              error: (error === null || error === void 0 ? void 0 : error.message) || String(error)
+            }));
+          }
+        }
+      }));
+      _defineProperty(this, 'handleToggleRequested', (async payload => {
+        const sanitizedPayload = this.sanitizeRequestedPayload(payload);
+        for (const handler of this.eventHandlers) {
+          if (!handler.toggle || sanitizedPayload.target !== handler.target) {
+            continue;
+          }
+          try {
+            var _this$eventBus3;
+            const result = await handler.toggle(sanitizedPayload);
+            await ((_this$eventBus3 = this.eventBus) === null || _this$eventBus3 === void 0 ? void 0 : _this$eventBus3.emit('social.toggle.completed', {
+              runId: sanitizedPayload.runId,
+              timestamp: Date.now(),
+              source: 'social',
+              target: handler.target,
+              ok: !!result,
+              processedCount: result ? 1 : 0
+            }));
+          } catch (error) {
+            var _this$eventBus4;
+            await ((_this$eventBus4 = this.eventBus) === null || _this$eventBus4 === void 0 ? void 0 : _this$eventBus4.emit('social.toggle.completed', {
+              runId: sanitizedPayload.runId,
+              timestamp: Date.now(),
+              source: 'social',
+              target: handler.target,
+              ok: false,
+              processedCount: 0,
+              error: (error === null || error === void 0 ? void 0 : error.message) || String(error)
+            }));
+          }
+        }
+      }));
+    }
+    setEventBus(eventBus) {
+      if (this.eventBus && this.listenersAttached) {
+        this.eventBus.off('social.init.requested', this.handleInitRequested);
+        this.eventBus.off('social.toggle.requested', this.handleToggleRequested);
+        this.listenersAttached = false;
+      }
+      this.eventBus = eventBus;
+      this.attachEventBusListeners();
+    }
+    registerEventBusHandlers(handlers) {
+      this.eventHandlers.push(handlers);
+      this.attachEventBusListeners();
+    }
+    attachEventBusListeners() {
+      if (!this.eventBus || this.listenersAttached || this.eventHandlers.length === 0) {
+        return;
+      }
+      this.listenersAttached = true;
+      this.eventBus.on('social.init.requested', this.handleInitRequested);
+      this.eventBus.on('social.toggle.requested', this.handleToggleRequested);
+    }
+    sanitizeRequestedPayload(payload) {
+      const rawTasks = payload.tasks;
+      if (!rawTasks || typeof rawTasks !== 'object') {
+        return _objectSpread(_objectSpread({}, payload), {}, {
+          tasks: {}
+        });
+      }
+      const tasks = Object.entries(rawTasks).reduce(((acc, _ref2) => {
+        let [key, value] = _ref2;
+        if (!Array.isArray(value)) {
+          return acc;
+        }
+        acc[key] = value.filter((item => typeof item === 'string'));
+        return acc;
+      }), {});
+      return _objectSpread(_objectSpread({}, payload), {}, {
+        tasks: tasks
+      });
     }
     getRealParams(name, links, doTask, link2param) {
       try {
@@ -1945,6 +2051,13 @@ function _toPrimitive(t, r) {
       debug('初始化Reddit实例');
       this.tasks = defaultTasksTemplate;
       this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue = GM_getValue('whiteList')) === null || _GM_getValue === void 0 ? void 0 : _GM_getValue.reddit) || {});
+      this.registerEventBusHandlers({
+        target: 'reddit',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
     }
     async init() {
       try {
@@ -1975,8 +2088,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref2) {
-      let {doTask: doTask = true, redditLinks: redditLinks = []} = _ref2;
+    async toggle(_ref3) {
+      let {doTask: doTask = true, redditLinks: redditLinks = []} = _ref3;
       try {
         debug('开始处理Reddit链接任务', {
           doTask: doTask,
@@ -2129,8 +2242,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleTask(_ref19) {
-    let {name: name, doTask: doTask = true} = _ref19;
+  async function _toggleTask(_ref20) {
+    let {name: name, doTask: doTask = true} = _ref20;
     try {
       debug('开始处理Reddit任务', {
         name: name,
@@ -2230,6 +2343,13 @@ function _toPrimitive(t, r) {
       debug('初始化Twitch实例');
       this.tasks = defaultTasksTemplate;
       this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue2 = GM_getValue('whiteList')) === null || _GM_getValue2 === void 0 ? void 0 : _GM_getValue2.twitch) || {});
+      this.registerEventBusHandlers({
+        target: 'twitch',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
     }
     async init() {
       try {
@@ -2276,8 +2396,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref3) {
-      let {doTask: doTask = true, channelLinks: channelLinks = []} = _ref3;
+    async toggle(_ref4) {
+      let {doTask: doTask = true, channelLinks: channelLinks = []} = _ref4;
       try {
         debug('开始处理Twitch链接任务', {
           doTask: doTask,
@@ -2481,8 +2601,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleChannel(_ref20) {
-    let {name: name, doTask: doTask = true} = _ref20;
+  async function _toggleChannel(_ref21) {
+    let {name: name, doTask: doTask = true} = _ref21;
     try {
       var _data$response88;
       debug('开始处理Twitch频道任务', {
@@ -2747,6 +2867,13 @@ function _toPrimitive(t, r) {
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua': generateSecCHUA()
       });
+      this.registerEventBusHandlers({
+        target: 'twitter',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
     }
     async init() {
       try {
@@ -2871,8 +2998,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref4) {
-      let {doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []} = _ref4;
+    async toggle(_ref5) {
+      let {doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []} = _ref5;
       try {
         debug('开始处理Twitter链接任务', {
           doTask: doTask,
@@ -3019,8 +3146,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleUser(_ref21) {
-    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref21;
+  async function _toggleUser(_ref22) {
+    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref22;
     try {
       debug('开始处理Twitter用户任务', {
         name: name,
@@ -3131,8 +3258,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleRetweet(_ref22) {
-    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref22;
+  async function _toggleRetweet(_ref23) {
+    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref23;
     try {
       var _data$response94, _data$responseHeaders4, _data$response95, _data$response96, _data$response97;
       debug('开始处理Twitter转推任务', {
@@ -3261,6 +3388,13 @@ function _toPrimitive(t, r) {
       debug('初始化Vk实例');
       this.tasks = defaultTasksTemplate;
       this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue4 = GM_getValue('whiteList')) === null || _GM_getValue4 === void 0 ? void 0 : _GM_getValue4.vk) || {});
+      this.registerEventBusHandlers({
+        target: 'vk',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
     }
     async init() {
       try {
@@ -3291,8 +3425,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref5) {
-      let {doTask: doTask = true, nameLinks: nameLinks = []} = _ref5;
+    async toggle(_ref6) {
+      let {doTask: doTask = true, nameLinks: nameLinks = []} = _ref6;
       try {
         debug('开始处理Vk链接任务', {
           doTask: doTask,
@@ -3914,8 +4048,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleVk(_ref23) {
-    let {name: name, doTask: doTask = true} = _ref23;
+  async function _toggleVk(_ref24) {
+    let {name: name, doTask: doTask = true} = _ref24;
     try {
       debug('开始处理Vk任务', {
         name: name,
@@ -3985,7 +4119,7 @@ function _toPrimitive(t, r) {
   }
   const getInfo = async function(link, type) {
     try {
-      var _data$responseText$ma, _ref6;
+      var _data$responseText$ma, _ref7;
       debug('开始获取YouTube信息', {
         link: link,
         type: type
@@ -4023,7 +4157,7 @@ function _toPrimitive(t, r) {
         };
       }
       const apiKey = (_data$responseText$ma = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma === void 0 ? void 0 : _data$responseText$ma[1];
-      const context = ((_ref6 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref6 === void 0 ? void 0 : _ref6[1]) || '{}';
+      const context = ((_ref7 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref7 === void 0 ? void 0 : _ref7[1]) || '{}';
       const {client: client, request: request} = JSON.parse(context);
       if (!apiKey || !client || !request) {
         debug('获取YouTube信息失败：缺少必要参数');
@@ -4109,6 +4243,13 @@ function _toPrimitive(t, r) {
       debug('初始化YouTube实例');
       this.tasks = defaultTasksTemplate;
       this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue5 = GM_getValue('whiteList')) === null || _GM_getValue5 === void 0 ? void 0 : _GM_getValue5.youtube) || {});
+      this.registerEventBusHandlers({
+        target: 'youtube',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
     }
     async init() {
       try {
@@ -4157,8 +4298,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref7) {
-      let {doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []} = _ref7;
+    async toggle(_ref8) {
+      let {doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []} = _ref8;
       try {
         debug('开始处理YouTube链接任务', {
           doTask: doTask,
@@ -4317,8 +4458,8 @@ function _toPrimitive(t, r) {
     });
     return getInfo(link, type);
   }
-  async function _toggleChannel2(_ref24) {
-    let {link: link, doTask: doTask = true, verify: verify = false} = _ref24;
+  async function _toggleChannel2(_ref25) {
+    let {link: link, doTask: doTask = true, verify: verify = false} = _ref25;
     try {
       debug('开始处理YouTube频道任务', {
         link: link,
@@ -4432,8 +4573,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleLikeVideo(_ref25) {
-    let {link: link, doTask: doTask = true} = _ref25;
+  async function _toggleLikeVideo(_ref26) {
+    let {link: link, doTask: doTask = true} = _ref26;
     try {
       debug('开始处理YouTube视频点赞任务', {
         link: link,
@@ -4558,8 +4699,8 @@ function _toPrimitive(t, r) {
   var _steamId = new WeakMap;
   var _SteamASF_brand = new WeakSet;
   class SteamASF {
-    constructor(_ref8) {
-      let {AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey} = _ref8;
+    constructor(_ref9) {
+      let {AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey} = _ref9;
       _classPrivateMethodInitSpec(this, _SteamASF_brand);
       _classPrivateFieldInitSpec(this, _asfOptions, void 0);
       _classPrivateFieldInitSpec(this, _botName, 'asf');
@@ -8005,6 +8146,20 @@ function _toPrimitive(t, r) {
       this.tasks = defaultTasksTemplate;
       this.whiteList = _objectSpread(_objectSpread({}, defaultTasksTemplate), ((_GM_getValue6 = GM_getValue('whiteList')) === null || _GM_getValue6 === void 0 ? void 0 : _GM_getValue6.steam) || {});
       _classPrivateFieldSet(_TaskExecutor, this, _assertClassBrand(_Steam_brand, this, _getTaskExecutionOrder).call(this, globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF));
+      this.registerEventBusHandlers({
+        target: 'steamStore',
+        init: async () => this.init('store'),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
+      this.registerEventBusHandlers({
+        target: 'steamCommunity',
+        init: async () => this.init('community'),
+        toggle: async payload => this.toggle(_objectSpread({
+          doTask: payload.action === 'do'
+        }, payload.tasks))
+      });
       debug('Steam实例初始化完成', {
         taskExecutorCount: _classPrivateFieldGet(_TaskExecutor, this).length
       });
@@ -8110,8 +8265,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref9) {
-      let {doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []} = _ref9;
+    async toggle(_ref0) {
+      let {doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []} = _ref0;
       try {
         var _classPrivateFieldGet2;
         debug('开始处理Steam任务', {
@@ -9014,19 +9169,97 @@ function _toPrimitive(t, r) {
         steamCommunity: false
       });
       _defineProperty(this, 'initialized', false);
+      _defineProperty(this, 'eventBus', void 0);
+      _defineProperty(this, 'handleLinksRequested', (async payload => {
+        var _payload$tasks;
+        if (!this.eventBus) {
+          return;
+        }
+        const links = Array.isArray((_payload$tasks = payload.tasks) === null || _payload$tasks === void 0 ? void 0 : _payload$tasks.links) ? payload.tasks.links : [];
+        let ok = true;
+        let processedCount = 0;
+        if (this.social.visitLink) {
+          for (const link of links) {
+            try {
+              const result = await this.social.visitLink(link);
+              ok = ok && !!result;
+              if (result) {
+                processedCount += 1;
+              }
+            } catch (error) {
+              ok = false;
+              debug('桥接链接任务失败', {
+                runId: payload.runId,
+                link: link,
+                error: error
+              });
+            }
+          }
+        } else {
+          ok = false;
+        }
+        await this.eventBus.emit('task.links.completed', _objectSpread({
+          runId: payload.runId,
+          timestamp: Date.now(),
+          source: 'website',
+          target: 'links',
+          ok: ok,
+          processedCount: processedCount
+        }, ok ? {} : {
+          error: this.social.visitLink ? 'Some links failed' : 'visitLink handler not available'
+        }));
+      }));
+      _defineProperty(this, 'handleExtraRequested', (async payload => {
+        if (!this.eventBus) {
+          return;
+        }
+        const extraTasks = payload.tasks;
+        let ok = false;
+        try {
+          ok = !!(this.extraDoTask ? await this.extraDoTask(extraTasks) : false);
+        } catch (error) {
+          debug('桥接额外任务失败', {
+            runId: payload.runId,
+            error: error
+          });
+          ok = false;
+        }
+        await this.eventBus.emit('task.extra.completed', _objectSpread({
+          runId: payload.runId,
+          timestamp: Date.now(),
+          source: 'website',
+          target: 'extra',
+          ok: ok,
+          processedCount: ok ? 1 : 0
+        }, ok ? {} : {
+          error: 'Extra task failed or handler not available'
+        }));
+      }));
+      _defineProperty(this, 'websiteBridgeAttached', false);
       _defineProperty(this, 'steamTaskType', {
         steamStore: false,
         steamCommunity: false
       });
       _defineProperty(this, 'social', {});
     }
+    setEventBus(eventBus) {
+      if (this.eventBus && this.websiteBridgeAttached) {
+        this.eventBus.off('task.links.requested', this.handleLinksRequested);
+        this.eventBus.off('task.extra.requested', this.handleExtraRequested);
+        this.websiteBridgeAttached = false;
+      }
+      this.eventBus = eventBus;
+      this.eventBus.on('task.links.requested', this.handleLinksRequested);
+      this.eventBus.on('task.extra.requested', this.handleExtraRequested);
+      this.websiteBridgeAttached = true;
+    }
     async initSocial(action) {
       try {
         debug('开始初始化社交媒体', {
           action: action
         });
-        const pro = [];
         const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
+        const initTasks = [];
         if (tasks.reddit) {
           const hasReddit = Object.values(tasks.reddit).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 Reddit 任务', {
@@ -9035,7 +9268,14 @@ function _toPrimitive(t, r) {
           if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
             debug('初始化 Reddit');
             this.social.reddit = new Reddit;
-            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'reddit', this.social.reddit.init()));
+            if (this.eventBus) {
+              this.social.reddit.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'reddit',
+              run: () => this.social.reddit.init(),
+              payloadTasks: tasks.reddit
+            });
           }
         }
         if (tasks.twitch) {
@@ -9046,7 +9286,14 @@ function _toPrimitive(t, r) {
           if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
             debug('初始化 Twitch');
             this.social.twitch = new Twitch;
-            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitch', this.social.twitch.init()));
+            if (this.eventBus) {
+              this.social.twitch.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'twitch',
+              run: () => this.social.twitch.init(),
+              payloadTasks: tasks.twitch
+            });
           }
         }
         if (tasks.twitter) {
@@ -9057,7 +9304,14 @@ function _toPrimitive(t, r) {
           if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
             debug('初始化 Twitter');
             this.social.twitter = new Twitter;
-            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitter', this.social.twitter.init()));
+            if (this.eventBus) {
+              this.social.twitter.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'twitter',
+              run: () => this.social.twitter.init(),
+              payloadTasks: tasks.twitter
+            });
           }
         }
         if (tasks.vk) {
@@ -9068,7 +9322,14 @@ function _toPrimitive(t, r) {
           if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
             debug('初始化 VK');
             this.social.vk = new Vk;
-            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'vk', this.social.vk.init()));
+            if (this.eventBus) {
+              this.social.vk.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'vk',
+              run: () => this.social.vk.init(),
+              payloadTasks: tasks.vk
+            });
           }
         }
         if (tasks.youtube) {
@@ -9079,7 +9340,14 @@ function _toPrimitive(t, r) {
           if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
             debug('初始化 YouTube');
             this.social.youtube = new Youtube;
-            pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'youtube', this.social.youtube.init()));
+            if (this.eventBus) {
+              this.social.youtube.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'youtube',
+              run: () => this.social.youtube.init(),
+              payloadTasks: tasks.youtube
+            });
           }
         }
         if (tasks.steam) {
@@ -9091,6 +9359,9 @@ function _toPrimitive(t, r) {
             if (!this.social.steam) {
               debug('创建 Steam 实例');
               this.social.steam = new Steam;
+              if (this.eventBus) {
+                this.social.steam.setEventBus(this.eventBus);
+              }
             }
             const steamCommunityLength = Object.keys(tasks.steam).map((type => {
               var _tasks$steam;
@@ -9103,14 +9374,22 @@ function _toPrimitive(t, r) {
               this.steamTaskType.steamStore = true;
               if (!this.socialInitialized.steamStore) {
                 debug('初始化 Steam 商店');
-                pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'steamStore', this.social.steam.init('store')));
+                initTasks.push({
+                  target: 'steamStore',
+                  run: () => this.social.steam.init('store'),
+                  payloadTasks: tasks.steam
+                });
               }
             }
             if (steamCommunityLength > 0) {
               if (!this.socialInitialized.steamCommunity) {
                 this.steamTaskType.steamCommunity = true;
                 debug('初始化 Steam 社区');
-                pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'steamCommunity', this.social.steam.init('community')));
+                initTasks.push({
+                  target: 'steamCommunity',
+                  run: () => this.social.steam.init('community'),
+                  payloadTasks: tasks.steam
+                });
               }
             }
           }
@@ -9121,15 +9400,24 @@ function _toPrimitive(t, r) {
           });
           this.social.visitLink = visitLink;
         }
-        debug('等待所有社交媒体初始化完成');
-        return await Promise.all(pro).then((result => {
+        if (initTasks.length === 0) {
+          debug('无需要初始化的社交媒体任务');
+          return true;
+        }
+        const runId = 'init-'.concat(Date.now(), '-').concat(Math.random().toString(36).slice(2, 10));
+        const timestamp = Date.now();
+        if (!this.eventBus) {
+          debug('EventBus 未注入，使用兼容模式初始化');
+          const result = await Promise.all(initTasks.map((task => _assertClassBrand(_Website_brand, this, _bind).call(this, task.target, task.run()))));
           let checked = true;
           for (const data of result) {
             if (data.result) {
               debug('社交媒体初始化成功', {
                 name: data.name
               });
-              this.socialInitialized[data.name] = data.result;
+              if (_assertClassBrand(_Website_brand, this, _isSocialInitializedTarget).call(this, data.name)) {
+                this.socialInitialized[data.name] = data.result;
+              }
             } else {
               debug('社交媒体初始化失败', {
                 name: data.name
@@ -9137,11 +9425,86 @@ function _toPrimitive(t, r) {
               checked = false;
             }
           }
-          debug('社交媒体初始化完成', {
-            allSuccess: checked
-          });
           return checked;
+        }
+        const expectedTargets = new Set(initTasks.map((task => task.target)));
+        const completedTargets = new Set;
+        const timeoutMs = 3e4;
+        const waitCompleted = new Promise((resolve => {
+          var _this$eventBus6;
+          let cleaned = false;
+          const resultMap = new Map;
+          const listener = payload => {
+            if (payload.runId !== runId) {
+              return;
+            }
+            if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+              debug('忽略重复或无关的初始化完成事件', {
+                runId: runId,
+                target: payload.target
+              });
+              return;
+            }
+            completedTargets.add(payload.target);
+            resultMap.set(payload.target, payload.ok);
+            if (_assertClassBrand(_Website_brand, this, _isSocialInitializedTarget).call(this, payload.target)) {
+              this.socialInitialized[payload.target] = payload.ok;
+            }
+            debug('接收到初始化完成事件', {
+              runId: runId,
+              target: payload.target,
+              ok: payload.ok,
+              completed: completedTargets.size,
+              total: expectedTargets.size
+            });
+            if (completedTargets.size === expectedTargets.size) {
+              cleanup();
+              resolve(Array.from(resultMap.values()).every(Boolean));
+            }
+          };
+          const cleanup = () => {
+            var _this$eventBus5;
+            if (cleaned) {
+              return;
+            }
+            cleaned = true;
+            clearTimeout(timer);
+            (_this$eventBus5 = this.eventBus) === null || _this$eventBus5 === void 0 || _this$eventBus5.off('social.init.completed', listener);
+          };
+          const timer = setTimeout((() => {
+            debug('社交媒体初始化等待超时', {
+              runId: runId,
+              timeoutMs: timeoutMs,
+              expected: Array.from(expectedTargets),
+              completed: Array.from(completedTargets)
+            });
+            cleanup();
+            resolve(false);
+          }), timeoutMs);
+          (_this$eventBus6 = this.eventBus) === null || _this$eventBus6 === void 0 || _this$eventBus6.on('social.init.completed', listener);
         }));
+        for (const task of initTasks) {
+          void this.eventBus.emit('social.init.requested', {
+            runId: runId,
+            timestamp: timestamp,
+            source: 'website',
+            action: action,
+            target: task.target,
+            tasks: task.payloadTasks
+          }).catch((error => {
+            debug('发送初始化请求事件失败', {
+              runId: runId,
+              target: task.target,
+              error: error
+            });
+          }));
+        }
+        const allSuccess = await waitCompleted;
+        debug('社交媒体初始化完成', {
+          runId: runId,
+          allSuccess: allSuccess
+        });
+        return allSuccess;
       } catch (error) {
         debug('初始化社交媒体失败', {
           error: error
@@ -9158,14 +9521,39 @@ function _toPrimitive(t, r) {
           debug('处理社交媒体任务', {
             social: social
           });
-          result[social] = {};
+          if (social === 'links') {
+            result.links = Array.isArray(types) ? unique(types.filter((item => typeof item === 'string'))) : [];
+            continue;
+          }
+          if (!types || typeof types !== 'object' || Array.isArray(types)) {
+            continue;
+          }
+          if (social === 'extra') {
+            const extraResult = {};
+            for (const [type, tasks] of Object.entries(types)) {
+              debug('处理额外任务类型', {
+                type: type
+              });
+              if (!Array.isArray(tasks)) {
+                continue;
+              }
+              extraResult[type] = unique(tasks.filter((item => typeof item === 'string')));
+            }
+            result.extra = extraResult;
+            continue;
+          }
+          const socialResult = {};
           for (const [type, tasks] of Object.entries(types)) {
             debug('处理任务类型', {
               social: social,
               type: type
             });
-            result[social][type] = unique(tasks);
+            if (!Array.isArray(tasks)) {
+              continue;
+            }
+            socialResult[type] = unique(tasks.filter((item => typeof item === 'string')));
           }
+          result[social] = socialResult;
         }
         debug('任务去重完成');
         return result;
@@ -9182,75 +9570,236 @@ function _toPrimitive(t, r) {
         debug('开始切换任务状态', {
           action: action
         });
-        if (!this.initialized && !this.init()) {
-          debug('初始化失败');
-          return false;
+        if (!this.initialized) {
+          const initResult = await this.init();
+          if (!initResult) {
+            debug('初始化失败');
+            return false;
+          }
         }
         if (!await this.classifyTask(action)) {
           debug('任务分类失败');
           return false;
         }
         debug('初始化社交媒体');
-        await this.initSocial(action);
+        if (!await this.initSocial(action)) {
+          debug('社交媒体初始化失败或超时');
+          return false;
+        }
         const pro = [];
         const doTask = action === 'do';
         const tasks = doTask ? this.undoneTasks : this.socialTasks;
-        if (this.socialInitialized.reddit === true && this.social.reddit) {
-          debug('处理 Reddit 任务');
-          pro.push(this.social.reddit.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.reddit)));
-        }
-        if (this.socialInitialized.twitch === true && this.social.twitch) {
-          debug('处理 Twitch 任务');
-          pro.push(this.social.twitch.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.twitch)));
-        }
-        if (this.socialInitialized.twitter === true && this.social.twitter) {
-          debug('处理 Twitter 任务');
-          pro.push(this.social.twitter.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.twitter)));
-        }
-        if (this.socialInitialized.vk === true && this.social.vk) {
-          debug('处理 VK 任务');
-          pro.push(this.social.vk.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.vk)));
-        }
-        if (this.socialInitialized.youtube === true && this.social.youtube) {
-          debug('处理 YouTube 任务');
-          pro.push(this.social.youtube.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.youtube)));
-        }
-        if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
-          debug('处理 Steam 任务');
-          pro.push(this.social.steam.toggle(_objectSpread({
-            doTask: doTask
-          }, tasks.steam)));
-        }
-        if (this.social.visitLink && tasks.links && doTask) {
-          debug('处理链接任务', {
-            linksCount: tasks.links.length
-          });
-          for (const link of tasks.links) {
-            pro.push(this.social.visitLink(link));
+        let toggleSuccess = true;
+        let linksSuccess = true;
+        let extraSuccess = true;
+        if (this.eventBus) {
+          const runId = 'toggle-'.concat(Date.now(), '-').concat(Math.random().toString(36).slice(2, 10));
+          const timestamp = Date.now();
+          const timeoutMs = 6e5;
+          const toggleTasks = [];
+          if (this.socialInitialized.reddit === true && this.social.reddit) {
+            debug('通过事件处理 Reddit 任务');
+            toggleTasks.push({
+              target: 'reddit',
+              payloadTasks: tasks.reddit
+            });
+          }
+          if (this.socialInitialized.twitch === true && this.social.twitch) {
+            debug('通过事件处理 Twitch 任务');
+            toggleTasks.push({
+              target: 'twitch',
+              payloadTasks: tasks.twitch
+            });
+          }
+          if (this.socialInitialized.twitter === true && this.social.twitter) {
+            debug('通过事件处理 Twitter 任务');
+            toggleTasks.push({
+              target: 'twitter',
+              payloadTasks: tasks.twitter
+            });
+          }
+          if (this.socialInitialized.vk === true && this.social.vk) {
+            debug('通过事件处理 VK 任务');
+            toggleTasks.push({
+              target: 'vk',
+              payloadTasks: tasks.vk
+            });
+          }
+          if (this.socialInitialized.youtube === true && this.social.youtube) {
+            debug('通过事件处理 YouTube 任务');
+            toggleTasks.push({
+              target: 'youtube',
+              payloadTasks: tasks.youtube
+            });
+          }
+          if (this.social.steam) {
+            const steamPayloadTasks = tasks.steam;
+            if (this.steamTaskType.steamStore && this.socialInitialized.steamStore === true) {
+              debug('通过事件处理 Steam 商店任务');
+              toggleTasks.push({
+                target: 'steamStore',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+            if (this.steamTaskType.steamCommunity && this.socialInitialized.steamCommunity === true) {
+              debug('通过事件处理 Steam 社区任务');
+              toggleTasks.push({
+                target: 'steamCommunity',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+            if (!this.steamTaskType.steamStore && !this.steamTaskType.steamCommunity && this.socialInitialized.steamStore === true) {
+              debug('通过事件处理 Steam 任务（默认商店目标）');
+              toggleTasks.push({
+                target: 'steamStore',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+          }
+          const expectedToggleTargets = new Set(toggleTasks.map((task => task.target)));
+          const waitToggleCompleted = _assertClassBrand(_Website_brand, this, _waitForCompletedEvents).call(this, 'social.toggle.completed', runId, expectedToggleTargets, timeoutMs);
+          for (const task of toggleTasks) {
+            void this.eventBus.emit('social.toggle.requested', {
+              runId: runId,
+              timestamp: timestamp,
+              source: 'website',
+              action: action,
+              target: task.target,
+              tasks: task.payloadTasks
+            }).catch((error => {
+              debug('发送切换请求事件失败', {
+                runId: runId,
+                target: task.target,
+                error: error
+              });
+            }));
+          }
+          toggleSuccess = await waitToggleCompleted;
+          if (!toggleSuccess) {
+            debug('社交媒体切换失败或超时', {
+              runId: runId
+            });
+          }
+          if (tasks.links && doTask && tasks.links.length > 0) {
+            debug('通过事件处理链接任务', {
+              linksCount: tasks.links.length
+            });
+            const linksRunId = 'links-'.concat(Date.now(), '-').concat(Math.random().toString(36).slice(2, 10));
+            const waitLinksCompleted = _assertClassBrand(_Website_brand, this, _waitForCompletedEvents).call(this, 'task.links.completed', linksRunId, new Set([ 'links' ]), 1e4);
+            void this.eventBus.emit('task.links.requested', {
+              runId: linksRunId,
+              timestamp: Date.now(),
+              source: 'website',
+              action: action,
+              target: 'links',
+              tasks: {
+                links: tasks.links
+              }
+            }).catch((error => {
+              debug('发送链接任务请求事件失败', {
+                runId: linksRunId,
+                error: error
+              });
+            }));
+            linksSuccess = await waitLinksCompleted;
+            if (!linksSuccess && this.social.visitLink) {
+              debug('链接事件处理失败或超时，回退到直接访问', {
+                runId: linksRunId
+              });
+              for (const link of tasks.links) {
+                pro.push(this.social.visitLink(link));
+              }
+            }
+          }
+          if (doTask && tasks.extra && this.extraDoTask) {
+            const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+            if (hasExtra) {
+              const extraRunId = 'extra-'.concat(Date.now(), '-').concat(Math.random().toString(36).slice(2, 10));
+              const waitExtraCompleted = _assertClassBrand(_Website_brand, this, _waitForCompletedEvents).call(this, 'task.extra.completed', extraRunId, new Set([ 'extra' ]), timeoutMs);
+              void this.eventBus.emit('task.extra.requested', {
+                runId: extraRunId,
+                timestamp: Date.now(),
+                source: 'website',
+                action: action,
+                target: 'extra',
+                tasks: tasks.extra
+              }).catch((error => {
+                debug('发送额外任务请求事件失败', {
+                  runId: extraRunId,
+                  error: error
+                });
+              }));
+              extraSuccess = await waitExtraCompleted;
+            }
+          }
+        } else {
+          if (this.socialInitialized.reddit === true && this.social.reddit) {
+            debug('处理 Reddit 任务');
+            pro.push(this.social.reddit.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.reddit)));
+          }
+          if (this.socialInitialized.twitch === true && this.social.twitch) {
+            debug('处理 Twitch 任务');
+            pro.push(this.social.twitch.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.twitch)));
+          }
+          if (this.socialInitialized.twitter === true && this.social.twitter) {
+            debug('处理 Twitter 任务');
+            pro.push(this.social.twitter.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.twitter)));
+          }
+          if (this.socialInitialized.vk === true && this.social.vk) {
+            debug('处理 VK 任务');
+            pro.push(this.social.vk.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.vk)));
+          }
+          if (this.socialInitialized.youtube === true && this.social.youtube) {
+            debug('处理 YouTube 任务');
+            pro.push(this.social.youtube.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.youtube)));
+          }
+          if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
+            debug('处理 Steam 任务');
+            pro.push(this.social.steam.toggle(_objectSpread({
+              doTask: doTask
+            }, tasks.steam)));
+          }
+          if (this.social.visitLink && tasks.links && doTask) {
+            debug('处理链接任务', {
+              linksCount: tasks.links.length
+            });
+            for (const link of tasks.links) {
+              pro.push(this.social.visitLink(link));
+            }
           }
         }
-        if (doTask && tasks.extra && this.extraDoTask) {
-          const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
-          if (hasExtra) {
-            debug('处理额外任务');
-            pro.push(this.extraDoTask(tasks.extra));
+        if (!this.eventBus) {
+          if (doTask && tasks.extra && this.extraDoTask) {
+            const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+            if (hasExtra) {
+              debug('处理额外任务');
+              pro.push(this.extraDoTask(tasks.extra));
+            }
           }
         }
         debug('等待所有任务完成');
         await Promise.all(pro);
-        debug('所有任务完成');
-        echoLog({}).success(I18n('allTasksComplete'));
-        return true;
+        const allSuccess = toggleSuccess && linksSuccess && extraSuccess;
+        debug('所有任务完成', {
+          allSuccess: allSuccess,
+          toggleSuccess: toggleSuccess,
+          linksSuccess: linksSuccess,
+          extraSuccess: extraSuccess
+        });
+        if (allSuccess) {
+          echoLog({}).success(I18n('allTasksComplete'));
+        }
+        return allSuccess;
       } catch (error) {
         debug('切换任务失败', {
           error: error
@@ -9292,6 +9841,9 @@ function _toPrimitive(t, r) {
       }
     }
   }
+  function _isSocialInitializedTarget(target) {
+    return target !== 'links' && target !== 'extra';
+  }
   async function _bind(name, init) {
     try {
       debug('开始绑定社交媒体', {
@@ -9317,6 +9869,65 @@ function _toPrimitive(t, r) {
         result: false
       };
     }
+  }
+  async function _waitForCompletedEvents(eventName, runId, expectedTargets, timeoutMs) {
+    if (!this.eventBus || expectedTargets.size === 0) {
+      return true;
+    }
+    const completedTargets = new Set;
+    const resultMap = new Map;
+    return await new Promise((resolve => {
+      var _this$eventBus8;
+      let cleaned = false;
+      const listener = payload => {
+        if (payload.runId !== runId) {
+          return;
+        }
+        if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+          debug('忽略重复或无关的完成事件', {
+            eventName: eventName,
+            runId: runId,
+            target: payload.target
+          });
+          return;
+        }
+        completedTargets.add(payload.target);
+        resultMap.set(payload.target, payload.ok);
+        debug('接收到完成事件', {
+          eventName: eventName,
+          runId: runId,
+          target: payload.target,
+          ok: payload.ok,
+          completed: completedTargets.size,
+          total: expectedTargets.size
+        });
+        if (completedTargets.size === expectedTargets.size) {
+          cleanup();
+          resolve(Array.from(resultMap.values()).every(Boolean));
+        }
+      };
+      const cleanup = () => {
+        var _this$eventBus7;
+        if (cleaned) {
+          return;
+        }
+        cleaned = true;
+        clearTimeout(timer);
+        (_this$eventBus7 = this.eventBus) === null || _this$eventBus7 === void 0 || _this$eventBus7.off(eventName, listener);
+      };
+      const timer = setTimeout((() => {
+        debug('等待完成事件超时', {
+          eventName: eventName,
+          runId: runId,
+          timeoutMs: timeoutMs,
+          expected: Array.from(expectedTargets),
+          completed: Array.from(completedTargets)
+        });
+        cleanup();
+        resolve(false);
+      }), timeoutMs);
+      (_this$eventBus8 = this.eventBus) === null || _this$eventBus8 === void 0 || _this$eventBus8.on(eventName, listener);
+    }));
   }
   const defaultTasksTemplate$7 = {
     steam: {
@@ -9492,8 +10103,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref0) {
-      let {website: website} = _ref0;
+    async extraDoTask(_ref1) {
+      let {website: website} = _ref1;
       try {
         debug('执行额外任务', {
           website: website
@@ -11061,8 +11672,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref1) {
-      let {videoTasks: videoTasks} = _ref1;
+    async extraDoTask(_ref10) {
+      let {videoTasks: videoTasks} = _ref10;
       try {
         debug('开始执行额外任务', {
           count: videoTasks.length
@@ -13794,8 +14405,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref10) {
-      let {gleam: gleam} = _ref10;
+    async extraDoTask(_ref11) {
+      let {gleam: gleam} = _ref11;
       try {
         debug('开始执行额外任务', {
           count: gleam.length
@@ -14420,21 +15031,21 @@ function _toPrimitive(t, r) {
       option: option,
       dataKeys: Object.keys(data)
     });
-    return Object.entries(data).map((_ref11 => {
-      let [socialType, value] = _ref11;
+    return Object.entries(data).map((_ref12 => {
+      let [socialType, value] = _ref12;
       return '\n    <tr style="background-color: '.concat(stringToColour(option), '66">\n      ').concat(isFirstOption ? '<th rowspan="'.concat(totalOptions, '" style="background-color: ').concat(headerBackgroundColor, '">').concat(I18n(type), '</th>') : '', '\n      <td>').concat(option, '.').concat(I18n(socialType), '</td>\n      <td>\n        <label>\n          <input type="checkbox" name="').concat(type, '.').concat(option, '.').concat(socialType, '"').concat(value ? ' checked="checked"' : '', '/>\n          <span><i></i></span>\n        </label>\n      </td>\n    </tr>');
     })).join('');
   };
   const generateGlobalOptionsForm = () => {
     debug('开始生成全局选项表单');
-    const formRows = Object.entries(globalOptions).map((_ref12 => {
-      let [type, data1] = _ref12;
+    const formRows = Object.entries(globalOptions).map((_ref13 => {
+      let [type, data1] = _ref13;
       debug('处理选项类型', {
         type: type,
         optionsCount: Object.keys(data1).length
       });
-      return Object.entries(data1).map(((_ref13, index) => {
-        let [option, data2] = _ref13;
+      return Object.entries(data1).map(((_ref14, index) => {
+        let [option, data2] = _ref14;
         const totalOptions = [ 'other', 'position', 'hotKey', 'ASF' ].includes(type) ? Object.keys(data1).length : Object.values(data1).reduce(((acc, cur) => acc + Object.keys(cur).length), 0);
         return generateFormRow(type, option, data2, index === 0, totalOptions);
       })).join('');
@@ -14482,8 +15093,8 @@ function _toPrimitive(t, r) {
           confirmButtonText: I18n('save'),
           showCancelButton: true,
           cancelButtonText: I18n('close')
-        }).then((_ref14 => {
-          let {isConfirmed: isConfirmed} = _ref14;
+        }).then((_ref15 => {
+          let {isConfirmed: isConfirmed} = _ref15;
           if (isConfirmed) {
             debug('用户确认保存选项');
             saveData();
@@ -14729,8 +15340,8 @@ function _toPrimitive(t, r) {
           cancelButtonText: I18n('close'),
           showDenyButton: true,
           denyButtonText: I18n('return')
-        }).then((_ref15 => {
-          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref15;
+        }).then((_ref16 => {
+          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref16;
           if (isDenied) {
             debug('返回白名单选项');
             if (showType === 'swal') {}
@@ -16571,8 +17182,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref16) {
-      let {visitLink: visitLink} = _ref16;
+    async extraDoTask(_ref17) {
+      let {visitLink: visitLink} = _ref17;
       try {
         debug('执行额外任务', {
           visitLink: visitLink
@@ -16671,8 +17282,8 @@ function _toPrimitive(t, r) {
     debug('开始生成网站选项表单HTML', {
       options: options
     });
-    const tableRows = Object.entries(options).map((_ref17 => {
-      let [option, value] = _ref17;
+    const tableRows = Object.entries(options).map((_ref18 => {
+      let [option, value] = _ref18;
       return '\n      <tr>\n        <td>'.concat(option, '</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="').concat(option, '"\n            value="').concat(value, '"\n          />\n        </td>\n      </tr>\n    ');
     })).join('');
     const formHtml = '\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('option'), '</td>\n            <td>').concat(I18n('value'), '</td>\n          </tr>\n        </thead>\n        <tbody>\n          ').concat(tableRows, '\n        </tbody>\n      </table>\n    </form>\n  ');
@@ -16684,8 +17295,8 @@ function _toPrimitive(t, r) {
       website: website,
       formValues: formValues
     });
-    formValues.forEach((_ref18 => {
-      let {name: name, value: value} = _ref18;
+    formValues.forEach((_ref19 => {
+      let {name: name, value: value} = _ref19;
       options[name] = value;
       debug('更新选项值', {
         name: name,
@@ -16929,6 +17540,43 @@ function _toPrimitive(t, r) {
       throwError(error, 'updateChecker');
     }
   };
+  class EventBus {
+    constructor() {
+      _defineProperty(this, 'listeners', {});
+    }
+    on(event, handler) {
+      const set = this.listeners[event];
+      if (set) {
+        set.add(handler);
+        return;
+      }
+      this.listeners[event] = new Set([ handler ]);
+    }
+    off(event, handler) {
+      const set = this.listeners[event];
+      if (!set) {
+        return;
+      }
+      set.delete(handler);
+      if (set.size === 0) {
+        delete this.listeners[event];
+      }
+    }
+    once(event, handler) {
+      const wrapper = async payload => {
+        this.off(event, wrapper);
+        await handler(payload);
+      };
+      this.on(event, wrapper);
+    }
+    async emit(event, payload) {
+      const set = this.listeners[event];
+      if (!set || set.size === 0) {
+        return;
+      }
+      await Promise.allSettled(Array.from(set, (handler => handler(payload))));
+    }
+  }
   try {
     consoleLogHook();
   } catch (error) {
@@ -17182,6 +17830,7 @@ function _toPrimitive(t, r) {
       await handleRedditAuth();
       return;
     }
+    const eventBus = new EventBus;
     let website;
     for (const Website of Websites) {
       if (Website.test()) {
@@ -17189,6 +17838,9 @@ function _toPrimitive(t, r) {
           website: Website.name
         });
         website = new Website;
+        if (website.setEventBus) {
+          website.setEventBus(eventBus);
+        }
         break;
       }
     }

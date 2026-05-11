@@ -1765,6 +1765,109 @@ if (missingDependencies.length > 0) {
   };
   class Social {
     tasks;
+    eventBus;
+    eventHandlers=[];
+    listenersAttached=false;
+    handleInitRequested=async payload => {
+      for (const handler of this.eventHandlers) {
+        if (!handler.init || payload.target !== handler.target) {
+          continue;
+        }
+        try {
+          const result = await handler.init(payload);
+          const isSkip = result === 'skip';
+          const isSuccess = result === true || isSkip;
+          await (this.eventBus?.emit('social.init.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: isSuccess,
+            processedCount: result === true ? 1 : 0
+          }));
+        } catch (error) {
+          await (this.eventBus?.emit('social.init.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: false,
+            processedCount: 0,
+            error: error?.message || String(error)
+          }));
+        }
+      }
+    };
+    handleToggleRequested=async payload => {
+      const sanitizedPayload = this.sanitizeRequestedPayload(payload);
+      for (const handler of this.eventHandlers) {
+        if (!handler.toggle || sanitizedPayload.target !== handler.target) {
+          continue;
+        }
+        try {
+          const result = await handler.toggle(sanitizedPayload);
+          await (this.eventBus?.emit('social.toggle.completed', {
+            runId: sanitizedPayload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: !!result,
+            processedCount: result ? 1 : 0
+          }));
+        } catch (error) {
+          await (this.eventBus?.emit('social.toggle.completed', {
+            runId: sanitizedPayload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: false,
+            processedCount: 0,
+            error: error?.message || String(error)
+          }));
+        }
+      }
+    };
+    setEventBus(eventBus) {
+      if (this.eventBus && this.listenersAttached) {
+        this.eventBus.off('social.init.requested', this.handleInitRequested);
+        this.eventBus.off('social.toggle.requested', this.handleToggleRequested);
+        this.listenersAttached = false;
+      }
+      this.eventBus = eventBus;
+      this.attachEventBusListeners();
+    }
+    registerEventBusHandlers(handlers) {
+      this.eventHandlers.push(handlers);
+      this.attachEventBusListeners();
+    }
+    attachEventBusListeners() {
+      if (!this.eventBus || this.listenersAttached || this.eventHandlers.length === 0) {
+        return;
+      }
+      this.listenersAttached = true;
+      this.eventBus.on('social.init.requested', this.handleInitRequested);
+      this.eventBus.on('social.toggle.requested', this.handleToggleRequested);
+    }
+    sanitizeRequestedPayload(payload) {
+      const rawTasks = payload.tasks;
+      if (!rawTasks || typeof rawTasks !== 'object') {
+        return {
+          ...payload,
+          tasks: {}
+        };
+      }
+      const tasks = Object.entries(rawTasks).reduce(((acc, [key, value]) => {
+        if (!Array.isArray(value)) {
+          return acc;
+        }
+        acc[key] = value.filter((item => typeof item === 'string'));
+        return acc;
+      }), {});
+      return {
+        ...payload,
+        tasks: tasks
+      };
+    }
     getRealParams(name, links, doTask, link2param) {
       try {
         debug('开始获取实际参数', {
@@ -1818,6 +1921,14 @@ if (missingDependencies.length > 0) {
         ...defaultTasksTemplate,
         ...GM_getValue('whiteList')?.reddit || {}
       };
+      this.registerEventBusHandlers({
+        target: 'reddit',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
     }
     async init() {
       try {
@@ -2094,6 +2205,14 @@ if (missingDependencies.length > 0) {
         ...defaultTasksTemplate,
         ...GM_getValue('whiteList')?.twitch || {}
       };
+      this.registerEventBusHandlers({
+        target: 'twitch',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
     }
     async init() {
       try {
@@ -2592,6 +2711,14 @@ if (missingDependencies.length > 0) {
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua': generateSecCHUA()
       };
+      this.registerEventBusHandlers({
+        target: 'twitter',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
     }
     async init() {
       try {
@@ -3089,6 +3216,14 @@ if (missingDependencies.length > 0) {
         ...defaultTasksTemplate,
         ...GM_getValue('whiteList')?.vk || {}
       };
+      this.registerEventBusHandlers({
+        target: 'vk',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
     }
     async init() {
       try {
@@ -3916,6 +4051,14 @@ if (missingDependencies.length > 0) {
         ...defaultTasksTemplate,
         ...GM_getValue('whiteList')?.youtube || {}
       };
+      this.registerEventBusHandlers({
+        target: 'youtube',
+        init: async () => this.init(),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
     }
     async init() {
       try {
@@ -7729,6 +7872,22 @@ if (missingDependencies.length > 0) {
         ...GM_getValue('whiteList')?.steam || {}
       };
       this.#TaskExecutor = this.#getTaskExecutionOrder(globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF);
+      this.registerEventBusHandlers({
+        target: 'steamStore',
+        init: async () => this.init('store'),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
+      this.registerEventBusHandlers({
+        target: 'steamCommunity',
+        init: async () => this.init('community'),
+        toggle: async payload => this.toggle({
+          doTask: payload.action === 'do',
+          ...payload.tasks
+        })
+      });
       debug('Steam实例初始化完成', {
         taskExecutorCount: this.#TaskExecutor.length
       });
@@ -8690,11 +8849,93 @@ if (missingDependencies.length > 0) {
       steamCommunity: false
     };
     initialized=false;
+    eventBus;
+    handleLinksRequested=async payload => {
+      if (!this.eventBus) {
+        return;
+      }
+      const links = Array.isArray(payload.tasks?.links) ? payload.tasks.links : [];
+      let ok = true;
+      let processedCount = 0;
+      if (this.social.visitLink) {
+        for (const link of links) {
+          try {
+            const result = await this.social.visitLink(link);
+            ok = ok && !!result;
+            if (result) {
+              processedCount += 1;
+            }
+          } catch (error) {
+            ok = false;
+            debug('桥接链接任务失败', {
+              runId: payload.runId,
+              link: link,
+              error: error
+            });
+          }
+        }
+      } else {
+        ok = false;
+      }
+      await this.eventBus.emit('task.links.completed', {
+        runId: payload.runId,
+        timestamp: Date.now(),
+        source: 'website',
+        target: 'links',
+        ok: ok,
+        processedCount: processedCount,
+        ...ok ? {} : {
+          error: this.social.visitLink ? 'Some links failed' : 'visitLink handler not available'
+        }
+      });
+    };
+    handleExtraRequested=async payload => {
+      if (!this.eventBus) {
+        return;
+      }
+      const extraTasks = payload.tasks;
+      let ok = false;
+      try {
+        ok = !!(this.extraDoTask ? await this.extraDoTask(extraTasks) : false);
+      } catch (error) {
+        debug('桥接额外任务失败', {
+          runId: payload.runId,
+          error: error
+        });
+        ok = false;
+      }
+      await this.eventBus.emit('task.extra.completed', {
+        runId: payload.runId,
+        timestamp: Date.now(),
+        source: 'website',
+        target: 'extra',
+        ok: ok,
+        processedCount: ok ? 1 : 0,
+        ...ok ? {} : {
+          error: 'Extra task failed or handler not available'
+        }
+      });
+    };
+    websiteBridgeAttached=false;
     steamTaskType={
       steamStore: false,
       steamCommunity: false
     };
     social={};
+    setEventBus(eventBus) {
+      if (this.eventBus && this.websiteBridgeAttached) {
+        this.eventBus.off('task.links.requested', this.handleLinksRequested);
+        this.eventBus.off('task.extra.requested', this.handleExtraRequested);
+        this.websiteBridgeAttached = false;
+      }
+      this.eventBus = eventBus;
+      this.eventBus.on('task.links.requested', this.handleLinksRequested);
+      this.eventBus.on('task.extra.requested', this.handleExtraRequested);
+      this.websiteBridgeAttached = true;
+    }
+    #isSocialInitializedTarget(target) {
+      return target !== 'links' && target !== 'extra';
+    }
     async #bind(name, init) {
       try {
         debug('开始绑定社交媒体', {
@@ -8721,13 +8962,70 @@ if (missingDependencies.length > 0) {
         };
       }
     }
+    async #waitForCompletedEvents(eventName, runId, expectedTargets, timeoutMs) {
+      if (!this.eventBus || expectedTargets.size === 0) {
+        return true;
+      }
+      const completedTargets = new Set;
+      const resultMap = new Map;
+      return await new Promise((resolve => {
+        let cleaned = false;
+        const listener = payload => {
+          if (payload.runId !== runId) {
+            return;
+          }
+          if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+            debug('忽略重复或无关的完成事件', {
+              eventName: eventName,
+              runId: runId,
+              target: payload.target
+            });
+            return;
+          }
+          completedTargets.add(payload.target);
+          resultMap.set(payload.target, payload.ok);
+          debug('接收到完成事件', {
+            eventName: eventName,
+            runId: runId,
+            target: payload.target,
+            ok: payload.ok,
+            completed: completedTargets.size,
+            total: expectedTargets.size
+          });
+          if (completedTargets.size === expectedTargets.size) {
+            cleanup();
+            resolve(Array.from(resultMap.values()).every(Boolean));
+          }
+        };
+        const cleanup = () => {
+          if (cleaned) {
+            return;
+          }
+          cleaned = true;
+          clearTimeout(timer);
+          this.eventBus?.off(eventName, listener);
+        };
+        const timer = setTimeout((() => {
+          debug('等待完成事件超时', {
+            eventName: eventName,
+            runId: runId,
+            timeoutMs: timeoutMs,
+            expected: Array.from(expectedTargets),
+            completed: Array.from(completedTargets)
+          });
+          cleanup();
+          resolve(false);
+        }), timeoutMs);
+        this.eventBus?.on(eventName, listener);
+      }));
+    }
     async initSocial(action) {
       try {
         debug('开始初始化社交媒体', {
           action: action
         });
-        const pro = [];
         const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
+        const initTasks = [];
         if (tasks.reddit) {
           const hasReddit = Object.values(tasks.reddit).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 Reddit 任务', {
@@ -8736,7 +9034,14 @@ if (missingDependencies.length > 0) {
           if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
             debug('初始化 Reddit');
             this.social.reddit = new Reddit;
-            pro.push(this.#bind('reddit', this.social.reddit.init()));
+            if (this.eventBus) {
+              this.social.reddit.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'reddit',
+              run: () => this.social.reddit.init(),
+              payloadTasks: tasks.reddit
+            });
           }
         }
         if (tasks.twitch) {
@@ -8747,7 +9052,14 @@ if (missingDependencies.length > 0) {
           if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
             debug('初始化 Twitch');
             this.social.twitch = new Twitch;
-            pro.push(this.#bind('twitch', this.social.twitch.init()));
+            if (this.eventBus) {
+              this.social.twitch.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'twitch',
+              run: () => this.social.twitch.init(),
+              payloadTasks: tasks.twitch
+            });
           }
         }
         if (tasks.twitter) {
@@ -8758,7 +9070,14 @@ if (missingDependencies.length > 0) {
           if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
             debug('初始化 Twitter');
             this.social.twitter = new Twitter;
-            pro.push(this.#bind('twitter', this.social.twitter.init()));
+            if (this.eventBus) {
+              this.social.twitter.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'twitter',
+              run: () => this.social.twitter.init(),
+              payloadTasks: tasks.twitter
+            });
           }
         }
         if (tasks.vk) {
@@ -8769,7 +9088,14 @@ if (missingDependencies.length > 0) {
           if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
             debug('初始化 VK');
             this.social.vk = new Vk;
-            pro.push(this.#bind('vk', this.social.vk.init()));
+            if (this.eventBus) {
+              this.social.vk.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'vk',
+              run: () => this.social.vk.init(),
+              payloadTasks: tasks.vk
+            });
           }
         }
         if (tasks.youtube) {
@@ -8780,7 +9106,14 @@ if (missingDependencies.length > 0) {
           if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
             debug('初始化 YouTube');
             this.social.youtube = new Youtube;
-            pro.push(this.#bind('youtube', this.social.youtube.init()));
+            if (this.eventBus) {
+              this.social.youtube.setEventBus(this.eventBus);
+            }
+            initTasks.push({
+              target: 'youtube',
+              run: () => this.social.youtube.init(),
+              payloadTasks: tasks.youtube
+            });
           }
         }
         if (tasks.steam) {
@@ -8792,6 +9125,9 @@ if (missingDependencies.length > 0) {
             if (!this.social.steam) {
               debug('创建 Steam 实例');
               this.social.steam = new Steam;
+              if (this.eventBus) {
+                this.social.steam.setEventBus(this.eventBus);
+              }
             }
             const steamCommunityLength = Object.keys(tasks.steam).map((type => [ 'groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks' ].includes(type) ? tasks.steam?.[type]?.length || 0 : 0)).reduce(((total, number) => total + number), 0);
             debug('Steam 社区任务数量', {
@@ -8801,14 +9137,22 @@ if (missingDependencies.length > 0) {
               this.steamTaskType.steamStore = true;
               if (!this.socialInitialized.steamStore) {
                 debug('初始化 Steam 商店');
-                pro.push(this.#bind('steamStore', this.social.steam.init('store')));
+                initTasks.push({
+                  target: 'steamStore',
+                  run: () => this.social.steam.init('store'),
+                  payloadTasks: tasks.steam
+                });
               }
             }
             if (steamCommunityLength > 0) {
               if (!this.socialInitialized.steamCommunity) {
                 this.steamTaskType.steamCommunity = true;
                 debug('初始化 Steam 社区');
-                pro.push(this.#bind('steamCommunity', this.social.steam.init('community')));
+                initTasks.push({
+                  target: 'steamCommunity',
+                  run: () => this.social.steam.init('community'),
+                  payloadTasks: tasks.steam
+                });
               }
             }
           }
@@ -8819,15 +9163,24 @@ if (missingDependencies.length > 0) {
           });
           this.social.visitLink = visitLink;
         }
-        debug('等待所有社交媒体初始化完成');
-        return await Promise.all(pro).then((result => {
+        if (initTasks.length === 0) {
+          debug('无需要初始化的社交媒体任务');
+          return true;
+        }
+        const runId = `init-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        const timestamp = Date.now();
+        if (!this.eventBus) {
+          debug('EventBus 未注入，使用兼容模式初始化');
+          const result = await Promise.all(initTasks.map((task => this.#bind(task.target, task.run()))));
           let checked = true;
           for (const data of result) {
             if (data.result) {
               debug('社交媒体初始化成功', {
                 name: data.name
               });
-              this.socialInitialized[data.name] = data.result;
+              if (this.#isSocialInitializedTarget(data.name)) {
+                this.socialInitialized[data.name] = data.result;
+              }
             } else {
               debug('社交媒体初始化失败', {
                 name: data.name
@@ -8835,11 +9188,84 @@ if (missingDependencies.length > 0) {
               checked = false;
             }
           }
-          debug('社交媒体初始化完成', {
-            allSuccess: checked
-          });
           return checked;
+        }
+        const expectedTargets = new Set(initTasks.map((task => task.target)));
+        const completedTargets = new Set;
+        const timeoutMs = 3e4;
+        const waitCompleted = new Promise((resolve => {
+          let cleaned = false;
+          const resultMap = new Map;
+          const listener = payload => {
+            if (payload.runId !== runId) {
+              return;
+            }
+            if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+              debug('忽略重复或无关的初始化完成事件', {
+                runId: runId,
+                target: payload.target
+              });
+              return;
+            }
+            completedTargets.add(payload.target);
+            resultMap.set(payload.target, payload.ok);
+            if (this.#isSocialInitializedTarget(payload.target)) {
+              this.socialInitialized[payload.target] = payload.ok;
+            }
+            debug('接收到初始化完成事件', {
+              runId: runId,
+              target: payload.target,
+              ok: payload.ok,
+              completed: completedTargets.size,
+              total: expectedTargets.size
+            });
+            if (completedTargets.size === expectedTargets.size) {
+              cleanup();
+              resolve(Array.from(resultMap.values()).every(Boolean));
+            }
+          };
+          const cleanup = () => {
+            if (cleaned) {
+              return;
+            }
+            cleaned = true;
+            clearTimeout(timer);
+            this.eventBus?.off('social.init.completed', listener);
+          };
+          const timer = setTimeout((() => {
+            debug('社交媒体初始化等待超时', {
+              runId: runId,
+              timeoutMs: timeoutMs,
+              expected: Array.from(expectedTargets),
+              completed: Array.from(completedTargets)
+            });
+            cleanup();
+            resolve(false);
+          }), timeoutMs);
+          this.eventBus?.on('social.init.completed', listener);
         }));
+        for (const task of initTasks) {
+          void this.eventBus.emit('social.init.requested', {
+            runId: runId,
+            timestamp: timestamp,
+            source: 'website',
+            action: action,
+            target: task.target,
+            tasks: task.payloadTasks
+          }).catch((error => {
+            debug('发送初始化请求事件失败', {
+              runId: runId,
+              target: task.target,
+              error: error
+            });
+          }));
+        }
+        const allSuccess = await waitCompleted;
+        debug('社交媒体初始化完成', {
+          runId: runId,
+          allSuccess: allSuccess
+        });
+        return allSuccess;
       } catch (error) {
         debug('初始化社交媒体失败', {
           error: error
@@ -8856,14 +9282,39 @@ if (missingDependencies.length > 0) {
           debug('处理社交媒体任务', {
             social: social
           });
-          result[social] = {};
+          if (social === 'links') {
+            result.links = Array.isArray(types) ? unique(types.filter((item => typeof item === 'string'))) : [];
+            continue;
+          }
+          if (!types || typeof types !== 'object' || Array.isArray(types)) {
+            continue;
+          }
+          if (social === 'extra') {
+            const extraResult = {};
+            for (const [type, tasks] of Object.entries(types)) {
+              debug('处理额外任务类型', {
+                type: type
+              });
+              if (!Array.isArray(tasks)) {
+                continue;
+              }
+              extraResult[type] = unique(tasks.filter((item => typeof item === 'string')));
+            }
+            result.extra = extraResult;
+            continue;
+          }
+          const socialResult = {};
           for (const [type, tasks] of Object.entries(types)) {
             debug('处理任务类型', {
               social: social,
               type: type
             });
-            result[social][type] = unique(tasks);
+            if (!Array.isArray(tasks)) {
+              continue;
+            }
+            socialResult[type] = unique(tasks.filter((item => typeof item === 'string')));
           }
+          result[social] = socialResult;
         }
         debug('任务去重完成');
         return result;
@@ -8880,81 +9331,242 @@ if (missingDependencies.length > 0) {
         debug('开始切换任务状态', {
           action: action
         });
-        if (!this.initialized && !this.init()) {
-          debug('初始化失败');
-          return false;
+        if (!this.initialized) {
+          const initResult = await this.init();
+          if (!initResult) {
+            debug('初始化失败');
+            return false;
+          }
         }
         if (!await this.classifyTask(action)) {
           debug('任务分类失败');
           return false;
         }
         debug('初始化社交媒体');
-        await this.initSocial(action);
+        if (!await this.initSocial(action)) {
+          debug('社交媒体初始化失败或超时');
+          return false;
+        }
         const pro = [];
         const doTask = action === 'do';
         const tasks = doTask ? this.undoneTasks : this.socialTasks;
-        if (this.socialInitialized.reddit === true && this.social.reddit) {
-          debug('处理 Reddit 任务');
-          pro.push(this.social.reddit.toggle({
-            doTask: doTask,
-            ...tasks.reddit
-          }));
-        }
-        if (this.socialInitialized.twitch === true && this.social.twitch) {
-          debug('处理 Twitch 任务');
-          pro.push(this.social.twitch.toggle({
-            doTask: doTask,
-            ...tasks.twitch
-          }));
-        }
-        if (this.socialInitialized.twitter === true && this.social.twitter) {
-          debug('处理 Twitter 任务');
-          pro.push(this.social.twitter.toggle({
-            doTask: doTask,
-            ...tasks.twitter
-          }));
-        }
-        if (this.socialInitialized.vk === true && this.social.vk) {
-          debug('处理 VK 任务');
-          pro.push(this.social.vk.toggle({
-            doTask: doTask,
-            ...tasks.vk
-          }));
-        }
-        if (this.socialInitialized.youtube === true && this.social.youtube) {
-          debug('处理 YouTube 任务');
-          pro.push(this.social.youtube.toggle({
-            doTask: doTask,
-            ...tasks.youtube
-          }));
-        }
-        if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
-          debug('处理 Steam 任务');
-          pro.push(this.social.steam.toggle({
-            doTask: doTask,
-            ...tasks.steam
-          }));
-        }
-        if (this.social.visitLink && tasks.links && doTask) {
-          debug('处理链接任务', {
-            linksCount: tasks.links.length
-          });
-          for (const link of tasks.links) {
-            pro.push(this.social.visitLink(link));
+        let toggleSuccess = true;
+        let linksSuccess = true;
+        let extraSuccess = true;
+        if (this.eventBus) {
+          const runId = `toggle-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+          const timestamp = Date.now();
+          const timeoutMs = 6e5;
+          const toggleTasks = [];
+          if (this.socialInitialized.reddit === true && this.social.reddit) {
+            debug('通过事件处理 Reddit 任务');
+            toggleTasks.push({
+              target: 'reddit',
+              payloadTasks: tasks.reddit
+            });
+          }
+          if (this.socialInitialized.twitch === true && this.social.twitch) {
+            debug('通过事件处理 Twitch 任务');
+            toggleTasks.push({
+              target: 'twitch',
+              payloadTasks: tasks.twitch
+            });
+          }
+          if (this.socialInitialized.twitter === true && this.social.twitter) {
+            debug('通过事件处理 Twitter 任务');
+            toggleTasks.push({
+              target: 'twitter',
+              payloadTasks: tasks.twitter
+            });
+          }
+          if (this.socialInitialized.vk === true && this.social.vk) {
+            debug('通过事件处理 VK 任务');
+            toggleTasks.push({
+              target: 'vk',
+              payloadTasks: tasks.vk
+            });
+          }
+          if (this.socialInitialized.youtube === true && this.social.youtube) {
+            debug('通过事件处理 YouTube 任务');
+            toggleTasks.push({
+              target: 'youtube',
+              payloadTasks: tasks.youtube
+            });
+          }
+          if (this.social.steam) {
+            const steamPayloadTasks = tasks.steam;
+            if (this.steamTaskType.steamStore && this.socialInitialized.steamStore === true) {
+              debug('通过事件处理 Steam 商店任务');
+              toggleTasks.push({
+                target: 'steamStore',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+            if (this.steamTaskType.steamCommunity && this.socialInitialized.steamCommunity === true) {
+              debug('通过事件处理 Steam 社区任务');
+              toggleTasks.push({
+                target: 'steamCommunity',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+            if (!this.steamTaskType.steamStore && !this.steamTaskType.steamCommunity && this.socialInitialized.steamStore === true) {
+              debug('通过事件处理 Steam 任务（默认商店目标）');
+              toggleTasks.push({
+                target: 'steamStore',
+                payloadTasks: steamPayloadTasks
+              });
+            }
+          }
+          const expectedToggleTargets = new Set(toggleTasks.map((task => task.target)));
+          const waitToggleCompleted = this.#waitForCompletedEvents('social.toggle.completed', runId, expectedToggleTargets, timeoutMs);
+          for (const task of toggleTasks) {
+            void this.eventBus.emit('social.toggle.requested', {
+              runId: runId,
+              timestamp: timestamp,
+              source: 'website',
+              action: action,
+              target: task.target,
+              tasks: task.payloadTasks
+            }).catch((error => {
+              debug('发送切换请求事件失败', {
+                runId: runId,
+                target: task.target,
+                error: error
+              });
+            }));
+          }
+          toggleSuccess = await waitToggleCompleted;
+          if (!toggleSuccess) {
+            debug('社交媒体切换失败或超时', {
+              runId: runId
+            });
+          }
+          if (tasks.links && doTask && tasks.links.length > 0) {
+            debug('通过事件处理链接任务', {
+              linksCount: tasks.links.length
+            });
+            const linksRunId = `links-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+            const waitLinksCompleted = this.#waitForCompletedEvents('task.links.completed', linksRunId, new Set([ 'links' ]), 1e4);
+            void this.eventBus.emit('task.links.requested', {
+              runId: linksRunId,
+              timestamp: Date.now(),
+              source: 'website',
+              action: action,
+              target: 'links',
+              tasks: {
+                links: tasks.links
+              }
+            }).catch((error => {
+              debug('发送链接任务请求事件失败', {
+                runId: linksRunId,
+                error: error
+              });
+            }));
+            linksSuccess = await waitLinksCompleted;
+            if (!linksSuccess && this.social.visitLink) {
+              debug('链接事件处理失败或超时，回退到直接访问', {
+                runId: linksRunId
+              });
+              for (const link of tasks.links) {
+                pro.push(this.social.visitLink(link));
+              }
+            }
+          }
+          if (doTask && tasks.extra && this.extraDoTask) {
+            const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+            if (hasExtra) {
+              const extraRunId = `extra-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+              const waitExtraCompleted = this.#waitForCompletedEvents('task.extra.completed', extraRunId, new Set([ 'extra' ]), timeoutMs);
+              void this.eventBus.emit('task.extra.requested', {
+                runId: extraRunId,
+                timestamp: Date.now(),
+                source: 'website',
+                action: action,
+                target: 'extra',
+                tasks: tasks.extra
+              }).catch((error => {
+                debug('发送额外任务请求事件失败', {
+                  runId: extraRunId,
+                  error: error
+                });
+              }));
+              extraSuccess = await waitExtraCompleted;
+            }
+          }
+        } else {
+          if (this.socialInitialized.reddit === true && this.social.reddit) {
+            debug('处理 Reddit 任务');
+            pro.push(this.social.reddit.toggle({
+              doTask: doTask,
+              ...tasks.reddit
+            }));
+          }
+          if (this.socialInitialized.twitch === true && this.social.twitch) {
+            debug('处理 Twitch 任务');
+            pro.push(this.social.twitch.toggle({
+              doTask: doTask,
+              ...tasks.twitch
+            }));
+          }
+          if (this.socialInitialized.twitter === true && this.social.twitter) {
+            debug('处理 Twitter 任务');
+            pro.push(this.social.twitter.toggle({
+              doTask: doTask,
+              ...tasks.twitter
+            }));
+          }
+          if (this.socialInitialized.vk === true && this.social.vk) {
+            debug('处理 VK 任务');
+            pro.push(this.social.vk.toggle({
+              doTask: doTask,
+              ...tasks.vk
+            }));
+          }
+          if (this.socialInitialized.youtube === true && this.social.youtube) {
+            debug('处理 YouTube 任务');
+            pro.push(this.social.youtube.toggle({
+              doTask: doTask,
+              ...tasks.youtube
+            }));
+          }
+          if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
+            debug('处理 Steam 任务');
+            pro.push(this.social.steam.toggle({
+              doTask: doTask,
+              ...tasks.steam
+            }));
+          }
+          if (this.social.visitLink && tasks.links && doTask) {
+            debug('处理链接任务', {
+              linksCount: tasks.links.length
+            });
+            for (const link of tasks.links) {
+              pro.push(this.social.visitLink(link));
+            }
           }
         }
-        if (doTask && tasks.extra && this.extraDoTask) {
-          const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
-          if (hasExtra) {
-            debug('处理额外任务');
-            pro.push(this.extraDoTask(tasks.extra));
+        if (!this.eventBus) {
+          if (doTask && tasks.extra && this.extraDoTask) {
+            const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+            if (hasExtra) {
+              debug('处理额外任务');
+              pro.push(this.extraDoTask(tasks.extra));
+            }
           }
         }
         debug('等待所有任务完成');
         await Promise.all(pro);
-        debug('所有任务完成');
-        echoLog({}).success(I18n('allTasksComplete'));
-        return true;
+        const allSuccess = toggleSuccess && linksSuccess && extraSuccess;
+        debug('所有任务完成', {
+          allSuccess: allSuccess,
+          toggleSuccess: toggleSuccess,
+          linksSuccess: linksSuccess,
+          extraSuccess: extraSuccess
+        });
+        if (allSuccess) {
+          echoLog({}).success(I18n('allTasksComplete'));
+        }
+        return allSuccess;
       } catch (error) {
         debug('切换任务失败', {
           error: error
@@ -16448,6 +17060,41 @@ if (missingDependencies.length > 0) {
       throwError(error, 'updateChecker');
     }
   };
+  class EventBus {
+    listeners={};
+    on(event, handler) {
+      const set = this.listeners[event];
+      if (set) {
+        set.add(handler);
+        return;
+      }
+      this.listeners[event] = new Set([ handler ]);
+    }
+    off(event, handler) {
+      const set = this.listeners[event];
+      if (!set) {
+        return;
+      }
+      set.delete(handler);
+      if (set.size === 0) {
+        delete this.listeners[event];
+      }
+    }
+    once(event, handler) {
+      const wrapper = async payload => {
+        this.off(event, wrapper);
+        await handler(payload);
+      };
+      this.on(event, wrapper);
+    }
+    async emit(event, payload) {
+      const set = this.listeners[event];
+      if (!set || set.size === 0) {
+        return;
+      }
+      await Promise.allSettled(Array.from(set, (handler => handler(payload))));
+    }
+  }
   try {
     consoleLogHook();
   } catch (error) {
@@ -16695,6 +17342,7 @@ if (missingDependencies.length > 0) {
       await handleRedditAuth();
       return;
     }
+    const eventBus = new EventBus;
     let website;
     for (const Website of Websites) {
       if (Website.test()) {
@@ -16702,6 +17350,9 @@ if (missingDependencies.length > 0) {
           website: Website.name
         });
         website = new Website;
+        if (website.setEventBus) {
+          website.setEventBus(eventBus);
+        }
         break;
       }
     }

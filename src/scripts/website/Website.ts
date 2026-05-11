@@ -610,7 +610,7 @@ abstract class Website {
         const runId = `toggle-${Date.now()}-${Math.random().toString(36)
           .slice(2, 10)}`;
         const timestamp = Date.now();
-        const timeoutMs = 30000;
+        const timeoutMs = 600000;
         const toggleTasks: Array<{ target: EventTarget, payloadTasks: Record<string, Array<string>> }> = [];
 
         if (this.socialInitialized.reddit === true && this.social.reddit) {

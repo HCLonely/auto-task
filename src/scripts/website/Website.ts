@@ -147,7 +147,11 @@ abstract class Website {
     this.eventBus = eventBus;
   }
 
-  async #bind(name: string, init: Promise<boolean | 'skip'>): Promise<bindReturn> {
+  #isSocialInitializedTarget(target: EventTarget): target is keyof socialInitialized {
+    return target !== 'links';
+  }
+
+  async #bind(name: EventTarget, init: Promise<boolean | 'skip'>): Promise<bindReturn> {
     try {
       debug('开始绑定社交媒体', { name });
       const result = await init;
@@ -302,8 +306,9 @@ abstract class Website {
         for (const data of result) {
           if (data.result) {
             debug('社交媒体初始化成功', { name: data.name });
-            // @ts-ignore
-            this.socialInitialized[data.name] = data.result;
+            if (this.#isSocialInitializedTarget(data.name)) {
+              this.socialInitialized[data.name] = data.result;
+            }
           } else {
             debug('社交媒体初始化失败', { name: data.name });
             checked = false;
@@ -327,8 +332,9 @@ abstract class Website {
           }
           completedTargets.add(payload.target);
           resultMap.set(payload.target, payload.ok);
-          // @ts-ignore
-          this.socialInitialized[payload.target] = payload.ok;
+          if (this.#isSocialInitializedTarget(payload.target)) {
+            this.socialInitialized[payload.target] = payload.ok;
+          }
           debug('接收到初始化完成事件', { runId, target: payload.target, ok: payload.ok, completed: completedTargets.size, total: expectedTargets.size });
 
           if (completedTargets.size === expectedTargets.size) {
@@ -354,13 +360,15 @@ abstract class Website {
       });
 
       for (const task of initTasks) {
-        await this.eventBus.emit('social.init.requested', {
+        void this.eventBus.emit('social.init.requested', {
           runId,
           timestamp,
           source: 'website',
           action: action as 'do' | 'undo',
           target: task.target,
           tasks: task.payloadTasks
+        }).catch((error) => {
+          debug('发送初始化请求事件失败', { runId, target: task.target, error });
         });
 
         this.#bind(task.target, task.run()).then(async (result) => {

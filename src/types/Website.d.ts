@@ -78,10 +78,22 @@ declare interface socialInitialized {
 declare function initFunction():Promise<boolean>
 
 interface EventBus {
-  on: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
-  off: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
-  once: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
-  emit: (event: string, payload: any) => Promise<void>
+  on: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  off: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  once: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  emit: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    payload: import('../scripts/events/eventTypes').EventMap[TEvent]
+  ) => Promise<void>
 }
 
 interface WebsiteButton {

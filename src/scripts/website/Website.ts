@@ -202,7 +202,7 @@ abstract class Website {
     this.websiteBridgeAttached = true;
   }
 
-  #isSocialInitializedTarget(target: EventTarget): target is keyof socialInitialized {
+  #isSocialInitializedTarget(target: EventTarget): target is Exclude<EventTarget, 'links' | 'extra'> {
     return target !== 'links' && target !== 'extra';
   }
 
@@ -417,7 +417,8 @@ abstract class Website {
         return true;
       }
 
-      const runId = `init-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const runId = `init-${Date.now()}-${Math.random().toString(36)
+        .slice(2, 10)}`;
       const timestamp = Date.now();
 
       if (!this.eventBus) {
@@ -491,7 +492,6 @@ abstract class Website {
         }).catch((error) => {
           debug('发送初始化请求事件失败', { runId, target: task.target, error });
         });
-
       }
 
       const allSuccess = await waitCompleted;
@@ -585,7 +585,8 @@ abstract class Website {
       let extraSuccess = true;
 
       if (this.eventBus) {
-        const runId = `toggle-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        const runId = `toggle-${Date.now()}-${Math.random().toString(36)
+          .slice(2, 10)}`;
         const timestamp = Date.now();
         const timeoutMs = 30000;
         const toggleTasks: Array<{ target: EventTarget, payloadTasks: Record<string, Array<string>> }> = [];
@@ -648,7 +649,8 @@ abstract class Website {
 
         if (tasks.links && doTask && tasks.links.length > 0) {
           debug('通过事件处理链接任务', { linksCount: tasks.links.length });
-          const linksRunId = `links-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+          const linksRunId = `links-${Date.now()}-${Math.random().toString(36)
+            .slice(2, 10)}`;
           const waitLinksCompleted = this.#waitForCompletedEvents('task.links.completed', linksRunId, new Set<EventTarget>(['links']), 10000);
           void this.eventBus.emit('task.links.requested', {
             runId: linksRunId,
@@ -675,7 +677,8 @@ abstract class Website {
           // @ts-ignore
           const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
           if (hasExtra) {
-            const extraRunId = `extra-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+            const extraRunId = `extra-${Date.now()}-${Math.random().toString(36)
+              .slice(2, 10)}`;
             // @ts-ignore
             const waitExtraCompleted = this.#waitForCompletedEvents('task.extra.completed', extraRunId, new Set<EventTarget>(['extra']), timeoutMs);
             // @ts-ignore

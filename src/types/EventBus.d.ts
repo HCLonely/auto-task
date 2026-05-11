@@ -13,5 +13,5 @@ export type {
   BaseEventPayload,
   RequestedPayload,
   CompletedPayload,
-  EventMap,
-} from '../scripts/events/eventTypes'
+  EventMap
+} from '../scripts/events/eventTypes';

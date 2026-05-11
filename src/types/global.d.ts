@@ -5,7 +5,6 @@
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/types/global.d.ts
  */
-import { PluginPanel } from 'src/scripts/tools/pluginPanel';
 declare global {
 
   interface GlobalThis {
@@ -25,7 +24,7 @@ declare global {
     };
     __twilightBuildID: string;
     Twitter: any;
-    pluginPanel: PluginPanel
+    pluginPanel: any
   }
 
   interface Array<T> {

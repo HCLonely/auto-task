@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.1.2
+// @version            5.1.3
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -3033,7 +3033,6 @@ if (missingDependencies.length > 0) {
       }
     }
   }
-  unsafeWindow.Twitter = Twitter;
   class Vk extends Social {
     tasks;
     whiteList;
@@ -16611,16 +16610,22 @@ if (missingDependencies.length > 0) {
   const checkVersionAndNotice = () => {
     debug('检查版本和通知');
     const {scriptHandler: scriptHandler} = GM_info;
-    if (scriptHandler !== 'Tampermonkey') {
+    if (scriptHandler === 'Tampermonkey') {
+      const [v1, v2] = GM_info.version?.split('.') || [];
+      if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
+        echoLog({}).error(I18n('versionNotMatched'));
+      }
+    } else if (scriptHandler !== 'Violentmonkey') {
+      const [v1, v2] = GM_info.version?.split('.') || [];
+      if (!(parseInt(v1, 10) >= 2 && parseInt(v2, 10) >= 36)) {
+        echoLog({}).error(I18n('versionNotMatched'));
+      }
+    } else {
       debug('未知脚本管理器', {
         scriptHandler: scriptHandler
       });
       echoLog({}).warning(I18n('unknownScriptHandler'));
       return;
-    }
-    const [v1, v2] = GM_info.version?.split('.') || [];
-    if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
-      echoLog({}).error(I18n('versionNotMatched'));
     }
     if (!GM_getValue('notice')) {
       Swal.fire({

@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.3
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.3)
+
+- 优化：恢复Violentmonkey支持([#20](https://github.com/HCLonely/auto-task/issues/20))
+
 ### V5.1.2
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.2)

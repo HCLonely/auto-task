@@ -1,8 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "change": [
-    "修复：Twitter/X初始化报错(#72)"
+    "优化：恢复Violentmonkey支持(#20)"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

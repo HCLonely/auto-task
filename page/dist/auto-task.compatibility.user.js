@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.1.2
+// @version            5.1.3
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -3202,7 +3202,6 @@ function _toPrimitive(t, r) {
       throwError(error, 'Twitter.setCache');
     }
   }
-  unsafeWindow.Twitter = Twitter;
   var _username = new WeakMap;
   var _cache3 = new WeakMap;
   var _initialized4 = new WeakMap;
@@ -17093,19 +17092,26 @@ function _toPrimitive(t, r) {
     }
   };
   const checkVersionAndNotice = () => {
-    var _GM_info$version;
     debug('检查版本和通知');
     const {scriptHandler: scriptHandler} = GM_info;
-    if (scriptHandler !== 'Tampermonkey') {
+    if (scriptHandler === 'Tampermonkey') {
+      var _GM_info$version;
+      const [v1, v2] = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [];
+      if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
+        echoLog({}).error(I18n('versionNotMatched'));
+      }
+    } else if (scriptHandler !== 'Violentmonkey') {
+      var _GM_info$version2;
+      const [v1, v2] = ((_GM_info$version2 = GM_info.version) === null || _GM_info$version2 === void 0 ? void 0 : _GM_info$version2.split('.')) || [];
+      if (!(parseInt(v1, 10) >= 2 && parseInt(v2, 10) >= 36)) {
+        echoLog({}).error(I18n('versionNotMatched'));
+      }
+    } else {
       debug('未知脚本管理器', {
         scriptHandler: scriptHandler
       });
       echoLog({}).warning(I18n('unknownScriptHandler'));
       return;
-    }
-    const [v1, v2] = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [];
-    if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
-      echoLog({}).error(I18n('versionNotMatched'));
     }
     if (!GM_getValue('notice')) {
       var _echoLog$font;

@@ -9,7 +9,7 @@
 
 export type TaskAction = 'do' | 'undo'
 
-export type EventTarget = 'reddit' | 'twitch' | 'twitter' | 'vk' | 'youtube' | 'steamStore' | 'steamCommunity' | 'links'
+export type EventTarget = 'reddit' | 'twitch' | 'twitter' | 'vk' | 'youtube' | 'steamStore' | 'steamCommunity' | 'links' | 'extra'
 
 export interface BaseEventPayload {
   runId: string
@@ -38,6 +38,8 @@ export interface EventMap {
   'social.toggle.completed': CompletedPayload
   'task.links.requested': RequestedPayload
   'task.links.completed': CompletedPayload
+  'task.extra.requested': RequestedPayload
+  'task.extra.completed': CompletedPayload
   'task.batch.completed': BaseEventPayload & {
     ok: boolean
     successCount: number

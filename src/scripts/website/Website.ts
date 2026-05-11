@@ -21,7 +21,7 @@ import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
 import type EventBus from '../events/eventBus';
-import type { CompletedPayload, EventTarget } from '../events/eventTypes';
+import type { CompletedPayload, EventTarget, RequestedPayload } from '../events/eventTypes';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
@@ -83,6 +83,61 @@ abstract class Website {
   };
   protected initialized = false;
   protected eventBus?: EventBus;
+  private readonly handleLinksRequested = async (payload: RequestedPayload): Promise<void> => {
+    if (!this.eventBus) return;
+    const links = Array.isArray(payload.tasks?.links) ? payload.tasks.links : [];
+    let ok = true;
+    let processedCount = 0;
+
+    if (this.social.visitLink) {
+      for (const link of links) {
+        try {
+          const result = await this.social.visitLink(link);
+          ok = ok && !!result;
+          if (result) processedCount += 1;
+        } catch (error) {
+          ok = false;
+          debug('桥接链接任务失败', { runId: payload.runId, link, error });
+        }
+      }
+    } else {
+      ok = false;
+    }
+
+    await this.eventBus.emit('task.links.completed', {
+      runId: payload.runId,
+      timestamp: Date.now(),
+      source: 'website',
+      target: 'links',
+      ok,
+      processedCount,
+      ...(ok ? {} : { error: this.social.visitLink ? 'Some links failed' : 'visitLink handler not available' })
+    });
+  };
+  private readonly handleExtraRequested = async (payload: RequestedPayload): Promise<void> => {
+    if (!this.eventBus) return;
+    // @ts-ignore
+    const extraTasks = payload.tasks;
+    let ok = false;
+    try {
+      // @ts-ignore
+      ok = !!(this.extraDoTask ? await this.extraDoTask(extraTasks) : false);
+    } catch (error) {
+      debug('桥接额外任务失败', { runId: payload.runId, error });
+      ok = false;
+    }
+
+    await this.eventBus.emit('task.extra.completed', {
+      runId: payload.runId,
+      timestamp: Date.now(),
+      source: 'website',
+      target: 'extra',
+      ok,
+      processedCount: ok ? 1 : 0,
+      ...(ok ? {} : { error: 'Extra task failed or handler not available' })
+    });
+  };
+  private websiteBridgeAttached = false;
   protected steamTaskType = {
     steamStore: false,
     steamCommunity: false
@@ -144,7 +199,15 @@ abstract class Website {
    * 如果初始化成功，则返回包含名称和结果的对象；如果发生错误，则记录错误信息并返回结果为 false 的对象。
    */
   setEventBus(eventBus: EventBus): void {
+    if (this.eventBus && this.websiteBridgeAttached) {
+      this.eventBus.off('task.links.requested', this.handleLinksRequested);
+      this.eventBus.off('task.extra.requested', this.handleExtraRequested);
+      this.websiteBridgeAttached = false;
+    }
     this.eventBus = eventBus;
+    this.eventBus.on('task.links.requested', this.handleLinksRequested);
+    this.eventBus.on('task.extra.requested', this.handleExtraRequested);
+    this.websiteBridgeAttached = true;
   }
 
   #isSocialInitializedTarget(target: EventTarget): target is keyof socialInitialized {
@@ -165,7 +228,7 @@ abstract class Website {
   }
 
   async #waitForCompletedEvents(
-    eventName: 'social.init.completed' | 'social.toggle.completed' | 'task.links.completed',
+    eventName: 'social.init.completed' | 'social.toggle.completed' | 'task.links.completed' | 'task.extra.completed',
     runId: string,
     expectedTargets: Set<EventTarget>,
     timeoutMs: number
@@ -525,6 +588,10 @@ abstract class Website {
       const doTask = action === 'do';
       const tasks = doTask ? this.undoneTasks : this.socialTasks;
 
+      let toggleSuccess = true;
+      let linksSuccess = true;
+      let extraSuccess = true;
+
       if (this.eventBus) {
         const runId = `toggle-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
         const timestamp = Date.now();
@@ -568,6 +635,7 @@ abstract class Website {
         }
 
         const expectedToggleTargets = new Set(toggleTasks.map((task) => task.target));
+        const waitToggleCompleted = this.#waitForCompletedEvents('social.toggle.completed', runId, expectedToggleTargets, timeoutMs);
         for (const task of toggleTasks) {
           void this.eventBus.emit('social.toggle.requested', {
             runId,
@@ -581,15 +649,15 @@ abstract class Website {
           });
         }
 
-        const toggleSuccess = await this.#waitForCompletedEvents('social.toggle.completed', runId, expectedToggleTargets, timeoutMs);
+        toggleSuccess = await waitToggleCompleted;
         if (!toggleSuccess) {
           debug('社交媒体切换失败或超时', { runId });
-          return false;
         }
 
         if (tasks.links && doTask && tasks.links.length > 0) {
           debug('通过事件处理链接任务', { linksCount: tasks.links.length });
           const linksRunId = `links-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+          const waitLinksCompleted = this.#waitForCompletedEvents('task.links.completed', linksRunId, new Set<EventTarget>(['links']), 10000);
           void this.eventBus.emit('task.links.requested', {
             runId: linksRunId,
             timestamp: Date.now(),
@@ -601,12 +669,36 @@ abstract class Website {
             debug('发送链接任务请求事件失败', { runId: linksRunId, error });
           });
 
-          const linkSuccess = await this.#waitForCompletedEvents('task.links.completed', linksRunId, new Set<EventTarget>(['links']), 10000);
-          if (!linkSuccess && this.social.visitLink) {
+          linksSuccess = await waitLinksCompleted;
+          if (!linksSuccess && this.social.visitLink) {
             debug('链接事件处理失败或超时，回退到直接访问', { runId: linksRunId });
             for (const link of tasks.links) {
               pro.push(this.social.visitLink(link));
             }
+          }
+        }
+
+        // @ts-ignore
+        if (doTask && tasks.extra && this.extraDoTask) {
+          // @ts-ignore
+          const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
+          if (hasExtra) {
+            const extraRunId = `extra-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+            // @ts-ignore
+            const waitExtraCompleted = this.#waitForCompletedEvents('task.extra.completed', extraRunId, new Set<EventTarget>(['extra']), timeoutMs);
+            // @ts-ignore
+            void this.eventBus.emit('task.extra.requested', {
+              runId: extraRunId,
+              timestamp: Date.now(),
+              source: 'website',
+              action,
+              target: 'extra',
+              // @ts-ignore
+              tasks: tasks.extra
+            }).catch((error) => {
+              debug('发送额外任务请求事件失败', { runId: extraRunId, error });
+            });
+            extraSuccess = await waitExtraCompleted;
           }
         }
       } else {
@@ -649,22 +741,27 @@ abstract class Website {
         }
       }
 
-      // 处理额外任务
-      // @ts-ignore
-      if (doTask && tasks.extra && this.extraDoTask) {
-        const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
-        if (hasExtra) {
-          debug('处理额外任务');
-          // @ts-ignore
-          pro.push(this.extraDoTask(tasks.extra));
+      // 处理额外任务（兼容模式）
+      if (!this.eventBus) {
+        // @ts-ignore
+        if (doTask && tasks.extra && this.extraDoTask) {
+          const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
+          if (hasExtra) {
+            debug('处理额外任务');
+            // @ts-ignore
+            pro.push(this.extraDoTask(tasks.extra));
+          }
         }
       }
 
       debug('等待所有任务完成');
       await Promise.all(pro);
-      debug('所有任务完成');
-      echoLog({}).success(__('allTasksComplete'));
-      return true;
+      const allSuccess = toggleSuccess && linksSuccess && extraSuccess;
+      debug('所有任务完成', { allSuccess, toggleSuccess, linksSuccess, extraSuccess });
+      if (allSuccess) {
+        echoLog({}).success(__('allTasksComplete'));
+      }
+      return allSuccess;
     } catch (error) {
       debug('切换任务失败', { error });
       throwError(error as Error, 'Website.toggleTask');

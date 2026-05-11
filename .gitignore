@@ -4,3 +4,6 @@ node_modules
 src/scripts/social/Instagram.ts
 test/
 CHANGELOG.md
+
+.claude
+XFwdForSdk

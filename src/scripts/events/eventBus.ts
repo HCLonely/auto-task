@@ -47,9 +47,7 @@ class EventBus {
   async emit<K extends keyof EventMap>(event: K, payload: EventMap[K]): Promise<void> {
     const set = this.listeners[event] as Set<EventHandler<K>> | undefined
     if (!set || set.size === 0) return
-    await Promise.all(Array.from(set).map(async (handler) => {
-      await handler(payload)
-    }))
+    await Promise.allSettled(Array.from(set, (handler) => handler(payload)))
   }
 }
 

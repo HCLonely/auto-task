@@ -457,9 +457,12 @@ abstract class Website {
   protected async toggleTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
       debug('开始切换任务状态', { action });
-      if (!this.initialized && !this.init()) {
-        debug('初始化失败');
-        return false;
+      if (!this.initialized) {
+        const initResult = await this.init();
+        if (!initResult) {
+          debug('初始化失败');
+          return false;
+        }
       }
       if (!(await this.classifyTask(action))) {
         debug('任务分类失败');

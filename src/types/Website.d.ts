@@ -77,6 +77,13 @@ declare interface socialInitialized {
 
 declare function initFunction():Promise<boolean>
 
+interface EventBus {
+  on: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
+  off: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
+  once: (event: string, handler: (...args: any[]) => void | Promise<void>) => void
+  emit: (event: string, payload: any) => Promise<void>
+}
+
 interface WebsiteButton {
   name: string;
   action: () => void | Promise<void>;
@@ -95,6 +102,8 @@ interface Website {
   undoTask?: () => void | Promise<void>;
   buttons?: string[];
   options?: WebsiteOptions;
+  eventBus?: EventBus;
+  setEventBus?: (eventBus: EventBus) => void;
   [key: string]: any;
 }
 

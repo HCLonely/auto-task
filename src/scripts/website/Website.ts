@@ -20,6 +20,8 @@ import { unique, visitLink } from '../tools/tools';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
+import type EventBus from '../events/eventBus';
+import type { CompletedPayload, EventTarget } from '../events/eventTypes';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
@@ -80,6 +82,7 @@ abstract class Website {
     steamCommunity: false
   };
   protected initialized = false;
+  protected eventBus?: EventBus;
   protected steamTaskType = {
     steamStore: false,
     steamCommunity: false
@@ -140,6 +143,10 @@ abstract class Website {
    * 该方法用于绑定指定名称的任务，并等待初始化的 Promise 完成。
    * 如果初始化成功，则返回包含名称和结果的对象；如果发生错误，则记录错误信息并返回结果为 false 的对象。
    */
+  setEventBus(eventBus: EventBus): void {
+    this.eventBus = eventBus;
+  }
+
   async #bind(name: string, init: Promise<boolean | 'skip'>): Promise<bindReturn> {
     try {
       debug('开始绑定社交媒体', { name });
@@ -170,8 +177,8 @@ abstract class Website {
   protected async initSocial(action: string): Promise<boolean> {
     try {
       debug('开始初始化社交媒体', { action });
-      const pro = [];
       const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
+      const initTasks: Array<{ target: EventTarget, run: () => Promise<boolean | 'skip'>, payloadTasks: Record<string, Array<string>> }> = [];
 
       // // 检查 Discord 任务
       // if (tasks.discord) {
@@ -180,7 +187,7 @@ abstract class Website {
       //   if (hasDiscord && (!this.socialInitialized.discord || !this.social.discord)) {
       //     debug('初始化 Discord');
       //     this.social.discord = new Discord();
-      //     pro.push(this.#bind('discord', this.social.discord.init(action)));
+      //     initTasks.push({ target: 'discord', run: () => this.social.discord!.init(action), payloadTasks: tasks.discord as Record<string, Array<string>> });
       //   }
       // }
 
@@ -191,66 +198,60 @@ abstract class Website {
       //   if (hasInstagram && (!this.socialInitialized.instagram || !this.social.instagram)) {
       //     debug('初始化 Instagram');
       //     this.social.instagram = new Instagram();
-      //     pro.push(this.#bind('instagram', this.social.instagram.init()));
+      //     initTasks.push({ target: 'instagram', run: () => this.social.instagram!.init(), payloadTasks: tasks.instagram as Record<string, Array<string>> });
       //   }
       // }
 
-      // 检查 Reddit 任务
       if (tasks.reddit) {
         const hasReddit = Object.values(tasks.reddit).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Reddit 任务', { hasReddit });
         if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
           debug('初始化 Reddit');
           this.social.reddit = new Reddit();
-          pro.push(this.#bind('reddit', this.social.reddit.init()));
+          initTasks.push({ target: 'reddit', run: () => this.social.reddit!.init(), payloadTasks: tasks.reddit as Record<string, Array<string>> });
         }
       }
 
-      // 检查 Twitch 任务
       if (tasks.twitch) {
         const hasTwitch = Object.values(tasks.twitch).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Twitch 任务', { hasTwitch });
         if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
           debug('初始化 Twitch');
           this.social.twitch = new Twitch();
-          pro.push(this.#bind('twitch', this.social.twitch.init()));
+          initTasks.push({ target: 'twitch', run: () => this.social.twitch!.init(), payloadTasks: tasks.twitch as Record<string, Array<string>> });
         }
       }
 
-      // 检查 Twitter 任务
       if (tasks.twitter) {
         const hasTwitter = Object.values(tasks.twitter).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Twitter 任务', { hasTwitter });
         if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
           debug('初始化 Twitter');
           this.social.twitter = new Twitter();
-          pro.push(this.#bind('twitter', this.social.twitter.init()));
+          initTasks.push({ target: 'twitter', run: () => this.social.twitter!.init(), payloadTasks: tasks.twitter as Record<string, Array<string>> });
         }
       }
 
-      // 检查 VK 任务
       if (tasks.vk) {
         const hasVk = Object.values(tasks.vk).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 VK 任务', { hasVk });
         if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
           debug('初始化 VK');
           this.social.vk = new Vk();
-          pro.push(this.#bind('vk', this.social.vk.init()));
+          initTasks.push({ target: 'vk', run: () => this.social.vk!.init(), payloadTasks: tasks.vk as Record<string, Array<string>> });
         }
       }
 
-      // 检查 YouTube 任务
       if (tasks.youtube) {
         const hasYoutube = Object.values(tasks.youtube).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 YouTube 任务', { hasYoutube });
         if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
           debug('初始化 YouTube');
           this.social.youtube = new Youtube();
-          pro.push(this.#bind('youtube', this.social.youtube.init()));
+          initTasks.push({ target: 'youtube', run: () => this.social.youtube!.init(), payloadTasks: tasks.youtube as Record<string, Array<string>> });
         }
       }
 
-      // 检查 Steam 任务
       if (tasks.steam) {
         const steamLength = Object.values(tasks.steam).reduce((total, arr) => [...total, ...arr]).length;
         debug('检查 Steam 任务', { steamLength });
@@ -268,27 +269,35 @@ abstract class Website {
             this.steamTaskType.steamStore = true;
             if (!this.socialInitialized.steamStore) {
               debug('初始化 Steam 商店');
-              pro.push(this.#bind('steamStore', this.social.steam.init('store')));
+              initTasks.push({ target: 'steamStore', run: () => this.social.steam!.init('store'), payloadTasks: tasks.steam as Record<string, Array<string>> });
             }
           }
           if (steamCommunityLength > 0) {
             if (!this.socialInitialized.steamCommunity) {
               this.steamTaskType.steamCommunity = true;
               debug('初始化 Steam 社区');
-              pro.push(this.#bind('steamCommunity', this.social.steam.init('community')));
+              initTasks.push({ target: 'steamCommunity', run: () => this.social.steam!.init('community'), payloadTasks: tasks.steam as Record<string, Array<string>> });
             }
           }
         }
       }
 
-      // 处理链接任务
       if (tasks.links && tasks.links.length > 0) {
         debug('初始化链接访问', { linksCount: tasks.links.length });
         this.social.visitLink = visitLink;
       }
 
-      debug('等待所有社交媒体初始化完成');
-      return await Promise.all(pro).then((result) => {
+      if (initTasks.length === 0) {
+        debug('无需要初始化的社交媒体任务');
+        return true;
+      }
+
+      const runId = `init-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      const timestamp = Date.now();
+
+      if (!this.eventBus) {
+        debug('EventBus 未注入，使用兼容模式初始化');
+        const result = await Promise.all(initTasks.map((task) => this.#bind(task.target, task.run())));
         let checked = true;
         for (const data of result) {
           if (data.result) {
@@ -300,9 +309,84 @@ abstract class Website {
             checked = false;
           }
         }
-        debug('社交媒体初始化完成', { allSuccess: checked });
         return checked;
+      }
+
+      const expectedTargets = new Set(initTasks.map((task) => task.target));
+      const completedTargets = new Set<EventTarget>();
+      const timeoutMs = 30000;
+
+      const waitCompleted = new Promise<boolean>((resolve) => {
+        let cleaned = false;
+        const resultMap = new Map<EventTarget, boolean>();
+        const listener = (payload: CompletedPayload): void => {
+          if (payload.runId !== runId) return;
+          if (!expectedTargets.has(payload.target) || completedTargets.has(payload.target)) {
+            debug('忽略重复或无关的初始化完成事件', { runId, target: payload.target });
+            return;
+          }
+          completedTargets.add(payload.target);
+          resultMap.set(payload.target, payload.ok);
+          // @ts-ignore
+          this.socialInitialized[payload.target] = payload.ok;
+          debug('接收到初始化完成事件', { runId, target: payload.target, ok: payload.ok, completed: completedTargets.size, total: expectedTargets.size });
+
+          if (completedTargets.size === expectedTargets.size) {
+            cleanup();
+            resolve(Array.from(resultMap.values()).every(Boolean));
+          }
+        };
+
+        const cleanup = (): void => {
+          if (cleaned) return;
+          cleaned = true;
+          clearTimeout(timer);
+          this.eventBus?.off('social.init.completed', listener);
+        };
+
+        const timer = setTimeout(() => {
+          debug('社交媒体初始化等待超时', { runId, timeoutMs, expected: Array.from(expectedTargets), completed: Array.from(completedTargets) });
+          cleanup();
+          resolve(false);
+        }, timeoutMs);
+
+        this.eventBus?.on('social.init.completed', listener);
       });
+
+      for (const task of initTasks) {
+        await this.eventBus.emit('social.init.requested', {
+          runId,
+          timestamp,
+          source: 'website',
+          action: action as 'do' | 'undo',
+          target: task.target,
+          tasks: task.payloadTasks
+        });
+
+        this.#bind(task.target, task.run()).then(async (result) => {
+          await this.eventBus?.emit('social.init.completed', {
+            runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: task.target,
+            ok: !!result.result,
+            processedCount: result.result ? 1 : 0
+          });
+        }).catch(async () => {
+          await this.eventBus?.emit('social.init.completed', {
+            runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: task.target,
+            ok: false,
+            processedCount: 0
+          });
+        });
+      }
+
+      const allSuccess = await waitCompleted;
+      debug('社交媒体初始化完成', { runId, allSuccess });
+      return allSuccess;
     } catch (error) {
       debug('初始化社交媒体失败', { error });
       throwError(error as Error, 'Website.initSocial');

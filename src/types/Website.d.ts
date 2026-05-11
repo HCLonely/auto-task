@@ -60,7 +60,7 @@ declare interface webSocialTasks {
   extra?: extraTasks
 }
 declare interface bindReturn {
-  name: string
+  name: import('../scripts/events/eventTypes').EventTarget
   result: boolean | 'skip'
 }
 declare interface socialInitialized {

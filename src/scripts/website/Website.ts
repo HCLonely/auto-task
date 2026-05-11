@@ -178,7 +178,7 @@ abstract class Website {
    * 如果存在待处理的任务且社交媒体尚未初始化，则创建相应的社交媒体实例并调用其初始化方法。
    * 所有初始化操作的结果将通过 Promise.all 进行处理，最终返回所有操作的成功状态。
    */
-  protected async initSocial(action: string): Promise<boolean> {
+  protected async initSocial(action: 'do' | 'undo'): Promise<boolean> {
     try {
       debug('开始初始化社交媒体', { action });
       const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
@@ -364,7 +364,7 @@ abstract class Website {
           runId,
           timestamp,
           source: 'website',
-          action: action as 'do' | 'undo',
+          action,
           target: task.target,
           tasks: task.payloadTasks
         }).catch((error) => {
@@ -467,7 +467,10 @@ abstract class Website {
       }
 
       debug('初始化社交媒体');
-      await this.initSocial(action);
+      if (!(await this.initSocial(action))) {
+        debug('社交媒体初始化失败或超时');
+        return false;
+      }
       const pro = [];
       const doTask = action === 'do';
       const tasks = doTask ? this.undoneTasks : this.socialTasks;

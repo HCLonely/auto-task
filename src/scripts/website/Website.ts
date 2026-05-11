@@ -8,8 +8,6 @@
  */
 
 import throwError from '../tools/throwError';
-// import Discord from '../social/Discord';
-// import Instagram from '../social/Instagram';
 import Reddit from '../social/Reddit';
 import Twitch from '../social/Twitch';
 import Twitter from '../social/Twitter';
@@ -69,7 +67,6 @@ abstract class Website {
   undoneTasks!: webSocialTasks;
   socialTasks!: webSocialTasks;
   giveawayId!: string;
-  // EventEmitter!: EventEmitter3
   protected socialInitialized: socialInitialized = {
     discord: false,
     instagram: false,
@@ -143,8 +140,6 @@ abstract class Website {
     steamCommunity: false
   };
   protected social: {
-    // discord?: Discord
-    // instagram?: Instagram
     reddit?: Reddit
     twitch?: Twitch
     twitter?: Twitter
@@ -154,9 +149,6 @@ abstract class Website {
     visitLink?: (link: string, options?: MonkeyXhrDetails) => Promise<boolean>
   } = {};
 
-  // constructor(EventEmitter: EventEmitter3) {
-  //   this.EventEmitter = EventEmitter;
-  // }
   /**
    * 分类任务的抽象方法
    *

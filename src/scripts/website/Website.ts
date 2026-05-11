@@ -523,12 +523,34 @@ abstract class Website {
       const result: webSocialTasks = {};
       for (const [social, types] of Object.entries(allTasks)) {
         debug('处理社交媒体任务', { social });
-        result[social as socialType] = {};
+
+        if (social === 'links') {
+          result.links = Array.isArray(types) ? unique(types.filter((item): item is string => typeof item === 'string')) : [];
+          continue;
+        }
+
+        if (!types || typeof types !== 'object' || Array.isArray(types)) {
+          continue;
+        }
+
+        if (social === 'extra') {
+          const extraResult: extraTasks = {};
+          for (const [type, tasks] of Object.entries(types)) {
+            debug('处理额外任务类型', { type });
+            if (!Array.isArray(tasks)) continue;
+            extraResult[type] = unique(tasks.filter((item): item is string => typeof item === 'string'));
+          }
+          result.extra = extraResult;
+          continue;
+        }
+
+        const socialResult: Record<string, Array<string>> = {};
         for (const [type, tasks] of Object.entries(types)) {
           debug('处理任务类型', { social, type });
-          // @ts-ignore
-          result[social][type] = unique(tasks as Array<string>);
+          if (!Array.isArray(tasks)) continue;
+          socialResult[type] = unique(tasks.filter((item): item is string => typeof item === 'string'));
         }
+        (result as Record<string, unknown>)[social] = socialResult;
       }
       debug('任务去重完成');
       return result;

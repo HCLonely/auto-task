@@ -60,7 +60,7 @@ declare interface webSocialTasks {
   extra?: extraTasks
 }
 declare interface bindReturn {
-  name: string
+  name: import('../scripts/events/eventTypes').EventTarget
   result: boolean | 'skip'
 }
 declare interface socialInitialized {
@@ -76,6 +76,25 @@ declare interface socialInitialized {
 }
 
 declare function initFunction():Promise<boolean>
+
+interface EventBus {
+  on: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  off: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  once: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    handler: (payload: import('../scripts/events/eventTypes').EventMap[TEvent]) => void | Promise<void>
+  ) => void
+  emit: <TEvent extends keyof import('../scripts/events/eventTypes').EventMap>(
+    event: TEvent,
+    payload: import('../scripts/events/eventTypes').EventMap[TEvent]
+  ) => Promise<void>
+}
 
 interface WebsiteButton {
   name: string;
@@ -95,6 +114,8 @@ interface Website {
   undoTask?: () => void | Promise<void>;
   buttons?: string[];
   options?: WebsiteOptions;
+  eventBus?: EventBus;
+  setEventBus?: (eventBus: EventBus) => void;
   [key: string]: any;
 }
 

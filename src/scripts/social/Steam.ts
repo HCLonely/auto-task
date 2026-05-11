@@ -100,6 +100,50 @@ class Steam extends Social {
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.steam || {}) };
     this.#TaskExecutor = this.#getTaskExecutionOrder(globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF);
+    this.registerEventBusHandlers({
+      target: 'steamStore',
+      init: async () => this.init('store'),
+      toggle: async (payload) => this.toggle({
+        doTask: payload.action === 'do',
+        ...(payload.tasks as {
+          groupLinks?: string[];
+          officialGroupLinks?: string[];
+          wishlistLinks?: string[];
+          followLinks?: string[];
+          forumLinks?: string[];
+          workshopLinks?: string[];
+          workshopVoteLinks?: string[];
+          curatorLinks?: string[];
+          curatorLikeLinks?: string[];
+          announcementLinks?: string[];
+          licenseLinks?: string[];
+          playtestLinks?: string[];
+          playTimeLinks?: string[];
+        })
+      })
+    });
+    this.registerEventBusHandlers({
+      target: 'steamCommunity',
+      init: async () => this.init('community'),
+      toggle: async (payload) => this.toggle({
+        doTask: payload.action === 'do',
+        ...(payload.tasks as {
+          groupLinks?: string[];
+          officialGroupLinks?: string[];
+          wishlistLinks?: string[];
+          followLinks?: string[];
+          forumLinks?: string[];
+          workshopLinks?: string[];
+          workshopVoteLinks?: string[];
+          curatorLinks?: string[];
+          curatorLikeLinks?: string[];
+          announcementLinks?: string[];
+          licenseLinks?: string[];
+          playtestLinks?: string[];
+          playTimeLinks?: string[];
+        })
+      })
+    });
     debug('Steam实例初始化完成', { taskExecutorCount: this.#TaskExecutor.length });
   }
   /**

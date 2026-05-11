@@ -4,11 +4,13 @@
     "outDir": "./dist/", // 打包到的目录
     "sourceMap": false, // 是否生成sourceMap（用于浏览器调试）
     "strict": true,
+    "skipLibCheck": true,
     "declaration": false, // 是否生成声明文件
     "declarationMap": false, // 是否生成声明文件map文件（便于调试）
     "module": "esnext",
     "target": "esnext", // 转化成的目标语言
     "allowJs": true,
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true
   },

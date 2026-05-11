@@ -21,6 +21,7 @@ import updateChecker from './scripts/updateChecker';
 import echoLog from './scripts/echoLog';
 import SteamASF from './scripts/social/SteamASF';
 import { debug } from './scripts/tools/debug';
+import EventBus from './scripts/events/eventBus';
 // import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
 // import browser from 'browser-tool';
 // import { v4 as uuidv4 } from 'uuid';
@@ -365,11 +366,16 @@ const loadScript = async (): Promise<void> => {
     return;
   }
 
+  const eventBus = new EventBus();
+
   let website: Website | undefined;
   for (const Website of (Websites as unknown as WebsiteClass[])) {
     if (Website.test()) {
       debug('识别到支持的网站', { website: Website.name });
       website = new Website();
+      if (website.setEventBus) {
+        website.setEventBus(eventBus);
+      }
       break;
     }
   }

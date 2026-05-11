@@ -10,9 +10,17 @@
 import throwError from '../tools/throwError';
 import { unique } from '../tools/tools';
 import { debug } from '../tools/debug';
+import type EventBus from '../events/eventBus';
+import type { EventTarget, RequestedPayload } from '../events/eventTypes';
 
 interface toggleParams {
   [name:string]:unknown
+}
+
+interface SocialEventHandlers {
+  target: EventTarget
+  init?: (payload: RequestedPayload) => Promise<boolean | 'skip'>
+  toggle?: (payload: RequestedPayload) => Promise<boolean>
 }
 
 /**
@@ -29,6 +37,9 @@ abstract class Social {
    * @description 当前的社交任务列表。
    */
   protected tasks!: socialTasks;
+  protected eventBus?: EventBus;
+  private readonly eventHandlers: Array<SocialEventHandlers> = [];
+  private listenersAttached = false;
 
   /**
    * 初始化社交功能。
@@ -54,6 +65,75 @@ abstract class Social {
    *                              - false: 切换失败
    */
   abstract toggle(toggleParams: toggleParams): Promise<boolean>;
+
+  setEventBus(eventBus: EventBus): void {
+    this.eventBus = eventBus;
+    this.attachEventBusListeners();
+  }
+
+  protected registerEventBusHandlers(handlers: SocialEventHandlers): void {
+    this.eventHandlers.push(handlers);
+    this.attachEventBusListeners();
+  }
+
+  private attachEventBusListeners(): void {
+    if (!this.eventBus || this.listenersAttached || this.eventHandlers.length === 0) return;
+    this.listenersAttached = true;
+
+    this.eventBus.on('social.init.requested', async (payload) => {
+      for (const handler of this.eventHandlers) {
+        if (!handler.init || payload.target !== handler.target) continue;
+        try {
+          const result = await handler.init(payload);
+          await this.eventBus?.emit('social.init.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: !!result,
+            processedCount: result ? 1 : 0
+          });
+        } catch (error) {
+          await this.eventBus?.emit('social.init.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: false,
+            processedCount: 0,
+            error: (error as Error)?.message || String(error)
+          });
+        }
+      }
+    });
+
+    this.eventBus.on('social.toggle.requested', async (payload) => {
+      for (const handler of this.eventHandlers) {
+        if (!handler.toggle || payload.target !== handler.target) continue;
+        try {
+          const result = await handler.toggle(payload);
+          await this.eventBus?.emit('social.toggle.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: !!result,
+            processedCount: result ? 1 : 0
+          });
+        } catch (error) {
+          await this.eventBus?.emit('social.toggle.completed', {
+            runId: payload.runId,
+            timestamp: Date.now(),
+            source: 'social',
+            target: handler.target,
+            ok: false,
+            processedCount: 0,
+            error: (error as Error)?.message || String(error)
+          });
+        }
+      }
+    });
+  }
 
   /**
    * 获取实际参数数组，用于执行任务。

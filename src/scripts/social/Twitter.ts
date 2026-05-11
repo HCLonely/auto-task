@@ -104,6 +104,14 @@ class Twitter extends Social {
       'sec-ch-ua-mobile': '?0',
       'sec-ch-ua': generateSecCHUA()
     };
+    this.registerEventBusHandlers({
+      target: 'twitter',
+      init: async () => this.init(),
+      toggle: async (payload) => this.toggle({
+        doTask: payload.action === 'do',
+        ...(payload.tasks as { userLinks?: Array<string>, retweetLinks?: Array<string> })
+      })
+    });
   }
 
   /**

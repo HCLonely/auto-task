@@ -83,6 +83,14 @@ class Reddit extends Social {
     debug('初始化Reddit实例');
     this.tasks = defaultTasksTemplate;
     this.whiteList = { ...defaultTasksTemplate, ...(GM_getValue<whiteList>('whiteList')?.reddit || {}) };
+    this.registerEventBusHandlers({
+      target: 'reddit',
+      init: async () => this.init(),
+      toggle: async (payload) => this.toggle({
+        doTask: payload.action === 'do',
+        ...(payload.tasks as { redditLinks?: Array<string> })
+      })
+    });
   }
 
   /**

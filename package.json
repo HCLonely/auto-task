@@ -43,7 +43,7 @@
     "eslint": "^9.27.0",
     "eslint-plugin-import": "^2.31.0",
     "fs-extra": "^11.3.0",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "^3.0.6",
     "keyboardjs": "^2.7.0",
     "node-inspect-extracted": "^3.3.1",
     "postcss": "^8.5.6",

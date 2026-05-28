@@ -7,3 +7,8 @@ CHANGELOG.md
 
 .claude
 XFwdForSdk
+
+.temp
+.cache
+
+doc/docs/.vuepress/dist

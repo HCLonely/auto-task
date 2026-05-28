@@ -1,9 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.1.4",
+  "version": "5.1.5",
   "change": [
-    "修复：Gleam推特任务无法验证(#73)",
-    "优化：Gleam输入框内有文本时不替换(#73)"
+    "优化：样式优化"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

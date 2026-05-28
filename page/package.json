@@ -1,8 +1,9 @@
 {
   "name": "auto-task",
-  "version": "5.1.3",
+  "version": "5.1.4",
   "change": [
-    "优化：恢复Violentmonkey支持(#20)"
+    "修复：Gleam推特任务无法验证(#73)",
+    "优化：Gleam输入框内有文本时不替换(#73)"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {
@@ -57,6 +58,6 @@
     "sweetalert2": "^11.6.13",
     "tslib": "^2.8.1",
     "typescript": "^5.8.3",
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   }
 }

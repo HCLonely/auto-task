@@ -570,7 +570,7 @@ class Gleam extends Website {
         const taskInfo = $task.find('.user-links');
         taskInfo[0].click();
 
-        const aElements = $task.find('.expandable').find('a.btn');
+        const aElements = $task.find('.expandable').find('a.btn,a.twitter-button');
         if (aElements.length > 0) {
           debug('处理可点击元素', { count: aElements.length });
           for (const element of aElements) {
@@ -602,7 +602,7 @@ class Gleam extends Website {
         // 处理输入框
         const expandInfo = $task.find('.expandable');
         const [input] = expandInfo.find('input');
-        if (input) {
+        if (input && !input.value) {
           debug('处理输入框');
           const evt = new Event('input', { bubbles: true, cancelable: true, composed: true });
           const valuelimit = [...expandInfo.text().matchAll(/"(.+?)"/g)].at(-1)?.[1];

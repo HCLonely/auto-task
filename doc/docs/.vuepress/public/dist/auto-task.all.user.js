@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.1.3
+// @version            5.1.4
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -13451,7 +13451,7 @@ if (missingDependencies.length > 0) {
           debug('处理任务验证');
           const taskInfo = $task.find('.user-links');
           taskInfo[0].click();
-          const aElements = $task.find('.expandable').find('a.btn');
+          const aElements = $task.find('.expandable').find('a.btn,a.twitter-button');
           if (aElements.length > 0) {
             debug('处理可点击元素', {
               count: aElements.length
@@ -13479,7 +13479,7 @@ if (missingDependencies.length > 0) {
           unsafeWindow.$hookTimer?.setSpeed(1);
           const expandInfo = $task.find('.expandable');
           const [input] = expandInfo.find('input');
-          if (input) {
+          if (input && !input.value) {
             debug('处理输入框');
             const evt = new Event('input', {
               bubbles: true,

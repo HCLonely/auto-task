@@ -6,8 +6,8 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "@vuepress/plugin-back-to-top": "^1.9.7",
-    "vuepress": "^1.9.7"
+    "@vuepress/plugin-back-to-top": "^1.9.10",
+    "vuepress": "^1.9.10"
   },
   "scripts": {
     "docs:dev": "vuepress dev docs",

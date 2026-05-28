@@ -5,6 +5,13 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.4
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.4)
+
+- 修复：Gleam推特任务无法验证([#73](https://github.com/HCLonely/auto-task/issues/73))
+- 优化：Gleam输入框内有文本时不替换([#73](https://github.com/HCLonely/auto-task/issues/73))
+
 ### V5.1.3
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.3)

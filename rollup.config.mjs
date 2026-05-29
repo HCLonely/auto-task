@@ -42,7 +42,7 @@ export default {
             preamble: fs.readFileSync('./src/scripts/header.js').toString()
               .replace(/__VERSION__/g, VERSION)
               .replace(/__NAME__/g, NAME)
-              .replace(/__UPDATE_URL__/g, `https://github.com/HCLonely/auto-task/main/dist/${NAME}.user.js`)
+              .replace(/__UPDATE_URL__/g, `https://github.com/HCLonely/auto-task/raw/main/dist/${NAME}.user.js`)
               .replace(/__CHECK_DEPENDENCIES__/g, fs.readFileSync('./src/scripts/checkDependence.js').toString())
               .replace(/__ALL_URL__/g, `https://github.com/HCLonely/auto-task/raw/main/dist/${NAME}.all.user.js`)
           },

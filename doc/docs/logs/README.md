@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.7
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.7)
+
+- 修复：更新链接文件不存在([#75](https://github.com/HCLonely/auto-task/issues/75))
+
 ### V5.1.6
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.6)

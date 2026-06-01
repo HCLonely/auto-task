@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.1.6
-          name: 5.1.6
-          body: "- 修复：更新链接文件不存在(#75)\r\n- 优化：样式优化"
+          tag_name: v5.1.7
+          name: 5.1.7
+          body: '- 修复：更新链接文件不存在(#75)'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

@@ -1,7 +1,7 @@
 # Auto-Task
 
 [![License](https://img.shields.io/github/license/HCLonely/auto-task?label=License)](LICENSE)
-[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0%20%3C%3D23.2.0-brightgreen)](package.json)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](package.json)
 
 一个功能强大的自动化任务处理脚本，专门用于处理各种赠Key站的任务。
 
@@ -32,7 +32,7 @@
 
 ### 环境要求
 
-- Node.js: >=18.0.0 <=23.2.0
+- Node.js: >=18.0.0
 - npm 或 yarn
 
 ### 安装依赖

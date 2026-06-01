@@ -12,7 +12,7 @@
   const fs = require('fs-extra');
   const chalk = await import('chalk');
 
-  fs.copySync('./dist', './page/dist');
+  fs.copySync('./dist', './doc/docs/.vuepress/dist/dist');
   fs.copySync('./package.json', './page/package.json');
 
   fs.copySync('./page', './doc/docs/.vuepress/public', {

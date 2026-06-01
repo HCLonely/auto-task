@@ -5,6 +5,13 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.6
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.6)
+
+- 修复：更新链接文件不存在
+- 优化：样式优化
+
 ### V5.1.5
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.5)

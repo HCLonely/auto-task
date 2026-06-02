@@ -228,7 +228,8 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
                 "track_code",
                 "reaction_id",
                 "game_update",
-                "playtime_forever"
+                "playtime_forever",
+                "csrf_token"
             ],
         }],
 

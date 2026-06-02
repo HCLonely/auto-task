@@ -290,8 +290,10 @@ const data = {
   changingRedditVersion: 'Switching Reddit to a new version page...',
   joiningReddit: 'Joining the Reddit',
   leavingReddit: 'Leaving the Reddit',
+  gettingRedditSubredditId: 'Getting Reddit Subreddit Id',
   followingRedditUser: 'Following Reddit User',
   unfollowingRedditUser: 'Unfollowing Reddit User',
+  gettingRedditUserId: 'Getting Reddit User Id',
 
   // Twitch
   channels: 'Channel',

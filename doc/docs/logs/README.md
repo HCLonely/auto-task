@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.8
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.8)
+
+- 修复：Reddit任务失败
+
 ### V5.1.7
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.7)

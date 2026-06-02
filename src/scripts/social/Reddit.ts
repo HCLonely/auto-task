@@ -123,111 +123,47 @@ class Reddit extends Social {
       return false;
     }
   }
-
   /**
-   * 切换Reddit网站为新版，使用新版API。
+   * 更新Reddit的身份验证Token。
    *
    * @async
-   * @function #useBeta
-   * @returns {Promise<boolean>} - 返回一个Promise，表示切换操作的结果。
-   *                              - true: 切换成功
-   *                              - false: 切换失败
-   *
-   * @description
-   * 该方法尝试将Reddit切换到新版。首先记录切换状态并清除当前的认证信息。
-   * 然后打开一个新的标签页以进行身份验证。当新标签页关闭时，记录成功状态并更新认证信息。
-   * 如果在执行过程中发生错误，将抛出错误并返回false。
-   */
-  async #useBeta(): Promise<boolean> {
-    /**
-     * @description: 切换Reddit网站为新版，此脚本使用新版API
-     * @return true: 切换成功 | false: 切换失败
-    */
-    try {
-      debug('开始切换Reddit为新版');
-      const logStatus = echoLog({ text: __('changingRedditVersion'), before: '[Reddit]' });
-      return await new Promise((resolve) => {
-        const newTab = GM_openInTab('https://www.reddit.com/',
-          { active: true, insert: true, setParent: true });
-        // @ts-ignore
-        newTab.name = 'ATv4_redditAuth';
-        newTab.onclose = async () => {
-          debug('新版Reddit标签页已关闭');
-          logStatus.success();
-          resolve(await this.#updateAuth(true));
-        };
-      });
-    } catch (error) {
-      debug('切换Reddit版本时发生错误', { error });
-      throwError(error as Error, 'Reddit.useBeta');
-      return false;
-    }
-  }
-
-  /**
-   * 更新Reddit的身份验证信息，获取新的访问令牌。
-   *
-   * @async
+   * @private
    * @function #updateAuth
-   * @param {boolean} [beta=false] - 指示是否使用Beta版本的标志，默认为false。
    * @returns {Promise<boolean>} - 返回一个Promise，表示更新操作的结果。
    *                              - true: 更新Token成功
    *                              - false: 更新Token失败
    *
    * @description
-   * 该方法通过发送GET请求到Reddit网站来更新身份验证Token。
-   * 如果请求成功且返回的响应包含登录页面，则记录错误信息并返回false。
-   * 如果返回状态为200且包含Beta选项，则根据参数决定是否切换到Beta版本。
-   * 如果成功获取到访问令牌，则将其存储在`#auth`中，并记录成功信息。
+   * 该方法通过打开Reddit网站的设置页面来更新Token。
+   * 使用`GM_cookie.list`方法获取当前的cookie信息，如果成功获取到`csrf_token`的值，则更新存储的身份验证信息。
+   * 如果用户未登录，则记录错误信息并返回false。
    * 如果在执行过程中发生错误，将抛出错误并返回false。
    */
-  async #updateAuth(beta = false): Promise<boolean> {
+  async #updateAuth(): Promise<boolean> {
     try {
-      debug('开始更新Reddit授权', { beta });
+      debug('开始更新Reddit授权');
       const logStatus = echoLog({ text: __('updatingAuth', 'Reddit'), before: '[Reddit]' });
-      const { result, statusText, status, data } = await httpRequest({
-        url: 'https://www.reddit.com/',
-        method: 'GET',
-        nochche: true,
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
+      return await new Promise((resolve) => {
+        GM_cookie.list({ url: 'https://www.reddit.com/' }, async (cookies, error) => {
+          if (!error) {
+            const csrftoken = cookies.find((cookie) => cookie.name === 'csrf_token')?.value;
+            if (csrftoken) {
+              debug('成功获取Reddit授权信息');
+              this.#auth = { csrftoken };
+              logStatus.success();
+              resolve(true);
+            } else {
+              debug('获取Reddit授权失败');
+              logStatus.error('Error: Parameter "csrf_token" not found!');
+              resolve(false);
+            }
+          } else {
+            debug('获取Reddit授权失败', { error });
+            logStatus.error('Error: Update reddit auth failed!');
+            resolve(false);
+          }
+        });
       });
-
-      if (result !== 'Success') {
-        debug('获取Reddit页面失败', { result, statusText, status });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      }
-
-      if (data?.responseText.includes('www.reddit.com/login/')) {
-        debug('需要登录Reddit');
-        logStatus.error(`Error:${__('loginReddit')}`, true);
-        return false;
-      }
-
-      if (data?.status !== 200) {
-        debug('Reddit页面状态码错误', { status: data?.status, statusText: data?.statusText });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      }
-
-      if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
-        debug('检测到旧版Reddit，需要切换到新版');
-        return await this.#useBeta();
-      }
-
-      const accessToken = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)?.[1];
-      if (!accessToken) {
-        debug('未找到Reddit访问令牌');
-        logStatus.error('Error: Parameter "accessToken" not found!');
-        return false;
-      }
-
-      debug('成功获取Reddit访问令牌');
-      this.#auth = { token: accessToken };
-      logStatus.success();
-      return true;
     } catch (error) {
       debug('更新Reddit授权时发生错误', { error });
       throwError(error as Error, 'Reddit.updateAuth');
@@ -265,21 +201,46 @@ class Reddit extends Social {
       }
 
       let type: string = doTask ? 'joiningReddit' : 'leavingReddit';
+      let postBody;
       if (/^u_/.test(name)) {
+        const accountId = await this.#getUserId(name.replace('u_', ''));
         type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
+        postBody = {
+          operation: 'UpdateProfileFollowState',
+          variables: {
+            input: {
+              accountId,
+              state: doTask ? 'FOLLOWED' : 'NONE'
+            }
+          },
+          csrf_token: this.#auth.csrftoken
+        };
+      } else {
+        const subredditId = await this.#getSubredditId(name);
+        if (!subredditId) {
+          return false;
+        }
+        postBody = {
+          operation: 'UpdateSubredditSubscriptions',
+          variables: {
+            input: {
+              inputs: [{
+                subredditId,
+                subscribeState: doTask ? 'SUBSCRIBED' : 'NONE'
+              }]
+            }
+          },
+          csrf_token: this.#auth.csrftoken
+        };
       }
       debug('任务类型', { type, name });
       const logStatus = echoLog({ type, text: name, before: '[Reddit]' });
 
       const { result, statusText, status, data } = await httpRequest({
-        url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+        url: 'https://www.reddit.com/svc/shreddit/graphql',
         method: 'POST',
-        headers: { authorization: `Bearer ${this.#auth.token}`, 'content-type': 'application/x-www-form-urlencoded' },
-        data: $.param({
-          action: doTask ? 'sub' : 'unsub',
-          sr_name: name,
-          api_type: 'json'
-        })
+        headers: { 'content-type': 'application/json' },
+        data: JSON.stringify(postBody)
       });
 
       if (result !== 'Success') {
@@ -291,6 +252,12 @@ class Reddit extends Social {
       if (data?.status !== 200) {
         debug('Reddit任务状态码错误', { status: data?.status, statusText: data?.statusText });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        return false;
+      }
+
+      if (data.response?.data?.[postBody.operation]?.ok) {
+        debug('Reddit推操作出错', { error: data.response?.data?.errors?.[0] });
+        logStatus.error(`Error:${data.response?.data?.errors?.[0]}`);
         return false;
       }
 
@@ -307,6 +274,81 @@ class Reddit extends Social {
     }
   }
 
+  async #getSubredditId(name: string): Promise<string | false> {
+    try {
+      const logStatus = echoLog({ type: 'gettingRedditSubredditId', text: name, before: '[Reddit]' });
+
+      const { result, statusText, status, data } = await httpRequest({
+        url: `https://www.reddit.com/r/${name}`,
+        method: 'GET'
+      });
+
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Reddit任务状态码错误', { status: data?.status, statusText: data?.statusText });
+        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        return false;
+      }
+
+      const id = data.response?.match(/<shreddit-subreddit-header-buttons[^>]*\ssubreddit-id="([^"]+)"/)?.[1];
+      if (!id) {
+        debug('获取Reddit SubredditId操作出错', { error: data.response });
+        logStatus.error('Error');
+        return false;
+      }
+
+      debug('Reddit任务处理成功', { name, id });
+      logStatus.success();
+      return id;
+    } catch (error) {
+      debug('获取Reddit SubredditId时发生错误', { error });
+      throwError(error as Error, 'Reddit.getSubredditId');
+      return false;
+    }
+  }
+
+  async #getUserId(name: string): Promise<string | false> {
+    try {
+      const logStatus = echoLog({ type: 'gettingRedditUserId', text: name, before: '[Reddit]' });
+
+      const { result, statusText, status, data } = await httpRequest({
+        url: `https://www.reddit.com/user/${name}`,
+        method: 'GET'
+      });
+
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', { result, statusText, status });
+        logStatus.error(`${result}:${statusText}(${status})`);
+        return false;
+      }
+
+      if (data?.status !== 200) {
+        debug('Reddit任务状态码错误', { status: data?.status, statusText: data?.statusText });
+        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        return false;
+      }
+
+      const id = data.response?.match(/<follow-button[^>]*\sredditor-id="([^"]+)"/)?.[1];
+      if (!id) {
+        debug('获取Reddit UserId操作出错', { error: data.response });
+        logStatus.error('Error');
+        return false;
+      }
+
+      debug('Reddit任务处理成功', { name, id });
+      logStatus.success();
+      return id;
+    } catch (error) {
+      debug('获取Reddit UserId时发生错误', { error });
+      throwError(error as Error, 'Reddit.getUserId');
+      return false;
+    }
+  }
   /**
    * 切换Reddit相关任务的状态，关注或取关指定的子版块或用户。
    *
@@ -352,10 +394,7 @@ class Reddit extends Social {
         (link) => {
           const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
           const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
-          if (userName) {
-            return name || userName;
-          }
-          return name;
+          return name || `u_${userName}`;
         });
       debug('处理后的Reddit列表', { count: realReddits.length, reddits: realReddits });
 

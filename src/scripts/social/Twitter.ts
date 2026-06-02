@@ -240,7 +240,7 @@ class Twitter extends Social {
       });
     } catch (error) {
       debug('更新Twitter授权时发生错误', { error });
-      throwError(error as Error, 'Twitter.updateToken');
+      throwError(error as Error, 'Twitter.updateAuth');
       return false;
     }
   }

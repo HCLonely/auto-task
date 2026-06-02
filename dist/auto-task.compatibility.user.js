@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.1.7
+// @version            5.1.8
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -683,8 +683,10 @@ function _toPrimitive(t, r) {
     changingRedditVersion: '正在切换Reddit为新版页面...',
     joiningReddit: '正在加入Reddit社区',
     leavingReddit: '正在退出Reddit社区',
+    gettingRedditSubredditId: '正在获取Reddit社区Id',
     followingRedditUser: '正在关注Reddit用户',
     unfollowingRedditUser: '正在取关Reddit用户',
+    gettingRedditUserId: '正在获取Reddit用户Id',
     channels: '频道',
     followingTwitchChannel: '正在关注Twitch频道',
     unfollowingTwitchChannel: '正在取关Twitch频道',
@@ -997,8 +999,10 @@ function _toPrimitive(t, r) {
     changingRedditVersion: 'Switching Reddit to a new version page...',
     joiningReddit: 'Joining the Reddit',
     leavingReddit: 'Leaving the Reddit',
+    gettingRedditSubredditId: 'Getting Reddit Subreddit Id',
     followingRedditUser: 'Following Reddit User',
     unfollowingRedditUser: 'Unfollowing Reddit User',
+    gettingRedditUserId: 'Getting Reddit User Id',
     channels: 'Channel',
     followingTwitchChannel: 'Following Twitch Channel',
     unfollowingTwitchChannel: 'Unfollowing Twitch Channel',
@@ -1573,8 +1577,10 @@ function _toPrimitive(t, r) {
       unfollowingTwitterUser: [ 'twitter' ],
       joiningReddit: [ 'reddit', 'subreddit' ],
       leavingReddit: [ 'reddit', 'subreddit' ],
+      gettingRedditSubredditId: [ 'reddit', 'subreddit' ],
       followingRedditUser: [ 'reddit', 'user' ],
       unfollowingRedditUser: [ 'reddit', 'user' ],
+      gettingRedditUserId: [ 'reddit', 'user' ],
       followingYtbChannel: [ 'youtube', 'channel' ],
       unfollowingYtbChannel: [ 'youtube', 'channel' ],
       likingYtbVideo: [ 'youtube', 'video' ],
@@ -1966,10 +1972,7 @@ function _toPrimitive(t, r) {
           var _link$match, _link$match2;
           const name = (_link$match = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1];
           const userName = (_link$match2 = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1];
-          if (userName) {
-            return name || userName;
-          }
-          return name;
+          return name || 'u_'.concat(userName);
         }));
         debug('处理后的Reddit列表', {
           count: realReddits.length,
@@ -1997,91 +2000,41 @@ function _toPrimitive(t, r) {
       }
     }
   }
-  async function _useBeta() {
-    try {
-      debug('开始切换Reddit为新版');
-      const logStatus = echoLog({
-        text: I18n('changingRedditVersion'),
-        before: '[Reddit]'
-      });
-      return await new Promise((resolve => {
-        const newTab = GM_openInTab('https://www.reddit.com/', {
-          active: true,
-          insert: true,
-          setParent: true
-        });
-        newTab.name = 'ATv4_redditAuth';
-        newTab.onclose = async () => {
-          debug('新版Reddit标签页已关闭');
-          logStatus.success();
-          resolve(await _assertClassBrand(_Reddit_brand, this, _updateAuth).call(this, true));
-        };
-      }));
-    } catch (error) {
-      debug('切换Reddit版本时发生错误', {
-        error: error
-      });
-      throwError(error, 'Reddit.useBeta');
-      return false;
-    }
-  }
   async function _updateAuth() {
-    let beta = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     try {
-      var _data$responseText$ma10;
-      debug('开始更新Reddit授权', {
-        beta: beta
-      });
+      debug('开始更新Reddit授权');
       const logStatus = echoLog({
         text: I18n('updatingAuth', 'Reddit'),
         before: '[Reddit]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: 'https://www.reddit.com/',
-        method: 'GET',
-        nochche: true,
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      });
-      if (result !== 'Success') {
-        debug('获取Reddit页面失败', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
-        return false;
-      }
-      if (data !== null && data !== void 0 && data.responseText.includes('www.reddit.com/login/')) {
-        debug('需要登录Reddit');
-        logStatus.error('Error:'.concat(I18n('loginReddit')), true);
-        return false;
-      }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
-        debug('Reddit页面状态码错误', {
-          status: data === null || data === void 0 ? void 0 : data.status,
-          statusText: data === null || data === void 0 ? void 0 : data.statusText
-        });
-        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
-        return false;
-      }
-      if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
-        debug('检测到旧版Reddit，需要切换到新版');
-        return await _assertClassBrand(_Reddit_brand, this, _useBeta).call(this);
-      }
-      const accessToken = (_data$responseText$ma10 = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1];
-      if (!accessToken) {
-        debug('未找到Reddit访问令牌');
-        logStatus.error('Error: Parameter "accessToken" not found!');
-        return false;
-      }
-      debug('成功获取Reddit访问令牌');
-      _classPrivateFieldSet(_auth, this, {
-        token: accessToken
-      });
-      logStatus.success();
-      return true;
+      return await new Promise((resolve => {
+        GM_cookie.list({
+          url: 'https://www.reddit.com/'
+        }, (async (cookies, error) => {
+          if (!error) {
+            var _cookies$find;
+            const csrftoken = (_cookies$find = cookies.find((cookie => cookie.name === 'csrf_token'))) === null || _cookies$find === void 0 ? void 0 : _cookies$find.value;
+            if (csrftoken) {
+              debug('成功获取Reddit授权信息');
+              _classPrivateFieldSet(_auth, this, {
+                csrftoken: csrftoken
+              });
+              logStatus.success();
+              resolve(true);
+            } else {
+              debug('获取Reddit授权失败');
+              logStatus.error('Error: Parameter "csrf_token" not found!');
+              resolve(false);
+            }
+          } else {
+            debug('获取Reddit授权失败', {
+              error: error
+            });
+            logStatus.error('Error: Update reddit auth failed!');
+            resolve(false);
+          }
+        }));
+      }));
     } catch (error) {
       debug('更新Reddit授权时发生错误', {
         error: error
@@ -2093,6 +2046,7 @@ function _toPrimitive(t, r) {
   async function _toggleTask(_ref19) {
     let {name: name, doTask: doTask = true} = _ref19;
     try {
+      var _data$response86;
       debug('开始处理Reddit任务', {
         name: name,
         doTask: doTask
@@ -2110,8 +2064,37 @@ function _toPrimitive(t, r) {
         return true;
       }
       let type = doTask ? 'joiningReddit' : 'leavingReddit';
+      let postBody;
       if (/^u_/.test(name)) {
+        const accountId = await _assertClassBrand(_Reddit_brand, this, _getUserId).call(this, name.replace('u_', ''));
         type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
+        postBody = {
+          operation: 'UpdateProfileFollowState',
+          variables: {
+            input: {
+              accountId: accountId,
+              state: doTask ? 'FOLLOWED' : 'NONE'
+            }
+          },
+          csrf_token: _classPrivateFieldGet(_auth, this).csrftoken
+        };
+      } else {
+        const subredditId = await _assertClassBrand(_Reddit_brand, this, _getSubredditId).call(this, name);
+        if (!subredditId) {
+          return false;
+        }
+        postBody = {
+          operation: 'UpdateSubredditSubscriptions',
+          variables: {
+            input: {
+              inputs: [ {
+                subredditId: subredditId,
+                subscribeState: doTask ? 'SUBSCRIBED' : 'NONE'
+              } ]
+            }
+          },
+          csrf_token: _classPrivateFieldGet(_auth, this).csrftoken
+        };
       }
       debug('任务类型', {
         type: type,
@@ -2123,17 +2106,12 @@ function _toPrimitive(t, r) {
         before: '[Reddit]'
       });
       const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+        url: 'https://www.reddit.com/svc/shreddit/graphql',
         method: 'POST',
         headers: {
-          authorization: 'Bearer '.concat(_classPrivateFieldGet(_auth, this).token),
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/json'
         },
-        data: $.param({
-          action: doTask ? 'sub' : 'unsub',
-          sr_name: name,
-          api_type: 'json'
-        })
+        data: JSON.stringify(postBody)
       });
       if (result !== 'Success') {
         debug('Reddit任务请求失败', {
@@ -2152,6 +2130,14 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
+      if ((_data$response86 = data.response) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86.data) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86[postBody.operation]) !== null && _data$response86 !== void 0 && _data$response86.ok) {
+        var _data$response87, _data$response88;
+        debug('Reddit推操作出错', {
+          error: (_data$response87 = data.response) === null || _data$response87 === void 0 || (_data$response87 = _data$response87.data) === null || _data$response87 === void 0 || (_data$response87 = _data$response87.errors) === null || _data$response87 === void 0 ? void 0 : _data$response87[0]
+        });
+        logStatus.error('Error:'.concat((_data$response88 = data.response) === null || _data$response88 === void 0 || (_data$response88 = _data$response88.data) === null || _data$response88 === void 0 || (_data$response88 = _data$response88.errors) === null || _data$response88 === void 0 ? void 0 : _data$response88[0]));
+        return false;
+      }
       debug('Reddit任务处理成功', {
         name: name,
         doTask: doTask
@@ -2166,6 +2152,108 @@ function _toPrimitive(t, r) {
         error: error
       });
       throwError(error, 'Reddit.toggleTask');
+      return false;
+    }
+  }
+  async function _getSubredditId(name) {
+    try {
+      var _data$response89;
+      const logStatus = echoLog({
+        type: 'gettingRedditSubredditId',
+        text: name,
+        before: '[Reddit]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.reddit.com/r/'.concat(name),
+        method: 'GET'
+      });
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Reddit任务状态码错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const id = (_data$response89 = data.response) === null || _data$response89 === void 0 || (_data$response89 = _data$response89.match(/<shreddit-subreddit-header-buttons[^>]*\ssubreddit-id="([^"]+)"/)) === null || _data$response89 === void 0 ? void 0 : _data$response89[1];
+      if (!id) {
+        debug('获取Reddit SubredditId操作出错', {
+          error: data.response
+        });
+        logStatus.error('Error');
+        return false;
+      }
+      debug('Reddit任务处理成功', {
+        name: name,
+        id: id
+      });
+      logStatus.success();
+      return id;
+    } catch (error) {
+      debug('获取Reddit SubredditId时发生错误', {
+        error: error
+      });
+      throwError(error, 'Reddit.getSubredditId');
+      return false;
+    }
+  }
+  async function _getUserId(name) {
+    try {
+      var _data$response90;
+      const logStatus = echoLog({
+        type: 'gettingRedditUserId',
+        text: name,
+        before: '[Reddit]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://www.reddit.com/user/'.concat(name),
+        method: 'GET'
+      });
+      if (result !== 'Success') {
+        debug('Reddit任务请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('Reddit任务状态码错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      const id = (_data$response90 = data.response) === null || _data$response90 === void 0 || (_data$response90 = _data$response90.match(/<follow-button[^>]*\sredditor-id="([^"]+)"/)) === null || _data$response90 === void 0 ? void 0 : _data$response90[1];
+      if (!id) {
+        debug('获取Reddit UserId操作出错', {
+          error: data.response
+        });
+        logStatus.error('Error');
+        return false;
+      }
+      debug('Reddit任务处理成功', {
+        name: name,
+        id: id
+      });
+      logStatus.success();
+      return id;
+    } catch (error) {
+      debug('获取Reddit UserId时发生错误', {
+        error: error
+      });
+      throwError(error, 'Reddit.getUserId');
       return false;
     }
   }
@@ -2293,7 +2381,7 @@ function _toPrimitive(t, r) {
   }
   async function _verifyAuth(isFirst) {
     try {
-      var _data$response86;
+      var _data$response91;
       debug('开始验证Twitch授权');
       const logStatus = echoLog({
         text: I18n('verifyingAuth', 'Twitch'),
@@ -2318,7 +2406,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response86 = data.response) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86[0]) !== null && _data$response86 !== void 0 && (_data$response86 = _data$response86.data) !== null && _data$response86 !== void 0 && _data$response86.currentUser)) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response91 = data.response) !== null && _data$response91 !== void 0 && (_data$response91 = _data$response91[0]) !== null && _data$response91 !== void 0 && (_data$response91 = _data$response91.data) !== null && _data$response91 !== void 0 && _data$response91.currentUser)) {
         debug('Twitch授权验证状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText
@@ -2342,7 +2430,7 @@ function _toPrimitive(t, r) {
     let isFirst = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
     let ct = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
     try {
-      var _data$responseHeaders, _data$response87;
+      var _data$responseHeaders, _data$response92;
       debug('开始检查Twitch完整性', {
         isFirst: isFirst,
         ct: ct
@@ -2383,7 +2471,7 @@ function _toPrimitive(t, r) {
         debug('需要重新检查Twitch完整性');
         return await _assertClassBrand(_Twitch_brand, this, _integrity).call(this, isFirst, data.responseHeaders['x-kpsdk-ct']);
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response87 = data.response) !== null && _data$response87 !== void 0 && _data$response87.token)) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response92 = data.response) !== null && _data$response92 !== void 0 && _data$response92.token)) {
         debug('Twitch完整性检查状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText
@@ -2445,7 +2533,7 @@ function _toPrimitive(t, r) {
   async function _toggleChannel(_ref20) {
     let {name: name, doTask: doTask = true} = _ref20;
     try {
-      var _data$response88;
+      var _data$response93;
       debug('开始处理Twitch频道任务', {
         name: name,
         doTask: doTask
@@ -2499,14 +2587,14 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (_data$response88 = data.response) !== null && _data$response88 !== void 0 && _data$response88[0] && data.response[0].errors) {
-        var _data$response89, _data$response90;
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (_data$response93 = data.response) !== null && _data$response93 !== void 0 && _data$response93[0] && data.response[0].errors) {
+        var _data$response94, _data$response95;
         debug('Twitch频道操作状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText,
-          errors: data === null || data === void 0 || (_data$response89 = data.response) === null || _data$response89 === void 0 ? void 0 : _data$response89[0].errors
+          errors: data === null || data === void 0 || (_data$response94 = data.response) === null || _data$response94 === void 0 ? void 0 : _data$response94[0].errors
         });
-        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response90 = data.response) === null || _data$response90 === void 0 || (_data$response90 = _data$response90[0].errors) === null || _data$response90 === void 0 || (_data$response90 = _data$response90[0]) === null || _data$response90 === void 0 ? void 0 : _data$response90.message) || ''.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')')));
+        logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response95 = data.response) === null || _data$response95 === void 0 || (_data$response95 = _data$response95[0].errors) === null || _data$response95 === void 0 || (_data$response95 = _data$response95[0]) === null || _data$response95 === void 0 ? void 0 : _data$response95.message) || ''.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')')));
         return false;
       }
       debug('Twitch频道操作成功', {
@@ -2528,7 +2616,7 @@ function _toPrimitive(t, r) {
   }
   async function _getChannelId(name) {
     try {
-      var _data$response91;
+      var _data$response96;
       debug('开始获取Twitch频道ID', {
         name: name
       });
@@ -2573,7 +2661,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const newChannelId = (_data$response91 = data.response) === null || _data$response91 === void 0 || (_data$response91 = _data$response91[0]) === null || _data$response91 === void 0 || (_data$response91 = _data$response91.data) === null || _data$response91 === void 0 || (_data$response91 = _data$response91.user) === null || _data$response91 === void 0 ? void 0 : _data$response91.id;
+      const newChannelId = (_data$response96 = data.response) === null || _data$response96 === void 0 || (_data$response96 = _data$response96[0]) === null || _data$response96 === void 0 || (_data$response96 = _data$response96.data) === null || _data$response96 === void 0 || (_data$response96 = _data$response96.user) === null || _data$response96 === void 0 ? void 0 : _data$response96.id;
       if (!newChannelId) {
         debug('未找到Twitch频道ID', {
           name: name
@@ -2942,11 +3030,11 @@ function _toPrimitive(t, r) {
           url: 'https://x.com/settings/account'
         }, (async (cookies, error) => {
           if (!error) {
-            var _cookies$find, _cookies$find2;
-            const ct0 = (_cookies$find = cookies.find((cookie => cookie.name === 'ct0'))) === null || _cookies$find === void 0 ? void 0 : _cookies$find.value;
-            const isLogin = (_cookies$find2 = cookies.find((cookie => cookie.name === 'twid'))) === null || _cookies$find2 === void 0 ? void 0 : _cookies$find2.value;
+            var _cookies$find2, _cookies$find3;
+            const ct0 = (_cookies$find2 = cookies.find((cookie => cookie.name === 'ct0'))) === null || _cookies$find2 === void 0 ? void 0 : _cookies$find2.value;
+            const isLogin = (_cookies$find3 = cookies.find((cookie => cookie.name === 'twid'))) === null || _cookies$find3 === void 0 ? void 0 : _cookies$find3.value;
             if (isLogin && ct0) {
-              var _cookies$find3;
+              var _cookies$find4;
               debug('成功获取Twitter授权信息');
               GM_setValue('twitterAuth', {
                 ct0: ct0
@@ -2955,7 +3043,7 @@ function _toPrimitive(t, r) {
                 ct0: ct0
               });
               _classPrivateFieldGet(_headers, this)['x-csrf-token'] = ct0;
-              _classPrivateFieldGet(_headers, this)['x-twitter-client-language'] = ((_cookies$find3 = cookies.find((cookie => cookie.name === 'lang'))) === null || _cookies$find3 === void 0 ? void 0 : _cookies$find3.value) || 'en';
+              _classPrivateFieldGet(_headers, this)['x-twitter-client-language'] = ((_cookies$find4 = cookies.find((cookie => cookie.name === 'lang'))) === null || _cookies$find4 === void 0 ? void 0 : _cookies$find4.value) || 'en';
               logStatus.success();
               resolve(true);
             } else {
@@ -2976,7 +3064,7 @@ function _toPrimitive(t, r) {
       debug('更新Twitter授权时发生错误', {
         error: error
       });
-      throwError(error, 'Twitter.updateToken');
+      throwError(error, 'Twitter.updateAuth');
       return false;
     }
   }
@@ -3055,13 +3143,13 @@ function _toPrimitive(t, r) {
         return true;
       }
       if (verify && (data === null || data === void 0 ? void 0 : data.status) === 403) {
-        var _data$response92, _data$response93, _data$responseHeaders2;
-        if (((_data$response92 = data.response) === null || _data$response92 === void 0 || (_data$response92 = _data$response92.errors) === null || _data$response92 === void 0 || (_data$response92 = _data$response92[0]) === null || _data$response92 === void 0 ? void 0 : _data$response92.code) === 158) {
+        var _data$response97, _data$response98, _data$responseHeaders2;
+        if (((_data$response97 = data.response) === null || _data$response97 === void 0 || (_data$response97 = _data$response97.errors) === null || _data$response97 === void 0 || (_data$response97 = _data$response97[0]) === null || _data$response97 === void 0 ? void 0 : _data$response97.code) === 158) {
           debug('Twitter授权验证成功（已关注）');
           logStatus.success();
           return true;
         }
-        if (((_data$response93 = data.response) === null || _data$response93 === void 0 || (_data$response93 = _data$response93.errors) === null || _data$response93 === void 0 || (_data$response93 = _data$response93[0]) === null || _data$response93 === void 0 ? void 0 : _data$response93.code) === 353 && !retry && (_data$responseHeaders2 = data.responseHeaders) !== null && _data$responseHeaders2 !== void 0 && _data$responseHeaders2['set-cookie']) {
+        if (((_data$response98 = data.response) === null || _data$response98 === void 0 || (_data$response98 = _data$response98.errors) === null || _data$response98 === void 0 || (_data$response98 = _data$response98[0]) === null || _data$response98 === void 0 ? void 0 : _data$response98.code) === 353 && !retry && (_data$responseHeaders2 = data.responseHeaders) !== null && _data$responseHeaders2 !== void 0 && _data$responseHeaders2['set-cookie']) {
           var _data$responseHeaders3;
           const newCt0 = (_data$responseHeaders3 = data.responseHeaders['set-cookie']) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.find((cookie => cookie.includes('ct0=')))) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.split(';')) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.at(0)) === null || _data$responseHeaders3 === void 0 || (_data$responseHeaders3 = _data$responseHeaders3.split('=')) === null || _data$responseHeaders3 === void 0 ? void 0 : _data$responseHeaders3.at(-1);
           if (newCt0) {
@@ -3095,7 +3183,7 @@ function _toPrimitive(t, r) {
   async function _toggleRetweet(_ref22) {
     let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref22;
     try {
-      var _data$response94, _data$responseHeaders4, _data$response95, _data$response96, _data$response97;
+      var _data$response99, _data$responseHeaders4, _data$response100, _data$response101, _data$response102;
       debug('开始处理Twitter转推任务', {
         retweetId: retweetId,
         doTask: doTask,
@@ -3139,7 +3227,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response94 = data.response) === null || _data$response94 === void 0 || (_data$response94 = _data$response94.errors) === null || _data$response94 === void 0 || (_data$response94 = _data$response94[0]) === null || _data$response94 === void 0 ? void 0 : _data$response94.code) === 353 && !retry && (_data$responseHeaders4 = data.responseHeaders) !== null && _data$responseHeaders4 !== void 0 && _data$responseHeaders4['set-cookie']) {
+      if ((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response99 = data.response) === null || _data$response99 === void 0 || (_data$response99 = _data$response99.errors) === null || _data$response99 === void 0 || (_data$response99 = _data$response99[0]) === null || _data$response99 === void 0 ? void 0 : _data$response99.code) === 353 && !retry && (_data$responseHeaders4 = data.responseHeaders) !== null && _data$responseHeaders4 !== void 0 && _data$responseHeaders4['set-cookie']) {
         var _data$responseHeaders5;
         const newCt0 = (_data$responseHeaders5 = data.responseHeaders['set-cookie']) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.find((cookie => cookie.includes('ct0=')))) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.split(';')) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.at(0)) === null || _data$responseHeaders5 === void 0 || (_data$responseHeaders5 = _data$responseHeaders5.split('=')) === null || _data$responseHeaders5 === void 0 ? void 0 : _data$responseHeaders5.at(-1);
         if (newCt0) {
@@ -3154,7 +3242,7 @@ function _toPrimitive(t, r) {
           });
         }
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 && !((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response95 = data.response) === null || _data$response95 === void 0 || (_data$response95 = _data$response95.errors) === null || _data$response95 === void 0 || (_data$response95 = _data$response95[0]) === null || _data$response95 === void 0 ? void 0 : _data$response95.code) === 327)) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 && !((data === null || data === void 0 ? void 0 : data.status) === 403 && ((_data$response100 = data.response) === null || _data$response100 === void 0 || (_data$response100 = _data$response100.errors) === null || _data$response100 === void 0 || (_data$response100 = _data$response100[0]) === null || _data$response100 === void 0 ? void 0 : _data$response100.code) === 327)) {
         debug('Twitter转推操作状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText
@@ -3162,12 +3250,12 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      if ((_data$response96 = data.response) !== null && _data$response96 !== void 0 && _data$response96.errors && ((_data$response97 = data.response) === null || _data$response97 === void 0 || (_data$response97 = _data$response97.errors) === null || _data$response97 === void 0 || (_data$response97 = _data$response97[0]) === null || _data$response97 === void 0 ? void 0 : _data$response97.code) !== 327) {
-        var _data$response98, _data$response99;
+      if ((_data$response101 = data.response) !== null && _data$response101 !== void 0 && _data$response101.errors && ((_data$response102 = data.response) === null || _data$response102 === void 0 || (_data$response102 = _data$response102.errors) === null || _data$response102 === void 0 || (_data$response102 = _data$response102[0]) === null || _data$response102 === void 0 ? void 0 : _data$response102.code) !== 327) {
+        var _data$response103, _data$response104;
         debug('Twitter转推操作出错', {
-          error: (_data$response98 = data.response) === null || _data$response98 === void 0 || (_data$response98 = _data$response98.errors) === null || _data$response98 === void 0 || (_data$response98 = _data$response98[0]) === null || _data$response98 === void 0 ? void 0 : _data$response98.message
+          error: (_data$response103 = data.response) === null || _data$response103 === void 0 || (_data$response103 = _data$response103.errors) === null || _data$response103 === void 0 || (_data$response103 = _data$response103[0]) === null || _data$response103 === void 0 ? void 0 : _data$response103.message
         });
-        logStatus.error('Error:'.concat((_data$response99 = data.response) === null || _data$response99 === void 0 || (_data$response99 = _data$response99.errors) === null || _data$response99 === void 0 || (_data$response99 = _data$response99[0]) === null || _data$response99 === void 0 ? void 0 : _data$response99.message));
+        logStatus.error('Error:'.concat((_data$response104 = data.response) === null || _data$response104 === void 0 || (_data$response104 = _data$response104.errors) === null || _data$response104 === void 0 || (_data$response104 = _data$response104[0]) === null || _data$response104 === void 0 ? void 0 : _data$response104.message));
         return false;
       }
       debug('Twitter转推操作成功', {
@@ -3308,7 +3396,7 @@ function _toPrimitive(t, r) {
   }
   async function _verifyAuth3() {
     try {
-      var _data$responseText$ma11;
+      var _data$responseText$ma10;
       debug('开始验证Vk授权');
       const logStatus = echoLog({
         text: I18n('verifyAuth', 'Vk'),
@@ -3340,7 +3428,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      _classPrivateFieldSet(_username, this, ((_data$responseText$ma11 = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]) || '');
+      _classPrivateFieldSet(_username, this, ((_data$responseText$ma10 = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1]) || '');
       debug('Vk授权验证成功');
       logStatus.success();
       return true;
@@ -3568,7 +3656,7 @@ function _toPrimitive(t, r) {
   }
   async function _sendWall(name) {
     try {
-      var _data$responseText$ma12, _dataR$responseText, _jsonData$payload, _jsonData$payload2, _jsonData$payload3;
+      var _data$responseText$ma11, _dataR$responseText, _jsonData$payload, _jsonData$payload2, _jsonData$payload3;
       debug('开始处理Vk转发任务', {
         name: name
       });
@@ -3608,7 +3696,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const hash = (_data$responseText$ma12 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1];
+      const hash = (_data$responseText$ma11 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1];
       if (!hash) {
         debug('获取Vk转发hash失败');
         logStatus.error('Error: Get "hash" failed');
@@ -3746,7 +3834,7 @@ function _toPrimitive(t, r) {
   }
   async function _getId(name, doTask) {
     try {
-      var _data$responseText$ma13, _data$responseText$ma14;
+      var _data$responseText$ma12, _data$responseText$ma13;
       debug('开始获取Vk ID', {
         name: name,
         doTask: doTask
@@ -3792,8 +3880,8 @@ function _toPrimitive(t, r) {
         return false;
       }
       const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
-      const publicHash = (_data$responseText$ma13 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1];
-      const publicPid = (_data$responseText$ma14 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1];
+      const publicHash = (_data$responseText$ma12 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1];
+      const publicPid = (_data$responseText$ma13 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1];
       const publicJoined = !data.responseText.includes('Public.subscribe');
       if (groupAct && groupId && groupHash) {
         debug('获取到Vk群组ID', {
@@ -3824,9 +3912,9 @@ function _toPrimitive(t, r) {
         };
       }
       if (name.includes('action=like')) {
-        var _data$responseText$ma15, _data$responseText$ma16, _name$match;
-        const hash = (_data$responseText$ma15 = data.responseText.match(/data-reaction-hash="(.*?)"/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1];
-        const trackCode = (_data$responseText$ma16 = data.responseText.match(/data-post-track-code="(.*?)"/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1];
+        var _data$responseText$ma14, _data$responseText$ma15, _name$match;
+        const hash = (_data$responseText$ma14 = data.responseText.match(/data-reaction-hash="(.*?)"/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1];
+        const trackCode = (_data$responseText$ma15 = data.responseText.match(/data-post-track-code="(.*?)"/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1];
         const object = (_name$match = name.match(/wall-[\w_]+/)) === null || _name$match === void 0 ? void 0 : _name$match[0];
         if (hash && trackCode && object) {
           debug('获取到Vk点赞ID', {
@@ -3844,8 +3932,8 @@ function _toPrimitive(t, r) {
         }
       }
       if (data.responseText.includes('wall.deletePost') && !doTask) {
-        var _data$responseText$ma17;
-        const wallHash = (_data$responseText$ma17 = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1];
+        var _data$responseText$ma16;
+        const wallHash = (_data$responseText$ma16 = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1];
         if (wallHash) {
           debug('获取到Vk删除墙ID', {
             wallHash: wallHash
@@ -4237,8 +4325,8 @@ function _toPrimitive(t, r) {
           url: 'https://www.youtube.com/@YouTube'
         }, (async (cookies, error) => {
           if (!error) {
-            var _cookies$find4;
-            const PAPISID = (_cookies$find4 = cookies.find((cookie => cookie.name === '__Secure-3PAPISID'))) === null || _cookies$find4 === void 0 ? void 0 : _cookies$find4.value;
+            var _cookies$find5;
+            const PAPISID = (_cookies$find5 = cookies.find((cookie => cookie.name === '__Secure-3PAPISID'))) === null || _cookies$find5 === void 0 ? void 0 : _cookies$find5.value;
             if (PAPISID) {
               debug('成功获取YouTube新授权信息');
               GM_setValue('youtubeAuth', {
@@ -5387,7 +5475,7 @@ function _toPrimitive(t, r) {
   }
   async function _getGroupId() {
     try {
-      var _data$response100, _data$response101, _data$response102, _data$response103, _data$response104;
+      var _data$response105, _data$response106, _data$response107, _data$response108, _data$response109;
       debug('开始获取Steam组ID列表');
       const logStatus = echoLog({
         type: 'gettingSteamGroupId',
@@ -5408,7 +5496,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response100 = data.response) !== null && _data$response100 !== void 0 && (_data$response100 = _data$response100.Result) !== null && _data$response100 !== void 0 && _data$response100.includes('|')) {
+      if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response105 = data.response) !== null && _data$response105 !== void 0 && (_data$response105 = _data$response105.Result) !== null && _data$response105 !== void 0 && _data$response105.includes('|')) {
         _classPrivateFieldSet(_groupInfo, this, Object.fromEntries(data.response.Result.split('\n').map((line => {
           const [, name, id] = line.trim().split('|');
           if (name && id) {
@@ -5423,10 +5511,10 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('获取Steam组ID列表失败', {
-        result: data === null || data === void 0 || (_data$response101 = data.response) === null || _data$response101 === void 0 ? void 0 : _data$response101.Result,
-        message: data === null || data === void 0 || (_data$response102 = data.response) === null || _data$response102 === void 0 ? void 0 : _data$response102.Message
+        result: data === null || data === void 0 || (_data$response106 = data.response) === null || _data$response106 === void 0 ? void 0 : _data$response106.Result,
+        message: data === null || data === void 0 || (_data$response107 = data.response) === null || _data$response107 === void 0 ? void 0 : _data$response107.Message
       });
-      logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response103 = data.response) === null || _data$response103 === void 0 ? void 0 : _data$response103.Result) || (data === null || data === void 0 || (_data$response104 = data.response) === null || _data$response104 === void 0 ? void 0 : _data$response104.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response108 = data.response) === null || _data$response108 === void 0 ? void 0 : _data$response108.Result) || (data === null || data === void 0 || (_data$response109 = data.response) === null || _data$response109 === void 0 ? void 0 : _data$response109.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
       return false;
     } catch (error) {
       debug('获取Steam组ID列表时发生错误', {
@@ -5438,7 +5526,7 @@ function _toPrimitive(t, r) {
   }
   async function _checkGame(gameId) {
     try {
-      var _data$response105, _data$response$Result2;
+      var _data$response110, _data$response$Result2;
       debug('开始检查游戏状态', {
         gameId: gameId
       });
@@ -5453,7 +5541,7 @@ function _toPrimitive(t, r) {
         });
         return {};
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response105 = data.response) !== null && _data$response105 !== void 0 && (_data$response105 = _data$response105.Result) !== null && _data$response105 !== void 0 && _data$response105.includes(gameId))) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response110 = data.response) !== null && _data$response110 !== void 0 && (_data$response110 = _data$response110.Result) !== null && _data$response110 !== void 0 && _data$response110.includes(gameId))) {
         debug('检查游戏状态响应无效', {
           status: data === null || data === void 0 ? void 0 : data.status
         });
@@ -6650,7 +6738,7 @@ function _toPrimitive(t, r) {
   async function _refreshToken() {
     let type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'steamStore';
     try {
-      var _data$response106;
+      var _data$response111;
       debug('开始刷新令牌', {
         type: type
       });
@@ -6691,7 +6779,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if (!(data !== null && data !== void 0 && (_data$response106 = data.response) !== null && _data$response106 !== void 0 && _data$response106.success)) {
+      if (!(data !== null && data !== void 0 && (_data$response111 = data.response) !== null && _data$response111 !== void 0 && _data$response111.success)) {
         debug('响应不成功', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText
@@ -6788,7 +6876,7 @@ function _toPrimitive(t, r) {
   async function _updateStoreAuth() {
     let retry = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     try {
-      var _data$responseText$ma18;
+      var _data$responseText$ma17;
       debug('开始更新Steam商店身份验证');
       const logStatus = echoLog({
         text: I18n('updatingAuth', I18n('steamStore')),
@@ -6847,7 +6935,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
         return false;
       }
-      const storeSessionID = (_data$responseText$ma18 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1];
+      const storeSessionID = (_data$responseText$ma17 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1];
       if (!storeSessionID) {
         debug('Steam商店身份验证失败：获取sessionID失败');
         logStatus.error('Error: Get "sessionID" failed');
@@ -6974,7 +7062,7 @@ function _toPrimitive(t, r) {
   async function _updateCommunityAuth(initStoreResult) {
     let retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     try {
-      var _data$responseText$ma19, _data$responseText$ma20;
+      var _data$responseText$ma18, _data$responseText$ma19;
       debug('开始更新Steam社区身份验证');
       const logStatus = echoLog({
         text: I18n('gettingUserInfo'),
@@ -7020,8 +7108,8 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(I18n('needLoginSteamCommunity')), true);
         return false;
       }
-      const steam64Id = (_data$responseText$ma19 = data.responseText.match(/g_steamID = "(.+?)";/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1];
-      const communitySessionID = (_data$responseText$ma20 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1];
+      const steam64Id = (_data$responseText$ma18 = data.responseText.match(/g_steamID = "(.+?)";/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1];
+      const communitySessionID = (_data$responseText$ma19 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1];
       if (!steam64Id || !communitySessionID) {
         debug('Steam社区身份验证失败：获取身份信息失败');
         logStatus.error('Error: Get "sessionID" failed');
@@ -7045,7 +7133,7 @@ function _toPrimitive(t, r) {
   }
   async function _getAreaInfo() {
     try {
-      var _data$responseText$ma21, _data$responseText$ma22;
+      var _data$responseText$ma20, _data$responseText$ma21;
       debug('开始获取Steam地区信息');
       const logStatus = echoLog({
         text: I18n('gettingAreaInfo'),
@@ -7069,7 +7157,7 @@ function _toPrimitive(t, r) {
         logStatus.error(result === 'Success' ? 'Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')') : ''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return {};
       }
-      const cartConfigRaw = (_data$responseText$ma21 = data.responseText.match(/data-cart_config="(.*?)"/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[1];
+      const cartConfigRaw = (_data$responseText$ma20 = data.responseText.match(/data-cart_config="(.*?)"/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1];
       debug('cartConfigRaw提取结果', {
         cartConfigRaw: cartConfigRaw
       });
@@ -7095,7 +7183,7 @@ function _toPrimitive(t, r) {
         logStatus.warning('Warning: Area cannot be changed');
         return {};
       }
-      const userInfoRaw = (_data$responseText$ma22 = data.responseText.match(/data-userinfo="(.*?)"/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1];
+      const userInfoRaw = (_data$responseText$ma21 = data.responseText.match(/data-userinfo="(.*?)"/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[1];
       debug('userInfoRaw提取结果', {
         userInfoRaw: userInfoRaw
       });
@@ -7287,7 +7375,7 @@ function _toPrimitive(t, r) {
   }
   async function _getGroupId2(groupName) {
     try {
-      var _data$responseText$ma23;
+      var _data$responseText$ma22;
       debug('开始获取Steam组ID', {
         groupName: groupName
       });
@@ -7332,7 +7420,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedGroupId = (_data$responseText$ma23 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma23 === void 0 ? void 0 : _data$responseText$ma23[1];
+      const matchedGroupId = (_data$responseText$ma22 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1];
       debug('正则提取组ID结果', {
         matchedGroupId: matchedGroupId
       });
@@ -7361,7 +7449,7 @@ function _toPrimitive(t, r) {
   }
   async function _getOfficialGroupId(gameId) {
     try {
-      var _data$responseText$ma24;
+      var _data$responseText$ma23;
       debug('开始获取Steam官方群组ID', {
         gameId: gameId
       });
@@ -7406,7 +7494,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedGroupId = (_data$responseText$ma24 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma24 === void 0 ? void 0 : _data$responseText$ma24[1];
+      const matchedGroupId = (_data$responseText$ma23 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma23 === void 0 ? void 0 : _data$responseText$ma23[1];
       debug('正则提取官方群组ID结果', {
         matchedGroupId: matchedGroupId
       });
@@ -7551,7 +7639,7 @@ function _toPrimitive(t, r) {
   }
   async function _getWorkshopAppId(id) {
     try {
-      var _data$responseText$ma25;
+      var _data$responseText$ma24;
       debug('开始获取Steam创意工坊AppId', {
         id: id
       });
@@ -7593,7 +7681,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedAppId = (_data$responseText$ma25 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma25 === void 0 ? void 0 : _data$responseText$ma25[1];
+      const matchedAppId = (_data$responseText$ma24 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma24 === void 0 ? void 0 : _data$responseText$ma24[1];
       debug('正则提取AppId结果', {
         matchedAppId: matchedAppId
       });
@@ -7620,7 +7708,7 @@ function _toPrimitive(t, r) {
   }
   async function _getAnnouncementParams(appId, viewId) {
     try {
-      var _data$response107, _data$response$event;
+      var _data$response112, _data$response$event;
       debug('开始获取Steam公告参数', {
         appId: appId,
         viewId: viewId
@@ -7652,7 +7740,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return {};
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response107 = data.response) === null || _data$response107 === void 0 ? void 0 : _data$response107.success) !== 1) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response112 = data.response) === null || _data$response112 === void 0 ? void 0 : _data$response112.success) !== 1) {
         debug('获取公告参数响应状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText,
@@ -7695,7 +7783,7 @@ function _toPrimitive(t, r) {
   }
   async function _appid2subid(id) {
     try {
-      var _data$responseText$ma26, _data$responseText$ma27;
+      var _data$responseText$ma25, _data$responseText$ma26;
       debug('开始将AppId转换为SubId', {
         id: id
       });
@@ -7752,7 +7840,7 @@ function _toPrimitive(t, r) {
         }
         return await _assertClassBrand(_SteamWeb_brand, this, _appid2subid).call(this, id);
       }
-      let subid = (_data$responseText$ma26 = data.responseText.match(/name="subid" value="([\d]+?)"/)) === null || _data$responseText$ma26 === void 0 ? void 0 : _data$responseText$ma26[1];
+      let subid = (_data$responseText$ma25 = data.responseText.match(/name="subid" value="([\d]+?)"/)) === null || _data$responseText$ma25 === void 0 ? void 0 : _data$responseText$ma25[1];
       debug('正则提取subid结果1', {
         subid: subid
       });
@@ -7760,7 +7848,7 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return subid;
       }
-      subid = (_data$responseText$ma27 = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)) === null || _data$responseText$ma27 === void 0 ? void 0 : _data$responseText$ma27[1];
+      subid = (_data$responseText$ma26 = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)) === null || _data$responseText$ma26 === void 0 ? void 0 : _data$responseText$ma26[1];
       debug('正则提取subid结果2', {
         subid: subid
       });
@@ -7784,7 +7872,7 @@ function _toPrimitive(t, r) {
   }
   async function _getLicenses() {
     try {
-      var _data$response108, _data$response109;
+      var _data$response113, _data$response114;
       debug('开始获取Steam用户许可证信息');
       const logStatus = echoLog({
         text: I18n('gettingLicenses'),
@@ -7818,10 +7906,10 @@ function _toPrimitive(t, r) {
         return false;
       }
       debug('获取到的许可证列表', {
-        licenses: (_data$response108 = data.response) === null || _data$response108 === void 0 ? void 0 : _data$response108.rgOwnedPackages
+        licenses: (_data$response113 = data.response) === null || _data$response113 === void 0 ? void 0 : _data$response113.rgOwnedPackages
       });
       logStatus.remove();
-      return (_data$response109 = data.response) === null || _data$response109 === void 0 ? void 0 : _data$response109.rgOwnedPackages;
+      return (_data$response114 = data.response) === null || _data$response114 === void 0 ? void 0 : _data$response114.rgOwnedPackages;
     } catch (error) {
       debug('获取许可证时发生异常', {
         error: error
@@ -8825,8 +8913,8 @@ function _toPrimitive(t, r) {
       });
       if (result === 'Success') {
         if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
-          var _data$responseText$ma28;
-          const demoAppid = (_data$responseText$ma28 = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)) === null || _data$responseText$ma28 === void 0 ? void 0 : _data$responseText$ma28[2];
+          var _data$responseText$ma27;
+          const demoAppid = (_data$responseText$ma27 = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)) === null || _data$responseText$ma27 === void 0 ? void 0 : _data$responseText$ma27[2];
           debug('成功获取游戏试玩ID', {
             id: id,
             demoAppid: demoAppid
@@ -10308,7 +10396,7 @@ function _toPrimitive(t, r) {
   }
   async function _join() {
     try {
-      var _data$response110, _data$response114, _data$response115;
+      var _data$response115, _data$response119, _data$response120;
       debug('开始加入抽奖');
       if ($('a.buttonenter:contains(Register to join)').length > 0) {
         debug('需要登录');
@@ -10368,19 +10456,19 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      if (!((_data$response110 = data.response) !== null && _data$response110 !== void 0 && _data$response110.success)) {
-        var _data$response111, _data$response112, _data$response113;
+      if (!((_data$response115 = data.response) !== null && _data$response115 !== void 0 && _data$response115.success)) {
+        var _data$response116, _data$response117, _data$response118;
         debug('响应失败', {
-          text: (_data$response111 = data.response) === null || _data$response111 === void 0 ? void 0 : _data$response111.text
+          text: (_data$response116 = data.response) === null || _data$response116 === void 0 ? void 0 : _data$response116.text
         });
-        logStatus.error('Error'.concat((_data$response112 = data.response) !== null && _data$response112 !== void 0 && _data$response112.text ? ':'.concat((_data$response113 = data.response) === null || _data$response113 === void 0 ? void 0 : _data$response113.text) : ''));
+        logStatus.error('Error'.concat((_data$response117 = data.response) !== null && _data$response117 !== void 0 && _data$response117.text ? ':'.concat((_data$response118 = data.response) === null || _data$response118 === void 0 ? void 0 : _data$response118.text) : ''));
         return false;
       }
       debug('加入成功');
       currentoption.addClass('buttonentered').text('Success - Giveaway joined');
       $('#giveawaysjoined').slideDown();
       $('#giveawaysrecommend').slideDown();
-      logStatus.success('Success'.concat((_data$response114 = data.response) !== null && _data$response114 !== void 0 && _data$response114.text ? ':'.concat((_data$response115 = data.response) === null || _data$response115 === void 0 ? void 0 : _data$response115.text) : ''));
+      logStatus.success('Success'.concat((_data$response119 = data.response) !== null && _data$response119 !== void 0 && _data$response119.text ? ':'.concat((_data$response120 = data.response) === null || _data$response120 === void 0 ? void 0 : _data$response120.text) : ''));
       return true;
     } catch (error) {
       debug('加入抽奖失败', {
@@ -13970,8 +14058,8 @@ function _toPrimitive(t, r) {
         responseType: 'json'
       });
       if (result === 'Success') {
-        var _data$response116, _data$response117;
-        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response116 = data.response) === null || _data$response116 === void 0 ? void 0 : _data$response116.Success) === true && data !== null && data !== void 0 && (_data$response117 = data.response) !== null && _data$response117 !== void 0 && _data$response117.Data) {
+        var _data$response121, _data$response122;
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response121 = data.response) === null || _data$response121 === void 0 ? void 0 : _data$response121.Success) === true && data !== null && data !== void 0 && (_data$response122 = data.response) !== null && _data$response122 !== void 0 && _data$response122.Data) {
           const {link: link} = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {};
           if (link) {
             debug('获取链接成功', {
@@ -15939,7 +16027,7 @@ function _toPrimitive(t, r) {
     });
   }
   async function _verifyTask(task, logStatus) {
-    var _document$cookie$matc4, _data$response118;
+    var _document$cookie$matc4, _data$response123;
     debug('验证任务', {
       taskId: task.id,
       category: task.category,
@@ -15972,7 +16060,7 @@ function _toPrimitive(t, r) {
       logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
       return false;
     }
-    if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response118 = data.response) !== null && _data$response118 !== void 0 && _data$response118.completed)) {
+    if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response123 = data.response) !== null && _data$response123 !== void 0 && _data$response123.completed)) {
       debug('任务验证响应异常', {
         status: data === null || data === void 0 ? void 0 : data.status,
         response: data === null || data === void 0 ? void 0 : data.response

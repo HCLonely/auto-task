@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task
 // @namespace          auto-task
-// @version            5.1.7
+// @version            5.1.8
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -637,8 +637,10 @@ if (missingDependencies.length > 0) {
     changingRedditVersion: '正在切换Reddit为新版页面...',
     joiningReddit: '正在加入Reddit社区',
     leavingReddit: '正在退出Reddit社区',
+    gettingRedditSubredditId: '正在获取Reddit社区Id',
     followingRedditUser: '正在关注Reddit用户',
     unfollowingRedditUser: '正在取关Reddit用户',
+    gettingRedditUserId: '正在获取Reddit用户Id',
     channels: '频道',
     followingTwitchChannel: '正在关注Twitch频道',
     unfollowingTwitchChannel: '正在取关Twitch频道',
@@ -951,8 +953,10 @@ if (missingDependencies.length > 0) {
     changingRedditVersion: 'Switching Reddit to a new version page...',
     joiningReddit: 'Joining the Reddit',
     leavingReddit: 'Leaving the Reddit',
+    gettingRedditSubredditId: 'Getting Reddit Subreddit Id',
     followingRedditUser: 'Following Reddit User',
     unfollowingRedditUser: 'Unfollowing Reddit User',
+    gettingRedditUserId: 'Getting Reddit User Id',
     channels: 'Channel',
     followingTwitchChannel: 'Following Twitch Channel',
     unfollowingTwitchChannel: 'Unfollowing Twitch Channel',
@@ -1509,8 +1513,10 @@ if (missingDependencies.length > 0) {
       unfollowingTwitterUser: [ 'twitter' ],
       joiningReddit: [ 'reddit', 'subreddit' ],
       leavingReddit: [ 'reddit', 'subreddit' ],
+      gettingRedditSubredditId: [ 'reddit', 'subreddit' ],
       followingRedditUser: [ 'reddit', 'user' ],
       unfollowingRedditUser: [ 'reddit', 'user' ],
+      gettingRedditUserId: [ 'reddit', 'user' ],
       followingYtbChannel: [ 'youtube', 'channel' ],
       unfollowingYtbChannel: [ 'youtube', 'channel' ],
       likingYtbVideo: [ 'youtube', 'video' ],
@@ -1848,89 +1854,40 @@ if (missingDependencies.length > 0) {
         return false;
       }
     }
-    async #useBeta() {
+    async #updateAuth() {
       try {
-        debug('开始切换Reddit为新版');
-        const logStatus = echoLog({
-          text: I18n('changingRedditVersion'),
-          before: '[Reddit]'
-        });
-        return await new Promise((resolve => {
-          const newTab = GM_openInTab('https://www.reddit.com/', {
-            active: true,
-            insert: true,
-            setParent: true
-          });
-          newTab.name = 'ATv4_redditAuth';
-          newTab.onclose = async () => {
-            debug('新版Reddit标签页已关闭');
-            logStatus.success();
-            resolve(await this.#updateAuth(true));
-          };
-        }));
-      } catch (error) {
-        debug('切换Reddit版本时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.useBeta');
-        return false;
-      }
-    }
-    async #updateAuth(beta = false) {
-      try {
-        debug('开始更新Reddit授权', {
-          beta: beta
-        });
+        debug('开始更新Reddit授权');
         const logStatus = echoLog({
           text: I18n('updatingAuth', 'Reddit'),
           before: '[Reddit]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://www.reddit.com/',
-          method: 'GET',
-          nochche: true,
-          headers: {
-            'Cache-Control': 'no-cache'
-          }
-        });
-        if (result !== 'Success') {
-          debug('获取Reddit页面失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.responseText.includes('www.reddit.com/login/')) {
-          debug('需要登录Reddit');
-          logStatus.error(`Error:${I18n('loginReddit')}`, true);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit页面状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.responseText.includes('redesign-beta-optin-btn') && !beta) {
-          debug('检测到旧版Reddit，需要切换到新版');
-          return await this.#useBeta();
-        }
-        const accessToken = data.responseText.match(/"accessToken":"(.*?)","expires":"(.*?)"/)?.[1];
-        if (!accessToken) {
-          debug('未找到Reddit访问令牌');
-          logStatus.error('Error: Parameter "accessToken" not found!');
-          return false;
-        }
-        debug('成功获取Reddit访问令牌');
-        this.#auth = {
-          token: accessToken
-        };
-        logStatus.success();
-        return true;
+        return await new Promise((resolve => {
+          GM_cookie.list({
+            url: 'https://www.reddit.com/'
+          }, (async (cookies, error) => {
+            if (!error) {
+              const csrftoken = cookies.find((cookie => cookie.name === 'csrf_token'))?.value;
+              if (csrftoken) {
+                debug('成功获取Reddit授权信息');
+                this.#auth = {
+                  csrftoken: csrftoken
+                };
+                logStatus.success();
+                resolve(true);
+              } else {
+                debug('获取Reddit授权失败');
+                logStatus.error('Error: Parameter "csrf_token" not found!');
+                resolve(false);
+              }
+            } else {
+              debug('获取Reddit授权失败', {
+                error: error
+              });
+              logStatus.error('Error: Update reddit auth failed!');
+              resolve(false);
+            }
+          }));
+        }));
       } catch (error) {
         debug('更新Reddit授权时发生错误', {
           error: error
@@ -1958,8 +1915,37 @@ if (missingDependencies.length > 0) {
           return true;
         }
         let type = doTask ? 'joiningReddit' : 'leavingReddit';
+        let postBody;
         if (/^u_/.test(name)) {
+          const accountId = await this.#getUserId(name.replace('u_', ''));
           type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
+          postBody = {
+            operation: 'UpdateProfileFollowState',
+            variables: {
+              input: {
+                accountId: accountId,
+                state: doTask ? 'FOLLOWED' : 'NONE'
+              }
+            },
+            csrf_token: this.#auth.csrftoken
+          };
+        } else {
+          const subredditId = await this.#getSubredditId(name);
+          if (!subredditId) {
+            return false;
+          }
+          postBody = {
+            operation: 'UpdateSubredditSubscriptions',
+            variables: {
+              input: {
+                inputs: [ {
+                  subredditId: subredditId,
+                  subscribeState: doTask ? 'SUBSCRIBED' : 'NONE'
+                } ]
+              }
+            },
+            csrf_token: this.#auth.csrftoken
+          };
         }
         debug('任务类型', {
           type: type,
@@ -1971,17 +1957,12 @@ if (missingDependencies.length > 0) {
           before: '[Reddit]'
         });
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://oauth.reddit.com/api/subscribe?redditWebClient=desktop2x&app=desktop2x-client-production&raw_json=1&gilding_detail=1',
+          url: 'https://www.reddit.com/svc/shreddit/graphql',
           method: 'POST',
           headers: {
-            authorization: `Bearer ${this.#auth.token}`,
-            'content-type': 'application/x-www-form-urlencoded'
+            'content-type': 'application/json'
           },
-          data: $.param({
-            action: doTask ? 'sub' : 'unsub',
-            sr_name: name,
-            api_type: 'json'
-          })
+          data: JSON.stringify(postBody)
         });
         if (result !== 'Success') {
           debug('Reddit任务请求失败', {
@@ -2000,6 +1981,13 @@ if (missingDependencies.length > 0) {
           logStatus.error(`Error:${data?.statusText}(${data?.status})`);
           return false;
         }
+        if (data.response?.data?.[postBody.operation]?.ok) {
+          debug('Reddit推操作出错', {
+            error: data.response?.data?.errors?.[0]
+          });
+          logStatus.error(`Error:${data.response?.data?.errors?.[0]}`);
+          return false;
+        }
         debug('Reddit任务处理成功', {
           name: name,
           doTask: doTask
@@ -2014,6 +2002,106 @@ if (missingDependencies.length > 0) {
           error: error
         });
         throwError(error, 'Reddit.toggleTask');
+        return false;
+      }
+    }
+    async #getSubredditId(name) {
+      try {
+        const logStatus = echoLog({
+          type: 'gettingRedditSubredditId',
+          text: name,
+          before: '[Reddit]'
+        });
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+          url: `https://www.reddit.com/r/${name}`,
+          method: 'GET'
+        });
+        if (result !== 'Success') {
+          debug('Reddit任务请求失败', {
+            result: result,
+            statusText: statusText,
+            status: status
+          });
+          logStatus.error(`${result}:${statusText}(${status})`);
+          return false;
+        }
+        if (data?.status !== 200) {
+          debug('Reddit任务状态码错误', {
+            status: data?.status,
+            statusText: data?.statusText
+          });
+          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          return false;
+        }
+        const id = data.response?.match(/<shreddit-subreddit-header-buttons[^>]*\ssubreddit-id="([^"]+)"/)?.[1];
+        if (!id) {
+          debug('获取Reddit SubredditId操作出错', {
+            error: data.response
+          });
+          logStatus.error('Error');
+          return false;
+        }
+        debug('Reddit任务处理成功', {
+          name: name,
+          id: id
+        });
+        logStatus.success();
+        return id;
+      } catch (error) {
+        debug('获取Reddit SubredditId时发生错误', {
+          error: error
+        });
+        throwError(error, 'Reddit.getSubredditId');
+        return false;
+      }
+    }
+    async #getUserId(name) {
+      try {
+        const logStatus = echoLog({
+          type: 'gettingRedditUserId',
+          text: name,
+          before: '[Reddit]'
+        });
+        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+          url: `https://www.reddit.com/user/${name}`,
+          method: 'GET'
+        });
+        if (result !== 'Success') {
+          debug('Reddit任务请求失败', {
+            result: result,
+            statusText: statusText,
+            status: status
+          });
+          logStatus.error(`${result}:${statusText}(${status})`);
+          return false;
+        }
+        if (data?.status !== 200) {
+          debug('Reddit任务状态码错误', {
+            status: data?.status,
+            statusText: data?.statusText
+          });
+          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+          return false;
+        }
+        const id = data.response?.match(/<follow-button[^>]*\sredditor-id="([^"]+)"/)?.[1];
+        if (!id) {
+          debug('获取Reddit UserId操作出错', {
+            error: data.response
+          });
+          logStatus.error('Error');
+          return false;
+        }
+        debug('Reddit任务处理成功', {
+          name: name,
+          id: id
+        });
+        logStatus.success();
+        return id;
+      } catch (error) {
+        debug('获取Reddit UserId时发生错误', {
+          error: error
+        });
+        throwError(error, 'Reddit.getUserId');
         return false;
       }
     }
@@ -2045,10 +2133,7 @@ if (missingDependencies.length > 0) {
         const realReddits = this.getRealParams('reddits', redditLinks, doTask, (link => {
           const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
           const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
-          if (userName) {
-            return name || userName;
-          }
-          return name;
+          return name || `u_${userName}`;
         }));
         debug('处理后的Reddit列表', {
           count: realReddits.length,
@@ -2698,7 +2783,7 @@ if (missingDependencies.length > 0) {
         debug('更新Twitter授权时发生错误', {
           error: error
         });
-        throwError(error, 'Twitter.updateToken');
+        throwError(error, 'Twitter.updateAuth');
         return false;
       }
     }

@@ -273,8 +273,10 @@ const data = {
   changingRedditVersion: '正在切换Reddit为新版页面...',
   joiningReddit: '正在加入Reddit社区',
   leavingReddit: '正在退出Reddit社区',
+  gettingRedditSubredditId: '正在获取Reddit社区Id',
   followingRedditUser: '正在关注Reddit用户',
   unfollowingRedditUser: '正在取关Reddit用户',
+  gettingRedditUserId: '正在获取Reddit用户Id',
 
   // Twitch
   channels: '频道',

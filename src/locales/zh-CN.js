@@ -353,6 +353,7 @@ const data = {
   updatingUserData: '正在更新用户数据...',
   gettingUserGames: '正在获取用户游戏...',
   skipExtensionToVerifyTask: '需要扩展，跳过自动验证',
+  verifyExtensionNeeded: '此任务验证需要扩展程序，跳过',
 
   // opquests
   confirmingTask: '正在跳过警告页面...',

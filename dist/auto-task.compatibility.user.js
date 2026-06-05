@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.1.8
+// @version            5.1.9
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -739,6 +739,7 @@ function _toPrimitive(t, r) {
     updatingUserData: '正在更新用户数据...',
     gettingUserGames: '正在获取用户游戏...',
     skipExtensionToVerifyTask: '需要扩展，跳过自动验证',
+    verifyExtensionNeeded: '此任务验证需要扩展程序，跳过',
     confirmingTask: '正在跳过警告页面...',
     unSupporttedTaskType: '不支持的任务类型: %0',
     taskNotFinished: '有任务未完成，不获取密钥',
@@ -1055,6 +1056,7 @@ function _toPrimitive(t, r) {
     updatingUserData: 'Updating user data...',
     gettingUserGames: 'Getting user games...',
     skipExtensionToVerifyTask: 'Need extension, skip automatic verification',
+    verifyExtensionNeeded: 'This task verification requires the extension. Skip.',
     confirmingTask: 'Confirming task...',
     unSupporttedTaskType: 'Unsupportted task type: %0',
     taskNotFinished: 'There are tasks not completed, do not get the key',
@@ -9399,7 +9401,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$9));
       _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$9));
       _defineProperty(this, 'games', void 0);
-      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'getKey' ]);
+      _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask', 'getKey' ]);
     }
     static test() {
       const isMatch = window.location.host === 'freeanywhere.net';
@@ -9529,6 +9531,12 @@ function _toPrimitive(t, r) {
           result: result
         });
         echoLog({}).success(I18n('allTasksComplete'));
+        const tasksNotDone = $('.game__content-tasks__task').toArray().find((el => !$(el).hasClass('done')));
+        if (tasksNotDone) {
+          $('.js-get-key').addClass('inactive');
+        } else {
+          $('.js-get-key').removeClass('inactive');
+        }
         if (result.every((item => item.status === 'fulfilled' && item.value === true))) {
           return !!await this.getKey(true);
         }
@@ -9823,6 +9831,13 @@ function _toPrimitive(t, r) {
       const logStatus = echoLog({
         text: ''.concat(I18n('verifyingTask')).concat(task.title.trim(), '...')
       });
+      const $parrent = $('.game__content-tasks__task[data-id="'.concat(task.id, '"]'));
+      const extension = $parrent.data('extension');
+      if (extension) {
+        logStatus.warning(I18n('verifyExtensionNeeded'));
+        return false;
+      }
+      $parrent.find('.task-check').addClass('loading');
       const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
         url: 'https://freeanywhere.net/php/user_task_update.php',
         method: 'POST',
@@ -9848,8 +9863,14 @@ function _toPrimitive(t, r) {
           status: data === null || data === void 0 ? void 0 : data.status
         });
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        $parrent.removeClass('error');
+        $parrent.removeClass('done');
+        $parrent.find('.task-check').removeClass('loading');
         return false;
       }
+      $parrent.addClass('done');
+      $parrent.removeClass('error');
+      $parrent.find('.task-check').removeClass('loading');
       debug('验证成功');
       logStatus.success();
       return true;

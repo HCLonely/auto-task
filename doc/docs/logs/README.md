@@ -5,6 +5,12 @@ lang: zh-CN
 
 ## V5.1
 
+### V5.1.9
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.9)
+
+- 修复：恢复Freeanywhere的验证按钮（当前仅支持不需要扩展的任务）([#76](https://github.com/HCLonely/auto-task/issues/76))
+
 ### V5.1.8
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.1.8)

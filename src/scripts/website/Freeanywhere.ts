@@ -72,7 +72,7 @@ class FreeAnyWhere extends Website {
   buttons: Array<string> = [
     'doTask',
     'undoTask',
-    // 'verifyTask',
+    'verifyTask',
     'getKey'
   ];
   /**
@@ -325,6 +325,15 @@ class FreeAnyWhere extends Website {
       debug('任务验证结果', { result });
       echoLog({}).success(__('allTasksComplete'));
 
+      const tasksNotDone = $('.game__content-tasks__task').toArray()
+        .find((el) => !$(el).hasClass('done'));
+
+      if (tasksNotDone) {
+        $('.js-get-key').addClass('inactive');
+      } else {
+        $('.js-get-key').removeClass('inactive');
+      }
+
       if (result.every((item) => item.status === 'fulfilled' && item.value === true)) {
         return !!await this.getKey(true);
       }
@@ -565,6 +574,18 @@ class FreeAnyWhere extends Website {
     try {
       debug('验证任务', { task });
       const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}...` });
+      // $(".game__content-tasks__task .task-check").on('click', function (event) {
+      // event.preventDefault();
+
+      const $parrent = $(`.game__content-tasks__task[data-id="${task.id}"]`);
+      const extension = $parrent.data('extension');
+
+      if (extension) {
+        logStatus.warning(__('verifyExtensionNeeded'));
+        return false;
+      };
+
+      $parrent.find('.task-check').addClass('loading');
 
       const { result, statusText, status, data } = await httpRequest({
         url: 'https://freeanywhere.net/php/user_task_update.php',
@@ -582,11 +603,18 @@ class FreeAnyWhere extends Website {
       }
 
       const response = data.responseText.trim();
+
       if (response !== 'good') {
         debug('验证响应异常', { response, statusText: data?.statusText, status: data?.status });
         logStatus.error(`Error:${data?.statusText}(${data?.status})`);
+        $parrent.removeClass('error');
+        $parrent.removeClass('done');
+        $parrent.find('.task-check').removeClass('loading');
         return false;
       }
+      $parrent.addClass('done');
+      $parrent.removeClass('error');
+      $parrent.find('.task-check').removeClass('loading');
 
       debug('验证成功');
       logStatus.success();

@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.1.8
-          name: 5.1.8
-          body: '- 修复：Reddit任务失败'
+          tag_name: v5.1.9
+          name: 5.1.9
+          body: '- 修复：恢复Freeanywhere的验证按钮（当前仅支持不需要扩展的任务）(#76)'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

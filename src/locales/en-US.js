@@ -372,6 +372,7 @@ const data = {
   updatingUserData: 'Updating user data...',
   gettingUserGames: 'Getting user games...',
   skipExtensionToVerifyTask: 'Need extension, skip automatic verification',
+  verifyExtensionNeeded: 'This task verification requires the extension. Skip.',
 
   // opquests
   confirmingTask: 'Confirming task...',

@@ -1,8 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.1.8",
+  "version": "5.1.9",
   "change": [
-    "修复：Reddit任务失败"
+    "修复：恢复Freeanywhere的验证按钮（当前仅支持不需要扩展的任务）(#76)"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

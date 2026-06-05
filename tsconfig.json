@@ -7,10 +7,12 @@
     "declaration": false, // 是否生成声明文件
     "declarationMap": false, // 是否生成声明文件map文件（便于调试）
     "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "esnext", // 转化成的目标语言
     "allowJs": true,
     "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "types": ["jquery", "tampermonkey", "js-cookie", "keyboardjs"]
   },
   "include": [
     "src/**/*.ts",

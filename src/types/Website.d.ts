@@ -28,6 +28,8 @@ declare interface steamWebTasks {
   curatorLikeLinks?: Array<string>
   announcementLinks?: Array<string>
   licenseLinks?: Array<string>
+  playTimeLinks?: Array<string>
+  playtestLinks?: Array<string>
 }
 declare interface twitchWebTasks {
   channelLinks?: Array<string>
@@ -47,7 +49,38 @@ declare interface youtubeWebTasks {
 declare interface extraTasks {
   [name: string]: Array<string>
 }
-declare interface webSocialTasks {
+
+declare interface WebsiteTask {
+  done: boolean
+  social: string
+  type: string
+  link: string
+  id?: string | number
+  title?: string
+  data?: string
+  minutes?: number
+  [key: string]: unknown
+}
+
+declare type WebsiteUnknownTaskHandler = (task: WebsiteTask) => void
+
+declare interface WebsiteStoredTasks {
+  tasks: Array<WebsiteTask>
+  time: number
+}
+
+declare interface LegacyWebsiteTasks {
+  [social: string]: Array<string> | {
+    [type: string]: Array<string>
+  }
+}
+
+declare type WebsiteStoredTasksInput = WebsiteStoredTasks | {
+  tasks: LegacyWebsiteTasks
+  time: number
+}
+
+declare interface WebsiteSocialPayload {
   discord?: discordWebTasks
   instagram?: instagramWebTasks
   twitch?: twitchWebTasks
@@ -57,7 +90,7 @@ declare interface webSocialTasks {
   reddit?: redditWebTasks
   steam?: steamWebTasks
   links?: Array<string>
-  extra?: extraTasks
+  extra?: Record<string, Array<WebsiteTask>>
 }
 declare interface bindReturn {
   name: string

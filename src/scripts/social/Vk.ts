@@ -805,7 +805,7 @@ class Vk extends Social {
         debug('根据全局选项跳过Vk任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'vk.names', before: '[Vk]' });
       } else {
-        const realNames = this.getRealParams('names', nameLinks, doTask, (link) => link.match(/https:\/\/vk\.com\/([^/]+)/)?.[1]);
+        const realNames = this.getRealParams('names', nameLinks, doTask, (link) => link.match(/https:\/\/vk\.(com|ru)\/([^/]+)/)?.[2]);
         debug('处理后的Vk链接列表', { count: realNames.length, names: realNames });
         if (realNames.length > 0) {
           for (const name of realNames) {

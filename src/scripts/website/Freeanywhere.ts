@@ -16,6 +16,8 @@ import httpRequest from '../tools/httpRequest';
 import { delay } from '../tools/tools';
 import { debug } from '../tools/debug';
 import { globalOptions } from '../globalOptions';
+import { ready } from './games-for-farm-api';
+import type { GamesForFarmApi } from './GFF_API';
 
 const defaultTasksTemplate = {
   steam: {
@@ -75,6 +77,8 @@ class FreeAnyWhere extends Website {
     'verifyTask',
     'getKey'
   ];
+  #ExtAPI!: GamesForFarmApi;
+
   /**
    * 检查当前窗口的域名是否为 'freeanywhere.net'
    *
@@ -84,6 +88,26 @@ class FreeAnyWhere extends Website {
     const isMatch = window.location.host === 'freeanywhere.net';
     debug('检查网站匹配', { host: window.location.host, isMatch });
     return isMatch;
+  }
+  /**
+   * 页面加载后的异步方法
+   *
+   * @returns {Promise<void>} 无返回值。
+   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
+   *
+   * @description
+   * 该方法在页面加载后执行初始化操作：
+   * 1. 检查用户登录状态，如果检查失败则记录警告信息
+   * 2. 获取抽奖ID
+   */
+  async after(): Promise<void> {
+    try {
+      debug('开始扩展注入');
+      this.#ExtAPI = await ready();
+    } catch (error) {
+      debug('后续操作失败', { error });
+      throwError(error as Error, 'GiveawayHopper.after');
+    }
   }
 
   /**
@@ -238,7 +262,6 @@ class FreeAnyWhere extends Website {
             if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.groupLinks.push(link);
             break;
           case 'steam_curator_sub':
-
             if (action === 'undo' && link) this.socialTasks.steam.curatorLinks.push(link);
             if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.curatorLinks.push(link);
             break;
@@ -502,61 +525,6 @@ class FreeAnyWhere extends Website {
   }
 
   /**
- * 使用扩展方式验证任务的私有异步方法
- *
- * @param {fawTaskInfo} task - 要验证的任务信息对象
- * @returns {Promise<boolean>} 如果任务验证成功，则返回true；否则返回false
- *
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误
- *
- * @description
- * 该方法使用扩展方式验证任务：
- * 1. 首先更新用户数据
- * 2. 向扩展API发送验证请求
- * 3. 检查响应结果：
- *    - 如果请求成功且响应为"good"，则验证成功
- *    - 否则验证失败
- * 4. 记录验证过程的日志信息
- */
-  // async #verifyWithExtension(task: fawTaskInfo): Promise<boolean> {
-  //   try {
-  //     await this.#updateUserData();
-  //     debug('验证任务', { task });
-  //     const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}...` });
-
-  //     const { result, statusText, status, data } = await httpRequest({
-  //       url: 'https://freeanywhere.net/php/extension/user_task_update.php',
-  //       method: 'POST',
-  //       headers: {
-  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  //       },
-  //       data: `id=${task.id}&type=${task.type}${(task.data && task.data !== 'none') ? `&data=${task.data}` : ''}`
-  //     });
-
-  //     if (result !== 'Success' || !data?.responseText) {
-  //       debug('验证请求失败', { result, statusText, status });
-  //       logStatus.error(`${result}:${statusText}(${status})`);
-  //       return false;
-  //     }
-
-  //     const response = data.responseText.trim();
-  //     if (response !== 'good') {
-  //       debug('验证响应异常', { response, statusText: data?.statusText, status: data?.status });
-  //       logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-  //       return false;
-  //     }
-
-  //     debug('验证成功');
-  //     logStatus.success();
-  //     return true;
-  //   } catch (error) {
-  //     debug('验证任务失败', { error });
-  //     throwError(error as Error, 'Freeanywhere.verifyWithExtension');
-  //     return false;
-  //   }
-  // }
-
-  /**
    * 验证任务的私有异步方法
    *
    * @param {fawTaskInfo} task - 要验证的任务信息对象。
@@ -626,125 +594,6 @@ class FreeAnyWhere extends Website {
     }
   }
 
-  /**
- * 更新用户数据的私有异步方法
- *
- * @returns {Promise<boolean>} 如果更新成功返回true，否则返回false
- *
- * @throws {Error} 如果在更新过程中发生错误，将抛出错误
- *
- * @description
- * 该方法负责更新用户的数据信息：
- * 1. 首先从本地存储获取用户数据
- * 2. 如果本地数据不完整或不存在：
- *    - 获取用户的游戏列表
- *    - 构建包含用户信息、游戏列表和设置的新数据
- * 3. 将数据发送到服务器进行更新
- * 4. 验证更新结果并返回更新状态
- */
-  // async #updateUserData(): Promise<boolean> {
-  //   try {
-  //     let postData = '';
-  //     const userData = GM_getValue<fawUserData>('FAW_STORAGE') || {};
-  //     if (Object.keys(userData).length === 0 || !userData.tasks || !userData.user || !userData.games || !userData.settings) {
-  //       if (!this.games) {
-  //         await this.#userGamesGet();
-  //       }
-  //       if (!this.games) {
-  //         debug('获取用户游戏失败');
-  //         return false;
-  //       }
-  //       postData = `extension=${encodeURIComponent(JSON.stringify({
-  //         games: this.games,
-  //         settings: {
-  //           game_update: Math.floor(Date.now() / 1000)
-  //         },
-  //         tasks: {},
-  //         user: {
-  //           avatar: $('header.games_for_farm_site').attr('data-avatar'),
-  //           lang: $('header.games_for_farm_site').attr('data-lang'),
-  //           name: $('header.games_for_farm_site').attr('data-name'),
-  //           steam: $('header.games_for_farm_site').attr('data-steam')
-  //         }
-  //       }))}`;
-  //     } else {
-  //       postData = `extension=${encodeURIComponent(JSON.stringify(userData))}`;
-  //     }
-
-  //     debug('更新用户数据');
-  //     const logStatus = echoLog({ text: `${__('updatingUserData')}` });
-
-  //     const { result, statusText, status, data } = await httpRequest({
-  //       url: 'https://freeanywhere.net/php/extension/user_data_update.php',
-  //       method: 'POST',
-  //       headers: {
-  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  //       },
-  //       data: postData
-  //     });
-
-  //     if (data?.status !== 200) {
-  //       debug('验证请求失败', { result, statusText, status, data });
-  //       logStatus.error(`${result}:${statusText}(${status})`);
-  //       return false;
-  //     }
-
-  //     debug('验证成功');
-  //     logStatus.success();
-  //     return true;
-  //   } catch (error) {
-  //     debug('验证任务失败', { error });
-  //     throwError(error as Error, 'Freeanywhere.updateUserData');
-  //     return false;
-  //   }
-  // }
-
-  /**
- * 获取用户游戏列表的私有异步方法
- *
- * @returns {Promise<boolean>} 如果获取成功返回true，否则返回false
- *
- * @throws {Error} 如果在获取过程中发生错误，将抛出错误
- *
- * @description
- * 该方法从服务器获取用户的游戏列表：
- * 1. 从页面元素中获取用户的Steam ID
- * 2. 向服务器发送请求获取游戏列表
- * 3. 验证响应数据的有效性
- * 4. 将获取到的游戏列表保存到实例属性中
- * 5. 记录操作日志并返回获取状态
- */
-  // async #userGamesGet(): Promise<boolean> {
-  //   try {
-  //     debug('获取用户游戏');
-  //     const logStatus = echoLog({ text: `${__('gettingUserGames')}` });
-
-  //     const { result, statusText, status, data } = await httpRequest({
-  //       url: 'https://freeanywhere.net/php/extension/user_games_get.php',
-  //       method: 'POST',
-  //       headers: {
-  //         'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
-  //       },
-  //       data: `steam=${$('header.games_for_farm_site').attr('data-steam')}`,
-  //       dataType: 'json'
-  //     });
-
-  //     if (result !== 'Success' || data?.status !== 200 || !data?.responseText) {
-  //       debug('验证请求失败', { result, statusText, status, data });
-  //       logStatus.error(`${result}:${statusText}(${status})`);
-  //       return false;
-  //     }
-
-  //     debug('验证成功');
-  //     this.games = data.response;
-  //     logStatus.success();
-  //     return true;
-  //   } catch (error) {
-  //     debug('验证任务失败', { error });
-  //     throwError(error as Error, 'Freeanywhere.userGamesGet');
-  //     return false;
-  //   }
-  // }
   /**
    * 检查剩余密钥数量的私有异步方法
    *

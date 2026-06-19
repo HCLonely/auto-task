@@ -6,22 +6,6 @@
  * @FilePath     : /auto-task/src/types/Opquests.d.ts
  */
 
-interface oqSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    wishlistLinks: Array<string>
-    followLinks: Array<string>
-    curatorLikeLinks: Array<string>
-    playTimeLinks: Array<string>
-  }
-  twitter: {
-    userLinks: Array<string>
-    retweetLinks: Array<string>
-  }
-  discord: {
-    serverLinks: Array<string>
-  }
-}
 interface qpqTaskInfo {
   token: string
   taskId: string

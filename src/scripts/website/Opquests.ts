@@ -16,23 +16,6 @@ import httpRequest from '../tools/httpRequest';
 import { debug } from '../tools/debug';
 import { getRedirectLink } from '../tools/tools';
 
-const defaultTasks: oqSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    followLinks: [],
-    curatorLikeLinks: [],
-    playTimeLinks: []
-  },
-  twitter: {
-    userLinks: [],
-    retweetLinks: []
-  },
-  discord: {
-    serverLinks: []
-  }
-};
-
 /**
  * Opquests 类用于处理与 Opquests 网站相关的任务和操作。
  *
@@ -40,7 +23,7 @@ const defaultTasks: oqSocialTasks = {
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'Opquests'。
- * @property {oqSocialTasks} undoneTasks - 存储未完成任务的对象。
+ * @property {Array<WebsiteTask>} tasks - 存储未完成任务的数组。
  * @property {Array<string>} buttons - 可用的操作按钮列表。
  *
  * @static
@@ -90,7 +73,6 @@ const defaultTasks: oqSocialTasks = {
  */
 class Opquests extends Website {
   name = 'Opquests';
-  undoneTasks: oqSocialTasks = { ...defaultTasks };
   buttons: Array<string> = [
     'doTask',
     'verifyTask',
@@ -229,6 +211,7 @@ class Opquests extends Website {
         return false;
       }
 
+      this.tasks = [];
       const logStatus = echoLog({ text: __('getTasksInfo') });
       const tasks = $('.w-full:contains("Validate") .items-center');
       debug('找到任务', { count: tasks.length });
@@ -249,47 +232,89 @@ class Opquests extends Website {
 
         if (/steamcommunity\.com\/groups\//.test(link)) {
           debug('添加 Steam 组任务');
-          this.undoneTasks.steam.groupLinks.push(link);
+          this.tasks.push({
+            done: false,
+            social: 'steam',
+            type: 'group',
+            link
+          });
           continue;
         }
 
         if (/store\.steampowered\.com\/app\//.test(link)) {
           if (/wishlist/gim.test(taskDes)) {
             debug('添加 Steam 愿望单任务');
-            this.undoneTasks.steam.wishlistLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'steam',
+              type: 'wishlist',
+              link
+            });
           } else if (/follow/gim.test(taskDes)) {
             debug('添加 Steam 关注任务');
-            this.undoneTasks.steam.followLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'steam',
+              type: 'follow',
+              link
+            });
           } else if (/play/gim.test(taskDes)) {
             const time = parseInt(taskDes.replace(/\s/gim, '').match(/(\d+)hours/im)?.[1] || '0', 10) * 60;
             debug('添加 Steam 游戏时长任务', { time });
-            this.undoneTasks.steam.playTimeLinks.push(`${time}-${link}`);
+            this.tasks.push({
+              done: false,
+              social: 'steam',
+              type: 'playtime',
+              link,
+              minutes: time,
+              title: taskDes
+            });
           }
           continue;
         }
 
         if (/store\.steampowered\.com\/(publisher|developer|curator)\//.test(link) && /follow/gim.test(taskDes)) {
           debug('添加 Steam 鉴赏家关注任务');
-          this.undoneTasks.steam.curatorLikeLinks.push(link);
+          this.tasks.push({
+            done: false,
+            social: 'steam',
+            type: 'curatorLike',
+            link
+          });
           continue;
         }
 
         if (link.includes('//x.com/')) {
           if (/follow/gim.test(taskDes)) {
             debug('添加 Twitter 关注任务');
-            this.undoneTasks.twitter.userLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'twitter',
+              type: 'user',
+              link
+            });
             continue;
           }
           if (link.includes('status') && /Repost/gim.test(taskDes)) {
             debug('添加 Twitter 转发任务');
-            this.undoneTasks.twitter.retweetLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'twitter',
+              type: 'retweet',
+              link
+            });
             continue;
           }
         }
         if (link.includes('//discord.com/')) {
           if (/join/gim.test(taskDes)) {
             debug('添加 Discord 加入任务');
-            this.undoneTasks.discord.serverLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'discord',
+              type: 'server',
+              link
+            });
             continue;
           }
         }
@@ -301,7 +326,12 @@ class Opquests extends Website {
             continue;
           }
           debug('添加 Discord 加入任务');
-          this.undoneTasks.discord.serverLinks.push(taskLink);
+          this.tasks.push({
+            done: false,
+            social: 'discord',
+            type: 'server',
+            link: taskLink
+          });
           continue;
         }
 
@@ -317,7 +347,7 @@ class Opquests extends Website {
 
       debug('任务分类完成');
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as oqSocialTasks;
+      this.tasks = this.uniqueTasks(this.tasks);
       if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
       return true;
     } catch (error) {

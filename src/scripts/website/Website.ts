@@ -441,7 +441,11 @@ abstract class Website {
       }
 
       debug('等待所有任务完成');
-      await Promise.all(pro);
+      const results = await Promise.all(pro);
+      if (!results.every((result) => result !== false)) {
+        debug('任务执行失败', { results });
+        return false;
+      }
       debug('所有任务完成');
       echoLog({}).success(__('allTasksComplete'));
       return true;

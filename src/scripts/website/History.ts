@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import Keylol from './Keylol';
 import dayjs from 'dayjs';
 import { debug } from '../tools/debug';
+import { normalizeStoredTasks } from './taskModel';
 
 /**
  * 表示历史记录的类，继承自 Keylol。
@@ -40,7 +41,9 @@ import { debug } from '../tools/debug';
  * @throws {Error} 如果在添加过程中发生错误，将抛出错误。
  */
 
-type TasksData = fawGMTasks | gasGMTasks | gkGMTasks | khGMTasks | prysGMTasks;
+type TasksData = WebsiteStoredTasksInput;
+
+const TASK_HISTORY_PATTERN = /^(?:faw|gas|gc|gk|gleam|giveawayHopper|kh|prys)Tasks-/;
 
 class History extends Keylol {
   name = 'History';
@@ -98,7 +101,7 @@ class History extends Keylol {
       debug('获取存储的所有值', { count: data.length });
 
       const tasksHistory = data
-        .map((value) => (/^[\w]+?Tasks-/.test(value) ? value : null))
+        .map((value) => (TASK_HISTORY_PATTERN.test(value) ? value : null))
         .filter((value) => value) as Array<string>;
       debug('筛选任务历史记录', { count: tasksHistory.length });
 
@@ -132,7 +135,7 @@ class History extends Keylol {
       debug('获取存储的所有值', { count: data.length });
 
       const tasksHistory = data
-        .map((value) => (/^[\w]+?Tasks-/.test(value) ? value : null))
+        .map((value) => (TASK_HISTORY_PATTERN.test(value) ? value : null))
         .filter((value) => value) as Array<string>;
       debug('筛选要清除的任务历史记录', { count: tasksHistory.length });
 
@@ -169,7 +172,8 @@ class History extends Keylol {
     try {
       debug('开始添加任务项', { item });
       const tasksData = GM_getValue<TasksData>(item);
-      if (!tasksData?.tasks) {
+      const tasks = normalizeStoredTasks(tasksData);
+      if (tasks.length === 0) {
         debug('任务数据无效', { item });
         return;
       }
@@ -181,7 +185,7 @@ class History extends Keylol {
       }
 
       debug('生成任务HTML', { item, title, link });
-      const html = this.#generateTaskHtml(tasksData.tasks);
+      const html = this.#generateTaskHtml(tasks);
       this.#appendTaskToContainer(item, title, link, html, tasksData.time);
       this.#bindDeleteEvent();
       debug('任务项添加完成', { item });
@@ -253,7 +257,7 @@ class History extends Keylol {
   /**
    * 生成任务HTML的私有方法
    *
-   * @param {TasksData['tasks']} tasks - 任务数据对象
+   * @param {Array<WebsiteTask>} tasks - 任务数据对象
    * @returns {string} 返回生成的HTML字符串
    * @throws {Error} 如果在生成过程中发生错误，将抛出错误
    *
@@ -263,21 +267,23 @@ class History extends Keylol {
    * 生成的HTML包含任务的社交平台、类型和链接信息。
    * 如果发生错误，则返回空字符串。
    */
-  #generateTaskHtml(tasks: TasksData['tasks']): string {
+  #generateTaskHtml(tasks: Array<WebsiteTask>): string {
     try {
       debug('开始生成任务HTML');
       let html = '';
-      for (const [social, types] of Object.entries(tasks)) {
-        for (const [type, taskList] of Object.entries(types)) {
-          for (const task of taskList as Array<string>) {
-            debug('处理任务', { social, type, task });
-            const displayTask = task.length > 55 ? `${task.slice(0, 55)}...` : task;
-            html += `<li>
-              <font class="auto-task-capitalize">${social}.${__(type.replace('Link', ''))}: </font>
-              <a href="${task}" target="_blank">${displayTask}</a>
-            </li>`;
-          }
-        }
+      for (const task of tasks) {
+        const social = task.social || '';
+        const link = task.link || '';
+        debug('处理任务', { social, type: task.type, link });
+        const displayLink = link.length > 55 ? `${link.slice(0, 55)}...` : link;
+        const escapedDisplayLink = this.#escapeHtml(displayLink);
+        const linkHtml = /^https?:\/\//i.test(link) ?
+          `<a href="${this.#escapeHtml(link)}" target="_blank" rel="noopener noreferrer">${escapedDisplayLink}</a>` :
+          `<span>${escapedDisplayLink}</span>`;
+        html += `<li>
+          <font class="auto-task-capitalize">${this.#escapeHtml(social)}.${this.#escapeHtml(__(task.type))}: </font>
+          ${linkHtml}
+        </li>`;
       }
       debug('任务HTML生成完成');
       return html;
@@ -286,6 +292,17 @@ class History extends Keylol {
       throwError(error as Error, 'History.generateTaskHtml');
       return '';
     }
+  }
+
+  #escapeHtml(value: string): string {
+    const htmlEntities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      '\'': '&#39;'
+    };
+    return value.replace(/[&<>"']/g, (character) => htmlEntities[character]);
   }
 
   /**
@@ -306,12 +323,19 @@ class History extends Keylol {
    */
   #appendTaskToContainer(item: string, title: string, link: string, html: string, time: number): void {
     try {
+      const escapedItem = this.#escapeHtml(item);
+      const escapedTitle = this.#escapeHtml(title);
+      const escapedLink = this.#escapeHtml(link);
+      const escapedTime = this.#escapeHtml(dayjs(time).format('YYYY-MM-DD HH:mm:ss'));
+      const titleHtml = /^https?:\/\//i.test(link) ?
+        `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer">${escapedTitle}</a>` :
+        `<span>${escapedTitle}</span>`;
       debug('开始添加任务到容器', { item, title, link });
       $('.container').append(`
-        <div class="card" data-name="${item}">
+        <div class="card" data-name="${escapedItem}">
           <div class="title">
-            <a href="${link}" target="_blank">${title}</a>
-            <span class="delete-task" data-name="${item}" title="${__('deleteTask')}">
+            ${titleHtml}
+            <span class="delete-task" data-name="${escapedItem}" title="${this.#escapeHtml(__('deleteTask'))}">
               <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2734" width="32" height="32">
                 <path d="M607.897867 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L575.903242 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 351.94087C639.892491 753.593818 625.61532 768.043004 607.897867 768.043004z" p-id="2735" fill="#d81e06"></path>
                 <path d="M415.930119 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L383.935495 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625 17.717453 0 31.994625 14.277171 31.994625 31.994625l0 351.94087C447.924744 753.593818 433.647573 768.043004 415.930119 768.043004z" p-id="2736" fill="#d81e06"></path>
@@ -321,7 +345,7 @@ class History extends Keylol {
             </span>
           </div>
           <ul>${html}</ul>
-          <span class="time">${__('lastChangeTime')}: ${dayjs(time).format('YYYY-MM-DD HH:mm:ss')}</span>
+          <span class="time">${this.#escapeHtml(__('lastChangeTime'))}: ${escapedTime}</span>
         </div>
       `);
       debug('任务已添加到容器', { item });
@@ -360,7 +384,9 @@ class History extends Keylol {
         }
 
         GM_deleteValue(itemName);
-        $(`div.card[data-name="${itemName}"]`).remove();
+        $(this)
+          .closest('div.card')
+          .remove();
         debug('任务删除成功', { itemName });
         Swal.fire({
           title: __('clearTaskFinished'),

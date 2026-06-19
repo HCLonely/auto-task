@@ -49,7 +49,7 @@ const SOCIAL_PAYLOAD_TYPE_MAP: Record<string, string> = {
   'vk.user': 'nameLinks',
   'vk.like': 'nameLinks',
   'youtube.channel': 'channelLinks',
-  'youtube.like': 'likeLinks'
+  'youtube.like': 'videoLinks'
 };
 
 const isWebsiteTask = (value: unknown): value is WebsiteTask => {

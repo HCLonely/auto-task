@@ -44,7 +44,7 @@ declare interface vkWebTasks {
 }
 declare interface youtubeWebTasks {
   channelLinks?: Array<string>
-  likeLinks?: Array<string>
+  videoLinks?: Array<string>
 }
 declare interface extraTasks {
   [name: string]: Array<string>

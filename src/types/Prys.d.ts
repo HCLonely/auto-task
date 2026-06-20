@@ -10,19 +10,3 @@ declare function checkClick(prarm: number): void
 declare function getURLParameter(prarm: string): string
 declare function showAlert(prarm1: string, prarm2: string): void
 declare function captchaCheck(): void
-
-interface prysSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    curatorLinks: Array<string>
-    wishlistLinks: Array<string>
-    followLinks: Array<string>
-  }
-  youtube: {
-    channelLinks: Array<string>
-  }
-}
-declare interface prysGMTasks {
-  tasks: prysSocialTasks
-  time: number
-}

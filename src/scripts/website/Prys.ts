@@ -15,19 +15,7 @@ import __ from '../tools/i18n';
 import { getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
-
-const defaultTasksTemplate: prysSocialTasks = {
-  steam: {
-    groupLinks: [],
-    curatorLinks: [],
-    wishlistLinks: [],
-    followLinks: []
-  },
-  youtube: {
-    channelLinks: []
-  }
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
+import { normalizeStoredTasks } from './taskModel';
 
 /**
  * Prys 类用于处理 Pry's 网站的相关任务和操作。
@@ -36,8 +24,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'Prys'。
- * @property {prysSocialTasks} socialTasks - 存储社交任务的对象。
- * @property {prysSocialTasks} undoneTasks - 存储未完成任务的对象。
+ * @property {Array<WebsiteTask>} tasks - 存储社交任务的数组。
  * @property {Array<string>} buttons - 可用的操作按钮数组。
  *
  * @static
@@ -91,8 +78,6 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class Prys extends Website {
   name = 'Prys';
-  socialTasks: prysSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: prysSocialTasks = JSON.parse(defaultTasks);
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -195,15 +180,18 @@ class Prys extends Website {
    * 支持的链接类型包括 Steam Curator 链接和 Steam 群组链接。
    * 处理完成后，记录成功信息并将分类后的任务存储到本地。
    */
-  async classifyTask(action: string): Promise<boolean> {
+  async classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> {
     try {
       debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<prysGMTasks>(`prysTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`prysTasks-${this.giveawayId}`));
+        logStatus.success();
+        return true;
       }
 
+      this.tasks = [];
       const steps = $('#steps tbody tr');
       debug('找到任务步骤', { count: steps.length });
       for (let eq = 0; eq < steps.length; eq += 1) {
@@ -214,44 +202,52 @@ class Prys extends Website {
       }
 
       const pro = [];
-      for (const step of steps) {
-        const isSuccess = $(step).find('span:contains(Success)').length > 0;
-        if (isSuccess && action === 'do') {
-          debug('跳过已完成的任务');
-          continue;
-        }
+      for (const [index, step] of Array.from(steps).entries()) {
+        const stepEle = $(step);
+        const isSuccess = stepEle.find('span:contains(Success)').length > 0;
+        const title = stepEle.find('td').first()
+          .text()
+          .trim();
+        const addTask = (social: string, type: string, link: string) => {
+          this.tasks.push({
+            done: isSuccess,
+            social,
+            type,
+            link,
+            title,
+            id: index,
+            taskId: index
+          });
+        };
 
-        const appLink = $(step).find('a[href*=\'store.steampowered.com/app/\']')
+        const appLink = stepEle.find('a[href*=\'store.steampowered.com/app/\']')
           .attr('href');
         if (appLink) {
-          const taskType = $(step).find('a[href*=\'store.steampowered.com/app/\']')
+          const taskType = stepEle.find('a[href*=\'store.steampowered.com/app/\']')
             .text()
-            .includes('wishlist') ? 'wishlistLinks' : 'followLinks';
+            .includes('wishlist') ? 'wishlist' : 'follow';
           debug('添加 Steam 应用任务', { type: taskType, link: appLink });
-          if (action === 'undo') this.socialTasks.steam[taskType].push(appLink);
-          if (action === 'do') this.undoneTasks.steam[taskType].push(appLink);
+          addTask('steam', taskType, appLink);
           continue;
         }
 
-        const curatorLink = $(step).find('a[href*=\'store.steampowered.com/curator/\']')
+        const curatorLink = stepEle.find('a[href*=\'store.steampowered.com/curator/\']')
           .attr('href');
         if (curatorLink) {
           debug('添加 Steam 鉴赏家任务', { link: curatorLink });
-          if (action === 'undo') this.socialTasks.steam.curatorLinks.push(curatorLink);
-          if (action === 'do') this.undoneTasks.steam.curatorLinks.push(curatorLink);
+          addTask('steam', 'curator', curatorLink);
           continue;
         }
 
-        const groupLink = $(step).find('a[href*=\'steamcommunity.com/groups/\']')
+        const groupLink = stepEle.find('a[href*=\'steamcommunity.com/groups/\']')
           .attr('href');
         if (groupLink) {
           debug('添加 Steam 组任务', { link: groupLink });
-          if (action === 'undo') this.socialTasks.steam.groupLinks.push(groupLink);
-          if (action === 'do') this.undoneTasks.steam.groupLinks.push(groupLink);
+          addTask('steam', 'group', groupLink);
           continue;
         }
 
-        const gidLink = $(step).find('a[href*=\'steamcommunity.com/gid\']')
+        const gidLink = stepEle.find('a[href*=\'steamcommunity.com/gid\']')
           .attr('href');
         if (gidLink) {
           debug('处理 Steam GID 链接', { link: gidLink });
@@ -261,8 +257,7 @@ class Prys extends Website {
               return false;
             }
             debug('添加 Steam 组任务（从 GID）', { link: finalUrl });
-            if (action === 'undo') this.socialTasks.steam.groupLinks.push(finalUrl);
-            if (action === 'do') this.undoneTasks.steam.groupLinks.push(finalUrl);
+            addTask('steam', 'group', finalUrl);
           }));
         }
       }
@@ -270,10 +265,12 @@ class Prys extends Website {
       await Promise.allSettled(pro);
       debug('任务分类完成');
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as prysSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as prysSocialTasks;
+      this.tasks = this.uniqueTasks(this.tasks);
+      const tasksForUndo = this.uniqueTasks(this.tasks
+        .filter((task) => task.done === false)
+        .map((task) => ({ ...task, done: true })));
       if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
-      GM_setValue(`prysTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      GM_setValue(`prysTasks-${this.giveawayId}`, { tasks: tasksForUndo, time: new Date().getTime() });
       return true;
     } catch (error) {
       debug('任务分类失败', { error });

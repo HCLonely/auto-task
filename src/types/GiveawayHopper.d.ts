@@ -6,43 +6,6 @@
  * @FilePath     : /auto-task/src/types/GiveawayHopper.d.ts
  */
 
-declare interface giveawayHopperSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    wishlistLinks: Array<string>
-    followLinks: Array<string>
-    curatorLinks: Array<string>
-    curatorLikeLinks: Array<string>
-  }
-  twitter: {
-    userLinks: Array<string>
-    retweetLinks: Array<string>
-  }
-  twitch: {
-    channelLinks: Array<string>
-  }
-  discord: {
-    serverLinks: Array<string>
-  }
-  youtube: {
-    channelLinks: Array<string>
-  }
-  extra: {
-    giveawayHopper: Array<string>
-  }
-}
-declare interface giveawayHopperGMTasks {
-  tasks: giveawayHopperSocialTasks
-  time: number
-}
-declare interface giveawayHopperTaskInfo {
-  id: string
-  title: string
-  done: boolean
-  link: string
-  social?: string
-  type?: string
-}
 declare interface giveawayHopperReturnTaskInfo {
   id: number;
   name: string;
@@ -61,4 +24,6 @@ declare interface giveawayHopperReturnTaskInfo {
   link: string;
   hash: string;
   username: string;
+  group_id?: string | number;
+  invite_code?: string;
 }

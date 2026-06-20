@@ -15,25 +15,7 @@ import { delay, getRedirectLink, unique } from '../tools/tools';
 import throwError from '../tools/throwError';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
-
-const defaultTasksTemplate: gkSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    curatorLinks: [],
-    curatorLikeLinks: []
-  },
-  twitter: {
-    userLinks: []
-  },
-  vk: {
-    nameLinks: []
-  },
-  discord: {
-    serverLinks: []
-  }
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
+import { normalizeStoredTasks } from './taskModel';
 
 /**
  * 表示 Givekey 网站的任务处理类。
@@ -42,9 +24,8 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称。
- * @property {Array<string>} tasks - 存储任务ID的数组。
- * @property {gkSocialTasks} socialTasks - 存储社交任务的对象。
- * @property {gkSocialTasks} undoneTasks - 存储未完成任务的对象。
+ * @property {Array<WebsiteTask>} tasks - 存储社交任务的数组。
+ * @property {Array<string>} verifyTaskIds - 存储验证任务ID的数组。
  * @property {string} userId - 用户ID。
  * @property {Array<string>} buttons - 包含 'doTask'、'undoTask' 和 'verifyTask' 的按钮数组。
  *
@@ -83,9 +64,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class Givekey extends Website {
   name = 'Givekey';
-  tasks: Array<string> = [];
-  socialTasks: gkSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: gkSocialTasks = JSON.parse(defaultTasks);
+  verifyTaskIds: Array<string> = [];
   userId!: string;
   buttons: Array<string> = [
     'doTask',
@@ -214,9 +193,13 @@ class Givekey extends Website {
 
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<gkGMTasks>(`gkTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`gkTasks-${this.giveawayId}`));
+        logStatus.success();
+        return true;
       }
 
+      this.tasks = [];
+      this.verifyTaskIds = [];
       const tasks = $('.card-body:has("button") .row');
       debug('找到任务元素', { count: tasks.length });
 
@@ -226,16 +209,13 @@ class Givekey extends Website {
         const isSuccess = /Complete/i.test(button.text().trim());
         debug('处理任务', { isSuccess });
 
-        if (isSuccess && action !== 'undo') {
-          debug('跳过已完成的任务');
-          continue;
-        }
+        if (action === 'verify' && isSuccess) continue;
 
         const checkButton = taskEle.find('#task_check');
         const taskId = checkButton.attr('data-id');
-        if (taskId) {
+        if (action === 'verify' && taskId) {
           debug('添加任务ID', { taskId });
-          this.tasks.push(taskId);
+          this.verifyTaskIds.push(taskId);
         }
 
         if (action === 'verify') continue;
@@ -263,18 +243,22 @@ class Givekey extends Website {
         }
 
         const icon = taskEle.find('i');
-        await this.#classifyTaskByType(href, text, icon, isSuccess, action);
+        await this.#classifyTaskByType(href, text, icon, isSuccess, taskId);
       }
 
       debug('任务分类完成');
       logStatus.success();
-      this.tasks = unique(this.tasks);
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gkSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as gkSocialTasks;
+      this.verifyTaskIds = unique(this.verifyTaskIds);
+      if (action === 'verify') return true;
+
+      this.tasks = this.uniqueTasks(this.tasks);
+      const tasksForUndo = this.uniqueTasks(this.tasks
+        .filter((task) => task.done === false)
+        .map((task) => ({ ...task, done: true })));
 
       debug('保存任务信息');
       GM_setValue(`gkTasks-${this.giveawayId}`, {
-        tasks: this.socialTasks,
+        tasks: tasksForUndo,
         time: new Date().getTime()
       });
 
@@ -307,16 +291,16 @@ class Givekey extends Website {
         debug('初始化失败');
         return false;
       }
-      if (this.tasks.length === 0 && !(await this.classifyTask('verify'))) {
+      if (this.verifyTaskIds.length === 0 && !(await this.classifyTask('verify'))) {
         debug('任务分类失败');
         return false;
       }
       echoLog({}).warning(__('giveKeyNoticeBefore'));
-      const taskLength = this.tasks.length;
+      const taskLength = this.verifyTaskIds.length;
       debug('开始验证任务', { taskCount: taskLength });
 
       for (let i = 0; i < taskLength; i++) {
-        await this.#verify(this.tasks[i]);
+        await this.#verify(this.verifyTaskIds[i]);
         if (i < (taskLength - 1)) {
           debug('等待15秒');
           await delay(15000);
@@ -499,7 +483,7 @@ class Givekey extends Website {
    * @param {string} text - 任务描述文本
    * @param {JQuery} icon - 任务图标的jQuery对象
    * @param {boolean} isSuccess - 任务是否已完成的标志
-   * @param {string} action - 执行的操作类型（'do'、'undo' 或 'verify'）
+   * @param {string | undefined} taskId - 任务ID
    * @returns {Promise<void>} 无返回值的Promise
    * @throws {Error} 在任务分类过程中发生错误时抛出
    *
@@ -518,59 +502,65 @@ class Givekey extends Website {
    * 处理流程：
    * 1. 检查任务链接URL的格式
    * 2. 根据URL、文本内容和图标类型确定任务类别
-   * 3. 将任务添加到对应的社交任务列表中
-   * 4. 如果是 'do' 操作且任务未完成，同时添加到未完成任务列表
-   * 5. 如果无法识别任务类型，记录警告信息
+   * 3. 将任务添加到扁平任务列表中
+   * 4. 如果无法识别任务类型，记录警告信息
    */
-  async #classifyTaskByType(href: string, text: string, icon: JQuery, isSuccess: boolean, action: string): Promise<void> {
+  async #classifyTaskByType(href: string, text: string, icon: JQuery, isSuccess: boolean, taskId?: string): Promise<void> {
     try {
-      debug('开始分类任务类型', { href, text, isSuccess, action });
+      debug('开始分类任务类型', { href, text, isSuccess, taskId });
+      const addTask = (social: string, type: string) => {
+        const task: WebsiteTask = {
+          done: isSuccess,
+          social,
+          type,
+          link: href,
+          title: text
+        };
+        if (taskId) {
+          task.id = taskId;
+          task.taskId = taskId;
+        }
+        this.tasks.push(task);
+      };
 
       if (/^https?:\/\/vk\.com\//.test(href)) {
         debug('添加 VK 任务');
-        this.socialTasks.vk.nameLinks.push(href);
-        if (action === 'do' && !isSuccess) this.undoneTasks.vk.nameLinks.push(href);
+        addTask('vk', 'user');
         return;
       }
 
       if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
         debug('添加 Steam 组任务');
-        this.socialTasks.steam.groupLinks.push(href);
-        if (action === 'do' && !isSuccess) this.undoneTasks.steam.groupLinks.push(href);
+        addTask('steam', 'group');
         return;
       }
 
       if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
         debug('添加 Steam 愿望单任务');
-        this.socialTasks.steam.wishlistLinks.push(href);
-        if (action === 'do' && !isSuccess) this.undoneTasks.steam.wishlistLinks.push(href);
+        addTask('steam', 'wishlist');
         return;
       }
 
       if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
         if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
           debug('添加 Steam 鉴赏家关注任务');
-          this.socialTasks.steam.curatorLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLinks.push(href);
+          addTask('steam', 'curator');
         } else {
           debug('添加 Steam 鉴赏家点赞任务');
-          this.socialTasks.steam.curatorLikeLinks.push(href);
-          if (action === 'do' && !isSuccess) this.undoneTasks.steam.curatorLikeLinks.push(href);
+          addTask('steam', 'curatorLike');
         }
         return;
       }
 
       if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
         debug('添加 Twitter 关注任务');
-        this.socialTasks.twitter.userLinks.push(href);
-        if (action === 'do' && !isSuccess) this.undoneTasks.twitter.userLinks.push(href);
+        addTask('twitter', 'user');
         return;
       }
 
       if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
         debug('添加 Discord 服务器任务');
-        this.socialTasks.discord.serverLinks.push(href);
-        if (action === 'do' && !isSuccess) this.undoneTasks.discord.serverLinks.push(href);
+        addTask('discord', 'server');
         return;
       }
 

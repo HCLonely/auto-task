@@ -16,17 +16,17 @@ import Twitter from '../social/Twitter';
 import Vk from '../social/Vk';
 import { Youtube } from '../social/Youtube';
 import Steam from '../social/Steam';
-import { unique, visitLink } from '../tools/tools';
+import { visitLink } from '../tools/tools';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
+import { selectTasksForAction, toSocialPayload, uniqueWebsiteTasks } from './taskModel';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
  *
  * @class
- * @property {Object} undoneTasks - 待处理的任务。
- * @property {Object} socialTasks - 社交媒体任务。
+ * @property {Array<WebsiteTask>} tasks - 网站任务。
  * @property {string} giveawayId - 抽奖 ID。
  * @property {Object} socialInitialized - 各社交媒体的初始化状态。
  * @property {boolean} initialized - 是否已初始化。
@@ -39,13 +39,13 @@ import { debug } from '../tools/debug';
  * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  *
  * @method initSocial - 初始化社交媒体的方法。
- * @param {string} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+ * @param {WebsiteSocialPayload} payload - 已转换的社交任务 payload。
  * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
  * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  *
  * @method uniqueTasks - 去重任务的保护方法。
- * @param {webSocialTasks} allTasks - 包含所有社交任务的对象。
- * @returns {webSocialTasks} 返回去重后的社交任务对象。
+ * @param {Array<WebsiteTask>} allTasks - 网站任务。
+ * @returns {Array<WebsiteTask>} 返回去重后的网站任务。
  * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  *
  * @method toggleTask - 切换任务的异步方法。
@@ -61,11 +61,11 @@ import { debug } from '../tools/debug';
  * @returns {Promise<boolean>} 如果任务成功撤销，则返回 true；否则返回 false。
  * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
  */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 abstract class Website {
   abstract name: string;
   abstract buttons: Array<string>;
-  undoneTasks!: webSocialTasks;
-  socialTasks!: webSocialTasks;
+  tasks: Array<WebsiteTask> = [];
   giveawayId!: string;
   // EventEmitter!: EventEmitter3
   protected socialInitialized: socialInitialized = {
@@ -156,7 +156,7 @@ abstract class Website {
   /**
    * 初始化社交媒体的方法
    *
-   * @param {string} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @param {WebsiteSocialPayload} payload - 已转换的社交任务 payload。
    * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
    *
    * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
@@ -167,11 +167,14 @@ abstract class Website {
    * 如果存在待处理的任务且社交媒体尚未初始化，则创建相应的社交媒体实例并调用其初始化方法。
    * 所有初始化操作的结果将通过 Promise.all 进行处理，最终返回所有操作的成功状态。
    */
-  protected async initSocial(action: string): Promise<boolean> {
+  protected async initSocial(payload: WebsiteSocialPayload): Promise<boolean> {
     try {
-      debug('开始初始化社交媒体', { action });
+      debug('开始初始化社交媒体');
       const pro = [];
-      const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
+      this.steamTaskType = {
+        steamStore: false,
+        steamCommunity: false
+      };
 
       // // 检查 Discord 任务
       // if (tasks.discord) {
@@ -196,8 +199,8 @@ abstract class Website {
       // }
 
       // 检查 Reddit 任务
-      if (tasks.reddit) {
-        const hasReddit = Object.values(tasks.reddit).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (payload.reddit) {
+        const hasReddit = Object.values(payload.reddit).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Reddit 任务', { hasReddit });
         if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
           debug('初始化 Reddit');
@@ -207,8 +210,8 @@ abstract class Website {
       }
 
       // 检查 Twitch 任务
-      if (tasks.twitch) {
-        const hasTwitch = Object.values(tasks.twitch).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (payload.twitch) {
+        const hasTwitch = Object.values(payload.twitch).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Twitch 任务', { hasTwitch });
         if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
           debug('初始化 Twitch');
@@ -218,8 +221,8 @@ abstract class Website {
       }
 
       // 检查 Twitter 任务
-      if (tasks.twitter) {
-        const hasTwitter = Object.values(tasks.twitter).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (payload.twitter) {
+        const hasTwitter = Object.values(payload.twitter).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 Twitter 任务', { hasTwitter });
         if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
           debug('初始化 Twitter');
@@ -229,8 +232,8 @@ abstract class Website {
       }
 
       // 检查 VK 任务
-      if (tasks.vk) {
-        const hasVk = Object.values(tasks.vk).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (payload.vk) {
+        const hasVk = Object.values(payload.vk).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 VK 任务', { hasVk });
         if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
           debug('初始化 VK');
@@ -240,8 +243,8 @@ abstract class Website {
       }
 
       // 检查 YouTube 任务
-      if (tasks.youtube) {
-        const hasYoutube = Object.values(tasks.youtube).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (payload.youtube) {
+        const hasYoutube = Object.values(payload.youtube).reduce((total, arr) => [...total, ...arr]).length > 0;
         debug('检查 YouTube 任务', { hasYoutube });
         if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
           debug('初始化 YouTube');
@@ -251,17 +254,17 @@ abstract class Website {
       }
 
       // 检查 Steam 任务
-      if (tasks.steam) {
-        const steamLength = Object.values(tasks.steam).reduce((total, arr) => [...total, ...arr]).length;
+      if (payload.steam) {
+        const steamLength = Object.values(payload.steam).reduce((total, arr) => [...total, ...arr]).length;
         debug('检查 Steam 任务', { steamLength });
         if (steamLength > 0) {
           if (!this.social.steam) {
             debug('创建 Steam 实例');
             this.social.steam = new Steam();
           }
-          const steamCommunityLength = Object.keys(tasks.steam).map((type) => (
+          const steamCommunityLength = Object.keys(payload.steam).map((type) => (
             ['groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks'].includes(type) ?
-              (tasks.steam?.[type as keyof typeof tasks.steam]?.length || 0) : 0))
+              (payload.steam?.[type as keyof typeof payload.steam]?.length || 0) : 0))
             .reduce((total, number) => total + number, 0);
           debug('Steam 社区任务数量', { steamCommunityLength });
           if (steamLength - steamCommunityLength > 0) {
@@ -272,8 +275,8 @@ abstract class Website {
             }
           }
           if (steamCommunityLength > 0) {
+            this.steamTaskType.steamCommunity = true;
             if (!this.socialInitialized.steamCommunity) {
-              this.steamTaskType.steamCommunity = true;
               debug('初始化 Steam 社区');
               pro.push(this.#bind('steamCommunity', this.social.steam.init('community')));
             }
@@ -282,8 +285,8 @@ abstract class Website {
       }
 
       // 处理链接任务
-      if (tasks.links && tasks.links.length > 0) {
-        debug('初始化链接访问', { linksCount: tasks.links.length });
+      if (payload.links && payload.links.length > 0) {
+        debug('初始化链接访问', { linksCount: payload.links.length });
         this.social.visitLink = visitLink;
       }
 
@@ -313,8 +316,8 @@ abstract class Website {
   /**
    * 去重任务的保护方法
    *
-   * @param {webSocialTasks} allTasks - 包含所有社交任务的对象。
-   * @returns {webSocialTasks} 返回去重后的社交任务对象。
+   * @param {Array<WebsiteTask>} allTasks - 网站任务。
+   * @returns {Array<WebsiteTask>} 返回去重后的网站任务。
    *
    * @throws {Error} 如果在绑定过程中发生错误，将抛出错误。
    *
@@ -323,19 +326,10 @@ abstract class Website {
    * 使用 `unique` 函数对每种任务类型的任务数组进行去重，并将结果存储在新的对象中。
    * 最后返回去重后的社交任务对象。
    */
-  protected uniqueTasks(allTasks: webSocialTasks): webSocialTasks {
+  protected uniqueTasks(allTasks: Array<WebsiteTask>): Array<WebsiteTask> {
     try {
       debug('开始去重任务');
-      const result: webSocialTasks = {};
-      for (const [social, types] of Object.entries(allTasks)) {
-        debug('处理社交媒体任务', { social });
-        result[social as socialType] = {};
-        for (const [type, tasks] of Object.entries(types)) {
-          debug('处理任务类型', { social, type });
-          // @ts-ignore
-          result[social][type] = unique(tasks as Array<string>);
-        }
-      }
+      const result = uniqueWebsiteTasks(allTasks);
       debug('任务去重完成');
       return result;
     } catch (error) {
@@ -365,7 +359,7 @@ abstract class Website {
   protected async toggleTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
       debug('开始切换任务状态', { action });
-      if (!this.initialized && !this.init()) {
+      if (!this.initialized && !(await this.init())) {
         debug('初始化失败');
         return false;
       }
@@ -374,11 +368,22 @@ abstract class Website {
         return false;
       }
 
+      const selectedTasks = selectTasksForAction(this.tasks, action);
+      const payload = toSocialPayload(selectedTasks, (task) => {
+        debug('发现未知任务，无法转换社交 payload', {
+          social: task.social,
+          type: task.type,
+          link: task.link
+        });
+      });
+
       debug('初始化社交媒体');
-      await this.initSocial(action);
+      if (!(await this.initSocial(payload))) {
+        debug('社交媒体初始化失败');
+        return false;
+      }
       const pro = [];
       const doTask = action === 'do';
-      const tasks = doTask ? this.undoneTasks : this.socialTasks;
 
       // 处理各个社交媒体的任务
       // if (this.socialInitialized.discord === true && this.social.discord) {
@@ -391,23 +396,23 @@ abstract class Website {
       // }
       if (this.socialInitialized.reddit === true && this.social.reddit) {
         debug('处理 Reddit 任务');
-        pro.push(this.social.reddit.toggle({ doTask, ...tasks.reddit }));
+        pro.push(this.social.reddit.toggle({ doTask, ...payload.reddit }));
       }
       if (this.socialInitialized.twitch === true && this.social.twitch) {
         debug('处理 Twitch 任务');
-        pro.push(this.social.twitch.toggle({ doTask, ...tasks.twitch }));
+        pro.push(this.social.twitch.toggle({ doTask, ...payload.twitch }));
       }
       if (this.socialInitialized.twitter === true && this.social.twitter) {
         debug('处理 Twitter 任务');
-        pro.push(this.social.twitter.toggle({ doTask, ...tasks.twitter }));
+        pro.push(this.social.twitter.toggle({ doTask, ...payload.twitter }));
       }
       if (this.socialInitialized.vk === true && this.social.vk) {
         debug('处理 VK 任务');
-        pro.push(this.social.vk.toggle({ doTask, ...tasks.vk }));
+        pro.push(this.social.vk.toggle({ doTask, ...payload.vk }));
       }
       if (this.socialInitialized.youtube === true && this.social.youtube) {
         debug('处理 YouTube 任务');
-        pro.push(this.social.youtube.toggle({ doTask, ...tasks.youtube }));
+        pro.push(this.social.youtube.toggle({ doTask, ...payload.youtube }));
       }
       if (
         (this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) &&
@@ -415,30 +420,32 @@ abstract class Website {
         this.social.steam
       ) {
         debug('处理 Steam 任务');
-        pro.push(this.social.steam.toggle({ doTask, ...tasks.steam }));
+        pro.push(this.social.steam.toggle({ doTask, ...payload.steam }));
       }
 
       // 处理链接任务
-      if (this.social.visitLink && tasks.links && doTask) {
-        debug('处理链接任务', { linksCount: tasks.links.length });
-        for (const link of tasks.links) {
+      if (this.social.visitLink && payload.links && doTask) {
+        debug('处理链接任务', { linksCount: payload.links.length });
+        for (const link of payload.links) {
           pro.push(this.social.visitLink(link));
         }
       }
 
       // 处理额外任务
-      // @ts-ignore
-      if (doTask && tasks.extra && this.extraDoTask) {
-        const hasExtra = Object.values(tasks.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
+      if (doTask && payload.extra && this.extraDoTask) {
+        const hasExtra = Object.values(payload.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
         if (hasExtra) {
           debug('处理额外任务');
-          // @ts-ignore
-          pro.push(this.extraDoTask(tasks.extra));
+          pro.push(this.extraDoTask(payload.extra));
         }
       }
 
       debug('等待所有任务完成');
-      await Promise.all(pro);
+      const results = await Promise.all(pro);
+      if (!results.every((result) => result !== false)) {
+        debug('任务执行失败', { results });
+        return false;
+      }
       debug('所有任务完成');
       echoLog({}).success(__('allTasksComplete'));
       return true;
@@ -496,6 +503,11 @@ abstract class Website {
       return false;
     }
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+interface Website {
+  extraDoTask?(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean>;
 }
 
 export default Website;

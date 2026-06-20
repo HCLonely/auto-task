@@ -16,33 +16,7 @@ import httpRequest from '../tools/httpRequest';
 import { delay, getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
-
-const defaultTasksTemplate: giveawayHopperSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    followLinks: [],
-    curatorLinks: [],
-    curatorLikeLinks: []
-  },
-  twitter: {
-    userLinks: [],
-    retweetLinks: []
-  },
-  twitch: {
-    channelLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  youtube: {
-    channelLinks: []
-  },
-  extra: {
-    giveawayHopper: []
-  }
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
+import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
 
 /**
  * 表示 GiveawayHopper 网站的任务处理类。
@@ -51,8 +25,8 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'GiveawayHopper'。
- * @property {giveawayHopperSocialTasks} undoneTasks - 社交任务列表。
- * @property {giveawayHopperSocialTasks} socialTasks - 存储已完成的社交任务。
+ * @property {Array<WebsiteTask>} tasks - 统一任务列表。
+ * @property {Array<giveawayHopperReturnTaskInfo>} rawTasks - API 原始任务列表。
  * @property {Array<string>} buttons - 可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
  *
  * @static
@@ -79,9 +53,8 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class GiveawayHopper extends Website {
   name = 'GiveawayHopper';
-  undoneTasks: giveawayHopperSocialTasks = JSON.parse(defaultTasks);
-  socialTasks: giveawayHopperSocialTasks = JSON.parse(defaultTasks);
-  tasks: Array<giveawayHopperReturnTaskInfo> = [];
+  tasks: Array<WebsiteTask> = [];
+  rawTasks: Array<giveawayHopperReturnTaskInfo> = [];
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -190,7 +163,9 @@ class GiveawayHopper extends Website {
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<giveawayHopperGMTasks>(`giveawayHopperTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`giveawayHopperTasks-${this.giveawayId}`));
+        logStatus.success();
+        return true;
       }
 
       debug('请求任务列表');
@@ -217,27 +192,31 @@ class GiveawayHopper extends Website {
       }
 
       debug('获取到任务列表', { count: data.response.tasks.length });
-      this.tasks = data.response.tasks;
+      this.rawTasks = data.response.tasks;
+      this.tasks = [];
 
       for (const task of data.response.tasks) {
-        if (task.isDone) {
-          debug('跳过已完成任务', { taskId: task.id, type: task.type });
-          continue;
+        debug('处理任务', { taskId: task.id, category: task.category, type: task.type });
+        if (!task.isDone) {
+          await httpRequest({
+            url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/visited`,
+            method: 'GET',
+            responseType: 'json',
+            headers: {
+              authorization: `Bearer ${window.sessionStorage.gw_auth}`,
+              'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
+            }
+          });
         }
 
-        debug('处理任务', { taskId: task.id, category: task.category, type: task.type });
-        await httpRequest({
-          url: `https://giveawayhopper.com/api/v1/campaigns/${this.giveawayId}/tasks/${task.id}/visited`,
-          method: 'GET',
-          responseType: 'json',
-          headers: {
-            authorization: `Bearer ${window.sessionStorage.gw_auth}`,
-            'x-xsrf-token': decodeURIComponent(document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] as string)
-          }
-        });
+        const taskTitle = task.displayName?.replace(':target', task.targetName) || task.name;
 
         if (task.category === 'Steam' && task.type === 'JoinGroup') {
           debug('处理 Steam 组任务');
+          if (!task.group_id) {
+            debug('缺少 Steam 组 ID，跳过任务', { taskId: task.id });
+            continue;
+          }
           const steamGroupLink = await getRedirectLink(`https://steamcommunity.com/gid/${task.group_id}`);
           if (!steamGroupLink) {
             debug('获取 Steam 组链接失败');
@@ -245,16 +224,40 @@ class GiveawayHopper extends Website {
           }
 
           debug('添加 Steam 组链接', { action, link: steamGroupLink });
-          if (action === 'undo') this.socialTasks.steam.groupLinks.push(steamGroupLink);
-          if (action === 'do') this.undoneTasks.steam.groupLinks.push(steamGroupLink);
+          this.tasks.push({
+            done: task.isDone,
+            social: 'steam',
+            type: 'group',
+            link: steamGroupLink,
+            id: task.id,
+            title: taskTitle,
+            category: task.category,
+            sourceType: task.type,
+            hash: task.hash,
+            groupId: task.group_id
+          });
           continue;
         }
 
         if (task.category === 'Discord' && task.type === 'JoinServer') {
+          if (!task.invite_code) {
+            debug('缺少 Discord 邀请码，跳过任务', { taskId: task.id });
+            continue;
+          }
           const discordLink = `https://discord.gg/${task.invite_code}`;
           debug('添加 Discord 服务器链接', { action, link: discordLink });
-          if (action === 'undo') this.socialTasks.discord.serverLinks.push(discordLink);
-          if (action === 'do') this.undoneTasks.discord.serverLinks.push(discordLink);
+          this.tasks.push({
+            done: task.isDone,
+            social: 'discord',
+            type: 'server',
+            link: discordLink,
+            id: task.id,
+            title: taskTitle,
+            category: task.category,
+            sourceType: task.type,
+            hash: task.hash,
+            inviteCode: task.invite_code
+          });
           continue;
         }
 
@@ -268,15 +271,19 @@ class GiveawayHopper extends Website {
       }
 
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as giveawayHopperSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as giveawayHopperSocialTasks;
+      this.tasks = uniqueWebsiteTasks(this.tasks);
+      const tasksForUndo = uniqueWebsiteTasks(this.tasks
+        .filter((task) => !task.done && task.social !== 'extra' && task.social !== 'links')
+        .map((task) => ({ ...task, done: true })));
 
       debug('任务分类完成', {
-        undoneTasks: this.undoneTasks,
-        socialTasks: this.socialTasks
+        tasks: this.tasks
       });
 
-      GM_setValue(`giveawayHopperTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      GM_setValue(`giveawayHopperTasks-${this.giveawayId}`, {
+        tasks: tasksForUndo,
+        time: new Date().getTime()
+      });
       return true;
     } catch (error) {
       debug('任务分类失败', { error });
@@ -301,7 +308,7 @@ class GiveawayHopper extends Website {
   async verifyTask(): Promise<boolean> {
     try {
       debug('开始验证任务');
-      for (const task of this.tasks) {
+      for (const task of this.rawTasks) {
         if (task.isDone) {
           debug('跳过已完成任务', { taskId: task.id });
           continue;

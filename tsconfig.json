@@ -12,6 +12,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
     "types": ["jquery", "tampermonkey", "js-cookie", "keyboardjs"]
   },
   "include": [

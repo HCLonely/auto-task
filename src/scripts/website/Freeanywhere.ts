@@ -17,30 +17,8 @@ import { delay } from '../tools/tools';
 import { debug } from '../tools/debug';
 import { globalOptions } from '../globalOptions';
 import { ready } from './games-for-farm-api';
+import { normalizeStoredTasks } from './taskModel';
 import type { GamesForFarmApi } from './GFF_API';
-
-const defaultTasksTemplate = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    curatorLinks: [],
-    followLinks: [],
-    playTimeLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  vk: {
-    nameLinks: []
-  },
-  youtube: {
-    channelLinks: []
-  },
-  extra: {
-    website: []
-  }
-} as const;
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
 
 /**
  * FreeAnyWhere 类用于处理与 FreeAnywhere 网站相关的任务和操作。
@@ -49,9 +27,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称。
- * @property {Array<fawTaskInfo>} tasks - 当前任务列表。
- * @property {fawSocialTasks} socialTasks - 社交任务列表。
- * @property {fawSocialTasks} undoneTasks - 未完成的社交任务列表。
+ * @property {Array<fawTaskInfo>} verifyTasks - 当前验证任务列表。
  * @property {Array<string>} buttons - 可用操作按钮列表。
  * @property {string} giveawayId - 抽奖ID。
  *
@@ -67,9 +43,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
 class FreeAnyWhere extends Website {
   static type = 'website';
   name = 'FreeAnyWhere';
-  tasks: Array<fawTaskInfo> = [];
-  socialTasks: fawSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: fawSocialTasks = JSON.parse(defaultTasks);
+  verifyTasks: Array<fawTaskInfo> = [];
   games!: Record<string, { playtime_forever: number }>;
   buttons: Array<string> = [
     'doTask',
@@ -104,6 +78,7 @@ class FreeAnyWhere extends Website {
     try {
       debug('开始扩展注入');
       this.#ExtAPI = await ready();
+      debug('扩展注入完成', { hasApi: Boolean(this.#ExtAPI) });
     } catch (error) {
       debug('后续操作失败', { error });
       throwError(error as Error, 'GiveawayHopper.after');
@@ -173,14 +148,17 @@ class FreeAnyWhere extends Website {
    * 支持的社交平台包括 Steam 和 VK，函数会根据不同的任务类型（如 WL、JTG、STC、GF）将任务链接分类到相应的列表中。
    * 最后，函数会去重任务列表，并将更新后的任务信息存储回本地。
    */
-  async classifyTask(action: string): Promise<boolean> {
+  async classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> {
     try {
       debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
 
       if (action === 'undo') {
         debug('获取已保存的任务信息');
-        this.socialTasks = GM_getValue<fawGMTasks>(`fawTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`fawTasks-${this.giveawayId}`));
+        logStatus.success();
+        debug('任务分类结果', { tasks: this.tasks });
+        return true;
       }
 
       const tasks = $('div.game__content-tasks__task').map((index, element) => ({
@@ -206,6 +184,10 @@ class FreeAnyWhere extends Website {
       }
 
       if (action === 'verify') {
+        this.verifyTasks = [];
+      }
+
+      if (action === 'do') {
         this.tasks = [];
       }
 
@@ -214,15 +196,20 @@ class FreeAnyWhere extends Website {
       }
 
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as fawSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as fawSocialTasks;
 
-      debug('任务分类结果', {
-        undoneTasks: this.undoneTasks,
-        socialTasks: this.socialTasks
-      });
-
-      GM_setValue(`fawTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      if (action === 'do') {
+        this.tasks = this.uniqueTasks(this.tasks);
+        const tasksForUndo = this.uniqueTasks(this.tasks
+          .filter((task) => task.social !== 'extra' && task.done === false)
+          .map((task) => ({ ...task, done: true })));
+        debug('任务分类结果', {
+          tasks: this.tasks,
+          tasksForUndo
+        });
+        GM_setValue(`fawTasks-${this.giveawayId}`, { tasks: tasksForUndo, time: new Date().getTime() });
+      } else {
+        debug('任务分类结果', { verifyTasks: this.verifyTasks });
+      }
       return true;
     } catch (error) {
       debug('任务分类失败', { error });
@@ -231,7 +218,10 @@ class FreeAnyWhere extends Website {
     }
   }
 
-  async #processTask(task: any, action: string): Promise<void> {
+  async #processTask(task: fawTaskInfo & {
+    link?: string
+    isSuccess: boolean
+  }, action: string): Promise<void> {
     try {
       debug('处理任务', { task, action });
       const { id, social, title, type, link, data, isSuccess } = task;
@@ -239,9 +229,11 @@ class FreeAnyWhere extends Website {
 
       if (action === 'verify' && !isSuccess) {
         debug('添加到验证任务列表', taskInfo);
-        this.tasks.push(taskInfo);
+        this.verifyTasks.push(taskInfo);
         return;
       }
+
+      if (action !== 'do') return;
 
       debug('处理特定类型任务', { type, action, isSuccess });
       switch (type) {
@@ -250,46 +242,46 @@ class FreeAnyWhere extends Website {
             debug('跳过任务', { type });
             break;
           case 'steam_game_sub':
-            if (action === 'undo' && link) this.socialTasks.steam.followLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.followLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'steam', type: 'follow', link, id, title, data });
             break;
           case 'steam_game_wishlist':
-            if (action === 'undo' && link) this.socialTasks.steam.wishlistLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.wishlistLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'steam', type: 'wishlist', link, id, title, data });
             break;
           case 'steam_group_sub':
-            if (action === 'undo' && link) this.socialTasks.steam.groupLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.groupLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'steam', type: 'group', link, id, title, data });
             break;
           case 'steam_curator_sub':
-            if (action === 'undo' && link) this.socialTasks.steam.curatorLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.curatorLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'steam', type: 'curator', link, id, title, data });
             break;
           case 'site_visit':
-            if (action === 'do' && !isSuccess) this.undoneTasks.extra.website.push(id);
+            this.tasks.push({ done: isSuccess, social: 'extra', type: 'website', link: id, id, title, data });
             break;
           case 'vk_community_sub':
-            if (action === 'undo' && link) this.socialTasks.vk.nameLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.vk.nameLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'vk', type: 'user', link, id, title, data });
             break;
           case 'vk_post_like':
-            if (action === 'undo' && link) this.socialTasks.vk.nameLinks.push(`${link}&action=like`);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.vk.nameLinks.push(`${link}&action=like`);
+            if (link) this.tasks.push({ done: isSuccess, social: 'vk', type: 'like', link: `${link}&action=like`, id, title, data });
             break;
           case 'discord_server_sub':
             debug('跳过 Discord 任务');
             echoLog({}).warning(`${__('discordTaskNotice')}`);
             break;
-            // if (action === 'undo' && link) this.socialTasks.discord.serverLinks.push(link);
-            // if (action === 'do' && !isSuccess && link) this.undoneTasks.discord.serverLinks.push(link);
-            break;
           case 'youtube_channel_sub':
-            if (action === 'undo' && link) this.socialTasks.youtube.channelLinks.push(link);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.youtube.channelLinks.push(link);
+            if (link) this.tasks.push({ done: isSuccess, social: 'youtube', type: 'channel', link, id, title, data });
             break;
           case 'steam_game_playtime':
-            if (action === 'undo' && link) this.socialTasks.steam.playTimeLinks.push(`${title.match(/(\d+)\s*min/)?.[1] || '0'}-${link}`);
-            if (action === 'do' && !isSuccess && link) this.undoneTasks.steam.playTimeLinks.push(`${title.match(/(\d+)\s*min/)?.[1] || '0'}-${link}`);
+            if (link) {
+              this.tasks.push({
+                done: isSuccess,
+                social: 'steam',
+                type: 'playtime',
+                link,
+                id,
+                title,
+                data,
+                minutes: Number(title.match(/(\d+)\s*min/)?.[1] || '0')
+              });
+            }
             break;
           case 'telegram_channel_sub':
             debug('跳过 Telegram 任务');
@@ -297,11 +289,11 @@ class FreeAnyWhere extends Website {
             break;
           case 'none':
             debug('跳过未连接的任务', { type });
-            echoLog({}).warning(`${__('notConnect', type)}`);
+            echoLog({}).warning(`${__('notConnect', type || '')}`);
             break;
           default:
             debug('未知任务类型', { type });
-            echoLog({}).warning(`${__('unKnownTaskType', type)}`);
+            echoLog({}).warning(`${__('unKnownTaskType', type || '')}`);
             break;
       }
     } catch (error) {
@@ -332,14 +324,19 @@ class FreeAnyWhere extends Website {
         return false;
       }
 
-      if (this.tasks.length === 0 && !(await this.classifyTask('verify'))) {
-        debug('任务列表为空', this.tasks);
+      if (this.verifyTasks.length === 0 && !(await this.classifyTask('verify'))) {
+        debug('任务列表为空', this.verifyTasks);
         return false;
       }
 
-      debug('开始验证任务列表', { tasks: this.tasks });
+      if (this.verifyTasks.length === 0) {
+        debug('没有待验证任务', this.verifyTasks);
+        return false;
+      }
+
+      debug('开始验证任务列表', { tasks: this.verifyTasks });
       const pro = [];
-      for (const task of this.tasks) {
+      for (const task of this.verifyTasks) {
         pro.push(this.#verify(task));
         await delay(1000);
       }
@@ -382,13 +379,14 @@ class FreeAnyWhere extends Website {
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
    */
-  async extraDoTask({ website }: { website: Array<string> }): Promise<boolean> {
+  async extraDoTask(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
+      const website = tasks.website || [];
       debug('执行额外任务', { website });
-      const promises = website.map((id) => this.#doVisitWebsite(id));
+      const promises = website.map((task) => this.#doVisitWebsite(`${task.id ?? task.link}`));
       const results = await Promise.allSettled(promises);
       debug('额外任务执行结果', { results });
-      return true;
+      return results.every((result) => result.status === 'fulfilled' && result.value);
     } catch (error) {
       debug('执行额外任务失败', { error });
       throwError(error as Error, 'FreeAnyWhere.extraDoTask');

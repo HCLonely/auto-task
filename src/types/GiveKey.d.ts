@@ -5,25 +5,3 @@
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/types/GiveKey.d.ts
  */
-
-declare interface gkSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    wishlistLinks: Array<string>
-    curatorLinks: Array<string>
-    curatorLikeLinks: Array<string>
-  }
-  twitter: {
-    userLinks: Array<string>
-  }
-  vk: {
-    nameLinks: Array<string>
-  }
-  discord: {
-    serverLinks: Array<string>
-  }
-}
-declare interface gkGMTasks {
-  tasks: gkSocialTasks
-  time: number
-}

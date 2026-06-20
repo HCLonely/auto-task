@@ -12,16 +12,9 @@ import Website from './Website';
 import throwError from '../tools/throwError';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
-import { getRedirectLink, delay } from '../tools/tools';
+import { visitLink, delay } from '../tools/tools';
 import { debug } from '../tools/debug';
 import { globalOptions } from '../globalOptions';
-
-const defaultTasksTemplate = {
-  extra: {
-    visitLink: []
-  }
-} as const;
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
 
 /**
  * FreeRu 类用于处理与 FreeRu 网站相关的任务和操作。
@@ -30,9 +23,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称。
- * @property {Array<fruTaskInfo>} tasks - 当前任务列表。
- * @property {fruSocialTasks} socialTasks - 社交任务列表。
- * @property {fruSocialTasks} undoneTasks - 未完成的社交任务列表。
+ * @property {Array<WebsiteTask>} tasks - 当前任务列表。
  * @property {Array<string>} buttons - 可用操作按钮列表。
  * @property {string} giveawayId - 抽奖ID。
  *
@@ -47,8 +38,6 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class FreeRu extends Website {
   name = 'FreeRu';
-  socialTasks: fruSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: fruSocialTasks = JSON.parse(defaultTasks);
   games!: Record<string, { playtime_forever: number }>;
   buttons: Array<string> = [
     'doTask',
@@ -126,16 +115,24 @@ class FreeRu extends Website {
       debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
 
+      this.tasks = [];
       $('.giveaway-tasks__list a.task-card__button').toArray()
         .forEach((elem) => {
-          this.undoneTasks.extra.visitLink.push(elem.getAttribute('href') as string);
+          const link = elem.getAttribute('href');
+          if (!link) return;
+          this.tasks.push({
+            done: false,
+            social: 'extra',
+            type: 'visit',
+            link
+          });
         });
 
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as fruSocialTasks;
+      this.tasks = this.uniqueTasks(this.tasks);
 
       debug('任务分类结果', {
-        undoneTasks: this.undoneTasks
+        tasks: this.tasks
       });
 
       return true;
@@ -160,14 +157,18 @@ class FreeRu extends Website {
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
    */
-  async extraDoTask({ visitLink }: { visitLink: Array<string> }): Promise<boolean> {
+  async extraDoTask(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
-      debug('执行额外任务', { visitLink });
+      const visitTasks = tasks.visit || [];
+      debug('执行额外任务', { visitTasks });
       const logStatus = echoLog({ text: __('visitingLink') });
-      const promises = visitLink.map((link) => getRedirectLink(link));
-      const results = await Promise.allSettled(promises);
-      logStatus.success();
+      const results = await Promise.all(visitTasks.map((task) => visitLink(task.link)));
       debug('额外任务执行结果', { results });
+      if (!results.every(Boolean)) {
+        debug('额外任务执行失败', { results });
+        return false;
+      }
+      logStatus.success();
       return true;
     } catch (error) {
       debug('执行额外任务失败', { error });

@@ -15,44 +15,7 @@ import __ from '../tools/i18n';
 import { getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
-
-const defaultTasks: gasSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    curatorLinks: [],
-    curatorLikeLinks: [],
-    followLinks: [],
-    forumLinks: [],
-    announcementLinks: [],
-    workshopVoteLinks: [],
-    playtestLinks: [],
-    playTimeLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  // instagram: {
-  //   userLinks: []
-  // },
-  vk: {
-    nameLinks: []
-  },
-  twitch: {
-    channelLinks: []
-  },
-  reddit: {
-    redditLinks: []
-  },
-  youtube: {
-    channelLinks: [],
-    likeLinks: []
-  },
-  twitter: {
-    userLinks: [],
-    retweetLinks: []
-  }
-};
+import { normalizeStoredTasks } from './taskModel';
 
 /**
  * GiveawaySu 类用于处理 GiveawaySu 网站的抽奖任务。
@@ -61,8 +24,7 @@ const defaultTasks: gasSocialTasks = {
  * @extends Website
  *
  * @property {string} name - 网站名称。
- * @property {gasSocialTasks} socialTasks - 社交任务列表。
- * @property {gasSocialTasks} undoneTasks - 未完成的社交任务。
+ * @property {Array<WebsiteTask>} tasks - 社交任务列表。
  * @property {Array<string>} buttons - 可用的操作按钮。
  *
  * @static
@@ -99,12 +61,20 @@ const defaultTasks: gasSocialTasks = {
  */
 class GiveawaySu extends Website {
   name = 'GiveawaySu';
-  socialTasks: gasSocialTasks = defaultTasks;
-  undoneTasks: gasSocialTasks = defaultTasks;
   buttons: Array<string> = [
     'doTask',
     'undoTask'
   ];
+
+  protected addTask(social: string, type: string, link: string, options?: Partial<WebsiteTask>): void {
+    this.tasks.push({
+      ...options,
+      done: false,
+      social,
+      type,
+      link
+    });
+  }
 
   /**
    * 检查当前URL是否为有效的抽奖页面的静态方法
@@ -216,9 +186,12 @@ class GiveawaySu extends Website {
 
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<gasGMTasks>(`gasTasks-${this.giveawayId}`)?.tasks || defaultTasks;
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`gasTasks-${this.giveawayId}`));
+        logStatus.success();
         return true;
       }
+
+      this.tasks = [];
 
       const tasks = $('#actions tr');
       if (!tasks.length) {
@@ -295,12 +268,14 @@ class GiveawaySu extends Website {
       debug('任务处理完成');
       logStatus.success();
 
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gasSocialTasks;
-      this.socialTasks = this.undoneTasks;
+      this.tasks = this.uniqueTasks(this.tasks);
+      const tasksForUndo = this.uniqueTasks(this.tasks
+        .filter((task) => task.social !== 'extra' && task.done === false)
+        .map((task) => ({ ...task, done: true })));
 
       debug('保存任务信息');
       GM_setValue(`gasTasks-${this.giveawayId}`, {
-        tasks: this.socialTasks,
+        tasks: tasksForUndo,
         time: new Date().getTime()
       });
 
@@ -340,93 +315,92 @@ class GiveawaySu extends Website {
 
       if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
         debug('添加 Steam 组任务');
-        this.undoneTasks.steam.groupLinks.push(taskLink);
+        this.addTask('steam', 'group', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.announcement.test(taskName)) {
         debug('添加 Steam 公告任务');
-        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        this.addTask('steam', 'announcement', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.curator.test(taskName) && TASK_PATTERNS.curatorLink.test(taskLink)) {
         debug('添加 Steam 鉴赏家关注任务');
-        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        this.addTask('steam', 'curator', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
         debug('添加 Steam 鉴赏家点赞任务');
-        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        this.addTask('steam', 'curatorLike', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.steamForum.test(taskName)) {
         debug('添加 Steam 论坛任务');
-        this.undoneTasks.steam.forumLinks.push(taskLink);
+        this.addTask('steam', 'forum', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
         debug('添加 Steam 创意工坊投票任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.addTask('steam', 'workshopVote', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('plus') && TASK_PATTERNS.playtest.test(taskName)) {
         debug('添加 Steam 游戏测试任务');
-        this.undoneTasks.steam.playtestLinks.push(taskLink);
+        this.addTask('steam', 'playtest', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
         debug('添加 Discord 服务器任务');
-        this.undoneTasks.discord.serverLinks.push(taskLink);
+        this.addTask('discord', 'server', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
         debug('跳过 Instagram 任务');
         // debug('添加 Instagram 关注任务');
-        // this.undoneTasks.instagram.userLinks.push(taskLink);
         return;
       }
 
       if (taskIcon.includes('twitch') || TASK_PATTERNS.twitchChannel.test(taskName)) {
         debug('添加 Twitch 频道任务');
-        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        this.addTask('twitch', 'channel', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('reddit') || TASK_PATTERNS.reddit.test(taskName)) {
         debug('添加 Reddit 任务');
-        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        this.addTask('reddit', 'post', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.watchArt.test(taskName)) {
         debug('添加创意工坊物品任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.addTask('steam', 'workshopVote', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.youtubeChannel.test(taskName)) {
         debug('添加 YouTube 频道任务');
-        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        this.addTask('youtube', 'channel', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (TASK_PATTERNS.youtubeVideo.test(taskName) ||
         ((taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && TASK_PATTERNS.youtubeVideo.test(taskName))) {
         debug('添加 YouTube 视频任务');
-        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        this.addTask('youtube', 'like', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
       if (taskIcon.includes('vk') || TASK_PATTERNS.vkGroup.test(taskName)) {
         debug('添加 VK 任务');
-        this.undoneTasks.vk.nameLinks.push(taskLink);
+        this.addTask('vk', 'user', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
@@ -437,12 +411,12 @@ class GiveawaySu extends Website {
 
       if (TASK_PATTERNS.wishlist.test(taskName)) {
         debug('添加 Steam 愿望单任务');
-        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+        this.addTask('steam', 'wishlist', taskLink, { title: taskName, icon: taskIcon });
       }
 
       if (TASK_PATTERNS.follow.test(taskName)) {
         debug('添加 Steam 关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.addTask('steam', 'follow', taskLink, { title: taskName, icon: taskIcon });
         return;
       }
 
@@ -572,4 +546,4 @@ class GiveawaySu extends Website {
   }
 }
 
-export { GiveawaySu, defaultTasks };
+export { GiveawaySu };

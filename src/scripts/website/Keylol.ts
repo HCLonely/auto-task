@@ -13,53 +13,11 @@ import leftKeyChecker from './leftKeyChecker';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
 
-const defaultTasksTemplate: keylolSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    curatorLinks: [],
-    curatorLikeLinks: [],
-    followLinks: [],
-    forumLinks: [],
-    announcementLinks: [],
-    workshopVoteLinks: [],
-    licenseLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  // instagram: {
-  //   userLinks: []
-  // },
-  vk: {
-    nameLinks: []
-  },
-  twitch: {
-    channelLinks: []
-  },
-  reddit: {
-    redditLinks: []
-  },
-  twitter: {
-    userLinks: [],
-    retweetLinks: []
-  },
-  youtube: {
-    channelLinks: [],
-    likeLinks: []
-  }
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
-
 // 添加更详细的类型定义
 type TaskAction = 'do' | 'undo';
-type SocialPlatform = keyof keylolSocialTasks;
-
-// 首先定义更精确的类型
-type TaskLinks = string[];
 
 interface TaskButton extends HTMLElement {
-  getAttribute(name: 'data-social'): SocialPlatform | null;
+  getAttribute(name: 'data-social'): string | null;
   getAttribute(name: 'data-type'): string | null;
   getAttribute(name: 'data-link'): string | null;
   getAttribute(name: 'selected'): string | null;
@@ -72,8 +30,7 @@ interface TaskButton extends HTMLElement {
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'Keylol'。
- * @property {keylolSocialTasks} socialTasks - 存储社交任务的对象。
- * @property {keylolSocialTasks} undoneTasks - 存储未完成任务的对象。
+ * @property {Array<WebsiteTask>} tasks - 统一任务列表。
  * @property {Array<string>} buttons - 可用的操作按钮数组。
  *
  * @method static test - 检查当前域名是否为 Keylol 网站。
@@ -113,8 +70,6 @@ interface TaskButton extends HTMLElement {
  */
 class Keylol extends Website {
   name = 'Keylol';
-  socialTasks: keylolSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: keylolSocialTasks = JSON.parse(defaultTasks);
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -246,37 +201,37 @@ class Keylol extends Website {
     switch (true) {
         case LINK_PATTERNS.DISCORD.test(href):
           debug('发现 Discord 链接');
-          this.#addBtn($link[0], 'discord', 'serverLinks', href);
+          this.#addBtn($link[0], 'discord', 'server', href);
           break;
 
         case LINK_PATTERNS.REDDIT.test(href):
           debug('发现 Reddit 链接');
-          this.#addBtn($link[0], 'reddit', 'redditLinks', href);
+          this.#addBtn($link[0], 'reddit', 'post', href);
           break;
 
           // case LINK_PATTERNS.INSTAGRAM.test(href):
           //   debug('发现 Instagram 链接');
-          //   this.#addBtn($link[0], 'instagram', 'userLinks', href);
+          //   this.#addBtn($link[0], 'instagram', 'user', href);
           //   break;
 
         case LINK_PATTERNS.TWITTER.test(href):
           if (LINK_PATTERNS.TWITTER_RETWEET.test(href)) {
             debug('发现 Twitter 转发链接');
-            this.#addBtn($link[0], 'twitter', 'retweetLinks', href);
+            this.#addBtn($link[0], 'twitter', 'retweet', href);
           } else {
             debug('发现 Twitter 用户链接');
-            this.#addBtn($link[0], 'twitter', 'userLinks', href);
+            this.#addBtn($link[0], 'twitter', 'user', href);
           }
           break;
 
         case LINK_PATTERNS.TWITCH.test(href):
           debug('发现 Twitch 链接');
-          this.#addBtn($link[0], 'twitch', 'channelLinks', href);
+          this.#addBtn($link[0], 'twitch', 'channel', href);
           break;
 
         case LINK_PATTERNS.VK.test(href):
           debug('发现 VK 链接');
-          this.#addBtn($link[0], 'vk', 'nameLinks', href);
+          this.#addBtn($link[0], 'vk', 'user', href);
           break;
 
         case href.includes('store.steampowered.com'):
@@ -291,8 +246,8 @@ class Keylol extends Website {
 
         case LINK_PATTERNS.YOUTUBE.test(href):
           debug('发现 YouTube 链接');
-          this.#addBtn($link[0], 'youtube', 'channelLinks', href);
-          this.#addBtn($link[0], 'youtube', 'likeLinks', href);
+          this.#addBtn($link[0], 'youtube', 'channel', href);
+          this.#addBtn($link[0], 'youtube', 'like', href);
           break;
     }
   }
@@ -306,17 +261,17 @@ class Keylol extends Website {
 
     if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
       debug('发现 Steam 鉴赏家链接');
-      this.#addBtn(element, 'steam', 'curatorLinks', href);
+      this.#addBtn(element, 'steam', 'curator', href);
     } else if (LINK_PATTERNS.STEAM_PUBLISHER.test(href)) {
       debug('发现 Steam 发行商链接');
-      this.#addBtn(element, 'steam', 'curatorLikeLinks', href);
+      this.#addBtn(element, 'steam', 'curatorLike', href);
     } else if (LINK_PATTERNS.STEAM_NEWS.test(href)) {
       debug('发现 Steam 新闻链接');
-      this.#addBtn(element, 'steam', 'announcementLinks', href);
+      this.#addBtn(element, 'steam', 'announcement', href);
     } else if (LINK_PATTERNS.STEAM_APP.test(href)) {
       debug('发现 Steam 应用链接');
-      this.#addBtn(element, 'steam', 'followLinks', href);
-      this.#addBtn(element, 'steam', 'wishlistLinks', href);
+      this.#addBtn(element, 'steam', 'follow', href);
+      this.#addBtn(element, 'steam', 'wishlist', href);
     }
   }
 
@@ -329,10 +284,10 @@ class Keylol extends Website {
 
     if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
       debug('发现 Steam 组链接');
-      this.#addBtn(element, 'steam', 'groupLinks', href);
+      this.#addBtn(element, 'steam', 'group', href);
     } else if (LINK_PATTERNS.STEAM_ANNOUNCEMENT.test(href)) {
       debug('发现 Steam 公告链接');
-      this.#addBtn(element, 'steam', 'announcementLinks', href);
+      this.#addBtn(element, 'steam', 'announcement', href);
     }
   }
 
@@ -395,7 +350,7 @@ class Keylol extends Website {
       debug('处理 ASF 链接', { href });
       const $link = $(`a[href="${href}"]`);
       $link.after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>');
-      this.#addBtn($link.next()[0], 'steam', 'licenseLinks', `appid-${href.replace('#asf', '')}`);
+      this.#addBtn($link.next()[0], 'steam', 'license', `appid-${href.replace('#asf', '')}`);
     });
 
     // 处理 SteamDB 链接
@@ -410,7 +365,7 @@ class Keylol extends Website {
       if (!subid) return;
 
       debug('处理 SteamDB 链接', { href, subid });
-      this.#addBtn(link, 'steam', 'licenseLinks', `subid-${subid}`);
+      this.#addBtn(link, 'steam', 'license', `subid-${subid}`);
     });
 
     // 处理 ASF 代码块
@@ -424,13 +379,13 @@ class Keylol extends Website {
 
       if (appid.length > 0) {
         debug('处理 ASF 代码块 appid', { appid });
-        this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `appid-${appid.join(',')}`);
+        this.#addBtn($(block).children('em')[0], 'steam', 'license', `appid-${appid.join(',')}`);
       }
 
       const subid = block.innerText.match(/[\d]+/g)?.filter((matched) => !appid.includes(matched));
       if (subid?.length) {
         debug('处理 ASF 代码块 subid', { subid });
-        this.#addBtn($(block).children('em')[0], 'steam', 'licenseLinks', `subid-${subid.join(',')}`);
+        this.#addBtn($(block).children('em')[0], 'steam', 'license', `subid-${subid.join(',')}`);
       }
     });
   }
@@ -464,7 +419,7 @@ class Keylol extends Website {
    *
    * @description
    * 该方法根据传入的操作类型分类任务。
-   * 首先将社交任务和未完成任务初始化为默认任务。
+   * 首先重置统一任务列表。
    * 然后遍历所有被选中的按钮，提取社交媒体类型、任务类型和链接。
    * 根据操作类型，将链接添加到相应的任务列表中。
    * 最后，去重任务列表并返回成功状态。
@@ -472,8 +427,7 @@ class Keylol extends Website {
   classifyTask(action: TaskAction): boolean {
     try {
       debug('开始分类任务', { action });
-      this.socialTasks = JSON.parse(defaultTasks);
-      this.undoneTasks = JSON.parse(defaultTasks);
+      this.tasks = [];
       const selectedBtns = $('.auto-task-keylol[selected="selected"]:visible').get() as TaskButton[];
       debug('找到选中的按钮', { count: selectedBtns.length });
 
@@ -488,24 +442,17 @@ class Keylol extends Website {
           debug('跳过无效任务按钮');
           continue;
         }
-        if (!(social in this.undoneTasks)) {
-          debug('跳过未知社交平台', { social });
-          continue;
-        }
 
-        if (action === 'do' && type in this.undoneTasks[social as SocialPlatform]) {
-          debug('添加到未完成任务', { social, type, link });
-          (this.undoneTasks[social as SocialPlatform][type as keyof typeof this.undoneTasks[SocialPlatform]] as TaskLinks).push(link);
-        }
-        if (action === 'undo' && type in this.socialTasks[social as SocialPlatform]) {
-          debug('添加到社交任务', { social, type, link });
-          (this.socialTasks[social as SocialPlatform][type as keyof typeof this.socialTasks[SocialPlatform]] as TaskLinks).push(link);
-        }
+        this.tasks.push({
+          done: action === 'undo',
+          social,
+          type,
+          link
+        });
       }
 
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as keylolSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as keylolSocialTasks;
-      debug('任务分类完成', { undoneTasks: this.undoneTasks, socialTasks: this.socialTasks });
+      this.tasks = this.uniqueTasks(this.tasks);
+      debug('任务分类完成', { tasks: this.tasks });
       return true;
     } catch (error) {
       debug('任务分类失败', { error });
@@ -621,7 +568,7 @@ class Keylol extends Website {
         'data-social': social,
         'data-type': linkType,
         'data-link': link,
-        text: linkType.replace('Links', ''),
+        text: linkType,
         onclick: 'this.getAttribute("selected") ? this.removeAttribute("selected") : this.setAttribute("selected", "selected")'
       });
       $(before).after(button);

@@ -16,40 +16,13 @@ import httpRequest from '../tools/httpRequest';
 import { delay } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
+import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
 
 declare global {
   interface Window {
     _OxA: string;
   }
 }
-
-const defaultTasksTemplate: gleamSocialTasks = {
-  steam: {
-    groupLinks: [],
-    wishlistLinks: [],
-    followLinks: [],
-    curatorLinks: [],
-    curatorLikeLinks: [],
-    playTimeLinks: []
-  },
-  twitter: {
-    userLinks: [],
-    retweetLinks: []
-  },
-  twitch: {
-    channelLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  youtube: {
-    channelLinks: []
-  },
-  extra: {
-    gleam: []
-  }
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
 
 /**
  * 表示 Gleam 网站的任务处理类。
@@ -58,8 +31,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'Gleam'。
- * @property {gleamSocialTasks} undoneTasks - 社交任务列表。
- * @property {gleamSocialTasks} socialTasks - 存储已完成的社交任务。
+ * @property {Array<WebsiteTask>} tasks - 统一任务列表。
  * @property {Array<string>} buttons - 可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
  *
  * @static
@@ -116,8 +88,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class Gleam extends Website {
   name = 'Gleam';
-  undoneTasks: gleamSocialTasks = JSON.parse(defaultTasks);
-  socialTasks: gleamSocialTasks = JSON.parse(defaultTasks);
+  tasks: Array<WebsiteTask> = [];
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -268,19 +239,18 @@ class Gleam extends Website {
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<gleamGMTasks>(`gleamTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`gleamTasks-${this.giveawayId}`));
+        logStatus.success();
+        return true;
       }
 
+      this.tasks = [];
       const tasks = $('.entry-content .entry-method');
       debug('找到任务元素', { count: tasks.length });
 
       for (const task of tasks) {
         const $task = $(task);
-
-        if (action === 'do' && $task.find('i.fa-question').length === 0) {
-          debug('跳过已完成的任务');
-          continue;
-        }
+        const isDone = $task.find('i.fa-question').length === 0;
 
         const socialIcon = $task.find('.icon-wrapper i');
         const taskInfo = $task.find('.user-links');
@@ -290,7 +260,22 @@ class Gleam extends Website {
 
         debug('处理任务', { taskText });
 
-        if (aElements.length > 0) {
+        const addTask = (
+          social: string,
+          type: string,
+          link: string,
+          options: Partial<WebsiteTask> = {}
+        ) => {
+          this.tasks.push({
+            ...options,
+            done: isDone,
+            social,
+            type,
+            link
+          });
+        };
+
+        if (!isDone && aElements.length > 0) {
           debug('处理可点击元素', { count: aElements.length });
           for (const element of aElements) {
             const $element = $(element);
@@ -306,14 +291,12 @@ class Gleam extends Website {
           if (!link) continue;
 
           if (/follow/gi.test(taskText)) {
-            if (action === 'undo') this.socialTasks.twitter.userLinks.push(link);
-            if (action === 'do') this.undoneTasks.twitter.userLinks.push(link);
+            addTask('twitter', 'user', link);
             continue;
           }
 
           if (/retweet/gim.test(taskText)) {
-            if (action === 'undo') this.socialTasks.twitter.retweetLinks.push(link);
-            if (action === 'do') this.undoneTasks.twitter.retweetLinks.push(link);
+            addTask('twitter', 'retweet', link);
             continue;
           }
         }
@@ -323,8 +306,7 @@ class Gleam extends Website {
           const link = $task.find('a[href^="https://twitch.tv/"]').attr('href');
           if (!link) continue;
 
-          if (action === 'undo') this.socialTasks.twitch.channelLinks.push(link);
-          if (action === 'do') this.undoneTasks.twitch.channelLinks.push(link);
+          addTask('twitch', 'channel', link);
           continue;
         }
 
@@ -338,8 +320,7 @@ class Gleam extends Website {
             link = `https://discord.com/invite/${ggLink}`;
           }
 
-          if (action === 'undo') this.socialTasks.discord.serverLinks.push(link);
-          if (action === 'do') this.undoneTasks.discord.serverLinks.push(link);
+          addTask('discord', 'server', link);
           continue;
         }
 
@@ -351,8 +332,7 @@ class Gleam extends Website {
           const link = $task.find('a[href^="https://www.youtube.com/channel/"]').attr('href');
           if (!link) continue;
 
-          if (action === 'undo') this.socialTasks.youtube.channelLinks.push(link);
-          if (action === 'do') this.undoneTasks.youtube.channelLinks.push(link);
+          addTask('youtube', 'channel', link);
           continue;
         }
 
@@ -362,8 +342,7 @@ class Gleam extends Website {
             const link = $task.find('a[href^="https://steamcommunity.com/groups/"]').attr('href');
             if (!link) continue;
 
-            if (action === 'undo') this.socialTasks.steam.groupLinks.push(link);
-            if (action === 'do') this.undoneTasks.steam.groupLinks.push(link);
+            addTask('steam', 'group', link);
             continue;
           }
 
@@ -371,8 +350,7 @@ class Gleam extends Website {
             const link = $task.find('a[href^="https://store.steampowered.com/curator/"]').attr('href');
             if (!link) continue;
 
-            if (action === 'undo') this.socialTasks.steam.curatorLinks.push(link);
-            if (action === 'do') this.undoneTasks.steam.curatorLinks.push(link);
+            addTask('steam', 'curator', link);
             continue;
           }
 
@@ -381,9 +359,8 @@ class Gleam extends Website {
             const time = [...taskText.matchAll(/(\d+?(\.\d+)?)\s*?hour/gi)];
             if (!link || !time[0]?.[1]) continue;
 
-            const trueTime = parseFloat(time[0][1]) * 60;
-            // if (action === 'undo') this.socialTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
-            if (action === 'do') this.undoneTasks.steam.playTimeLinks.push(`${trueTime}-${link}`);
+            const minutes = parseFloat(time[0][1]) * 60;
+            addTask('steam', 'playtime', link, { minutes });
             continue;
           }
 
@@ -391,16 +368,15 @@ class Gleam extends Website {
             const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
             if (!link) continue;
 
-            if (action === 'undo') this.socialTasks.steam.wishlistLinks.push(link);
-            if (action === 'do') this.undoneTasks.steam.wishlistLinks.push(link);
+            addTask('steam', 'wishlist', link);
+            continue;
           }
 
           if (/follow/gi.test(taskText)) {
             const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
             if (!link) continue;
 
-            if (action === 'undo') this.socialTasks.steam.followLinks.push(link);
-            if (action === 'do') this.undoneTasks.steam.followLinks.push(link);
+            addTask('steam', 'follow', link);
             continue;
           }
 
@@ -411,12 +387,10 @@ class Gleam extends Website {
 
         // 处理Gleam任务
         if (socialIcon.hasClass('fa-bullhorn') && (/Complete|Increase/gi.test(taskText))) {
-          if (action !== 'do') continue;
-
           const gleamLink = await this.#getGleamLink(taskText);
           if (!gleamLink) continue;
 
-          this.undoneTasks.extra.gleam.push(gleamLink);
+          addTask('extra', 'gleam', gleamLink);
           continue;
         }
 
@@ -450,11 +424,16 @@ class Gleam extends Website {
       }
       debug('任务分类完成');
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gleamSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as gleamSocialTasks;
+      this.tasks = uniqueWebsiteTasks(this.tasks);
+      const tasksForUndo = uniqueWebsiteTasks(this.tasks
+        .filter((task) => !task.done && task.social !== 'extra' && task.social !== 'links')
+        .map((task) => ({ ...task, done: true })));
 
       debug('保存任务信息');
-      GM_setValue(`gleamTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      GM_setValue(`gleamTasks-${this.giveawayId}`, {
+        tasks: tasksForUndo,
+        time: new Date().getTime()
+      });
       return true;
     } catch (error) {
       debug('任务分类失败', { error });
@@ -477,14 +456,14 @@ class Gleam extends Website {
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
    */
-  async extraDoTask({ gleam }: { gleam: Array<string> }): Promise<boolean> {
+  async extraDoTask({ gleam = [] }: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
       debug('开始执行额外任务', { count: gleam.length });
       const pro = [];
-      for (const link of gleam) {
-        pro.push(this.#doGleamTask(link));
+      for (const task of gleam) {
+        pro.push(this.#doGleamTask(task.link));
       }
-      return Promise.all(pro).then(() => true);
+      return Promise.all(pro).then((results) => results.every((result) => result !== false));
     } catch (error) {
       debug('执行额外任务失败', { error });
       throwError(error as Error, 'Gleam.extraDoTask');

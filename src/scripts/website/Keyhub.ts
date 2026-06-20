@@ -16,23 +16,7 @@ import { getRedirectLink } from '../tools/tools';
 import { globalOptions } from '../globalOptions';
 import httpRequest from '../tools/httpRequest';
 import { debug } from '../tools/debug';
-
-const defaultTasksTemplate: khSocialTasks = {
-  steam: {
-    groupLinks: [],
-    officialGroupLinks: [],
-    wishlistLinks: [],
-    curatorLinks: []
-  },
-  discord: {
-    serverLinks: []
-  },
-  extra: {
-    videoTasks: []
-  },
-  links: []
-};
-const defaultTasks = JSON.stringify(defaultTasksTemplate);
+import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
 
 /**
  * Keyhub 类用于处理与 Keyhub 网站相关的任务和操作。
@@ -41,8 +25,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  * @extends Website
  *
  * @property {string} name - 网站名称，默认为 'Keyhub'。
- * @property {khSocialTasks} socialTasks - 存储社交任务的对象。
- * @property {khSocialTasks} undoneTasks - 存储未完成任务的对象。
+ * @property {Array<WebsiteTask>} tasks - 统一任务列表。
  * @property {Array<string>} buttons - 可用的操作按钮数组。
  *
  * @method static test - 检查当前域名是否为 Keyhub 网站。
@@ -90,8 +73,7 @@ const defaultTasks = JSON.stringify(defaultTasksTemplate);
  */
 class Keyhub extends Website {
   name = 'Keyhub';
-  socialTasks: khSocialTasks = JSON.parse(defaultTasks);
-  undoneTasks: khSocialTasks = JSON.parse(defaultTasks);
+  tasks: Array<WebsiteTask> = [];
   buttons: Array<string> = [
     'doTask',
     'undoTask'
@@ -200,25 +182,43 @@ class Keyhub extends Website {
    * 遍历页面中的任务，提取任务链接并根据任务类型分类到相应的社交任务列表中。
    * 处理完成后，记录成功信息并将分类后的任务存储到本地。
    */
-  async classifyTask(action: string): Promise<boolean> {
+  async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
       debug('开始分类任务', { action });
       const logStatus = echoLog({ text: __('getTasksInfo') });
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<khGMTasks>(`khTasks-${this.giveawayId}`)?.tasks || JSON.parse(defaultTasks);
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`khTasks-${this.giveawayId}`));
+        logStatus.success();
+        return true;
       }
 
-      const tasks = $('.task:not(".googleads")')
-        .filter((index, element) => (action === 'do' ? $(element).find('i.fa-check-circle:visible').length === 0 : true))
-        .find('a');
+      this.tasks = [];
+      const tasks = $('.task:not(".googleads")').find('a');
       debug('找到任务', { count: tasks.length });
 
       for (const task of tasks) {
+        const $task = $(task);
+        const isDone = $task.closest('.task').find('i.fa-check-circle:visible').length > 0;
         let link = $(task).attr('href');
         const taskDes = $(task).text()
           .trim();
         debug('处理任务', { taskDes, link });
+
+        const addTask = (
+          social: string,
+          type: string,
+          taskLink: string,
+          options: Partial<WebsiteTask> = {}
+        ) => {
+          this.tasks.push({
+            ...options,
+            done: isDone,
+            social,
+            type,
+            link: taskLink
+          });
+        };
 
         if (!link) {
           debug('跳过无链接任务');
@@ -232,53 +232,46 @@ class Keyhub extends Website {
 
         if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
           debug('处理 Discord 连接任务');
-          GM_openInTab(link, { active: true });
+          if (!isDone) GM_openInTab(link, { active: true });
           continue;
         }
 
         if (/steamcommunity\.com\/groups\//.test(link)) {
           debug('处理 Steam 组任务');
-          if (action === 'undo') this.socialTasks.steam.groupLinks.push(link);
-          if (action === 'do') this.undoneTasks.steam.groupLinks.push(link);
+          addTask('steam', 'group', link);
           continue;
         }
 
         if (/steamcommunity\.com\/games\/[\d]+/.test(link)) {
           debug('处理 Steam 官方组任务');
-          if (action === 'undo') this.socialTasks.steam.officialGroupLinks.push(link);
-          if (action === 'do') this.undoneTasks.steam.officialGroupLinks.push(link);
+          addTask('steam', 'officialGroup', link);
           continue;
         }
 
         if (/store\.steampowered\.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
           debug('处理 Steam 愿望单任务');
-          if (action === 'undo') this.socialTasks.steam.wishlistLinks.push(link);
-          if (action === 'do') this.undoneTasks.steam.wishlistLinks.push(link);
+          addTask('steam', 'wishlist', link);
           continue;
         }
 
         if (/store\.steampowered\.com\/curator\//.test(link)) {
           debug('处理 Steam 鉴赏家任务');
-          if (action === 'undo') this.socialTasks.steam.curatorLinks.push(link);
-          if (action === 'do') this.undoneTasks.steam.curatorLinks.push(link);
+          addTask('steam', 'curator', link);
           continue;
         }
 
         if (/^https?:\/\/discord\.com\/invite\//.test(link)) {
           debug('处理 Discord 服务器任务');
-          if (action === 'undo') this.socialTasks.discord.serverLinks.push(link);
-          if (action === 'do') this.undoneTasks.discord.serverLinks.push(link);
+          addTask('discord', 'server', link);
           continue;
         }
 
         if (/^javascript:videoTask.+/.test(link)) {
           debug('处理视频任务');
-          if (action === 'do') {
-            const taskData = link.match(/javascript:videoTask\('.+?','(.+?)'/)?.[1];
-            if (taskData) {
-              debug('添加视频任务', { taskData });
-              this.undoneTasks.extra.videoTasks.push(taskData);
-            }
+          const taskData = link.match(/javascript:videoTask\('.+?','(.+?)'/)?.[1];
+          if (taskData) {
+            debug('添加视频任务', { taskData });
+            addTask('extra', 'video', link, { data: taskData });
           }
           continue;
         }
@@ -288,17 +281,28 @@ class Keyhub extends Website {
           continue;
         }
 
+        if (/^https?:\/\//.test(link)) {
+          debug('处理普通访问任务', { link });
+          addTask('links', 'visit', link);
+          continue;
+        }
+
         debug('未知任务类型', { taskDes, link });
         echoLog({}).warning(`${__('unKnownTaskType')}: ${taskDes}(${link})`);
       }
 
       debug('任务分类完成');
       logStatus.success();
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as khSocialTasks;
-      this.socialTasks = this.uniqueTasks(this.socialTasks) as khSocialTasks;
+      this.tasks = uniqueWebsiteTasks(this.tasks);
+      const tasksForUndo = uniqueWebsiteTasks(this.tasks
+        .filter((task) => !task.done && task.social !== 'extra' && task.social !== 'links')
+        .map((task) => ({ ...task, done: true })));
       if (window.DEBUG) console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
       debug('保存任务信息');
-      GM_setValue(`khTasks-${this.giveawayId}`, { tasks: this.socialTasks, time: new Date().getTime() });
+      GM_setValue(`khTasks-${this.giveawayId}`, {
+        tasks: tasksForUndo,
+        time: new Date().getTime()
+      });
       return true;
     } catch (error) {
       debug('任务分类失败', { error });
@@ -406,16 +410,16 @@ class Keyhub extends Website {
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
    */
-  async extraDoTask({ videoTasks }: { videoTasks: Array<string> }): Promise<boolean> {
+  async extraDoTask({ video = [] }: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
-      debug('开始执行额外任务', { count: videoTasks.length });
+      debug('开始执行额外任务', { count: video.length });
       const pro = [];
-      for (const data of videoTasks) {
-        pro.push(this.#doScriptTask(data));
+      for (const task of video) {
+        pro.push(this.#doScriptTask(String(task.data || '')));
       }
-      return Promise.all(pro).then(() => {
+      return Promise.all(pro).then((results) => {
         debug('所有额外任务完成');
-        return true;
+        return results.every((result) => result !== false);
       });
     } catch (error) {
       debug('执行额外任务失败', { error });

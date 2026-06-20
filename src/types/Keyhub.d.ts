@@ -6,24 +6,4 @@
  * @FilePath     : /auto-task/src/types/Keyhub.d.ts
  */
 
-interface khSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    officialGroupLinks: Array<string>
-    wishlistLinks: Array<string>
-    curatorLinks: Array<string>
-  }
-  discord: {
-    serverLinks: Array<string>
-  }
-  extra: {
-    videoTasks: Array<string>
-  }
-  links: Array<string>
-}
-declare interface khGMTasks {
-  tasks: khSocialTasks
-  time: number
-}
-
 declare function VerifyTasks(value: string): void

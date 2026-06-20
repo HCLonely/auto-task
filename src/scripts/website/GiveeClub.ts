@@ -12,9 +12,10 @@ import throwError from '../tools/throwError';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { delay, getRedirectLink } from '../tools/tools';
-import { GiveawaySu, defaultTasks } from './Giveawaysu';
+import { GiveawaySu } from './Giveawaysu';
 import { globalOptions } from '../globalOptions';
 import { debug } from '../tools/debug';
+import { normalizeStoredTasks } from './taskModel';
 
 /**
  * GiveeClub 类用于处理 GiveeClub 抽奖活动的相关操作。
@@ -176,12 +177,13 @@ class GiveeClub extends GiveawaySu {
 
       if (action === 'undo') {
         debug('恢复已保存的任务信息');
-        this.socialTasks = GM_getValue<gasGMTasks>(`gcTasks-${this.giveawayId}`)?.tasks || defaultTasks;
+        this.tasks = normalizeStoredTasks(GM_getValue<WebsiteStoredTasksInput>(`gcTasks-${this.giveawayId}`));
+        logStatus.success();
         return true;
       }
 
-      debug('初始化未完成任务列表');
-      this.undoneTasks = defaultTasks;
+      debug('初始化任务列表');
+      this.tasks = [];
       const tasks = $('.event-actions tr');
 
       const processTask = async (task: Element): Promise<boolean> => {
@@ -193,12 +195,24 @@ class GiveeClub extends GiveawaySu {
           ?.attr('data-type') || '';
         const taskFinished = $(task).find('.event-action-buttons .btn-success')?.length;
         const appId = taskDes.attr('data-steam-wishlist-appid');
+        const taskInfo = {
+          done: Boolean(taskFinished),
+          title: taskName,
+          taskType,
+          icon: taskIcon,
+          appId
+        };
 
         debug('处理任务', { taskName, taskType, taskIcon, taskFinished, appId });
 
         if (taskIcon.includes('ban') || /AdBlock/i.test(taskName) ||
-          taskIcon.includes('envelope') || taskFinished) {
-          debug('跳过无效或已完成任务');
+          taskIcon.includes('envelope')) {
+          debug('跳过无效任务');
+          return true;
+        }
+
+        if (taskFinished) {
+          debug('跳过已完成任务');
           return true;
         }
 
@@ -218,12 +232,17 @@ class GiveeClub extends GiveawaySu {
 
           if (taskType === 'steam.game.wishlist' && appId) {
             debug('添加 Steam 愿望单任务', { appId });
-            this.undoneTasks.steam.wishlistLinks.push(`https://store.steampowered.com/app/${appId}`);
+            this.tasks.push({
+              ...taskInfo,
+              social: 'steam',
+              type: 'wishlist',
+              link: `https://store.steampowered.com/app/${appId}`
+            });
             return true;
           }
 
           debug('分类任务', { taskLink, taskType });
-          this.#classifyTaskByType(taskLink, taskType, taskIcon, taskName, taskDes);
+          this.#classifyTaskByType(taskLink, taskType, taskIcon, taskName, taskDes, taskInfo);
           return true;
         } catch (error) {
           debug('获取重定向链接失败', { error });
@@ -237,12 +256,14 @@ class GiveeClub extends GiveawaySu {
       debug('任务处理完成');
       logStatus.success();
 
-      this.undoneTasks = this.uniqueTasks(this.undoneTasks) as gasSocialTasks;
-      this.socialTasks = this.undoneTasks;
+      this.tasks = this.uniqueTasks(this.tasks);
+      const tasksForUndo = this.uniqueTasks(this.tasks
+        .filter((task) => task.social !== 'extra' && task.done === false)
+        .map((task) => ({ ...task, done: true })));
 
       debug('保存任务信息');
       GM_setValue(`gcTasks-${this.giveawayId}`, {
-        tasks: this.socialTasks,
+        tasks: tasksForUndo,
         time: new Date().getTime()
       });
 
@@ -271,126 +292,136 @@ class GiveeClub extends GiveawaySu {
    * 支持多种社交平台的任务分类，包括Steam、YouTube、Twitter等。
    */
   #classifyTaskByType(taskLink: string, taskType: string | undefined,
-    taskIcon: string, taskName: string, taskDes: JQuery): void {
+    taskIcon: string, taskName: string, taskDes: JQuery, taskInfo: Partial<WebsiteTask>): void {
     try {
       debug('开始分类任务', { taskLink, taskType, taskIcon, taskName });
 
       if (taskType === 'steam.group.join' && /^https?:\/\/steamcommunity\.com\/groups/.test(taskLink)) {
         debug('添加 Steam 组任务');
-        this.undoneTasks.steam.groupLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'group', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/like.*announcement/gi.test(taskName)) {
         debug('添加 Steam 公告任务');
-        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'announcement', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskType === 'steam.game.wishlist' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
         debug('添加 Steam 愿望单任务');
-        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'wishlist', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskType === 'steam.game.wishlist' && taskDes.attr('data-steam-wishlist-appid')) {
         debug('添加 Steam 愿望单任务（通过 appId）');
-        this.undoneTasks.steam.wishlistLinks.push(
-          `https://store.steampowered.com/app/${taskDes.attr('data-steam-wishlist-appid')}`
-        );
+        this.tasks.push({
+          ...taskInfo,
+          social: 'steam',
+          type: 'wishlist',
+          link: `https://store.steampowered.com/app/${taskDes.attr('data-steam-wishlist-appid')}`,
+          done: Boolean(taskInfo.done)
+        });
         return;
       }
 
       if (taskType === 'steam.game.follow' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
         debug('添加 Steam 游戏关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'follow', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(taskLink)) {
         debug('添加 Steam 鉴赏家关注任务');
-        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'curator', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
         debug('添加 Steam 鉴赏家点赞任务');
-        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'curatorLike', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/subscribe.*steam.*forum/gim.test(taskName)) {
         debug('添加 Steam 论坛任务');
-        this.undoneTasks.steam.forumLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'forum', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskType === 'steam.game.playtime' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
         const time = taskDes.text().match(/(\d+)(?:\.\d+)?/gim)?.[0] || '0';
         debug('添加 Steam 游戏时长任务', { time });
-        this.undoneTasks.steam.playTimeLinks.push(`${time}-${taskLink}`);
+        this.tasks.push({
+          ...taskInfo,
+          social: 'steam',
+          type: 'playtime',
+          link: taskLink,
+          done: Boolean(taskInfo.done),
+          minutes: Number(time)
+        });
         return;
       }
 
       if (taskIcon.includes('discord')) {
         debug('添加 Discord 服务器任务');
-        this.undoneTasks.discord.serverLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'discord', type: 'server', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskIcon.includes('instagram')) {
         debug('跳过 Instagram 任务');
         // debug('添加 Instagram 关注任务');
-        // this.undoneTasks.instagram.userLinks.push(taskLink);
         return;
       }
 
       if (taskIcon.includes('twitch')) {
         debug('添加 Twitch 频道任务');
-        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'twitch', type: 'channel', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskIcon.includes('reddit')) {
         debug('添加 Reddit 任务');
-        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'reddit', type: 'post', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/watch.*art/gim.test(taskName)) {
         debug('添加创意工坊物品任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'workshopVote', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/subscribe.*youtube.*channel/gim.test(taskName)) {
         debug('添加 YouTube 频道任务');
-        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'youtube', type: 'channel', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (/(watch|like).*youtube.*video/gim.test(taskName) ||
         ((taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName))) {
         debug('添加 YouTube 视频任务');
-        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'youtube', type: 'like', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         debug('添加 VK 任务');
-        this.undoneTasks.vk.nameLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'vk', type: 'user', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 
       if (taskIcon.includes('twitter')) {
         if (/https?:\/\/(twitter|x)\.com\/[^/]+\/?$/gim.test(taskLink)) {
           debug('添加 Twitter 用户关注任务');
-          this.undoneTasks.twitter.userLinks.push(taskLink);
+          this.tasks.push({ ...taskInfo, social: 'twitter', type: 'user', link: taskLink, done: Boolean(taskInfo.done) });
           return;
         }
         if (/https?:\/\/(twitter|x)\.com\/[^/]+?\/status\/[\d]+/gim.test(taskLink)) {
           debug('添加 Twitter 转发任务');
-          this.undoneTasks.twitter.retweetLinks.push(taskLink);
+          this.tasks.push({ ...taskInfo, social: 'twitter', type: 'retweet', link: taskLink, done: Boolean(taskInfo.done) });
           return;
         }
       }
@@ -402,7 +433,7 @@ class GiveeClub extends GiveawaySu {
 
       if (/follow.*button/gim.test(taskName)) {
         debug('添加 Steam 关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.tasks.push({ ...taskInfo, social: 'steam', type: 'follow', link: taskLink, done: Boolean(taskInfo.done) });
         return;
       }
 

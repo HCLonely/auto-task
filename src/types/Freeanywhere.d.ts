@@ -5,31 +5,6 @@
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/types/Freeanywhere.d.ts
  */
-declare interface fawSocialTasks {
-  steam: {
-    groupLinks: Array<string>
-    wishlistLinks: Array<string>
-    curatorLinks: Array<string>
-    followLinks: Array<string>
-    playTimeLinks: Array<string>
-  }
-  vk: {
-    nameLinks: Array<string>
-  }
-  discord: {
-    serverLinks: Array<string>
-  }
-  youtube: {
-    channelLinks: Array<string>
-  }
-  extra: {
-    website: Array<string>
-  }
-}
-declare interface fawGMTasks {
-  tasks: fawSocialTasks
-  time: number
-}
 declare interface fawTaskInfo {
   id: string
   title: string
@@ -39,7 +14,7 @@ declare interface fawTaskInfo {
 }
 
 declare interface fawUserData {
-  tasks?: fawSocialTasks
+  tasks?: WebsiteTask[]
   user?: {
     avatar?: string
     lang?: string

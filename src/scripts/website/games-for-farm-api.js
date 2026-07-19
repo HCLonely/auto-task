@@ -184,6 +184,7 @@ function isPlainObject(value) {
 }
 
 // src/shared/storage.ts
+var ROOT_KEY = "GamesForFarmExt";
 function cloneValue(value) {
   return value !== null && typeof value === "object" ? structuredClone(value) : value;
 }
@@ -192,6 +193,14 @@ function isRecord(value) {
 }
 function createStorage(gm) {
   const subscribers = /* @__PURE__ */ new Set();
+  async function readContainer() {
+    const stored = await gm.GM_getValue(ROOT_KEY, void 0);
+    if (isRecord(stored)) return cloneValue(stored);
+    return {};
+  }
+  async function writeContainer(container) {
+    await gm.GM_setValue(ROOT_KEY, cloneValue(container));
+  }
   async function notify(key, oldValue, newValue) {
     for (const listener of subscribers) {
       try {
@@ -205,19 +214,20 @@ function createStorage(gm) {
     }
   }
   async function get(key, defaultValue) {
-    return cloneValue(await gm.GM_getValue(key, cloneValue(defaultValue)));
+    const container = await readContainer();
+    return cloneValue(
+      Object.prototype.hasOwnProperty.call(container, key) ? container[key] : defaultValue
+    );
   }
   async function getAll() {
-    const keys = await gm.GM_listValues();
-    const entries = await Promise.all(
-      keys.map(async (key) => [key, await get(key, void 0)])
-    );
-    return Object.fromEntries(entries);
+    return cloneValue(await readContainer());
   }
   async function set(key, value) {
-    const oldValue = await get(key, void 0);
+    const container = await readContainer();
+    const oldValue = container[key];
     const newValue = cloneValue(value);
-    await gm.GM_setValue(key, newValue);
+    container[key] = newValue;
+    await writeContainer(container);
     await notify(key, oldValue, newValue);
   }
   async function setMany(values) {
@@ -226,14 +236,18 @@ function createStorage(gm) {
     }
   }
   async function remove(key) {
-    const oldValue = await get(key, void 0);
-    await gm.GM_deleteValue(key);
+    const container = await readContainer();
+    const oldValue = container[key];
+    delete container[key];
+    await writeContainer(container);
     await notify(key, oldValue, void 0);
   }
   async function clear() {
-    const keys = await gm.GM_listValues();
+    const container = await readContainer();
+    const keys = Object.keys(container);
+    await writeContainer({});
     for (const key of keys) {
-      await remove(key);
+      await notify(key, container[key], void 0);
     }
   }
   async function initialize() {
@@ -913,9 +927,7 @@ async function bootstrap({ exposeGlobal }) {
   const gm = {
     GM_xmlhttpRequest,
     GM_setValue,
-    GM_getValue,
-    GM_deleteValue,
-    GM_listValues
+    GM_getValue
   };
   const storage = createStorage(gm);
   const request = createRequest(gm, location.href);

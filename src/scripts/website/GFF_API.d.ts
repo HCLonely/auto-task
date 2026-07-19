@@ -13,8 +13,7 @@ export interface UserData extends UnknownRecord {
   name?: string;
   lang?: string;
 }
-export interface GamesData extends UnknownRecord {
-}
+export type GamesData = UnknownRecord
 export interface SettingsData extends UnknownRecord {
   game_update?: number;
   hide_games?: boolean;

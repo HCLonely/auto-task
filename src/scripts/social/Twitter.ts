@@ -559,7 +559,7 @@ class Twitter extends Social {
     doTask: boolean,
     userLinks?: Array<string>,
     retweetLinks?: Array<string>
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理Twitter链接任务', { doTask, userLinksCount: userLinks.length, retweetLinksCount: retweetLinks.length });
       if (!this.#initialized) {
@@ -567,6 +567,7 @@ class Twitter extends Social {
         echoLog({ text: __('needInit'), before: '[Twitter]' });
         return false;
       }
+      const result = this.createToggleResult();
 
       // Handle user tasks
       if (
@@ -575,18 +576,17 @@ class Twitter extends Social {
       ) {
         debug('根据全局选项跳过Twitter用户任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'twitter.users', before: '[Twitter]' });
+        for (const link of userLinks) this.setToggleResult(result, 'userLinks', link, true);
       } else {
-        const realUsers = this.getRealParams('users', userLinks, doTask, (link) => link.match(/https:\/\/x\.com\/([^/]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/([^/]+)/)?.[1]);
-        debug('处理后的Twitter用户列表', { count: realUsers.length, users: realUsers });
-        if (realUsers.length > 0) {
-          for (const user of realUsers) {
-            // if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-            //   debug('Twitter SDK过期，重新获取', { expiryTimeMillis: this.#FwdForSdk.expiryTimeMillis });
-            //   this.#FwdForSdk = await getFwdForSdk();
-            // }
-            await this.#toggleUser({ name: user, doTask });
-            await delay(1000);
+        for (const link of userLinks) {
+          const user = link.match(/https:\/\/x\.com\/([^/]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/([^/]+)/)?.[1];
+          if (!user) {
+            this.setToggleResult(result, 'userLinks', link, false);
+            continue;
           }
+          const success = await this.#toggleUser({ name: user, doTask });
+          this.setToggleResult(result, 'userLinks', link, success);
+          await delay(1000);
         }
       }
 
@@ -597,22 +597,20 @@ class Twitter extends Social {
       ) {
         debug('根据全局选项跳过Twitter转推任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'twitter.retweets', before: '[Twitter]' });
+        for (const link of retweetLinks) this.setToggleResult(result, 'retweetLinks', link, true);
       } else {
-        const realRetweets = this.getRealParams('retweets', retweetLinks, doTask,
-          (link) => link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1]);
-        debug('处理后的Twitter转推列表', { count: realRetweets.length, retweets: realRetweets });
-        if (realRetweets.length > 0) {
-          for (const retweet of realRetweets) {
-            // if (Date.now() > this.#FwdForSdk.expiryTimeMillis) {
-            //   debug('Twitter SDK过期，重新获取');
-            //   this.#FwdForSdk = await getFwdForSdk();
-            // }
-            await this.#toggleRetweet({ retweetId: retweet, doTask });
-            await delay(1000);
+        for (const link of retweetLinks) {
+          const retweet = link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1];
+          if (!retweet) {
+            this.setToggleResult(result, 'retweetLinks', link, false);
+            continue;
           }
+          const success = await this.#toggleRetweet({ retweetId: retweet, doTask });
+          this.setToggleResult(result, 'retweetLinks', link, success);
+          await delay(1000);
         }
       }
-      return true;
+      return result;
     } catch (error) {
       debug('处理Twitter链接任务时发生错误', { error });
       throwError(error as Error, 'Twitter.toggle');

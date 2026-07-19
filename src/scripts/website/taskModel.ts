@@ -183,7 +183,19 @@ const toSocialPayload = (
   return payload;
 };
 
+const getSocialPayloadEntry = (
+  task: WebsiteTask
+): { type: string; value: string } | null => {
+  const payloadType = SOCIAL_PAYLOAD_TYPE_MAP[`${task.social}.${task.type}`];
+  if (!payloadType) return null;
+  const value = task.type === 'playtime' && task.minutes !== undefined ?
+    `${task.minutes}-${task.link}` :
+    task.link;
+  return { type: payloadType, value };
+};
+
 export {
+  getSocialPayloadEntry,
   isWebsiteTask,
   normalizeLegacyTasks,
   normalizeStoredTasks,

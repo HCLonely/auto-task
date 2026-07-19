@@ -92,6 +92,14 @@ declare interface WebsiteSocialPayload {
   links?: Array<string>
   extra?: Record<string, Array<WebsiteTask>>
 }
+
+declare interface SocialToggleDetailResult {
+  success: boolean
+  results: Record<string, Record<string, boolean>>
+}
+
+declare type SocialToggleResult = boolean | SocialToggleDetailResult
+
 declare interface bindReturn {
   name: string
   result: boolean | 'skip'

@@ -372,7 +372,7 @@ class Reddit extends Social {
   }: {
     doTask: boolean,
     redditLinks?: Array<string>
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理Reddit链接任务', { doTask, redditLinksCount: redditLinks.length });
       if (!this.#initialized) {
@@ -380,6 +380,7 @@ class Reddit extends Social {
         echoLog({ text: __('needInit'), before: '[Reddit]' });
         return false;
       }
+      const result = this.createToggleResult();
 
       if (
         (doTask && !globalOptions.doTask.reddit.reddits) ||
@@ -387,29 +388,33 @@ class Reddit extends Social {
       ) {
         debug('根据全局选项跳过Reddit任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'reddit.reddits', before: '[Reddit]' });
-        return true;
+        for (const link of redditLinks) this.setToggleResult(result, 'redditLinks', link, true);
+        return result;
       }
 
-      const realReddits: Array<string> = this.getRealParams('reddits', redditLinks, doTask,
-        (link) => {
-          const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
-          const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
-          return name || `u_${userName}`;
-        });
-      debug('处理后的Reddit列表', { count: realReddits.length, reddits: realReddits });
-
-      if (realReddits.length === 0) {
+      if (redditLinks.length === 0) {
         debug('没有需要处理的Reddit链接');
-        return true;
+        return result;
       }
 
       const prom: Array<Promise<boolean>> = [];
-      for (const name of realReddits) {
-        prom.push(this.#toggleTask({ name, doTask }));
+      for (const link of redditLinks) {
+        const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
+        const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
+        const realReddit = name || (userName ? `u_${userName}` : undefined);
+        if (!realReddit) {
+          this.setToggleResult(result, 'redditLinks', link, false);
+          continue;
+        }
+        prom.push(this.#toggleTask({ name: realReddit, doTask }).then((success) => {
+          this.setToggleResult(result, 'redditLinks', link, success);
+          return success;
+        }));
         await delay(1000);
       }
 
-      return await Promise.all(prom).then(() => true);
+      await Promise.all(prom);
+      return result;
     } catch (error) {
       debug('处理Reddit链接任务时发生错误', { error });
       throwError(error as Error, 'Reddit.toggle');

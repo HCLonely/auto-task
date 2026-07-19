@@ -542,7 +542,7 @@ class Discord extends Social {
   }: {
     doTask: boolean,
     serverLinks?: Array<string>
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理Discord服务器任务', { doTask, serverLinksCount: serverLinks.length });
       if (!this.#initialized) {
@@ -550,6 +550,7 @@ class Discord extends Social {
         echoLog({ text: __('needInit'), before: '[Discord]' });
         return false;
       }
+      const result = this.createToggleResult();
 
       // Check if task should be skipped
       if (
@@ -558,24 +559,31 @@ class Discord extends Social {
       ) {
         debug('根据全局选项跳过Discord服务器任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'discord.servers', before: '[Discord]' });
-        return true;
+        for (const link of serverLinks) this.setToggleResult(result, 'serverLinks', link, true);
+        return result;
       }
 
       // Process server links
-      const realServers = this.getRealParams('servers', serverLinks, doTask, (link: string) => link.match(/invite\/(.+)/)?.[1]);
-      debug('处理后的服务器列表', { count: realServers.length, servers: realServers });
-
-      if (realServers.length === 0) {
+      if (serverLinks.length === 0) {
         debug('没有需要处理的服务器');
-        return true;
+        return result;
       }
       const results = [];
-      for (const server of realServers) {
-        results.push(doTask ? this.#joinServer(server) : this.#leaveServer(server));
+      for (const link of serverLinks) {
+        const server = link.match(/invite\/(.+)/)?.[1];
+        if (!server) {
+          this.setToggleResult(result, 'serverLinks', link, false);
+          continue;
+        }
+        results.push((doTask ? this.#joinServer(server) : this.#leaveServer(server)).then((success) => {
+          this.setToggleResult(result, 'serverLinks', link, success);
+          return success;
+        }));
         await delay(1000);
       }
 
-      return await Promise.allSettled(results).then(() => true);
+      await Promise.allSettled(results);
+      return result;
     } catch (error) {
       throwError(error as Error, 'Discord.toggleServers');
       return false;

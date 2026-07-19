@@ -3,6 +3,15 @@ title: 更新日志
 lang: zh-CN
 ---
 
+## V5.2
+
+### V5.2.0
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.2.0)
+
+- 修复：处理Vk任务时报错([#80](https://github.com/HCLonely/auto-task/issues/80))
+- 优化：任务处理逻辑优化
+
 ## V5.1
 
 ### V5.1.9

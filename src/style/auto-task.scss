@@ -229,7 +229,6 @@
   li {
     display: flex !important;
     align-items: flex-start !important;
-    gap: 8px;
     text-align: left;
     padding: 10px 8px;
     border-bottom: 1px solid var(--at-border-light);
@@ -254,6 +253,7 @@
       height: 18px !important;
       flex-shrink: 0 !important;
       margin-top: 1px;
+      margin-right: 8px;
       background-size: 18px !important;
       background-repeat: no-repeat !important;
       border-radius: 50%;

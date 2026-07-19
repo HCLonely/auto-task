@@ -49,11 +49,29 @@ abstract class Social {
    * @abstract
    * @function toggle
    * @param {toggleParams} toggleParams - 切换参数。
-   * @returns {Promise<boolean>} - 返回一个Promise，表示切换操作的结果。
-   *                              - true: 切换成功
-   *                              - false: 切换失败
+   * @returns {Promise<SocialToggleResult>} - 返回一个Promise，表示切换操作的结果。
+   *                                         - boolean: 兼容旧整体结果
+   *                                         - SocialToggleDetailResult: 每个任务的执行结果
    */
-  abstract toggle(toggleParams: toggleParams): Promise<boolean>;
+  abstract toggle(toggleParams: toggleParams): Promise<SocialToggleResult>;
+
+  protected createToggleResult(): SocialToggleDetailResult {
+    return {
+      success: true,
+      results: {}
+    };
+  }
+
+  protected setToggleResult(
+    result: SocialToggleDetailResult,
+    type: string,
+    value: string,
+    success: boolean
+  ): void {
+    result.results[type] ||= {};
+    result.results[type][value] = success;
+    result.success = result.success && success;
+  }
 
   /**
    * 获取实际参数数组，用于执行任务。

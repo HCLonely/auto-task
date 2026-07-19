@@ -609,7 +609,7 @@ class Youtube extends Social {
     doTask: boolean,
     channelLinks?: Array<string>,
     videoLinks?: Array<string>
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理YouTube链接任务', { doTask, channelLinksCount: channelLinks.length, videoLinksCount: videoLinks.length });
       if (!this.#initialized) {
@@ -617,6 +617,7 @@ class Youtube extends Social {
         echoLog({ text: __('needInit'), before: '[Youtube]' });
         return false;
       }
+      const result = this.createToggleResult();
 
       const prom = [];
       const shouldProcessChannels = (doTask && globalOptions.doTask.youtube.channels) ||
@@ -627,44 +628,55 @@ class Youtube extends Social {
       if (!shouldProcessChannels) {
         debug('根据全局选项跳过YouTube频道任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'youtube.channels', before: '[Youtube]' });
+        for (const link of channelLinks) this.setToggleResult(result, 'channelLinks', link, true);
       } else {
-        const realChannels = this.getRealParams('channels', channelLinks, doTask, (link) => {
+        const normalizeYoutubeLink = (link: string) => {
           if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
             return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
           }
           return link;
-        });
-        debug('处理后的YouTube频道链接列表', { count: realChannels.length, channels: realChannels });
-
-        if (realChannels.length > 0) {
-          for (const channel of realChannels) {
-            prom.push(this.#toggleChannel({ link: channel, doTask }));
-            await delay(1000);
+        };
+        for (const link of channelLinks) {
+          const channel = normalizeYoutubeLink(link);
+          if (!channel) {
+            this.setToggleResult(result, 'channelLinks', link, false);
+            continue;
           }
+          prom.push(this.#toggleChannel({ link: channel, doTask }).then((success) => {
+            this.setToggleResult(result, 'channelLinks', link, success);
+            return success;
+          }));
+          await delay(1000);
         }
       }
 
       if (!shouldProcessVideos) {
         debug('根据全局选项跳过YouTube视频任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'youtube.likes', before: '[Youtube]' });
+        for (const link of videoLinks) this.setToggleResult(result, 'videoLinks', link, true);
       } else {
-        const realLikes = this.getRealParams('likes', videoLinks, doTask, (link) => {
+        const normalizeYoutubeLink = (link: string) => {
           if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
             return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
           }
           return link;
-        });
-        debug('处理后的YouTube视频链接列表', { count: realLikes.length, videos: realLikes });
-
-        if (realLikes.length > 0) {
-          for (const video of realLikes) {
-            prom.push(this.#toggleLikeVideo({ link: video, doTask }));
-            await delay(1000);
+        };
+        for (const link of videoLinks) {
+          const video = normalizeYoutubeLink(link);
+          if (!video) {
+            this.setToggleResult(result, 'videoLinks', link, false);
+            continue;
           }
+          prom.push(this.#toggleLikeVideo({ link: video, doTask }).then((success) => {
+            this.setToggleResult(result, 'videoLinks', link, success);
+            return success;
+          }));
+          await delay(1000);
         }
       }
 
-      return Promise.all(prom).then(() => true);
+      await Promise.all(prom);
+      return result;
     } catch (error) {
       debug('处理YouTube链接任务时发生错误', { error });
       throwError(error as Error, 'Youtube.toggle');

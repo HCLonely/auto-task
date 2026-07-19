@@ -302,6 +302,8 @@ const data = {
   leavingVkGroup: '正在退出Vk组',
   joiningVkPublic: '正在加入Vk社区',
   leavingVkPublic: '正在退出Vk社区',
+  likingVkPublic: '正在点赞Vk动态',
+  unlikingVkPublic: '正在取消点赞Vk动态',
   sendingVkWall: '正在转发Vk动态',
   deletingVkWall: '正在撤销转发Vk动态',
 

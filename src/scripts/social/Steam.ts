@@ -1021,7 +1021,7 @@ class Steam extends Social {
     licenseLinks?: string[];
     playtestLinks?: string[];
     playTimeLinks?: string[];
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理Steam任务', {
         doTask,
@@ -1064,164 +1064,230 @@ class Steam extends Social {
         return false;
       }
 
+      const result = this.createToggleResult();
       const tasks: Array<Promise<boolean>> = [];
+      const pushTask = (type: string, value: string, task: Promise<boolean>) => {
+        tasks.push(task.then((success) => {
+          this.setToggleResult(result, type, value, success);
+          return success;
+        }));
+      };
+      const markSkipped = (type: string, links: Array<string>) => {
+        for (const link of links) this.setToggleResult(result, type, link, true);
+      };
 
       // 处理群组任务
       if (this.shouldProcessTask('groups', doTask)) {
         debug('开始处理群组任务');
-        const realGroups = this.getRealParams('groups', groupLinks, doTask,
-          (link) => link.match(/groups\/(.+)\/?/)?.[1]?.split('/')?.[0]);
-        debug('处理后的群组列表', { count: realGroups.length, groups: realGroups });
-
-        for (const group of realGroups) {
-          tasks.push(doTask ? this.#joinGroup(group) : this.#leaveGroup(group));
+        for (const link of groupLinks) {
+          const group = link.match(/groups\/(.+)\/?/)?.[1]?.split('/')?.[0];
+          if (!group) {
+            this.setToggleResult(result, 'groupLinks', link, false);
+            continue;
+          }
+          pushTask('groupLinks', link, doTask ? this.#joinGroup(group) : this.#leaveGroup(group));
           await delay(1000);
         }
+      } else {
+        markSkipped('groupLinks', groupLinks);
       }
 
       // 处理官方群组任务
       if (this.shouldProcessTask('officialGroups', doTask)) {
-        const realOfficialGroups = this.getRealParams('officialGroups', officialGroupLinks, doTask,
-          (link) => link.match(/games\/(.+)\/?/)?.[1]);
-
-        for (const officialGroup of realOfficialGroups) {
-          tasks.push(doTask ? this.#joinOfficialGroup(officialGroup) : this.#leaveOfficialGroup(officialGroup));
+        for (const link of officialGroupLinks) {
+          const officialGroup = link.match(/games\/(.+)\/?/)?.[1];
+          if (!officialGroup) {
+            this.setToggleResult(result, 'officialGroupLinks', link, false);
+            continue;
+          }
+          pushTask('officialGroupLinks', link, doTask ? this.#joinOfficialGroup(officialGroup) : this.#leaveOfficialGroup(officialGroup));
           await delay(1000);
         }
+      } else {
+        markSkipped('officialGroupLinks', officialGroupLinks);
       }
 
       // 处理愿望单任务
       if (this.shouldProcessTask('wishlists', doTask)) {
-        const realWishlists = this.getRealParams('wishlists', wishlistLinks, doTask,
-          (link) => link.match(/app\/([\d]+)/)?.[1]);
-
-        for (const game of realWishlists) {
-          tasks.push(doTask ? this.#addToWishlist(game) : this.#removeFromWishlist(game));
+        for (const link of wishlistLinks) {
+          const game = link.match(/app\/([\d]+)/)?.[1];
+          if (!game) {
+            this.setToggleResult(result, 'wishlistLinks', link, false);
+            continue;
+          }
+          pushTask('wishlistLinks', link, doTask ? this.#addToWishlist(game) : this.#removeFromWishlist(game));
           await delay(1000);
         }
+      } else {
+        markSkipped('wishlistLinks', wishlistLinks);
       }
 
       // 处理关注任务
       if (this.shouldProcessTask('follows', doTask)) {
-        const realFollows = this.getRealParams('follows', followLinks, doTask,
-          (link) => link.match(/app\/([\d]+)/)?.[1]);
-
-        for (const game of realFollows) {
-          tasks.push(this.#toggleFollowGame(game, doTask));
+        for (const link of followLinks) {
+          const game = link.match(/app\/([\d]+)/)?.[1];
+          if (!game) {
+            this.setToggleResult(result, 'followLinks', link, false);
+            continue;
+          }
+          pushTask('followLinks', link, this.#toggleFollowGame(game, doTask));
           await delay(1000);
         }
+      } else {
+        markSkipped('followLinks', followLinks);
       }
 
       // 处理游戏时长任务
       if (this.shouldProcessTask('playTime', doTask)) {
-        const realGames = this.getRealParams('playTime', playTimeLinks, doTask,
-          (link) => `${link.split('-')[0]}-${link.match(/app\/([\d]+)/)?.[1] || ''}`);
-
-        if (realGames.length > 0) {
-          const maxTime = Math.max(...realGames.map((info) => parseInt(info.split('-')[0], 10) || 0));
-          const games = realGames
-            .filter((info) => {
-              const [time, game] = info.split('-');
-              return (parseInt(time, 10) || 0) > 0 && game;
-            })
-            .map((info) => info.split('-')[1]);
-
-          tasks.push(this.#playGames(games.join(','), maxTime, doTask));
+        const playInfos = playTimeLinks.map((link) => {
+          const time = parseInt(link.split('-')[0], 10) || 0;
+          const game = link.match(/app\/([\d]+)/)?.[1];
+          if (time <= 0 || !game) this.setToggleResult(result, 'playTimeLinks', link, false);
+          return { link, time, game };
+        }).filter((info): info is { link: string; time: number; game: string } => info.time > 0 && Boolean(info.game));
+        if (playInfos.length > 0) {
+          const maxTime = Math.max(...playInfos.map((info) => info.time));
+          tasks.push(this.#playGames(playInfos.map((info) => info.game).join(','), maxTime, doTask).then((success) => {
+            for (const info of playInfos) this.setToggleResult(result, 'playTimeLinks', info.link, success);
+            return success;
+          }));
           await delay(1000);
         }
+      } else {
+        markSkipped('playTimeLinks', playTimeLinks);
       }
 
       // 处理论坛任务
       if (this.shouldProcessTask('forums', doTask)) {
-        const realForums = this.getRealParams('forums', forumLinks, doTask,
-          (link) => link.match(/app\/([\d]+)/)?.[1]);
-
-        for (const forum of realForums) {
-          tasks.push(this.#toggleForum(forum, doTask));
+        for (const link of forumLinks) {
+          const forum = link.match(/app\/([\d]+)/)?.[1];
+          if (!forum) {
+            this.setToggleResult(result, 'forumLinks', link, false);
+            continue;
+          }
+          pushTask('forumLinks', link, this.#toggleForum(forum, doTask));
           await delay(1000);
         }
+      } else {
+        markSkipped('forumLinks', forumLinks);
       }
 
       // 处理创意工坊任务
       if (this.shouldProcessTask('workshops', doTask)) {
-        const realWorkshops = this.getRealParams('workshops', workshopLinks, doTask,
-          (link) => link.match(/\?id=([\d]+)/)?.[1]);
-
-        for (const workshop of realWorkshops) {
-          tasks.push(this.#toggleFavoriteWorkshop(workshop, doTask));
+        for (const link of workshopLinks) {
+          const workshop = link.match(/\?id=([\d]+)/)?.[1];
+          if (!workshop) {
+            this.setToggleResult(result, 'workshopLinks', link, false);
+            continue;
+          }
+          pushTask('workshopLinks', link, this.#toggleFavoriteWorkshop(workshop, doTask));
           await delay(1000);
         }
+      } else {
+        markSkipped('workshopLinks', workshopLinks);
       }
 
       // 处理创意工坊投票任务
       if (doTask && globalOptions.doTask.steam.workshopVotes) {
-        const realworkshopVotes = this.getRealParams('workshopVotes', workshopVoteLinks, doTask,
-          (link) => link.match(/\?id=([\d]+)/)?.[1]);
-
-        for (const workshop of realworkshopVotes) {
-          tasks.push(this.#voteUpWorkshop(workshop));
+        for (const link of workshopVoteLinks) {
+          const workshop = link.match(/\?id=([\d]+)/)?.[1];
+          if (!workshop) {
+            this.setToggleResult(result, 'workshopVoteLinks', link, false);
+            continue;
+          }
+          pushTask('workshopVoteLinks', link, this.#voteUpWorkshop(workshop));
           await delay(1000);
         }
+      } else {
+        markSkipped('workshopVoteLinks', workshopVoteLinks);
       }
 
       // 处理鉴赏家任务
       if (this.shouldProcessTask('curators', doTask)) {
-        const realCurators = this.getRealParams('curators', curatorLinks, doTask,
-          (link) => link.match(/curator\/([\d]+)/)?.[1]);
-        const realCuratorLikes = this.getRealParams('curatorLikes', curatorLikeLinks, doTask,
-          (link) => link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)?.slice(1, 3)
-            .join('/'));
-
-        for (const curator of realCurators) {
-          tasks.push(this.#toggleCurator(curator, doTask));
+        for (const link of curatorLinks) {
+          const curator = link.match(/curator\/([\d]+)/)?.[1];
+          if (!curator) {
+            this.setToggleResult(result, 'curatorLinks', link, false);
+            continue;
+          }
+          pushTask('curatorLinks', link, this.#toggleCurator(curator, doTask));
           await delay(1000);
         }
 
-        for (const curatorLike of realCuratorLikes) {
-          tasks.push(this.#toggleCuratorLike(curatorLike, doTask));
+        for (const link of curatorLikeLinks) {
+          const curatorLike = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)?.slice(1, 3)
+            .join('/');
+          if (!curatorLike) {
+            this.setToggleResult(result, 'curatorLikeLinks', link, false);
+            continue;
+          }
+          pushTask('curatorLikeLinks', link, this.#toggleCuratorLike(curatorLike, doTask));
           await delay(1000);
         }
+      } else {
+        markSkipped('curatorLinks', curatorLinks);
+        markSkipped('curatorLikeLinks', curatorLikeLinks);
       }
 
       // 处理公告任务
       if (doTask && globalOptions.doTask.steam.announcements) {
-        const realAnnouncements = this.getRealParams('announcements', announcementLinks, doTask,
-          (link) => {
-            if (link.includes('store.steampowered.com')) {
-              return link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)?.slice(1, 3)
-                .join('/');
-            }
-            return link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)?.slice(1, 3)
+        for (const link of announcementLinks) {
+          const id = link.includes('store.steampowered.com') ?
+            link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)?.slice(1, 3)
+              .join('/') :
+            link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)?.slice(1, 3)
               .join('/');
-          });
-
-        for (const id of realAnnouncements) {
-          tasks.push(this.#likeAnnouncement(id));
+          if (!id) {
+            this.setToggleResult(result, 'announcementLinks', link, false);
+            continue;
+          }
+          pushTask('announcementLinks', link, this.#likeAnnouncement(id));
           await delay(1000);
         }
+      } else {
+        markSkipped('announcementLinks', announcementLinks);
       }
 
       // 处理许可证任务
       if (doTask && globalOptions.doTask.steam.licenses && licenseLinks.length > 0) {
-        for (const ids of licenseLinks) {
-          const [type, idsStr] = ids.split('-');
-          const idsArr = idsStr.split(',');
-          for (const id of idsArr) {
-            tasks.push(this.#addLicense(`${type}-${id}`));
-            await delay(1000);
+        for (const link of licenseLinks) {
+          const [type, idsStr] = link.split('-');
+          if (!type || !idsStr) {
+            this.setToggleResult(result, 'licenseLinks', link, false);
+            continue;
           }
+          const idsArr = idsStr.split(',');
+          if (idsArr.length === 0 || idsArr.some((id) => !id)) {
+            this.setToggleResult(result, 'licenseLinks', link, false);
+            continue;
+          }
+          tasks.push(Promise.all(idsArr.map(async (id) => {
+            const success = await this.#addLicense(`${type}-${id}`);
+            await delay(1000);
+            return success;
+          })).then((licenseResults) => {
+            const success = licenseResults.every(Boolean);
+            this.setToggleResult(result, 'licenseLinks', link, success);
+            return success;
+          }));
         }
+      } else {
+        markSkipped('licenseLinks', licenseLinks);
       }
 
       // 处理试玩任务
       if (doTask && globalOptions.doTask.steam.playtests) {
-        const realPlaytests = this.getRealParams('playtests', playtestLinks, doTask,
-          (link) => link.match(/app\/([\d]+)/)?.[1]);
-
-        for (const id of realPlaytests) {
-          tasks.push(this.#requestPlayTestAccess(id));
+        for (const link of playtestLinks) {
+          const id = link.match(/app\/([\d]+)/)?.[1];
+          if (!id) {
+            this.setToggleResult(result, 'playtestLinks', link, false);
+            continue;
+          }
+          pushTask('playtestLinks', link, this.#requestPlayTestAccess(id));
           await delay(1000);
         }
+      } else {
+        markSkipped('playtestLinks', playtestLinks);
       }
 
       // 执行所有任务并重置区域
@@ -1230,7 +1296,7 @@ class Steam extends Social {
       this.#TaskExecutor.find((e) => e instanceof SteamWeb)?.resetArea();
       debug('所有任务执行完成', { success: results.every((result) => result) });
 
-      return results.every((result) => result);
+      return result;
     } catch (error) {
       debug('处理Steam任务时发生错误', { error });
       throwError(error as Error, 'Steam.toggle');

@@ -319,6 +319,8 @@ const data = {
   leavingVkGroup: 'Leaving Vk Group',
   joiningVkPublic: 'Joining Vk Public',
   leavingVkPublic: 'Leaving Vk Public',
+  likingVkPublic: 'Liking Vk Wall',
+  unlikingVkPublic: 'Unliking Vk Wall',
   sendingVkWall: 'Sending Vk Wall',
   deletingVkWall: 'Deleting Vk Wall',
 

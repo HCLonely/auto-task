@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.1.9
+// @version            5.2.0
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -426,7 +426,7 @@ function _toPrimitive(t, r) {
   };
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
-  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{display:flex !important;align-items:flex-start !important;gap:8px;text-align:left;padding:10px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:18px !important;height:18px !important;flex-shrink:0 !important;margin-top:1px;background-size:18px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:33% !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
+  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{display:flex !important;align-items:flex-start !important;text-align:left;padding:10px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:18px !important;height:18px !important;flex-shrink:0 !important;margin-top:1px;margin-right:8px;background-size:18px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:33% !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
   const data$1 = {
     website: '网站',
     type: '类型',
@@ -706,6 +706,8 @@ function _toPrimitive(t, r) {
     leavingVkGroup: '正在退出Vk组',
     joiningVkPublic: '正在加入Vk社区',
     leavingVkPublic: '正在退出Vk社区',
+    likingVkPublic: '正在点赞Vk动态',
+    unlikingVkPublic: '正在取消点赞Vk动态',
     sendingVkWall: '正在转发Vk动态',
     deletingVkWall: '正在撤销转发Vk动态',
     youtubeChannel: 'YouTube频道',
@@ -1023,6 +1025,8 @@ function _toPrimitive(t, r) {
     leavingVkGroup: 'Leaving Vk Group',
     joiningVkPublic: 'Joining Vk Public',
     leavingVkPublic: 'Leaving Vk Public',
+    likingVkPublic: 'Liking Vk Wall',
+    unlikingVkPublic: 'Unliking Vk Wall',
     sendingVkWall: 'Sending Vk Wall',
     deletingVkWall: 'Deleting Vk Wall',
     youtubeChannel: 'YouTube Channel',
@@ -1588,6 +1592,9 @@ function _toPrimitive(t, r) {
       likingYtbVideo: [ 'youtube', 'video' ],
       unlikingYtbVideo: [ 'youtube', 'video' ],
       gettingVkId: [ 'vk' ],
+      gettingVkWall: [ 'vk' ],
+      likingVkPublic: [ 'vk' ],
+      unlikingVkPublic: [ 'vk' ],
       joiningVkGroup: [ 'vk' ],
       leavingVkGroup: [ 'vk' ],
       joiningVkPublic: [ 'vk' ],
@@ -1858,6 +1865,18 @@ function _toPrimitive(t, r) {
     constructor() {
       _defineProperty(this, 'tasks', void 0);
     }
+    createToggleResult() {
+      return {
+        success: true,
+        results: {}
+      };
+    }
+    setToggleResult(result, type, value, success) {
+      var _result$results;
+      (_result$results = result.results)[type] || (_result$results[type] = {});
+      result.results[type][value] = success;
+      result.success = result.success && success;
+    }
     getRealParams(name, links, doTask, link2param) {
       try {
         var _this$tasks$name;
@@ -1959,6 +1978,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         if (doTask && !globalOptions.doTask.reddit.reddits || !doTask && !globalOptions.undoTask.reddit.reddits) {
           debug('根据全局选项跳过Reddit任务', {
             doTask: doTask
@@ -1968,31 +1988,36 @@ function _toPrimitive(t, r) {
             text: 'reddit.reddits',
             before: '[Reddit]'
           });
-          return true;
+          for (const link of redditLinks) {
+            this.setToggleResult(result, 'redditLinks', link, true);
+          }
+          return result;
         }
-        const realReddits = this.getRealParams('reddits', redditLinks, doTask, (link => {
+        if (redditLinks.length === 0) {
+          debug('没有需要处理的Reddit链接');
+          return result;
+        }
+        const prom = [];
+        for (const link of redditLinks) {
           var _link$match, _link$match2;
           const name = (_link$match = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)) === null || _link$match === void 0 ? void 0 : _link$match[1];
           const userName = (_link$match2 = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)) === null || _link$match2 === void 0 ? void 0 : _link$match2[1];
-          return name || 'u_'.concat(userName);
-        }));
-        debug('处理后的Reddit列表', {
-          count: realReddits.length,
-          reddits: realReddits
-        });
-        if (realReddits.length === 0) {
-          debug('没有需要处理的Reddit链接');
-          return true;
-        }
-        const prom = [];
-        for (const name of realReddits) {
+          const realReddit = name || (userName ? 'u_'.concat(userName) : undefined);
+          if (!realReddit) {
+            this.setToggleResult(result, 'redditLinks', link, false);
+            continue;
+          }
           prom.push(_assertClassBrand(_Reddit_brand, this, _toggleTask).call(this, {
-            name: name,
+            name: realReddit,
             doTask: doTask
-          }));
+          }).then((success => {
+            this.setToggleResult(result, 'redditLinks', link, success);
+            return success;
+          })));
           await delay(1e3);
         }
-        return await Promise.all(prom).then((() => true));
+        await Promise.all(prom);
+        return result;
       } catch (error) {
         debug('处理Reddit链接任务时发生错误', {
           error: error
@@ -2045,8 +2070,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleTask(_ref19) {
-    let {name: name, doTask: doTask = true} = _ref19;
+  async function _toggleTask(_ref24) {
+    let {name: name, doTask: doTask = true} = _ref24;
     try {
       var _data$response86;
       debug('开始处理Reddit任务', {
@@ -2342,6 +2367,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         const prom = [];
         if (doTask && !globalOptions.doTask.twitch.channels || !doTask && !globalOptions.undoTask.twitch.channels) {
           debug('根据全局选项跳过Twitch任务', {
@@ -2352,26 +2378,29 @@ function _toPrimitive(t, r) {
             text: 'twitch.channels',
             before: '[Twitch]'
           });
+          for (const link of channelLinks) {
+            this.setToggleResult(result, 'channelLinks', link, true);
+          }
         } else {
-          const realChannels = this.getRealParams('channels', channelLinks, doTask, (link => {
+          for (const link of channelLinks) {
             var _link$match3;
-            return (_link$match3 = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[2];
-          }));
-          debug('处理后的Twitch频道列表', {
-            count: realChannels.length,
-            channels: realChannels
-          });
-          if (realChannels.length > 0) {
-            for (const channel of realChannels) {
-              prom.push(_assertClassBrand(_Twitch_brand, this, _toggleChannel).call(this, {
-                name: channel,
-                doTask: doTask
-              }));
-              await delay(1e3);
+            const channel = (_link$match3 = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)) === null || _link$match3 === void 0 ? void 0 : _link$match3[2];
+            if (!channel) {
+              this.setToggleResult(result, 'channelLinks', link, false);
+              continue;
             }
+            prom.push(_assertClassBrand(_Twitch_brand, this, _toggleChannel).call(this, {
+              name: channel,
+              doTask: doTask
+            }).then((success => {
+              this.setToggleResult(result, 'channelLinks', link, success);
+              return success;
+            })));
+            await delay(1e3);
           }
         }
-        return Promise.all(prom).then((() => true));
+        await Promise.all(prom);
+        return result;
       } catch (error) {
         debug('处理Twitch链接任务时发生错误', {
           error: error
@@ -2532,8 +2561,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleChannel(_ref20) {
-    let {name: name, doTask: doTask = true} = _ref20;
+  async function _toggleChannel(_ref25) {
+    let {name: name, doTask: doTask = true} = _ref25;
     try {
       var _data$response93;
       debug('开始处理Twitch频道任务', {
@@ -2938,6 +2967,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         if (doTask && !globalOptions.doTask.twitter.users || !doTask && !globalOptions.undoTask.twitter.users) {
           debug('根据全局选项跳过Twitter用户任务', {
             doTask: doTask
@@ -2947,23 +2977,23 @@ function _toPrimitive(t, r) {
             text: 'twitter.users',
             before: '[Twitter]'
           });
+          for (const link of userLinks) {
+            this.setToggleResult(result, 'userLinks', link, true);
+          }
         } else {
-          const realUsers = this.getRealParams('users', userLinks, doTask, (link => {
+          for (const link of userLinks) {
             var _link$match4, _link$match5;
-            return ((_link$match4 = link.match(/https:\/\/x\.com\/([^/]+)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]) || ((_link$match5 = link.match(/https:\/\/twitter\.com\/([^/]+)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]);
-          }));
-          debug('处理后的Twitter用户列表', {
-            count: realUsers.length,
-            users: realUsers
-          });
-          if (realUsers.length > 0) {
-            for (const user of realUsers) {
-              await _assertClassBrand(_Twitter_brand, this, _toggleUser).call(this, {
-                name: user,
-                doTask: doTask
-              });
-              await delay(1e3);
+            const user = ((_link$match4 = link.match(/https:\/\/x\.com\/([^/]+)/)) === null || _link$match4 === void 0 ? void 0 : _link$match4[1]) || ((_link$match5 = link.match(/https:\/\/twitter\.com\/([^/]+)/)) === null || _link$match5 === void 0 ? void 0 : _link$match5[1]);
+            if (!user) {
+              this.setToggleResult(result, 'userLinks', link, false);
+              continue;
             }
+            const success = await _assertClassBrand(_Twitter_brand, this, _toggleUser).call(this, {
+              name: user,
+              doTask: doTask
+            });
+            this.setToggleResult(result, 'userLinks', link, success);
+            await delay(1e3);
           }
         }
         if (doTask && !globalOptions.doTask.twitter.retweets || !doTask && !globalOptions.undoTask.twitter.retweets) {
@@ -2975,26 +3005,26 @@ function _toPrimitive(t, r) {
             text: 'twitter.retweets',
             before: '[Twitter]'
           });
+          for (const link of retweetLinks) {
+            this.setToggleResult(result, 'retweetLinks', link, true);
+          }
         } else {
-          const realRetweets = this.getRealParams('retweets', retweetLinks, doTask, (link => {
+          for (const link of retweetLinks) {
             var _link$match6, _link$match7;
-            return ((_link$match6 = link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]) || ((_link$match7 = link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]);
-          }));
-          debug('处理后的Twitter转推列表', {
-            count: realRetweets.length,
-            retweets: realRetweets
-          });
-          if (realRetweets.length > 0) {
-            for (const retweet of realRetweets) {
-              await _assertClassBrand(_Twitter_brand, this, _toggleRetweet).call(this, {
-                retweetId: retweet,
-                doTask: doTask
-              });
-              await delay(1e3);
+            const retweet = ((_link$match6 = link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)) === null || _link$match6 === void 0 ? void 0 : _link$match6[1]) || ((_link$match7 = link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)) === null || _link$match7 === void 0 ? void 0 : _link$match7[1]);
+            if (!retweet) {
+              this.setToggleResult(result, 'retweetLinks', link, false);
+              continue;
             }
+            const success = await _assertClassBrand(_Twitter_brand, this, _toggleRetweet).call(this, {
+              retweetId: retweet,
+              doTask: doTask
+            });
+            this.setToggleResult(result, 'retweetLinks', link, success);
+            await delay(1e3);
           }
         }
-        return true;
+        return result;
       } catch (error) {
         debug('处理Twitter链接任务时发生错误', {
           error: error
@@ -3070,8 +3100,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleUser(_ref21) {
-    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref21;
+  async function _toggleUser(_ref26) {
+    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref26;
     try {
       debug('开始处理Twitter用户任务', {
         name: name,
@@ -3182,8 +3212,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleRetweet(_ref22) {
-    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref22;
+  async function _toggleRetweet(_ref27) {
+    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref27;
     try {
       var _data$response99, _data$responseHeaders4, _data$response100, _data$response101, _data$response102;
       debug('开始处理Twitter转推任务', {
@@ -3292,9 +3322,12 @@ function _toPrimitive(t, r) {
       throwError(error, 'Twitter.setCache');
     }
   }
-  var _username = new WeakMap;
+  var _userId = new WeakMap;
   var _cache3 = new WeakMap;
   var _initialized4 = new WeakMap;
+  var _token = new WeakMap;
+  var _version = new WeakMap;
+  var _appId = new WeakMap;
   var _Vk_brand = new WeakSet;
   class Vk extends Social {
     constructor() {
@@ -3303,9 +3336,12 @@ function _toPrimitive(t, r) {
       _classPrivateMethodInitSpec(this, _Vk_brand);
       _defineProperty(this, 'tasks', void 0);
       _defineProperty(this, 'whiteList', void 0);
-      _classPrivateFieldInitSpec(this, _username, '');
+      _classPrivateFieldInitSpec(this, _userId, '');
       _classPrivateFieldInitSpec(this, _cache3, GM_getValue('vkCache') || {});
       _classPrivateFieldInitSpec(this, _initialized4, false);
+      _classPrivateFieldInitSpec(this, _token, null);
+      _classPrivateFieldInitSpec(this, _version, '5.282');
+      _classPrivateFieldInitSpec(this, _appId, '6287487');
       const defaultTasksTemplate = {
         names: []
       };
@@ -3320,8 +3356,9 @@ function _toPrimitive(t, r) {
           debug('Vk模块已初始化');
           return true;
         }
+        const result = await _assertClassBrand(_Vk_brand, this, _updateAuth4).call(this);
         const isVerified = await _assertClassBrand(_Vk_brand, this, _verifyAuth3).call(this);
-        if (isVerified) {
+        if (result && isVerified) {
           debug('Vk授权验证成功');
           echoLog({
             before: '[Vk]'
@@ -3357,6 +3394,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         const prom = [];
         if (doTask && !globalOptions.doTask.vk.names || !doTask && !globalOptions.undoTask.vk.names) {
           debug('根据全局选项跳过Vk任务', {
@@ -3367,26 +3405,29 @@ function _toPrimitive(t, r) {
             text: 'vk.names',
             before: '[Vk]'
           });
+          for (const link of nameLinks) {
+            this.setToggleResult(result, 'nameLinks', link, true);
+          }
         } else {
-          const realNames = this.getRealParams('names', nameLinks, doTask, (link => {
+          for (const link of nameLinks) {
             var _link$match8;
-            return (_link$match8 = link.match(/https:\/\/vk\.com\/([^/]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[1];
-          }));
-          debug('处理后的Vk链接列表', {
-            count: realNames.length,
-            names: realNames
-          });
-          if (realNames.length > 0) {
-            for (const name of realNames) {
-              prom.push(_assertClassBrand(_Vk_brand, this, _toggleVk).call(this, {
-                name: name,
-                doTask: doTask
-              }));
-              await delay(1e3);
+            const name = (_link$match8 = link.match(/https:\/\/vk\.(\w+?)\/([^/]+)/)) === null || _link$match8 === void 0 ? void 0 : _link$match8[2];
+            if (!name) {
+              this.setToggleResult(result, 'nameLinks', link, false);
+              continue;
             }
+            prom.push(_assertClassBrand(_Vk_brand, this, _toggleVk).call(this, {
+              name: name,
+              doTask: doTask
+            }).then((success => {
+              this.setToggleResult(result, 'nameLinks', link, success);
+              return success;
+            })));
+            await delay(1e3);
           }
         }
-        return Promise.all(prom).then((() => true));
+        await Promise.all(prom);
+        return result;
       } catch (error) {
         debug('处理Vk链接任务时发生错误', {
           error: error
@@ -3398,7 +3439,7 @@ function _toPrimitive(t, r) {
   }
   async function _verifyAuth3() {
     try {
-      var _data$responseText$ma10;
+      var _data$responseText$ma10, _data$responseText$ma11, _data$responseText$ma12;
       debug('开始验证Vk授权');
       const logStatus = echoLog({
         text: I18n('verifyAuth', 'Vk'),
@@ -3430,7 +3471,9 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      _classPrivateFieldSet(_username, this, ((_data$responseText$ma10 = data.responseText.match(/TopNavBtn__profileLink" href="\/(.*?)"/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1]) || '');
+      _classPrivateFieldSet(_userId, this, ((_data$responseText$ma10 = data.responseText.match(/id: (\d+)/)) === null || _data$responseText$ma10 === void 0 ? void 0 : _data$responseText$ma10[1]) || '');
+      _classPrivateFieldSet(_version, this, ((_data$responseText$ma11 = data.responseText.match(/"version":"(.+?)","response"/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1]) || '');
+      _classPrivateFieldSet(_appId, this, ((_data$responseText$ma12 = data.responseText.match(/"app_id":(.+?),"is_mobile"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1]) || '');
       debug('Vk授权验证成功');
       logStatus.success();
       return true;
@@ -3442,9 +3485,76 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
+  async function _updateAuth4() {
+    try {
+      var _data$response105;
+      debug('开始更新Vk授权');
+      const logStatus = echoLog({
+        text: I18n('updatingAuth', 'Vk'),
+        before: '[Vk]'
+      });
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        url: 'https://login.vk.com/?act=web_token',
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/',
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        responseType: 'json',
+        data: $.param({
+          version: _classPrivateFieldGet(_version, this),
+          app_id: _classPrivateFieldGet(_appId, this)
+        })
+      });
+      if (result !== 'Success') {
+        debug('更新Vk授权请求失败', {
+          result: result,
+          statusText: statusText,
+          status: status
+        });
+        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
+        debug('更新Vk授权状态错误', {
+          status: data === null || data === void 0 ? void 0 : data.status,
+          statusText: data === null || data === void 0 ? void 0 : data.statusText
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      if ((data === null || data === void 0 || (_data$response105 = data.response) === null || _data$response105 === void 0 ? void 0 : _data$response105.type) !== 'okay') {
+        debug('更新Vk授权失败', {
+          response: data === null || data === void 0 ? void 0 : data.response
+        });
+        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        return false;
+      }
+      debug('更新Vk授权成功', {
+        response: data === null || data === void 0 ? void 0 : data.response
+      });
+      _classPrivateFieldSet(_token, this, data.response.data.access_token);
+      logStatus.success();
+      return true;
+    } catch (error) {
+      debug('更新Vk授权时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.updateAuth');
+      return false;
+    }
+  }
   async function _toggleGroup(name, dataParam) {
     let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     try {
+      if (!_classPrivateFieldGet(_token, this) || !dataParam.groupId) {
+        debug('缺少关键参数', {
+          token: !!_classPrivateFieldGet(_token, this),
+          groupId: dataParam.groupId
+        });
+        return false;
+      }
       debug('开始处理Vk群组任务', {
         name: name,
         doTask: doTask
@@ -3454,7 +3564,7 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Vk]'
       });
-      if (dataParam.groupAct === 'enter' && !doTask || dataParam.groupAct === 'leave' && doTask) {
+      if (dataParam.isMember === '0' && !doTask || dataParam.isMember === '1' && doTask) {
         debug('Vk群组操作已完成，跳过', {
           name: name,
           doTask: doTask
@@ -3463,22 +3573,20 @@ function _toPrimitive(t, r) {
         return true;
       }
       const reqData = {
-        act: doTask ? 'enter' : 'leave',
-        al: 1,
-        gid: dataParam.groupId,
-        hash: dataParam.groupHash
+        group_id: dataParam.groupId,
+        source: '',
+        track_code: '',
+        access_token: _classPrivateFieldGet(_token, this)
       };
-      if (doTask) {
-        reqData.context = '_';
-      }
       const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: 'https://vk.com/al_groups.php',
+        url: 'https://web.api.vk.com/method/groups.'.concat(doTask ? 'join' : 'leave', '?v=').concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
           origin: 'https://vk.com',
           referer: 'https://vk.com/'.concat(name),
           'content-type': 'application/x-www-form-urlencoded'
         },
+        responseType: 'json',
         data: $.param(reqData)
       });
       if (result !== 'Success') {
@@ -3543,6 +3651,7 @@ function _toPrimitive(t, r) {
           referer: 'https://vk.com/'.concat(name),
           'content-type': 'application/x-www-form-urlencoded'
         },
+        responseType: 'json',
         data: $.param({
           act: doTask ? 'a_enter' : 'a_leave',
           al: 1,
@@ -3584,10 +3693,87 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleLikeWall(name, dataParam) {
-    let doTask = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+  async function _getWall(name) {
     try {
       var _dataR$response;
+      debug('开始获取Vk帖子信息', {
+        name: name
+      });
+      const logStatus = echoLog({
+        type: 'gettingVkWall',
+        text: name,
+        before: '[Vk]'
+      });
+      const postData = {
+        extended: '1',
+        fields: 'photo_100,photo_200,photo_base,sex,friend_status,first_name_gen,last_name_gen,screen_name,verified,image_status,has_unseen_stories,is_government_organization,trust_mark,is_verified,social_button_type,url,is_member,can_write_private_message,can_message,member_status,can_publish,can_edit,can_delete',
+        filters: 'post,photo,photo_tag,friends_recomm,ads_app,ads_app_slider,ads_site,ads_site_slider,ads_post,ads_post_snippet_video,ads_app_video,ads_post_pretty_cards,recommended_groups,recommended_game,recommended_mini_app,mini_apps_carousel,videos_for_you_block,clips_block,animated_block,dzen_block',
+        filter: 'owner',
+        domain: name.split('_')[0].replace('wall', ''),
+        start_from: '',
+        count: '10',
+        access_token: _classPrivateFieldGet(_token, this)
+      };
+      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        url: 'https://web.api.vk.ru/method/wall.get?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
+        method: 'POST',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/'.concat(name),
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        responseType: 'json',
+        data: $.param(postData)
+      });
+      if (resultR !== 'Success') {
+        debug('获取Vk帖子信息失败', {
+          result: resultR,
+          statusText: statusTextR,
+          status: statusR
+        });
+        logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
+        return false;
+      }
+      if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
+        debug('获取Vk帖子信息状态错误', {
+          status: dataR === null || dataR === void 0 ? void 0 : dataR.status,
+          statusText: dataR === null || dataR === void 0 ? void 0 : dataR.statusText
+        });
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      const item = (_dataR$response = dataR.response) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response.response) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response.items) === null || _dataR$response === void 0 ? void 0 : _dataR$response.find((e => e.id === parseInt(name.split('_')[1] || '0', 10)));
+      if (!item) {
+        debug('未找到匹配的Vk帖子信息');
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
+        return false;
+      }
+      debug('获取Vk帖子信息成功', {
+        name: name
+      });
+      logStatus.success();
+      return item;
+    } catch (error) {
+      debug('处理Vk点赞任务时发生错误', {
+        error: error
+      });
+      throwError(error, 'Vk.getWall');
+      return false;
+    }
+  }
+  async function _toggleLikeWall(name) {
+    let doTask = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    try {
+      if (!name) {
+        debug('格式错误', {
+          name: name
+        });
+        return false;
+      }
+      const itemInfo = await _assertClassBrand(_Vk_brand, this, _getWall).call(this, name);
+      if (!itemInfo) {
+        return false;
+      }
       debug('开始处理Vk点赞任务', {
         name: name,
         doTask: doTask
@@ -3597,27 +3783,30 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Vk]'
       });
+      if (doTask === !!itemInfo.likes.user_likes) {
+        logStatus.success();
+        return true;
+      }
       const postData = {
-        act: 'a_set_reaction',
-        al: 1,
-        event_subtype: 'post_modal',
-        from: 'wall_page',
-        hash: dataParam.hash,
-        object: dataParam.object,
-        track_code: dataParam.trackCode,
-        wall: 2
+        type: itemInfo.type,
+        owner_id: itemInfo.owner_id,
+        item_id: itemInfo.id,
+        track_code: itemInfo.track_code,
+        ref: 'group',
+        access_token: _classPrivateFieldGet(_token, this)
       };
       if (doTask) {
         postData.reaction_id = 0;
       }
       const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-        url: 'https://vk.com/like.php?act=a_set_reaction',
+        url: 'https://web.api.vk.com/method/likes.'.concat(doTask ? 'add' : 'delete', '?v=').concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
           origin: 'https://vk.com',
           referer: 'https://vk.com/'.concat(name),
           'content-type': 'application/x-www-form-urlencoded'
         },
+        responseType: 'json',
         data: $.param(postData)
       });
       if (resultR !== 'Success') {
@@ -3637,11 +3826,6 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
         return false;
       }
-      if (((_dataR$response = dataR.response) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response.payload) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response[1]) === null || _dataR$response === void 0 || (_dataR$response = _dataR$response[1]) === null || _dataR$response === void 0 ? void 0 : _dataR$response.like_my) !== true) {
-        debug('Vk点赞操作验证失败');
-        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
-        return false;
-      }
       debug('Vk点赞操作成功', {
         name: name,
         doTask: doTask
@@ -3652,13 +3836,23 @@ function _toPrimitive(t, r) {
       debug('处理Vk点赞任务时发生错误', {
         error: error
       });
-      throwError(error, 'Vk.sendWall');
+      throwError(error, 'Vk.toggleLikeWall');
       return false;
     }
   }
   async function _sendWall(name) {
     try {
-      var _data$responseText$ma11, _dataR$responseText, _jsonData$payload, _jsonData$payload2, _jsonData$payload3;
+      var _dataR$response2, _dataR$response3;
+      if (!name) {
+        debug('格式错误', {
+          name: name
+        });
+        return false;
+      }
+      const itemInfo = await _assertClassBrand(_Vk_brand, this, _getWall).call(this, name);
+      if (!itemInfo) {
+        return false;
+      }
       debug('开始处理Vk转发任务', {
         name: name
       });
@@ -3667,69 +3861,37 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Vk]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: 'https://vk.com/like.php',
-        method: 'POST',
-        headers: {
-          origin: 'https://vk.com',
-          referer: 'https://vk.com/'.concat(name),
-          'content-type': 'application/x-www-form-urlencoded'
-        },
-        data: $.param({
-          act: 'publish_box',
-          al: 1,
-          object: name
-        })
-      });
-      if (result !== 'Success') {
-        debug('Vk转发操作请求失败', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
-        return false;
+      if (itemInfo.reposts.user_reposted) {
+        logStatus.success();
+        return true;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
-        debug('Vk转发操作状态错误', {
-          status: data === null || data === void 0 ? void 0 : data.status,
-          statusText: data === null || data === void 0 ? void 0 : data.statusText
-        });
-        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
-        return false;
-      }
-      const hash = (_data$responseText$ma11 = data.responseText.match(/shHash:[\s]*'(.*?)'/)) === null || _data$responseText$ma11 === void 0 ? void 0 : _data$responseText$ma11[1];
-      if (!hash) {
-        debug('获取Vk转发hash失败');
-        logStatus.error('Error: Get "hash" failed');
-        return false;
-      }
+      const postData = {
+        object: name,
+        message: '',
+        group_id: '',
+        ref: 'group',
+        mark_as_ads: 0,
+        friends_only: 0,
+        close_comments: 0,
+        mute_notifications: 0,
+        publish_date: '',
+        entry_point: 'share',
+        track_code: itemInfo.track_code,
+        access_token: _classPrivateFieldGet(_token, this)
+      };
       const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-        url: 'https://vk.com/like.php',
+        url: 'https://web.api.vk.ru/method/wall.repost?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
           origin: 'https://vk.com',
           referer: 'https://vk.com/'.concat(name),
           'content-type': 'application/x-www-form-urlencoded'
         },
-        data: $.param({
-          Message: '',
-          act: 'a_do_publish',
-          al: 1,
-          close_comments: 0,
-          friends_only: 0,
-          from: 'box',
-          hash: hash,
-          list: '',
-          mark_as_ads: 0,
-          mute_notifications: 0,
-          object: name,
-          ret_data: 1,
-          to: 0
-        })
+        responseType: 'json',
+        data: $.param(postData)
       });
       if (resultR !== 'Success') {
-        debug('Vk转发确认请求失败', {
+        debug('Vk转发操作请求失败', {
           result: resultR,
           statusText: statusTextR,
           status: statusR
@@ -3738,27 +3900,26 @@ function _toPrimitive(t, r) {
         return false;
       }
       if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
-        debug('Vk转发确认状态错误', {
+        debug('Vk转发操作状态错误', {
           status: dataR === null || dataR === void 0 ? void 0 : dataR.status,
           statusText: dataR === null || dataR === void 0 ? void 0 : dataR.statusText
         });
         logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
         return false;
       }
-      const jsonData = JSON.parse(((_dataR$responseText = dataR.responseText) === null || _dataR$responseText === void 0 ? void 0 : _dataR$responseText.replace('\x3c!--', '')) || '{}');
-      if ((jsonData === null || jsonData === void 0 || (_jsonData$payload = jsonData.payload) === null || _jsonData$payload === void 0 || (_jsonData$payload = _jsonData$payload[1]) === null || _jsonData$payload === void 0 || (_jsonData$payload = _jsonData$payload[1]) === null || _jsonData$payload === void 0 ? void 0 : _jsonData$payload.share_my) !== true) {
-        debug('Vk转发确认验证失败');
+      if (((_dataR$response2 = dataR.response) === null || _dataR$response2 === void 0 || (_dataR$response2 = _dataR$response2.response) === null || _dataR$response2 === void 0 ? void 0 : _dataR$response2.success) !== 1) {
+        debug('Vk转发操作验证失败');
         logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
         return false;
       }
       debug('Vk转发操作成功', {
-        name: name
+        name: name,
+        doTask: true
       });
       logStatus.success();
-      const postId = jsonData === null || jsonData === void 0 || (_jsonData$payload2 = jsonData.payload) === null || _jsonData$payload2 === void 0 || (_jsonData$payload2 = _jsonData$payload2[1]) === null || _jsonData$payload2 === void 0 || (_jsonData$payload2 = _jsonData$payload2[1]) === null || _jsonData$payload2 === void 0 ? void 0 : _jsonData$payload2.post_id;
-      const ownerId = jsonData === null || jsonData === void 0 || (_jsonData$payload3 = jsonData.payload) === null || _jsonData$payload3 === void 0 || (_jsonData$payload3 = _jsonData$payload3[1]) === null || _jsonData$payload3 === void 0 || (_jsonData$payload3 = _jsonData$payload3[1]) === null || _jsonData$payload3 === void 0 ? void 0 : _jsonData$payload3.owner_id;
-      if (postId && ownerId) {
-        _assertClassBrand(_Vk_brand, this, _setCache3).call(this, name, ''.concat(ownerId, '_').concat(postId));
+      const postId = (_dataR$response3 = dataR.response) === null || _dataR$response3 === void 0 || (_dataR$response3 = _dataR$response3.response) === null || _dataR$response3 === void 0 ? void 0 : _dataR$response3.post_id;
+      if (postId) {
+        _assertClassBrand(_Vk_brand, this, _setCache3).call(this, name, postId);
       }
       this.tasks.names = unique([ ...this.tasks.names, name ]);
       return true;
@@ -3770,10 +3931,20 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _deleteWall(name, dataParams) {
+  async function _deleteWall(name) {
     try {
-      var _data$responseText2, _jsonData$payload4;
-      debug('开始处理Vk删除墙任务', {
+      var _dataR$response4;
+      if (!name) {
+        debug('格式错误', {
+          name: name
+        });
+        return false;
+      }
+      const itemInfo = await _assertClassBrand(_Vk_brand, this, _getWall).call(this, name);
+      if (!itemInfo) {
+        return false;
+      }
+      debug('开始处理Vk删除转发任务', {
         name: name
       });
       const logStatus = echoLog({
@@ -3781,53 +3952,56 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Vk]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: 'https://vk.com/al_wall.php?act=delete',
+      if (!itemInfo.reposts.user_reposted) {
+        logStatus.success();
+        return true;
+      }
+      const postData = {
+        owner_id: _classPrivateFieldGet(_userId, this),
+        post_id: _classPrivateFieldGet(_cache3, this)[name],
+        creation_entry_point: '',
+        access_token: _classPrivateFieldGet(_token, this)
+      };
+      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        url: 'https://web.api.vk.ru/method/wall.delete?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
           origin: 'https://vk.com',
-          referer: 'https://vk.com/'.concat(_classPrivateFieldGet(_username, this), '?w=wall').concat(_classPrivateFieldGet(_cache3, this)[name], '%2Fall'),
+          referer: 'https://vk.com/'.concat(name),
           'content-type': 'application/x-www-form-urlencoded'
         },
-        data: $.param({
-          act: 'delete',
-          al: 1,
-          confirm: 0,
-          from: 'wkview',
-          hash: dataParams.wallHash,
-          post: _classPrivateFieldGet(_cache3, this)[name]
-        })
+        responseType: 'json',
+        data: $.param(postData)
       });
-      if (result !== 'Success') {
-        debug('Vk删除墙请求失败', {
-          result: result,
-          statusText: statusText,
-          status: status
+      if (resultR !== 'Success') {
+        debug('Vk删除转发操作请求失败', {
+          result: resultR,
+          statusText: statusTextR,
+          status: statusR
         });
-        logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
+        logStatus.error(''.concat(resultR, ':').concat(statusTextR, '(').concat(statusR, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200) {
-        debug('Vk删除墙状态错误', {
-          status: data === null || data === void 0 ? void 0 : data.status,
-          statusText: data === null || data === void 0 ? void 0 : data.statusText
+      if ((dataR === null || dataR === void 0 ? void 0 : dataR.status) !== 200) {
+        debug('Vk删除转发操作状态错误', {
+          status: dataR === null || dataR === void 0 ? void 0 : dataR.status,
+          statusText: dataR === null || dataR === void 0 ? void 0 : dataR.statusText
         });
-        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
         return false;
       }
-      const jsonData = JSON.parse(((_data$responseText2 = data.responseText) === null || _data$responseText2 === void 0 ? void 0 : _data$responseText2.replace('\x3c!--', '')) || '{}');
-      if (!(jsonData !== null && jsonData !== void 0 && (_jsonData$payload4 = jsonData.payload) !== null && _jsonData$payload4 !== void 0 && (_jsonData$payload4 = _jsonData$payload4[1]) !== null && _jsonData$payload4 !== void 0 && _jsonData$payload4[1])) {
-        debug('Vk删除墙验证失败');
-        logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      if (((_dataR$response4 = dataR.response) === null || _dataR$response4 === void 0 ? void 0 : _dataR$response4.response) !== 1) {
+        debug('Vk删除转发操作验证失败');
+        logStatus.error('Error:'.concat(dataR === null || dataR === void 0 ? void 0 : dataR.statusText, '(').concat(dataR === null || dataR === void 0 ? void 0 : dataR.status, ')'));
         return false;
       }
-      debug('Vk删除墙操作成功', {
+      debug('Vk删除转发操作成功', {
         name: name
       });
       logStatus.success();
       return true;
     } catch (error) {
-      debug('处理Vk删除墙任务时发生错误', {
+      debug('处理Vk删除转发任务时发生错误', {
         error: error
       });
       throwError(error, 'Vk.deleteWall');
@@ -3836,24 +4010,30 @@ function _toPrimitive(t, r) {
   }
   async function _getId(name, doTask) {
     try {
-      var _data$responseText$ma12, _data$responseText$ma13;
       debug('开始获取Vk ID', {
         name: name,
         doTask: doTask
       });
-      let url = 'https://vk.com/'.concat(name);
-      if (/^wall-/.test(name)) {
+      const url = 'https://vk.com/'.concat(name);
+      if (/^w=wall-/.test(name.split('?')[1])) {
+        var _name$match;
+        const realname = ((_name$match = name.match(/wall-\d+?_\d+/)) === null || _name$match === void 0 ? void 0 : _name$match[0]) || '';
+        if (name.includes('action=like')) {
+          return {
+            type: 'likeWall',
+            name: realname
+          };
+        }
         if (doTask) {
           return {
-            type: 'sendWall'
+            type: 'sendWall',
+            name: realname
           };
         }
-        if (!_classPrivateFieldGet(_cache3, this)[name]) {
-          return {
-            type: 'unSupport'
-          };
-        }
-        url = 'https://vk.com/'.concat(_classPrivateFieldGet(_username, this), '?w=wall').concat(_classPrivateFieldGet(_cache3, this)[name]);
+        return {
+          type: 'deleteWall',
+          name: realname
+        };
       }
       const logStatus = echoLog({
         type: 'gettingVkId',
@@ -3881,77 +4061,17 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const [, groupAct, groupId, , groupHash] = data.responseText.match(/Groups.(enter|leave)\(.*?,.*?([\d]+?), (&#39;|')(.*?)(&#39;|')/) || [];
-      const publicHash = (_data$responseText$ma12 = data.responseText.match(/"enterHash":"(.*?)"/)) === null || _data$responseText$ma12 === void 0 ? void 0 : _data$responseText$ma12[1];
-      const publicPid = (_data$responseText$ma13 = data.responseText.match(/"public_id":([\d]+?),/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1];
-      const publicJoined = !data.responseText.includes('Public.subscribe');
-      if (groupAct && groupId && groupHash) {
+      const [, groupId] = data.responseText.match(/"group_id":(.+?),"fields"/) || [];
+      const [, isMember] = data.responseText.match(/"is_member":(.+?),/) || [];
+      if (groupId) {
         debug('获取到Vk群组ID', {
-          groupAct: groupAct,
-          groupId: groupId,
-          groupHash: groupHash
+          groupId: groupId
         });
         logStatus.success();
         return {
-          groupAct: groupAct,
           groupId: groupId,
-          groupHash: groupHash,
+          isMember: isMember,
           type: 'group'
-        };
-      }
-      if (publicHash && publicPid) {
-        debug('获取到Vk公共页面ID', {
-          publicHash: publicHash,
-          publicPid: publicPid,
-          publicJoined: publicJoined
-        });
-        logStatus.success();
-        return {
-          publicHash: publicHash,
-          publicPid: publicPid,
-          publicJoined: publicJoined,
-          type: 'public'
-        };
-      }
-      if (name.includes('action=like')) {
-        var _data$responseText$ma14, _data$responseText$ma15, _name$match;
-        const hash = (_data$responseText$ma14 = data.responseText.match(/data-reaction-hash="(.*?)"/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1];
-        const trackCode = (_data$responseText$ma15 = data.responseText.match(/data-post-track-code="(.*?)"/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1];
-        const object = (_name$match = name.match(/wall-[\w_]+/)) === null || _name$match === void 0 ? void 0 : _name$match[0];
-        if (hash && trackCode && object) {
-          debug('获取到Vk点赞ID', {
-            hash: hash,
-            trackCode: trackCode,
-            object: object
-          });
-          logStatus.success();
-          return {
-            type: 'likeWall',
-            hash: hash,
-            trackCode: trackCode,
-            object: object
-          };
-        }
-      }
-      if (data.responseText.includes('wall.deletePost') && !doTask) {
-        var _data$responseText$ma16;
-        const wallHash = (_data$responseText$ma16 = data.responseText.match(/wall\.deletePost\(this, '.*?', '(.*?)'\)/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1];
-        if (wallHash) {
-          debug('获取到Vk删除墙ID', {
-            wallHash: wallHash
-          });
-          logStatus.success();
-          return {
-            type: 'deleteWall',
-            wallHash: wallHash
-          };
-        }
-      }
-      if (name.includes('wall') && doTask) {
-        debug('获取到Vk墙ID');
-        logStatus.success();
-        return {
-          type: 'sendWall'
         };
       }
       debug('未找到Vk ID参数');
@@ -3965,8 +4085,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleVk(_ref23) {
-    let {name: name, doTask: doTask = true} = _ref23;
+  async function _toggleVk(_ref28) {
+    let {name: name, doTask: doTask = true} = _ref28;
     try {
       debug('开始处理Vk任务', {
         name: name,
@@ -3997,13 +4117,13 @@ function _toPrimitive(t, r) {
         return await _assertClassBrand(_Vk_brand, this, _togglePublic).call(this, formatName, data, doTask);
 
        case 'likeWall':
-        return await _assertClassBrand(_Vk_brand, this, _toggleLikeWall).call(this, formatName, data, doTask);
+        return await _assertClassBrand(_Vk_brand, this, _toggleLikeWall).call(this, data.name, doTask);
 
        case 'sendWall':
-        return doTask ? await _assertClassBrand(_Vk_brand, this, _sendWall).call(this, formatName) : true;
+        return doTask ? await _assertClassBrand(_Vk_brand, this, _sendWall).call(this, data.name) : true;
 
        case 'deleteWall':
-        return doTask ? true : await _assertClassBrand(_Vk_brand, this, _deleteWall).call(this, formatName, data);
+        return doTask ? true : await _assertClassBrand(_Vk_brand, this, _deleteWall).call(this, data.name);
 
        default:
         debug('未知的Vk任务类型', {
@@ -4034,6 +4154,7 @@ function _toPrimitive(t, r) {
       throwError(error, 'Vk.setCache');
     }
   }
+  unsafeWindow.Vk = Vk;
   const getInfo = async function(link, type) {
     try {
       var _data$responseText$ma, _ref6;
@@ -4170,7 +4291,7 @@ function _toPrimitive(t, r) {
         }
         if (!_classPrivateFieldGet(_auth4, this).PAPISID) {
           debug('YouTube授权信息不完整，需要更新授权');
-          if (await _assertClassBrand(_Youtube_brand, this, _updateAuth4).call(this)) {
+          if (await _assertClassBrand(_Youtube_brand, this, _updateAuth5).call(this)) {
             _classPrivateFieldSet(_initialized5, this, true);
             return true;
           }
@@ -4187,7 +4308,7 @@ function _toPrimitive(t, r) {
         }
         debug('YouTube授权失效，尝试重新获取');
         GM_setValue('youtubeAuth', null);
-        if (await _assertClassBrand(_Youtube_brand, this, _updateAuth4).call(this)) {
+        if (await _assertClassBrand(_Youtube_brand, this, _updateAuth5).call(this)) {
           debug('YouTube重新授权成功');
           echoLog({
             before: '[Youtube]'
@@ -4224,6 +4345,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         const prom = [];
         const shouldProcessChannels = doTask && globalOptions.doTask.youtube.channels || !doTask && globalOptions.undoTask.youtube.channels;
         const shouldProcessVideos = doTask && globalOptions.doTask.youtube.likes || !doTask && globalOptions.undoTask.youtube.likes;
@@ -4236,26 +4358,31 @@ function _toPrimitive(t, r) {
             text: 'youtube.channels',
             before: '[Youtube]'
           });
+          for (const link of channelLinks) {
+            this.setToggleResult(result, 'channelLinks', link, true);
+          }
         } else {
-          const realChannels = this.getRealParams('channels', channelLinks, doTask, (link => {
+          const normalizeYoutubeLink = link => {
             if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
               var _link$match9;
               return (_link$match9 = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)) === null || _link$match9 === void 0 ? void 0 : _link$match9[1];
             }
             return link;
-          }));
-          debug('处理后的YouTube频道链接列表', {
-            count: realChannels.length,
-            channels: realChannels
-          });
-          if (realChannels.length > 0) {
-            for (const channel of realChannels) {
-              prom.push(_assertClassBrand(_Youtube_brand, this, _toggleChannel2).call(this, {
-                link: channel,
-                doTask: doTask
-              }));
-              await delay(1e3);
+          };
+          for (const link of channelLinks) {
+            const channel = normalizeYoutubeLink(link);
+            if (!channel) {
+              this.setToggleResult(result, 'channelLinks', link, false);
+              continue;
             }
+            prom.push(_assertClassBrand(_Youtube_brand, this, _toggleChannel2).call(this, {
+              link: channel,
+              doTask: doTask
+            }).then((success => {
+              this.setToggleResult(result, 'channelLinks', link, success);
+              return success;
+            })));
+            await delay(1e3);
           }
         }
         if (!shouldProcessVideos) {
@@ -4267,29 +4394,35 @@ function _toPrimitive(t, r) {
             text: 'youtube.likes',
             before: '[Youtube]'
           });
+          for (const link of videoLinks) {
+            this.setToggleResult(result, 'videoLinks', link, true);
+          }
         } else {
-          const realLikes = this.getRealParams('likes', videoLinks, doTask, (link => {
+          const normalizeYoutubeLink = link => {
             if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
               var _link$match0;
               return (_link$match0 = link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)) === null || _link$match0 === void 0 ? void 0 : _link$match0[1];
             }
             return link;
-          }));
-          debug('处理后的YouTube视频链接列表', {
-            count: realLikes.length,
-            videos: realLikes
-          });
-          if (realLikes.length > 0) {
-            for (const video of realLikes) {
-              prom.push(_assertClassBrand(_Youtube_brand, this, _toggleLikeVideo).call(this, {
-                link: video,
-                doTask: doTask
-              }));
-              await delay(1e3);
+          };
+          for (const link of videoLinks) {
+            const video = normalizeYoutubeLink(link);
+            if (!video) {
+              this.setToggleResult(result, 'videoLinks', link, false);
+              continue;
             }
+            prom.push(_assertClassBrand(_Youtube_brand, this, _toggleLikeVideo).call(this, {
+              link: video,
+              doTask: doTask
+            }).then((success => {
+              this.setToggleResult(result, 'videoLinks', link, success);
+              return success;
+            })));
+            await delay(1e3);
           }
         }
-        return Promise.all(prom).then((() => true));
+        await Promise.all(prom);
+        return result;
       } catch (error) {
         debug('处理YouTube链接任务时发生错误', {
           error: error
@@ -4315,7 +4448,7 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _updateAuth4() {
+  async function _updateAuth5() {
     try {
       debug('开始更新YouTube授权');
       const logStatus = echoLog({
@@ -4368,8 +4501,8 @@ function _toPrimitive(t, r) {
     });
     return getInfo(link, type);
   }
-  async function _toggleChannel2(_ref24) {
-    let {link: link, doTask: doTask = true, verify: verify = false} = _ref24;
+  async function _toggleChannel2(_ref29) {
+    let {link: link, doTask: doTask = true, verify: verify = false} = _ref29;
     try {
       debug('开始处理YouTube频道任务', {
         link: link,
@@ -4483,8 +4616,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleLikeVideo(_ref25) {
-    let {link: link, doTask: doTask = true} = _ref25;
+  async function _toggleLikeVideo(_ref30) {
+    let {link: link, doTask: doTask = true} = _ref30;
     try {
       debug('开始处理YouTube视频点赞任务', {
         link: link,
@@ -5477,7 +5610,7 @@ function _toPrimitive(t, r) {
   }
   async function _getGroupId() {
     try {
-      var _data$response105, _data$response106, _data$response107, _data$response108, _data$response109;
+      var _data$response106, _data$response107, _data$response108, _data$response109, _data$response110;
       debug('开始获取Steam组ID列表');
       const logStatus = echoLog({
         type: 'gettingSteamGroupId',
@@ -5498,7 +5631,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response105 = data.response) !== null && _data$response105 !== void 0 && (_data$response105 = _data$response105.Result) !== null && _data$response105 !== void 0 && _data$response105.includes('|')) {
+      if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response106 = data.response) !== null && _data$response106 !== void 0 && (_data$response106 = _data$response106.Result) !== null && _data$response106 !== void 0 && _data$response106.includes('|')) {
         _classPrivateFieldSet(_groupInfo, this, Object.fromEntries(data.response.Result.split('\n').map((line => {
           const [, name, id] = line.trim().split('|');
           if (name && id) {
@@ -5513,10 +5646,10 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('获取Steam组ID列表失败', {
-        result: data === null || data === void 0 || (_data$response106 = data.response) === null || _data$response106 === void 0 ? void 0 : _data$response106.Result,
-        message: data === null || data === void 0 || (_data$response107 = data.response) === null || _data$response107 === void 0 ? void 0 : _data$response107.Message
+        result: data === null || data === void 0 || (_data$response107 = data.response) === null || _data$response107 === void 0 ? void 0 : _data$response107.Result,
+        message: data === null || data === void 0 || (_data$response108 = data.response) === null || _data$response108 === void 0 ? void 0 : _data$response108.Message
       });
-      logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response108 = data.response) === null || _data$response108 === void 0 ? void 0 : _data$response108.Result) || (data === null || data === void 0 || (_data$response109 = data.response) === null || _data$response109 === void 0 ? void 0 : _data$response109.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
+      logStatus.error('Error:'.concat((data === null || data === void 0 || (_data$response109 = data.response) === null || _data$response109 === void 0 ? void 0 : _data$response109.Result) || (data === null || data === void 0 || (_data$response110 = data.response) === null || _data$response110 === void 0 ? void 0 : _data$response110.Message) || (data === null || data === void 0 ? void 0 : data.statusText), '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
       return false;
     } catch (error) {
       debug('获取Steam组ID列表时发生错误', {
@@ -5528,7 +5661,7 @@ function _toPrimitive(t, r) {
   }
   async function _checkGame(gameId) {
     try {
-      var _data$response110, _data$response$Result2;
+      var _data$response111, _data$response$Result2;
       debug('开始检查游戏状态', {
         gameId: gameId
       });
@@ -5543,7 +5676,7 @@ function _toPrimitive(t, r) {
         });
         return {};
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response110 = data.response) !== null && _data$response110 !== void 0 && (_data$response110 = _data$response110.Result) !== null && _data$response110 !== void 0 && _data$response110.includes(gameId))) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !((_data$response111 = data.response) !== null && _data$response111 !== void 0 && (_data$response111 = _data$response111.Result) !== null && _data$response111 !== void 0 && _data$response111.includes(gameId))) {
         debug('检查游戏状态响应无效', {
           status: data === null || data === void 0 ? void 0 : data.status
         });
@@ -6740,7 +6873,7 @@ function _toPrimitive(t, r) {
   async function _refreshToken() {
     let type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'steamStore';
     try {
-      var _data$response111;
+      var _data$response112;
       debug('开始刷新令牌', {
         type: type
       });
@@ -6781,7 +6914,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return false;
       }
-      if (!(data !== null && data !== void 0 && (_data$response111 = data.response) !== null && _data$response111 !== void 0 && _data$response111.success)) {
+      if (!(data !== null && data !== void 0 && (_data$response112 = data.response) !== null && _data$response112 !== void 0 && _data$response112.success)) {
         debug('响应不成功', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText
@@ -6878,7 +7011,7 @@ function _toPrimitive(t, r) {
   async function _updateStoreAuth() {
     let retry = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
     try {
-      var _data$responseText$ma17;
+      var _data$responseText$ma13;
       debug('开始更新Steam商店身份验证');
       const logStatus = echoLog({
         text: I18n('updatingAuth', I18n('steamStore')),
@@ -6937,7 +7070,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(I18n('needLoginSteamStore')), true);
         return false;
       }
-      const storeSessionID = (_data$responseText$ma17 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1];
+      const storeSessionID = (_data$responseText$ma13 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma13 === void 0 ? void 0 : _data$responseText$ma13[1];
       if (!storeSessionID) {
         debug('Steam商店身份验证失败：获取sessionID失败');
         logStatus.error('Error: Get "sessionID" failed');
@@ -7064,7 +7197,7 @@ function _toPrimitive(t, r) {
   async function _updateCommunityAuth(initStoreResult) {
     let retry = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     try {
-      var _data$responseText$ma18, _data$responseText$ma19;
+      var _data$responseText$ma14, _data$responseText$ma15;
       debug('开始更新Steam社区身份验证');
       const logStatus = echoLog({
         text: I18n('gettingUserInfo'),
@@ -7110,8 +7243,8 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(I18n('needLoginSteamCommunity')), true);
         return false;
       }
-      const steam64Id = (_data$responseText$ma18 = data.responseText.match(/g_steamID = "(.+?)";/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1];
-      const communitySessionID = (_data$responseText$ma19 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1];
+      const steam64Id = (_data$responseText$ma14 = data.responseText.match(/g_steamID = "(.+?)";/)) === null || _data$responseText$ma14 === void 0 ? void 0 : _data$responseText$ma14[1];
+      const communitySessionID = (_data$responseText$ma15 = data.responseText.match(/g_sessionID = "(.+?)";/)) === null || _data$responseText$ma15 === void 0 ? void 0 : _data$responseText$ma15[1];
       if (!steam64Id || !communitySessionID) {
         debug('Steam社区身份验证失败：获取身份信息失败');
         logStatus.error('Error: Get "sessionID" failed');
@@ -7135,7 +7268,7 @@ function _toPrimitive(t, r) {
   }
   async function _getAreaInfo() {
     try {
-      var _data$responseText$ma20, _data$responseText$ma21;
+      var _data$responseText$ma16, _data$responseText$ma17;
       debug('开始获取Steam地区信息');
       const logStatus = echoLog({
         text: I18n('gettingAreaInfo'),
@@ -7159,7 +7292,7 @@ function _toPrimitive(t, r) {
         logStatus.error(result === 'Success' ? 'Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')') : ''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return {};
       }
-      const cartConfigRaw = (_data$responseText$ma20 = data.responseText.match(/data-cart_config="(.*?)"/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1];
+      const cartConfigRaw = (_data$responseText$ma16 = data.responseText.match(/data-cart_config="(.*?)"/)) === null || _data$responseText$ma16 === void 0 ? void 0 : _data$responseText$ma16[1];
       debug('cartConfigRaw提取结果', {
         cartConfigRaw: cartConfigRaw
       });
@@ -7185,7 +7318,7 @@ function _toPrimitive(t, r) {
         logStatus.warning('Warning: Area cannot be changed');
         return {};
       }
-      const userInfoRaw = (_data$responseText$ma21 = data.responseText.match(/data-userinfo="(.*?)"/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[1];
+      const userInfoRaw = (_data$responseText$ma17 = data.responseText.match(/data-userinfo="(.*?)"/)) === null || _data$responseText$ma17 === void 0 ? void 0 : _data$responseText$ma17[1];
       debug('userInfoRaw提取结果', {
         userInfoRaw: userInfoRaw
       });
@@ -7377,7 +7510,7 @@ function _toPrimitive(t, r) {
   }
   async function _getGroupId2(groupName) {
     try {
-      var _data$responseText$ma22;
+      var _data$responseText$ma18;
       debug('开始获取Steam组ID', {
         groupName: groupName
       });
@@ -7422,7 +7555,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedGroupId = (_data$responseText$ma22 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1];
+      const matchedGroupId = (_data$responseText$ma18 = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)) === null || _data$responseText$ma18 === void 0 ? void 0 : _data$responseText$ma18[1];
       debug('正则提取组ID结果', {
         matchedGroupId: matchedGroupId
       });
@@ -7451,7 +7584,7 @@ function _toPrimitive(t, r) {
   }
   async function _getOfficialGroupId(gameId) {
     try {
-      var _data$responseText$ma23;
+      var _data$responseText$ma19;
       debug('开始获取Steam官方群组ID', {
         gameId: gameId
       });
@@ -7496,7 +7629,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedGroupId = (_data$responseText$ma23 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma23 === void 0 ? void 0 : _data$responseText$ma23[1];
+      const matchedGroupId = (_data$responseText$ma19 = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)) === null || _data$responseText$ma19 === void 0 ? void 0 : _data$responseText$ma19[1];
       debug('正则提取官方群组ID结果', {
         matchedGroupId: matchedGroupId
       });
@@ -7570,7 +7703,7 @@ function _toPrimitive(t, r) {
   }
   async function _getForumId(gameId) {
     try {
-      var _data$responseText3;
+      var _data$responseText2;
       debug('开始获取Steam论坛ID', {
         gameId: gameId
       });
@@ -7612,7 +7745,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedForumId = (_data$responseText3 = data.responseText) === null || _data$responseText3 === void 0 || (_data$responseText3 = _data$responseText3.match(/General_([\d]+(_[\d]+)?)/)) === null || _data$responseText3 === void 0 ? void 0 : _data$responseText3[1];
+      const matchedForumId = (_data$responseText2 = data.responseText) === null || _data$responseText2 === void 0 || (_data$responseText2 = _data$responseText2.match(/General_([\d]+(_[\d]+)?)/)) === null || _data$responseText2 === void 0 ? void 0 : _data$responseText2[1];
       debug('正则提取论坛ID结果', {
         matchedForumId: matchedForumId
       });
@@ -7641,7 +7774,7 @@ function _toPrimitive(t, r) {
   }
   async function _getWorkshopAppId(id) {
     try {
-      var _data$responseText$ma24;
+      var _data$responseText$ma20;
       debug('开始获取Steam创意工坊AppId', {
         id: id
       });
@@ -7683,7 +7816,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const matchedAppId = (_data$responseText$ma24 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma24 === void 0 ? void 0 : _data$responseText$ma24[1];
+      const matchedAppId = (_data$responseText$ma20 = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)) === null || _data$responseText$ma20 === void 0 ? void 0 : _data$responseText$ma20[1];
       debug('正则提取AppId结果', {
         matchedAppId: matchedAppId
       });
@@ -7710,7 +7843,7 @@ function _toPrimitive(t, r) {
   }
   async function _getAnnouncementParams(appId, viewId) {
     try {
-      var _data$response112, _data$response$event;
+      var _data$response113, _data$response$event;
       debug('开始获取Steam公告参数', {
         appId: appId,
         viewId: viewId
@@ -7742,7 +7875,7 @@ function _toPrimitive(t, r) {
         logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return {};
       }
-      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response112 = data.response) === null || _data$response112 === void 0 ? void 0 : _data$response112.success) !== 1) {
+      if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || (data === null || data === void 0 || (_data$response113 = data.response) === null || _data$response113 === void 0 ? void 0 : _data$response113.success) !== 1) {
         debug('获取公告参数响应状态错误', {
           status: data === null || data === void 0 ? void 0 : data.status,
           statusText: data === null || data === void 0 ? void 0 : data.statusText,
@@ -7785,7 +7918,7 @@ function _toPrimitive(t, r) {
   }
   async function _appid2subid(id) {
     try {
-      var _data$responseText$ma25, _data$responseText$ma26;
+      var _data$responseText$ma21, _data$responseText$ma22;
       debug('开始将AppId转换为SubId', {
         id: id
       });
@@ -7842,7 +7975,7 @@ function _toPrimitive(t, r) {
         }
         return await _assertClassBrand(_SteamWeb_brand, this, _appid2subid).call(this, id);
       }
-      let subid = (_data$responseText$ma25 = data.responseText.match(/name="subid" value="([\d]+?)"/)) === null || _data$responseText$ma25 === void 0 ? void 0 : _data$responseText$ma25[1];
+      let subid = (_data$responseText$ma21 = data.responseText.match(/name="subid" value="([\d]+?)"/)) === null || _data$responseText$ma21 === void 0 ? void 0 : _data$responseText$ma21[1];
       debug('正则提取subid结果1', {
         subid: subid
       });
@@ -7850,7 +7983,7 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return subid;
       }
-      subid = (_data$responseText$ma26 = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)) === null || _data$responseText$ma26 === void 0 ? void 0 : _data$responseText$ma26[1];
+      subid = (_data$responseText$ma22 = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)) === null || _data$responseText$ma22 === void 0 ? void 0 : _data$responseText$ma22[1];
       debug('正则提取subid结果2', {
         subid: subid
       });
@@ -7874,7 +8007,7 @@ function _toPrimitive(t, r) {
   }
   async function _getLicenses() {
     try {
-      var _data$response113, _data$response114;
+      var _data$response114, _data$response115;
       debug('开始获取Steam用户许可证信息');
       const logStatus = echoLog({
         text: I18n('gettingLicenses'),
@@ -7908,10 +8041,10 @@ function _toPrimitive(t, r) {
         return false;
       }
       debug('获取到的许可证列表', {
-        licenses: (_data$response113 = data.response) === null || _data$response113 === void 0 ? void 0 : _data$response113.rgOwnedPackages
+        licenses: (_data$response114 = data.response) === null || _data$response114 === void 0 ? void 0 : _data$response114.rgOwnedPackages
       });
       logStatus.remove();
-      return (_data$response114 = data.response) === null || _data$response114 === void 0 ? void 0 : _data$response114.rgOwnedPackages;
+      return (_data$response115 = data.response) === null || _data$response115 === void 0 ? void 0 : _data$response115.rgOwnedPackages;
     } catch (error) {
       debug('获取许可证时发生异常', {
         error: error
@@ -8191,148 +8324,222 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        const result = this.createToggleResult();
         const tasks = [];
+        const pushTask = (type, value, task) => {
+          tasks.push(task.then((success => {
+            this.setToggleResult(result, type, value, success);
+            return success;
+          })));
+        };
+        const markSkipped = (type, links) => {
+          for (const link of links) {
+            this.setToggleResult(result, type, link, true);
+          }
+        };
         if (this.shouldProcessTask('groups', doTask)) {
           debug('开始处理群组任务');
-          const realGroups = this.getRealParams('groups', groupLinks, doTask, (link => {
+          for (const link of groupLinks) {
             var _link$match1;
-            return (_link$match1 = link.match(/groups\/(.+)\/?/)) === null || _link$match1 === void 0 || (_link$match1 = _link$match1[1]) === null || _link$match1 === void 0 || (_link$match1 = _link$match1.split('/')) === null || _link$match1 === void 0 ? void 0 : _link$match1[0];
-          }));
-          debug('处理后的群组列表', {
-            count: realGroups.length,
-            groups: realGroups
-          });
-          for (const group of realGroups) {
-            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _joinGroup).call(this, group) : _assertClassBrand(_Steam_brand, this, _leaveGroup).call(this, group));
+            const group = (_link$match1 = link.match(/groups\/(.+)\/?/)) === null || _link$match1 === void 0 || (_link$match1 = _link$match1[1]) === null || _link$match1 === void 0 || (_link$match1 = _link$match1.split('/')) === null || _link$match1 === void 0 ? void 0 : _link$match1[0];
+            if (!group) {
+              this.setToggleResult(result, 'groupLinks', link, false);
+              continue;
+            }
+            pushTask('groupLinks', link, doTask ? _assertClassBrand(_Steam_brand, this, _joinGroup).call(this, group) : _assertClassBrand(_Steam_brand, this, _leaveGroup).call(this, group));
             await delay(1e3);
           }
+        } else {
+          markSkipped('groupLinks', groupLinks);
         }
         if (this.shouldProcessTask('officialGroups', doTask)) {
-          const realOfficialGroups = this.getRealParams('officialGroups', officialGroupLinks, doTask, (link => {
+          for (const link of officialGroupLinks) {
             var _link$match10;
-            return (_link$match10 = link.match(/games\/(.+)\/?/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1];
-          }));
-          for (const officialGroup of realOfficialGroups) {
-            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _joinOfficialGroup).call(this, officialGroup) : _assertClassBrand(_Steam_brand, this, _leaveOfficialGroup).call(this, officialGroup));
+            const officialGroup = (_link$match10 = link.match(/games\/(.+)\/?/)) === null || _link$match10 === void 0 ? void 0 : _link$match10[1];
+            if (!officialGroup) {
+              this.setToggleResult(result, 'officialGroupLinks', link, false);
+              continue;
+            }
+            pushTask('officialGroupLinks', link, doTask ? _assertClassBrand(_Steam_brand, this, _joinOfficialGroup).call(this, officialGroup) : _assertClassBrand(_Steam_brand, this, _leaveOfficialGroup).call(this, officialGroup));
             await delay(1e3);
           }
+        } else {
+          markSkipped('officialGroupLinks', officialGroupLinks);
         }
         if (this.shouldProcessTask('wishlists', doTask)) {
-          const realWishlists = this.getRealParams('wishlists', wishlistLinks, doTask, (link => {
+          for (const link of wishlistLinks) {
             var _link$match11;
-            return (_link$match11 = link.match(/app\/([\d]+)/)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1];
-          }));
-          for (const game of realWishlists) {
-            tasks.push(doTask ? _assertClassBrand(_Steam_brand, this, _addToWishlist).call(this, game) : _assertClassBrand(_Steam_brand, this, _removeFromWishlist).call(this, game));
+            const game = (_link$match11 = link.match(/app\/([\d]+)/)) === null || _link$match11 === void 0 ? void 0 : _link$match11[1];
+            if (!game) {
+              this.setToggleResult(result, 'wishlistLinks', link, false);
+              continue;
+            }
+            pushTask('wishlistLinks', link, doTask ? _assertClassBrand(_Steam_brand, this, _addToWishlist).call(this, game) : _assertClassBrand(_Steam_brand, this, _removeFromWishlist).call(this, game));
             await delay(1e3);
           }
+        } else {
+          markSkipped('wishlistLinks', wishlistLinks);
         }
         if (this.shouldProcessTask('follows', doTask)) {
-          const realFollows = this.getRealParams('follows', followLinks, doTask, (link => {
+          for (const link of followLinks) {
             var _link$match12;
-            return (_link$match12 = link.match(/app\/([\d]+)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1];
-          }));
-          for (const game of realFollows) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleFollowGame).call(this, game, doTask));
+            const game = (_link$match12 = link.match(/app\/([\d]+)/)) === null || _link$match12 === void 0 ? void 0 : _link$match12[1];
+            if (!game) {
+              this.setToggleResult(result, 'followLinks', link, false);
+              continue;
+            }
+            pushTask('followLinks', link, _assertClassBrand(_Steam_brand, this, _toggleFollowGame).call(this, game, doTask));
             await delay(1e3);
           }
+        } else {
+          markSkipped('followLinks', followLinks);
         }
         if (this.shouldProcessTask('playTime', doTask)) {
-          const realGames = this.getRealParams('playTime', playTimeLinks, doTask, (link => {
+          const playInfos = playTimeLinks.map((link => {
             var _link$match13;
-            return ''.concat(link.split('-')[0], '-').concat(((_link$match13 = link.match(/app\/([\d]+)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1]) || '');
-          }));
-          if (realGames.length > 0) {
-            const maxTime = Math.max(...realGames.map((info => parseInt(info.split('-')[0], 10) || 0)));
-            const games = realGames.filter((info => {
-              const [time, game] = info.split('-');
-              return (parseInt(time, 10) || 0) > 0 && game;
-            })).map((info => info.split('-')[1]));
-            tasks.push(_assertClassBrand(_Steam_brand, this, _playGames).call(this, games.join(','), maxTime, doTask));
+            const time = parseInt(link.split('-')[0], 10) || 0;
+            const game = (_link$match13 = link.match(/app\/([\d]+)/)) === null || _link$match13 === void 0 ? void 0 : _link$match13[1];
+            if (time <= 0 || !game) {
+              this.setToggleResult(result, 'playTimeLinks', link, false);
+            }
+            return {
+              link: link,
+              time: time,
+              game: game
+            };
+          })).filter((info => info.time > 0 && Boolean(info.game)));
+          if (playInfos.length > 0) {
+            const maxTime = Math.max(...playInfos.map((info => info.time)));
+            tasks.push(_assertClassBrand(_Steam_brand, this, _playGames).call(this, playInfos.map((info => info.game)).join(','), maxTime, doTask).then((success => {
+              for (const info of playInfos) {
+                this.setToggleResult(result, 'playTimeLinks', info.link, success);
+              }
+              return success;
+            })));
             await delay(1e3);
           }
+        } else {
+          markSkipped('playTimeLinks', playTimeLinks);
         }
         if (this.shouldProcessTask('forums', doTask)) {
-          const realForums = this.getRealParams('forums', forumLinks, doTask, (link => {
+          for (const link of forumLinks) {
             var _link$match14;
-            return (_link$match14 = link.match(/app\/([\d]+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1];
-          }));
-          for (const forum of realForums) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleForum).call(this, forum, doTask));
+            const forum = (_link$match14 = link.match(/app\/([\d]+)/)) === null || _link$match14 === void 0 ? void 0 : _link$match14[1];
+            if (!forum) {
+              this.setToggleResult(result, 'forumLinks', link, false);
+              continue;
+            }
+            pushTask('forumLinks', link, _assertClassBrand(_Steam_brand, this, _toggleForum).call(this, forum, doTask));
             await delay(1e3);
           }
+        } else {
+          markSkipped('forumLinks', forumLinks);
         }
         if (this.shouldProcessTask('workshops', doTask)) {
-          const realWorkshops = this.getRealParams('workshops', workshopLinks, doTask, (link => {
+          for (const link of workshopLinks) {
             var _link$match15;
-            return (_link$match15 = link.match(/\?id=([\d]+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1];
-          }));
-          for (const workshop of realWorkshops) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleFavoriteWorkshop).call(this, workshop, doTask));
+            const workshop = (_link$match15 = link.match(/\?id=([\d]+)/)) === null || _link$match15 === void 0 ? void 0 : _link$match15[1];
+            if (!workshop) {
+              this.setToggleResult(result, 'workshopLinks', link, false);
+              continue;
+            }
+            pushTask('workshopLinks', link, _assertClassBrand(_Steam_brand, this, _toggleFavoriteWorkshop).call(this, workshop, doTask));
             await delay(1e3);
           }
+        } else {
+          markSkipped('workshopLinks', workshopLinks);
         }
         if (doTask && globalOptions.doTask.steam.workshopVotes) {
-          const realworkshopVotes = this.getRealParams('workshopVotes', workshopVoteLinks, doTask, (link => {
+          for (const link of workshopVoteLinks) {
             var _link$match16;
-            return (_link$match16 = link.match(/\?id=([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1];
-          }));
-          for (const workshop of realworkshopVotes) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _voteUpWorkshop).call(this, workshop));
+            const workshop = (_link$match16 = link.match(/\?id=([\d]+)/)) === null || _link$match16 === void 0 ? void 0 : _link$match16[1];
+            if (!workshop) {
+              this.setToggleResult(result, 'workshopVoteLinks', link, false);
+              continue;
+            }
+            pushTask('workshopVoteLinks', link, _assertClassBrand(_Steam_brand, this, _voteUpWorkshop).call(this, workshop));
             await delay(1e3);
           }
+        } else {
+          markSkipped('workshopVoteLinks', workshopVoteLinks);
         }
         if (this.shouldProcessTask('curators', doTask)) {
-          const realCurators = this.getRealParams('curators', curatorLinks, doTask, (link => {
+          for (const link of curatorLinks) {
             var _link$match17;
-            return (_link$match17 = link.match(/curator\/([\d]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1];
-          }));
-          const realCuratorLikes = this.getRealParams('curatorLikes', curatorLikeLinks, doTask, (link => {
+            const curator = (_link$match17 = link.match(/curator\/([\d]+)/)) === null || _link$match17 === void 0 ? void 0 : _link$match17[1];
+            if (!curator) {
+              this.setToggleResult(result, 'curatorLinks', link, false);
+              continue;
+            }
+            pushTask('curatorLinks', link, _assertClassBrand(_Steam_brand, this, _toggleCurator).call(this, curator, doTask));
+            await delay(1e3);
+          }
+          for (const link of curatorLikeLinks) {
             var _link$match18;
-            return (_link$match18 = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)) === null || _link$match18 === void 0 ? void 0 : _link$match18.slice(1, 3).join('/');
-          }));
-          for (const curator of realCurators) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleCurator).call(this, curator, doTask));
+            const curatorLike = (_link$match18 = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)) === null || _link$match18 === void 0 ? void 0 : _link$match18.slice(1, 3).join('/');
+            if (!curatorLike) {
+              this.setToggleResult(result, 'curatorLikeLinks', link, false);
+              continue;
+            }
+            pushTask('curatorLikeLinks', link, _assertClassBrand(_Steam_brand, this, _toggleCuratorLike).call(this, curatorLike, doTask));
             await delay(1e3);
           }
-          for (const curatorLike of realCuratorLikes) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _toggleCuratorLike).call(this, curatorLike, doTask));
-            await delay(1e3);
-          }
+        } else {
+          markSkipped('curatorLinks', curatorLinks);
+          markSkipped('curatorLikeLinks', curatorLikeLinks);
         }
         if (doTask && globalOptions.doTask.steam.announcements) {
-          const realAnnouncements = this.getRealParams('announcements', announcementLinks, doTask, (link => {
-            var _link$match20;
-            if (link.includes('store.steampowered.com')) {
-              var _link$match19;
-              return (_link$match19 = link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)) === null || _link$match19 === void 0 ? void 0 : _link$match19.slice(1, 3).join('/');
+          for (const link of announcementLinks) {
+            var _link$match19, _link$match20;
+            const id = link.includes('store.steampowered.com') ? (_link$match19 = link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)) === null || _link$match19 === void 0 ? void 0 : _link$match19.slice(1, 3).join('/') : (_link$match20 = link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)) === null || _link$match20 === void 0 ? void 0 : _link$match20.slice(1, 3).join('/');
+            if (!id) {
+              this.setToggleResult(result, 'announcementLinks', link, false);
+              continue;
             }
-            return (_link$match20 = link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)) === null || _link$match20 === void 0 ? void 0 : _link$match20.slice(1, 3).join('/');
-          }));
-          for (const id of realAnnouncements) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _likeAnnouncement).call(this, id));
+            pushTask('announcementLinks', link, _assertClassBrand(_Steam_brand, this, _likeAnnouncement).call(this, id));
             await delay(1e3);
           }
+        } else {
+          markSkipped('announcementLinks', announcementLinks);
         }
         if (doTask && globalOptions.doTask.steam.licenses && licenseLinks.length > 0) {
-          for (const ids of licenseLinks) {
-            const [type, idsStr] = ids.split('-');
-            const idsArr = idsStr.split(',');
-            for (const id of idsArr) {
-              tasks.push(_assertClassBrand(_Steam_brand, this, _addLicense).call(this, ''.concat(type, '-').concat(id)));
-              await delay(1e3);
+          for (const link of licenseLinks) {
+            const [type, idsStr] = link.split('-');
+            if (!type || !idsStr) {
+              this.setToggleResult(result, 'licenseLinks', link, false);
+              continue;
             }
+            const idsArr = idsStr.split(',');
+            if (idsArr.length === 0 || idsArr.some((id => !id))) {
+              this.setToggleResult(result, 'licenseLinks', link, false);
+              continue;
+            }
+            tasks.push(Promise.all(idsArr.map((async id => {
+              const success = await _assertClassBrand(_Steam_brand, this, _addLicense).call(this, ''.concat(type, '-').concat(id));
+              await delay(1e3);
+              return success;
+            }))).then((licenseResults => {
+              const success = licenseResults.every(Boolean);
+              this.setToggleResult(result, 'licenseLinks', link, success);
+              return success;
+            })));
           }
+        } else {
+          markSkipped('licenseLinks', licenseLinks);
         }
         if (doTask && globalOptions.doTask.steam.playtests) {
-          const realPlaytests = this.getRealParams('playtests', playtestLinks, doTask, (link => {
+          for (const link of playtestLinks) {
             var _link$match21;
-            return (_link$match21 = link.match(/app\/([\d]+)/)) === null || _link$match21 === void 0 ? void 0 : _link$match21[1];
-          }));
-          for (const id of realPlaytests) {
-            tasks.push(_assertClassBrand(_Steam_brand, this, _requestPlayTestAccess).call(this, id));
+            const id = (_link$match21 = link.match(/app\/([\d]+)/)) === null || _link$match21 === void 0 ? void 0 : _link$match21[1];
+            if (!id) {
+              this.setToggleResult(result, 'playtestLinks', link, false);
+              continue;
+            }
+            pushTask('playtestLinks', link, _assertClassBrand(_Steam_brand, this, _requestPlayTestAccess).call(this, id));
             await delay(1e3);
           }
+        } else {
+          markSkipped('playtestLinks', playtestLinks);
         }
         debug('开始执行所有任务');
         const results = await Promise.all(tasks);
@@ -8340,7 +8547,7 @@ function _toPrimitive(t, r) {
         debug('所有任务执行完成', {
           success: results.every((result => result))
         });
-        return results.every((result => result));
+        return result;
       } catch (error) {
         debug('处理Steam任务时发生错误', {
           error: error
@@ -8915,8 +9122,8 @@ function _toPrimitive(t, r) {
       });
       if (result === 'Success') {
         if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
-          var _data$responseText$ma27;
-          const demoAppid = (_data$responseText$ma27 = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)) === null || _data$responseText$ma27 === void 0 ? void 0 : _data$responseText$ma27[2];
+          var _data$responseText$ma23;
+          const demoAppid = (_data$responseText$ma23 = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)) === null || _data$responseText$ma23 === void 0 ? void 0 : _data$responseText$ma23[2];
           debug('成功获取游戏试玩ID', {
             id: id,
             demoAppid: demoAppid
@@ -9046,12 +9253,187 @@ function _toPrimitive(t, r) {
     }
     return preferASF ? [ new SteamASF(globalOptions.ASF), new SteamWeb ] : [ new SteamWeb, new SteamASF(globalOptions.ASF) ];
   }
+  const LEGACY_TYPE_MAP = {
+    groupLinks: 'group',
+    officialGroupLinks: 'officialGroup',
+    wishlistLinks: 'wishlist',
+    followLinks: 'follow',
+    forumLinks: 'forum',
+    workshopLinks: 'workshop',
+    workshopVoteLinks: 'workshopVote',
+    curatorLinks: 'curator',
+    curatorLikeLinks: 'curatorLike',
+    announcementLinks: 'announcement',
+    licenseLinks: 'license',
+    playTimeLinks: 'playtime',
+    playtestLinks: 'playtest',
+    serverLinks: 'server',
+    redditLinks: 'post',
+    channelLinks: 'channel',
+    userLinks: 'user',
+    retweetLinks: 'retweet',
+    likeLinks: 'like',
+    nameLinks: 'user',
+    website: 'website',
+    visitLink: 'visit',
+    videoTasks: 'video',
+    gleam: 'gleam',
+    giveawayHopper: 'giveawayHopper'
+  };
+  const SOCIAL_PAYLOAD_TYPE_MAP = {
+    'steam.group': 'groupLinks',
+    'steam.officialGroup': 'officialGroupLinks',
+    'steam.wishlist': 'wishlistLinks',
+    'steam.follow': 'followLinks',
+    'steam.forum': 'forumLinks',
+    'steam.workshop': 'workshopLinks',
+    'steam.workshopVote': 'workshopVoteLinks',
+    'steam.curator': 'curatorLinks',
+    'steam.curatorLike': 'curatorLikeLinks',
+    'steam.announcement': 'announcementLinks',
+    'steam.license': 'licenseLinks',
+    'steam.playtime': 'playTimeLinks',
+    'steam.playtest': 'playtestLinks',
+    'discord.server': 'serverLinks',
+    'reddit.post': 'redditLinks',
+    'twitch.channel': 'channelLinks',
+    'twitter.user': 'userLinks',
+    'twitter.retweet': 'retweetLinks',
+    'twitter.like': 'likeLinks',
+    'vk.user': 'nameLinks',
+    'vk.like': 'nameLinks',
+    'youtube.channel': 'channelLinks',
+    'youtube.like': 'videoLinks'
+  };
+  const isWebsiteTask = value => {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const task = value;
+    return typeof task.done === 'boolean' && typeof task.social === 'string' && typeof task.type === 'string' && typeof task.link === 'string' && (!('minutes' in task) || typeof task.minutes === 'number') && (!('id' in task) || typeof task.id === 'string' || typeof task.id === 'number') && (!('title' in task) || typeof task.title === 'string') && (!('data' in task) || typeof task.data === 'string');
+  };
+  const normalizePlaytimeTask = (social, type, value, done) => {
+    if (social !== 'steam' || type !== 'playtime') {
+      return {
+        done: done,
+        social: social,
+        type: type,
+        link: value
+      };
+    }
+    const match = value.match(/^(\d+(?:\.\d+)?)-(https?:\/\/.+)$/);
+    if (!match) {
+      return {
+        done: done,
+        social: social,
+        type: type,
+        link: value
+      };
+    }
+    return {
+      done: done,
+      social: social,
+      type: type,
+      link: match[2],
+      minutes: Number(match[1])
+    };
+  };
+  const normalizeLegacyTasks = function(tasks) {
+    let done = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    const result = [];
+    for (const [social, legacyTypes] of Object.entries(tasks)) {
+      if (Array.isArray(legacyTypes)) {
+        for (const link of legacyTypes) {
+          result.push({
+            done: done,
+            social: social === 'links' ? 'links' : 'extra',
+            type: social === 'links' ? 'visit' : social,
+            link: link
+          });
+        }
+        continue;
+      }
+      for (const [legacyType, links] of Object.entries(legacyTypes)) {
+        const type = LEGACY_TYPE_MAP[legacyType] || legacyType.replace(/Links$/, '');
+        for (const link of links) {
+          result.push(normalizePlaytimeTask(social, type, link, done));
+        }
+      }
+    }
+    return result;
+  };
+  const normalizeStoredTasks = value => {
+    if (!(value !== null && value !== void 0 && value.tasks)) {
+      return [];
+    }
+    if (Array.isArray(value.tasks)) {
+      return value.tasks.filter(isWebsiteTask);
+    }
+    return normalizeLegacyTasks(value.tasks, true);
+  };
+  const getTaskKey = task => {
+    var _task$minutes, _task$id, _task$data;
+    return JSON.stringify([ task.done, task.social, task.type, task.link, (_task$minutes = task.minutes) !== null && _task$minutes !== void 0 ? _task$minutes : null, (_task$id = task.id) !== null && _task$id !== void 0 ? _task$id : null, (_task$data = task.data) !== null && _task$data !== void 0 ? _task$data : null ]);
+  };
+  const uniqueWebsiteTasks = tasks => {
+    const seen = new Set;
+    return tasks.filter((task => {
+      const key = getTaskKey(task);
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    }));
+  };
+  const selectTasksForAction = (tasks, action) => tasks.filter((task => action === 'do' ? !task.done : task.done));
+  const toSocialPayload = (tasks, onUnknownTask) => {
+    const payload = {};
+    for (const task of tasks) {
+      var _task$social;
+      if (task.social === 'extra') {
+        var _payload$extra, _task$type;
+        payload.extra || (payload.extra = {});
+        (_payload$extra = payload.extra)[_task$type = task.type] || (_payload$extra[_task$type] = []);
+        payload.extra[task.type].push(task);
+        continue;
+      }
+      if (task.social === 'links') {
+        payload.links || (payload.links = []);
+        payload.links.push(task.link);
+        continue;
+      }
+      const payloadType = SOCIAL_PAYLOAD_TYPE_MAP[''.concat(task.social, '.').concat(task.type)];
+      if (!payloadType) {
+        onUnknownTask(task);
+        continue;
+      }
+      const socialPayloads = payload;
+      socialPayloads[_task$social = task.social] || (socialPayloads[_task$social] = {});
+      const socialPayload = socialPayloads[task.social];
+      socialPayload[payloadType] || (socialPayload[payloadType] = []);
+      const link = task.type === 'playtime' && task.minutes !== undefined ? ''.concat(task.minutes, '-').concat(task.link) : task.link;
+      socialPayload[payloadType].push(link);
+    }
+    return payload;
+  };
+  const getSocialPayloadEntry = task => {
+    const payloadType = SOCIAL_PAYLOAD_TYPE_MAP[''.concat(task.social, '.').concat(task.type)];
+    if (!payloadType) {
+      return null;
+    }
+    const value = task.type === 'playtime' && task.minutes !== undefined ? ''.concat(task.minutes, '-').concat(task.link) : task.link;
+    return {
+      type: payloadType,
+      value: value
+    };
+  };
+  var _ExtAPI = new WeakMap;
   var _Website_brand = new WeakSet;
   class Website {
     constructor() {
       _classPrivateMethodInitSpec(this, _Website_brand);
-      _defineProperty(this, 'undoneTasks', void 0);
-      _defineProperty(this, 'socialTasks', void 0);
+      _defineProperty(this, 'tasks', []);
       _defineProperty(this, 'giveawayId', void 0);
       _defineProperty(this, 'socialInitialized', {
         discord: false,
@@ -9070,16 +9452,18 @@ function _toPrimitive(t, r) {
         steamCommunity: false
       });
       _defineProperty(this, 'social', {});
+      _classPrivateFieldInitSpec(this, _ExtAPI, void 0);
     }
-    async initSocial(action) {
+    async initSocial(payload) {
       try {
-        debug('开始初始化社交媒体', {
-          action: action
-        });
+        debug('开始初始化社交媒体');
         const pro = [];
-        const tasks = action === 'do' ? this.undoneTasks : this.socialTasks;
-        if (tasks.reddit) {
-          const hasReddit = Object.values(tasks.reddit).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        this.steamTaskType = {
+          steamStore: false,
+          steamCommunity: false
+        };
+        if (payload.reddit) {
+          const hasReddit = Object.values(payload.reddit).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 Reddit 任务', {
             hasReddit: hasReddit
           });
@@ -9089,8 +9473,8 @@ function _toPrimitive(t, r) {
             pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'reddit', this.social.reddit.init()));
           }
         }
-        if (tasks.twitch) {
-          const hasTwitch = Object.values(tasks.twitch).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        if (payload.twitch) {
+          const hasTwitch = Object.values(payload.twitch).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 Twitch 任务', {
             hasTwitch: hasTwitch
           });
@@ -9100,8 +9484,8 @@ function _toPrimitive(t, r) {
             pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitch', this.social.twitch.init()));
           }
         }
-        if (tasks.twitter) {
-          const hasTwitter = Object.values(tasks.twitter).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        if (payload.twitter) {
+          const hasTwitter = Object.values(payload.twitter).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 Twitter 任务', {
             hasTwitter: hasTwitter
           });
@@ -9111,8 +9495,8 @@ function _toPrimitive(t, r) {
             pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'twitter', this.social.twitter.init()));
           }
         }
-        if (tasks.vk) {
-          const hasVk = Object.values(tasks.vk).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        if (payload.vk) {
+          const hasVk = Object.values(payload.vk).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 VK 任务', {
             hasVk: hasVk
           });
@@ -9122,8 +9506,8 @@ function _toPrimitive(t, r) {
             pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'vk', this.social.vk.init()));
           }
         }
-        if (tasks.youtube) {
-          const hasYoutube = Object.values(tasks.youtube).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        if (payload.youtube) {
+          const hasYoutube = Object.values(payload.youtube).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           debug('检查 YouTube 任务', {
             hasYoutube: hasYoutube
           });
@@ -9133,8 +9517,8 @@ function _toPrimitive(t, r) {
             pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'youtube', this.social.youtube.init()));
           }
         }
-        if (tasks.steam) {
-          const steamLength = Object.values(tasks.steam).reduce(((total, arr) => [ ...total, ...arr ])).length;
+        if (payload.steam) {
+          const steamLength = Object.values(payload.steam).reduce(((total, arr) => [ ...total, ...arr ])).length;
           debug('检查 Steam 任务', {
             steamLength: steamLength
           });
@@ -9143,9 +9527,9 @@ function _toPrimitive(t, r) {
               debug('创建 Steam 实例');
               this.social.steam = new Steam;
             }
-            const steamCommunityLength = Object.keys(tasks.steam).map((type => {
-              var _tasks$steam;
-              return [ 'groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks' ].includes(type) ? ((_tasks$steam = tasks.steam) === null || _tasks$steam === void 0 || (_tasks$steam = _tasks$steam[type]) === null || _tasks$steam === void 0 ? void 0 : _tasks$steam.length) || 0 : 0;
+            const steamCommunityLength = Object.keys(payload.steam).map((type => {
+              var _payload$steam;
+              return [ 'groupLinks', 'officialGroupLinks', 'forumLinks', 'workshopLinks', 'workshopVoteLinks' ].includes(type) ? ((_payload$steam = payload.steam) === null || _payload$steam === void 0 || (_payload$steam = _payload$steam[type]) === null || _payload$steam === void 0 ? void 0 : _payload$steam.length) || 0 : 0;
             })).reduce(((total, number) => total + number), 0);
             debug('Steam 社区任务数量', {
               steamCommunityLength: steamCommunityLength
@@ -9158,17 +9542,17 @@ function _toPrimitive(t, r) {
               }
             }
             if (steamCommunityLength > 0) {
+              this.steamTaskType.steamCommunity = true;
               if (!this.socialInitialized.steamCommunity) {
-                this.steamTaskType.steamCommunity = true;
                 debug('初始化 Steam 社区');
                 pro.push(_assertClassBrand(_Website_brand, this, _bind).call(this, 'steamCommunity', this.social.steam.init('community')));
               }
             }
           }
         }
-        if (tasks.links && tasks.links.length > 0) {
+        if (payload.links && payload.links.length > 0) {
           debug('初始化链接访问', {
-            linksCount: tasks.links.length
+            linksCount: payload.links.length
           });
           this.social.visitLink = visitLink;
         }
@@ -9204,20 +9588,7 @@ function _toPrimitive(t, r) {
     uniqueTasks(allTasks) {
       try {
         debug('开始去重任务');
-        const result = {};
-        for (const [social, types] of Object.entries(allTasks)) {
-          debug('处理社交媒体任务', {
-            social: social
-          });
-          result[social] = {};
-          for (const [type, tasks] of Object.entries(types)) {
-            debug('处理任务类型', {
-              social: social,
-              type: type
-            });
-            result[social][type] = unique(tasks);
-          }
-        }
+        const result = uniqueWebsiteTasks(allTasks);
         debug('任务去重完成');
         return result;
       } catch (error) {
@@ -9233,7 +9604,7 @@ function _toPrimitive(t, r) {
         debug('开始切换任务状态', {
           action: action
         });
-        if (!this.initialized && !this.init()) {
+        if (!this.initialized && !await this.init()) {
           debug('初始化失败');
           return false;
         }
@@ -9241,64 +9612,157 @@ function _toPrimitive(t, r) {
           debug('任务分类失败');
           return false;
         }
+        const selectedTasks = selectTasksForAction(this.tasks, action);
+        const payload = toSocialPayload(selectedTasks, (task => {
+          debug('发现未知任务，无法转换社交 payload', {
+            social: task.social,
+            type: task.type,
+            link: task.link
+          });
+        }));
         debug('初始化社交媒体');
-        await this.initSocial(action);
+        if (!await this.initSocial(payload)) {
+          debug('社交媒体初始化失败');
+          return false;
+        }
         const pro = [];
         const doTask = action === 'do';
-        const tasks = doTask ? this.undoneTasks : this.socialTasks;
+        const targetDone = doTask;
+        const applySocialResult = (social, result) => {
+          const socialTasks = selectedTasks.filter((task => task.social === social));
+          if (typeof result === 'boolean') {
+            if (result) {
+              for (const task of socialTasks) {
+                task.done = targetDone;
+              }
+            }
+            return;
+          }
+          for (const task of socialTasks) {
+            var _result$results$entry;
+            const entry = getSocialPayloadEntry(task);
+            if (!entry) {
+              continue;
+            }
+            const taskResult = (_result$results$entry = result.results[entry.type]) === null || _result$results$entry === void 0 ? void 0 : _result$results$entry[entry.value];
+            if (taskResult) {
+              task.done = targetDone;
+            }
+          }
+        };
+        const pushSocialTask = (social, promise) => {
+          pro.push(promise.then((result => ({
+            social: social,
+            result: result
+          }))));
+        };
         if (this.socialInitialized.reddit === true && this.social.reddit) {
           debug('处理 Reddit 任务');
-          pro.push(this.social.reddit.toggle(_objectSpread({
+          pushSocialTask('reddit', this.social.reddit.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.reddit)));
+          }, payload.reddit)));
         }
         if (this.socialInitialized.twitch === true && this.social.twitch) {
           debug('处理 Twitch 任务');
-          pro.push(this.social.twitch.toggle(_objectSpread({
+          pushSocialTask('twitch', this.social.twitch.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.twitch)));
+          }, payload.twitch)));
         }
         if (this.socialInitialized.twitter === true && this.social.twitter) {
           debug('处理 Twitter 任务');
-          pro.push(this.social.twitter.toggle(_objectSpread({
+          pushSocialTask('twitter', this.social.twitter.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.twitter)));
+          }, payload.twitter)));
         }
         if (this.socialInitialized.vk === true && this.social.vk) {
           debug('处理 VK 任务');
-          pro.push(this.social.vk.toggle(_objectSpread({
+          pushSocialTask('vk', this.social.vk.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.vk)));
+          }, payload.vk)));
         }
         if (this.socialInitialized.youtube === true && this.social.youtube) {
           debug('处理 YouTube 任务');
-          pro.push(this.social.youtube.toggle(_objectSpread({
+          pushSocialTask('youtube', this.social.youtube.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.youtube)));
+          }, payload.youtube)));
         }
         if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
           debug('处理 Steam 任务');
-          pro.push(this.social.steam.toggle(_objectSpread({
+          pushSocialTask('steam', this.social.steam.toggle(_objectSpread({
             doTask: doTask
-          }, tasks.steam)));
+          }, payload.steam)));
         }
-        if (this.social.visitLink && tasks.links && doTask) {
+        if (this.social.visitLink && payload.links && doTask) {
           debug('处理链接任务', {
-            linksCount: tasks.links.length
+            linksCount: payload.links.length
           });
-          for (const link of tasks.links) {
-            pro.push(this.social.visitLink(link));
+          for (const link of payload.links) {
+            pro.push(this.social.visitLink(link).then((result => ({
+              social: 'links',
+              result: {
+                success: result !== false,
+                results: {
+                  visit: {
+                    [link]: result !== false
+                  }
+                }
+              }
+            }))));
           }
         }
-        if (doTask && tasks.extra && this.extraDoTask) {
-          const hasExtra = Object.values(tasks.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
+        if (doTask && payload.extra && this.extraDoTask) {
+          const hasExtra = Object.values(payload.extra).reduce(((total, arr) => [ ...total, ...arr ])).length > 0;
           if (hasExtra) {
             debug('处理额外任务');
-            pro.push(this.extraDoTask(tasks.extra));
+            pro.push(this.extraDoTask(payload.extra).then((result => ({
+              social: 'extra',
+              result: result
+            }))));
           }
         }
         debug('等待所有任务完成');
-        await Promise.all(pro);
+        const results = await Promise.all(pro);
+        for (const {social: social, result: result} of results) {
+          if (social === 'links') {
+            if (typeof result !== 'boolean') {
+              for (const task of selectedTasks.filter((selectedTask => selectedTask.social === 'links'))) {
+                var _result$results$visit;
+                if ((_result$results$visit = result.results.visit) !== null && _result$results$visit !== void 0 && _result$results$visit[task.link]) {
+                  task.done = targetDone;
+                }
+              }
+            }
+            continue;
+          }
+          if (social === 'extra') {
+            if (typeof result === 'boolean') {
+              if (result) {
+                for (const task of selectedTasks.filter((selectedTask => selectedTask.social === 'extra'))) {
+                  task.done = targetDone;
+                }
+              }
+            } else {
+              for (const task of selectedTasks.filter((selectedTask => selectedTask.social === 'extra'))) {
+                var _result$results$task$;
+                if ((_result$results$task$ = result.results[task.type]) !== null && _result$results$task$ !== void 0 && _result$results$task$[task.link]) {
+                  task.done = targetDone;
+                }
+              }
+            }
+            continue;
+          }
+          applySocialResult(social, result);
+        }
+        if (_classPrivateFieldGet(_ExtAPI, this)) {}
+        if (!results.every((_ref0 => {
+          let {result: result} = _ref0;
+          return typeof result === 'boolean' ? result : result.success;
+        }))) {
+          debug('任务执行失败', {
+            results: results
+          });
+          return false;
+        }
         debug('所有任务完成');
         echoLog({}).success(I18n('allTasksComplete'));
         return true;
@@ -9369,39 +9833,1080 @@ function _toPrimitive(t, r) {
       };
     }
   }
-  const defaultTasksTemplate$7 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      curatorLinks: [],
-      followLinks: [],
-      playTimeLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    vk: {
-      nameLinks: []
-    },
-    youtube: {
-      channelLinks: []
-    },
-    extra: {
-      website: []
+  function createGamesForFarmApi(storage, taskStore) {
+    const queues = new Map;
+    const entity = key => ({
+      get: () => storage.get(key, {}),
+      async replace(value) {
+        await storage.set(key, assertRecord(value, key));
+      },
+      async update(partial) {
+        var _queues$get;
+        assertRecord(partial, key);
+        const previous = (_queues$get = queues.get(key)) !== null && _queues$get !== void 0 ? _queues$get : Promise.resolve();
+        const operation = previous.then((async () => {
+          const current = await storage.get(key, {});
+          await storage.set(key, _objectSpread(_objectSpread({}, current), partial));
+        }));
+        queues.set(key, operation.catch((() => void 0)));
+        await operation;
+      }
+    });
+    const tasks = {
+      get: () => storage.get('tasks', []),
+      async add(type, data) {
+        await taskStore.update(validateType(type), validateData(data), 'add');
+      },
+      async remove(type, data) {
+        await taskStore.update(validateType(type), validateData(data), 'remove');
+      },
+      async update(type, data, action) {
+        if (action !== 'add' && action !== 'remove') {
+          throw new TypeError('Invalid task action');
+        }
+        await taskStore.update(validateType(type), validateData(data), action);
+      }
+    };
+    return {
+      tasks: tasks,
+      user: entity('user'),
+      games: entity('games'),
+      settings: entity('settings'),
+      discord: {
+        get: () => storage.get('discord', []),
+        async update(entries) {
+          if (!Array.isArray(entries)) {
+            throw new TypeError('Discord entries must be an array');
+          }
+          await storage.set('discord', entries);
+        },
+        clear: () => storage.remove('discord')
+      },
+      storage: {
+        get: storage.get,
+        set: storage.set,
+        remove: storage.remove,
+        getAll: storage.getAll,
+        clear: storage.clear
+      }
+    };
+  }
+  function assertRecord(value, label) {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+      throw new TypeError(''.concat(label, ' value must be an object'));
+    }
+    return value;
+  }
+  function validateType(type) {
+    if (!(type !== null && type !== void 0 && type.trim())) {
+      throw new TypeError('Task type is required');
+    }
+    return type;
+  }
+  function validateData(data) {
+    if (data === '' || data === null || data === void 0) {
+      throw new TypeError('Task data is required');
+    }
+    return data;
+  }
+  function selectRoute(hostname, pathname) {
+    if (typeof hostname !== 'string') {
+      return null;
+    }
+    switch (hostname.toLowerCase()) {
+     case 'freeanywhere.net':
+     case 'give.gamesforfarm.local':
+     case 'gamesforfarm-testing.ru':
+      return 'freeanywhere';
+
+     case 'store.steampowered.com':
+     case 'steamcommunity.com':
+      return 'steam';
+
+     case 'www.youtube.com':
+     case 'm.youtube.com':
+      return 'youtube';
+
+     case 'mee6.xyz':
+      return 'mee6';
+
+     case 'gamesforfarm.com':
+      return pathname === '/' ? 'gamesforfarm-store' : null;
+
+     case 'firstgamemarket.com':
+      return pathname === '/' ? 'firstgamemarket' : null;
+
+     default:
+      return null;
+    }
+  }
+  function createRequest(gm, baseUrl) {
+    function request(options) {
+      return new Promise(((resolve, reject) => {
+        var _options$method, _options$timeout;
+        for (const callbackName of [ 'onload', 'onerror', 'ontimeout', 'onabort' ]) {
+          if (callbackName in options) {
+            reject(new TypeError(''.concat(callbackName, ' is not supported; request() is Promise-only')));
+            return;
+          }
+        }
+        const method = ((_options$method = options.method) !== null && _options$method !== void 0 ? _options$method : 'GET').toUpperCase();
+        const resolvedUrl = new URL(options.url, baseUrl);
+        const transportOptions = _objectSpread(_objectSpread({}, options), {}, {
+          method: method,
+          timeout: (_options$timeout = options.timeout) !== null && _options$timeout !== void 0 ? _options$timeout : 2e4
+        });
+        if (method === 'GET' && isPlainObject(options.data)) {
+          for (const [key, value] of new URLSearchParams(options.data)) {
+            resolvedUrl.searchParams.append(key, value);
+          }
+          delete transportOptions.data;
+        }
+        const url = resolvedUrl.toString();
+        gm.GM_xmlhttpRequest(_objectSpread(_objectSpread({}, transportOptions), {}, {
+          url: url,
+          onload(response) {
+            if (response.status < 200 || response.status >= 300) {
+              var _response$responseTex;
+              const status = [ response.status, response.statusText ].filter((part => part !== void 0 && part !== '')).join(' ');
+              const responseText = String((_response$responseTex = response.responseText) !== null && _response$responseTex !== void 0 ? _response$responseTex : '');
+              const excerpt = responseText.replace(/\s+/g, ' ').trim().slice(0, 160);
+              const detail = excerpt ? ': '.concat(excerpt) : '';
+              reject(new Error(''.concat(method, ' ').concat(url, ' failed with ').concat(status).concat(detail)));
+              return;
+            }
+            resolve(response.responseText);
+          },
+          onerror() {
+            reject(new Error(''.concat(method, ' ').concat(url, ' request error')));
+          },
+          ontimeout() {
+            reject(new Error(''.concat(method, ' ').concat(url, ' request timeout')));
+          },
+          onabort() {
+            reject(new Error(''.concat(method, ' ').concat(url, ' request aborted')));
+          }
+        }));
+      }));
+    }
+    function get(url) {
+      return request({
+        method: 'GET',
+        url: url
+      });
+    }
+    function postForm(url, data) {
+      return request({
+        method: 'POST',
+        url: url,
+        data: new URLSearchParams(data).toString(),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+      });
+    }
+    return {
+      request: request,
+      get: get,
+      postForm: postForm
+    };
+  }
+  function isPlainObject(value) {
+    if (value === null || typeof value !== 'object') {
+      return false;
+    }
+    const prototype = Object.getPrototypeOf(value);
+    return prototype === Object.prototype || prototype === null;
+  }
+  var ROOT_KEY = 'GamesForFarmExt';
+  function cloneValue(value) {
+    return value !== null && typeof value === 'object' ? structuredClone(value) : value;
+  }
+  function isRecord(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+  function createStorage(gm) {
+    const subscribers = new Set;
+    async function readContainer() {
+      const stored = await gm.GM_getValue(ROOT_KEY, void 0);
+      if (isRecord(stored)) {
+        return cloneValue(stored);
+      }
+      return {};
+    }
+    async function writeContainer(container) {
+      await gm.GM_setValue(ROOT_KEY, cloneValue(container));
+    }
+    async function notify(key, oldValue, newValue) {
+      for (const listener of subscribers) {
+        try {
+          await listener({
+            key: key,
+            oldValue: cloneValue(oldValue),
+            newValue: cloneValue(newValue)
+          });
+        } catch (_unused2) {}
+      }
+    }
+    async function get(key, defaultValue) {
+      const container = await readContainer();
+      return cloneValue(Object.prototype.hasOwnProperty.call(container, key) ? container[key] : defaultValue);
+    }
+    async function getAll() {
+      return cloneValue(await readContainer());
+    }
+    async function set(key, value) {
+      const container = await readContainer();
+      const oldValue = container[key];
+      const newValue = cloneValue(value);
+      container[key] = newValue;
+      await writeContainer(container);
+      await notify(key, oldValue, newValue);
+    }
+    async function setMany(values) {
+      for (const [key, value] of Object.entries(values)) {
+        await set(key, value);
+      }
+    }
+    async function remove(key) {
+      const container = await readContainer();
+      const oldValue = container[key];
+      delete container[key];
+      await writeContainer(container);
+      await notify(key, oldValue, void 0);
+    }
+    async function clear() {
+      const container = await readContainer();
+      const keys = Object.keys(container);
+      await writeContainer({});
+      for (const key of keys) {
+        await notify(key, container[key], void 0);
+      }
+    }
+    async function initialize() {
+      const tasks = await get('tasks', void 0);
+      if (!Array.isArray(tasks)) {
+        await set('tasks', []);
+      }
+      for (const key of [ 'user', 'games', 'settings' ]) {
+        if (!isRecord(await get(key, void 0))) {
+          await set(key, {});
+        }
+      }
+      return getAll();
+    }
+    function subscribe(listener) {
+      subscribers.add(listener);
+      return () => subscribers.delete(listener);
+    }
+    return {
+      get: get,
+      getAll: getAll,
+      set: set,
+      setMany: setMany,
+      remove: remove,
+      clear: clear,
+      initialize: initialize,
+      subscribe: subscribe
+    };
+  }
+  var unixTime = () => Math.floor(Date.now() / 1e3);
+  var onWindowLoad = callback => {
+    if (document.readyState === 'complete') {
+      callback();
+    } else {
+      window.addEventListener('load', callback, {
+        once: true
+      });
     }
   };
-  const defaultTasks$9 = JSON.stringify(defaultTasksTemplate$7);
+  var isValidTask = task => Boolean((task === null || task === void 0 ? void 0 : task.type) && (task === null || task === void 0 ? void 0 : task.data));
+  function createTaskStore(storage) {
+    let now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : unixTime;
+    let queue = Promise.resolve();
+    async function mutate(type, data, action) {
+      const storedTasks = await storage.get('tasks', []);
+      const tasks = Array.isArray(storedTasks) ? storedTasks : [];
+      const match = task => String(task.type) === String(type) && String(task.data) === String(data);
+      const found = tasks.some((task => isValidTask(task) && match(task)));
+      if (action === 'add' && found || action === 'remove' && !found) {
+        return;
+      }
+      const nextTasks = tasks.filter((task => isValidTask(task) && !match(task)));
+      if (action === 'add') {
+        nextTasks.push({
+          type: type,
+          data: data,
+          time: now()
+        });
+      }
+      await storage.set('tasks', nextTasks);
+    }
+    function update(type, data, action) {
+      if (!type || !data || ![ 'add', 'remove' ].includes(action)) {
+        return Promise.resolve();
+      }
+      const operation = queue.then((() => mutate(type, data, action)));
+      queue = operation.catch((() => {}));
+      return operation;
+    }
+    return {
+      update: update
+    };
+  }
+  async function initFirstGameMarket(_ref1) {
+    let {$: $, storage: storage} = _ref1;
+    const [settings, games] = await Promise.all([ storage.get('settings', {}), storage.get('games', {}) ]);
+    $('.game-list li').each((function markOwned() {
+      var _$item$find$attr;
+      const $item = $(this);
+      const match = String((_$item$find$attr = $item.find('.visual img').attr('src')) !== null && _$item$find$attr !== void 0 ? _$item$find$attr : '').match(/\/apps\/(\d+)\//);
+      const id = match ? Number.parseInt(match[1], 10) : null;
+      if (id && games[id] && settings.hide_games === true) {
+        $item.css('opacity', '.2');
+      }
+    }));
+  }
+  var initFirstGameMarketListener = initFirstGameMarket;
+  var SYNC_DELAY_MS = 50;
+  var TASK_RESULT_DELAY_MS = 1250;
+  var GAME_REFRESH_SECONDS = 24 * 60 * 60;
+  var TASK_MAX_AGE_SECONDS = 2 * 60 * 60;
+  var activeInstances = new WeakMap;
+  var initializationSequence = 0;
+  function detectPageUser($) {
+    const $site = $('.games_for_farm_site').first();
+    return compactUser({
+      steam: $site.data('steam'),
+      avatar: $site.data('avatar'),
+      name: $site.data('name'),
+      lang: $site.data('lang')
+    });
+  }
+  async function initFreeAnywhere(context) {
+    var _context$setTimeout, _context$clearTimeout, _context$now, _context$document, _activeInstances$get;
+    const {$: $, storage: storage, request: request, alert: alert2, console: console2} = context;
+    const schedule = (_context$setTimeout = context.setTimeout) !== null && _context$setTimeout !== void 0 ? _context$setTimeout : globalThis.setTimeout;
+    const cancel = (_context$clearTimeout = context.clearTimeout) !== null && _context$clearTimeout !== void 0 ? _context$clearTimeout : globalThis.clearTimeout;
+    const now = (_context$now = context.now) !== null && _context$now !== void 0 ? _context$now : () => Math.floor(Date.now() / 1e3);
+    const documentRef = (_context$document = context.document) !== null && _context$document !== void 0 ? _context$document : globalThis.document;
+    const eventNamespace = '.gamesForFarm'.concat(++initializationSequence);
+    (_activeInstances$get = activeInstances.get(documentRef)) === null || _activeInstances$get === void 0 || _activeInstances$get.dispose();
+    const pageUser = detectPageUser($);
+    let syncTimer;
+    let disposed = false;
+    let syncSuspended = true;
+    let startupMutated = false;
+    let trackSuspendedMutations = true;
+    let unsubscribe = () => {};
+    let attemptedInitialGameFetch = false;
+    const resultTimers = new Set;
+    const instance = {
+      dispose: dispose
+    };
+    activeInstances.set(documentRef, instance);
+    const logError = (message, error) => {
+      var _console2$error;
+      const logger = (_console2$error = console2 === null || console2 === void 0 ? void 0 : console2.error) !== null && _console2$error !== void 0 ? _console2$error : console2 === null || console2 === void 0 ? void 0 : console2.log;
+      logger === null || logger === void 0 || logger.call(console2, message, error);
+    };
+    const normalizeStorage = value => {
+      const source = isRecord2(value) ? value : {};
+      return _objectSpread(_objectSpread({}, source), {}, {
+        tasks: Array.isArray(source.tasks) ? source.tasks : [],
+        user: isRecord2(source.user) ? source.user : {},
+        games: isRecord2(source.games) ? source.games : {},
+        settings: isRecord2(source.settings) ? source.settings : {}
+      });
+    };
+    const replaceStorage = async nextStorage => {
+      const snapshot = await storage.getAll();
+      try {
+        await clearStorage(storage);
+        await storage.setMany(normalizeStorage(nextStorage));
+      } catch (error) {
+        try {
+          await clearStorage(storage);
+          await storage.setMany(snapshot);
+        } catch (rollbackError) {
+          logError('GamesForFarm: storage rollback failed', rollbackError);
+        }
+        throw error;
+      }
+    };
+    const parseResponse = (value, label) => {
+      try {
+        return JSON.parse(value);
+      } catch (error) {
+        logError('GamesForFarm: invalid '.concat(label, ' JSON'), error);
+        return null;
+      }
+    };
+    const fetchGames = async steam => {
+      try {
+        const response = await request.postForm('/php/extension/user_games_get.php', {
+          steam: steam
+        });
+        if (!response) {
+          return null;
+        }
+        const games = parseResponse(response, 'games');
+        return isRecord2(games) ? games : null;
+      } catch (error) {
+        logError('GamesForFarm: game refresh failed', error);
+        return null;
+      }
+    };
+    const syncStorage = async () => {
+      if (disposed) {
+        return;
+      }
+      try {
+        await request.postForm('/php/extension/user_data_update.php', {
+          extension: JSON.stringify(await storage.getAll())
+        });
+      } catch (error) {
+        logError('GamesForFarm: storage sync failed', error);
+      }
+    };
+    const scheduleSync = () => {
+      if (syncSuspended || disposed || syncTimer !== void 0) {
+        return;
+      }
+      syncTimer = schedule((async () => {
+        syncTimer = void 0;
+        await syncStorage();
+      }), SYNC_DELAY_MS);
+    };
+    unsubscribe = storage.subscribe((() => {
+      if (disposed) {
+        return;
+      }
+      if (syncSuspended) {
+        if (trackSuspendedMutations) {
+          startupMutated = true;
+        }
+        return;
+      }
+      scheduleSync();
+    }));
+    function cancelPendingSync() {
+      if (syncTimer === void 0) {
+        return;
+      }
+      cancel(syncTimer);
+      syncTimer = void 0;
+    }
+    function dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      unsubscribe();
+      $(documentRef).off(eventNamespace);
+      cancelPendingSync();
+      for (const timerId of resultTimers) {
+        cancel(timerId);
+      }
+      resultTimers.clear();
+      if (activeInstances.get(documentRef) === instance) {
+        activeInstances.delete(documentRef);
+      }
+    }
+    const rawStorage = await storage.getAll();
+    if (disposed) {
+      return instance.dispose;
+    }
+    const initializedStorage = normalizeStorage(await storage.initialize());
+    const needsFreshStorage = !hasInitialStorageShape(rawStorage);
+    if (needsFreshStorage) {
+      const freshStorage = _objectSpread(_objectSpread({}, initializedStorage), {}, {
+        tasks: [],
+        user: compactUser(pageUser),
+        games: {},
+        settings: {}
+      });
+      await storage.setMany({
+        tasks: freshStorage.tasks,
+        user: freshStorage.user,
+        games: freshStorage.games,
+        settings: freshStorage.settings
+      });
+      if (pageUser.steam) {
+        attemptedInitialGameFetch = true;
+        const games = await fetchGames(pageUser.steam);
+        if (games) {
+          freshStorage.games = games;
+          freshStorage.settings.game_update = now();
+          await storage.setMany({
+            games: freshStorage.games,
+            settings: freshStorage.settings
+          });
+        }
+      }
+    }
+    let currentStorage = normalizeStorage(await storage.getAll());
+    let restoreSucceeded = false;
+    const accountChanged = pageUser.steam && currentStorage.user.steam && String(currentStorage.user.steam) !== String(pageUser.steam);
+    if (accountChanged) {
+      const mutatedBeforeRestore = startupMutated;
+      try {
+        const response = await request.postForm('/php/extension/user_data_get.php', {
+          steam: pageUser.steam
+        });
+        if (response) {
+          const restored = parseResponse(response, 'user data');
+          if (isRecord2(restored)) {
+            const normalized = normalizeStorage(restored);
+            normalized.user = _objectSpread(_objectSpread({}, normalized.user), compactUser(pageUser));
+            trackSuspendedMutations = false;
+            try {
+              await replaceStorage(normalized);
+              restoreSucceeded = true;
+              startupMutated = false;
+            } finally {
+              trackSuspendedMutations = true;
+            }
+          }
+        }
+      } catch (error) {
+        startupMutated || (startupMutated = mutatedBeforeRestore);
+        logError('GamesForFarm: account restore failed', error);
+      }
+      currentStorage = normalizeStorage(await storage.getAll());
+    }
+    const canApplyPageUser = !accountChanged || restoreSucceeded;
+    if (canApplyPageUser) {
+      const nextUser = _objectSpread(_objectSpread({}, currentStorage.user), compactUser(pageUser));
+      if (!sameJson(nextUser, currentStorage.user)) {
+        await storage.set('user', nextUser);
+      }
+      currentStorage.user = nextUser;
+    }
+    const lastGameUpdate = Number.parseInt(currentStorage.settings.game_update, 10) || 0;
+    if (currentStorage.user.steam && !attemptedInitialGameFetch && now() - lastGameUpdate > GAME_REFRESH_SECONDS) {
+      const games = await fetchGames(currentStorage.user.steam);
+      if (games) {
+        currentStorage.games = games;
+        currentStorage.settings = _objectSpread(_objectSpread({}, currentStorage.settings), {}, {
+          game_update: now()
+        });
+        await storage.setMany({
+          games: currentStorage.games,
+          settings: currentStorage.settings
+        });
+      }
+    }
+    const taskList = Array.isArray(currentStorage.tasks) ? currentStorage.tasks : [];
+    const activeTasks = taskList.filter((task => {
+      if (!(task !== null && task !== void 0 && task.time)) {
+        return true;
+      }
+      const taskTime = Number.parseInt(task.time, 10);
+      return !Number.isFinite(taskTime) || now() - taskTime <= TASK_MAX_AGE_SECONDS;
+    }));
+    if (activeTasks.length !== taskList.length) {
+      await storage.set('tasks', activeTasks);
+    }
+    const discord = await storage.get('discord');
+    if ((discord === null || discord === void 0 ? void 0 : discord.length) > 0) {
+      try {
+        const response = await request.postForm('/php/extension/discord_levels_update.php', {
+          discord: JSON.stringify(discord)
+        });
+        if (String(response).includes('success')) {
+          alert2('Данные discord уровней обновлены');
+        } else {
+          alert2('Возникла ошибка при обновлении discord уровней');
+        }
+      } catch (error) {
+        logError('GamesForFarm: Discord upload failed', error);
+        alert2('Возникла ошибка при обновлении discord уровней');
+      } finally {
+        await storage.remove('discord');
+      }
+    }
+    if ($('.games_for_farm_extension.work').length > 0) {
+      $('.games_for_farm_extension.not_work').remove();
+      $('.games_for_farm_extension.work').slideDown(200);
+    }
+    syncSuspended = false;
+    if (startupMutated) {
+      scheduleSync();
+    }
+    const checkTasksButton = () => {
+      let tasksDone = true;
+      $('.game__content-tasks__task').each((function checkTask() {
+        if (!$(this).hasClass('done')) {
+          tasksDone = false;
+        }
+      }));
+      $('.js-get-key').toggleClass('inactive', !tasksDone);
+    };
+    const resetTaskButton = ($parent, $button, result) => {
+      if (disposed) {
+        return;
+      }
+      let timerId;
+      timerId = schedule((() => {
+        resultTimers.delete(timerId);
+        if (disposed) {
+          return;
+        }
+        $parent.toggleClass('done', result === 'good');
+        $parent.toggleClass('error', result === 'bad');
+        $button.removeClass('loading');
+        checkTasksButton();
+      }), TASK_RESULT_DELAY_MS);
+      resultTimers.add(timerId);
+    };
+    $('.task-check-extension').removeClass('js-extentions-modal');
+    $('.game__content-tasks__task[data-extension=\'1\'] .task-link a').removeClass('js-extentions-modal');
+    $(documentRef).off('click'.concat(eventNamespace), '.game__content-tasks__task .task-check-extension').on('click'.concat(eventNamespace), '.game__content-tasks__task .task-check-extension', (async function taskCheck(event) {
+      if (disposed) {
+        return;
+      }
+      event.preventDefault();
+      const $button = $(this);
+      if ($button.hasClass('loading')) {
+        return;
+      }
+      const $parent = $button.closest('.game__content-tasks__task');
+      if ($parent.data('extension') == false) {
+        return;
+      }
+      const id = $parent.data('id');
+      const type = $parent.data('type');
+      const data = $parent.data('data');
+      if (![ id, type, data ].every(hasTaskValue)) {
+        return;
+      }
+      $button.addClass('loading');
+      try {
+        var _console2$log;
+        await request.postForm('/php/extension/user_data_update.php', {
+          extension: JSON.stringify(await storage.getAll())
+        });
+        if (disposed) {
+          return;
+        }
+        const startedAt = Date.now();
+        const response = await request.postForm('/php/extension/user_task_update.php', {
+          id: id,
+          type: type,
+          data: data
+        });
+        console2 === null || console2 === void 0 || (_console2$log = console2.log) === null || _console2$log === void 0 || _console2$log.call(console2, '👌 checking task in '.concat(Date.now() - startedAt, ' ms'));
+        if (disposed) {
+          return;
+        }
+        const text = String(response);
+        const result = text.includes('good') ? 'good' : text.includes('bad') ? 'bad' : 'neutral';
+        resetTaskButton($parent, $button, result);
+      } catch (error) {
+        logError('GamesForFarm: task check failed', error);
+        if (disposed) {
+          return;
+        }
+        resetTaskButton($parent, $button, 'neutral');
+      }
+    }));
+    return instance.dispose;
+  }
+  var initFreeAnywhereListener = initFreeAnywhere;
+  function compactUser(user) {
+    return Object.fromEntries(Object.entries(user).filter((_ref10 => {
+      let [, value] = _ref10;
+      return value !== void 0 && value !== null && value !== '';
+    })));
+  }
+  function hasInitialStorageShape(storage) {
+    return isRecord2(storage) && Object.prototype.hasOwnProperty.call(storage, 'tasks') && isRecord2(storage.user) && isRecord2(storage.games) && isRecord2(storage.settings);
+  }
+  function isRecord2(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+  function sameJson(left, right) {
+    return JSON.stringify(left) === JSON.stringify(right);
+  }
+  function hasTaskValue(value) {
+    return value !== void 0 && value !== null && value !== '';
+  }
+  async function clearStorage(storage) {
+    const current = await storage.getAll();
+    for (const key of Object.keys(current)) {
+      await storage.remove(key);
+    }
+  }
+  async function updateStoreGameCount(api, count) {
+    const settings = await api.settings.get();
+    if (Number(settings.store_games) !== count) {
+      await api.settings.update({
+        store_games: count
+      });
+    }
+  }
+  async function initGamesForFarmStore(_ref11) {
+    let {$: $, storage: storage, api: api} = _ref11;
+    const [settings, games] = await Promise.all([ storage.get('settings', {}), storage.get('games', {}) ]);
+    const owned = new Set;
+    $('.product__item').each((function markOwned() {
+      const $item = $(this);
+      const id = extractAppId($item.find('.product__box-image img').data('src'), $item.find('.product__box-props a').attr('href'));
+      if (id && games[id]) {
+        owned.add(id);
+        if (settings.hide_games === true) {
+          $item.css('opacity', '.2');
+        }
+      }
+    }));
+    if (Number(settings.store_games) !== owned.size) {
+      if (api) {
+        await updateStoreGameCount(api, owned.size);
+      } else {
+        await storage.set('settings', _objectSpread(_objectSpread({}, settings), {}, {
+          store_games: owned.size
+        }));
+      }
+    }
+  }
+  var initGamesForFarmStoreListener = initGamesForFarmStore;
+  function extractAppId(image, link) {
+    var _String$match;
+    const match = (_String$match = String(image !== null && image !== void 0 ? image : '').match(/\/apps\/(\d+)\//)) !== null && _String$match !== void 0 ? _String$match : String(link !== null && link !== void 0 ? link : '').match(/\/app\/(\d+)(?:\/|$)/);
+    return match ? Number.parseInt(match[1], 10) : null;
+  }
+  var activeInstances2 = new WeakMap;
+  function applyDiscordEntries(api, entries) {
+    return api.discord.update(entries);
+  }
+  function detectMee6Leaderboard($) {
+    const users = [];
+    let complete = false;
+    $('.md\\:block').each((function collectUser() {
+      const user = {
+        name: $(this).find('.justify-start p').text(),
+        level: $(this).find('.leaderboardPlayerStat .items-center').text()
+      };
+      users.push(user);
+      if (Number(user.level) === 0) {
+        complete = true;
+        return false;
+      }
+      return void 0;
+    }));
+    return complete ? users : null;
+  }
+  function initMee6(_ref12) {
+    var _activeInstances2$get;
+    let {$: $, storage: storage, api: api, alert: alert2, document: document2 = globalThis.document} = _ref12;
+    (_activeInstances2$get = activeInstances2.get(document2)) === null || _activeInstances2$get === void 0 || _activeInstances2$get();
+    let shown = false;
+    const handler = async event => {
+      if (event.code !== 'End') {
+        return;
+      }
+      const users = detectMee6Leaderboard($);
+      if (!users) {
+        return;
+      }
+      if (api) {
+        await applyDiscordEntries(api, users);
+      } else {
+        await storage.set('discord', users);
+      }
+      if (!shown) {
+        alert2('Можно переходить на freeanywhere.net');
+        shown = true;
+      }
+    };
+    $(document2).on('keydown.gamesForFarmMee6', handler);
+    const dispose = () => {
+      $(document2).off('.gamesForFarmMee6');
+      if (activeInstances2.get(document2) === dispose) {
+        activeInstances2.delete(document2);
+      }
+    };
+    activeInstances2.set(document2, dispose);
+    return dispose;
+  }
+  var initMee6Listener = initMee6;
+  var activeInstances3 = new WeakMap;
+  var instanceSequence = 0;
+  function detectSteamObservations($) {
+    const observations = [];
+    const curator = $('span[id^=\'CuratorUnFollowBtn_\']').first();
+    if (curator.length) {
+      var _curator$attr;
+      const id = String((_curator$attr = curator.attr('id')) !== null && _curator$attr !== void 0 ? _curator$attr : '').split('_')[1];
+      const action = $('#CuratorFollowBtn_'.concat(id)).css('display') === 'none' ? 'add' : $('#CuratorUnFollowBtn_'.concat(id)).css('display') === 'none' ? 'remove' : null;
+      if (id && action) {
+        observations.push({
+          type: 'steam_curator_sub',
+          data: id,
+          action: action
+        });
+      }
+    }
+    if ($('.followStatsBlock').length) {
+      var _$$attr;
+      const id = String((_$$attr = $('#HeaderUserInfoName a').attr('href')) !== null && _$$attr !== void 0 ? _$$attr : '').split('/').filter(Boolean).pop();
+      const action = $('#FollowUserOptionAdd').css('visibility') === 'hidden' ? 'add' : $('#FollowUserOptionFollowing, .followOption.remove').css('visibility') === 'hidden' ? 'remove' : null;
+      if (id && action) {
+        observations.push({
+          type: 'steam_guides_sub',
+          data: id,
+          action: action
+        });
+      }
+    }
+    if ($('#ScrollingItemControls').length) {
+      const id = $('#PublishedFileFavorite input[name=\'id\']').val();
+      const action = $('#FavoriteItemOptionAdd').css('visibility') === 'hidden' ? 'add' : $('#FavoriteItemOptionFavorited, .favoriteOption.removefavorite').css('visibility') === 'hidden' ? 'remove' : null;
+      if (id && action) {
+        observations.push({
+          type: 'steam_manual_favourite',
+          data: id,
+          action: action
+        });
+      }
+    }
+    if ($('#queueBtnFollow').length) {
+      const id = $('.game_page_background').data('miniprofile-appid');
+      const action = $('#queueBtnFollow .queue_btn_inactive').css('display') === 'none' ? 'add' : $('#queueBtnFollow .queue_btn_active').css('display') === 'none' ? 'remove' : null;
+      if (id && action) {
+        observations.push({
+          type: 'steam_game_sub',
+          data: id,
+          action: action
+        });
+      }
+    }
+    return observations;
+  }
+  function applySteamObservation(api, observation) {
+    return api.tasks.update(observation.type, observation.data, observation.action);
+  }
+  function initSteam(_ref13) {
+    var _activeInstances3$get;
+    let {$: $, taskStore: taskStore, api: api, document: document2 = globalThis.document} = _ref13;
+    (_activeInstances3$get = activeInstances3.get(document2)) === null || _activeInstances3$get === void 0 || _activeInstances3$get();
+    const namespace = '.gamesForFarmSteam'.concat(++instanceSequence);
+    let disposed = false;
+    const update = (type, data, action) => {
+      if (!disposed && data !== void 0 && data !== null && data !== '') {
+        void (api ? api.tasks.update(type, data, action) : taskStore.update(type, data, action));
+      }
+    };
+    for (const observation of detectSteamObservations($)) {
+      void (api ? applySteamObservation(api, observation) : taskStore.update(observation.type, observation.data, observation.action));
+    }
+    const curatorElement = $('span[id^=\'CuratorUnFollowBtn_\']').first();
+    if (curatorElement.length) {
+      var _curatorElement$attr;
+      const curatorId = String((_curatorElement$attr = curatorElement.attr('id')) !== null && _curatorElement$attr !== void 0 ? _curatorElement$attr : '').split('_')[1];
+      const follow = '#CuratorFollowBtn_'.concat(curatorId);
+      const unfollow = '#CuratorUnFollowBtn_'.concat(curatorId);
+      bindPair($, document2, namespace, follow, unfollow, 'steam_curator_sub', curatorId, update);
+    }
+    if ($('.followStatsBlock').length) {
+      var _$$attr2;
+      const userId = String((_$$attr2 = $('#HeaderUserInfoName a').attr('href')) !== null && _$$attr2 !== void 0 ? _$$attr2 : '').split('/').filter(Boolean).pop();
+      const follow = '#FollowUserOptionAdd';
+      const unfollow = '#FollowUserOptionFollowing, .followOption.remove';
+      bindPair($, document2, namespace, follow, unfollow, 'steam_guides_sub', userId, update);
+    }
+    if ($('#ScrollingItemControls').length) {
+      const manualId = $('#PublishedFileFavorite input[name=\'id\']').val();
+      const follow = '#FavoriteItemOptionAdd';
+      const unfollow = '#FavoriteItemOptionFavorited, .favoriteOption.removefavorite';
+      bindPair($, document2, namespace, follow, unfollow, 'steam_manual_favourite', manualId, update);
+    }
+    if ($('#queueBtnFollow').length) {
+      const gameId = $('.game_page_background').data('miniprofile-appid');
+      const follow = '#queueBtnFollow .queue_btn_inactive';
+      const unfollow = '#queueBtnFollow .queue_btn_active';
+      bindPair($, document2, namespace, follow, unfollow, 'steam_game_sub', gameId, update);
+    }
+    function dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      $(document2).off(namespace);
+      if (activeInstances3.get(document2) === dispose) {
+        activeInstances3.delete(document2);
+      }
+    }
+    activeInstances3.set(document2, dispose);
+    return dispose;
+  }
+  var initSteamListener = initSteam;
+  function bindPair($, document2, namespace, follow, unfollow, type, id, update) {
+    if (id === void 0 || id === null || id === '') {
+      return;
+    }
+    $(document2).on('click'.concat(namespace), follow, (() => update(type, id, 'add'))).on('click'.concat(namespace), unfollow, (() => update(type, id, 'remove')));
+  }
+  var SUBSCRIBE = new Set([ 'Подписаться', 'Падпісацца', 'Підписатися', 'Abonnieren', 'Subscribe', 'Suscribirse', 'Mag-subscribe', 'S\'abonner', 'Iscriviti', 'Subskrybuj', 'Subscrever', 'Abonează-te', '订阅', 'チャンネル登録', '訂閱' ]);
+  var SUBSCRIBED = new Set([ 'Вы подписаны', 'Вы падпісаны', 'Ви підписалися', 'Abonniert', 'Subscribed', 'Suscrito', 'Naka-subscribe', 'Abonné', 'Iscritto', 'Subskrybujesz', 'Subscrito', 'Abonat(ă)', '已订阅', '登録済み', '已訂閱' ]);
+  var activeInstances4 = new WeakMap;
+  function detectYouTubeObservations($) {
+    let location2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : globalThis.location;
+    const observations = [];
+    const $subscribe = $('yt-subscribe-button-view-model');
+    if ($subscribe.length) {
+      const data = $('meta[itemprop="identifier"]').attr('content');
+      const text = $subscribe.text().trim();
+      let action = null;
+      if (SUBSCRIBE.has(text)) {
+        action = 'remove';
+      } else if (SUBSCRIBED.has(text) || $('.ytSubscribePlusButtonViewModelHost').length) {
+        action = 'add';
+      } else {
+        const color = $subscribe.find('button').css('color');
+        if ([ '#0f0f0f', 'rgb(15, 15, 15)' ].includes(color)) {
+          action = 'remove';
+        }
+        if ([ '#f1f1f1', 'rgb(241, 241, 241)' ].includes(color)) {
+          action = 'add';
+        }
+      }
+      if (data && action) {
+        observations.push({
+          type: 'youtube_channel_sub',
+          data: data,
+          action: action
+        });
+      }
+    }
+    if ($('.ytLikeButtonViewModelHost').length) {
+      var _$$attr3;
+      const data = location2.hostname === 'm.youtube.com' ? new URL((_$$attr3 = $('link[rel="canonical"]').attr('href')) !== null && _$$attr3 !== void 0 ? _$$attr3 : location2.href).searchParams.get('v') : $('meta[itemprop="identifier"]').attr('content');
+      const pressed = $('.ytLikeButtonViewModelHost button').attr('aria-pressed');
+      if (data && (pressed === 'true' || pressed === 'false')) {
+        observations.push({
+          type: 'youtube_video_like',
+          data: data,
+          action: pressed === 'true' ? 'add' : 'remove'
+        });
+      }
+    }
+    return observations;
+  }
+  function initYouTube(context) {
+    var _context$setInterval, _context$clearInterva, _activeInstances4$get;
+    const {$: $, taskStore: taskStore, api: api, document: document2 = globalThis.document, location: location2 = globalThis.location} = context;
+    const setIntervalFn = (_context$setInterval = context.setInterval) !== null && _context$setInterval !== void 0 ? _context$setInterval : globalThis.setInterval;
+    const clearIntervalFn = (_context$clearInterva = context.clearInterval) !== null && _context$clearInterva !== void 0 ? _context$clearInterva : globalThis.clearInterval;
+    (_activeInstances4$get = activeInstances4.get(document2)) === null || _activeInstances4$get === void 0 || _activeInstances4$get();
+    let disposed = false;
+    let lastUrl = location2.href;
+    const states = new Map;
+    const record = (type, id, subscribed) => {
+      if (!id) {
+        return;
+      }
+      const key = ''.concat(type, ':').concat(id);
+      if (states.get(key) === subscribed) {
+        return;
+      }
+      states.set(key, subscribed);
+      void (api ? api.tasks.update(type, id, subscribed ? 'add' : 'remove') : taskStore.update(type, id, subscribed ? 'add' : 'remove'));
+    };
+    const inspect = () => {
+      if (disposed) {
+        return;
+      }
+      if (location2.href !== lastUrl) {
+        lastUrl = location2.href;
+        states.clear();
+      }
+      for (const observation of detectYouTubeObservations($, location2)) {
+        record(observation.type, observation.data, observation.action === 'add');
+      }
+    };
+    const interval = setIntervalFn(inspect, 600);
+    $(document2).on('yt-navigate-finish.gamesForFarmYouTube popstate.gamesForFarmYouTube', inspect);
+    inspect();
+    function dispose() {
+      if (disposed) {
+        return;
+      }
+      disposed = true;
+      clearIntervalFn(interval);
+      $(document2).off('.gamesForFarmYouTube');
+      if (activeInstances4.get(document2) === dispose) {
+        activeInstances4.delete(document2);
+      }
+    }
+    activeInstances4.set(document2, dispose);
+    return dispose;
+  }
+  var initYouTubeListener = initYouTube;
+  async function bootstrap(_ref14) {
+    let {exposeGlobal: exposeGlobal} = _ref14;
+    const gm = {
+      GM_xmlhttpRequest: GM_xmlhttpRequest,
+      GM_setValue: GM_setValue,
+      GM_getValue: GM_getValue
+    };
+    const storage = createStorage(gm);
+    const request = createRequest(gm, location.href);
+    const taskStore = createTaskStore(storage);
+    const api = createGamesForFarmApi(storage, taskStore);
+    await storage.initialize();
+    const route = selectRoute(location.hostname, location.pathname);
+    if (!route) {
+      return api;
+    }
+    const context = {
+      $: jQuery,
+      storage: storage,
+      request: request,
+      taskStore: taskStore,
+      api: api,
+      location: location,
+      document: document,
+      alert: alert,
+      console: console
+    };
+    const initializers = {
+      freeanywhere: initFreeAnywhereListener,
+      steam: initSteamListener,
+      youtube: initYouTubeListener,
+      mee6: initMee6Listener,
+      'gamesforfarm-store': initGamesForFarmStoreListener,
+      firstgamemarket: initFirstGameMarketListener
+    };
+    await new Promise(((resolve, reject) => {
+      onWindowLoad((async () => {
+        try {
+          await initializers[route](context);
+          console.log('👌 gamesforfarm userscript: '.concat(route));
+          resolve();
+        } catch (error) {
+          console.error('GamesForFarm '.concat(route, ' initialization failed'), error);
+          reject(error);
+        }
+      }));
+    }));
+    return api;
+  }
+  var ready = () => bootstrap({
+    exposeGlobal: false
+  });
+  var _ExtAPI2 = new WeakMap;
   var _FreeAnyWhere_brand = new WeakSet;
   class FreeAnyWhere extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _FreeAnyWhere_brand);
       _defineProperty(this, 'name', 'FreeAnyWhere');
-      _defineProperty(this, 'tasks', []);
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$9));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$9));
+      _defineProperty(this, 'verifyTasks', []);
       _defineProperty(this, 'games', void 0);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask', 'getKey' ]);
+      _classPrivateFieldInitSpec(this, _ExtAPI2, void 0);
     }
     static test() {
       const isMatch = window.location.host === 'freeanywhere.net';
@@ -9410,6 +10915,20 @@ function _toPrimitive(t, r) {
         isMatch: isMatch
       });
       return isMatch;
+    }
+    async after() {
+      try {
+        debug('开始扩展注入');
+        _classPrivateFieldSet(_ExtAPI2, this, await ready());
+        debug('扩展注入完成', {
+          hasApi: Boolean(_classPrivateFieldGet(_ExtAPI2, this))
+        });
+      } catch (error) {
+        debug('后续操作失败', {
+          error: error
+        });
+        throwError(error, 'GiveawayHopper.after');
+      }
     }
     async init() {
       try {
@@ -9460,9 +10979,13 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue7;
           debug('获取已保存的任务信息');
-          this.socialTasks = ((_GM_getValue7 = GM_getValue('fawTasks-'.concat(this.giveawayId))) === null || _GM_getValue7 === void 0 ? void 0 : _GM_getValue7.tasks) || JSON.parse(defaultTasks$9);
+          this.tasks = normalizeStoredTasks(GM_getValue('fawTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          debug('任务分类结果', {
+            tasks: this.tasks
+          });
+          return true;
         }
         const tasks = $('div.game__content-tasks__task').map(((index, element) => ({
           id: $(element).attr('data-id'),
@@ -9482,22 +11005,33 @@ function _toPrimitive(t, r) {
           return false;
         }
         if (action === 'verify') {
+          this.verifyTasks = [];
+        }
+        if (action === 'do') {
           this.tasks = [];
         }
         for (const task of tasks) {
           await _assertClassBrand(_FreeAnyWhere_brand, this, _processTask).call(this, task, action);
         }
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
-        debug('任务分类结果', {
-          undoneTasks: this.undoneTasks,
-          socialTasks: this.socialTasks
-        });
-        GM_setValue('fawTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
-          time: (new Date).getTime()
-        });
+        if (action === 'do') {
+          this.tasks = this.uniqueTasks(this.tasks);
+          const tasksForUndo = this.uniqueTasks(this.tasks.filter((task => task.social !== 'extra' && task.done === false)).map((task => _objectSpread(_objectSpread({}, task), {}, {
+            done: true
+          }))));
+          debug('任务分类结果', {
+            tasks: this.tasks,
+            tasksForUndo: tasksForUndo
+          });
+          GM_setValue('fawTasks-'.concat(this.giveawayId), {
+            tasks: tasksForUndo,
+            time: (new Date).getTime()
+          });
+        } else {
+          debug('任务分类结果', {
+            verifyTasks: this.verifyTasks
+          });
+        }
         return true;
       } catch (error) {
         debug('任务分类失败', {
@@ -9514,15 +11048,19 @@ function _toPrimitive(t, r) {
           debug('未初始化');
           return false;
         }
-        if (this.tasks.length === 0 && !await this.classifyTask('verify')) {
-          debug('任务列表为空', this.tasks);
+        if (this.verifyTasks.length === 0 && !await this.classifyTask('verify')) {
+          debug('任务列表为空', this.verifyTasks);
+          return false;
+        }
+        if (this.verifyTasks.length === 0) {
+          debug('没有待验证任务', this.verifyTasks);
           return false;
         }
         debug('开始验证任务列表', {
-          tasks: this.tasks
+          tasks: this.verifyTasks
         });
         const pro = [];
-        for (const task of this.tasks) {
+        for (const task of this.verifyTasks) {
           pro.push(_assertClassBrand(_FreeAnyWhere_brand, this, _verify).call(this, task));
           await delay(1e3);
         }
@@ -9549,18 +11087,21 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref0) {
-      let {website: website} = _ref0;
+    async extraDoTask(tasks) {
       try {
+        const website = tasks.website || [];
         debug('执行额外任务', {
           website: website
         });
-        const promises = website.map((id => _assertClassBrand(_FreeAnyWhere_brand, this, _doVisitWebsite).call(this, id)));
+        const promises = website.map((task => {
+          var _task$id2;
+          return _assertClassBrand(_FreeAnyWhere_brand, this, _doVisitWebsite).call(this, ''.concat((_task$id2 = task.id) !== null && _task$id2 !== void 0 ? _task$id2 : task.link));
+        }));
         const results = await Promise.allSettled(promises);
         debug('额外任务执行结果', {
           results: results
         });
-        return true;
+        return results.every((result => result.status === 'fulfilled' && result.value));
       } catch (error) {
         debug('执行额外任务失败', {
           error: error
@@ -9617,7 +11158,6 @@ function _toPrimitive(t, r) {
     }
   }
   async function _processTask(task, action) {
-    var _title$match, _title$match2;
     try {
       debug('处理任务', {
         task: task,
@@ -9633,7 +11173,10 @@ function _toPrimitive(t, r) {
       };
       if (action === 'verify' && !isSuccess) {
         debug('添加到验证任务列表', taskInfo);
-        this.tasks.push(taskInfo);
+        this.verifyTasks.push(taskInfo);
+        return;
+      }
+      if (action !== 'do') {
         return;
       }
       debug('处理特定类型任务', {
@@ -9650,62 +11193,98 @@ function _toPrimitive(t, r) {
         break;
 
        case 'steam_game_sub':
-        if (action === 'undo' && link) {
-          this.socialTasks.steam.followLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.steam.followLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'steam',
+            type: 'follow',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'steam_game_wishlist':
-        if (action === 'undo' && link) {
-          this.socialTasks.steam.wishlistLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.steam.wishlistLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'steam',
+            type: 'wishlist',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'steam_group_sub':
-        if (action === 'undo' && link) {
-          this.socialTasks.steam.groupLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.steam.groupLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'steam',
+            type: 'group',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'steam_curator_sub':
-        if (action === 'undo' && link) {
-          this.socialTasks.steam.curatorLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.steam.curatorLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'steam',
+            type: 'curator',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'site_visit':
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.extra.website.push(id);
-        }
+        this.tasks.push({
+          done: isSuccess,
+          social: 'extra',
+          type: 'website',
+          link: id,
+          id: id,
+          title: title,
+          data: data
+        });
         break;
 
        case 'vk_community_sub':
-        if (action === 'undo' && link) {
-          this.socialTasks.vk.nameLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.vk.nameLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'vk',
+            type: 'user',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'vk_post_like':
-        if (action === 'undo' && link) {
-          this.socialTasks.vk.nameLinks.push(''.concat(link, '&action=like'));
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.vk.nameLinks.push(''.concat(link, '&action=like'));
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'vk',
+            type: 'like',
+            link: ''.concat(link, '&action=like'),
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
@@ -9713,23 +11292,34 @@ function _toPrimitive(t, r) {
         debug('跳过 Discord 任务');
         echoLog({}).warning(''.concat(I18n('discordTaskNotice')));
         break;
-        break;
 
        case 'youtube_channel_sub':
-        if (action === 'undo' && link) {
-          this.socialTasks.youtube.channelLinks.push(link);
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.youtube.channelLinks.push(link);
+        if (link) {
+          this.tasks.push({
+            done: isSuccess,
+            social: 'youtube',
+            type: 'channel',
+            link: link,
+            id: id,
+            title: title,
+            data: data
+          });
         }
         break;
 
        case 'steam_game_playtime':
-        if (action === 'undo' && link) {
-          this.socialTasks.steam.playTimeLinks.push(''.concat(((_title$match = title.match(/(\d+)\s*min/)) === null || _title$match === void 0 ? void 0 : _title$match[1]) || '0', '-').concat(link));
-        }
-        if (action === 'do' && !isSuccess && link) {
-          this.undoneTasks.steam.playTimeLinks.push(''.concat(((_title$match2 = title.match(/(\d+)\s*min/)) === null || _title$match2 === void 0 ? void 0 : _title$match2[1]) || '0', '-').concat(link));
+        if (link) {
+          var _title$match;
+          this.tasks.push({
+            done: isSuccess,
+            social: 'steam',
+            type: 'playtime',
+            link: link,
+            id: id,
+            title: title,
+            data: data,
+            minutes: Number(((_title$match = title.match(/(\d+)\s*min/)) === null || _title$match === void 0 ? void 0 : _title$match[1]) || '0')
+          });
         }
         break;
 
@@ -9742,14 +11332,14 @@ function _toPrimitive(t, r) {
         debug('跳过未连接的任务', {
           type: type
         });
-        echoLog({}).warning(''.concat(I18n('notConnect', type)));
+        echoLog({}).warning(''.concat(I18n('notConnect', type || '')));
         break;
 
        default:
         debug('未知任务类型', {
           type: type
         });
-        echoLog({}).warning(''.concat(I18n('unKnownTaskType', type)));
+        echoLog({}).warning(''.concat(I18n('unKnownTaskType', type || '')));
         break;
       }
     } catch (error) {
@@ -9921,9 +11511,9 @@ function _toPrimitive(t, r) {
   }
   function _getGiveawayId() {
     try {
-      var _$$attr3;
+      var _$$attr6;
       debug('开始获取抽奖ID');
-      const giveawayId = (_$$attr3 = $('link[rel="canonical"]').attr('href')) === null || _$$attr3 === void 0 || (_$$attr3 = _$$attr3.match(/n=([\d]+)/)) === null || _$$attr3 === void 0 ? void 0 : _$$attr3[1];
+      const giveawayId = (_$$attr6 = $('link[rel="canonical"]').attr('href')) === null || _$$attr6 === void 0 || (_$$attr6 = _$$attr6.match(/n=([\d]+)/)) === null || _$$attr6 === void 0 ? void 0 : _$$attr6[1];
       if (giveawayId) {
         this.giveawayId = giveawayId;
         debug('获取抽奖ID成功', {
@@ -9943,49 +11533,21 @@ function _toPrimitive(t, r) {
     }
   }
   _defineProperty(FreeAnyWhere, 'type', 'website');
-  const defaultTasks$8 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      curatorLinks: [],
-      curatorLikeLinks: [],
-      followLinks: [],
-      forumLinks: [],
-      announcementLinks: [],
-      workshopVoteLinks: [],
-      playtestLinks: [],
-      playTimeLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    vk: {
-      nameLinks: []
-    },
-    twitch: {
-      channelLinks: []
-    },
-    reddit: {
-      redditLinks: []
-    },
-    youtube: {
-      channelLinks: [],
-      likeLinks: []
-    },
-    twitter: {
-      userLinks: [],
-      retweetLinks: []
-    }
-  };
   var _GiveawaySu_brand = new WeakSet;
   class GiveawaySu extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _GiveawaySu_brand);
       _defineProperty(this, 'name', 'GiveawaySu');
-      _defineProperty(this, 'socialTasks', defaultTasks$8);
-      _defineProperty(this, 'undoneTasks', defaultTasks$8);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask' ]);
+    }
+    addTask(social, type, link, options) {
+      this.tasks.push(_objectSpread(_objectSpread({}, options), {}, {
+        done: false,
+        social: social,
+        type: type,
+        link: link
+      }));
     }
     static test() {
       const url = window.location.href;
@@ -10054,11 +11616,12 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue8;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue8 = GM_getValue('gasTasks-'.concat(this.giveawayId))) === null || _GM_getValue8 === void 0 ? void 0 : _GM_getValue8.tasks) || defaultTasks$8;
+          this.tasks = normalizeStoredTasks(GM_getValue('gasTasks-'.concat(this.giveawayId)));
+          logStatus.success();
           return true;
         }
+        this.tasks = [];
         const tasks = $('#actions tr');
         if (!tasks.length) {
           debug('未找到任务');
@@ -10133,11 +11696,13 @@ function _toPrimitive(t, r) {
         }
         debug('任务处理完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.undoneTasks;
+        this.tasks = this.uniqueTasks(this.tasks);
+        const tasksForUndo = this.uniqueTasks(this.tasks.filter((task => task.social !== 'extra' && task.done === false)).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         debug('保存任务信息');
         GM_setValue('gasTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -10161,42 +11726,66 @@ function _toPrimitive(t, r) {
       const {TASK_PATTERNS: TASK_PATTERNS} = _GiveawaySu;
       if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
         debug('添加 Steam 组任务');
-        this.undoneTasks.steam.groupLinks.push(taskLink);
+        this.addTask('steam', 'group', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.announcement.test(taskName)) {
         debug('添加 Steam 公告任务');
-        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        this.addTask('steam', 'announcement', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.curator.test(taskName) && TASK_PATTERNS.curatorLink.test(taskLink)) {
         debug('添加 Steam 鉴赏家关注任务');
-        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        this.addTask('steam', 'curator', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
         debug('添加 Steam 鉴赏家点赞任务');
-        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        this.addTask('steam', 'curatorLike', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.steamForum.test(taskName)) {
         debug('添加 Steam 论坛任务');
-        this.undoneTasks.steam.forumLinks.push(taskLink);
+        this.addTask('steam', 'forum', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('thumbs-up') && /^https?:\/\/steamcommunity\.com\/sharedfiles\/filedetails\/\?id=[\d]+/.test(taskLink)) {
         debug('添加 Steam 创意工坊投票任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.addTask('steam', 'workshopVote', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('plus') && TASK_PATTERNS.playtest.test(taskName)) {
         debug('添加 Steam 游戏测试任务');
-        this.undoneTasks.steam.playtestLinks.push(taskLink);
+        this.addTask('steam', 'playtest', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
         debug('添加 Discord 服务器任务');
-        this.undoneTasks.discord.serverLinks.push(taskLink);
+        this.addTask('discord', 'server', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
@@ -10205,32 +11794,50 @@ function _toPrimitive(t, r) {
       }
       if (taskIcon.includes('twitch') || TASK_PATTERNS.twitchChannel.test(taskName)) {
         debug('添加 Twitch 频道任务');
-        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        this.addTask('twitch', 'channel', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('reddit') || TASK_PATTERNS.reddit.test(taskName)) {
         debug('添加 Reddit 任务');
-        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        this.addTask('reddit', 'post', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.watchArt.test(taskName)) {
         debug('添加创意工坊物品任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.addTask('steam', 'workshopVote', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.youtubeChannel.test(taskName)) {
         debug('添加 YouTube 频道任务');
-        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        this.addTask('youtube', 'channel', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.youtubeVideo.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && TASK_PATTERNS.youtubeVideo.test(taskName)) {
         debug('添加 YouTube 视频任务');
-        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        this.addTask('youtube', 'like', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (taskIcon.includes('vk') || TASK_PATTERNS.vkGroup.test(taskName)) {
         debug('添加 VK 任务');
-        this.undoneTasks.vk.nameLinks.push(taskLink);
+        this.addTask('vk', 'user', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       if (TASK_PATTERNS.twitter.test(taskName)) {
@@ -10239,11 +11846,17 @@ function _toPrimitive(t, r) {
       }
       if (TASK_PATTERNS.wishlist.test(taskName)) {
         debug('添加 Steam 愿望单任务');
-        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+        this.addTask('steam', 'wishlist', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
       }
       if (TASK_PATTERNS.follow.test(taskName)) {
         debug('添加 Steam 关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.addTask('steam', 'follow', taskLink, {
+          title: taskName,
+          icon: taskIcon
+        });
         return;
       }
       debug('未识别的任务类型', {
@@ -10417,7 +12030,7 @@ function _toPrimitive(t, r) {
   }
   async function _join() {
     try {
-      var _data$response115, _data$response119, _data$response120;
+      var _data$response116, _data$response120, _data$response121;
       debug('开始加入抽奖');
       if ($('a.buttonenter:contains(Register to join)').length > 0) {
         debug('需要登录');
@@ -10477,19 +12090,19 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      if (!((_data$response115 = data.response) !== null && _data$response115 !== void 0 && _data$response115.success)) {
-        var _data$response116, _data$response117, _data$response118;
+      if (!((_data$response116 = data.response) !== null && _data$response116 !== void 0 && _data$response116.success)) {
+        var _data$response117, _data$response118, _data$response119;
         debug('响应失败', {
-          text: (_data$response116 = data.response) === null || _data$response116 === void 0 ? void 0 : _data$response116.text
+          text: (_data$response117 = data.response) === null || _data$response117 === void 0 ? void 0 : _data$response117.text
         });
-        logStatus.error('Error'.concat((_data$response117 = data.response) !== null && _data$response117 !== void 0 && _data$response117.text ? ':'.concat((_data$response118 = data.response) === null || _data$response118 === void 0 ? void 0 : _data$response118.text) : ''));
+        logStatus.error('Error'.concat((_data$response118 = data.response) !== null && _data$response118 !== void 0 && _data$response118.text ? ':'.concat((_data$response119 = data.response) === null || _data$response119 === void 0 ? void 0 : _data$response119.text) : ''));
         return false;
       }
       debug('加入成功');
       currentoption.addClass('buttonentered').text('Success - Giveaway joined');
       $('#giveawaysjoined').slideDown();
       $('#giveawaysrecommend').slideDown();
-      logStatus.success('Success'.concat((_data$response119 = data.response) !== null && _data$response119 !== void 0 && _data$response119.text ? ':'.concat((_data$response120 = data.response) === null || _data$response120 === void 0 ? void 0 : _data$response120.text) : ''));
+      logStatus.success('Success'.concat((_data$response120 = data.response) !== null && _data$response120 !== void 0 && _data$response120.text ? ':'.concat((_data$response121 = data.response) === null || _data$response121 === void 0 ? void 0 : _data$response121.text) : ''));
       return true;
     } catch (error) {
       debug('加入抽奖失败', {
@@ -10909,30 +12522,13 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  const defaultTasksTemplate$6 = {
-    steam: {
-      groupLinks: [],
-      officialGroupLinks: [],
-      wishlistLinks: [],
-      curatorLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    extra: {
-      videoTasks: []
-    },
-    links: []
-  };
-  const defaultTasks$7 = JSON.stringify(defaultTasksTemplate$6);
   var _Keyhub_brand = new WeakSet;
   class Keyhub extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Keyhub_brand);
       _defineProperty(this, 'name', 'Keyhub');
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$7));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$7));
+      _defineProperty(this, 'tasks', []);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask' ]);
     }
     static test() {
@@ -10996,6 +12592,7 @@ function _toPrimitive(t, r) {
       }
     }
     async classifyTask(action) {
+      var _this = this;
       try {
         debug('开始分类任务', {
           action: action
@@ -11004,21 +12601,34 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue9;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue9 = GM_getValue('khTasks-'.concat(this.giveawayId))) === null || _GM_getValue9 === void 0 ? void 0 : _GM_getValue9.tasks) || JSON.parse(defaultTasks$7);
+          this.tasks = normalizeStoredTasks(GM_getValue('khTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          return true;
         }
-        const tasks = $('.task:not(".googleads")').filter(((index, element) => action === 'do' ? $(element).find('i.fa-check-circle:visible').length === 0 : true)).find('a');
+        this.tasks = [];
+        const tasks = $('.task:not(".googleads")').find('a');
         debug('找到任务', {
           count: tasks.length
         });
         for (const task of tasks) {
+          const $task = $(task);
+          const isDone = $task.closest('.task').find('i.fa-check-circle:visible').length > 0;
           let link = $(task).attr('href');
           const taskDes = $(task).text().trim();
           debug('处理任务', {
             taskDes: taskDes,
             link: link
           });
+          const addTask = function(social, type, taskLink) {
+            let options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+            _this.tasks.push(_objectSpread(_objectSpread({}, options), {}, {
+              done: isDone,
+              social: social,
+              type: type,
+              link: taskLink
+            }));
+          };
           if (!link) {
             debug('跳过无链接任务');
             continue;
@@ -11029,72 +12639,49 @@ function _toPrimitive(t, r) {
           }
           if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
             debug('处理 Discord 连接任务');
-            GM_openInTab(link, {
-              active: true
-            });
+            if (!isDone) {
+              GM_openInTab(link, {
+                active: true
+              });
+            }
             continue;
           }
           if (/steamcommunity\.com\/groups\//.test(link)) {
             debug('处理 Steam 组任务');
-            if (action === 'undo') {
-              this.socialTasks.steam.groupLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.groupLinks.push(link);
-            }
+            addTask('steam', 'group', link);
             continue;
           }
           if (/steamcommunity\.com\/games\/[\d]+/.test(link)) {
             debug('处理 Steam 官方组任务');
-            if (action === 'undo') {
-              this.socialTasks.steam.officialGroupLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.officialGroupLinks.push(link);
-            }
+            addTask('steam', 'officialGroup', link);
             continue;
           }
           if (/store\.steampowered\.com\/app\//.test(link) && /wishlist/gim.test(taskDes)) {
             debug('处理 Steam 愿望单任务');
-            if (action === 'undo') {
-              this.socialTasks.steam.wishlistLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.wishlistLinks.push(link);
-            }
+            addTask('steam', 'wishlist', link);
             continue;
           }
           if (/store\.steampowered\.com\/curator\//.test(link)) {
             debug('处理 Steam 鉴赏家任务');
-            if (action === 'undo') {
-              this.socialTasks.steam.curatorLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.curatorLinks.push(link);
-            }
+            addTask('steam', 'curator', link);
             continue;
           }
           if (/^https?:\/\/discord\.com\/invite\//.test(link)) {
             debug('处理 Discord 服务器任务');
-            if (action === 'undo') {
-              this.socialTasks.discord.serverLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.discord.serverLinks.push(link);
-            }
+            addTask('discord', 'server', link);
             continue;
           }
           if (/^javascript:videoTask.+/.test(link)) {
+            var _link$match22;
             debug('处理视频任务');
-            if (action === 'do') {
-              var _link$match22;
-              const taskData = (_link$match22 = link.match(/javascript:videoTask\('.+?','(.+?)'/)) === null || _link$match22 === void 0 ? void 0 : _link$match22[1];
-              if (taskData) {
-                debug('添加视频任务', {
-                  taskData: taskData
-                });
-                this.undoneTasks.extra.videoTasks.push(taskData);
-              }
+            const taskData = (_link$match22 = link.match(/javascript:videoTask\('.+?','(.+?)'/)) === null || _link$match22 === void 0 ? void 0 : _link$match22[1];
+            if (taskData) {
+              debug('添加视频任务', {
+                taskData: taskData
+              });
+              addTask('extra', 'video', link, {
+                data: taskData
+              });
             }
             continue;
           }
@@ -11102,6 +12689,13 @@ function _toPrimitive(t, r) {
             debug('跳过可忽略的链接', {
               link: link
             });
+            continue;
+          }
+          if (/^https?:\/\//.test(link)) {
+            debug('处理普通访问任务', {
+              link: link
+            });
+            addTask('links', 'visit', link);
             continue;
           }
           debug('未知任务类型', {
@@ -11112,14 +12706,16 @@ function _toPrimitive(t, r) {
         }
         debug('任务分类完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.tasks = uniqueWebsiteTasks(this.tasks);
+        const tasksForUndo = uniqueWebsiteTasks(this.tasks.filter((task => !task.done && task.social !== 'extra' && task.social !== 'links')).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         if (window.DEBUG) {
           console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
         }
         debug('保存任务信息');
         GM_setValue('khTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -11131,19 +12727,19 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref1) {
-      let {videoTasks: videoTasks} = _ref1;
+    async extraDoTask(_ref15) {
+      let {video: video = []} = _ref15;
       try {
         debug('开始执行额外任务', {
-          count: videoTasks.length
+          count: video.length
         });
         const pro = [];
-        for (const data of videoTasks) {
-          pro.push(_assertClassBrand(_Keyhub_brand, this, _doScriptTask).call(this, data));
+        for (const task of video) {
+          pro.push(_assertClassBrand(_Keyhub_brand, this, _doScriptTask).call(this, String(task.data || '')));
         }
-        return Promise.all(pro).then((() => {
+        return Promise.all(pro).then((results => {
           debug('所有额外任务完成');
-          return true;
+          return results.every((result => result !== false));
         }));
       } catch (error) {
         debug('执行额外任务失败', {
@@ -11281,33 +12877,13 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  const defaultTasksTemplate$5 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      curatorLinks: [],
-      curatorLikeLinks: []
-    },
-    twitter: {
-      userLinks: []
-    },
-    vk: {
-      nameLinks: []
-    },
-    discord: {
-      serverLinks: []
-    }
-  };
-  const defaultTasks$6 = JSON.stringify(defaultTasksTemplate$5);
   var _Givekey_brand = new WeakSet;
   class Givekey extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Givekey_brand);
       _defineProperty(this, 'name', 'Givekey');
-      _defineProperty(this, 'tasks', []);
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$6));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$6));
+      _defineProperty(this, 'verifyTaskIds', []);
       _defineProperty(this, 'userId', void 0);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
@@ -11389,10 +12965,13 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue0;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue0 = GM_getValue('gkTasks-'.concat(this.giveawayId))) === null || _GM_getValue0 === void 0 ? void 0 : _GM_getValue0.tasks) || JSON.parse(defaultTasks$6);
+          this.tasks = normalizeStoredTasks(GM_getValue('gkTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          return true;
         }
+        this.tasks = [];
+        this.verifyTaskIds = [];
         const tasks = $('.card-body:has("button") .row');
         debug('找到任务元素', {
           count: tasks.length
@@ -11404,17 +12983,16 @@ function _toPrimitive(t, r) {
           debug('处理任务', {
             isSuccess: isSuccess
           });
-          if (isSuccess && action !== 'undo') {
-            debug('跳过已完成的任务');
+          if (action === 'verify' && isSuccess) {
             continue;
           }
           const checkButton = taskEle.find('#task_check');
           const taskId = checkButton.attr('data-id');
-          if (taskId) {
+          if (action === 'verify' && taskId) {
             debug('添加任务ID', {
               taskId: taskId
             });
-            this.tasks.push(taskId);
+            this.verifyTaskIds.push(taskId);
           }
           if (action === 'verify') {
             continue;
@@ -11441,16 +13019,21 @@ function _toPrimitive(t, r) {
             continue;
           }
           const icon = taskEle.find('i');
-          await _assertClassBrand(_Givekey_brand, this, _classifyTaskByType2).call(this, href, text, icon, isSuccess, action);
+          await _assertClassBrand(_Givekey_brand, this, _classifyTaskByType2).call(this, href, text, icon, isSuccess, taskId);
         }
         debug('任务分类完成');
         logStatus.success();
-        this.tasks = unique(this.tasks);
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.verifyTaskIds = unique(this.verifyTaskIds);
+        if (action === 'verify') {
+          return true;
+        }
+        this.tasks = this.uniqueTasks(this.tasks);
+        const tasksForUndo = this.uniqueTasks(this.tasks.filter((task => task.done === false)).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         debug('保存任务信息');
         GM_setValue('gkTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -11469,17 +13052,17 @@ function _toPrimitive(t, r) {
           debug('初始化失败');
           return false;
         }
-        if (this.tasks.length === 0 && !await this.classifyTask('verify')) {
+        if (this.verifyTaskIds.length === 0 && !await this.classifyTask('verify')) {
           debug('任务分类失败');
           return false;
         }
         echoLog({}).warning(I18n('giveKeyNoticeBefore'));
-        const taskLength = this.tasks.length;
+        const taskLength = this.verifyTaskIds.length;
         debug('开始验证任务', {
           taskCount: taskLength
         });
         for (let i = 0; i < taskLength; i++) {
-          await _assertClassBrand(_Givekey_brand, this, _verify2).call(this, this.tasks[i]);
+          await _assertClassBrand(_Givekey_brand, this, _verify2).call(this, this.verifyTaskIds[i]);
           if (i < taskLength - 1) {
             debug('等待15秒');
             await delay(15e3);
@@ -11621,68 +13204,61 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _classifyTaskByType2(href, text, icon, isSuccess, action) {
+  async function _classifyTaskByType2(href, text, icon, isSuccess, taskId) {
     try {
       debug('开始分类任务类型', {
         href: href,
         text: text,
         isSuccess: isSuccess,
-        action: action
+        taskId: taskId
       });
+      const addTask = (social, type) => {
+        const task = {
+          done: isSuccess,
+          social: social,
+          type: type,
+          link: href,
+          title: text
+        };
+        if (taskId) {
+          task.id = taskId;
+          task.taskId = taskId;
+        }
+        this.tasks.push(task);
+      };
       if (/^https?:\/\/vk\.com\//.test(href)) {
         debug('添加 VK 任务');
-        this.socialTasks.vk.nameLinks.push(href);
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.vk.nameLinks.push(href);
-        }
+        addTask('vk', 'user');
         return;
       }
       if (/^https?:\/\/steamcommunity\.com\/groups/.test(href)) {
         debug('添加 Steam 组任务');
-        this.socialTasks.steam.groupLinks.push(href);
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.steam.groupLinks.push(href);
-        }
+        addTask('steam', 'group');
         return;
       }
       if (/^https?:\/\/store\.steampowered\.com\/app\//.test(href)) {
         debug('添加 Steam 愿望单任务');
-        this.socialTasks.steam.wishlistLinks.push(href);
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.steam.wishlistLinks.push(href);
-        }
+        addTask('steam', 'wishlist');
         return;
       }
       if (/Subscribe/gi.test(text) && icon.hasClass('fa-steam-square')) {
         if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(href)) {
           debug('添加 Steam 鉴赏家关注任务');
-          this.socialTasks.steam.curatorLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.steam.curatorLinks.push(href);
-          }
+          addTask('steam', 'curator');
         } else {
           debug('添加 Steam 鉴赏家点赞任务');
-          this.socialTasks.steam.curatorLikeLinks.push(href);
-          if (action === 'do' && !isSuccess) {
-            this.undoneTasks.steam.curatorLikeLinks.push(href);
-          }
+          addTask('steam', 'curatorLike');
         }
         return;
       }
       if (/^https?:\/\/twitter\.com\//.test(href) && /Subscribe/gi.test(text)) {
         debug('添加 Twitter 关注任务');
-        this.socialTasks.twitter.userLinks.push(href);
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.twitter.userLinks.push(href);
-        }
+        addTask('twitter', 'user');
         return;
       }
       if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
         debug('添加 Discord 服务器任务');
-        this.socialTasks.discord.serverLinks.push(href);
-        if (action === 'do' && !isSuccess) {
-          this.undoneTasks.discord.serverLinks.push(href);
-        }
+        addTask('discord', 'server');
         return;
       }
       debug('未识别的任务类型', {
@@ -11769,13 +13345,13 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue1;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue1 = GM_getValue('gcTasks-'.concat(this.giveawayId))) === null || _GM_getValue1 === void 0 ? void 0 : _GM_getValue1.tasks) || defaultTasks$8;
+          this.tasks = normalizeStoredTasks(GM_getValue('gcTasks-'.concat(this.giveawayId)));
+          logStatus.success();
           return true;
         }
-        debug('初始化未完成任务列表');
-        this.undoneTasks = defaultTasks$8;
+        debug('初始化任务列表');
+        this.tasks = [];
         const tasks = $('.event-actions tr');
         const processTask = async task => {
           var _$$find, _$$find2;
@@ -11785,6 +13361,13 @@ function _toPrimitive(t, r) {
           const taskType = ((_$$find = $(task).find('button[data-type]')) === null || _$$find === void 0 ? void 0 : _$$find.attr('data-type')) || '';
           const taskFinished = (_$$find2 = $(task).find('.event-action-buttons .btn-success')) === null || _$$find2 === void 0 ? void 0 : _$$find2.length;
           const appId = taskDes.attr('data-steam-wishlist-appid');
+          const taskInfo = {
+            done: Boolean(taskFinished),
+            title: taskName,
+            taskType: taskType,
+            icon: taskIcon,
+            appId: appId
+          };
           debug('处理任务', {
             taskName: taskName,
             taskType: taskType,
@@ -11792,8 +13375,12 @@ function _toPrimitive(t, r) {
             taskFinished: taskFinished,
             appId: appId
           });
-          if (taskIcon.includes('ban') || /AdBlock/i.test(taskName) || taskIcon.includes('envelope') || taskFinished) {
-            debug('跳过无效或已完成任务');
+          if (taskIcon.includes('ban') || /AdBlock/i.test(taskName) || taskIcon.includes('envelope')) {
+            debug('跳过无效任务');
+            return true;
+          }
+          if (taskFinished) {
+            debug('跳过已完成任务');
             return true;
           }
           const taskHref = taskDes.attr('href');
@@ -11814,14 +13401,18 @@ function _toPrimitive(t, r) {
               debug('添加 Steam 愿望单任务', {
                 appId: appId
               });
-              this.undoneTasks.steam.wishlistLinks.push('https://store.steampowered.com/app/'.concat(appId));
+              this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+                social: 'steam',
+                type: 'wishlist',
+                link: 'https://store.steampowered.com/app/'.concat(appId)
+              }));
               return true;
             }
             debug('分类任务', {
               taskLink: taskLink,
               taskType: taskType
             });
-            _assertClassBrand(_GiveeClub_brand, this, _classifyTaskByType3).call(this, taskLink, taskType, taskIcon, taskName, taskDes);
+            _assertClassBrand(_GiveeClub_brand, this, _classifyTaskByType3).call(this, taskLink, taskType, taskIcon, taskName, taskDes, taskInfo);
             return true;
           } catch (error) {
             debug('获取重定向链接失败', {
@@ -11835,11 +13426,13 @@ function _toPrimitive(t, r) {
         await Promise.all(Array.from(tasks).map(processTask));
         debug('任务处理完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.undoneTasks;
+        this.tasks = this.uniqueTasks(this.tasks);
+        const tasksForUndo = this.uniqueTasks(this.tasks.filter((task => task.social !== 'extra' && task.done === false)).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         debug('保存任务信息');
         GM_setValue('gcTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -11883,7 +13476,7 @@ function _toPrimitive(t, r) {
       }
     }
   }
-  function _classifyTaskByType3(taskLink, taskType, taskIcon, taskName, taskDes) {
+  function _classifyTaskByType3(taskLink, taskType, taskIcon, taskName, taskDes, taskInfo) {
     try {
       debug('开始分类任务', {
         taskLink: taskLink,
@@ -11893,42 +13486,82 @@ function _toPrimitive(t, r) {
       });
       if (taskType === 'steam.group.join' && /^https?:\/\/steamcommunity\.com\/groups/.test(taskLink)) {
         debug('添加 Steam 组任务');
-        this.undoneTasks.steam.groupLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'group',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/like.*announcement/gi.test(taskName)) {
         debug('添加 Steam 公告任务');
-        this.undoneTasks.steam.announcementLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'announcement',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskType === 'steam.game.wishlist' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
         debug('添加 Steam 愿望单任务');
-        this.undoneTasks.steam.wishlistLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'wishlist',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskType === 'steam.game.wishlist' && taskDes.attr('data-steam-wishlist-appid')) {
         debug('添加 Steam 愿望单任务（通过 appId）');
-        this.undoneTasks.steam.wishlistLinks.push('https://store.steampowered.com/app/'.concat(taskDes.attr('data-steam-wishlist-appid')));
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'wishlist',
+          link: 'https://store.steampowered.com/app/'.concat(taskDes.attr('data-steam-wishlist-appid')),
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskType === 'steam.game.follow' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
         debug('添加 Steam 游戏关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'follow',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/^https?:\/\/store\.steampowered\.com\/curator\//.test(taskLink)) {
         debug('添加 Steam 鉴赏家关注任务');
-        this.undoneTasks.steam.curatorLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'curator',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskIcon.includes('steam') && /follow|subscribe/gim.test(taskName)) {
         debug('添加 Steam 鉴赏家点赞任务');
-        this.undoneTasks.steam.curatorLikeLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'curatorLike',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/subscribe.*steam.*forum/gim.test(taskName)) {
         debug('添加 Steam 论坛任务');
-        this.undoneTasks.steam.forumLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'forum',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskType === 'steam.game.playtime' && /^https?:\/\/store\.steampowered\.com\/app\//.test(taskLink)) {
@@ -11937,12 +13570,23 @@ function _toPrimitive(t, r) {
         debug('添加 Steam 游戏时长任务', {
           time: time
         });
-        this.undoneTasks.steam.playTimeLinks.push(''.concat(time, '-').concat(taskLink));
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'playtime',
+          link: taskLink,
+          done: Boolean(taskInfo.done),
+          minutes: Number(time)
+        }));
         return;
       }
       if (taskIcon.includes('discord')) {
         debug('添加 Discord 服务器任务');
-        this.undoneTasks.discord.serverLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'discord',
+          type: 'server',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskIcon.includes('instagram')) {
@@ -11951,43 +13595,83 @@ function _toPrimitive(t, r) {
       }
       if (taskIcon.includes('twitch')) {
         debug('添加 Twitch 频道任务');
-        this.undoneTasks.twitch.channelLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'twitch',
+          type: 'channel',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskIcon.includes('reddit')) {
         debug('添加 Reddit 任务');
-        this.undoneTasks.reddit.redditLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'reddit',
+          type: 'post',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/watch.*art/gim.test(taskName)) {
         debug('添加创意工坊物品任务');
-        this.undoneTasks.steam.workshopVoteLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'workshopVote',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/subscribe.*youtube.*channel/gim.test(taskName)) {
         debug('添加 YouTube 频道任务');
-        this.undoneTasks.youtube.channelLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'youtube',
+          type: 'channel',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (/(watch|like).*youtube.*video/gim.test(taskName) || (taskIcon.includes('youtube') || taskIcon.includes('thumbs-up')) && /(watch|like).*video/gim.test(taskName)) {
         debug('添加 YouTube 视频任务');
-        this.undoneTasks.youtube.likeLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'youtube',
+          type: 'like',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskIcon.includes('vk') || /join.*vk.*group/gim.test(taskName)) {
         debug('添加 VK 任务');
-        this.undoneTasks.vk.nameLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'vk',
+          type: 'user',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       if (taskIcon.includes('twitter')) {
         if (/https?:\/\/(twitter|x)\.com\/[^/]+\/?$/gim.test(taskLink)) {
           debug('添加 Twitter 用户关注任务');
-          this.undoneTasks.twitter.userLinks.push(taskLink);
+          this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+            social: 'twitter',
+            type: 'user',
+            link: taskLink,
+            done: Boolean(taskInfo.done)
+          }));
           return;
         }
         if (/https?:\/\/(twitter|x)\.com\/[^/]+?\/status\/[\d]+/gim.test(taskLink)) {
           debug('添加 Twitter 转发任务');
-          this.undoneTasks.twitter.retweetLinks.push(taskLink);
+          this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+            social: 'twitter',
+            type: 'retweet',
+            link: taskLink,
+            done: Boolean(taskInfo.done)
+          }));
           return;
         }
       }
@@ -11997,7 +13681,12 @@ function _toPrimitive(t, r) {
       }
       if (/follow.*button/gim.test(taskName)) {
         debug('添加 Steam 关注任务');
-        this.undoneTasks.steam.followLinks.push(taskLink);
+        this.tasks.push(_objectSpread(_objectSpread({}, taskInfo), {}, {
+          social: 'steam',
+          type: 'follow',
+          link: taskLink,
+          done: Boolean(taskInfo.done)
+        }));
         return;
       }
       debug('未识别的任务类型', {
@@ -12447,7 +14136,7 @@ function _toPrimitive(t, r) {
     },
     async gleam(link) {
       try {
-        var _data$responseText$ma8, _$$attr;
+        var _data$responseText$ma8, _$$attr4;
         debug('开始检查 gleam.io 链接', {
           link: link
         });
@@ -12471,7 +14160,7 @@ function _toPrimitive(t, r) {
           debug('未找到活动信息');
           return false;
         }
-        const campaignString = (_$$attr = $(campaignDiv).attr('ng-init')) === null || _$$attr === void 0 || (_$$attr = _$$attr.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr === void 0 ? void 0 : _$$attr[1];
+        const campaignString = (_$$attr4 = $(campaignDiv).attr('ng-init')) === null || _$$attr4 === void 0 || (_$$attr4 = _$$attr4.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr4 === void 0 ? void 0 : _$$attr4[1];
         if (!campaignString) {
           debug('未找到活动初始化数据');
           return false;
@@ -12696,48 +14385,12 @@ function _toPrimitive(t, r) {
       }
     }
   };
-  const defaultTasksTemplate$4 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      curatorLinks: [],
-      curatorLikeLinks: [],
-      followLinks: [],
-      forumLinks: [],
-      announcementLinks: [],
-      workshopVoteLinks: [],
-      licenseLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    vk: {
-      nameLinks: []
-    },
-    twitch: {
-      channelLinks: []
-    },
-    reddit: {
-      redditLinks: []
-    },
-    twitter: {
-      userLinks: [],
-      retweetLinks: []
-    },
-    youtube: {
-      channelLinks: [],
-      likeLinks: []
-    }
-  };
-  const defaultTasks$5 = JSON.stringify(defaultTasksTemplate$4);
   var _Keylol_brand = new WeakSet;
   class Keylol extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Keylol_brand);
       _defineProperty(this, 'name', 'Keylol');
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$5));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$5));
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ]);
     }
     static test() {
@@ -12791,8 +14444,7 @@ function _toPrimitive(t, r) {
         debug('开始分类任务', {
           action: action
         });
-        this.socialTasks = JSON.parse(defaultTasks$5);
-        this.undoneTasks = JSON.parse(defaultTasks$5);
+        this.tasks = [];
         const selectedBtns = $('.auto-task-keylol[selected="selected"]:visible').get();
         debug('找到选中的按钮', {
           count: selectedBtns.length
@@ -12810,34 +14462,16 @@ function _toPrimitive(t, r) {
             debug('跳过无效任务按钮');
             continue;
           }
-          if (!(social in this.undoneTasks)) {
-            debug('跳过未知社交平台', {
-              social: social
-            });
-            continue;
-          }
-          if (action === 'do' && type in this.undoneTasks[social]) {
-            debug('添加到未完成任务', {
-              social: social,
-              type: type,
-              link: link
-            });
-            this.undoneTasks[social][type].push(link);
-          }
-          if (action === 'undo' && type in this.socialTasks[social]) {
-            debug('添加到社交任务', {
-              social: social,
-              type: type,
-              link: link
-            });
-            this.socialTasks[social][type].push(link);
-          }
+          this.tasks.push({
+            done: action === 'undo',
+            social: social,
+            type: type,
+            link: link
+          });
         }
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.tasks = this.uniqueTasks(this.tasks);
         debug('任务分类完成', {
-          undoneTasks: this.undoneTasks,
-          socialTasks: this.socialTasks
+          tasks: this.tasks
         });
         return true;
       } catch (error) {
@@ -12910,32 +14544,32 @@ function _toPrimitive(t, r) {
     switch (true) {
      case LINK_PATTERNS.DISCORD.test(href):
       debug('发现 Discord 链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'discord', 'serverLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'discord', 'server', href);
       break;
 
      case LINK_PATTERNS.REDDIT.test(href):
       debug('发现 Reddit 链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'reddit', 'redditLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'reddit', 'post', href);
       break;
 
      case LINK_PATTERNS.TWITTER.test(href):
       if (LINK_PATTERNS.TWITTER_RETWEET.test(href)) {
         debug('发现 Twitter 转发链接');
-        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'retweetLinks', href);
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'retweet', href);
       } else {
         debug('发现 Twitter 用户链接');
-        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'userLinks', href);
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitter', 'user', href);
       }
       break;
 
      case LINK_PATTERNS.TWITCH.test(href):
       debug('发现 Twitch 链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitch', 'channelLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'twitch', 'channel', href);
       break;
 
      case LINK_PATTERNS.VK.test(href):
       debug('发现 VK 链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'vk', 'nameLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'vk', 'user', href);
       break;
 
      case href.includes('store.steampowered.com'):
@@ -12950,8 +14584,8 @@ function _toPrimitive(t, r) {
 
      case LINK_PATTERNS.YOUTUBE.test(href):
       debug('发现 YouTube 链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'channelLinks', href);
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'likeLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'channel', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link[0], 'youtube', 'like', href);
       break;
     }
   }
@@ -12962,17 +14596,17 @@ function _toPrimitive(t, r) {
     const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
     if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
       debug('发现 Steam 鉴赏家链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curatorLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curator', href);
     } else if (LINK_PATTERNS.STEAM_PUBLISHER.test(href)) {
       debug('发现 Steam 发行商链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curatorLikeLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curatorLike', href);
     } else if (LINK_PATTERNS.STEAM_NEWS.test(href)) {
       debug('发现 Steam 新闻链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcementLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcement', href);
     } else if (LINK_PATTERNS.STEAM_APP.test(href)) {
       debug('发现 Steam 应用链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'followLinks', href);
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'wishlistLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'follow', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'wishlist', href);
     }
   }
   function _processSteamCommunityLink(element, href) {
@@ -12982,10 +14616,10 @@ function _toPrimitive(t, r) {
     const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
     if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
       debug('发现 Steam 组链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'groupLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'group', href);
     } else if (LINK_PATTERNS.STEAM_ANNOUNCEMENT.test(href)) {
       debug('发现 Steam 公告链接');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcementLinks', href);
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'announcement', href);
     }
   }
   function _processGiveawayLinks(mainPost) {
@@ -13039,7 +14673,7 @@ function _toPrimitive(t, r) {
       });
       const $link = $('a[href="'.concat(href, '"]'));
       $link.after('<span style="color: #ccc; margin: 0 -5px 0 5px"> | </span>');
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link.next()[0], 'steam', 'licenseLinks', 'appid-'.concat(href.replace('#asf', '')));
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $link.next()[0], 'steam', 'license', 'appid-'.concat(href.replace('#asf', '')));
     }));
     const steamDbLinks = mainPost.find('a[href*="steamdb.info/sub/"]:visible');
     debug('找到 SteamDB 链接', {
@@ -13059,7 +14693,7 @@ function _toPrimitive(t, r) {
         href: href,
         subid: subid
       });
-      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, link, 'steam', 'licenseLinks', 'subid-'.concat(subid));
+      _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, link, 'steam', 'license', 'subid-'.concat(subid));
     }));
     const asfBlocks = mainPost.find('.blockcode:contains("addlicense"):visible');
     debug('找到 ASF 代码块', {
@@ -13072,14 +14706,14 @@ function _toPrimitive(t, r) {
         debug('处理 ASF 代码块 appid', {
           appid: appid
         });
-        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'licenseLinks', 'appid-'.concat(appid.join(',')));
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'license', 'appid-'.concat(appid.join(',')));
       }
       const subid = (_block$innerText$matc = block.innerText.match(/[\d]+/g)) === null || _block$innerText$matc === void 0 ? void 0 : _block$innerText$matc.filter((matched => !appid.includes(matched)));
       if (subid !== null && subid !== void 0 && subid.length) {
         debug('处理 ASF 代码块 subid', {
           subid: subid
         });
-        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'licenseLinks', 'subid-'.concat(subid.join(',')));
+        _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, $(block).children('em')[0], 'steam', 'license', 'subid-'.concat(subid.join(',')));
       }
     }));
   }
@@ -13116,7 +14750,7 @@ function _toPrimitive(t, r) {
         'data-social': social,
         'data-type': linkType,
         'data-link': link,
-        text: linkType.replace('Links', ''),
+        text: linkType,
         onclick: 'this.getAttribute("selected") ? this.removeAttribute("selected") : this.setAttribute("selected", "selected")'
       });
       $(before).after(button);
@@ -13154,29 +14788,12 @@ function _toPrimitive(t, r) {
       }
     }
   });
-  const defaultTasks$4 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      followLinks: [],
-      curatorLikeLinks: [],
-      playTimeLinks: []
-    },
-    twitter: {
-      userLinks: [],
-      retweetLinks: []
-    },
-    discord: {
-      serverLinks: []
-    }
-  };
   var _Opquests_brand = new WeakSet;
   class Opquests extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Opquests_brand);
       _defineProperty(this, 'name', 'Opquests');
-      _defineProperty(this, 'undoneTasks', _objectSpread({}, defaultTasks$4));
       _defineProperty(this, 'buttons', [ 'doTask', 'verifyTask', 'getKey' ]);
     }
     static test() {
@@ -13266,6 +14883,7 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
+        this.tasks = [];
         const logStatus = echoLog({
           text: I18n('getTasksInfo')
         });
@@ -13286,47 +14904,89 @@ function _toPrimitive(t, r) {
           });
           if (/steamcommunity\.com\/groups\//.test(link)) {
             debug('添加 Steam 组任务');
-            this.undoneTasks.steam.groupLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'steam',
+              type: 'group',
+              link: link
+            });
             continue;
           }
           if (/store\.steampowered\.com\/app\//.test(link)) {
             if (/wishlist/gim.test(taskDes)) {
               debug('添加 Steam 愿望单任务');
-              this.undoneTasks.steam.wishlistLinks.push(link);
+              this.tasks.push({
+                done: false,
+                social: 'steam',
+                type: 'wishlist',
+                link: link
+              });
             } else if (/follow/gim.test(taskDes)) {
               debug('添加 Steam 关注任务');
-              this.undoneTasks.steam.followLinks.push(link);
+              this.tasks.push({
+                done: false,
+                social: 'steam',
+                type: 'follow',
+                link: link
+              });
             } else if (/play/gim.test(taskDes)) {
               var _taskDes$replace$matc;
               const time = parseInt(((_taskDes$replace$matc = taskDes.replace(/\s/gim, '').match(/(\d+)hours/im)) === null || _taskDes$replace$matc === void 0 ? void 0 : _taskDes$replace$matc[1]) || '0', 10) * 60;
               debug('添加 Steam 游戏时长任务', {
                 time: time
               });
-              this.undoneTasks.steam.playTimeLinks.push(''.concat(time, '-').concat(link));
+              this.tasks.push({
+                done: false,
+                social: 'steam',
+                type: 'playtime',
+                link: link,
+                minutes: time,
+                title: taskDes
+              });
             }
             continue;
           }
           if (/store\.steampowered\.com\/(publisher|developer|curator)\//.test(link) && /follow/gim.test(taskDes)) {
             debug('添加 Steam 鉴赏家关注任务');
-            this.undoneTasks.steam.curatorLikeLinks.push(link);
+            this.tasks.push({
+              done: false,
+              social: 'steam',
+              type: 'curatorLike',
+              link: link
+            });
             continue;
           }
           if (link.includes('//x.com/')) {
             if (/follow/gim.test(taskDes)) {
               debug('添加 Twitter 关注任务');
-              this.undoneTasks.twitter.userLinks.push(link);
+              this.tasks.push({
+                done: false,
+                social: 'twitter',
+                type: 'user',
+                link: link
+              });
               continue;
             }
             if (link.includes('status') && /Repost/gim.test(taskDes)) {
               debug('添加 Twitter 转发任务');
-              this.undoneTasks.twitter.retweetLinks.push(link);
+              this.tasks.push({
+                done: false,
+                social: 'twitter',
+                type: 'retweet',
+                link: link
+              });
               continue;
             }
           }
           if (link.includes('//discord.com/')) {
             if (/join/gim.test(taskDes)) {
               debug('添加 Discord 加入任务');
-              this.undoneTasks.discord.serverLinks.push(link);
+              this.tasks.push({
+                done: false,
+                social: 'discord',
+                type: 'server',
+                link: link
+              });
               continue;
             }
           }
@@ -13340,7 +15000,12 @@ function _toPrimitive(t, r) {
               continue;
             }
             debug('添加 Discord 加入任务');
-            this.undoneTasks.discord.serverLinks.push(taskLink);
+            this.tasks.push({
+              done: false,
+              social: 'discord',
+              type: 'server',
+              link: taskLink
+            });
             continue;
           }
           if (/clash\.gg/.test(link)) {
@@ -13353,7 +15018,7 @@ function _toPrimitive(t, r) {
         }
         debug('任务分类完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
+        this.tasks = this.uniqueTasks(this.tasks);
         if (window.DEBUG) {
           console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
         }
@@ -13541,41 +15206,13 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  const defaultTasksTemplate$3 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      followLinks: [],
-      curatorLinks: [],
-      curatorLikeLinks: [],
-      playTimeLinks: []
-    },
-    twitter: {
-      userLinks: [],
-      retweetLinks: []
-    },
-    twitch: {
-      channelLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    youtube: {
-      channelLinks: []
-    },
-    extra: {
-      gleam: []
-    }
-  };
-  const defaultTasks$3 = JSON.stringify(defaultTasksTemplate$3);
   var _Gleam_brand = new WeakSet;
   class Gleam extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Gleam_brand);
       _defineProperty(this, 'name', 'Gleam');
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$3));
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$3));
+      _defineProperty(this, 'tasks', []);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
@@ -13648,6 +15285,7 @@ function _toPrimitive(t, r) {
       }
     }
     async classifyTask(action) {
+      var _this2 = this;
       try {
         debug('开始分类任务', {
           action: action
@@ -13656,10 +15294,12 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue10;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue10 = GM_getValue('gleamTasks-'.concat(this.giveawayId))) === null || _GM_getValue10 === void 0 ? void 0 : _GM_getValue10.tasks) || JSON.parse(defaultTasks$3);
+          this.tasks = normalizeStoredTasks(GM_getValue('gleamTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          return true;
         }
+        this.tasks = [];
         const tasks = $('.entry-content .entry-method');
         debug('找到任务元素', {
           count: tasks.length
@@ -13667,10 +15307,7 @@ function _toPrimitive(t, r) {
         for (const task of tasks) {
           var _socialIcon$attr;
           const $task = $(task);
-          if (action === 'do' && $task.find('i.fa-question').length === 0) {
-            debug('跳过已完成的任务');
-            continue;
-          }
+          const isDone = $task.find('i.fa-question').length === 0;
           const socialIcon = $task.find('.icon-wrapper i');
           const taskInfo = $task.find('.user-links');
           const taskText = taskInfo.text().trim();
@@ -13679,7 +15316,16 @@ function _toPrimitive(t, r) {
           debug('处理任务', {
             taskText: taskText
           });
-          if (aElements.length > 0) {
+          const addTask = function(social, type, link) {
+            let options = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+            _this2.tasks.push(_objectSpread(_objectSpread({}, options), {}, {
+              done: isDone,
+              social: social,
+              type: type,
+              link: link
+            }));
+          };
+          if (!isDone && aElements.length > 0) {
             debug('处理可点击元素', {
               count: aElements.length
             });
@@ -13696,21 +15342,11 @@ function _toPrimitive(t, r) {
               continue;
             }
             if (/follow/gi.test(taskText)) {
-              if (action === 'undo') {
-                this.socialTasks.twitter.userLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.twitter.userLinks.push(link);
-              }
+              addTask('twitter', 'user', link);
               continue;
             }
             if (/retweet/gim.test(taskText)) {
-              if (action === 'undo') {
-                this.socialTasks.twitter.retweetLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.twitter.retweetLinks.push(link);
-              }
+              addTask('twitter', 'retweet', link);
               continue;
             }
           }
@@ -13719,12 +15355,7 @@ function _toPrimitive(t, r) {
             if (!link) {
               continue;
             }
-            if (action === 'undo') {
-              this.socialTasks.twitch.channelLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.twitch.channelLinks.push(link);
-            }
+            addTask('twitch', 'channel', link);
             continue;
           }
           if (socialIcon.hasClass('fa-discord') && /join/gim.test(taskText)) {
@@ -13737,12 +15368,7 @@ function _toPrimitive(t, r) {
               }
               link = 'https://discord.com/invite/'.concat(ggLink);
             }
-            if (action === 'undo') {
-              this.socialTasks.discord.serverLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.discord.serverLinks.push(link);
-            }
+            addTask('discord', 'server', link);
             continue;
           }
           if (socialIcon.hasClass('fa-external-link-square-alt')) {
@@ -13753,12 +15379,7 @@ function _toPrimitive(t, r) {
             if (!link) {
               continue;
             }
-            if (action === 'undo') {
-              this.socialTasks.youtube.channelLinks.push(link);
-            }
-            if (action === 'do') {
-              this.undoneTasks.youtube.channelLinks.push(link);
-            }
+            addTask('youtube', 'channel', link);
             continue;
           }
           if ((_socialIcon$attr = socialIcon.attr('class')) !== null && _socialIcon$attr !== void 0 && _socialIcon$attr.includes('steam')) {
@@ -13767,12 +15388,7 @@ function _toPrimitive(t, r) {
               if (!link) {
                 continue;
               }
-              if (action === 'undo') {
-                this.socialTasks.steam.groupLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.steam.groupLinks.push(link);
-              }
+              addTask('steam', 'group', link);
               continue;
             }
             if (/follow.*curator/gi.test(taskText)) {
@@ -13780,12 +15396,7 @@ function _toPrimitive(t, r) {
               if (!link) {
                 continue;
               }
-              if (action === 'undo') {
-                this.socialTasks.steam.curatorLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.steam.curatorLinks.push(link);
-              }
+              addTask('steam', 'curator', link);
               continue;
             }
             if (/play[\w\W]*hours/gi.test(taskText)) {
@@ -13795,10 +15406,10 @@ function _toPrimitive(t, r) {
               if (!link || !((_time$ = time[0]) !== null && _time$ !== void 0 && _time$[1])) {
                 continue;
               }
-              const trueTime = parseFloat(time[0][1]) * 60;
-              if (action === 'do') {
-                this.undoneTasks.steam.playTimeLinks.push(''.concat(trueTime, '-').concat(link));
-              }
+              const minutes = parseFloat(time[0][1]) * 60;
+              addTask('steam', 'playtime', link, {
+                minutes: minutes
+              });
               continue;
             }
             if (/wishlist/gi.test(taskText)) {
@@ -13806,24 +15417,15 @@ function _toPrimitive(t, r) {
               if (!link) {
                 continue;
               }
-              if (action === 'undo') {
-                this.socialTasks.steam.wishlistLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.steam.wishlistLinks.push(link);
-              }
+              addTask('steam', 'wishlist', link);
+              continue;
             }
             if (/follow/gi.test(taskText)) {
               const link = $task.find('a[href^="https://steamcommunity.com/app/"],a[href^="https://store.steampowered.com/app/"]').attr('href');
               if (!link) {
                 continue;
               }
-              if (action === 'undo') {
-                this.socialTasks.steam.followLinks.push(link);
-              }
-              if (action === 'do') {
-                this.undoneTasks.steam.followLinks.push(link);
-              }
+              addTask('steam', 'follow', link);
               continue;
             }
             if (/Sign up/gi.test(taskText)) {
@@ -13831,14 +15433,11 @@ function _toPrimitive(t, r) {
             }
           }
           if (socialIcon.hasClass('fa-bullhorn') && /Complete|Increase/gi.test(taskText)) {
-            if (action !== 'do') {
-              continue;
-            }
             const gleamLink = await _assertClassBrand(_Gleam_brand, this, _getGleamLink).call(this, taskText);
             if (!gleamLink) {
               continue;
             }
-            this.undoneTasks.extra.gleam.push(gleamLink);
+            addTask('extra', 'gleam', gleamLink);
             continue;
           }
           if (socialIcon.hasClass('fa-question') || socialIcon.hasClass('fa-reddit') || socialIcon.hasClass('fa-instagram') || socialIcon.hasClass('fa-facebook-f') || socialIcon.hasClass('fa-telegram-plane') || socialIcon.hasClass('fa-telegram') || socialIcon.hasClass('fa-vk') || socialIcon.hasClass('fa-envelope') || socialIcon.hasClass('fa-gift') || socialIcon.hasClass('fa-square-up-right') || socialIcon.hasClass('fa-gamepad-modern') || socialIcon.hasClass('fa-dollar-sign') || socialIcon.hasClass('fa-tiktok') || socialIcon.hasClass('fa-gamepad-alt') || socialIcon.hasClass('fa-bag-shopping') || socialIcon.hasClass('fa-swords') || socialIcon.hasClass('fa-dinosaur') || socialIcon.hasClass('fa-shield') && taskText.includes('one of our giveaways') || socialIcon.hasClass('fa-shield') && taskText.includes('Check out') || socialIcon.hasClass('fa-shield') && taskText.includes('vloot.io')) {
@@ -13848,11 +15447,13 @@ function _toPrimitive(t, r) {
         }
         debug('任务分类完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.tasks = uniqueWebsiteTasks(this.tasks);
+        const tasksForUndo = uniqueWebsiteTasks(this.tasks.filter((task => !task.done && task.social !== 'extra' && task.social !== 'links')).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         debug('保存任务信息');
         GM_setValue('gleamTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -13864,17 +15465,17 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref10) {
-      let {gleam: gleam} = _ref10;
+    async extraDoTask(_ref16) {
+      let {gleam: gleam = []} = _ref16;
       try {
         debug('开始执行额外任务', {
           count: gleam.length
         });
         const pro = [];
-        for (const link of gleam) {
-          pro.push(_assertClassBrand(_Gleam_brand, this, _doGleamTask).call(this, link));
+        for (const task of gleam) {
+          pro.push(_assertClassBrand(_Gleam_brand, this, _doGleamTask).call(this, task.link));
         }
-        return Promise.all(pro).then((() => true));
+        return Promise.all(pro).then((results => results.every((result => result !== false))));
       } catch (error) {
         debug('执行额外任务失败', {
           error: error
@@ -14079,8 +15680,8 @@ function _toPrimitive(t, r) {
         responseType: 'json'
       });
       if (result === 'Success') {
-        var _data$response121, _data$response122;
-        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response121 = data.response) === null || _data$response121 === void 0 ? void 0 : _data$response121.Success) === true && data !== null && data !== void 0 && (_data$response122 = data.response) !== null && _data$response122 !== void 0 && _data$response122.Data) {
+        var _data$response122, _data$response123;
+        if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response122 = data.response) === null || _data$response122 === void 0 ? void 0 : _data$response122.Success) === true && data !== null && data !== void 0 && (_data$response123 = data.response) !== null && _data$response123 !== void 0 && _data$response123.Data) {
           const {link: link} = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {};
           if (link) {
             debug('获取链接成功', {
@@ -14117,19 +15718,19 @@ function _toPrimitive(t, r) {
   }
   async function _checkLeftKey7() {
     try {
-      var _$$attr4, _$$attr5;
+      var _$$attr7, _$$attr8;
       debug('检查剩余密钥');
       if (!globalOptions.other.checkLeftKey) {
         debug('跳过密钥检查');
         return true;
       }
-      const campaignString = (_$$attr4 = $('div.popup-blocks-container').attr('ng-init')) === null || _$$attr4 === void 0 || (_$$attr4 = _$$attr4.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr4 === void 0 ? void 0 : _$$attr4[1];
+      const campaignString = (_$$attr7 = $('div.popup-blocks-container').attr('ng-init')) === null || _$$attr7 === void 0 || (_$$attr7 = _$$attr7.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr7 === void 0 ? void 0 : _$$attr7[1];
       if (!campaignString) {
         debug('未找到活动配置信息');
         return false;
       }
       const {campaign: campaign, incentive: incentive} = JSON.parse(campaignString);
-      const controllerString = (_$$attr5 = $('div.campaign.reward').attr('ng-init')) === null || _$$attr5 === void 0 || (_$$attr5 = _$$attr5.match(/initContestant\(([\w\W]+?)\);/)) === null || _$$attr5 === void 0 ? void 0 : _$$attr5[1];
+      const controllerString = (_$$attr8 = $('div.campaign.reward').attr('ng-init')) === null || _$$attr8 === void 0 || (_$$attr8 = _$$attr8.match(/initContestant\(([\w\W]+?)\);/)) === null || _$$attr8 === void 0 ? void 0 : _$$attr8[1];
       let ownedKey = false;
       if (controllerString) {
         var _JSON$parse$contestan;
@@ -14490,21 +16091,21 @@ function _toPrimitive(t, r) {
       option: option,
       dataKeys: Object.keys(data)
     });
-    return Object.entries(data).map((_ref11 => {
-      let [socialType, value] = _ref11;
+    return Object.entries(data).map((_ref17 => {
+      let [socialType, value] = _ref17;
       return '\n    <tr style="background-color: '.concat(stringToColour(option), '66">\n      ').concat(isFirstOption ? '<th rowspan="'.concat(totalOptions, '" style="background-color: ').concat(headerBackgroundColor, '">').concat(I18n(type), '</th>') : '', '\n      <td>').concat(option, '.').concat(I18n(socialType), '</td>\n      <td>\n        <label>\n          <input type="checkbox" name="').concat(type, '.').concat(option, '.').concat(socialType, '"').concat(value ? ' checked="checked"' : '', '/>\n          <span><i></i></span>\n        </label>\n      </td>\n    </tr>');
     })).join('');
   };
   const generateGlobalOptionsForm = () => {
     debug('开始生成全局选项表单');
-    const formRows = Object.entries(globalOptions).map((_ref12 => {
-      let [type, data1] = _ref12;
+    const formRows = Object.entries(globalOptions).map((_ref18 => {
+      let [type, data1] = _ref18;
       debug('处理选项类型', {
         type: type,
         optionsCount: Object.keys(data1).length
       });
-      return Object.entries(data1).map(((_ref13, index) => {
-        let [option, data2] = _ref13;
+      return Object.entries(data1).map(((_ref19, index) => {
+        let [option, data2] = _ref19;
         const totalOptions = [ 'other', 'position', 'hotKey', 'ASF' ].includes(type) ? Object.keys(data1).length : Object.values(data1).reduce(((acc, cur) => acc + Object.keys(cur).length), 0);
         return generateFormRow(type, option, data2, index === 0, totalOptions);
       })).join('');
@@ -14552,8 +16153,8 @@ function _toPrimitive(t, r) {
           confirmButtonText: I18n('save'),
           showCancelButton: true,
           cancelButtonText: I18n('close')
-        }).then((_ref14 => {
-          let {isConfirmed: isConfirmed} = _ref14;
+        }).then((_ref20 => {
+          let {isConfirmed: isConfirmed} = _ref20;
           if (isConfirmed) {
             debug('用户确认保存选项');
             saveData();
@@ -14799,8 +16400,8 @@ function _toPrimitive(t, r) {
           cancelButtonText: I18n('close'),
           showDenyButton: true,
           denyButtonText: I18n('return')
-        }).then((_ref15 => {
-          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref15;
+        }).then((_ref21 => {
+          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref21;
           if (isDenied) {
             debug('返回白名单选项');
             if (showType === 'swal') {}
@@ -15468,6 +17069,7 @@ function _toPrimitive(t, r) {
     }
     return link;
   }
+  const TASK_HISTORY_PATTERN = /^(?:faw|gas|gc|gk|gleam|giveawayHopper|kh|prys)Tasks-/;
   var _History_brand = new WeakSet;
   class History extends Keylol {
     constructor() {
@@ -15503,7 +17105,7 @@ function _toPrimitive(t, r) {
         debug('获取存储的所有值', {
           count: data.length
         });
-        const tasksHistory = data.map((value => /^[\w]+?Tasks-/.test(value) ? value : null)).filter((value => value));
+        const tasksHistory = data.map((value => TASK_HISTORY_PATTERN.test(value) ? value : null)).filter((value => value));
         debug('筛选任务历史记录', {
           count: tasksHistory.length
         });
@@ -15528,7 +17130,7 @@ function _toPrimitive(t, r) {
         debug('获取存储的所有值', {
           count: data.length
         });
-        const tasksHistory = data.map((value => /^[\w]+?Tasks-/.test(value) ? value : null)).filter((value => value));
+        const tasksHistory = data.map((value => TASK_HISTORY_PATTERN.test(value) ? value : null)).filter((value => value));
         debug('筛选要清除的任务历史记录', {
           count: tasksHistory.length
         });
@@ -15557,7 +17159,8 @@ function _toPrimitive(t, r) {
         item: item
       });
       const tasksData = GM_getValue(item);
-      if (!(tasksData !== null && tasksData !== void 0 && tasksData.tasks)) {
+      const tasks = normalizeStoredTasks(tasksData);
+      if (tasks.length === 0) {
         debug('任务数据无效', {
           item: item
         });
@@ -15575,7 +17178,7 @@ function _toPrimitive(t, r) {
         title: title,
         link: link
       });
-      const html = _assertClassBrand(_History_brand, this, _generateTaskHtml).call(this, tasksData.tasks);
+      const html = _assertClassBrand(_History_brand, this, _generateTaskHtml).call(this, tasks);
       _assertClassBrand(_History_brand, this, _appendTaskToContainer).call(this, item, title, link, html, tasksData.time);
       _assertClassBrand(_History_brand, this, _bindDeleteEvent).call(this);
       debug('任务项添加完成', {
@@ -15653,18 +17256,18 @@ function _toPrimitive(t, r) {
     try {
       debug('开始生成任务HTML');
       let html = '';
-      for (const [social, types] of Object.entries(tasks)) {
-        for (const [type, taskList] of Object.entries(types)) {
-          for (const task of taskList) {
-            debug('处理任务', {
-              social: social,
-              type: type,
-              task: task
-            });
-            const displayTask = task.length > 55 ? ''.concat(task.slice(0, 55), '...') : task;
-            html += '<li>\n              <font class="auto-task-capitalize">'.concat(social, '.').concat(I18n(type.replace('Link', '')), ': </font>\n              <a href="').concat(task, '" target="_blank">').concat(displayTask, '</a>\n            </li>');
-          }
-        }
+      for (const task of tasks) {
+        const social = task.social || '';
+        const link = task.link || '';
+        debug('处理任务', {
+          social: social,
+          type: task.type,
+          link: link
+        });
+        const displayLink = link.length > 55 ? ''.concat(link.slice(0, 55), '...') : link;
+        const escapedDisplayLink = _assertClassBrand(_History_brand, this, _escapeHtml).call(this, displayLink);
+        const linkHtml = /^https?:\/\//i.test(link) ? '<a href="'.concat(_assertClassBrand(_History_brand, this, _escapeHtml).call(this, link), '" target="_blank" rel="noopener noreferrer">').concat(escapedDisplayLink, '</a>') : '<span>'.concat(escapedDisplayLink, '</span>');
+        html += '<li>\n          <font class="auto-task-capitalize">'.concat(_assertClassBrand(_History_brand, this, _escapeHtml).call(this, social), '.').concat(_assertClassBrand(_History_brand, this, _escapeHtml).call(this, I18n(task.type)), ': </font>\n          ').concat(linkHtml, '\n        </li>');
       }
       debug('任务HTML生成完成');
       return html;
@@ -15676,14 +17279,29 @@ function _toPrimitive(t, r) {
       return '';
     }
   }
+  function _escapeHtml(value) {
+    const htmlEntities = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      '\'': '&#39;'
+    };
+    return value.replace(/[&<>"']/g, (character => htmlEntities[character]));
+  }
   function _appendTaskToContainer(item, title, link, html, time) {
     try {
+      const escapedItem = _assertClassBrand(_History_brand, this, _escapeHtml).call(this, item);
+      const escapedTitle = _assertClassBrand(_History_brand, this, _escapeHtml).call(this, title);
+      const escapedLink = _assertClassBrand(_History_brand, this, _escapeHtml).call(this, link);
+      const escapedTime = _assertClassBrand(_History_brand, this, _escapeHtml).call(this, dayjs(time).format('YYYY-MM-DD HH:mm:ss'));
+      const titleHtml = /^https?:\/\//i.test(link) ? '<a href="'.concat(escapedLink, '" target="_blank" rel="noopener noreferrer">').concat(escapedTitle, '</a>') : '<span>'.concat(escapedTitle, '</span>');
       debug('开始添加任务到容器', {
         item: item,
         title: title,
         link: link
       });
-      $('.container').append('\n        <div class="card" data-name="'.concat(item, '">\n          <div class="title">\n            <a href="').concat(link, '" target="_blank">').concat(title, '</a>\n            <span class="delete-task" data-name="').concat(item, '" title="').concat(I18n('deleteTask'), '">\n              <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2734" width="32" height="32">\n                <path d="M607.897867 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L575.903242 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 351.94087C639.892491 753.593818 625.61532 768.043004 607.897867 768.043004z" p-id="2735" fill="#d81e06"></path>\n                <path d="M415.930119 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L383.935495 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625 17.717453 0 31.994625 14.277171 31.994625 31.994625l0 351.94087C447.924744 753.593818 433.647573 768.043004 415.930119 768.043004z" p-id="2736" fill="#d81e06"></path>\n                <path d="M928.016126 223.962372l-159.973123 0L768.043004 159.973123c0-52.980346-42.659499-95.983874-95.295817-95.983874L351.94087 63.989249c-52.980346 0-95.983874 43.003528-95.983874 95.983874l0 63.989249-159.973123 0c-17.717453 0-31.994625 14.277171-31.994625 31.994625s14.277171 31.994625 31.994625 31.994625l832.032253 0c17.717453 0 31.994625-14.277171 31.994625-31.994625S945.73358 223.962372 928.016126 223.962372zM319.946246 159.973123c0-17.545439 14.449185-31.994625 31.994625-31.994625l320.806316 0c17.545439 0 31.306568 14.105157 31.306568 31.994625l0 63.989249L319.946246 223.962372 319.946246 159.973123 319.946246 159.973123z" p-id="2737" fill="#d81e06"></path>\n                <path d="M736.048379 960.010751 288.123635 960.010751c-52.980346 0-95.983874-43.003528-95.983874-95.983874L192.139761 383.591466c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 480.435411c0 17.717453 14.449185 31.994625 31.994625 31.994625l448.096758 0c17.717453 0 31.994625-14.277171 31.994625-31.994625L768.215018 384.795565c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 479.231312C832.032253 916.835209 789.028725 960.010751 736.048379 960.010751z" p-id="2738" fill="#d81e06"></path>\n              </svg>\n            </span>\n          </div>\n          <ul>').concat(html, '</ul>\n          <span class="time">').concat(I18n('lastChangeTime'), ': ').concat(dayjs(time).format('YYYY-MM-DD HH:mm:ss'), '</span>\n        </div>\n      '));
+      $('.container').append('\n        <div class="card" data-name="'.concat(escapedItem, '">\n          <div class="title">\n            ').concat(titleHtml, '\n            <span class="delete-task" data-name="').concat(escapedItem, '" title="').concat(_assertClassBrand(_History_brand, this, _escapeHtml).call(this, I18n('deleteTask')), '">\n              <svg class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2734" width="32" height="32">\n                <path d="M607.897867 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L575.903242 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 351.94087C639.892491 753.593818 625.61532 768.043004 607.897867 768.043004z" p-id="2735" fill="#d81e06"></path>\n                <path d="M415.930119 768.043004c-17.717453 0-31.994625-14.277171-31.994625-31.994625L383.935495 383.935495c0-17.717453 14.277171-31.994625 31.994625-31.994625 17.717453 0 31.994625 14.277171 31.994625 31.994625l0 351.94087C447.924744 753.593818 433.647573 768.043004 415.930119 768.043004z" p-id="2736" fill="#d81e06"></path>\n                <path d="M928.016126 223.962372l-159.973123 0L768.043004 159.973123c0-52.980346-42.659499-95.983874-95.295817-95.983874L351.94087 63.989249c-52.980346 0-95.983874 43.003528-95.983874 95.983874l0 63.989249-159.973123 0c-17.717453 0-31.994625 14.277171-31.994625 31.994625s14.277171 31.994625 31.994625 31.994625l832.032253 0c17.717453 0 31.994625-14.277171 31.994625-31.994625S945.73358 223.962372 928.016126 223.962372zM319.946246 159.973123c0-17.545439 14.449185-31.994625 31.994625-31.994625l320.806316 0c17.545439 0 31.306568 14.105157 31.306568 31.994625l0 63.989249L319.946246 223.962372 319.946246 159.973123 319.946246 159.973123z" p-id="2737" fill="#d81e06"></path>\n                <path d="M736.048379 960.010751 288.123635 960.010751c-52.980346 0-95.983874-43.003528-95.983874-95.983874L192.139761 383.591466c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 480.435411c0 17.717453 14.449185 31.994625 31.994625 31.994625l448.096758 0c17.717453 0 31.994625-14.277171 31.994625-31.994625L768.215018 384.795565c0-17.717453 14.277171-31.994625 31.994625-31.994625s31.994625 14.277171 31.994625 31.994625l0 479.231312C832.032253 916.835209 789.028725 960.010751 736.048379 960.010751z" p-id="2738" fill="#d81e06"></path>\n              </svg>\n            </span>\n          </div>\n          <ul>').concat(html, '</ul>\n          <span class="time">').concat(_assertClassBrand(_History_brand, this, _escapeHtml).call(this, I18n('lastChangeTime')), ': ').concat(escapedTime, '</span>\n        </div>\n      '));
       debug('任务已添加到容器', {
         item: item
       });
@@ -15712,7 +17330,7 @@ function _toPrimitive(t, r) {
           return;
         }
         GM_deleteValue(itemName);
-        $('div.card[data-name="'.concat(itemName, '"]')).remove();
+        $(this).closest('div.card').remove();
         debug('任务删除成功', {
           itemName: itemName
         });
@@ -15730,41 +17348,14 @@ function _toPrimitive(t, r) {
       throwError(error, 'History.bindDeleteEvent');
     }
   }
-  const defaultTasksTemplate$2 = {
-    steam: {
-      groupLinks: [],
-      wishlistLinks: [],
-      followLinks: [],
-      curatorLinks: [],
-      curatorLikeLinks: []
-    },
-    twitter: {
-      userLinks: [],
-      retweetLinks: []
-    },
-    twitch: {
-      channelLinks: []
-    },
-    discord: {
-      serverLinks: []
-    },
-    youtube: {
-      channelLinks: []
-    },
-    extra: {
-      giveawayHopper: []
-    }
-  };
-  const defaultTasks$2 = JSON.stringify(defaultTasksTemplate$2);
   var _GiveawayHopper_brand = new WeakSet;
   class GiveawayHopper extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _GiveawayHopper_brand);
       _defineProperty(this, 'name', 'GiveawayHopper');
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$2));
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$2));
       _defineProperty(this, 'tasks', []);
+      _defineProperty(this, 'rawTasks', []);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
@@ -15832,9 +17423,10 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue11;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue11 = GM_getValue('giveawayHopperTasks-'.concat(this.giveawayId))) === null || _GM_getValue11 === void 0 ? void 0 : _GM_getValue11.tasks) || JSON.parse(defaultTasks$2);
+          this.tasks = normalizeStoredTasks(GM_getValue('giveawayHopperTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          return true;
         }
         debug('请求任务列表');
         const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
@@ -15866,32 +17458,36 @@ function _toPrimitive(t, r) {
         debug('获取到任务列表', {
           count: data.response.tasks.length
         });
-        this.tasks = data.response.tasks;
+        this.rawTasks = data.response.tasks;
+        this.tasks = [];
         for (const task of data.response.tasks) {
-          var _document$cookie$matc2;
-          if (task.isDone) {
-            debug('跳过已完成任务', {
-              taskId: task.id,
-              type: task.type
-            });
-            continue;
-          }
+          var _task$displayName;
           debug('处理任务', {
             taskId: task.id,
             category: task.category,
             type: task.type
           });
-          await httpRequest({
-            url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/tasks/').concat(task.id, '/visited'),
-            method: 'GET',
-            responseType: 'json',
-            headers: {
-              authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
-              'x-xsrf-token': decodeURIComponent((_document$cookie$matc2 = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc2 === void 0 ? void 0 : _document$cookie$matc2[1])
-            }
-          });
+          if (!task.isDone) {
+            var _document$cookie$matc2;
+            await httpRequest({
+              url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/tasks/').concat(task.id, '/visited'),
+              method: 'GET',
+              responseType: 'json',
+              headers: {
+                authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
+                'x-xsrf-token': decodeURIComponent((_document$cookie$matc2 = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc2 === void 0 ? void 0 : _document$cookie$matc2[1])
+              }
+            });
+          }
+          const taskTitle = ((_task$displayName = task.displayName) === null || _task$displayName === void 0 ? void 0 : _task$displayName.replace(':target', task.targetName)) || task.name;
           if (task.category === 'Steam' && task.type === 'JoinGroup') {
             debug('处理 Steam 组任务');
+            if (!task.group_id) {
+              debug('缺少 Steam 组 ID，跳过任务', {
+                taskId: task.id
+              });
+              continue;
+            }
             const steamGroupLink = await getRedirectLink('https://steamcommunity.com/gid/'.concat(task.group_id));
             if (!steamGroupLink) {
               debug('获取 Steam 组链接失败');
@@ -15901,26 +17497,44 @@ function _toPrimitive(t, r) {
               action: action,
               link: steamGroupLink
             });
-            if (action === 'undo') {
-              this.socialTasks.steam.groupLinks.push(steamGroupLink);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.groupLinks.push(steamGroupLink);
-            }
+            this.tasks.push({
+              done: task.isDone,
+              social: 'steam',
+              type: 'group',
+              link: steamGroupLink,
+              id: task.id,
+              title: taskTitle,
+              category: task.category,
+              sourceType: task.type,
+              hash: task.hash,
+              groupId: task.group_id
+            });
             continue;
           }
           if (task.category === 'Discord' && task.type === 'JoinServer') {
+            if (!task.invite_code) {
+              debug('缺少 Discord 邀请码，跳过任务', {
+                taskId: task.id
+              });
+              continue;
+            }
             const discordLink = 'https://discord.gg/'.concat(task.invite_code);
             debug('添加 Discord 服务器链接', {
               action: action,
               link: discordLink
             });
-            if (action === 'undo') {
-              this.socialTasks.discord.serverLinks.push(discordLink);
-            }
-            if (action === 'do') {
-              this.undoneTasks.discord.serverLinks.push(discordLink);
-            }
+            this.tasks.push({
+              done: task.isDone,
+              social: 'discord',
+              type: 'server',
+              link: discordLink,
+              id: task.id,
+              title: taskTitle,
+              category: task.category,
+              sourceType: task.type,
+              hash: task.hash,
+              inviteCode: task.invite_code
+            });
             continue;
           }
           if ([ 'TikTok', 'YouTube', 'General' ].includes(task.category)) {
@@ -15936,14 +17550,15 @@ function _toPrimitive(t, r) {
           echoLog({}).warning(''.concat(I18n('unKnownTaskType'), ': ').concat(task.category, '-').concat(task.type));
         }
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.tasks = uniqueWebsiteTasks(this.tasks);
+        const tasksForUndo = uniqueWebsiteTasks(this.tasks.filter((task => !task.done && task.social !== 'extra' && task.social !== 'links')).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         debug('任务分类完成', {
-          undoneTasks: this.undoneTasks,
-          socialTasks: this.socialTasks
+          tasks: this.tasks
         });
         GM_setValue('giveawayHopperTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -15958,8 +17573,8 @@ function _toPrimitive(t, r) {
     async verifyTask() {
       try {
         debug('开始验证任务');
-        for (const task of this.tasks) {
-          var _task$displayName, _task$displayName2;
+        for (const task of this.rawTasks) {
+          var _task$displayName2, _task$displayName3;
           if (task.isDone) {
             debug('跳过已完成任务', {
               taskId: task.id
@@ -15968,10 +17583,10 @@ function _toPrimitive(t, r) {
           }
           debug('验证任务', {
             taskId: task.id,
-            name: ((_task$displayName = task.displayName) === null || _task$displayName === void 0 ? void 0 : _task$displayName.replace(':target', task.targetName)) || task.name
+            name: ((_task$displayName2 = task.displayName) === null || _task$displayName2 === void 0 ? void 0 : _task$displayName2.replace(':target', task.targetName)) || task.name
           });
           const logStatus = echoLog({
-            text: ''.concat(I18n('verifyingTask'), '[').concat(((_task$displayName2 = task.displayName) === null || _task$displayName2 === void 0 ? void 0 : _task$displayName2.replace(':target', task.targetName)) || task.name, ']...')
+            text: ''.concat(I18n('verifyingTask'), '[').concat(((_task$displayName3 = task.displayName) === null || _task$displayName3 === void 0 ? void 0 : _task$displayName3.replace(':target', task.targetName)) || task.name, ']...')
           });
           if (!task.link) {
             debug('获取任务链接');
@@ -16048,7 +17663,7 @@ function _toPrimitive(t, r) {
     });
   }
   async function _verifyTask(task, logStatus) {
-    var _document$cookie$matc4, _data$response123;
+    var _document$cookie$matc4, _data$response124;
     debug('验证任务', {
       taskId: task.id,
       category: task.category,
@@ -16081,7 +17696,7 @@ function _toPrimitive(t, r) {
       logStatus.error(''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
       return false;
     }
-    if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response123 = data.response) !== null && _data$response123 !== void 0 && _data$response123.completed)) {
+    if ((data === null || data === void 0 ? void 0 : data.status) !== 200 || !(data !== null && data !== void 0 && (_data$response124 = data.response) !== null && _data$response124 !== void 0 && _data$response124.completed)) {
       debug('任务验证响应异常', {
         status: data === null || data === void 0 ? void 0 : data.status,
         response: data === null || data === void 0 ? void 0 : data.response
@@ -16180,26 +17795,12 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  const defaultTasksTemplate$1 = {
-    steam: {
-      groupLinks: [],
-      curatorLinks: [],
-      wishlistLinks: [],
-      followLinks: []
-    },
-    youtube: {
-      channelLinks: []
-    }
-  };
-  const defaultTasks$1 = JSON.stringify(defaultTasksTemplate$1);
   var _Prys_brand = new WeakSet;
   class Prys extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _Prys_brand);
       _defineProperty(this, 'name', 'Prys');
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks$1));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks$1));
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
@@ -16265,10 +17866,12 @@ function _toPrimitive(t, r) {
           text: I18n('getTasksInfo')
         });
         if (action === 'undo') {
-          var _GM_getValue12;
           debug('恢复已保存的任务信息');
-          this.socialTasks = ((_GM_getValue12 = GM_getValue('prysTasks-'.concat(this.giveawayId))) === null || _GM_getValue12 === void 0 ? void 0 : _GM_getValue12.tasks) || JSON.parse(defaultTasks$1);
+          this.tasks = normalizeStoredTasks(GM_getValue('prysTasks-'.concat(this.giveawayId)));
+          logStatus.success();
+          return true;
         }
+        this.tasks = [];
         const steps = $('#steps tbody tr');
         debug('找到任务步骤', {
           count: steps.length
@@ -16282,54 +17885,48 @@ function _toPrimitive(t, r) {
           }
         }
         const pro = [];
-        for (const step of steps) {
-          const isSuccess = $(step).find('span:contains(Success)').length > 0;
-          if (isSuccess && action === 'do') {
-            debug('跳过已完成的任务');
-            continue;
-          }
-          const appLink = $(step).find('a[href*=\'store.steampowered.com/app/\']').attr('href');
+        for (const [index, step] of Array.from(steps).entries()) {
+          const stepEle = $(step);
+          const isSuccess = stepEle.find('span:contains(Success)').length > 0;
+          const title = stepEle.find('td').first().text().trim();
+          const addTask = (social, type, link) => {
+            this.tasks.push({
+              done: isSuccess,
+              social: social,
+              type: type,
+              link: link,
+              title: title,
+              id: index,
+              taskId: index
+            });
+          };
+          const appLink = stepEle.find('a[href*=\'store.steampowered.com/app/\']').attr('href');
           if (appLink) {
-            const taskType = $(step).find('a[href*=\'store.steampowered.com/app/\']').text().includes('wishlist') ? 'wishlistLinks' : 'followLinks';
+            const taskType = stepEle.find('a[href*=\'store.steampowered.com/app/\']').text().includes('wishlist') ? 'wishlist' : 'follow';
             debug('添加 Steam 应用任务', {
               type: taskType,
               link: appLink
             });
-            if (action === 'undo') {
-              this.socialTasks.steam[taskType].push(appLink);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam[taskType].push(appLink);
-            }
+            addTask('steam', taskType, appLink);
             continue;
           }
-          const curatorLink = $(step).find('a[href*=\'store.steampowered.com/curator/\']').attr('href');
+          const curatorLink = stepEle.find('a[href*=\'store.steampowered.com/curator/\']').attr('href');
           if (curatorLink) {
             debug('添加 Steam 鉴赏家任务', {
               link: curatorLink
             });
-            if (action === 'undo') {
-              this.socialTasks.steam.curatorLinks.push(curatorLink);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.curatorLinks.push(curatorLink);
-            }
+            addTask('steam', 'curator', curatorLink);
             continue;
           }
-          const groupLink = $(step).find('a[href*=\'steamcommunity.com/groups/\']').attr('href');
+          const groupLink = stepEle.find('a[href*=\'steamcommunity.com/groups/\']').attr('href');
           if (groupLink) {
             debug('添加 Steam 组任务', {
               link: groupLink
             });
-            if (action === 'undo') {
-              this.socialTasks.steam.groupLinks.push(groupLink);
-            }
-            if (action === 'do') {
-              this.undoneTasks.steam.groupLinks.push(groupLink);
-            }
+            addTask('steam', 'group', groupLink);
             continue;
           }
-          const gidLink = $(step).find('a[href*=\'steamcommunity.com/gid\']').attr('href');
+          const gidLink = stepEle.find('a[href*=\'steamcommunity.com/gid\']').attr('href');
           if (gidLink) {
             debug('处理 Steam GID 链接', {
               link: gidLink
@@ -16344,25 +17941,22 @@ function _toPrimitive(t, r) {
               debug('添加 Steam 组任务（从 GID）', {
                 link: finalUrl
               });
-              if (action === 'undo') {
-                this.socialTasks.steam.groupLinks.push(finalUrl);
-              }
-              if (action === 'do') {
-                this.undoneTasks.steam.groupLinks.push(finalUrl);
-              }
+              addTask('steam', 'group', finalUrl);
             })));
           }
         }
         await Promise.allSettled(pro);
         debug('任务分类完成');
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
-        this.socialTasks = this.uniqueTasks(this.socialTasks);
+        this.tasks = this.uniqueTasks(this.tasks);
+        const tasksForUndo = this.uniqueTasks(this.tasks.filter((task => task.done === false)).map((task => _objectSpread(_objectSpread({}, task), {}, {
+          done: true
+        }))));
         if (window.DEBUG) {
           console.log('%cAuto-Task[Debug]:', 'color:blue', JSON.stringify(this));
         }
         GM_setValue('prysTasks-'.concat(this.giveawayId), {
-          tasks: this.socialTasks,
+          tasks: tasksForUndo,
           time: (new Date).getTime()
         });
         return true;
@@ -16385,8 +17979,8 @@ function _toPrimitive(t, r) {
         }
         const pro = [];
         for (const check of checks) {
-          var _$$attr2, _$$parent;
-          const id = (_$$attr2 = $(check).attr('id')) === null || _$$attr2 === void 0 || (_$$attr2 = _$$attr2.match(/[\d]+/)) === null || _$$attr2 === void 0 ? void 0 : _$$attr2[0];
+          var _$$attr5, _$$parent;
+          const id = (_$$attr5 = $(check).attr('id')) === null || _$$attr5 === void 0 || (_$$attr5 = _$$attr5.match(/[\d]+/)) === null || _$$attr5 === void 0 ? void 0 : _$$attr5[0];
           if (!id) {
             debug('跳过无效任务ID');
             continue;
@@ -16561,20 +18155,12 @@ function _toPrimitive(t, r) {
       resolve(false);
     }
   }
-  const defaultTasksTemplate = {
-    extra: {
-      visitLink: []
-    }
-  };
-  const defaultTasks = JSON.stringify(defaultTasksTemplate);
   var _FreeRu_brand = new WeakSet;
   class FreeRu extends Website {
     constructor() {
       super(...arguments);
       _classPrivateMethodInitSpec(this, _FreeRu_brand);
       _defineProperty(this, 'name', 'FreeRu');
-      _defineProperty(this, 'socialTasks', JSON.parse(defaultTasks));
-      _defineProperty(this, 'undoneTasks', JSON.parse(defaultTasks));
       _defineProperty(this, 'games', void 0);
       _defineProperty(this, 'buttons', [ 'doTask', 'verifyTask' ]);
     }
@@ -16624,13 +18210,23 @@ function _toPrimitive(t, r) {
         const logStatus = echoLog({
           text: I18n('getTasksInfo')
         });
+        this.tasks = [];
         $('.giveaway-tasks__list a.task-card__button').toArray().forEach((elem => {
-          this.undoneTasks.extra.visitLink.push(elem.getAttribute('href'));
+          const link = elem.getAttribute('href');
+          if (!link) {
+            return;
+          }
+          this.tasks.push({
+            done: false,
+            social: 'extra',
+            type: 'visit',
+            link: link
+          });
         }));
         logStatus.success();
-        this.undoneTasks = this.uniqueTasks(this.undoneTasks);
+        this.tasks = this.uniqueTasks(this.tasks);
         debug('任务分类结果', {
-          undoneTasks: this.undoneTasks
+          tasks: this.tasks
         });
         return true;
       } catch (error) {
@@ -16641,21 +18237,26 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref16) {
-      let {visitLink: visitLink} = _ref16;
+    async extraDoTask(tasks) {
       try {
+        const visitTasks = tasks.visit || [];
         debug('执行额外任务', {
-          visitLink: visitLink
+          visitTasks: visitTasks
         });
         const logStatus = echoLog({
           text: I18n('visitingLink')
         });
-        const promises = visitLink.map((link => getRedirectLink(link)));
-        const results = await Promise.allSettled(promises);
-        logStatus.success();
+        const results = await Promise.all(visitTasks.map((task => visitLink(task.link))));
         debug('额外任务执行结果', {
           results: results
         });
+        if (!results.every(Boolean)) {
+          debug('额外任务执行失败', {
+            results: results
+          });
+          return false;
+        }
+        logStatus.success();
         return true;
       } catch (error) {
         debug('执行额外任务失败', {
@@ -16741,8 +18342,8 @@ function _toPrimitive(t, r) {
     debug('开始生成网站选项表单HTML', {
       options: options
     });
-    const tableRows = Object.entries(options).map((_ref17 => {
-      let [option, value] = _ref17;
+    const tableRows = Object.entries(options).map((_ref22 => {
+      let [option, value] = _ref22;
       return '\n      <tr>\n        <td>'.concat(option, '</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="').concat(option, '"\n            value="').concat(value, '"\n          />\n        </td>\n      </tr>\n    ');
     })).join('');
     const formHtml = '\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('option'), '</td>\n            <td>').concat(I18n('value'), '</td>\n          </tr>\n        </thead>\n        <tbody>\n          ').concat(tableRows, '\n        </tbody>\n      </table>\n    </form>\n  ');
@@ -16754,8 +18355,8 @@ function _toPrimitive(t, r) {
       website: website,
       formValues: formValues
     });
-    formValues.forEach((_ref18 => {
-      let {name: name, value: value} = _ref18;
+    formValues.forEach((_ref23 => {
+      let {name: name, value: value} = _ref23;
       options[name] = value;
       debug('更新选项值', {
         name: name,

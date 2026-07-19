@@ -1,8 +1,9 @@
 {
   "name": "auto-task",
-  "version": "5.1.9",
+  "version": "5.2.0",
   "change": [
-    "修复：恢复Freeanywhere的验证按钮（当前仅支持不需要扩展的任务）(#76)"
+    "修复：处理Vk任务时报错(#80)",
+    "优化：任务处理逻辑优化"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

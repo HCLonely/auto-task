@@ -20,7 +20,13 @@ import { visitLink } from '../tools/tools';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
-import { selectTasksForAction, toSocialPayload, uniqueWebsiteTasks } from './taskModel';
+import {
+  getSocialPayloadEntry,
+  selectTasksForAction,
+  toSocialPayload,
+  uniqueWebsiteTasks
+} from './taskModel';
+import type { GamesForFarmApi } from './GFF_API';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
@@ -95,6 +101,7 @@ abstract class Website {
     steam?: Steam
     visitLink?: (link: string, options?: MonkeyXhrDetails) => Promise<boolean>
   } = {};
+  #ExtAPI!: GamesForFarmApi | null;
 
   // constructor(EventEmitter: EventEmitter3) {
   //   this.EventEmitter = EventEmitter;
@@ -382,8 +389,36 @@ abstract class Website {
         debug('社交媒体初始化失败');
         return false;
       }
-      const pro = [];
+      const pro: Array<Promise<{
+        social: string;
+        result: SocialToggleResult;
+      }>> = [];
       const doTask = action === 'do';
+      const targetDone = doTask;
+
+      const applySocialResult = (social: string, result: SocialToggleResult) => {
+        const socialTasks = selectedTasks.filter((task) => task.social === social);
+        if (typeof result === 'boolean') {
+          if (result) {
+            for (const task of socialTasks) task.done = targetDone;
+          }
+          return;
+        }
+
+        for (const task of socialTasks) {
+          const entry = getSocialPayloadEntry(task);
+          if (!entry) continue;
+          const taskResult = result.results[entry.type]?.[entry.value];
+          if (taskResult) task.done = targetDone;
+        }
+      };
+
+      const pushSocialTask = (
+        social: string,
+        promise: Promise<SocialToggleResult>
+      ) => {
+        pro.push(promise.then((result) => ({ social, result })));
+      };
 
       // 处理各个社交媒体的任务
       // if (this.socialInitialized.discord === true && this.social.discord) {
@@ -396,23 +431,23 @@ abstract class Website {
       // }
       if (this.socialInitialized.reddit === true && this.social.reddit) {
         debug('处理 Reddit 任务');
-        pro.push(this.social.reddit.toggle({ doTask, ...payload.reddit }));
+        pushSocialTask('reddit', this.social.reddit.toggle({ doTask, ...payload.reddit }));
       }
       if (this.socialInitialized.twitch === true && this.social.twitch) {
         debug('处理 Twitch 任务');
-        pro.push(this.social.twitch.toggle({ doTask, ...payload.twitch }));
+        pushSocialTask('twitch', this.social.twitch.toggle({ doTask, ...payload.twitch }));
       }
       if (this.socialInitialized.twitter === true && this.social.twitter) {
         debug('处理 Twitter 任务');
-        pro.push(this.social.twitter.toggle({ doTask, ...payload.twitter }));
+        pushSocialTask('twitter', this.social.twitter.toggle({ doTask, ...payload.twitter }));
       }
       if (this.socialInitialized.vk === true && this.social.vk) {
         debug('处理 VK 任务');
-        pro.push(this.social.vk.toggle({ doTask, ...payload.vk }));
+        pushSocialTask('vk', this.social.vk.toggle({ doTask, ...payload.vk }));
       }
       if (this.socialInitialized.youtube === true && this.social.youtube) {
         debug('处理 YouTube 任务');
-        pro.push(this.social.youtube.toggle({ doTask, ...payload.youtube }));
+        pushSocialTask('youtube', this.social.youtube.toggle({ doTask, ...payload.youtube }));
       }
       if (
         (this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) &&
@@ -420,14 +455,24 @@ abstract class Website {
         this.social.steam
       ) {
         debug('处理 Steam 任务');
-        pro.push(this.social.steam.toggle({ doTask, ...payload.steam }));
+        pushSocialTask('steam', this.social.steam.toggle({ doTask, ...payload.steam }));
       }
 
       // 处理链接任务
       if (this.social.visitLink && payload.links && doTask) {
         debug('处理链接任务', { linksCount: payload.links.length });
         for (const link of payload.links) {
-          pro.push(this.social.visitLink(link));
+          pro.push(this.social.visitLink(link).then((result) => ({
+            social: 'links',
+            result: {
+              success: result !== false,
+              results: {
+                visit: {
+                  [link]: result !== false
+                }
+              }
+            }
+          })));
         }
       }
 
@@ -436,13 +481,46 @@ abstract class Website {
         const hasExtra = Object.values(payload.extra).reduce((total, arr) => [...total, ...arr]).length > 0;
         if (hasExtra) {
           debug('处理额外任务');
-          pro.push(this.extraDoTask(payload.extra));
+          pro.push(this.extraDoTask(payload.extra).then((result) => ({
+            social: 'extra',
+            result
+          })));
         }
       }
 
       debug('等待所有任务完成');
       const results = await Promise.all(pro);
-      if (!results.every((result) => result !== false)) {
+      for (const { social, result } of results) {
+        if (social === 'links') {
+          if (typeof result !== 'boolean') {
+            for (const task of selectedTasks.filter((selectedTask) => selectedTask.social === 'links')) {
+              if (result.results.visit?.[task.link]) task.done = targetDone;
+            }
+          }
+          continue;
+        }
+        if (social === 'extra') {
+          if (typeof result === 'boolean') {
+            if (result) {
+              for (const task of selectedTasks.filter((selectedTask) => selectedTask.social === 'extra')) {
+                task.done = targetDone;
+              }
+            }
+          } else {
+            for (const task of selectedTasks.filter((selectedTask) => selectedTask.social === 'extra')) {
+              if (result.results[task.type]?.[task.link]) task.done = targetDone;
+            }
+          }
+          continue;
+        }
+        applySocialResult(social, result);
+      }
+      if (this.#ExtAPI) { // todo
+      //   for (const result of results) {
+      //     this.#ExtAPI.tasks.update(result);
+      //   }
+      }
+      if (!results.every(({ result }) => (typeof result === 'boolean' ? result : result.success))) {
         debug('任务执行失败', { results });
         return false;
       }

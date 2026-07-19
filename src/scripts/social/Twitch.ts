@@ -511,7 +511,7 @@ class Twitch extends Social {
   }: {
     doTask: boolean,
     channelLinks?: Array<string>
-  }): Promise<boolean> {
+  }): Promise<SocialToggleResult> {
     try {
       debug('开始处理Twitch链接任务', { doTask, channelLinksCount: channelLinks.length });
       if (!this.#initialized) {
@@ -519,6 +519,7 @@ class Twitch extends Social {
         echoLog({ text: __('needInit'), before: '[Twitch]' });
         return false;
       }
+      const result = this.createToggleResult();
       const prom = [];
       if (
         (doTask && !globalOptions.doTask.twitch.channels) ||
@@ -526,18 +527,23 @@ class Twitch extends Social {
       ) {
         debug('根据全局选项跳过Twitch任务', { doTask });
         echoLog({ type: 'globalOptionsSkip', text: 'twitch.channels', before: '[Twitch]' });
+        for (const link of channelLinks) this.setToggleResult(result, 'channelLinks', link, true);
       } else {
-        const realChannels = this.getRealParams('channels', channelLinks, doTask,
-          (link) => link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)?.[2]);
-        debug('处理后的Twitch频道列表', { count: realChannels.length, channels: realChannels });
-        if (realChannels.length > 0) {
-          for (const channel of realChannels) {
-            prom.push(this.#toggleChannel({ name: channel, doTask }));
-            await delay(1000);
+        for (const link of channelLinks) {
+          const channel = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)?.[2];
+          if (!channel) {
+            this.setToggleResult(result, 'channelLinks', link, false);
+            continue;
           }
+          prom.push(this.#toggleChannel({ name: channel, doTask }).then((success) => {
+            this.setToggleResult(result, 'channelLinks', link, success);
+            return success;
+          }));
+          await delay(1000);
         }
       }
-      return Promise.all(prom).then(() => true);
+      await Promise.all(prom);
+      return result;
     } catch (error) {
       debug('处理Twitch链接任务时发生错误', { error });
       throwError(error as Error, 'Twitch.toggle');

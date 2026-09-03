@@ -793,7 +793,7 @@ class Vk extends Social {
     try {
       debug('开始获取Vk ID', { name, doTask });
       const url = `https://vk.com/${name}`;
-      if (/^w=wall-/.test(name.split('?')[1])) {
+      if (/^wall-/.test(name.split(/\?|#/)[0])) {
         const realname = name.match(/wall-\d+?_\d+/)?.[0] || '';
         if (name.includes('action=like')) {
           return { type: 'likeWall', name: realname };

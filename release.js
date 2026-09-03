@@ -25,6 +25,9 @@
   }
   const options = {};
 
+  if (!fs.existsSync('./CHANGELOG.md')) {
+    fs.writeFileSync('./CHANGELOG.md', '');
+  }
   const changelog = fs.readFileSync('./CHANGELOG.md', 'utf8').trim();
   const package = fs.readJSONSync('./package.json');
   package.change = changelog.split('\n').map(line => line.replace(/^-\s*/, '').trim()).filter(line => line);

@@ -5,6 +5,14 @@ lang: zh-CN
 
 ## V5.2
 
+### V5.2.1
+
+[Release](https://github.com/HCLonely/auto-task/releases/tag/v5.2.1)
+
+- 修复：Vk点赞任务获取参数失败
+- 修复：样式编译错误
+- 移除：Freeanywhere扩展任务支持
+
 ### V5.2.0
 
 [Release](https://github.com/HCLonely/auto-task/releases/tag/v5.2.0)

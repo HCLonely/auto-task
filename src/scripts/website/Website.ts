@@ -26,7 +26,6 @@ import {
   toSocialPayload,
   uniqueWebsiteTasks
 } from './taskModel';
-import type { GamesForFarmApi } from './GFF_API';
 
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
@@ -101,7 +100,6 @@ abstract class Website {
     steam?: Steam
     visitLink?: (link: string, options?: MonkeyXhrDetails) => Promise<boolean>
   } = {};
-  #ExtAPI!: GamesForFarmApi | null;
 
   // constructor(EventEmitter: EventEmitter3) {
   //   this.EventEmitter = EventEmitter;
@@ -515,11 +513,7 @@ abstract class Website {
         }
         applySocialResult(social, result);
       }
-      if (this.#ExtAPI) { // todo
-      //   for (const result of results) {
-      //     this.#ExtAPI.tasks.update(result);
-      //   }
-      }
+
       if (!results.every(({ result }) => (typeof result === 'boolean' ? result : result.success))) {
         debug('任务执行失败', { results });
         return false;

@@ -22,9 +22,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           prerelease: false
-          tag_name: v5.2.0
-          name: 5.2.0
-          body: "- 修复：处理Vk任务时报错(#80)\r\n- 优化：任务处理逻辑优化"
+          tag_name: v5.2.1
+          name: 5.2.1
+          body: "- 修复：Vk点赞任务获取参数失败\r\n- 修复：样式编译错误\r\n- 移除：Freeanywhere扩展任务支持"
           files: |-
             dist/auto-task.user.js
             dist/auto-task.min.user.js

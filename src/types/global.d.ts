@@ -5,8 +5,8 @@
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/types/global.d.ts
  */
-declare global {
 
+declare global {
   interface GlobalThis {
     Xresponse: undefined | JQuery;
   }

@@ -1,6 +1,7 @@
 // ============================================================
 // Auto-Task Design Tokens
 // ============================================================
+
 :root {
   --at-primary: #2563eb;
   --at-primary-dark: #1d4ed8;
@@ -227,10 +228,10 @@
   }
 
   li {
-    display: flex !important;
+    // display: flex !important;
     align-items: flex-start !important;
     text-align: left;
-    padding: 10px 8px;
+    padding: 3px 8px;
     border-bottom: 1px solid var(--at-border-light);
     border-radius: 6px;
     transition:
@@ -460,7 +461,7 @@
     &::after {
       content: "✓" !important;
       position: absolute !important;
-      left: 33% !important;
+      // left: 33% !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
       font-size: 20px !important;

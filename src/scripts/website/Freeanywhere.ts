@@ -16,9 +16,7 @@ import httpRequest from '../tools/httpRequest';
 import { delay } from '../tools/tools';
 import { debug } from '../tools/debug';
 import { globalOptions } from '../globalOptions';
-import { ready } from './games-for-farm-api';
 import { normalizeStoredTasks } from './taskModel';
-import type { GamesForFarmApi } from './GFF_API';
 
 /**
  * FreeAnyWhere 类用于处理与 FreeAnywhere 网站相关的任务和操作。
@@ -51,7 +49,6 @@ class FreeAnyWhere extends Website {
     'verifyTask',
     'getKey'
   ];
-  #ExtAPI!: GamesForFarmApi;
 
   /**
    * 检查当前窗口的域名是否为 'freeanywhere.net'
@@ -62,27 +59,6 @@ class FreeAnyWhere extends Website {
     const isMatch = window.location.host === 'freeanywhere.net';
     debug('检查网站匹配', { host: window.location.host, isMatch });
     return isMatch;
-  }
-  /**
-   * 页面加载后的异步方法
-   *
-   * @returns {Promise<void>} 无返回值。
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
-   * 该方法在页面加载后执行初始化操作：
-   * 1. 检查用户登录状态，如果检查失败则记录警告信息
-   * 2. 获取抽奖ID
-   */
-  async after(): Promise<void> {
-    try {
-      debug('开始扩展注入');
-      this.#ExtAPI = await ready();
-      debug('扩展注入完成', { hasApi: Boolean(this.#ExtAPI) });
-    } catch (error) {
-      debug('后续操作失败', { error });
-      throwError(error as Error, 'GiveawayHopper.after');
-    }
   }
 
   /**
@@ -122,6 +98,12 @@ class FreeAnyWhere extends Website {
       }
       const giveawayIdSuccess = this.#getGiveawayId();
       debug('获取抽奖ID结果', { success: giveawayIdSuccess, id: this.giveawayId });
+
+      if ($('.task-check-extension').length > 0) {
+        debug('需要扩展，暂不支持');
+        logStatus.warning(__('needExtensionToDoTask'));
+        return false;
+      }
 
       this.initialized = true;
       logStatus.success();
@@ -260,7 +242,7 @@ class FreeAnyWhere extends Website {
             if (link) this.tasks.push({ done: isSuccess, social: 'vk', type: 'user', link, id, title, data });
             break;
           case 'vk_post_like':
-            if (link) this.tasks.push({ done: isSuccess, social: 'vk', type: 'like', link: `${link}&action=like`, id, title, data });
+            if (link) this.tasks.push({ done: isSuccess, social: 'vk', type: 'like', link: `${link}#action=like`, id, title, data });
             break;
           case 'discord_server_sub':
             debug('跳过 Discord 任务');
@@ -544,10 +526,11 @@ class FreeAnyWhere extends Website {
       // event.preventDefault();
 
       const $parrent = $(`.game__content-tasks__task[data-id="${task.id}"]`);
-      const extension = $parrent.data('extension');
+      const extension = $parrent.find('.task-check-extension').length > 0 || $parrent.data('extension');
 
       if (extension) {
         logStatus.warning(__('verifyExtensionNeeded'));
+        $parrent.find('.task-check-extension')[0].click();
         return false;
       };
 

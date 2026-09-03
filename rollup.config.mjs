@@ -4,6 +4,7 @@ import progress from 'rollup-plugin-progress';
 import sizes from 'rollup-plugin-sizes';
 import { visualizer } from "rollup-plugin-visualizer";
 import scss from 'rollup-plugin-scss';
+import * as sass from 'sass';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
@@ -139,8 +140,13 @@ export default {
     typescript(),
     scss({
       output: false,
-      processor: () => postcss([autoprefixer()]),
+      sass,
+      processor: async (css) => {
+        const result = await postcss([autoprefixer()]).process(css, { from: undefined });
+        return result.css.replace(/^\uFEFF/, '');
+      },
       outputStyle: 'compressed',
+      failOnError: true,
     }),
     svg({
       stringify: true

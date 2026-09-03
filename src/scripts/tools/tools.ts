@@ -95,7 +95,7 @@ const getRedirectLink = async (link?: string, redirectOnce = false): Promise<str
 const visitLink = async (link: string, options?: MonkeyXhrDetails): Promise<boolean> => {
   try {
     debug('开始访问链接', { link, options });
-    const logStatus = echoLog({ type: 'visitLink', text: link });
+    const logStatus = echoLog({ type: 'visitingLink', text: link });
 
     const { result, statusText, status } = await httpRequest({
       url: link,

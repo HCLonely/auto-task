@@ -414,11 +414,6 @@ const loadScript = async (): Promise<void> => {
 try {
   debug('主程序入口开始', { hostname: window.location.hostname, windowName: window.name });
 
-  // if (['freeanywhere.net', 'give.gamesforfarm.local', 'gamesforfarm-testing.ru', 'store.steampowered.com', 'steamcommunity.com', 'www.youtube.com', 'm.youtube.com', 'mee6.xyz', 'gamesforfarm.com'].includes(window.location.hostname) && $('.task-check-extension').length > 0) {
-  //   debug('检测到freeanywhere.com，加载扩展');
-  //   fawExtension();
-  // }
-
   // if (window.location.hostname === 'discord.com') {
   //   if (window.name === 'ATv4_discordAuth') {
   //     debug('检测到Discord认证窗口');

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name               auto-task.compatibility
 // @namespace          auto-task.compatibility
-// @version            5.2.0
+// @version            5.2.1
 // @description        自动完成 Freeanywhere，Giveawaysu，GiveeClub，Givekey，Gleam，Indiedb，keyhub，OpiumPulses，Opquests，SweepWidget 等网站的任务。
 // @description:en     Automatically complete the tasks of FreeAnyWhere, GiveawaySu, GiveeClub, Givekey, Gleam, Indiedb, keyhub, OpiumPulses, Opquests, SweepWidget websites.
 // @author             HCLonely
@@ -174,6 +174,78 @@ function _assertClassBrand(e, t, n) {
     return arguments.length < 3 ? t : n;
   }
   throw new TypeError('Private element is not present on this object');
+}
+
+function _toArray(r) {
+  return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest();
+}
+
+function _iterableToArray(r) {
+  if ('undefined' != typeof Symbol && null != r[Symbol.iterator] || null != r['@@iterator']) {
+    return Array.from(r);
+  }
+}
+
+function _slicedToArray(r, e) {
+  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
+}
+
+function _nonIterableRest() {
+  throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
+}
+
+function _unsupportedIterableToArray(r, a) {
+  if (r) {
+    if ('string' == typeof r) {
+      return _arrayLikeToArray(r, a);
+    }
+    var t = {}.toString.call(r).slice(8, -1);
+    return 'Object' === t && r.constructor && (t = r.constructor.name), 'Map' === t || 'Set' === t ? Array.from(r) : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
+  }
+}
+
+function _arrayLikeToArray(r, a) {
+  (null == a || a > r.length) && (a = r.length);
+  for (var e = 0, n = Array(a); e < a; e++) {
+    n[e] = r[e];
+  }
+  return n;
+}
+
+function _iterableToArrayLimit(r, l) {
+  var t = null == r ? null : 'undefined' != typeof Symbol && r[Symbol.iterator] || r['@@iterator'];
+  if (null != t) {
+    var e, n, i, u, a = [], f = !0, o = !1;
+    try {
+      if (i = (t = t.call(r)).next, 0 === l) {
+        if (Object(t) !== t) {
+          return;
+        }
+        f = !1;
+      } else {
+        for (;!(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {}
+      }
+    } catch (r) {
+      o = !0, n = r;
+    } finally {
+      try {
+        if (!f && null != t.return && (u = t.return(), Object(u) !== u)) {
+          return;
+        }
+      } finally {
+        if (o) {
+          throw n;
+        }
+      }
+    }
+    return a;
+  }
+}
+
+function _arrayWithHoles(r) {
+  if (Array.isArray(r)) {
+    return r;
+  }
 }
 
 function ownKeys(e, r) {
@@ -406,7 +478,10 @@ function _toPrimitive(t, r) {
   const deepMerge = (target, source) => {
     try {
       const result = _objectSpread({}, target);
-      for (const [key, value] of Object.entries(source)) {
+      for (const _ref of Object.entries(source)) {
+        var _ref2 = _slicedToArray(_ref, 2);
+        const key = _ref2[0];
+        const value = _ref2[1];
         const targetValue = target[key];
         if (isObject(value) && isObject(targetValue)) {
           result[key] = deepMerge(targetValue, value);
@@ -426,7 +501,7 @@ function _toPrimitive(t, r) {
   };
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
-  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{display:flex !important;align-items:flex-start !important;text-align:left;padding:10px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:18px !important;height:18px !important;flex-shrink:0 !important;margin-top:1px;margin-right:8px;background-size:18px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;left:33% !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
+  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{align-items:flex-start !important;text-align:left;padding:3px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:18px !important;height:18px !important;flex-shrink:0 !important;margin-top:1px;margin-right:8px;background-size:18px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
   const data$1 = {
     website: '网站',
     type: '类型',
@@ -741,7 +816,8 @@ function _toPrimitive(t, r) {
     updatingUserData: '正在更新用户数据...',
     gettingUserGames: '正在获取用户游戏...',
     skipExtensionToVerifyTask: '需要扩展，跳过自动验证',
-    verifyExtensionNeeded: '此任务验证需要扩展程序，跳过',
+    needExtensionToDoTask: '当前活动需要官方扩展验证，暂不支持自动此类任务',
+    verifyExtensionNeeded: '此任务验证需要扩展程序，如验证失败请手动完成',
     confirmingTask: '正在跳过警告页面...',
     unSupporttedTaskType: '不支持的任务类型: %0',
     taskNotFinished: '有任务未完成，不获取密钥',
@@ -1060,7 +1136,8 @@ function _toPrimitive(t, r) {
     updatingUserData: 'Updating user data...',
     gettingUserGames: 'Getting user games...',
     skipExtensionToVerifyTask: 'Need extension, skip automatic verification',
-    verifyExtensionNeeded: 'This task verification requires the extension. Skip.',
+    needExtensionToDoTask: 'This activity requires verification via the official extension, cannot be completed automatically.',
+    verifyExtensionNeeded: 'This task verification requires the extension. If verification fails, please complete it manually.',
     confirmingTask: 'Confirming task...',
     unSupporttedTaskType: 'Unsupportted task type: %0',
     taskNotFinished: 'There are tasks not completed, do not get the key',
@@ -1312,13 +1389,13 @@ function _toPrimitive(t, r) {
     const envInfo = await getEnvironmentInfo();
     envInfo.logs = errorStack;
     debug('显示错误报告对话框');
-    const {isConfirmed: isConfirmed} = await Swal.fire({
+    const _await$Swal$fire = await Swal.fire({
       title: I18n('errorReport'),
       icon: 'error',
       showCancelButton: true,
       confirmButtonText: I18n('toGithub'),
       cancelButtonText: I18n('close')
-    });
+    }), isConfirmed = _await$Swal$fire.isConfirmed;
     if (isConfirmed) {
       debug('用户确认提交错误报告');
       await handleErrorReport('github', name, errorStack, envInfo);
@@ -1343,7 +1420,7 @@ function _toPrimitive(t, r) {
       return headers;
     }
     headerString.split('\n').forEach((header => {
-      const [name, ...values] = header.trim().split(':');
+      const _header$trim$split = header.trim().split(':'), _header$trim$split2 = _toArray(_header$trim$split), name = _header$trim$split2[0], values = _header$trim$split2.slice(1);
       const value = values.join(':').trim();
       if (!name || !value) {
         return;
@@ -1490,16 +1567,16 @@ function _toPrimitive(t, r) {
       };
     }
   };
-  var ASF = '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" version="1.1">\n<g id="surface1">\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(11.372549%,17.254902%,26.274511%);fill-opacity:1;" d="M 7.652344 0.175781 C 8.046875 0.351562 8.210938 0.59375 8.441406 0.953125 C 9.007812 1.746094 9.644531 2.539062 10.640625 2.761719 C 12.011719 2.949219 13.429688 2.882812 14.808594 2.796875 C 14.90625 2.792969 15.003906 2.785156 15.101562 2.78125 C 15.1875 2.773438 15.273438 2.769531 15.363281 2.761719 C 15.429688 2.769531 15.496094 2.777344 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.34375 15.976562 4.597656 15.960938 4.851562 C 15.957031 4.925781 15.957031 5 15.953125 5.074219 C 15.945312 5.175781 15.945312 5.175781 15.941406 5.285156 C 15.9375 5.378906 15.9375 5.378906 15.929688 5.480469 C 15.914062 5.652344 15.914062 5.652344 15.824219 5.914062 C 15.816406 6.058594 15.8125 6.203125 15.8125 6.34375 C 15.8125 6.433594 15.8125 6.519531 15.808594 6.613281 C 15.808594 6.707031 15.808594 6.800781 15.808594 6.898438 C 15.804688 7.097656 15.804688 7.300781 15.800781 7.5 C 15.796875 7.816406 15.792969 8.132812 15.792969 8.449219 C 15.789062 8.753906 15.785156 9.058594 15.78125 9.363281 C 15.78125 9.457031 15.78125 9.550781 15.78125 9.648438 C 15.777344 9.738281 15.777344 9.824219 15.773438 9.914062 C 15.773438 10.03125 15.773438 10.03125 15.773438 10.148438 C 15.738281 10.347656 15.738281 10.347656 15.625 10.503906 C 15.386719 10.671875 15.152344 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.6875 12.414062 13.6875 12.414062 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.359375 12.515625 13.359375 12.515625 13.324219 12.683594 C 13.226562 13.144531 13.054688 13.566406 12.871094 14 C 12.75 13.988281 12.628906 13.980469 12.511719 13.96875 C 12.410156 13.957031 12.410156 13.957031 12.308594 13.949219 C 12.050781 13.90625 11.8125 13.828125 11.566406 13.738281 C 11.492188 13.867188 11.492188 13.867188 11.417969 14 C 11.355469 14.113281 11.292969 14.222656 11.226562 14.335938 C 11.195312 14.394531 11.164062 14.449219 11.132812 14.507812 C 11 14.738281 10.882812 14.941406 10.695312 15.128906 C 10.257812 15.097656 9.957031 14.863281 9.601562 14.625 C 9.402344 14.503906 9.402344 14.503906 9.222656 14.542969 C 9.015625 14.617188 8.925781 14.703125 8.777344 14.863281 C 8.730469 14.914062 8.683594 14.964844 8.632812 15.019531 C 8.535156 15.125 8.433594 15.234375 8.335938 15.339844 C 7.972656 15.726562 7.972656 15.726562 7.675781 15.792969 C 7.4375 15.726562 7.367188 15.660156 7.21875 15.460938 C 7 15.1875 6.773438 14.941406 6.523438 14.695312 C 6.375 14.550781 6.230469 14.40625 6.085938 14.261719 C 6.023438 14.195312 5.957031 14.128906 5.890625 14.0625 C 2.175781 10.347656 2.175781 10.347656 1.945312 10.117188 C 1.738281 9.910156 1.527344 9.707031 1.316406 9.503906 C 1.160156 9.351562 1 9.199219 0.84375 9.042969 C 0.722656 8.925781 0.722656 8.925781 0.597656 8.808594 C 0.519531 8.734375 0.445312 8.660156 0.363281 8.582031 C 0.296875 8.515625 0.226562 8.445312 0.152344 8.375 C -0.03125 8.132812 -0.0351562 8.039062 0 7.738281 C 0.117188 7.570312 0.117188 7.570312 0.28125 7.402344 C 0.34375 7.339844 0.40625 7.277344 0.472656 7.210938 C 0.542969 7.144531 0.613281 7.074219 0.683594 7.003906 C 0.757812 6.933594 0.828125 6.859375 0.902344 6.785156 C 1.101562 6.585938 1.304688 6.386719 1.503906 6.1875 C 1.714844 5.980469 1.921875 5.773438 2.132812 5.5625 C 2.480469 5.214844 2.832031 4.863281 3.183594 4.515625 C 3.683594 4.023438 4.175781 3.53125 4.671875 3.039062 C 5.015625 2.695312 5.359375 2.355469 5.699219 2.015625 C 5.785156 1.929688 5.867188 1.847656 5.949219 1.765625 C 6.222656 1.492188 6.496094 1.222656 6.773438 0.949219 C 6.839844 0.882812 6.910156 0.8125 6.980469 0.742188 C 7.078125 0.648438 7.078125 0.648438 7.171875 0.550781 C 7.226562 0.496094 7.285156 0.441406 7.339844 0.386719 C 7.476562 0.261719 7.476562 0.261719 7.652344 0.175781 Z M 7.652344 0.175781 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.332031 15.980469 4.578125 15.96875 4.824219 C 15.964844 4.929688 15.964844 4.929688 15.960938 5.035156 C 15.9375 5.492188 15.863281 5.90625 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.761719 5.195312 13.582031 5.089844 13.40625 4.988281 C 12.996094 4.746094 12.585938 4.507812 12.167969 4.273438 C 10.847656 3.527344 10.847656 3.527344 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 7.566406 5.304688 C 7.878906 5.410156 7.90625 5.480469 8.058594 5.761719 C 8.117188 5.859375 8.117188 5.859375 8.175781 5.964844 C 8.269531 6.195312 8.277344 6.363281 8.261719 6.609375 C 8.355469 6.550781 8.449219 6.492188 8.550781 6.433594 C 8.777344 6.296875 8.855469 6.261719 9.128906 6.261719 C 9.136719 6.425781 9.140625 6.589844 9.148438 6.753906 C 9.152344 6.894531 9.152344 6.894531 9.15625 7.035156 C 9.125 7.34375 9.058594 7.492188 8.871094 7.738281 C 8.703125 7.871094 8.703125 7.871094 8.527344 7.972656 C 8.46875 8.007812 8.410156 8.042969 8.351562 8.078125 C 8.292969 8.109375 8.234375 8.140625 8.175781 8.175781 C 8.113281 8.207031 8.054688 8.238281 7.996094 8.273438 C 7.710938 8.398438 7.511719 8.335938 7.21875 8.261719 C 6.832031 8.070312 6.476562 7.859375 6.261719 7.476562 C 6.167969 7.203125 6.164062 7.007812 6.167969 6.722656 C 6.167969 6.636719 6.171875 6.550781 6.171875 6.460938 C 6.171875 6.394531 6.171875 6.328125 6.175781 6.261719 C 6.492188 6.332031 6.753906 6.457031 7.042969 6.609375 C 7.050781 6.480469 7.050781 6.480469 7.058594 6.347656 C 7.113281 5.9375 7.332031 5.636719 7.566406 5.304688 Z M 7.566406 5.304688 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.882353%,8.235294%,15.294118%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.800781 15.769531 9.878906 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.398438 15.664062 10.472656 15.476562 10.609375 C 15.15625 10.625 15.15625 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.726562 12.421875 13.648438 12.40625 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.449219 12.027344 13.535156 11.730469 13.644531 11.425781 C 13.679688 11.332031 13.710938 11.238281 13.746094 11.144531 C 13.78125 11.046875 13.816406 10.953125 13.851562 10.851562 C 13.902344 10.710938 13.902344 10.710938 13.957031 10.566406 C 14.054688 10.289062 14.160156 10.015625 14.261719 9.738281 C 14.292969 9.65625 14.320312 9.574219 14.351562 9.488281 C 14.613281 8.792969 14.613281 8.792969 14.929688 8.523438 C 15.359375 8.140625 15.347656 7.753906 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(13.725491%,18.431373%,37.254903%);fill-opacity:1;" d="M 13.566406 9.824219 C 13.609375 9.914062 13.609375 9.914062 13.652344 10 C 13.539062 10.21875 13.417969 10.425781 13.289062 10.636719 C 13.207031 10.769531 13.125 10.90625 13.046875 11.039062 C 13.003906 11.109375 12.960938 11.183594 12.914062 11.253906 C 12.691406 11.632812 12.46875 12.015625 12.25 12.398438 C 12.207031 12.472656 12.160156 12.550781 12.117188 12.628906 C 11.8125 13.160156 11.53125 13.703125 11.269531 14.253906 C 11.113281 14.582031 10.933594 14.855469 10.695312 15.128906 C 10.3125 15.078125 10.042969 14.933594 9.710938 14.734375 C 9.574219 14.648438 9.574219 14.648438 9.429688 14.566406 C 9.359375 14.523438 9.289062 14.480469 9.21875 14.433594 C 9.253906 14.046875 9.523438 13.835938 9.789062 13.582031 C 9.832031 13.539062 9.875 13.496094 9.921875 13.449219 C 10.15625 13.21875 10.402344 12.996094 10.65625 12.78125 C 11.15625 12.34375 11.621094 11.871094 12.089844 11.398438 C 12.25 11.238281 12.414062 11.078125 12.574219 10.914062 C 12.679688 10.8125 12.78125 10.707031 12.886719 10.605469 C 12.933594 10.554688 12.980469 10.507812 13.03125 10.457031 C 13.234375 10.253906 13.40625 10.066406 13.566406 9.824219 Z M 13.566406 9.824219 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.294118%,95.686275%,96.078432%);fill-opacity:1;" d="M 6.175781 10.347656 C 6.503906 10.464844 6.769531 10.617188 7.054688 10.820312 C 7.128906 10.871094 7.203125 10.925781 7.277344 10.976562 C 7.445312 11.105469 7.59375 11.234375 7.738281 11.390625 C 7.769531 11.316406 7.769531 11.316406 7.800781 11.238281 C 7.941406 10.992188 8.105469 10.882812 8.335938 10.722656 C 8.410156 10.671875 8.488281 10.617188 8.566406 10.5625 C 8.761719 10.449219 8.90625 10.386719 9.128906 10.347656 C 9.21875 11.453125 9.21875 11.453125 8.914062 11.832031 C 8.617188 12.113281 8.285156 12.273438 7.914062 12.433594 C 7.882812 12.921875 7.855469 13.410156 7.824219 13.914062 C 7.683594 13.914062 7.539062 13.914062 7.390625 13.914062 C 7.390625 13.398438 7.390625 12.878906 7.390625 12.347656 C 7.246094 12.320312 7.105469 12.289062 6.957031 12.261719 C 6.5625 12.078125 6.359375 11.875 6.175781 11.476562 C 6.144531 11.097656 6.152344 10.726562 6.175781 10.347656 Z M 6.175781 10.347656 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(8.235294%,11.764706%,23.137255%);fill-opacity:1;" d="M 14.433594 9.042969 C 14.523438 9.21875 14.523438 9.21875 14.484375 9.378906 C 14.460938 9.445312 14.4375 9.507812 14.414062 9.574219 C 14.386719 9.648438 14.359375 9.71875 14.335938 9.792969 C 14.308594 9.871094 14.277344 9.949219 14.25 10.027344 C 14.222656 10.105469 14.195312 10.183594 14.164062 10.265625 C 14.007812 10.703125 13.84375 11.132812 13.675781 11.566406 C 13.503906 11.996094 13.386719 12.429688 13.285156 12.878906 C 13.179688 13.269531 13.03125 13.632812 12.871094 14 C 12.378906 13.96875 12 13.910156 11.566406 13.652344 C 11.703125 13.144531 11.960938 12.71875 12.222656 12.265625 C 12.269531 12.1875 12.316406 12.105469 12.363281 12.023438 C 12.460938 11.859375 12.554688 11.695312 12.648438 11.53125 C 12.765625 11.332031 12.882812 11.128906 12.996094 10.925781 C 13.402344 10.222656 13.859375 9.621094 14.433594 9.042969 Z M 14.433594 9.042969 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 14.917969 3.957031 14.128906 3.839844 13.324219 3.6875 C 13.066406 3.640625 12.808594 3.59375 12.546875 3.550781 C 12.363281 3.515625 12.175781 3.484375 11.992188 3.449219 C 11.78125 3.414062 11.566406 3.378906 11.355469 3.34375 C 11.226562 3.324219 11.226562 3.324219 11.097656 3.304688 C 11.027344 3.292969 10.953125 3.28125 10.878906 3.273438 C 10.664062 3.207031 10.570312 3.132812 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 9.128906 8.261719 C 9.183594 9.257812 9.183594 9.257812 9.011719 9.695312 C 8.605469 10.082031 8.152344 10.3125 7.597656 10.398438 C 7.09375 10.3125 6.6875 10.128906 6.347656 9.738281 C 6.074219 9.320312 6.136719 8.828125 6.175781 8.347656 C 6.539062 8.394531 6.765625 8.519531 7.066406 8.734375 C 7.140625 8.789062 7.214844 8.839844 7.292969 8.894531 C 7.476562 9.042969 7.476562 9.042969 7.566406 9.21875 C 7.621094 9.21875 7.679688 9.21875 7.738281 9.21875 C 7.835938 9.117188 7.933594 9.015625 8.03125 8.914062 C 8.738281 8.261719 8.738281 8.261719 9.128906 8.261719 Z M 9.128906 8.261719 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(7.843138%,11.372549%,22.745098%);fill-opacity:1;" d="M 11.042969 3.476562 C 11.648438 3.675781 12.246094 3.886719 12.84375 4.101562 C 12.984375 4.152344 12.984375 4.152344 13.125 4.207031 C 14.054688 4.542969 14.984375 4.878906 15.914062 5.21875 C 15.867188 5.597656 15.816406 5.972656 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.667969 5.140625 13.402344 4.984375 13.132812 4.828125 C 12.804688 4.636719 12.476562 4.445312 12.148438 4.253906 C 12.011719 4.179688 11.878906 4.101562 11.746094 4.023438 C 11.683594 3.988281 11.621094 3.949219 11.558594 3.914062 C 11.140625 3.671875 11.140625 3.671875 11.042969 3.476562 Z M 11.042969 3.476562 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0.392157%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.839844 15.769531 9.839844 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.394531 15.664062 10.472656 15.476562 10.609375 C 15.199219 10.625 15.199219 10.625 14.957031 10.609375 C 14.875 10.285156 14.871094 10.046875 14.933594 9.71875 C 14.949219 9.636719 14.964844 9.550781 14.980469 9.464844 C 15 9.378906 15.015625 9.289062 15.03125 9.199219 C 15.050781 9.113281 15.066406 9.027344 15.082031 8.933594 C 15.203125 8.289062 15.203125 8.289062 15.304688 8.085938 C 15.34375 7.792969 15.375 7.5 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(86.274511%,87.450981%,89.019608%);fill-opacity:1;" d="M 8.609375 3.390625 C 8.78125 3.390625 8.953125 3.390625 9.128906 3.390625 C 9.128906 4.109375 9.128906 4.824219 9.128906 5.566406 C 8.988281 5.59375 8.84375 5.621094 8.695312 5.652344 C 8.609375 5.566406 8.609375 5.566406 8.597656 5.355469 C 8.597656 5.265625 8.601562 5.175781 8.601562 5.082031 C 8.601562 4.984375 8.601562 4.886719 8.601562 4.785156 C 8.601562 4.683594 8.601562 4.578125 8.601562 4.472656 C 8.605469 4.371094 8.605469 4.265625 8.605469 4.160156 C 8.605469 3.902344 8.605469 3.648438 8.609375 3.390625 Z M 8.609375 3.390625 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.725491%,94.117647%,94.509804%);fill-opacity:1;" d="M 6.175781 3.390625 C 6.316406 3.390625 6.460938 3.390625 6.609375 3.390625 C 6.609375 4.136719 6.609375 4.882812 6.609375 5.652344 C 6.464844 5.625 6.320312 5.59375 6.175781 5.566406 C 6.175781 4.847656 6.175781 4.128906 6.175781 3.390625 Z M 6.175781 3.390625 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.333334%,93.725491%,94.117647%);fill-opacity:1;" d="M 7.476562 2.433594 C 7.59375 2.433594 7.707031 2.433594 7.824219 2.433594 C 7.824219 3.179688 7.824219 3.925781 7.824219 4.695312 C 7.683594 4.695312 7.539062 4.695312 7.390625 4.695312 C 7.390625 4.335938 7.386719 3.976562 7.386719 3.613281 C 7.386719 3.511719 7.382812 3.410156 7.382812 3.300781 C 7.382812 3.203125 7.382812 3.105469 7.382812 3.003906 C 7.382812 2.914062 7.382812 2.824219 7.382812 2.730469 C 7.390625 2.523438 7.390625 2.523438 7.476562 2.433594 Z M 7.476562 2.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 15.390625 6.871094 C 15.511719 7.203125 15.449219 7.484375 15.390625 7.824219 C 15.304688 7.769531 15.21875 7.710938 15.128906 7.652344 C 15.171875 7.328125 15.207031 7.148438 15.390625 6.871094 Z M 15.390625 6.871094 "/>\n</g>\n</svg>\n';
-  var Web = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Discord = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Twitch$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\n\t<title>favicon-32-e29e246c157142c94346</title>\n\t<defs>\n\t\t<image  width="28" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAgBAMAAADzmwVxAAAAAXNSR0IB2cksfwAAACdQTFRFAAAAk0b/kUb/////wZf/yKP/j0b/j0X/j0b/kUb/j0D/kUb/j0j/8nvBLQAAAA10Uk5TAH//////gJCgzxDfIMV/78EAAACZSURBVHicY2RgYFRkgANGBgYhAWQuUFIQxnvPCJJE4oJ0InFBOpG4Sgxg7ntBMKI9F81ebFzGdyhc+SvIXKa3dshc+as3kbhMb+MawFygANNbBga2GwwwrvwFBoaKNBhXGCjJXp4A4xoAJWe4McC4QMA51QGZO8sFEuwMDEoQKQS3KoUBiQsyFIkb18CAxFW/yYDMTVgA4wIAtrc0x9ZZthYAAAAASUVORK5CYII="/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="2" y="0"/>\n</svg>\n';
-  var Instagram = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76" width="16" height="16">\n\t<title>lam-fZmwmvn</title>\n\t<defs>\n\t\t<image  width="76" height="76" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAMAAADwSaEZAAAAAXNSR0IB2cksfwAAAvdQTFRFR3BM1TeUehf6exj7gBn8bxf9bxX9eA32hAnukgXlngTjqATisAPguQLewAThxAHdygLd0AHazwDU3gDA3gDB7ROe1gDY3wDI2gDHYBlFeBf9cxn8gRf9ihf9kQvx3ADW6AC/kRf9oQzxrw3v4wDX5gDO7AC0uAnomRf86wDV8ADG8QPR8wC69AqfoBf8qBf74BTc6xTW8wCr9xOVvzT24WHu3oP39qzy9sr5+N78/ej6/t31+Xrj+lbX9xvS9wnJ//7+//////n69QCesRn7/gLD/gG+/gGy/8vq/ivO/gG5//X7/QKq9wea6k3l+zrS+yq8/gCj+ACPuhr6/gq3/gCc7xbO/A/BxRr4/RO4/gCW/VDD/2nM/gCQ0hzz/7Pe/gGJ/gmw/UG4+h2r/gGC3Bru6Bvd/QJ79BrD/hOt/pDO5Rro/hKk9xu2/gJ08Brf+x6g/hKY/S+j/QJt/SCW/hOQ/SKQ/m+3/haH/SKI/lul/+vw/QBn/EOT/h2B/hV8/iF6/iR0/idu/uHk/i1//QFi/its/oar/T94/ixm/Spd/mON/lZw/snV/i5V/omZ/hNw/kNZ//r2/jNO/jtT/jNi/gBf/l1c/jpJ/nh//tfS/jlc/jFH/jND/khR/jk//T9D/hFn/ipM/kM6/js1/kZB/sS1/R1k/lA9/Us1/kEq/oN1/qmz/g5c/nNI/lEv/hZb/lg2/kgf/h5Z/lgq/lQX/l8m/mI4/iJS/mMY/oxO/mch/mcv/FEP/FwG/pdo/m0b/WUB/rd//mwC/nQY/nQn/m4s/nMC/qOJ/ndk/vHc/noV/noC/oQd/p0//oIS/nsi/unI/tuq/oIC/rA9/ooB/owT/vbn/pAE/pUP/pYB/pwI/p0A/qkf/tBr/GMY/XQD+3QI/qQC/qoC/td8+4QW/q8A/rsW/rQA/rgA/rsA/r4A/YUD/SGH/sEA/JUF/sUA/JIG/skA/DJm/JgH/asD/s0A/EFI+68J/bcE+1E0+0w6/L0Fi9deiwAAAP10Uk5TAA5AcL3X////////////////5a9+QP//zwL/nP////////////////7/////xP//////df/////////////////////////////////l/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+XBcP///z/////////V1f+M/6v/oavV/9VwwMFw5VUJIaQAAAukSURBVHicbZhbbBxXGYD/f2Zn9uZL7NiNL4nTFLnUqZpKlaqKRCBIgApIWhKE1PahPKAiRFNaCdSqL4U+0odKlUorQXkAoSCQQLRqSwlKpIKaFAJNlFtDTdzarr221/a63uvc+S9nZ9eB8Xr27Myc7/zXc/4zCOmBcph2wg35kZ7wxg9Kl9WkQ0gbltVp/y8q/Qik3XZYhHAt2QIbhWU7RQ3B2va1/y8QYEpUko4aZUqjAKVRReBYOSUBrA3D6nD5JmqVsSMJWLAFBJCHJuZa3IrWktHSaAm7WEOCoz4oJFjtkCzoVk1AdLQURe3qetIeilkpiS9lIshwawlTUofDnZ2A/tQUm/lmHty19ZES/x61ykpKx7cjRi2PLI8vqs9Svdq81EtAVDq7sO4wbHR5pBtFmCz4plViEDJhC4cFo3MozYawACplcgBmhg1pC4qaJbrKpDZIEe0jJILERKOnxrDsZRLV3mGlQZIhlAtYS1G7u+JHjpaVNhPU+Gr08PA9gP9CtEduQEENBiQXcAumjY0gcRDXYGhVaAz3XRYtuIzWmLGkaMgsx7Jy3CvR0w2sBKwYIWllNGHWYqH10GngItpjDApZKkENb9pZxhOqm4byW12olwK0XSiNLQKMc5QOAGxgZpfcMihwMjkjqbELSHc0jS2XchixQtGCoa3gbfKEq0oMbzg5MELxx8rfYLNmDGmEJej3IcyNQ3kMFkkwKOC+jj2GYcPJ8qMJeLEzKNb3b6BxeCZBxtEe/rAfcdws7t6k3/14pz7DsQb9C2L5wuqOOUAOgiEjcjsK0qOwNNRg+bI9VY5BBzYHiYpfTB/oh/kCs7wggFpv644rjBpc7zJgt1ebkcteCosO0zYH1/vp8jfaDzjBLBksQW9ojh/2KV/dwQpIzGjmqKGMHzJOOUtm9SeqDj/iAE0g+ABnqibKTJHGLq5Q4mLr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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Twitter$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="16" height="16">\n\t<title>icon-ios</title>\n\t<defs>\n\t\t<image  width="1024" height="1024" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAMAAABIw9uxAAAAAXNSR0IB2cksfwAAAwBQTFRFAAAABAQEFxcXGBgYDAwMERERCgoKfn5+wMDAv7+/k5OTFhYWKioqp6enq6urJycnPDw83Nzc////+/v7f39/BwcHKSkpu7u78vLyc3NzXl5e7+/v6+vrU1NTExMTra2t9/f3e3t7BgYGCQkJiIiI+fn50tLSLy8vDw8Pjo6O/f39mJiYrq6ur6+vGRkZCAgIh4eH/v7+Gxsb1NTUhISEAQEBZGRk8PDwvLy8ICAgVVVV6enp7OzsVlZWAwMDWFhY4+Pj0NDQODg4AgIC1tbWNTU1QkJC4eHh2NjYPz8/pKSktLS0Li4uxcXFy8vL+vr6wsLC7u7ubW1tBQUFSEhI5eXl8/PzfHx89vb2Nzc3EhISkpKS/Pz8nZ2dEBAQDQ0NuLi4hYWFIyMjwcHBi4uLYmJi7e3tvr6+Q0ND3d3dXFxczMzMZ2dn8fHx29vbOzs72traQEBAj4+Pvb29Hh4eMjIyx8fHHR0dt7e3JiYmaGhoNjY2oaGh39/fmZmZpqamFRUVrKysl5eXZmZmw8PDJCQkMDAwz8/Pa2tr6urqycnJMzMzUFBQ4uLifX19+Pj4xMTE5+fnFBQUo6OjnJycISEhb29vR0dH5OTkRUVFmpqalJSUcHBw9fX1xsbGJSUleHh4Dg4ObGxsKCgodHR0QUFB5ubmPj4+1dXV4ODgGhoaubm5eXl5hoaGOTk56Ojom5ubkZGRXV1dd3d3qKioUVFRysrKRkZGqqqqtra29PT0aWlpg4ODHBwcCwsLlpaWenp6sbGxcXFxT09Pzs7O19fXSkpK3t7e2dnZIiIijIyMgICAYGBgbm5u0dHRUlJScnJylZWVsLCwurq6Tk5OVFRU09PTNDQ0Ojo6KysrPT09Y2NjZWVlW1tbjY2NtbW1yMjIYWFhn5+fWlpadnZ2TU1Nzc3NpaWlLS0tgYGBV1dXoqKiWVlZS0tLdXV1s7OzHx8fgoKCoKCgkJCQREREX19fTExMSUlJqampMTExLCwsiYmJsrKyampqioqKnp6enA0qUQAAUvtJREFUeJzt3X1gjmX/P/DrZFt5aNTQ4reNzTC5Lasrj9tks7Kk1iwNbR5KMVHa8rDGPM00NzeNodCEydMippIVlqhMSTGR4ksSIk+F7HfXfd9luGzXcb2P6zyv83i//vne9/fb8TnOb+y96zrO4/gcmoWIlKXp/QBEpB8GAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwB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ABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHC/j9GYmsPmw8LugAAAABJRU5ErkJggg=="/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Reddit$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="16" height="16">\n\t<title>192x192</title>\n\t<defs>\n\t\t<image  width="192" height="192" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAAAXNSR0IB2cksfwAAPL5JREFUeJztXQeYFEXabnLOknMWiYJKPEDYQA4qqAiH8VTM4U799UTPHM4cD++Qu8NTOc8cMSeEJSy7bM67bM5xdnZ35v2/r7p7pnumZ3cWZraHZcrnfVgn9HRVve8XqqqrJClYTrogTOqGpdIYhErzES5ton/vIjyHEOltem8v4RD9fwqhkFBFgAdU0XcK6fNp9PcR8d0Q6R36+6+EO+jaG7FMWoAV0gTMl3qYXe9gOc0KFkudsUQaSqRcQOS8jfB3wj5CFhG0nFDfCLl9BZvyW9mEX8Q9hEq3ExZhFd3bH6QOZrdTsLSiQhZ3IpFrMxHtNfo3klDZAiQ/MYRJJSRO9jY76b4vJ7GONbv9guUUKxReDCIiXSJIFColmU7qkxdFGuFvhHWE4ZCktma3cbAEUMEDUluKrccRWW4gfAE5TrebTlzfg+tUJuoYLt1InmIE193s9g8WkwqWSz3JIl4lEs1QqToACNrSqFQS9G3cFmb3R7C0QOEEkSxfOHX6HkJ5AJAwUGCh9tiNpVIoNkhdzO6nYPFxUeL6mwnHqLPrAoBwgQpum8OirZZKA83ut2A5yUIdOZo69HFCUQCQ61RDNuUKL3Ibmt2PwdLMQmHOVMijOJYAINKpDg6P3qR/ZwST5gAugNRGjNmHSLsQGozv/YBa0bbh0nRua7P7O1g0RcyAhknPIGjxWwJsXHZguTTM7H4/7YtYgxMmPSBmQM0nxukGbvM/UbLcz2wenHYFs6Su1Pgb0Bpmak99RFPouSEYFrVQEdP5vMrS/I4Pwola6pePeKGg2fxotUWsxFwq3Qx5qYLZHR6EMXg5923cV2bzpVUVsi5TCN+gda7RaW3gPvo+OH/ggyIWqoVKl5JVCU5knXrIJ1wOKZgbnFDBOqk3WZH/QH4AxOzODOLEwH33LmGI2Xw6ZYqY0OKnm8KkxADowCB8gRDpKGGx2dw6JQoRfysaf242iFMTRSSCG83mV8AWLJc6KY8dmt1RQfgTYdKTWCn1MZtvAVV46S01zPsIxvunB7ivg8ut5YLF0ihqlBjTOyWIlkYkVkgjzeafqUXscRMq9sAxuzOCMAf55A1mm81DUwpVfDk1QF4AdMLpibC2wLqewO/HAncsAu5fA2xfB/wpBLhyEr3XGwhv21IiWGU2H1u0UIVXI7h02Rys6CSIbt+7C/a8NNgb6mEH9ODX8jNhP/AZ8MzVwJru/r6vUiyRVpvNS78XnhUEbzIVHOZseSzvALx8E+y5qe6EbwrVFbDv/D9g4yB/3qMVIdIVZnPUr4UriNNzCxLzENYGuPFc2GP2wW63NZ/8WmTEwL59rRw++ed+mRubzeapX4oS9gR3ZGhp/Hk17BUlJ0d8LawW2Hf8EVjW3l/3XNXqwiEslVaB4zyzyXCawf70FbDbGnxHfgfov//+lZJkv4nAQiJYbjZvfVIQLp2H4GhPy+P/lpPlL/YD+RXYKJx6+Wb/3X+YlM/D5Gbz96QKqXgk5GWx5hPidMJlI2DPTvIf+VXUVALbZvlTBGk8UWo2j0+oKMsbIk0nw2kI+2c7/E9+FZRci/kE/9UnGmtOsWUTWCD1Udb2mE6G0w32a6bAVlfbcgJgPLHFv/UKkz7gxZJm89rrghDpSbOJcHqiDWxf7ESD3Q6bvWXIb2MkHqSEuJ0/62YjEbxuNq+9KmLvedOJcJpifR/U52egnhJUIYKWID/9Tr2lGvabZvu/fvysSCA/Ygl+kiu4a4NpsN0dhppaK6ottaixWgU5/SUClfwN5GrqGmyo37W9JepYFbBPltHNDSFEmU2C0wlWCnkiF3fDrgUDcN+cEdi6OhQrt1yFkI2bEb5pK+586DEUlZb5XARa8rO3sTY0oO6Xj1qq3on8vLjZfNcV8RxvuDjO03RStHaUh7THhwv74przxmLstBnoP3kmzpg0Df0mTEHfcWc50G/8ZJwxcSrmLF+L/OJin+UEfB0H+cnyW+sbYKmrhyUrueXagTdLCKSdqpU1PsGnufwEO1n6jCWd8dTcIZg1jYh95jT0GTMRPYePQveBQ9H1jAHo3OcMdOrVF5169hHoTH936XsGuvUfhGdffkVJjE88JHJYfbts9R3kr69HNYVbVZWVLdkmzLVLzea9KMoB0cHJLj/BEtoWz80bjAlTpgnL3nPoSHQ7YyA69eiJ9p27oF3HTmjXidFZ/H/7Ll3p367ye/Qav7/l8sudibFGCN6IQSW+NuSp01j+amsdKinnKK+xtHTbFFLUMdlc8vN2hbwLWAAQpbWBrf73i3ph/vRJZO3PRPdBw8jC90H7TjLpO3TpRla+D7r2G0jvDUXPISPQc9ho9Bo+hjCahDIKPQYPR7cBQ3DP/Q8Iwopk1WZzF4MybOqE8/UGQXybk/gU79eS1bfU1QnLL8hfbUFJRYt6ABVfm7oNIynwVgS3K/Q5akLa4v45wzHkzCnoNWwUulA4015Y+M5CBN36Dxav9x17pojzB06ZicHTzsGQGedh6NmzMXTGbAyZfh4GTT0HE+ctRsTRKGGtmbiyEBpECOMQgwHqNdATvx41ZPWraq2oIPKXEfmLq6pRlJ5kVnvdYg75+VCK4IMtPkcZJblXnztGkLs7We8OXbsLi9+pR2+K94eg9+jxlPROx2Ai+IhzF2DsvPMxYWEoJp2/DJOXrsAUBZOXLEf4ZVfisx9+ElaarTUTVysEVQxMcAGbAvH/DYL0/Bkt8YXVJ/JzyFPK5K+sRkF5JYr3fWFWmxXxjuEtS35+sou3ww4AwrQmFC5tj9AZE9F71HhKYPujPYc6JIBuAwahz6hxGDB5BobPmodx85fgLCL8jGVrEbJyFf64ch7+tXwivtm2Aj8eiUJUchqSjueikIlJBC2trhGEZSGw5daKQQWTXIWl3vm6THrZ4quxPlv9ErpuYUUV8uk3ckrLUfHGvea1HW+XP7cFj3el0GcjeE/4ACBNa0HZ0nZYP3M8kX8cuvTup1j9XuhBsX2/iVMw5Ow5wtpPCVmJ2SvX4/rV5+PH5cNQEt4ZNsoX+Br1Fw9BeloaMgpLkF1ShlwiJhO0qLIKJVVOIXDooopBFYQr1Pf4cxUO4teI6/D12OrnllWI38ksKITllt+Z24Yh0saWIf9SqR/94DGzCdOaUEsx/7UU9vQePYHI35fI31HE+j0pme1/1nSMPO93mLQ4HDNXrMd1a0NwaPlAB+m1sC9rj+w9ryIptwBpBcXILColgpYjj4gqhEAWmz0Ck5jJXEakFoJQROGA8rpK+tKqGjnOV4jP12Orn1VcivTCYmQcjYBtdTdz2zFMSuIjs/wvgFDpLrMJ09rw3NzBYoizS5/+aNdBJn+vEWNFcjtm7mJMDV2FRWsvxH9XTTQkvhZV285DdOpxxB/PQ0peoSAoEzW7WPYITF4mcWGF7BlYEAJVGiiv8fsc5qik5++zxVeJz9ePz8pD8ZPXmN6Gigi2+5f8y6VhCD7a6FNELO6OEZOmiASXR3p4fJ8nuFTyTw9bjbXr1pDVHyyGRpsmQVskfbQbkclZOJaejQQWQi4JQXiEElkMRGK24Kog2Du4QhC+rFx8jr0If489Cl+HiZ9wPF9cP/7XH9Cwro/p7agIoMRvp1cqW5rsML2SrQgNROgl0yeh17DR6EjJbocuXSnmH47+k6Zj9JxFCvnXIntZj2Zd17J5LI5EROBgQoYQQnRaNuKycpGUky/Iy+ER5wlMaCb2cfIOruDXs+j9DBINkz41v4i+XyAsPhP/aEoWDidmoORPK0xvRx34uFx/rBgVByQHD6D2KV6ZP4hCn0ki6W3fqRO69h+EfhMmY+S5C0TYs44sf+qy3id07eK7ViEiKgEH4tJICOk4kpQpSBtN5I3NzBGeIZEEwfkCewgWhgP0//x6Yna+CKViM3KEiATp6Tp8vQi6btZzd5jehgbgk+3P9C355aOK3gyAyrUaFIe0x+zpZ4nZWl62wCM+fUaOw5AZs0XCG7JmPfatGHpSv5H9xPXYH52I/TEpJIRURMSn4RCR93BSBo4ky4KIonwhOu24IPgxBfw3v87v8+f48/w9/j4L6kBMMpJ3PY2G1c3zTC2GMGmXbwUQIp0N3rnL7Iq1Ivxj/gD0o8S3M4/6UOzfjXKAART68FAnj/a8uuZsHxChDXKfuJY8QRx+IxEw9scyUgWRmdAH42UPwTik/CsQryE8fZ6/o14j+Z/PwM47zQVAO3pAOXF2qi8FsCsAKtVqYA1pi9+dPVksZ+CFa2z9efJr2My5Yhb3knUrUR/qu93Xym5bimM//SDCFkFmFoJC5qagfpa/d/hINPL/shnwJhk3Hzt9Q/4waTSCG9n6FPsXd8egSVPFUmWe8OrWf6BY08OjPueQ9f9uxQif/2b9+n7Ifv0BxByJRCTnBBwOcX7AnkAgVQP5dX7/MH0u6mgM0t95FTVXTJa3WgyANvQCFizzwZYqdKEXA6AyrQqPzR0mkl9ezdmB4n9e4jxo2rki9r94zXJYwvz3gHndZWNQ8uT1SP/5eyRSbB9PSW2sisQMGfQ3v56y7xfk/f1hWK6aeioRX4vHT478vLdPqJQdABVpVVjI4c+IsWLYkxe59RkzAcPPmS+GPXevnNRi99Fw0QDU3rIIlY9dgYrnbiHcSn9fhZo/LkP95jGmt5MPUIQV0qCTsf63BEAlWhVKQ9ph8OSzxXg/L3br2re/eJyRx/3nr1iNtHC/bjJ1OuLElktjg9SFkt/DAVCBVoV9i7qj/1lno9uAwUIA3enfAZNmYPyCpdi8cqlPk98gBGLwB6lD8wUQJoUiuJ25z7FzwQDxTG+XfgPEo4w9Bg3DwKmzMHFRGLavPM/0+2uFqCNDHn4iAtgdADff6vAwJcD9Jk4VD7Hz+D8/yjho2jkiAX5z+Zmm31+rRJj03+aRf7nUE8GhT7/gzjmjRMzfuU8/WQBDR2Lw9HPFAy6fLfP98GcQEj8rUMGc9l4AIdL1pt90a8TyDtg2d4JeAMIDyAL4afVo+RA7s++zNSJMuso78vO6nzBpr+k3fCqBlwVc0AfYMlocOWp/6nLY37wP9s/+BvuvH8Ieuw/2rATYCzLx9LPPiBCIH3lkAfBaIM4BpoWsRNKxKPpMFuzHE+Tv/PYx7J+/Afu/H4T9r1cBd4XJv3FhP39vRtv6EEKc9mYzLfrgCPpCpek3HMhgwvNmsM9cA/vHr8B+7GfYC4/D3lDX5D47peUVeODJZzB2ynQxCtSLPMCSCy/B+1/s9W6TKnGEaQYJ5Fdx1Cn4lJZb5pHn6Gh+uwQ2qhEujfNGAMHdnV2xtidw5/mw734Y9sjvYK+p8Mk2gzUWC+rqDc7pPRHUW2GP+YXu8SHZU1w82Px2Czzc0HT4Eyp9GQA3ai7Ywm8eCfujm+QQppDCkvqmrXvAwG6HvSSPQqhPYH/uWmDreH8ebXoq4cvGBRAmDacPlQXAjZqDdb2AJ7bAvu8jcf6V6UT2FarLYT/yLfD89cCG/ua3s3kobHRpBAlgHU63nd7CyTLevhD2L/9BRCkzn6z+Bh9m8eMe4O5QwOydHFoeduL4JZ4FYPYzvxxr/34c8JcNsO+8Vx4B+fG/sP/yPuw/vQf7F/8QMa798c3AH6adXAde2E8+R5fj5toa84nZ0uAwKekw7C/dJI9gnWg7rust+sL+GIWLbz0i99HP/5P7jPvu0x2wv/ln4KENwBUTgVVdzRaB5+cExLGUZtzUrfNg3/M07Okx3h/szDH58UTY9/6Tkr5Q2ZJ781vrKcx5YRvs2cnmkzBQkJcG7LpfHLHkVRvyKfF3Lob9k9dgz02TxeRVn1GinnIU9o9eBm40bdlHkjH5l0hjW/RGVnQmS38RWeCffdOJ3BFPXeHZmq3pDvsbd8Nemm8+4QIVnPe8cRdwyRDjNlzVRRyObc9O9M3vxf0mOICVnVtWBMukiUbhz+UtdQP2m+fIY+d2m+87MekQ7A9eIFsp/r3VXcUxnva0aPl0c7NJdiogh7zjSzdS23V3Wvw/r5ZDJm89tLdgDrAQrp/ZkiLYYiSAnX7/YbYgPENaW+XfDuTJIopFxazsoa/MJ9SpCibmA+soZHnF/8bDUiXyPixrkYftX9OTf5bUgV486NcfXdcL9oNfmt+pQQQ2jnwNXOohBPMdInUHayh7/ftvy8Mtoyn5iTS/cYM4NcCeh9c8+YuPYVIlc14b/izy249tGkYV2m9+owZxaoEMJi7o608vMF8rgNv98iPLO8Ae9aP5jRnEqYnI7/03WRcu3aod/3/DHz8iJkbMbsQgTm28/Zi/PMAbWgH84vMf4OUFVov5DRjEqY26WuCPS/whgH0y+RdL3eHrvX/W9IAtI9b8xguiVcCWdNgfoVCWOFEGS6UJ8PG25/Zn/yDOmDW74YJoHeCzi+28ktW3AijHSmkMPwA/n5Rg89mFw9vBlpMaFEAQPoHjpHqKKHz8GGg9eCSIPMDFPrX+29c7TyIPgAYM4tSGKgDmlO3+tb71AiHSJqlwkfRH3120DRp+2OMUQFAEQZwkmEMNigDqv3/Hp5v0Zi+U7pLEmUq+EsAFfVGXlylOGheKVURgdiMGcWqCY38hAPpDnF5flAP7xoG+9ALPsQDe9tUFbXcuESeNWxsagl4giJOCGvow+ZlLzCnmlu32Rb4UwH8kX+4BVP/anbDU1dONNpBifSMCYQUCoEOCaDk4yK+EPmz9rcQp5hZzzGcCIO5LZUt8twN07Sd/Q7W1TtyoVYjAdlIisGm+FxTB6QM2eo64X7H+zKka4lbtZ3/3mQCql0iHeB1Qmq8uWBPxFapqreJGhQgaTlwEDvILBAVwqqI5xktv+e0Oy8+hD3Oqmrl1cK8vQ6AUFkChry5YGReBCkutQwRqPuAmAnvTjdGgNERQBKcuZELDq4EQw7BHifstdUR+qxWVxK3KuIO+E0CIVMgCqPLVBctTYlBeYxE3KtQq8gFFBDZXEXj2BmpD6AXg+2TaUlGB9P0HEPnuHkTs+ieiP/wIeXFxrXbkqiApCTGffoaIf/0Lh99+Byk//wxLWbn/yA+9J/f4WbvLcKdNS/56EVZXWqyCW+Wpcb70AFWSDy+G0vgjKKmq0YuAw6F6NSdQEmOb3aMQ+G/tZ3ztBWxkWdJ+/RV7rtuGxyaciYdHjxV4dMxYPDZG/vulhYuw/x87Yak89TfHqrNYcOSdd/HGqjVu9RT/P24C3tp6BRK+/hr1db7b/U5r/VVyexJIg2a0Rxv2aC0/c6q0ugalCUd8KQD4VAAlh39AUWW1TgTanIBHh8QQqRoSuXoEu3PWzx8iKMvJwbvXXodHx0/EE0SCHePH4NOzRuOXaaNwcDpjJH6dOgof0Wuv0nt/W7YCxenpppP4RFGcnoHdmy7Dy+PH4v1J7vX8fPJovDlhNB6ntnhk7Hj8a9NmlGVn+4X8jn6Ey+s2Z3+zgdTF/IL8VoX81SgmbpUSxwJWAKXfvIOC8kq60SqUuoig2iECfV7g6hG0r6shky9EUJSSildDwoTVe50I8QsRIObskYg9ewQSZg1D8jmDBRJnDUH8zGGInjESX00ehVfmzUfWkSOmk7m5KM3KwutLQ/AhiZnrEnv2cKrbUKrjEF09Y+i9fSSMXRPHiLZ5ccHvkHHggM/IrxWArj91xNeHPGrCq7X8TH7mVunX7wSuAMp3PYTc0nLk040WVlSRJ6gWN+8WEqlCUDyCSvq6hgYF7uIwyge8FUFRcgqemzsPj5Cl+0AhRNzM4Ug5dxCyZp+BnLl9kTu3N3Ln9aa/+yBrzhlIO2+QEEYEWctdS85H6fHjppPaW1QWFWFnSAh+IpFzPVO5nnOUes5T69nXUc94+swxahP2COwZnz13Nom++c9wG8X9RoRXSa8Pd5xWnw0mD6aUV1uEIWWDyuRnbjHHAlYA1Q9uwPHiUp0IhNuqdvUGxkJQIRrH5hsRWGtq8OaFG0Tsy6ENd3QCWb6M2QOQN68Piub3QMnvuqHsd10FSunv4gU9kD+vF47P6Yckspj7po3Ef7dsge0U2FeI2+Ore+7BD0R+rmfmef1J3FTPBZ7rmTVbrmcMecMvyetxSPTiwsWoLi31OfnrlARXS3yLIH6d4IYa8pQRZ9iAFmnIn11SJjgWsAKo3zwKGXkFyCIR5LAIyipQKEIiWQRlpGhPQrDoPILvRPDTSy8J1/72mWOE5U+YOVRY/YL5PQUJKhd1RvXiTqhZ3NEBy1XTYX32alQ/vAm5i4eKkOGbKaNEomg2wZtCXnw8Ppo81lHPwvm9iPDG9axa1AmVF41GzZNXoPKJq5AePkWEhe9RvsBttvehR7wSfXPIL1t9rcVXwh2t1VdCHjag+Qr52bBm5uSinveO9bEAfDYMal/VBcd/+wZpBcXIKipFdnGZuzcgl1aqEYIqBtUb1PpQBOW5uXhu9ly8OG4MjlAow65eJkUPVCzsLEhQe3571C1ph/qlbQUaeNPdn/4G/PyGQN2/70PuosHCQu7dfDGslsB+zHPvDdeJsCeziXry39YNQ2D//BlHXW1fvoDUJZNwlNrqb+PH4LEzz0JhcuN7qDY37FG9fJVCejXO18b6qtXPI+6wIWWDml5YjOx9e2Ff4dNtFKt8OhHGKH7mRiTlFAgRZBaWOEKiPPIGXKkijRDKlNCIla8TgIsI6r0Rgd1dBL+89rqwZF9SbMvJbvq5A4gUPYkUXWA5vwOsCiEalrZBQ4gM++vXOQihouyyqSIc2kceJOfoUdNJ7gklGRn4ef40pJ+n1pPIr61nSBsdbPcvd6tr8S0rRXLM+QPnTF888GDj5Lc3J+ZvcIQ/TH411BHE14Q7HDmIkIcMaCYZ0nTiUnJuAYpeusOn1l+dCEvx5UWtm0YiJjUTCVl5SMkrFMrVeQNFCKpH4DivgqwqT5r5UgQNdJ2/r1mHp8fIoU/SrCGU/PVBOcW/lvM7CgvIxLeF6IEd29xIUX3ldEGo1HMHIubVF00nuifEv/s24mYNRR4l9OULu5Lll8lvVE+G/dH1bnWtuGsN0rie1GavkBd4Yd4CkUf5kvzcv+wBuO+1Fj+/vMIR67PVzyDupOYXITE7H7FpWajb6PNjn9IkXhDk44siY/fziEo9jtiMXOENuBIZGiGwW5NDI1kMFRY5F/ClCPITEvHEWVOwh2J/tv6Zs/ujZEF3EQ4w+W0KKewhFLqFOoHbZ1MItMNBCPsHD8OyrKcgVM6cvojcus50ontC9F03O+pZvVgvctd6CmwdDXz3slMA37+KijXDKGnuK7zAh5QL8JxJ+n7nxmbOkOdEyS/3L8f+Muk51KkQnGBuMEcyKHJgziTl5CMuM1dwKXPXE74mP0rPl474dDm0ipqtExF59Bgik7MQnZaNuCynEGSPIIdGrHQWgjpP4EiIGxGBp5zAVQgxn32ORyj8+ZZcOY95s1WspNCndkl7N1JQG/BGSQraAn8OBd65F/adt8K2ZZSwopxAshdIWD7D0CKaDU5WYzYsQf7cPlTPziLmb7SeYXJf2bdRzvPWPbD/807UU/7D9SxaQN7uvEH4ddpIMWv8K4WS3lh9w4TXgPwiAa6rE2FxdgknuCrxZYufROFOHEUQx9KzcTQlC0ejYlBz+USfC0Ash6Y//uPzCxPS//YXHIxPw+HEDESmyEKIJTWzO+PQiHMEVjqLQB0RUkXQlCfQiqBeaXhXEfzw/AtiTPvA9FEiJuYhP2H9l7ZzkAIqKZYRVihYrhCEyUGf4c8ykWoplubRlKylY1CZlWk64V1RU1aGlLDJop5s/Tnmb34924rcqGxhN5HzRM8Ygb+OHYOP/3R34+S3y6s3XcnvGvY4hj2VEaC8skqRJ3KML1v8AsSTsZSJfxxHkjJxMCEdWS/fC37c1uc8DZHeZgE87w8B1K/rh6hvPsf+uFQhhEMshORM4c5iMnKoonnCxbEF0A6LGovAOTrkmCdoIiT65J7/o84bi2MU/mRT6MIhjNb6O0jBZFhNWKOA/16pkCVUcsTLHE7wUGLuooGoios2nfBuAsg5juzQMUTerkKsXE87CyBUITrXc5VxPe2KCPg7op6LOyNvXm8xj/DSuDF46/IrmxnyNGb5ncOfnA8mkUFkLjAnmBtHKGpgo3kwIQ0H4tIQvfdTNKzp6Xvyy+3yVylroXS3Xy5OqN56JiIOHcX+2BSqTCoiFCEcSc4Qro29Asd9FZrh0OparQiaDoncRKAI4b0bb8IL48aKTsyb10uQl0MZh1VkUqwhIWwgXEK4VPn3IsJahTBhMjn4O2xR2YMULuyD6uiDphPeFfU5GSgIGynqWaetZ5hi7ZnwF1DdLlbqythIWNdGtIWjnkvkevLEWco5g7Bjwmi8ufHiponvavUbNFZfE/bUaCa9OARiDjAX2NoL4senC+IzZ5g7lVdP9w/5CaWLpTskqvwmf/0Ao/DeC3DgaCx+i0kR2B+bKirICmcx5BaXo6KmVhZBrTwNXtVMEehDIlkI/73hJrxC1it51mAx26sLC5j4mwlXeMCWNjJZljuJoYYHJYt7wxIdYTrhjQRQHD5cxPCOeqrWf53UdH3XtXHUkz0ITxJmnNcf/5hIAthwcaPkd7P8RiGPhvzVSh8XllfhcFKGCHPYOLKR3K/w5EBkLIru8fE2KK4IkTZyCDQf8iZB/hPB/RfjYFS8o3IquMI82SFPhNTqPIEqguomROApJPr47nvwPAmAhy5LFnQT5OXOtV/UCBFcwd6BvYCSB1gpsSwP6Yu65GOmE95NAIU5KFk5AjXndxT1dIR5LOTLvawveQcbxdpWChXLF3YRk4ZvkAd464orNcRvXsijm/FVLH+VMgFWXFFNxE/X8YL/joiKQ8H2S/xLfj4ydZm0gDfGGgMfb41ohCLyBJGRx3CQSH8gVlZ6BP3LcSAvkShTZgNVEVQ6RGDgDeqb9gbfUxLMCVwqJcClYuy/A2xrmkH+KxTirJEtKU8cMTGqVg9BQ/7JLxn2NWx1VpRvmAjLEhJ6SFshWhHje0t+Bfb1znyHc6eXx4/GZ/fd33TIY2j1teS36mZ/uZ95HoDzQ+YCcyKCuHEkMhrF9673N/khOL9CmsDHI3UlK5fVAj+Iypt+h/jffsVRUv1hCoMOUxhUUFapWyfktQgaC4kIcXv34slx4xB7zgA5MVzaHvbLmikAxiYiRZjkSIRrNk+BvcHHB8X5CNU3h1Gi30Ge0Q5Rcprm1vf3lAeEygJIIwE8RUbk8Lt7DMlvPQnyi6UPVTU4QuHPIeLCERJC3P7fUHnzwpYgPyMbG6Tu6vbo+1roR1F/0UDkvvMKEoj8cZT88GI5ddk0T4trPYEsBKt7SOQ2X+AuhPLCQrGs98cZg4QArKHtm20NBbYSmcLVBLEdrM/ebDrRPcG6+ymnAEKbyHMaQf2ydmKhXOSs/njizLOQGxevC3e0Vt/qkuh6DHmUxW4q+csUASQQB+I5F/z3M8SNAS1Ffg5tf/H7ARmeYF/WATV3hiP/6w8cq0WFCKpqdN6gQpMXeOcN9EL44PY7sOvMEU4BbD0BQmxxeoD68C5oOPSt6UT3hIaUKNSGdXUKYNMJ1PdyrqcsgA+mDMHurZejltrcE/E9JroerL68/kd5vJGXQHzzISy3LRacaEkOQndARrh0awv/uIDtwjNQnJYg1oKoIihxEYFRSORplMg1N8iOi8OTZ05C2tyewjLaNpwAITY6c4D6O0LEjKtjOUAAkF4LW70V9U9eJXIAkQSvP4H6XsqhXnsULOiGpyZORPy33+mGNnXhjgerX13bNPlFPxfmw+bpUG7/43anAEKkBWbchH11dxTHRIiFceoq0eJKrQg0IVEzvIHDI9C/P770Mv49aRjKyaI1hFJy2ByreKkkj5HzZNjKbrBlJhiuOzKCX4nuCXw/JXlo2DTaOQp0SRuvQz/OkWxhbUWyv2fKYHzyf/cJ6++0+AbEb8rqa0MeZeVnSZW87LnkeKowgiYJYJHrMamVLX4Ty9qj5OB38upQZYWoN97AfbjUsxCqa2rw/u134osZA1DHw4MUGth5UuhiOb4X5NCCX+Nk+UJJngxjT7W+Lxp+fM9g4Z0R4ERjZD0ZOH7Dwz1E/QzbphHOeYD1khwOeaovT4qtZfK3IU/ZFj/N6od3r74KVeXl+lCnCeKrT3R5DHmqanQrQEsTImFf66dZ3sZRqj8mdbHUGXx4sAlKLP1qtxgK5VWBBRWNicAoQXYPi4yEUF1djR+efx4fzBwOCyWyjhlSHibkSSIm+wblXybLWuU9tv7XzUQDEcp14Z3xStRmiKNZ8O76untLj4X9toX6mWCu20VKXS9S6r5KcswEs4H4YfZgfL79QVRSXzRt8Zu2+tqQR0t+7ufSg9/6+tAL7xAmHcQfpA760+JDpdfMEECF8iB9nioC1RM04g1OVAgFGZn45t4/IWnDdJSc39G5RkZdC7RW+XtjL9juXoqGr/+F+vo6t1lPx5ILD6I4MXF4D4+/qbkvca8Uszd8/w7s960grzbQvZ6KyKsoP4pbMQb77r8TWcdivLD4+tEdlfgVXhKfwf1c/uW/zbD+LIA3JddCb2wx42ZqHrkMOSXlThEoQijUCMGZG7iPFDUuBE1opBFDWXEx8o8dRf5nb6P8nedRs/sR1P73adR/80/UR/+I+vxM1BHxncN+7sstjKAThhcCaTYMrt/UPam7bdSX5KP+GHmy73bD+t4zos7lbz+Dws/+g6LowygrLBQPp2tJrya3hqGOAfF14U61k/iC/ArxC5VnALifq9641xwBhEqXuwvgfGmiGTdjpRCDl0SrIsgtrWiGN3CGRbrRoiY8Qo2mg50jR5ohVLddKhqaLQavxOElXJcfNEl43Zi9foGafhjTOL43Ir4+1DGO872x+uIBGOpffgjG8n+rzBHAcmmsmwAUL5DU4jdDiXB2VqZ4KEIrBNFILkLwlB801yN4FINuPsGzIDyJ4kSEcTKoMyS7ze1ejQhf60J4d9K7xPdeWHxtkqu1+gUaq5+nPO+bQ31tu6CfGQJIMyS/IoCdZiiy4Lv/iSeCxFNiihByS93DogIPYZFHITRHDAYjSI0KwoMwrK7CMILNCzRxDaPfdb03/b0bWPm6Oo+k14Y5TYc6TYc7KvHVZ37zj+4zx/qHSjs8CyBMugS8Sq6Fb6r8+RvF02EsAn4YumlvoB8t8tYjeBZC057BPVzyIAgPomiOSLz5vtHvull4A9IbW/rGiV/uIdRxs/iOcKdSH+44rL5Mfu7fsjf/Ygb57cTxdZ4FsEIaBB9vk+IN6n4/HpmZGUIEmY0IwTU/KNDMHRQpnVBsIATXPMFVDJ48Q1PeQRWFxSWsEKMkFqtm0ZcMLVnkjZ9kaF+Tt4yxOPZOEuctWJS9Va2uAmyc6J6tvAHhvSW9OpHVBPHlrU0U4itWn707e/mswmLU3jzfDAGUkQCGexSAEgZ92eI3FtYGuT99Kp4TTleeFc4sKnELixweoVQJi9QtVgySZddRI6/EYNGLQZ3YKamsod+povsoR1p+CZJyChGblY+otFwciE/Dj0cT8HVEND75+RA++O437Nn7M/7z2Xf4x/8+x6tvvY/n33wbf93xLzz68ht46PnXFbyG7c+8hD8/9aL4W339kRd3iM8+8/fd9N3/4e/vfYrdn34jrvnBd/vxyU8H8dWBKPGb/NtH03IQm5kv7onvLbuoTBCQSao+XadNYl3rpg1veHsatW3Kqz3E95rkVhvq6OJ8T8Sn/uR+zT26H7bV3c0QwJd4QGrblABuMOHGUP7kVUjJL6JOLFJEoApB7w2EEEqNQyPHRJoX4ZE2RHJLnDViYILt/PArPPDMy7j1voew9fpbsPaSLVgUvhJnz56PiVOnY9S4CRg4bDj6nDEA3Xr0QofOXdCuQ0cnOjI6NRPK95RrdOjUGd169Uaf/gMwePgIjKTfPHPqDMw4bw4WLA3HyosuwWXXbMONd92P7U+/hB17PsGBxEzHalqnlfcc1xtZe6Mwx2HxXYlf5iS+M9yR+y9T2e6E+7V0x31mkJ+fALuxUfILAYRL48hNVLf0zdVvHIyUhDgk5xaKHQLchVCiCKHUKQRHaGSULGvFUO1RDEaeQRVEPln9ux95Gh2IiG3atiW0Q5t27dC2XXsZ7TvI6NDBmOhE2vZakDC8guY7fA3dNRVB8G86fr+9fD98b+Ie6V7b0WtX3HC78Fp6K++J8I0ktY2EOXmNhToK8TMV4ov+zMwUe8iaIIBKEsCIpgVALsIfewV5g/w3tiPheJ7YHoO3TnEVQmYToZGhENzE4OoZXMMkJYGutggihC5bqSd++/Z60ndwkt4z2buiQxcjdFPg/h5/x0gUekG4ikEvhGlnz6Q6V+sIr4Y2RlbeNUfRkt6Ttdcmt1riZ7kQP62gSPRn3sc7KeRta4b139tk+OMQQZh0pRkCsG4eg7i0LLFNRkJ2vtggySEEbX6ghkZeCsHVK7iOIHkUAxHmLw891DjxO3VyJ7yW4F216C6jWyMQn9F8RxFI+y7ugvAoBMVD3XTTTSLkMbLy6kytEekdsX2Fc7DBW+I7LX6JQnx5zx/ux2QybJZrZ5ph/YGl0javyC8EsFzqiRZ4TtgI2f98EjEZ2WJbRd5RThZCvqFH0CbLjjyhWJ8n6HMF9xEkI8+gFUR2Ti4GDxmqCXNcwhudhdcQncjcsVsPGd0ZPfXo4QLX97v3cHxfJwxVEBoPofMKihC60vePRkU5Np8tacTKe7T0RqQXYU65g/Ta5DZDa/HzncRnQ8b9mP2h7874bSYszGmvBaB4gT2meIFLhyP2aKTYL0YIITPX6RFcQiN3r+AMj5xDqO6ewTVMcnoH91CJhyAfePBBZ3yvtfYupO+okl5D+E6UFDvQs7d30HzHVRCuYtB5BocQOuLa669HtfLguZGFb8rKy8sVyt2SWu2IjjHxi3TET1Q2vopPToXlmmnmCCBM2t0s8gsBhEjh9OU6M24474U7xGZJvFOYJyEkey0EfdLs6hnyjcSgCZeYNHn5BRg7foLT4qshjtbaq6Tv0dOd8L36oLMDfdG5twfwe8rn+DtOUShi6OEUQwcWg0MIGo9A9zhs5CgkpaSghCx/kUFYU1juQnoDS++e1GqHMjXxvRHxc5zE537jXd+y33xMDHebwKc6hEshzRfALKkDffmYGQJoWNsb8d99IXYLE5ujil3kjiMmPVs0pgiNKFnmRk7W5gn5cmcYicExgqT1DJrONvIOqijKiUgfffwxOrH11RBfa+1lwvfSE95B7n7o0odxhoy+HqC+T5/tzNAIQycIh2dQvIKLEF59/XUR+zdFdiPCe0xoDUmvie9zC5GYky/6hftHEJ/6iw1Y/P5f0HCBaU9+HcZcqUuzBSBEECrdYtJNo+rqGTgSm0Qi4K0UFSGkykLgzVNjFSHEK0Jgd6sdQnV6Bc9i0M0tuHgHV0HUWK248po/NEp8LekdhBfk7o+ujH4D3HHGQPfX6LNdBDSC6K0IwoMQVI+w/qINIvTRrsPxivCGpC9xJLTO0RwPYY5KfOqXYwrxo6i/oqj/Su9ebRb5GbecEPmFABabszRCxfGX71G2UEwXW+ixECI1HkEOj3KEtZG9Qr6wQnqv4K0YnN7BSBDiiM7SMiwKCdWHOqrF11p6lfT9+jtJrqBb/0GNQvtZVRBaMahCcHgETWg0YfIUZB3PFqGONoZ3JXyOC+GNLb0r6fXWnjc2TlDCnDglzJGJf9zhtbm/0t56wazQh5GNpdLAExaA4gUeN0sA9uUdEffZHrFvJO8feYjBm+smyTtNy3mC4hUUMcS5iCHJVQy6MMlAEEaiUITB+UBKaiqmzTzHgPgy6btoSa8Se8Bgge4Dh2gw1ADye90GDJG/w4JQRcFCUMVgIIQxEychKSlZjPbkNGLd3QnvYuU9Wno1xDEmPfcD9wf3C/cPb3Qb++3nqL+wBff6ccdLJ0V+IYBl0ijwMJJJlajZMg6R+34RG+rKQkhzCEF4BZc8QXgFbYikJM6qGNh6peS7ewdjQThFoRKH5wlS0tIwbvJUZ6jjsPgDnFZeR3oi96Ch6DFoGHoMZgz3DPoMf1YVhE4MDiHIHkHNE0YR+fcdiBATXa5DlFqye0N4RorD0hfIpHcJcdTY3tXaM/G5X7h/Ig8dQuV155pJfgvCpNEnLQAhglDpTRMrgvJtc3EgOkFspusQguoVODxy8QqqGI65iUHjGXIUMSjeQU2iHYIodArC1Uvw4rjExCTMWbhYR3ynxXeSvvsgDeGHjBDoOXSkIdT3Bejz3TViEELoP9jhEVRvMHHaDBw6coSSXotMdB3ZteGMnvBqEqu18iK0UUl/XEt6xdqnqdb+uMbay9uacz8w8blfeI/Pwvt8e55vsxEi7fIJ+YUAwqQpMGliTEX+A5sQcSRabK8ub7HeuBiOaMQgD6fKybOcM2i8AwtCHVpVwiWPotAIg8Oh/IICXLr1CnRzWH0lvHEhvSD4sFECvYaPVjDGBfLrPYeNlj+rEUR3VQwOIcgiWHXhBhzPziZBVutI7kZ0A7KrFl4dsnSENuoIji6Zdbf0bqQXxJe3OM979CpzyR8qWQkzfCYAIQJSlMmVQvYT1zm20OYDFIQQFDFEuIVISuLsEiZFaUaSeH5Bm0THH5dnnhNdQybXsEmETkXIL6tEVXU1Xn59B0ZOmqq3+BriOwg/Yix6M0aOkzFKgfr/I8eKz6iC0AlBI4JBYyfg3gf+grKKChRVVArCp6lEL3DeoyB7vnz/Ouue7RLWZCqhDbWHEekdll4T4nA7a0kvcCwRmS/dA5tvz/JtPsKIq96u+/FaAMvEQ/Om5QIMGyXFOWRdtGcMqELQeQWjfEHjGSLdvIPc8THpekGow6yql3CGTs7wia0uP2ySlJyCK7fdSGRVyC8svob4gvDjBfqMnmCI3qPl9/mzqhBUj9CDhUAiWHfJZTgSFSUeduFhXNVTpapW3TFKI5M9UUN2rYWXCe9i5bWJrM7Su5A+Xj6+SBxoEasiBSk7nzRnoZse5QiXpvuU/EIAktSGlPWs2V6AkfXsbTgQGaMTgrEYNJ7BZSTJIYgkWRCRGg+hhkwOYShkEcJQvQVP7yviYILllsi7qEUcPoxNV12LwROn6IgvSD5mIvqOPVPGuEl6jJ2EPvQ6f0aIQSOE/mMnYt1lW/DVt9+jwWZDfmmFI0FVCa7G7CrJ+T5die4csdHE8RoL70541/DGnfTq4RYZZPkDgPyMHcxVnwtAiGC5NIxEUBIAlUTuI1dif3Simwi0J40Yeod4D4LQhEvakMkhCkUQqih0IVSGTDYmIZPTUleHtIwMPP7cC1i8eh0GT5omyM0k7zvuLPQbPxn9JjCmOEGv8XssBv7s0ClnY174Ktz70KOIjo0Ve/YUV1aJFZWqd4p1kDxXEWm2hujOkRp1iFIfxyuET3IhvMbKq+HN/jh3wjtO+SFDlPXs7bCt7Go6JwQ3iaN+Ib9DBGHSdtMrSrCHt0PxHeGGnqAxz2DkHTx5CJ0okvWeQusttB5DnItMSTY/91plqYWViBuflIwPPv0c2594Gpdcsw0LVq3H5IVLMXLWHIycORuT5p+PeSvWYuPV1+FPDz6Mf+95T3yHd3arrq1DLoU6bNFVcrsTXIWe6JHKPWvJ7mbh3QjvauXl03xciS/aNTqJQtKrTeeCBnf5lfyKALrBjP2DPKDympk4+vOPDutk1FFunsFVFHEu+YMubNIIQysORwjlIhCBLIdQeOgwPa8IReWVQhD8EDtvsc67PGsLv1bHJ6hbrPTZKmRSQhubnqMjtJPYGnJrCO5GcnWURiG6I5xxJbtBWNNUOx767TeUtdxpLt4gGkulfn4XgBBBuLQxACrsQO2lw5G45w1EKGdNedOBxuGSew7h8BQab6HOTOuEoRGIQJJWIPrRKN16JjGxxGPsZME1w4yecEgNWYQVz9D99kEjq+46UuNKdoOwpqm2OvbFB6i6fJLp/a5BrTjxsaUKNkhdyBO8HQAVd8C2sgtyn7kZh4/GicP3ItQhUi8tWpNeQucpXLyFqzh03sPpRQwF0wi0hHYg3sWSx+vv44CG7PtdQxkN4b1tD21bRFDOlf76g+YPc7rjI78lvh5FsFAaDhMXynlC5XXnIX7vJ+IQPj58jU+l1AvC6SGaIwodGQw8hlYkeqE4BeOKCAMYfc71WvsNye0ewpxM/dS2UtsumsLM8htN2cuncYRJVVii2eu/RUUgL5du8Z3kmkLDmh7IeeVeREXFiNMHD8fLYjhEpDkY6yqIEydMkyJxE8tJwOC6vrxXbgct4bmduL0ORycg7V/Pom7DINP71RAh0m2mkF8IQD5Y42vTG8EDaq6ehpRP30EUhRFHeYFWfLqLIIw9hKuX8AXZzIRrXbT1dBA+LtXRJoeVY0sT936ESrL69sAY3zfC98xB0wQgRHC+NBkBGAo5ENYGpdsvRvJP3yKGEsdjhGhKHo82IQqtMNzE4SeL7EuPY0Ryleg6ssfLZOd2UNsk7rffUPzgJnNOb/EeeXzIu6nkVwvdzKUEWwA0ikc0rOuFkkevQsqhg4hPykQsIYYgBEFQvYQsCpkUQhhxzvDJNYRyhRxGEGKcMCToCUJ73QOx7nG6juhKCHNIIfthHdnTHHXlerNB4HZIOLAfhU9tM3sNvzewUehzhdm8dxSxmVZIYI0KeRTChf1R+vjVSCchJKVkITE5CwnJmYhTRaF6CeEp0nXhk+otVI/hFIfecxxUhNKYWE4UBzVWXGvJXUmuWnXVskcJyPXi+nE9ub5c72Rqi8KX7kLDBf1N7x8v8S7QwqM+TRWKxXrTjSUGQON4BT6YufLBy5D79UdIT8lEamo2UlKOI5ngFEaW8Bau4nAKRO859EJRkWaIw43A03eOxDuvrw1ZojSWPFpzj1qScz24Plwvrl8yiT7rh69Q/pctYgjZ7P7wGiHSUfp3iNl8Nyx0Y4sIVaY3UnOEsLwDrNfORMnuZ5F99Agy03OQwbO3hDQSRWqKKgyZOIkpsjASkpziUAUih1UZOqFoxaKHk7hOAqtw//wxF2Lz76i/GacheXySfH+Jyv0mCxwXdUijvzOjopH/3huw3DgP9pUBN57fFIpIAIvN5rnHIlaMLpW2BkBDnRBsGwfDct96FH/xLvJSMpCTkYtswnESRVZaDjJJFDpxpMrE0noO1XuoHkRFPFlcgaRmQPmO9jqJGiuepJBbJTjfD98XI12510y67yzycAVfvofKx69Cw4aBprfzCSNMuslsjntVSKWvI8CT4ibFcEE/1G7fgIqP3kRJJMXImXkoyMpDPv2bR8jNzHUIhJHFIiGwB8nUiEUVTLpGON5C+70MB6EVUiu/x+JU74HvJ5fA91cQG4fSD99EzSMU4mwM0DH85iBEetJsXntdMFnqSGp93/RG8xHs6/ug/sY5qH35TlR9/T9UxMehLDMbJcfzUaygKCsfhYQCQr4Ai4XJmCvEkptxcuDr8PXEdZXf4d/j3y3OoHuJjUH5dx+j+o3tqL9pPmwXngGEtze97XyCMOkDrJN6m83rZhWskQbCpJ3l/Is2sF/QF7Zt56H+kc2w/vspWH7Zi+qUVFTlFqIqpxCVhApGdiHKswsEyjQo9RLa78jXka9bmZaB6l+/huWdF2B9+jo03DCHRGrKiYstgciT3tvHrKJsqZIWAI3of/DmTxcNhP1msr4PXQrbq3eh4Z3nUP/FW6j/6TPUR/yIusgDsMYchTUxDtbkJFhT0wiphBR6LRbWuGhYoyJgPfgTrD99jrrPd6P+7WfRwNd6+DLYblsE+6XDybIH7Mysr5GPJdJIs3l8UoVitwXgWTvzG9M8MGFXdAL4XKx1fQA+H/fC/gAnpIyLBsiv8XtregCrurae8OVkyB8mzTabvz4pCJeWweQH6oM4pVBKnFlpNm99WkjNq8HnNJnfuEEEMsIkK4U9q83mq18KqfoamHTmQBCnAPhwxkBa4+PrQpX8s+mNHESggqODzS3+ZFdLFarc0wHQyEEEJiytN+yZK54ffhj84LL5DR1EoCFEyudBErN56reCYNgThGek8jC52Rz1W0Ew7AnCM47xRKnZHPVLCYY9QTQCfprr/VN2eYM3BcGwJwhP4JXCk6WOZnPUbwXBsCcIY1RRVLDVbH76rQTDniAaQSI/yRVwz/H6siAY9gThDpvYQnPxKbaWv7kFwbAnCHfwXlGX+vyookAqwbAnCAPwVpnf8IZpZvPT7wXBsCcILUKkIjKIN5u+XWFLFATDniC04Fg/TBpuNi/9XoJhTxAuSMIyaQNmSV3N5maLFATDniBkFJMhfICPzDKbky1WEAx7guCly3xc7iqTDqUwq1DFL0fwud7TGeWU5O4SB6a35gktoyI2vg2T4gKgE4JoeVgQLu0k8k81m4emFSJ/KDVEQwB0RhAtB57Iepz6frTZ/DO9kPpvDYAOCcL/4A0LYpSx/EFm8y5gCpZK9wRA5wThL4RJFYQ9ZOjCMUvqYDbfAq5Qw/ze9E4KwtekrybsJVyJ5VJPszkW0AUrpJHUaGWmd1oQJwNeo8Nx/ZeEG4j0Y1v1QjVfFnHwRbj0bgB0YhDNRxJhJ4WxF+N30mCzuXTKFrHTc5iUHAAdGoRn8OZSkYTXwJtMLZMmms2bVlWwhNxmaHA+wGTUgyelwqQswj7C38k78yjdfJ6dPS1WYppZsFLqw2c1UYPvJ1gDgBCtCXzAIMfpKdTGh0SSGir9h/A84S6ESJsE0VdKY06rNTh+LP8PY7bcAuqNajoAAAAASUVORK5CYII="/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Youtube$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16" height="16">\n\t<title>favicon_48x48</title>\n\t<defs>\n\t\t<image  width="48" height="48" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAAXNSR0IB2cksfwAAARRQTFRF////AAAA/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/xBA/wAz/56x/5uv/xZF/wAz/wAz/6Cz/////+/y/26L/wQ2/wAz/wAz/9Pc/0Bm/6m6/x1K/wAz//X3/3uV/wg5/wAz/93k/01x/7fF/yVR/yZR/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAzgb8Y2wAAAFx0Uk5TAAAJNFp0i52ptMDQ3ODl8Pj/99uoWS+z+zD6uxL+DEhAcm2Vkav/v////7zU///////T6P/////0////8///////8ufSlEEUDVe1/bkyOF13jKC2wd3mqp92XDdJ2BKpAAABRElEQVR4nO2VwUtCQRDG53vV0/DwEhNDXoREdCjC0CK6Rlj9vYHdg04SiSAUEUFE8gwJi0roNb0tHwS7Gzu3iOawh5nvt+zOzs6AhIZ/wAXA1/rdxl7ERMz+K3PukXlmwJwCRWDksHeGvd4nMDv14nic6ShOAK/kqk+Itz5QfnbWE/kRQjwJgIyPhaFATxSg8iAC8lgciIAClu41Z7FvByawHGnOEnBnA8pYvdWcoaqPazNQQe3KACQJx6URiBF4RoAoiwsD8I6tcwtAOaCrxVaQ13cJ008SoKMFfwTUO7WFgHcmAYxHEl56XZ7WnVMjYH84YWnU5MUnLu/dlj1qsIL8iwqbwAYaXVGbqcobGeYgbJW015Y14yTvdZw4yLeBw3SgzFdVNXTW0Dw42myNvWqANJrM+zyJURY4vlHS3zgU/wDwAXpXWYPo2LOhAAAAAElFTkSuQmCC"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Vk$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>fav_logo</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var AutoTask = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="32" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IB2cksfwAAAgdQTFRFPHjYPnnYUIXbR3/ZUofbaJbgZpTfSIDaPXjYUYfbapfhbJnhZ5XgRn7ZP3rYU4jca5jhbZriaZfgR3/aVIncapjhZZTgRn/aVIjcbpvicp3iZ5bgQXvZVYncjrHorsfutMvvvtLyj7HoVorcdqDj0+H26/H7/v7+////1eH2apfgYpLfm7nq8fX87fP71uL2vNDxnLrq7fL7/v7/7PL7faXkWIvdRH3ZfqXk7vP7/f3+1+P2k7TpkbPpnLrrY5PfRn/ZPXnYXo/eu9DweqPkeKHjtMvwdaDjRX7ZQXvYWYzd1OL2dJ/jaJfgeKHk1eL2bpriWozdkLLoaZfhbZrhdZ/i7PH7WozeeKLk8/b8nbvrr8fvQHrYb5vitszwuM7wapjgfKTkz971/P3+9/n9mrnqtczwuM3wZpXgcp7jwdTyl7fqeaLkvtLxxtfzc53i1OH2+vz+t83wkrPoxNbzdJ7jZpTgjbDo6fD62uX39Pf8rsfvkbPoT4TaYZLfr8fuc57jcJviQnzYja/n+vv+rcbucZziYJHfXpDeqsTtkrPpQnzZd6Dj0+D21uP2UYbcYZHfdqHj8vb8q8Xussnv7/T7YpPfSoLaQHvYX5Dfnbrr0+D1h6vmYJHegajln7zrSYHZw9XzTIPaUIbbT4XbXY7ea5nhUofcW43dV4rdXI7dXI7eX5DeWOgbkgAAAmNJREFUeJx10l1IFFEUB/DzT/c6uTpb9CCIbYFBZVIhpuXLYD6oYCTSt9LXkgj7lL1kPVVbSSGbD5ZhUqD0AUKxrNqTK5KhRoo+WFgbZUHuw6Ls+jEz7jbdGbVYZ3deZuacH/ece+4FxTwAousisX9JXCiJgcDTfJFwIiDqeb1MMD4Q0hDR36oVgXgAGTJ4EdJkdRN+mYFokyPpeg1NS5pNmTGD7JANKz1wgUkz2AMss9UVdInhdeCgHvTLerM7QlY5Dej/D4oHpOHdbCM+ruJ8zIczx/LeroFyvEeRP2Ur+pixzdQc2xdtJz5EAisAlT4UT/+xjpYNzemiBD1sc/5X66gxD5BY7iUmCrtGZHXbjMLUI+P70SsUfM7vUVUhTKiZmgJVYKTQw9sr9Sgn9Ga76PiAtOilk08VFPA8nUJfyXOq5qmOs2ERniBd7K7AE1KdTZAmaA3U4g0qX1fhIY84uwygXkVhaRNbK3FGeUdVFjRzYBOkzAeEOQl089V3RitNWq782A7cW2YkaXqTqUHJxxsQG1wsd2GD3Td/q7Ha3kiaZZGlC0LN3fkok41B3Y+4mF0pyxr0phmDslDZgbbagcFr9drqqOG+fgcvTzf/NiZJatHRsbyhQ7gs/zusVtS7W4UCz5IekiYahiYd/Z0xp5l1o97dNrtXsX2jnMAnONNdftOVEyqWfy4YF8YaXVi6fd4E+NK59ox9NB6Y3tLdXiubQUcdn1g2+b2U7K4xXzn+2Qmn8XH42AU5HqDycw59ny1Jl0IUFxBe1IFakh/5KAEgZAXxzBGihIDEx5b23pjIX32q0uJJAW9GAAAAAElFTkSuQmCC"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
+  var ASF = '<?xml version="1.0" encoding="UTF-8"?>\r\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" version="1.1">\r\n<g id="surface1">\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(11.372549%,17.254902%,26.274511%);fill-opacity:1;" d="M 7.652344 0.175781 C 8.046875 0.351562 8.210938 0.59375 8.441406 0.953125 C 9.007812 1.746094 9.644531 2.539062 10.640625 2.761719 C 12.011719 2.949219 13.429688 2.882812 14.808594 2.796875 C 14.90625 2.792969 15.003906 2.785156 15.101562 2.78125 C 15.1875 2.773438 15.273438 2.769531 15.363281 2.761719 C 15.429688 2.769531 15.496094 2.777344 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.34375 15.976562 4.597656 15.960938 4.851562 C 15.957031 4.925781 15.957031 5 15.953125 5.074219 C 15.945312 5.175781 15.945312 5.175781 15.941406 5.285156 C 15.9375 5.378906 15.9375 5.378906 15.929688 5.480469 C 15.914062 5.652344 15.914062 5.652344 15.824219 5.914062 C 15.816406 6.058594 15.8125 6.203125 15.8125 6.34375 C 15.8125 6.433594 15.8125 6.519531 15.808594 6.613281 C 15.808594 6.707031 15.808594 6.800781 15.808594 6.898438 C 15.804688 7.097656 15.804688 7.300781 15.800781 7.5 C 15.796875 7.816406 15.792969 8.132812 15.792969 8.449219 C 15.789062 8.753906 15.785156 9.058594 15.78125 9.363281 C 15.78125 9.457031 15.78125 9.550781 15.78125 9.648438 C 15.777344 9.738281 15.777344 9.824219 15.773438 9.914062 C 15.773438 10.03125 15.773438 10.03125 15.773438 10.148438 C 15.738281 10.347656 15.738281 10.347656 15.625 10.503906 C 15.386719 10.671875 15.152344 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.6875 12.414062 13.6875 12.414062 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.359375 12.515625 13.359375 12.515625 13.324219 12.683594 C 13.226562 13.144531 13.054688 13.566406 12.871094 14 C 12.75 13.988281 12.628906 13.980469 12.511719 13.96875 C 12.410156 13.957031 12.410156 13.957031 12.308594 13.949219 C 12.050781 13.90625 11.8125 13.828125 11.566406 13.738281 C 11.492188 13.867188 11.492188 13.867188 11.417969 14 C 11.355469 14.113281 11.292969 14.222656 11.226562 14.335938 C 11.195312 14.394531 11.164062 14.449219 11.132812 14.507812 C 11 14.738281 10.882812 14.941406 10.695312 15.128906 C 10.257812 15.097656 9.957031 14.863281 9.601562 14.625 C 9.402344 14.503906 9.402344 14.503906 9.222656 14.542969 C 9.015625 14.617188 8.925781 14.703125 8.777344 14.863281 C 8.730469 14.914062 8.683594 14.964844 8.632812 15.019531 C 8.535156 15.125 8.433594 15.234375 8.335938 15.339844 C 7.972656 15.726562 7.972656 15.726562 7.675781 15.792969 C 7.4375 15.726562 7.367188 15.660156 7.21875 15.460938 C 7 15.1875 6.773438 14.941406 6.523438 14.695312 C 6.375 14.550781 6.230469 14.40625 6.085938 14.261719 C 6.023438 14.195312 5.957031 14.128906 5.890625 14.0625 C 2.175781 10.347656 2.175781 10.347656 1.945312 10.117188 C 1.738281 9.910156 1.527344 9.707031 1.316406 9.503906 C 1.160156 9.351562 1 9.199219 0.84375 9.042969 C 0.722656 8.925781 0.722656 8.925781 0.597656 8.808594 C 0.519531 8.734375 0.445312 8.660156 0.363281 8.582031 C 0.296875 8.515625 0.226562 8.445312 0.152344 8.375 C -0.03125 8.132812 -0.0351562 8.039062 0 7.738281 C 0.117188 7.570312 0.117188 7.570312 0.28125 7.402344 C 0.34375 7.339844 0.40625 7.277344 0.472656 7.210938 C 0.542969 7.144531 0.613281 7.074219 0.683594 7.003906 C 0.757812 6.933594 0.828125 6.859375 0.902344 6.785156 C 1.101562 6.585938 1.304688 6.386719 1.503906 6.1875 C 1.714844 5.980469 1.921875 5.773438 2.132812 5.5625 C 2.480469 5.214844 2.832031 4.863281 3.183594 4.515625 C 3.683594 4.023438 4.175781 3.53125 4.671875 3.039062 C 5.015625 2.695312 5.359375 2.355469 5.699219 2.015625 C 5.785156 1.929688 5.867188 1.847656 5.949219 1.765625 C 6.222656 1.492188 6.496094 1.222656 6.773438 0.949219 C 6.839844 0.882812 6.910156 0.8125 6.980469 0.742188 C 7.078125 0.648438 7.078125 0.648438 7.171875 0.550781 C 7.226562 0.496094 7.285156 0.441406 7.339844 0.386719 C 7.476562 0.261719 7.476562 0.261719 7.652344 0.175781 Z M 7.652344 0.175781 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.332031 15.980469 4.578125 15.96875 4.824219 C 15.964844 4.929688 15.964844 4.929688 15.960938 5.035156 C 15.9375 5.492188 15.863281 5.90625 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.761719 5.195312 13.582031 5.089844 13.40625 4.988281 C 12.996094 4.746094 12.585938 4.507812 12.167969 4.273438 C 10.847656 3.527344 10.847656 3.527344 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 7.566406 5.304688 C 7.878906 5.410156 7.90625 5.480469 8.058594 5.761719 C 8.117188 5.859375 8.117188 5.859375 8.175781 5.964844 C 8.269531 6.195312 8.277344 6.363281 8.261719 6.609375 C 8.355469 6.550781 8.449219 6.492188 8.550781 6.433594 C 8.777344 6.296875 8.855469 6.261719 9.128906 6.261719 C 9.136719 6.425781 9.140625 6.589844 9.148438 6.753906 C 9.152344 6.894531 9.152344 6.894531 9.15625 7.035156 C 9.125 7.34375 9.058594 7.492188 8.871094 7.738281 C 8.703125 7.871094 8.703125 7.871094 8.527344 7.972656 C 8.46875 8.007812 8.410156 8.042969 8.351562 8.078125 C 8.292969 8.109375 8.234375 8.140625 8.175781 8.175781 C 8.113281 8.207031 8.054688 8.238281 7.996094 8.273438 C 7.710938 8.398438 7.511719 8.335938 7.21875 8.261719 C 6.832031 8.070312 6.476562 7.859375 6.261719 7.476562 C 6.167969 7.203125 6.164062 7.007812 6.167969 6.722656 C 6.167969 6.636719 6.171875 6.550781 6.171875 6.460938 C 6.171875 6.394531 6.171875 6.328125 6.175781 6.261719 C 6.492188 6.332031 6.753906 6.457031 7.042969 6.609375 C 7.050781 6.480469 7.050781 6.480469 7.058594 6.347656 C 7.113281 5.9375 7.332031 5.636719 7.566406 5.304688 Z M 7.566406 5.304688 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.882353%,8.235294%,15.294118%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.800781 15.769531 9.878906 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.398438 15.664062 10.472656 15.476562 10.609375 C 15.15625 10.625 15.15625 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.726562 12.421875 13.648438 12.40625 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.449219 12.027344 13.535156 11.730469 13.644531 11.425781 C 13.679688 11.332031 13.710938 11.238281 13.746094 11.144531 C 13.78125 11.046875 13.816406 10.953125 13.851562 10.851562 C 13.902344 10.710938 13.902344 10.710938 13.957031 10.566406 C 14.054688 10.289062 14.160156 10.015625 14.261719 9.738281 C 14.292969 9.65625 14.320312 9.574219 14.351562 9.488281 C 14.613281 8.792969 14.613281 8.792969 14.929688 8.523438 C 15.359375 8.140625 15.347656 7.753906 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(13.725491%,18.431373%,37.254903%);fill-opacity:1;" d="M 13.566406 9.824219 C 13.609375 9.914062 13.609375 9.914062 13.652344 10 C 13.539062 10.21875 13.417969 10.425781 13.289062 10.636719 C 13.207031 10.769531 13.125 10.90625 13.046875 11.039062 C 13.003906 11.109375 12.960938 11.183594 12.914062 11.253906 C 12.691406 11.632812 12.46875 12.015625 12.25 12.398438 C 12.207031 12.472656 12.160156 12.550781 12.117188 12.628906 C 11.8125 13.160156 11.53125 13.703125 11.269531 14.253906 C 11.113281 14.582031 10.933594 14.855469 10.695312 15.128906 C 10.3125 15.078125 10.042969 14.933594 9.710938 14.734375 C 9.574219 14.648438 9.574219 14.648438 9.429688 14.566406 C 9.359375 14.523438 9.289062 14.480469 9.21875 14.433594 C 9.253906 14.046875 9.523438 13.835938 9.789062 13.582031 C 9.832031 13.539062 9.875 13.496094 9.921875 13.449219 C 10.15625 13.21875 10.402344 12.996094 10.65625 12.78125 C 11.15625 12.34375 11.621094 11.871094 12.089844 11.398438 C 12.25 11.238281 12.414062 11.078125 12.574219 10.914062 C 12.679688 10.8125 12.78125 10.707031 12.886719 10.605469 C 12.933594 10.554688 12.980469 10.507812 13.03125 10.457031 C 13.234375 10.253906 13.40625 10.066406 13.566406 9.824219 Z M 13.566406 9.824219 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.294118%,95.686275%,96.078432%);fill-opacity:1;" d="M 6.175781 10.347656 C 6.503906 10.464844 6.769531 10.617188 7.054688 10.820312 C 7.128906 10.871094 7.203125 10.925781 7.277344 10.976562 C 7.445312 11.105469 7.59375 11.234375 7.738281 11.390625 C 7.769531 11.316406 7.769531 11.316406 7.800781 11.238281 C 7.941406 10.992188 8.105469 10.882812 8.335938 10.722656 C 8.410156 10.671875 8.488281 10.617188 8.566406 10.5625 C 8.761719 10.449219 8.90625 10.386719 9.128906 10.347656 C 9.21875 11.453125 9.21875 11.453125 8.914062 11.832031 C 8.617188 12.113281 8.285156 12.273438 7.914062 12.433594 C 7.882812 12.921875 7.855469 13.410156 7.824219 13.914062 C 7.683594 13.914062 7.539062 13.914062 7.390625 13.914062 C 7.390625 13.398438 7.390625 12.878906 7.390625 12.347656 C 7.246094 12.320312 7.105469 12.289062 6.957031 12.261719 C 6.5625 12.078125 6.359375 11.875 6.175781 11.476562 C 6.144531 11.097656 6.152344 10.726562 6.175781 10.347656 Z M 6.175781 10.347656 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(8.235294%,11.764706%,23.137255%);fill-opacity:1;" d="M 14.433594 9.042969 C 14.523438 9.21875 14.523438 9.21875 14.484375 9.378906 C 14.460938 9.445312 14.4375 9.507812 14.414062 9.574219 C 14.386719 9.648438 14.359375 9.71875 14.335938 9.792969 C 14.308594 9.871094 14.277344 9.949219 14.25 10.027344 C 14.222656 10.105469 14.195312 10.183594 14.164062 10.265625 C 14.007812 10.703125 13.84375 11.132812 13.675781 11.566406 C 13.503906 11.996094 13.386719 12.429688 13.285156 12.878906 C 13.179688 13.269531 13.03125 13.632812 12.871094 14 C 12.378906 13.96875 12 13.910156 11.566406 13.652344 C 11.703125 13.144531 11.960938 12.71875 12.222656 12.265625 C 12.269531 12.1875 12.316406 12.105469 12.363281 12.023438 C 12.460938 11.859375 12.554688 11.695312 12.648438 11.53125 C 12.765625 11.332031 12.882812 11.128906 12.996094 10.925781 C 13.402344 10.222656 13.859375 9.621094 14.433594 9.042969 Z M 14.433594 9.042969 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 14.917969 3.957031 14.128906 3.839844 13.324219 3.6875 C 13.066406 3.640625 12.808594 3.59375 12.546875 3.550781 C 12.363281 3.515625 12.175781 3.484375 11.992188 3.449219 C 11.78125 3.414062 11.566406 3.378906 11.355469 3.34375 C 11.226562 3.324219 11.226562 3.324219 11.097656 3.304688 C 11.027344 3.292969 10.953125 3.28125 10.878906 3.273438 C 10.664062 3.207031 10.570312 3.132812 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 9.128906 8.261719 C 9.183594 9.257812 9.183594 9.257812 9.011719 9.695312 C 8.605469 10.082031 8.152344 10.3125 7.597656 10.398438 C 7.09375 10.3125 6.6875 10.128906 6.347656 9.738281 C 6.074219 9.320312 6.136719 8.828125 6.175781 8.347656 C 6.539062 8.394531 6.765625 8.519531 7.066406 8.734375 C 7.140625 8.789062 7.214844 8.839844 7.292969 8.894531 C 7.476562 9.042969 7.476562 9.042969 7.566406 9.21875 C 7.621094 9.21875 7.679688 9.21875 7.738281 9.21875 C 7.835938 9.117188 7.933594 9.015625 8.03125 8.914062 C 8.738281 8.261719 8.738281 8.261719 9.128906 8.261719 Z M 9.128906 8.261719 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(7.843138%,11.372549%,22.745098%);fill-opacity:1;" d="M 11.042969 3.476562 C 11.648438 3.675781 12.246094 3.886719 12.84375 4.101562 C 12.984375 4.152344 12.984375 4.152344 13.125 4.207031 C 14.054688 4.542969 14.984375 4.878906 15.914062 5.21875 C 15.867188 5.597656 15.816406 5.972656 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.667969 5.140625 13.402344 4.984375 13.132812 4.828125 C 12.804688 4.636719 12.476562 4.445312 12.148438 4.253906 C 12.011719 4.179688 11.878906 4.101562 11.746094 4.023438 C 11.683594 3.988281 11.621094 3.949219 11.558594 3.914062 C 11.140625 3.671875 11.140625 3.671875 11.042969 3.476562 Z M 11.042969 3.476562 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0.392157%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.839844 15.769531 9.839844 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.394531 15.664062 10.472656 15.476562 10.609375 C 15.199219 10.625 15.199219 10.625 14.957031 10.609375 C 14.875 10.285156 14.871094 10.046875 14.933594 9.71875 C 14.949219 9.636719 14.964844 9.550781 14.980469 9.464844 C 15 9.378906 15.015625 9.289062 15.03125 9.199219 C 15.050781 9.113281 15.066406 9.027344 15.082031 8.933594 C 15.203125 8.289062 15.203125 8.289062 15.304688 8.085938 C 15.34375 7.792969 15.375 7.5 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(86.274511%,87.450981%,89.019608%);fill-opacity:1;" d="M 8.609375 3.390625 C 8.78125 3.390625 8.953125 3.390625 9.128906 3.390625 C 9.128906 4.109375 9.128906 4.824219 9.128906 5.566406 C 8.988281 5.59375 8.84375 5.621094 8.695312 5.652344 C 8.609375 5.566406 8.609375 5.566406 8.597656 5.355469 C 8.597656 5.265625 8.601562 5.175781 8.601562 5.082031 C 8.601562 4.984375 8.601562 4.886719 8.601562 4.785156 C 8.601562 4.683594 8.601562 4.578125 8.601562 4.472656 C 8.605469 4.371094 8.605469 4.265625 8.605469 4.160156 C 8.605469 3.902344 8.605469 3.648438 8.609375 3.390625 Z M 8.609375 3.390625 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.725491%,94.117647%,94.509804%);fill-opacity:1;" d="M 6.175781 3.390625 C 6.316406 3.390625 6.460938 3.390625 6.609375 3.390625 C 6.609375 4.136719 6.609375 4.882812 6.609375 5.652344 C 6.464844 5.625 6.320312 5.59375 6.175781 5.566406 C 6.175781 4.847656 6.175781 4.128906 6.175781 3.390625 Z M 6.175781 3.390625 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.333334%,93.725491%,94.117647%);fill-opacity:1;" d="M 7.476562 2.433594 C 7.59375 2.433594 7.707031 2.433594 7.824219 2.433594 C 7.824219 3.179688 7.824219 3.925781 7.824219 4.695312 C 7.683594 4.695312 7.539062 4.695312 7.390625 4.695312 C 7.390625 4.335938 7.386719 3.976562 7.386719 3.613281 C 7.386719 3.511719 7.382812 3.410156 7.382812 3.300781 C 7.382812 3.203125 7.382812 3.105469 7.382812 3.003906 C 7.382812 2.914062 7.382812 2.824219 7.382812 2.730469 C 7.390625 2.523438 7.390625 2.523438 7.476562 2.433594 Z M 7.476562 2.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 15.390625 6.871094 C 15.511719 7.203125 15.449219 7.484375 15.390625 7.824219 C 15.304688 7.769531 15.21875 7.710938 15.128906 7.652344 C 15.171875 7.328125 15.207031 7.148438 15.390625 6.871094 Z M 15.390625 6.871094 "/>\r\n</g>\r\n</svg>\r\n';
+  var Web = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\r\n\t<title>favicon</title>\r\n\t<defs>\r\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>\r\n';
+  var Discord = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\r\n\t<title>favicon</title>\r\n\t<defs>\r\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>\r\n';
+  var Twitch$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\r\n\t<title>favicon-32-e29e246c157142c94346</title>\r\n\t<defs>\r\n\t\t<image  width="28" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAgBAMAAADzmwVxAAAAAXNSR0IB2cksfwAAACdQTFRFAAAAk0b/kUb/////wZf/yKP/j0b/j0X/j0b/kUb/j0D/kUb/j0j/8nvBLQAAAA10Uk5TAH//////gJCgzxDfIMV/78EAAACZSURBVHicY2RgYFRkgANGBgYhAWQuUFIQxnvPCJJE4oJ0InFBOpG4Sgxg7ntBMKI9F81ebFzGdyhc+SvIXKa3dshc+as3kbhMb+MawFygANNbBga2GwwwrvwFBoaKNBhXGCjJXp4A4xoAJWe4McC4QMA51QGZO8sFEuwMDEoQKQS3KoUBiQsyFIkb18CAxFW/yYDMTVgA4wIAtrc0x9ZZthYAAAAASUVORK5CYII="/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="2" y="0"/>\r\n</svg>\r\n';
+  var Instagram = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76" width="16" height="16">\r\n\t<title>lam-fZmwmvn</title>\r\n\t<defs>\r\n\t\t<image  width="76" height="76" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAMAAADwSaEZAAAAAXNSR0IB2cksfwAAAvdQTFRFR3BM1TeUehf6exj7gBn8bxf9bxX9eA32hAnukgXlngTjqATisAPguQLewAThxAHdygLd0AHazwDU3gDA3gDB7ROe1gDY3wDI2gDHYBlFeBf9cxn8gRf9ihf9kQvx3ADW6AC/kRf9oQzxrw3v4wDX5gDO7AC0uAnomRf86wDV8ADG8QPR8wC69AqfoBf8qBf74BTc6xTW8wCr9xOVvzT24WHu3oP39qzy9sr5+N78/ej6/t31+Xrj+lbX9xvS9wnJ//7+//////n69QCesRn7/gLD/gG+/gGy/8vq/ivO/gG5//X7/QKq9wea6k3l+zrS+yq8/gCj+ACPuhr6/gq3/gCc7xbO/A/BxRr4/RO4/gCW/VDD/2nM/gCQ0hzz/7Pe/gGJ/gmw/UG4+h2r/gGC3Bru6Bvd/QJ79BrD/hOt/pDO5Rro/hKk9xu2/gJ08Brf+x6g/hKY/S+j/QJt/SCW/hOQ/SKQ/m+3/haH/SKI/lul/+vw/QBn/EOT/h2B/hV8/iF6/iR0/idu/uHk/i1//QFi/its/oar/T94/ixm/Spd/mON/lZw/snV/i5V/omZ/hNw/kNZ//r2/jNO/jtT/jNi/gBf/l1c/jpJ/nh//tfS/jlc/jFH/jND/khR/jk//T9D/hFn/ipM/kM6/js1/kZB/sS1/R1k/lA9/Us1/kEq/oN1/qmz/g5c/nNI/lEv/hZb/lg2/kgf/h5Z/lgq/lQX/l8m/mI4/iJS/mMY/oxO/mch/mcv/FEP/FwG/pdo/m0b/WUB/rd//mwC/nQY/nQn/m4s/nMC/qOJ/ndk/vHc/noV/noC/oQd/p0//oIS/nsi/unI/tuq/oIC/rA9/ooB/owT/vbn/pAE/pUP/pYB/pwI/p0A/qkf/tBr/GMY/XQD+3QI/qQC/qoC/td8+4QW/q8A/rsW/rQA/rgA/rsA/r4A/YUD/SGH/sEA/JUF/sUA/JIG/skA/DJm/JgH/asD/s0A/EFI+68J/bcE+1E0+0w6/L0Fi9deiwAAAP10Uk5TAA5AcL3X////////////////5a9+QP//zwL/nP////////////////7/////xP//////df/////////////////////////////////l/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+XBcP///z/////////V1f+M/6v/oavV/9VwwMFw5VUJIaQAAAukSURBVHicbZhbbBxXGYD/f2Zn9uZL7NiNL4nTFLnUqZpKlaqKRCBIgApIWhKE1PahPKAiRFNaCdSqL4U+0odKlUorQXkAoSCQQLRqSwlKpIKaFAJNlFtDTdzarr221/a63uvc+S9nZ9eB8Xr27Myc7/zXc/4zCOmBcph2wg35kZ7wxg9Kl9WkQ0gbltVp/y8q/Qik3XZYhHAt2QIbhWU7RQ3B2va1/y8QYEpUko4aZUqjAKVRReBYOSUBrA3D6nD5JmqVsSMJWLAFBJCHJuZa3IrWktHSaAm7WEOCoz4oJFjtkCzoVk1AdLQURe3qetIeilkpiS9lIshwawlTUofDnZ2A/tQUm/lmHty19ZES/x61ykpKx7cjRi2PLI8vqs9Svdq81EtAVDq7sO4wbHR5pBtFmCz4plViEDJhC4cFo3MozYawACplcgBmhg1pC4qaJbrKpDZIEe0jJILERKOnxrDsZRLV3mGlQZIhlAtYS1G7u+JHjpaVNhPU+Gr08PA9gP9CtEduQEENBiQXcAumjY0gcRDXYGhVaAz3XRYtuIzWmLGkaMgsx7Jy3CvR0w2sBKwYIWllNGHWYqH10GngItpjDApZKkENb9pZxhOqm4byW12olwK0XSiNLQKMc5QOAGxgZpfcMihwMjkjqbELSHc0jS2XchixQtGCoa3gbfKEq0oMbzg5MELxx8rfYLNmDGmEJej3IcyNQ3kMFkkwKOC+jj2GYcPJ8qMJeLEzKNb3b6BxeCZBxtEe/rAfcdws7t6k3/14pz7DsQb9C2L5wuqOOUAOgiEjcjsK0qOwNNRg+bI9VY5BBzYHiYpfTB/oh/kCs7wggFpv644rjBpc7zJgt1ebkcteCosO0zYH1/vp8jfaDzjBLBksQW9ojh/2KV/dwQpIzGjmqKGMHzJOOUtm9SeqDj/iAE0g+ABnqibKTJHGLq5Q4mLr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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Twitter$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="16" height="16">\r\n\t<title>icon-ios</title>\r\n\t<defs>\r\n\t\t<image  width="1024" height="1024" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAMAAABIw9uxAAAAAXNSR0IB2cksfwAAAwBQTFRFAAAABAQEFxcXGBgYDAwMERERCgoKfn5+wMDAv7+/k5OTFhYWKioqp6enq6urJycnPDw83Nzc////+/v7f39/BwcHKSkpu7u78vLyc3NzXl5e7+/v6+vrU1NTExMTra2t9/f3e3t7BgYGCQkJiIiI+fn50tLSLy8vDw8Pjo6O/f39mJiYrq6ur6+vGRkZCAgIh4eH/v7+Gxsb1NTUhISEAQEBZGRk8PDwvLy8ICAgVVVV6enp7OzsVlZWAwMDWFhY4+Pj0NDQODg4AgIC1tbWNTU1QkJC4eHh2NjYPz8/pKSktLS0Li4uxcXFy8vL+vr6wsLC7u7ubW1tBQUFSEhI5eXl8/PzfHx89vb2Nzc3EhISkpKS/Pz8nZ2dEBAQDQ0NuLi4hYWFIyMjwcHBi4uLYmJi7e3tvr6+Q0ND3d3dXFxczMzMZ2dn8fHx29vbOzs72traQEBAj4+Pvb29Hh4eMjIyx8fHHR0dt7e3JiYmaGhoNjY2oaGh39/fmZmZpqamFRUVrKysl5eXZmZmw8PDJCQkMDAwz8/Pa2tr6urqycnJMzMzUFBQ4uLifX19+Pj4xMTE5+fnFBQUo6OjnJycISEhb29vR0dH5OTkRUVFmpqalJSUcHBw9fX1xsbGJSUleHh4Dg4ObGxsKCgodHR0QUFB5ubmPj4+1dXV4ODgGhoaubm5eXl5hoaGOTk56Ojom5ubkZGRXV1dd3d3qKioUVFRysrKRkZGqqqqtra29PT0aWlpg4ODHBwcCwsLlpaWenp6sbGxcXFxT09Pzs7O19fXSkpK3t7e2dnZIiIijIyMgICAYGBgbm5u0dHRUlJScnJylZWVsLCwurq6Tk5OVFRU09PTNDQ0Ojo6KysrPT09Y2NjZWVlW1tbjY2NtbW1yMjIYWFhn5+fWlpadnZ2TU1Nzc3NpaWlLS0tgYGBV1dXoqKiWVlZS0tLdXV1s7OzHx8fgoKCoKCgkJCQREREX19fTExMSUlJqampMTExLCwsiYmJsrKyampqioqKnp6enA0qUQAAUvtJREFUeJzt3X1gjmX/P/DrZFt5aNTQ4reNzTC5Lasrj9tks7Kk1iwNbR5KMVHa8rDGPM00NzeNodCEydMippIVlqhMSTGR4ksSIk+F7HfXfd9luGzXcb2P6zyv83i//vne9/fb8TnOb+y96zrO4/gcmoWIlKXp/QBEpB8GAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwB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ABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHC/j9GYmsPmw8LugAAAABJRU5ErkJggg=="/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>\r\n';
+  var Reddit$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="16" height="16">\r\n\t<title>192x192</title>\r\n\t<defs>\r\n\t\t<image  width="192" height="192" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Youtube$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16" height="16">\r\n\t<title>favicon_48x48</title>\r\n\t<defs>\r\n\t\t<image  width="48" height="48" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAAXNSR0IB2cksfwAAARRQTFRF////AAAA/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/xBA/wAz/56x/5uv/xZF/wAz/wAz/6Cz/////+/y/26L/wQ2/wAz/wAz/9Pc/0Bm/6m6/x1K/wAz//X3/3uV/wg5/wAz/93k/01x/7fF/yVR/yZR/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAzgb8Y2wAAAFx0Uk5TAAAJNFp0i52ptMDQ3ODl8Pj/99uoWS+z+zD6uxL+DEhAcm2Vkav/v////7zU///////T6P/////0////8///////8ufSlEEUDVe1/bkyOF13jKC2wd3mqp92XDdJ2BKpAAABRElEQVR4nO2VwUtCQRDG53vV0/DwEhNDXoREdCjC0CK6Rlj9vYHdg04SiSAUEUFE8gwJi0roNb0tHwS7Gzu3iOawh5nvt+zOzs6AhIZ/wAXA1/rdxl7ERMz+K3PukXlmwJwCRWDksHeGvd4nMDv14nic6ShOAK/kqk+Itz5QfnbWE/kRQjwJgIyPhaFATxSg8iAC8lgciIAClu41Z7FvByawHGnOEnBnA8pYvdWcoaqPazNQQe3KACQJx6URiBF4RoAoiwsD8I6tcwtAOaCrxVaQ13cJ008SoKMFfwTUO7WFgHcmAYxHEl56XZ7WnVMjYH84YWnU5MUnLu/dlj1qsIL8iwqbwAYaXVGbqcobGeYgbJW015Y14yTvdZw4yLeBw3SgzFdVNXTW0Dw42myNvWqANJrM+zyJURY4vlHS3zgU/wDwAXpXWYPo2LOhAAAAAElFTkSuQmCC"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Vk$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\r\n\t<title>fav_logo</title>\r\n\t<defs>\r\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var AutoTask = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\r\n\t<title>favicon</title>\r\n\t<defs>\r\n\t\t<image  width="32" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IB2cksfwAAAgdQTFRFPHjYPnnYUIXbR3/ZUofbaJbgZpTfSIDaPXjYUYfbapfhbJnhZ5XgRn7ZP3rYU4jca5jhbZriaZfgR3/aVIncapjhZZTgRn/aVIjcbpvicp3iZ5bgQXvZVYncjrHorsfutMvvvtLyj7HoVorcdqDj0+H26/H7/v7+////1eH2apfgYpLfm7nq8fX87fP71uL2vNDxnLrq7fL7/v7/7PL7faXkWIvdRH3ZfqXk7vP7/f3+1+P2k7TpkbPpnLrrY5PfRn/ZPXnYXo/eu9DweqPkeKHjtMvwdaDjRX7ZQXvYWYzd1OL2dJ/jaJfgeKHk1eL2bpriWozdkLLoaZfhbZrhdZ/i7PH7WozeeKLk8/b8nbvrr8fvQHrYb5vitszwuM7wapjgfKTkz971/P3+9/n9mrnqtczwuM3wZpXgcp7jwdTyl7fqeaLkvtLxxtfzc53i1OH2+vz+t83wkrPoxNbzdJ7jZpTgjbDo6fD62uX39Pf8rsfvkbPoT4TaYZLfr8fuc57jcJviQnzYja/n+vv+rcbucZziYJHfXpDeqsTtkrPpQnzZd6Dj0+D21uP2UYbcYZHfdqHj8vb8q8Xussnv7/T7YpPfSoLaQHvYX5Dfnbrr0+D1h6vmYJHegajln7zrSYHZw9XzTIPaUIbbT4XbXY7ea5nhUofcW43dV4rdXI7dXI7eX5DeWOgbkgAAAmNJREFUeJx10l1IFFEUB/DzT/c6uTpb9CCIbYFBZVIhpuXLYD6oYCTSt9LXkgj7lL1kPVVbSSGbD5ZhUqD0AUKxrNqTK5KhRoo+WFgbZUHuw6Ls+jEz7jbdGbVYZ3deZuacH/ece+4FxTwAousisX9JXCiJgcDTfJFwIiDqeb1MMD4Q0hDR36oVgXgAGTJ4EdJkdRN+mYFokyPpeg1NS5pNmTGD7JANKz1wgUkz2AMss9UVdInhdeCgHvTLerM7QlY5Dej/D4oHpOHdbCM+ruJ8zIczx/LeroFyvEeRP2Ur+pixzdQc2xdtJz5EAisAlT4UT/+xjpYNzemiBD1sc/5X66gxD5BY7iUmCrtGZHXbjMLUI+P70SsUfM7vUVUhTKiZmgJVYKTQw9sr9Sgn9Ga76PiAtOilk08VFPA8nUJfyXOq5qmOs2ERniBd7K7AE1KdTZAmaA3U4g0qX1fhIY84uwygXkVhaRNbK3FGeUdVFjRzYBOkzAeEOQl089V3RitNWq782A7cW2YkaXqTqUHJxxsQG1wsd2GD3Td/q7Ha3kiaZZGlC0LN3fkok41B3Y+4mF0pyxr0phmDslDZgbbagcFr9drqqOG+fgcvTzf/NiZJatHRsbyhQ7gs/zusVtS7W4UCz5IekiYahiYd/Z0xp5l1o97dNrtXsX2jnMAnONNdftOVEyqWfy4YF8YaXVi6fd4E+NK59ox9NB6Y3tLdXiubQUcdn1g2+b2U7K4xXzn+2Qmn8XH42AU5HqDycw59ny1Jl0IUFxBe1IFakh/5KAEgZAXxzBGihIDEx5b23pjIX32q0uJJAW9GAAAAAElFTkSuQmCC"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
   const ICONS = {
     '[ASF]': ASF,
     '[Web]': Web,
@@ -1606,7 +1683,7 @@ function _toPrimitive(t, r) {
     if (!urlConfig || !text) {
       return null;
     }
-    const [platform, subType] = urlConfig;
+    const _urlConfig = _slicedToArray(urlConfig, 2), platform = _urlConfig[0], subType = _urlConfig[1];
     const urlGenerator = urlGenerators[platform];
     if (typeof urlGenerator === 'function') {
       const url = urlGenerator(text, id);
@@ -1648,8 +1725,8 @@ function _toPrimitive(t, r) {
       return createBaseElement(''.concat(I18n('unKnown'), ':').concat(type, '(').concat(text, ')...'));
     }
   };
-  const echoLog = _ref => {
-    let {type: type, text: text, html: html, id: id, before: before} = _ref;
+  const echoLog = _ref3 => {
+    let type = _ref3.type, text = _ref3.text, html = _ref3.html, id = _ref3.id, before = _ref3.before;
     const emptyStatus = {
       success: () => emptyStatus,
       error: () => emptyStatus,
@@ -1768,11 +1845,11 @@ function _toPrimitive(t, r) {
         });
         return cachedLink;
       }
-      const {data: data} = await httpRequest({
+      const _await$httpRequest = await httpRequest({
         url: link,
         method: 'GET',
         redirect: redirectOnce ? 'manual' : 'follow'
-      });
+      }), data = _await$httpRequest.data;
       if (data !== null && data !== void 0 && data.finalUrl) {
         redirectLinksCache[link] = data.finalUrl;
         GM_setValue('redirectLinks', redirectLinksCache);
@@ -1798,13 +1875,13 @@ function _toPrimitive(t, r) {
         options: options
       });
       const logStatus = echoLog({
-        type: 'visitLink',
+        type: 'visitingLink',
         text: link
       });
-      const {result: result, statusText: statusText, status: status} = await httpRequest(_objectSpread({
+      const _await$httpRequest2 = await httpRequest(_objectSpread({
         url: link,
         method: 'GET'
-      }, options));
+      }, options)), result = _await$httpRequest2.result, statusText = _await$httpRequest2.statusText, status = _await$httpRequest2.status;
       if (result === 'Success') {
         debug('链接访问成功', {
           link: link
@@ -1832,7 +1909,10 @@ function _toPrimitive(t, r) {
       });
       const searchParams = url ? new URL(url, window.location.origin).searchParams : new URLSearchParams(window.location.search);
       const query = {};
-      for (const [key, value] of searchParams.entries()) {
+      for (const _ref4 of searchParams.entries()) {
+        var _ref5 = _slicedToArray(_ref4, 2);
+        const key = _ref5[0];
+        const value = _ref5[1];
         query[key] = value;
       }
       debug('URL查询参数解析结果', query);
@@ -1963,8 +2043,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref2) {
-      let {doTask: doTask = true, redditLinks: redditLinks = []} = _ref2;
+    async toggle(_ref6) {
+      let _ref6$doTask = _ref6.doTask, doTask = _ref6$doTask === void 0 ? true : _ref6$doTask, _ref6$redditLinks = _ref6.redditLinks, redditLinks = _ref6$redditLinks === void 0 ? [] : _ref6$redditLinks;
       try {
         debug('开始处理Reddit链接任务', {
           doTask: doTask,
@@ -2070,8 +2150,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleTask(_ref24) {
-    let {name: name, doTask: doTask = true} = _ref24;
+  async function _toggleTask(_ref43) {
+    let name = _ref43.name, _ref43$doTask = _ref43.doTask, doTask = _ref43$doTask === void 0 ? true : _ref43$doTask;
     try {
       var _data$response86;
       debug('开始处理Reddit任务', {
@@ -2132,14 +2212,14 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Reddit]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest50 = await httpRequest({
         url: 'https://www.reddit.com/svc/shreddit/graphql',
         method: 'POST',
         headers: {
           'content-type': 'application/json'
         },
         data: JSON.stringify(postBody)
-      });
+      }), result = _await$httpRequest50.result, statusText = _await$httpRequest50.statusText, status = _await$httpRequest50.status, data = _await$httpRequest50.data;
       if (result !== 'Success') {
         debug('Reddit任务请求失败', {
           result: result,
@@ -2190,10 +2270,10 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Reddit]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest51 = await httpRequest({
         url: 'https://www.reddit.com/r/'.concat(name),
         method: 'GET'
-      });
+      }), result = _await$httpRequest51.result, statusText = _await$httpRequest51.statusText, status = _await$httpRequest51.status, data = _await$httpRequest51.data;
       if (result !== 'Success') {
         debug('Reddit任务请求失败', {
           result: result,
@@ -2241,10 +2321,10 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Reddit]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest52 = await httpRequest({
         url: 'https://www.reddit.com/user/'.concat(name),
         method: 'GET'
-      });
+      }), result = _await$httpRequest52.result, statusText = _await$httpRequest52.statusText, status = _await$httpRequest52.status, data = _await$httpRequest52.data;
       if (result !== 'Success') {
         debug('Reddit任务请求失败', {
           result: result,
@@ -2352,8 +2432,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref3) {
-      let {doTask: doTask = true, channelLinks: channelLinks = []} = _ref3;
+    async toggle(_ref7) {
+      let _ref7$doTask = _ref7.doTask, doTask = _ref7$doTask === void 0 ? true : _ref7$doTask, _ref7$channelLinks = _ref7.channelLinks, channelLinks = _ref7$channelLinks === void 0 ? [] : _ref7$channelLinks;
       try {
         debug('开始处理Twitch链接任务', {
           doTask: doTask,
@@ -2418,7 +2498,7 @@ function _toPrimitive(t, r) {
         text: I18n('verifyingAuth', 'Twitch'),
         before: '[Twitch]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest53 = await httpRequest({
         url: 'https://gql.twitch.tv/gql',
         method: 'POST',
         dataType: 'json',
@@ -2427,7 +2507,7 @@ function _toPrimitive(t, r) {
           'Client-Id': _classPrivateFieldGet(_auth2, this).clientId
         },
         data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,' + '"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]'
-      });
+      }), result = _await$httpRequest53.result, statusText = _await$httpRequest53.statusText, status = _await$httpRequest53.status, data = _await$httpRequest53.data;
       if (result !== 'Success') {
         debug('Twitch授权验证请求失败', {
           result: result,
@@ -2473,7 +2553,7 @@ function _toPrimitive(t, r) {
       if (isFirst && (!_classPrivateFieldGet(_auth2, this).authToken || !_classPrivateFieldGet(_auth2, this).clientId || !_classPrivateFieldGet(_auth2, this).clientVersion || !_classPrivateFieldGet(_auth2, this).deviceId || !_classPrivateFieldGet(_auth2, this).clientSessionId)) {
         return await _assertClassBrand(_Twitch_brand, this, _updateAuth2).call(this, false);
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest54 = await httpRequest({
         url: 'https://gql.twitch.tv/integrity',
         method: 'POST',
         dataType: 'json',
@@ -2488,7 +2568,7 @@ function _toPrimitive(t, r) {
           'Client-Session-Id': _classPrivateFieldGet(_auth2, this).clientSessionId,
           'x-kpsdk-ct': ct
         }
-      });
+      }), result = _await$httpRequest54.result, statusText = _await$httpRequest54.statusText, status = _await$httpRequest54.status, data = _await$httpRequest54.data;
       if (result !== 'Success') {
         debug('Twitch完整性检查请求失败', {
           result: result,
@@ -2561,8 +2641,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleChannel(_ref25) {
-    let {name: name, doTask: doTask = true} = _ref25;
+  async function _toggleChannel(_ref44) {
+    let name = _ref44.name, _ref44$doTask = _ref44.doTask, doTask = _ref44$doTask === void 0 ? true : _ref44$doTask;
     try {
       var _data$response93;
       debug('开始处理Twitch频道任务', {
@@ -2592,7 +2672,7 @@ function _toPrimitive(t, r) {
       });
       const followData = '[{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":false,"targetID":"'.concat(channelId) + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}]';
       const unfollowData = '[{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"'.concat(channelId, '"}},') + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}}]';
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest55 = await httpRequest({
         url: 'https://gql.twitch.tv/gql',
         method: 'POST',
         dataType: 'json',
@@ -2608,7 +2688,7 @@ function _toPrimitive(t, r) {
           'Client-Integrity': _classPrivateFieldGet(_integrityToken, this)
         },
         data: doTask ? followData : unfollowData
-      });
+      }), result = _await$httpRequest55.result, statusText = _await$httpRequest55.statusText, status = _await$httpRequest55.status, data = _await$httpRequest55.data;
       if (result !== 'Success') {
         debug('Twitch频道操作请求失败', {
           result: result,
@@ -2665,7 +2745,7 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return cachedChannelId;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest56 = await httpRequest({
         url: 'https://gql.twitch.tv/gql',
         method: 'POST',
         headers: {
@@ -2674,7 +2754,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: '[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"'.concat(name, '"},') + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]'
-      });
+      }), result = _await$httpRequest56.result, statusText = _await$httpRequest56.statusText, status = _await$httpRequest56.status, data = _await$httpRequest56.data;
       if (result !== 'Success') {
         debug('获取Twitch频道ID请求失败', {
           result: result,
@@ -2777,7 +2857,7 @@ function _toPrimitive(t, r) {
     const json = await res.json();
     return async (method, path) => {
       const randomPair = json[Math.floor(Math.random() * json.length)];
-      const {animationKey: animationKey, verification: verification} = randomPair;
+      const animationKey = randomPair.animationKey, verification = randomPair.verification;
       const tid = await generateTransactionId(method, path, verification, animationKey);
       return tid;
     };
@@ -2893,7 +2973,7 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return cachedUserId;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest3 = await httpRequest({
           url: 'https://x.com/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + '?variables=%7B%22screen_name%22%3A%22'.concat(name, '%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D'),
           method: 'GET',
           headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
@@ -2902,7 +2982,7 @@ function _toPrimitive(t, r) {
             'x-client-transaction-id': await _classPrivateFieldGet(_getTID, this).call(this, 'GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + '?variables=%7B%22screen_name%22%3A%22'.concat(name, '%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D'))
           }),
           responseType: 'json'
-        });
+        }), result = _await$httpRequest3.result, statusText = _await$httpRequest3.statusText, status = _await$httpRequest3.status, data = _await$httpRequest3.data;
         if (result !== 'Success') {
           debug('获取Twitter用户ID请求失败', {
             result: result,
@@ -2951,8 +3031,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref4) {
-      let {doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []} = _ref4;
+    async toggle(_ref8) {
+      let _ref8$doTask = _ref8.doTask, doTask = _ref8$doTask === void 0 ? true : _ref8$doTask, _ref8$userLinks = _ref8.userLinks, userLinks = _ref8$userLinks === void 0 ? [] : _ref8$userLinks, _ref8$retweetLinks = _ref8.retweetLinks, retweetLinks = _ref8$retweetLinks === void 0 ? [] : _ref8$retweetLinks;
       try {
         debug('开始处理Twitter链接任务', {
           doTask: doTask,
@@ -3100,8 +3180,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleUser(_ref26) {
-    let {name: name, doTask: doTask = true, verify: verify = false, retry: retry = false} = _ref26;
+  async function _toggleUser(_ref45) {
+    let name = _ref45.name, _ref45$doTask = _ref45.doTask, doTask = _ref45$doTask === void 0 ? true : _ref45$doTask, _ref45$verify = _ref45.verify, verify = _ref45$verify === void 0 ? false : _ref45$verify, _ref45$retry = _ref45.retry, retry = _ref45$retry === void 0 ? false : _ref45$retry;
     try {
       debug('开始处理Twitter用户任务', {
         name: name,
@@ -3133,7 +3213,7 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Twitter]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest57 = await httpRequest({
         url: 'https://x.com/i/api/1.1/friendships/'.concat(doTask ? 'create' : 'destroy', '.json'),
         method: 'POST',
         headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
@@ -3153,7 +3233,7 @@ function _toPrimitive(t, r) {
           skip_status: 1,
           id: userId
         })
-      });
+      }), result = _await$httpRequest57.result, statusText = _await$httpRequest57.statusText, status = _await$httpRequest57.status, data = _await$httpRequest57.data;
       if (result !== 'Success') {
         debug('Twitter用户操作请求失败', {
           result: result,
@@ -3212,8 +3292,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleRetweet(_ref27) {
-    let {retweetId: retweetId, doTask: doTask = true, retry: retry = false} = _ref27;
+  async function _toggleRetweet(_ref46) {
+    let retweetId = _ref46.retweetId, _ref46$doTask = _ref46.doTask, doTask = _ref46$doTask === void 0 ? true : _ref46$doTask, _ref46$retry = _ref46.retry, retry = _ref46$retry === void 0 ? false : _ref46$retry;
     try {
       var _data$response99, _data$responseHeaders4, _data$response100, _data$response101, _data$response102;
       debug('开始处理Twitter转推任务', {
@@ -3238,7 +3318,7 @@ function _toPrimitive(t, r) {
         text: retweetId,
         before: '[Twitter]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest58 = await httpRequest({
         url: 'https://x.com/i/api/graphql/'.concat(doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'),
         method: 'POST',
         headers: _objectSpread(_objectSpread({}, _classPrivateFieldGet(_headers, this)), {}, {
@@ -3249,7 +3329,7 @@ function _toPrimitive(t, r) {
         }),
         data: '{"variables":{"'.concat(doTask ? '' : 'source_', 'tweet_id":"').concat(retweetId, '","dark_request":false},"queryId":"').concat(doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw', '"}'),
         responseType: 'json'
-      });
+      }), result = _await$httpRequest58.result, statusText = _await$httpRequest58.statusText, status = _await$httpRequest58.status, data = _await$httpRequest58.data;
       if (result !== 'Success') {
         debug('Twitter转推操作请求失败', {
           result: result,
@@ -3379,8 +3459,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref5) {
-      let {doTask: doTask = true, nameLinks: nameLinks = []} = _ref5;
+    async toggle(_ref9) {
+      let _ref9$doTask = _ref9.doTask, doTask = _ref9$doTask === void 0 ? true : _ref9$doTask, _ref9$nameLinks = _ref9.nameLinks, nameLinks = _ref9$nameLinks === void 0 ? [] : _ref9$nameLinks;
       try {
         debug('开始处理Vk链接任务', {
           doTask: doTask,
@@ -3445,10 +3525,10 @@ function _toPrimitive(t, r) {
         text: I18n('verifyAuth', 'Vk'),
         before: '[Vk]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest59 = await httpRequest({
         url: 'https://vk.com/im',
         method: 'GET'
-      });
+      }), result = _await$httpRequest59.result, statusText = _await$httpRequest59.statusText, status = _await$httpRequest59.status, data = _await$httpRequest59.data;
       if (result !== 'Success') {
         debug('Vk授权验证请求失败', {
           result: result,
@@ -3493,7 +3573,7 @@ function _toPrimitive(t, r) {
         text: I18n('updatingAuth', 'Vk'),
         before: '[Vk]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest60 = await httpRequest({
         url: 'https://login.vk.com/?act=web_token',
         method: 'POST',
         headers: {
@@ -3506,7 +3586,7 @@ function _toPrimitive(t, r) {
           version: _classPrivateFieldGet(_version, this),
           app_id: _classPrivateFieldGet(_appId, this)
         })
-      });
+      }), result = _await$httpRequest60.result, statusText = _await$httpRequest60.statusText, status = _await$httpRequest60.status, data = _await$httpRequest60.data;
       if (result !== 'Success') {
         debug('更新Vk授权请求失败', {
           result: result,
@@ -3578,7 +3658,7 @@ function _toPrimitive(t, r) {
         track_code: '',
         access_token: _classPrivateFieldGet(_token, this)
       };
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest61 = await httpRequest({
         url: 'https://web.api.vk.com/method/groups.'.concat(doTask ? 'join' : 'leave', '?v=').concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
@@ -3588,7 +3668,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: $.param(reqData)
-      });
+      }), result = _await$httpRequest61.result, statusText = _await$httpRequest61.statusText, status = _await$httpRequest61.status, data = _await$httpRequest61.data;
       if (result !== 'Success') {
         debug('Vk群组操作请求失败', {
           result: result,
@@ -3643,7 +3723,7 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return true;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest62 = await httpRequest({
         url: 'https://vk.com/al_public.php',
         method: 'POST',
         headers: {
@@ -3658,7 +3738,7 @@ function _toPrimitive(t, r) {
           pid: dataParam.publicPid,
           hash: dataParam.publicHash
         })
-      });
+      }), result = _await$httpRequest62.result, statusText = _await$httpRequest62.statusText, status = _await$httpRequest62.status, data = _await$httpRequest62.data;
       if (result !== 'Success') {
         debug('Vk公共页面操作请求失败', {
           result: result,
@@ -3714,7 +3794,7 @@ function _toPrimitive(t, r) {
         count: '10',
         access_token: _classPrivateFieldGet(_token, this)
       };
-      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+      const _await$httpRequest63 = await httpRequest({
         url: 'https://web.api.vk.ru/method/wall.get?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
@@ -3724,7 +3804,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: $.param(postData)
-      });
+      }), resultR = _await$httpRequest63.result, statusTextR = _await$httpRequest63.statusText, statusR = _await$httpRequest63.status, dataR = _await$httpRequest63.data;
       if (resultR !== 'Success') {
         debug('获取Vk帖子信息失败', {
           result: resultR,
@@ -3798,7 +3878,7 @@ function _toPrimitive(t, r) {
       if (doTask) {
         postData.reaction_id = 0;
       }
-      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+      const _await$httpRequest64 = await httpRequest({
         url: 'https://web.api.vk.com/method/likes.'.concat(doTask ? 'add' : 'delete', '?v=').concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
@@ -3808,7 +3888,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: $.param(postData)
-      });
+      }), resultR = _await$httpRequest64.result, statusTextR = _await$httpRequest64.statusText, statusR = _await$httpRequest64.status, dataR = _await$httpRequest64.data;
       if (resultR !== 'Success') {
         debug('Vk点赞操作请求失败', {
           result: resultR,
@@ -3879,7 +3959,7 @@ function _toPrimitive(t, r) {
         track_code: itemInfo.track_code,
         access_token: _classPrivateFieldGet(_token, this)
       };
-      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+      const _await$httpRequest65 = await httpRequest({
         url: 'https://web.api.vk.ru/method/wall.repost?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
@@ -3889,7 +3969,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: $.param(postData)
-      });
+      }), resultR = _await$httpRequest65.result, statusTextR = _await$httpRequest65.statusText, statusR = _await$httpRequest65.status, dataR = _await$httpRequest65.data;
       if (resultR !== 'Success') {
         debug('Vk转发操作请求失败', {
           result: resultR,
@@ -3962,7 +4042,7 @@ function _toPrimitive(t, r) {
         creation_entry_point: '',
         access_token: _classPrivateFieldGet(_token, this)
       };
-      const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+      const _await$httpRequest66 = await httpRequest({
         url: 'https://web.api.vk.ru/method/wall.delete?v='.concat(_classPrivateFieldGet(_version, this), '&client_id=').concat(_classPrivateFieldGet(_appId, this)),
         method: 'POST',
         headers: {
@@ -3972,7 +4052,7 @@ function _toPrimitive(t, r) {
         },
         responseType: 'json',
         data: $.param(postData)
-      });
+      }), resultR = _await$httpRequest66.result, statusTextR = _await$httpRequest66.statusText, statusR = _await$httpRequest66.status, dataR = _await$httpRequest66.data;
       if (resultR !== 'Success') {
         debug('Vk删除转发操作请求失败', {
           result: resultR,
@@ -4015,7 +4095,7 @@ function _toPrimitive(t, r) {
         doTask: doTask
       });
       const url = 'https://vk.com/'.concat(name);
-      if (/^w=wall-/.test(name.split('?')[1])) {
+      if (/^wall-/.test(name.split(/\?|#/)[0])) {
         var _name$match;
         const realname = ((_name$match = name.match(/wall-\d+?_\d+/)) === null || _name$match === void 0 ? void 0 : _name$match[0]) || '';
         if (name.includes('action=like')) {
@@ -4040,10 +4120,10 @@ function _toPrimitive(t, r) {
         text: name,
         before: '[Vk]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest67 = await httpRequest({
         url: url,
         method: 'GET'
-      });
+      }), result = _await$httpRequest67.result, statusText = _await$httpRequest67.statusText, status = _await$httpRequest67.status, data = _await$httpRequest67.data;
       if (result !== 'Success') {
         debug('获取Vk ID请求失败', {
           result: result,
@@ -4061,8 +4141,8 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return false;
       }
-      const [, groupId] = data.responseText.match(/"group_id":(.+?),"fields"/) || [];
-      const [, isMember] = data.responseText.match(/"is_member":(.+?),/) || [];
+      const _ref47 = data.responseText.match(/"group_id":(.+?),"fields"/) || [], _ref48 = _slicedToArray(_ref47, 2), groupId = _ref48[1];
+      const _ref49 = data.responseText.match(/"is_member":(.+?),/) || [], _ref50 = _slicedToArray(_ref49, 2), isMember = _ref50[1];
       if (groupId) {
         debug('获取到Vk群组ID', {
           groupId: groupId
@@ -4085,8 +4165,8 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleVk(_ref28) {
-    let {name: name, doTask: doTask = true} = _ref28;
+  async function _toggleVk(_ref51) {
+    let name = _ref51.name, _ref51$doTask = _ref51.doTask, doTask = _ref51$doTask === void 0 ? true : _ref51$doTask;
     try {
       debug('开始处理Vk任务', {
         name: name,
@@ -4157,7 +4237,7 @@ function _toPrimitive(t, r) {
   unsafeWindow.Vk = Vk;
   const getInfo = async function(link, type) {
     try {
-      var _data$responseText$ma, _ref6;
+      var _data$responseText$ma, _ref0;
       debug('开始获取YouTube信息', {
         link: link,
         type: type
@@ -4166,10 +4246,10 @@ function _toPrimitive(t, r) {
         text: I18n('gettingYtbToken'),
         before: '[Youtube]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest4 = await httpRequest({
         url: link,
         method: 'GET'
-      });
+      }), result = _await$httpRequest4.result, statusText = _await$httpRequest4.statusText, status = _await$httpRequest4.status, data = _await$httpRequest4.data;
       if (result !== 'Success') {
         debug('获取YouTube信息请求失败', {
           result: result,
@@ -4195,8 +4275,8 @@ function _toPrimitive(t, r) {
         };
       }
       const apiKey = (_data$responseText$ma = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)) === null || _data$responseText$ma === void 0 ? void 0 : _data$responseText$ma[1];
-      const context = ((_ref6 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref6 === void 0 ? void 0 : _ref6[1]) || '{}';
-      const {client: client, request: request} = JSON.parse(context);
+      const context = ((_ref0 = data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/)) === null || _ref0 === void 0 ? void 0 : _ref0[1]) || '{}';
+      const _JSON$parse = JSON.parse(context), client = _JSON$parse.client, request = _JSON$parse.request;
       if (!apiKey || !client || !request) {
         debug('获取YouTube信息失败：缺少必要参数');
         logStatus.error('Error: Parameter "apiKey" not found!');
@@ -4329,8 +4409,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref7) {
-      let {doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []} = _ref7;
+    async toggle(_ref1) {
+      let _ref1$doTask = _ref1.doTask, doTask = _ref1$doTask === void 0 ? true : _ref1$doTask, _ref1$channelLinks = _ref1.channelLinks, channelLinks = _ref1$channelLinks === void 0 ? [] : _ref1$channelLinks, _ref1$videoLinks = _ref1.videoLinks, videoLinks = _ref1$videoLinks === void 0 ? [] : _ref1$videoLinks;
       try {
         debug('开始处理YouTube链接任务', {
           doTask: doTask,
@@ -4501,16 +4581,16 @@ function _toPrimitive(t, r) {
     });
     return getInfo(link, type);
   }
-  async function _toggleChannel2(_ref29) {
-    let {link: link, doTask: doTask = true, verify: verify = false} = _ref29;
+  async function _toggleChannel2(_ref52) {
+    let link = _ref52.link, _ref52$doTask = _ref52.doTask, doTask = _ref52$doTask === void 0 ? true : _ref52$doTask, _ref52$verify = _ref52.verify, verify = _ref52$verify === void 0 ? false : _ref52$verify;
     try {
       debug('开始处理YouTube频道任务', {
         link: link,
         doTask: doTask,
         verify: verify
       });
-      const {params: params, needLogin: needLogin} = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'channel');
-      const {apiKey: apiKey, client: client, request: request, channelId: channelId} = params || {};
+      const _await$_assertClassBr2 = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'channel'), params = _await$_assertClassBr2.params, needLogin = _await$_assertClassBr2.needLogin;
+      const _ref53 = params || {}, apiKey = _ref53.apiKey, client = _ref53.client, request = _ref53.request, channelId = _ref53.channelId;
       if (needLogin) {
         debug('YouTube频道操作失败：需要登录');
         echoLog({
@@ -4539,6 +4619,9 @@ function _toPrimitive(t, r) {
         });
         return true;
       }
+      if (doTask && globalThis.GFF_STU) {
+        globalThis.GFF_STU('youtube_channel_sub', channelId, 'add');
+      }
       const logStatus = verify ? echoLog({
         text: I18n('verifyingAuth', 'Youtube'),
         before: '[Youtube]'
@@ -4548,7 +4631,7 @@ function _toPrimitive(t, r) {
         before: '[Youtube]'
       });
       const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest68 = await httpRequest({
         url: 'https://www.youtube.com/youtubei/v1/subscription/'.concat(doTask ? '' : 'un', 'subscribe?key=').concat(apiKey, '&prettyPrint=false'),
         method: 'POST',
         headers: {
@@ -4573,7 +4656,7 @@ function _toPrimitive(t, r) {
           channelIds: [ channelId ],
           params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
         })
-      });
+      }), result = _await$httpRequest68.result, statusText = _await$httpRequest68.statusText, status = _await$httpRequest68.status, data = _await$httpRequest68.data;
       if (result !== 'Success') {
         debug('YouTube频道操作请求失败', {
           result: result,
@@ -4616,15 +4699,15 @@ function _toPrimitive(t, r) {
       return false;
     }
   }
-  async function _toggleLikeVideo(_ref30) {
-    let {link: link, doTask: doTask = true} = _ref30;
+  async function _toggleLikeVideo(_ref54) {
+    let link = _ref54.link, _ref54$doTask = _ref54.doTask, doTask = _ref54$doTask === void 0 ? true : _ref54$doTask;
     try {
       debug('开始处理YouTube视频点赞任务', {
         link: link,
         doTask: doTask
       });
-      const {params: params, needLogin: needLogin} = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'likeVideo');
-      const {apiKey: apiKey, client: client, request: request, videoId: videoId, likeParams: likeParams} = params || {};
+      const _await$_assertClassBr3 = await _assertClassBrand(_Youtube_brand, this, _getInfo).call(this, link, 'likeVideo'), params = _await$_assertClassBr3.params, needLogin = _await$_assertClassBr3.needLogin;
+      const _ref55 = params || {}, apiKey = _ref55.apiKey, client = _ref55.client, request = _ref55.request, videoId = _ref55.videoId, likeParams = _ref55.likeParams;
       if (needLogin) {
         debug('YouTube视频点赞失败：需要登录');
         echoLog({
@@ -4652,6 +4735,9 @@ function _toPrimitive(t, r) {
           before: '[Youtube]'
         });
         return true;
+      }
+      if (doTask && globalThis.GFF_STU) {
+        globalThis.GFF_STU('youtube_video_like', videoId, 'add');
       }
       const logStatus = echoLog({
         type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo',
@@ -4681,7 +4767,7 @@ function _toPrimitive(t, r) {
       if (doTask) {
         likeVideoData.params = likeParams;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest69 = await httpRequest({
         url: 'https://www.youtube.com/youtubei/v1/like/'.concat(doTask ? '' : 'remove', 'like?key=').concat(apiKey),
         method: 'POST',
         headers: {
@@ -4694,7 +4780,7 @@ function _toPrimitive(t, r) {
           authorization: 'SAPISIDHASH '.concat(nowTime, '_').concat(sha1(''.concat(nowTime, ' ').concat(_classPrivateFieldGet(_auth4, this).PAPISID, ' https://www.youtube.com')))
         },
         data: JSON.stringify(likeVideoData)
-      });
+      }), result = _await$httpRequest69.result, statusText = _await$httpRequest69.statusText, status = _await$httpRequest69.status, data = _await$httpRequest69.data;
       if (result !== 'Success') {
         debug('YouTube视频点赞请求失败', {
           result: result,
@@ -4742,8 +4828,8 @@ function _toPrimitive(t, r) {
   var _steamId = new WeakMap;
   var _SteamASF_brand = new WeakSet;
   class SteamASF {
-    constructor(_ref8) {
-      let {AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey} = _ref8;
+    constructor(_ref10) {
+      let AsfIpcUrl = _ref10.AsfIpcUrl, AsfIpcPassword = _ref10.AsfIpcPassword, AsfBotname = _ref10.AsfBotname, steamWebApiKey = _ref10.steamWebApiKey;
       _classPrivateMethodInitSpec(this, _SteamASF_brand);
       _classPrivateFieldInitSpec(this, _asfOptions, void 0);
       _classPrivateFieldInitSpec(this, _botName, 'asf');
@@ -4788,9 +4874,9 @@ function _toPrimitive(t, r) {
           text: I18n('initingASF'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest5 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: '{"Command":"!stats"}'
-        }));
+        })), result = _await$httpRequest5.result, statusText = _await$httpRequest5.statusText, status = _await$httpRequest5.status, data = _await$httpRequest5.data;
         if (result !== 'Success') {
           debug('ASF初始化请求失败', {
             result: result,
@@ -4839,11 +4925,11 @@ function _toPrimitive(t, r) {
           text: groupName,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest6 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!JOINGROUP '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(groupName)
           })
-        }));
+        })), result = _await$httpRequest6.result, statusText = _await$httpRequest6.statusText, status = _await$httpRequest6.status, data = _await$httpRequest6.data;
         if (result !== 'Success') {
           debug('加入Steam组请求失败', {
             result: result,
@@ -4902,11 +4988,11 @@ function _toPrimitive(t, r) {
           text: groupName,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest7 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!LEAVEGROUP '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(groupId)
           })
-        }));
+        })), result = _await$httpRequest7.result, statusText = _await$httpRequest7.statusText, status = _await$httpRequest7.status, data = _await$httpRequest7.data;
         if (result !== 'Success') {
           debug('退出Steam组请求失败', {
             result: result,
@@ -4960,11 +5046,11 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest8 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!ADDWISHLIST '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        }));
+        })), result = _await$httpRequest8.result, statusText = _await$httpRequest8.statusText, status = _await$httpRequest8.status, data = _await$httpRequest8.data;
         if (result !== 'Success') {
           debug('添加游戏到愿望单请求失败', {
             result: result,
@@ -5018,11 +5104,11 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest9 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!REMOVEWISHLIST '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        }));
+        })), result = _await$httpRequest9.result, statusText = _await$httpRequest9.statusText, status = _await$httpRequest9.status, data = _await$httpRequest9.data;
         if (result !== 'Success') {
           debug('从愿望单移除游戏请求失败', {
             result: result,
@@ -5079,11 +5165,11 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return true;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest0 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!'.concat(doTask ? '' : 'UN', 'FOLLOWGAME ').concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
           })
-        }));
+        })), result = _await$httpRequest0.result, statusText = _await$httpRequest0.statusText, status = _await$httpRequest0.status, data = _await$httpRequest0.data;
         if (result !== 'Success') {
           debug('处理游戏关注状态请求失败', {
             result: result,
@@ -5133,11 +5219,11 @@ function _toPrimitive(t, r) {
           text: curatorId,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest1 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!'.concat(doTask ? '' : 'UN', 'FOLLOWCURATOR ').concat(_classPrivateFieldGet(_botName, this), ' ').concat(curatorId)
           })
-        }));
+        })), result = _await$httpRequest1.result, statusText = _await$httpRequest1.statusText, status = _await$httpRequest1.status, data = _await$httpRequest1.data;
         if (result !== 'Success') {
           debug('处理鉴赏家关注状态请求失败', {
             result: result,
@@ -5188,7 +5274,7 @@ function _toPrimitive(t, r) {
         debug('开始添加许可证', {
           id: id
         });
-        const [type, ids] = id.split('-');
+        const _id$split = id.split('-'), _id$split2 = _slicedToArray(_id$split, 2), type = _id$split2[0], ids = _id$split2[1];
         const idsArr = ids.split(',');
         if (type === 'appid') {
           var _data$response38, _data$response39, _data$response40, _data$response41;
@@ -5197,11 +5283,11 @@ function _toPrimitive(t, r) {
             text: ids,
             before: '[ASF]'
           });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+          const _await$httpRequest10 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
             data: JSON.stringify({
               Command: '!addlicense '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(idsArr.map((id => 'app/'.concat(id))).join(','))
             })
-          }));
+          })), result = _await$httpRequest10.result, statusText = _await$httpRequest10.statusText, status = _await$httpRequest10.status, data = _await$httpRequest10.data;
           if (result !== 'Success') {
             debug('添加应用许可证请求失败', {
               result: result,
@@ -5235,11 +5321,11 @@ function _toPrimitive(t, r) {
             text: ids,
             before: '[ASF]'
           });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+          const _await$httpRequest11 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
             data: JSON.stringify({
               Command: '!addlicense '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(idsArr.map((id => 'sub/'.concat(id))).join(','))
             })
-          }));
+          })), result = _await$httpRequest11.result, statusText = _await$httpRequest11.statusText, status = _await$httpRequest11.status, data = _await$httpRequest11.data;
           if (result !== 'Success') {
             debug('添加订阅许可证请求失败', {
               result: result,
@@ -5306,11 +5392,11 @@ function _toPrimitive(t, r) {
           text: id,
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest12 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!REQUESTACCESS '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(id)
           })
-        }));
+        })), result = _await$httpRequest12.result, statusText = _await$httpRequest12.statusText, status = _await$httpRequest12.status, data = _await$httpRequest12.data;
         if (result !== 'Success') {
           debug('请求游戏试玩权限请求失败', {
             result: result,
@@ -5355,11 +5441,11 @@ function _toPrimitive(t, r) {
           text: I18n('playingGames', ids),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest13 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!play '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(ids)
           })
-        }));
+        })), result = _await$httpRequest13.result, statusText = _await$httpRequest13.statusText, status = _await$httpRequest13.status, data = _await$httpRequest13.data;
         if (result !== 'Success') {
           debug('挂游戏时长请求失败', {
             result: result,
@@ -5402,11 +5488,11 @@ function _toPrimitive(t, r) {
           text: I18n('gettingSteamId'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest14 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!steamid '.concat(_classPrivateFieldGet(_botName, this))
           })
-        }));
+        })), result = _await$httpRequest14.result, statusText = _await$httpRequest14.statusText, status = _await$httpRequest14.status, data = _await$httpRequest14.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('获取Steam ID请求失败', {
             result: result,
@@ -5447,13 +5533,13 @@ function _toPrimitive(t, r) {
           text: I18n('gettingSteamId'),
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest15 = await httpRequest({
           url: 'https://store.steampowered.com',
           method: 'GET',
           headers: {
             host: 'store.steampowered.com'
           }
-        });
+        }), result = _await$httpRequest15.result, statusText = _await$httpRequest15.statusText, status = _await$httpRequest15.status, data = _await$httpRequest15.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('获取Steam ID请求失败', {
             result: result,
@@ -5508,13 +5594,13 @@ function _toPrimitive(t, r) {
           text: I18n('checkingPlayStatus'),
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest16 = await httpRequest({
           url: 'https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key='.concat(_classPrivateFieldGet(_steamWebApiKey, this), '&steamids=').concat(_classPrivateFieldGet(_steamId, this)),
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'
           }
-        });
+        }), result = _await$httpRequest16.result, statusText = _await$httpRequest16.statusText, status = _await$httpRequest16.status, data = _await$httpRequest16.data;
         if (result !== 'Success') {
           debug('检查挂游戏时长状态请求失败', {
             result: result,
@@ -5559,11 +5645,11 @@ function _toPrimitive(t, r) {
           text: I18n('stoppingPlayGames'),
           before: '[ASF]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+        const _await$httpRequest17 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
           data: JSON.stringify({
             Command: '!resume '.concat(_classPrivateFieldGet(_botName, this))
           })
-        }));
+        })), result = _await$httpRequest17.result, statusText = _await$httpRequest17.statusText, status = _await$httpRequest17.status, data = _await$httpRequest17.data;
         if (result !== 'Success') {
           debug('停止挂游戏时长请求失败', {
             result: result,
@@ -5617,11 +5703,11 @@ function _toPrimitive(t, r) {
         text: 'All',
         before: '[ASF]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+      const _await$httpRequest70 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
         data: JSON.stringify({
           Command: '!GROUPLIST '.concat(_classPrivateFieldGet(_botName, this))
         })
-      }));
+      })), result = _await$httpRequest70.result, statusText = _await$httpRequest70.statusText, status = _await$httpRequest70.status, data = _await$httpRequest70.data;
       if (result !== 'Success') {
         debug('获取Steam组ID列表请求失败', {
           result: result,
@@ -5633,7 +5719,7 @@ function _toPrimitive(t, r) {
       }
       if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (_data$response106 = data.response) !== null && _data$response106 !== void 0 && (_data$response106 = _data$response106.Result) !== null && _data$response106 !== void 0 && _data$response106.includes('|')) {
         _classPrivateFieldSet(_groupInfo, this, Object.fromEntries(data.response.Result.split('\n').map((line => {
-          const [, name, id] = line.trim().split('|');
+          const _line$trim$split = line.trim().split('|'), _line$trim$split2 = _slicedToArray(_line$trim$split, 3), name = _line$trim$split2[1], id = _line$trim$split2[2];
           if (name && id) {
             return [ name, id ];
           }
@@ -5665,11 +5751,11 @@ function _toPrimitive(t, r) {
       debug('开始检查游戏状态', {
         gameId: gameId
       });
-      const {result: result, data: data} = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
+      const _await$httpRequest71 = await httpRequest(_objectSpread(_objectSpread({}, _classPrivateFieldGet(_asfOptions, this)), {}, {
         data: JSON.stringify({
           Command: '!CHECK '.concat(_classPrivateFieldGet(_botName, this), ' ').concat(gameId)
         })
-      }));
+      })), result = _await$httpRequest71.result, data = _await$httpRequest71.data;
       if (result !== 'Success') {
         debug('检查游戏状态请求失败', {
           result: result
@@ -5849,7 +5935,7 @@ function _toPrimitive(t, r) {
           text: groupName,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest18 = await httpRequest({
           url: 'https://steamcommunity.com/groups/'.concat(groupName),
           method: 'POST',
           headers: {
@@ -5859,7 +5945,7 @@ function _toPrimitive(t, r) {
             action: 'join',
             sessionID: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
-        });
+        }), result = _await$httpRequest18.result, statusText = _await$httpRequest18.statusText, status = _await$httpRequest18.status, data = _await$httpRequest18.data;
         if (result !== 'Success') {
           debug('加入Steam组请求失败', {
             result: result
@@ -5902,7 +5988,7 @@ function _toPrimitive(t, r) {
           text: groupName,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest19 = await httpRequest({
           url: 'https://steamcommunity.com/profiles/'.concat(_classPrivateFieldGet(_auth5, this).steam64Id, '/home_process'),
           method: 'POST',
           headers: {
@@ -5913,7 +5999,7 @@ function _toPrimitive(t, r) {
             action: 'leaveGroup',
             groupId: groupId
           })
-        });
+        }), result = _await$httpRequest19.result, statusText = _await$httpRequest19.statusText, status = _await$httpRequest19.status, data = _await$httpRequest19.data;
         if (result !== 'Success') {
           debug('退出Steam组请求失败', {
             result: result
@@ -5958,13 +6044,13 @@ function _toPrimitive(t, r) {
           text: gameId,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest20 = await httpRequest({
           url: 'https://steamcommunity.com/games/'.concat(gameId, '?action=join&sessionID=').concat(_classPrivateFieldGet(_auth5, this).communitySessionID),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
-        });
+        }), result = _await$httpRequest20.result, statusText = _await$httpRequest20.statusText, status = _await$httpRequest20.status, data = _await$httpRequest20.data;
         if (result !== 'Success') {
           debug('加入Steam官方组请求失败', {
             result: result
@@ -6011,7 +6097,7 @@ function _toPrimitive(t, r) {
           text: gameId,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest21 = await httpRequest({
           url: 'https://steamcommunity.com/profiles/'.concat(_classPrivateFieldGet(_auth5, this).steam64Id, '/home_process'),
           method: 'POST',
           headers: {
@@ -6022,7 +6108,7 @@ function _toPrimitive(t, r) {
             action: 'leaveGroup',
             groupId: groupId
           })
-        });
+        }), result = _await$httpRequest21.result, statusText = _await$httpRequest21.statusText, status = _await$httpRequest21.status, data = _await$httpRequest21.data;
         if (result !== 'Success') {
           debug('退出Steam官方组请求失败', {
             result: result
@@ -6037,13 +6123,13 @@ function _toPrimitive(t, r) {
           logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
           return false;
         }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        const _await$httpRequest22 = await httpRequest({
           url: 'https://steamcommunity.com/games/'.concat(gameId),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
-        });
+        }), resultR = _await$httpRequest22.result, statusTextR = _await$httpRequest22.statusText, statusR = _await$httpRequest22.status, dataR = _await$httpRequest22.data;
         if (resultR !== 'Success') {
           debug('退出Steam官方组时发生错误', {
             error: resultR,
@@ -6085,7 +6171,7 @@ function _toPrimitive(t, r) {
           text: gameId,
           before: '[Web]'
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest23 = await httpRequest({
           url: 'https://store.steampowered.com/api/addtowishlist',
           method: 'POST',
           headers: {
@@ -6096,7 +6182,7 @@ function _toPrimitive(t, r) {
             appid: gameId
           }),
           dataType: 'json'
-        });
+        }), result = _await$httpRequest23.result, data = _await$httpRequest23.data;
         if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && ((_data$response67 = data.response) === null || _data$response67 === void 0 ? void 0 : _data$response67.success) === true) {
           debug('成功添加游戏到愿望单', {
             gameId: gameId
@@ -6104,10 +6190,10 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return true;
         }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        const _await$httpRequest24 = await httpRequest({
           url: 'https://store.steampowered.com/app/'.concat(gameId),
           method: 'GET'
-        });
+        }), resultR = _await$httpRequest24.result, statusTextR = _await$httpRequest24.statusText, statusR = _await$httpRequest24.status, dataR = _await$httpRequest24.data;
         if (resultR !== 'Success') {
           debug('添加游戏到愿望单请求失败', {
             result: resultR,
@@ -6170,7 +6256,7 @@ function _toPrimitive(t, r) {
           text: gameId,
           before: '[Web]'
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest25 = await httpRequest({
           url: 'https://store.steampowered.com/api/removefromwishlist',
           method: 'POST',
           headers: {
@@ -6181,7 +6267,7 @@ function _toPrimitive(t, r) {
             appid: gameId
           }),
           dataType: 'json'
-        });
+        }), result = _await$httpRequest25.result, data = _await$httpRequest25.data;
         if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && ((_data$response68 = data.response) === null || _data$response68 === void 0 ? void 0 : _data$response68.success) === true) {
           debug('成功从愿望单移除游戏', {
             gameId: gameId
@@ -6189,10 +6275,10 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return true;
         }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
+        const _await$httpRequest26 = await httpRequest({
           url: 'https://store.steampowered.com/app/'.concat(gameId),
           method: 'GET'
-        });
+        }), resultR = _await$httpRequest26.result, statusTextR = _await$httpRequest26.statusText, statusR = _await$httpRequest26.status, dataR = _await$httpRequest26.data;
         if (resultR !== 'Success') {
           debug('从愿望单移除游戏请求失败', {
             result: resultR,
@@ -6258,14 +6344,14 @@ function _toPrimitive(t, r) {
         if (!doTask) {
           requestData.unfollow = '1';
         }
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest27 = await httpRequest({
           url: 'https://store.steampowered.com/explore/followgame/',
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           },
           data: $.param(requestData)
-        });
+        }), result = _await$httpRequest27.result, data = _await$httpRequest27.data;
         if (result === 'Success' && (data === null || data === void 0 ? void 0 : data.status) === 200 && data.responseText === 'true') {
           debug('成功处理游戏关注状态', {
             gameId: gameId,
@@ -6322,8 +6408,8 @@ function _toPrimitive(t, r) {
           text: gameId,
           before: '[Web]'
         });
-        const [id, feature] = forumId.split('_');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _forumId$split = forumId.split('_'), _forumId$split2 = _slicedToArray(_forumId$split, 2), id = _forumId$split2[0], feature = _forumId$split2[1];
+        const _await$httpRequest28 = await httpRequest({
           url: 'https://steamcommunity.com/forum/'.concat(id, '/General/').concat(doTask ? '' : 'un', 'subscribe/').concat(feature || '0', '/'),
           method: 'POST',
           responseType: 'json',
@@ -6333,7 +6419,7 @@ function _toPrimitive(t, r) {
           data: $.param({
             sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
-        });
+        }), result = _await$httpRequest28.result, statusText = _await$httpRequest28.statusText, status = _await$httpRequest28.status, data = _await$httpRequest28.data;
         if (result !== 'Success') {
           debug('处理论坛订阅状态请求失败', {
             result: result
@@ -6380,7 +6466,7 @@ function _toPrimitive(t, r) {
           text: id,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest29 = await httpRequest({
           url: 'https://steamcommunity.com/sharedfiles/'.concat(doTask ? '' : 'un', 'favorite'),
           method: 'POST',
           headers: {
@@ -6391,7 +6477,7 @@ function _toPrimitive(t, r) {
             appid: appid,
             sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
-        });
+        }), result = _await$httpRequest29.result, statusText = _await$httpRequest29.statusText, status = _await$httpRequest29.status, data = _await$httpRequest29.data;
         if (result !== 'Success') {
           debug('处理创意工坊收藏状态请求失败', {
             result: result
@@ -6433,7 +6519,7 @@ function _toPrimitive(t, r) {
           text: id,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest30 = await httpRequest({
           url: 'https://steamcommunity.com/sharedfiles/voteup',
           method: 'POST',
           responseType: 'json',
@@ -6444,7 +6530,7 @@ function _toPrimitive(t, r) {
             id: id,
             sessionid: _classPrivateFieldGet(_auth5, this).communitySessionID
           })
-        });
+        }), result = _await$httpRequest30.result, statusText = _await$httpRequest30.statusText, status = _await$httpRequest30.status, data = _await$httpRequest30.data;
         if (result !== 'Success') {
           debug('点赞创意工坊物品请求失败', {
             result: result
@@ -6486,7 +6572,7 @@ function _toPrimitive(t, r) {
           text: curatorId,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest31 = await httpRequest({
           url: 'https://store.steampowered.com/curators/ajaxfollow',
           method: 'POST',
           headers: {
@@ -6498,7 +6584,7 @@ function _toPrimitive(t, r) {
             follow: doTask
           }),
           dataType: 'json'
-        });
+        }), result = _await$httpRequest31.result, statusText = _await$httpRequest31.statusText, status = _await$httpRequest31.status, data = _await$httpRequest31.data;
         if (result !== 'Success') {
           debug('处理鉴赏家关注状态请求失败', {
             result: result
@@ -6546,14 +6632,14 @@ function _toPrimitive(t, r) {
         debug('开始点赞公告', {
           id: id
         });
-        const [appId, viewId] = id.split('/');
+        const _id$split3 = id.split('/'), _id$split4 = _slicedToArray(_id$split3, 2), appId = _id$split4[0], viewId = _id$split4[1];
         if (!(appId && viewId)) {
           echoLog({
             before: '[Web]'
           }).error(''.concat(I18n('missParams'), '(id)'));
           return false;
         }
-        const {clanId: clanId, gid: gid} = await _assertClassBrand(_SteamWeb_brand, this, _getAnnouncementParams).call(this, appId, viewId);
+        const _await$_assertClassBr = await _assertClassBrand(_SteamWeb_brand, this, _getAnnouncementParams).call(this, appId, viewId), clanId = _await$_assertClassBr.clanId, gid = _await$_assertClassBr.gid;
         if (!clanId) {
           return false;
         }
@@ -6563,7 +6649,7 @@ function _toPrimitive(t, r) {
           id: viewId,
           before: '[Web]'
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest32 = await httpRequest({
           url: 'https://store.steampowered.com/updated/ajaxrateupdate/'.concat(gid || viewId),
           method: 'POST',
           headers: {
@@ -6579,7 +6665,7 @@ function _toPrimitive(t, r) {
             ajax: 1
           }),
           dataType: 'json'
-        });
+        }), result = _await$httpRequest32.result, statusText = _await$httpRequest32.statusText, status = _await$httpRequest32.status, data = _await$httpRequest32.data;
         if (result !== 'Success') {
           debug('点赞公告请求失败', {
             result: result
@@ -6613,7 +6699,7 @@ function _toPrimitive(t, r) {
         debug('开始添加许可证', {
           id: id
         });
-        const [type, ids] = id.split('-');
+        const _id$split5 = id.split('-'), _id$split6 = _slicedToArray(_id$split5, 2), type = _id$split6[0], ids = _id$split6[1];
         debug('解析许可证ID', {
           type: type,
           ids: ids
@@ -6659,10 +6745,10 @@ function _toPrimitive(t, r) {
             });
             return false;
           }
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+          const _await$httpRequest33 = await httpRequest({
             url: 'https://store.steampowered.com/app/'.concat(ids),
             method: 'GET'
-          });
+          }), result = _await$httpRequest33.result, statusText = _await$httpRequest33.statusText, status = _await$httpRequest33.status, data = _await$httpRequest33.data;
           debug('验证许可证添加状态', {
             result: result,
             status: status,
@@ -6780,7 +6866,7 @@ function _toPrimitive(t, r) {
         debug('准备发送试玩权限请求', {
           id: id
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest34 = await httpRequest({
           url: 'https://store.steampowered.com/ajaxrequestplaytestaccess/'.concat(id),
           method: 'POST',
           headers: {
@@ -6793,7 +6879,7 @@ function _toPrimitive(t, r) {
             sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
           }),
           dataType: 'json'
-        });
+        }), result = _await$httpRequest34.result, statusText = _await$httpRequest34.statusText, status = _await$httpRequest34.status, data = _await$httpRequest34.data;
         debug('收到试玩权限请求响应', {
           result: result,
           status: status,
@@ -6889,7 +6975,7 @@ function _toPrimitive(t, r) {
       const formData = new FormData;
       formData.append('redir', 'https://'.concat(host[type], '/'));
       debug('发送刷新令牌请求');
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest72 = await httpRequest({
         url: 'https://login.steampowered.com/jwt/ajaxrefresh',
         method: 'POST',
         responseType: 'json',
@@ -6899,7 +6985,7 @@ function _toPrimitive(t, r) {
           Referer: 'https://'.concat(host[type], '/')
         },
         data: formData
-      });
+      }), result = _await$httpRequest72.result, statusText = _await$httpRequest72.statusText, status = _await$httpRequest72.status, data = _await$httpRequest72.data;
       debug('收到刷新令牌响应', {
         result: result,
         status: status,
@@ -6964,7 +7050,7 @@ function _toPrimitive(t, r) {
         redir: param.redir
       });
       debug('发送设置令牌请求');
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest73 = await httpRequest({
         url: 'https://'.concat(host[type], '/login/settoken'),
         method: 'POST',
         headers: {
@@ -6973,7 +7059,7 @@ function _toPrimitive(t, r) {
           Origin: 'https://'.concat(host[type])
         },
         data: formData
-      });
+      }), result = _await$httpRequest73.result, statusText = _await$httpRequest73.statusText, status = _await$httpRequest73.status, data = _await$httpRequest73.data;
       debug('收到设置令牌响应', {
         result: result,
         status: status,
@@ -7017,7 +7103,7 @@ function _toPrimitive(t, r) {
         text: I18n('updatingAuth', I18n('steamStore')),
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest74 = await httpRequest({
         url: 'https://store.steampowered.com/',
         method: 'GET',
         headers: {
@@ -7027,7 +7113,7 @@ function _toPrimitive(t, r) {
           'Upgrade-Insecure-Requests': '1'
         },
         redirect: 'manual'
-      });
+      }), result = _await$httpRequest74.result, statusText = _await$httpRequest74.statusText, status = _await$httpRequest74.status, data = _await$httpRequest74.data;
       debug('收到Steam商店身份验证响应', {
         result: result,
         statusText: statusText,
@@ -7203,7 +7289,7 @@ function _toPrimitive(t, r) {
         text: I18n('gettingUserInfo'),
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest75 = await httpRequest({
         url: 'https://steamcommunity.com/my',
         method: 'GET',
         headers: {
@@ -7213,7 +7299,7 @@ function _toPrimitive(t, r) {
           'Sec-Fetch-Mode': 'navigate'
         },
         redirect: 'follow'
-      });
+      }), result = _await$httpRequest75.result, statusText = _await$httpRequest75.statusText, status = _await$httpRequest75.status, data = _await$httpRequest75.data;
       debug('收到Steam社区身份验证响应', {
         result: result,
         statusText: statusText,
@@ -7274,10 +7360,10 @@ function _toPrimitive(t, r) {
         text: I18n('gettingAreaInfo'),
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest76 = await httpRequest({
         url: 'https://store.steampowered.com/cart/',
         method: 'GET'
-      });
+      }), result = _await$httpRequest76.result, statusText = _await$httpRequest76.statusText, status = _await$httpRequest76.status, data = _await$httpRequest76.data;
       debug('获取地区信息请求结果', {
         result: result,
         statusText: statusText,
@@ -7398,7 +7484,7 @@ function _toPrimitive(t, r) {
       let aimedArea = area;
       if (!aimedArea) {
         debug('未指定目标地区，自动获取可用地区');
-        const {currentArea: currentArea, areas: areas} = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this);
+        const _await$_assertClassBr4 = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this), currentArea = _await$_assertClassBr4.currentArea, areas = _await$_assertClassBr4.areas;
         debug('获取到地区信息', {
           currentArea: currentArea,
           areas: areas
@@ -7435,7 +7521,8 @@ function _toPrimitive(t, r) {
           });
           return false;
         }
-        [aimedArea] = anotherArea;
+        var _anotherArea = _slicedToArray(anotherArea, 1);
+        aimedArea = _anotherArea[0];
         debug('选定目标地区', {
           aimedArea: aimedArea
         });
@@ -7447,7 +7534,7 @@ function _toPrimitive(t, r) {
       debug('发送更换地区请求', {
         aimedArea: aimedArea
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest77 = await httpRequest({
         url: 'https://store.steampowered.com/country/setcountry',
         method: 'POST',
         headers: {
@@ -7457,7 +7544,7 @@ function _toPrimitive(t, r) {
           cc: aimedArea,
           sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
         })
-      });
+      }), result = _await$httpRequest77.result, statusText = _await$httpRequest77.statusText, status = _await$httpRequest77.status, data = _await$httpRequest77.data;
       debug('更换地区请求结果', {
         result: result,
         statusText: statusText,
@@ -7474,7 +7561,7 @@ function _toPrimitive(t, r) {
         logStatus.error(result === 'Success' ? 'Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')') : ''.concat(result, ':').concat(statusText, '(').concat(status, ')'));
         return 'CN';
       }
-      const {currentArea: currentArea} = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this);
+      const _await$_assertClassBr5 = await _assertClassBrand(_SteamWeb_brand, this, _getAreaInfo).call(this), currentArea = _await$_assertClassBr5.currentArea;
       debug('更换后获取到的当前地区', {
         currentArea: currentArea
       });
@@ -7528,13 +7615,13 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return cachedGroupId;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest78 = await httpRequest({
         url: 'https://steamcommunity.com/groups/'.concat(groupName),
         method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-      });
+      }), result = _await$httpRequest78.result, statusText = _await$httpRequest78.statusText, status = _await$httpRequest78.status, data = _await$httpRequest78.data;
       debug('获取组ID请求结果', {
         result: result,
         statusText: statusText,
@@ -7602,13 +7689,13 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return cachedGroupId;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest79 = await httpRequest({
         url: 'https://steamcommunity.com/games/'.concat(gameId),
         method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-      });
+      }), result = _await$httpRequest79.result, statusText = _await$httpRequest79.statusText, status = _await$httpRequest79.status, data = _await$httpRequest79.data;
       debug('获取官方群组ID请求结果', {
         result: result,
         statusText: statusText,
@@ -7661,10 +7748,10 @@ function _toPrimitive(t, r) {
       debug('开始判断Steam游戏是否已关注', {
         gameId: gameId
       });
-      const {result: result, data: data} = await httpRequest({
+      const _await$httpRequest80 = await httpRequest({
         url: 'https://store.steampowered.com/app/'.concat(gameId),
         method: 'GET'
-      });
+      }), result = _await$httpRequest80.result, data = _await$httpRequest80.data;
       debug('获取游戏页面请求结果', {
         result: result,
         status: data === null || data === void 0 ? void 0 : data.status
@@ -7721,10 +7808,10 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return cachedForumId;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest81 = await httpRequest({
         url: 'https://steamcommunity.com/app/'.concat(gameId, '/discussions/'),
         method: 'GET'
-      });
+      }), result = _await$httpRequest81.result, statusText = _await$httpRequest81.statusText, status = _await$httpRequest81.status, data = _await$httpRequest81.data;
       debug('获取论坛ID请求结果', {
         result: result,
         statusText: statusText,
@@ -7792,10 +7879,10 @@ function _toPrimitive(t, r) {
         logStatus.success();
         return cachedAppId;
       }
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest82 = await httpRequest({
         url: 'https://steamcommunity.com/sharedfiles/filedetails/?id='.concat(id),
         method: 'GET'
-      });
+      }), result = _await$httpRequest82.result, statusText = _await$httpRequest82.statusText, status = _await$httpRequest82.status, data = _await$httpRequest82.data;
       debug('获取创意工坊AppId请求结果', {
         result: result,
         statusText: statusText,
@@ -7854,7 +7941,7 @@ function _toPrimitive(t, r) {
         id: viewId,
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest83 = await httpRequest({
         url: 'https://store.steampowered.com/events/ajaxgetpartnerevent?appid='.concat(appId, '&announcement_gid=').concat(viewId, '&lang_list=6_0&last_modified_time=0&origin=https:%2F%2Fstore.steampowered.com&for_edit=false'),
         method: 'GET',
         responseType: 'json',
@@ -7862,7 +7949,7 @@ function _toPrimitive(t, r) {
           Host: 'store.steampowered.com',
           Referer: 'https://store.steampowered.com/news/app/'.concat(appId, '/view/').concat(viewId)
         }
-      });
+      }), result = _await$httpRequest83.result, statusText = _await$httpRequest83.statusText, status = _await$httpRequest83.status, data = _await$httpRequest83.data;
       debug('获取公告参数请求结果', {
         result: result,
         statusText: statusText,
@@ -7884,7 +7971,7 @@ function _toPrimitive(t, r) {
         logStatus.error('Error:'.concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')'));
         return {};
       }
-      const {clanid: clanid, gid: gid} = ((_data$response$event = data.response.event) === null || _data$response$event === void 0 ? void 0 : _data$response$event.announcement_body) || {};
+      const _ref56 = ((_data$response$event = data.response.event) === null || _data$response$event === void 0 ? void 0 : _data$response$event.announcement_body) || {}, clanid = _ref56.clanid, gid = _ref56.gid;
       debug('公告参数提取', {
         clanid: clanid,
         gid: gid
@@ -7927,13 +8014,13 @@ function _toPrimitive(t, r) {
         text: id,
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest84 = await httpRequest({
         url: 'https://store.steampowered.com/app/'.concat(id),
         method: 'GET',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
-      });
+      }), result = _await$httpRequest84.result, statusText = _await$httpRequest84.statusText, status = _await$httpRequest84.status, data = _await$httpRequest84.data;
       debug('获取App页面请求结果', {
         result: result,
         statusText: statusText,
@@ -8013,11 +8100,11 @@ function _toPrimitive(t, r) {
         text: I18n('gettingLicenses'),
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest85 = await httpRequest({
         url: 'https://store.steampowered.com/dynamicstore/userdata/?t='.concat((new Date).getTime()),
         method: 'GET',
         responseType: 'json'
-      });
+      }), result = _await$httpRequest85.result, statusText = _await$httpRequest85.statusText, status = _await$httpRequest85.status, data = _await$httpRequest85.data;
       debug('获取许可证请求结果', {
         result: result,
         statusText: statusText,
@@ -8063,7 +8150,7 @@ function _toPrimitive(t, r) {
         text: id,
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest86 = await httpRequest({
         url: 'https://store.steampowered.com/freelicense/addfreelicense/'.concat(id),
         method: 'POST',
         headers: {
@@ -8077,7 +8164,7 @@ function _toPrimitive(t, r) {
           sessionid: _classPrivateFieldGet(_auth5, this).storeSessionID
         }),
         dataType: 'json'
-      });
+      }), result = _await$httpRequest86.result, statusText = _await$httpRequest86.statusText, status = _await$httpRequest86.status, data = _await$httpRequest86.data;
       debug('添加免费许可证请求结果', {
         result: result,
         statusText: statusText,
@@ -8239,13 +8326,13 @@ function _toPrimitive(t, r) {
           logStatus.success();
           return curatorId;
         }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest35 = await httpRequest({
           url: 'https://store.steampowered.com/'.concat(path, '/').concat(name),
           method: 'GET',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
           }
-        });
+        }), result = _await$httpRequest35.result, statusText = _await$httpRequest35.statusText, status = _await$httpRequest35.status, data = _await$httpRequest35.data;
         if (result === 'Success') {
           if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
             var _data$responseText$ma7;
@@ -8294,8 +8381,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async toggle(_ref9) {
-      let {doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []} = _ref9;
+    async toggle(_ref11) {
+      let _ref11$doTask = _ref11.doTask, doTask = _ref11$doTask === void 0 ? true : _ref11$doTask, _ref11$groupLinks = _ref11.groupLinks, groupLinks = _ref11$groupLinks === void 0 ? [] : _ref11$groupLinks, _ref11$officialGroupL = _ref11.officialGroupLinks, officialGroupLinks = _ref11$officialGroupL === void 0 ? [] : _ref11$officialGroupL, _ref11$wishlistLinks = _ref11.wishlistLinks, wishlistLinks = _ref11$wishlistLinks === void 0 ? [] : _ref11$wishlistLinks, _ref11$followLinks = _ref11.followLinks, followLinks = _ref11$followLinks === void 0 ? [] : _ref11$followLinks, _ref11$forumLinks = _ref11.forumLinks, forumLinks = _ref11$forumLinks === void 0 ? [] : _ref11$forumLinks, _ref11$workshopLinks = _ref11.workshopLinks, workshopLinks = _ref11$workshopLinks === void 0 ? [] : _ref11$workshopLinks, _ref11$workshopVoteLi = _ref11.workshopVoteLinks, workshopVoteLinks = _ref11$workshopVoteLi === void 0 ? [] : _ref11$workshopVoteLi, _ref11$curatorLinks = _ref11.curatorLinks, curatorLinks = _ref11$curatorLinks === void 0 ? [] : _ref11$curatorLinks, _ref11$curatorLikeLin = _ref11.curatorLikeLinks, curatorLikeLinks = _ref11$curatorLikeLin === void 0 ? [] : _ref11$curatorLikeLin, _ref11$announcementLi = _ref11.announcementLinks, announcementLinks = _ref11$announcementLi === void 0 ? [] : _ref11$announcementLi, _ref11$licenseLinks = _ref11.licenseLinks, licenseLinks = _ref11$licenseLinks === void 0 ? [] : _ref11$licenseLinks, _ref11$playtestLinks = _ref11.playtestLinks, playtestLinks = _ref11$playtestLinks === void 0 ? [] : _ref11$playtestLinks, _ref11$playTimeLinks = _ref11.playTimeLinks, playTimeLinks = _ref11$playTimeLinks === void 0 ? [] : _ref11$playTimeLinks;
       try {
         var _classPrivateFieldGet2;
         debug('开始处理Steam任务', {
@@ -8504,7 +8591,7 @@ function _toPrimitive(t, r) {
         }
         if (doTask && globalOptions.doTask.steam.licenses && licenseLinks.length > 0) {
           for (const link of licenseLinks) {
-            const [type, idsStr] = link.split('-');
+            const _link$split = link.split('-'), _link$split2 = _slicedToArray(_link$split, 2), type = _link$split2[0], idsStr = _link$split2[1];
             if (!type || !idsStr) {
               this.setToggleResult(result, 'licenseLinks', link, false);
               continue;
@@ -8782,6 +8869,9 @@ function _toPrimitive(t, r) {
         });
         return true;
       }
+      if (doTask && globalThis.GFF_STU) {
+        globalThis.GFF_STU('steam_game_sub', gameId, 'add');
+      }
       for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
         if (await taskExecutor.toggleFollowGame(gameId, doTask)) {
           if (doTask) {
@@ -8952,6 +9042,9 @@ function _toPrimitive(t, r) {
         });
         return true;
       }
+      if (doTask && globalThis.GFF_STU) {
+        globalThis.GFF_STU('steam_curator_sub', curatorId, 'add');
+      }
       for (const taskExecutor of _classPrivateFieldGet(_TaskExecutor, this)) {
         if (await taskExecutor.toggleCurator(curatorId, doTask)) {
           if (doTask) {
@@ -8989,7 +9082,7 @@ function _toPrimitive(t, r) {
         link: link,
         doTask: doTask
       });
-      const [path, name] = link.split('/');
+      const _link$split3 = link.split('/'), _link$split4 = _slicedToArray(_link$split3, 2), path = _link$split4[0], name = _link$split4[1];
       if (!(path && name)) {
         debug('无效的鉴赏家链接', {
           link: link
@@ -9110,7 +9203,7 @@ function _toPrimitive(t, r) {
         text: id,
         before: '[Web]'
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest87 = await httpRequest({
         url: 'https://store.steampowered.com/app/'.concat(id),
         method: 'GET',
         headers: {
@@ -9119,7 +9212,7 @@ function _toPrimitive(t, r) {
           Origin: 'https://store.steampowered.com',
           Referer: 'https://store.steampowered.com/app/'.concat(id)
         }
-      });
+      }), result = _await$httpRequest87.result, statusText = _await$httpRequest87.statusText, status = _await$httpRequest87.status, data = _await$httpRequest87.data;
       if (result === 'Success') {
         if ((data === null || data === void 0 ? void 0 : data.status) === 200) {
           var _data$responseText$ma23;
@@ -9341,7 +9434,10 @@ function _toPrimitive(t, r) {
   const normalizeLegacyTasks = function(tasks) {
     let done = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     const result = [];
-    for (const [social, legacyTypes] of Object.entries(tasks)) {
+    for (const _ref12 of Object.entries(tasks)) {
+      var _ref13 = _slicedToArray(_ref12, 2);
+      const social = _ref13[0];
+      const legacyTypes = _ref13[1];
       if (Array.isArray(legacyTypes)) {
         for (const link of legacyTypes) {
           result.push({
@@ -9353,7 +9449,10 @@ function _toPrimitive(t, r) {
         }
         continue;
       }
-      for (const [legacyType, links] of Object.entries(legacyTypes)) {
+      for (const _ref14 of Object.entries(legacyTypes)) {
+        var _ref15 = _slicedToArray(_ref14, 2);
+        const legacyType = _ref15[0];
+        const links = _ref15[1];
         const type = LEGACY_TYPE_MAP[legacyType] || legacyType.replace(/Links$/, '');
         for (const link of links) {
           result.push(normalizePlaytimeTask(social, type, link, done));
@@ -9428,7 +9527,6 @@ function _toPrimitive(t, r) {
       value: value
     };
   };
-  var _ExtAPI = new WeakMap;
   var _Website_brand = new WeakSet;
   class Website {
     constructor() {
@@ -9452,7 +9550,6 @@ function _toPrimitive(t, r) {
         steamCommunity: false
       });
       _defineProperty(this, 'social', {});
-      _classPrivateFieldInitSpec(this, _ExtAPI, void 0);
     }
     async initSocial(payload) {
       try {
@@ -9722,7 +9819,9 @@ function _toPrimitive(t, r) {
         }
         debug('等待所有任务完成');
         const results = await Promise.all(pro);
-        for (const {social: social, result: result} of results) {
+        for (const _ref16 of results) {
+          const social = _ref16.social;
+          const result = _ref16.result;
           if (social === 'links') {
             if (typeof result !== 'boolean') {
               for (const task of selectedTasks.filter((selectedTask => selectedTask.social === 'links'))) {
@@ -9753,9 +9852,8 @@ function _toPrimitive(t, r) {
           }
           applySocialResult(social, result);
         }
-        if (_classPrivateFieldGet(_ExtAPI, this)) {}
-        if (!results.every((_ref0 => {
-          let {result: result} = _ref0;
+        if (!results.every((_ref17 => {
+          let result = _ref17.result;
           return typeof result === 'boolean' ? result : result.success;
         }))) {
           debug('任务执行失败', {
@@ -9833,1070 +9931,6 @@ function _toPrimitive(t, r) {
       };
     }
   }
-  function createGamesForFarmApi(storage, taskStore) {
-    const queues = new Map;
-    const entity = key => ({
-      get: () => storage.get(key, {}),
-      async replace(value) {
-        await storage.set(key, assertRecord(value, key));
-      },
-      async update(partial) {
-        var _queues$get;
-        assertRecord(partial, key);
-        const previous = (_queues$get = queues.get(key)) !== null && _queues$get !== void 0 ? _queues$get : Promise.resolve();
-        const operation = previous.then((async () => {
-          const current = await storage.get(key, {});
-          await storage.set(key, _objectSpread(_objectSpread({}, current), partial));
-        }));
-        queues.set(key, operation.catch((() => void 0)));
-        await operation;
-      }
-    });
-    const tasks = {
-      get: () => storage.get('tasks', []),
-      async add(type, data) {
-        await taskStore.update(validateType(type), validateData(data), 'add');
-      },
-      async remove(type, data) {
-        await taskStore.update(validateType(type), validateData(data), 'remove');
-      },
-      async update(type, data, action) {
-        if (action !== 'add' && action !== 'remove') {
-          throw new TypeError('Invalid task action');
-        }
-        await taskStore.update(validateType(type), validateData(data), action);
-      }
-    };
-    return {
-      tasks: tasks,
-      user: entity('user'),
-      games: entity('games'),
-      settings: entity('settings'),
-      discord: {
-        get: () => storage.get('discord', []),
-        async update(entries) {
-          if (!Array.isArray(entries)) {
-            throw new TypeError('Discord entries must be an array');
-          }
-          await storage.set('discord', entries);
-        },
-        clear: () => storage.remove('discord')
-      },
-      storage: {
-        get: storage.get,
-        set: storage.set,
-        remove: storage.remove,
-        getAll: storage.getAll,
-        clear: storage.clear
-      }
-    };
-  }
-  function assertRecord(value, label) {
-    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
-      throw new TypeError(''.concat(label, ' value must be an object'));
-    }
-    return value;
-  }
-  function validateType(type) {
-    if (!(type !== null && type !== void 0 && type.trim())) {
-      throw new TypeError('Task type is required');
-    }
-    return type;
-  }
-  function validateData(data) {
-    if (data === '' || data === null || data === void 0) {
-      throw new TypeError('Task data is required');
-    }
-    return data;
-  }
-  function selectRoute(hostname, pathname) {
-    if (typeof hostname !== 'string') {
-      return null;
-    }
-    switch (hostname.toLowerCase()) {
-     case 'freeanywhere.net':
-     case 'give.gamesforfarm.local':
-     case 'gamesforfarm-testing.ru':
-      return 'freeanywhere';
-
-     case 'store.steampowered.com':
-     case 'steamcommunity.com':
-      return 'steam';
-
-     case 'www.youtube.com':
-     case 'm.youtube.com':
-      return 'youtube';
-
-     case 'mee6.xyz':
-      return 'mee6';
-
-     case 'gamesforfarm.com':
-      return pathname === '/' ? 'gamesforfarm-store' : null;
-
-     case 'firstgamemarket.com':
-      return pathname === '/' ? 'firstgamemarket' : null;
-
-     default:
-      return null;
-    }
-  }
-  function createRequest(gm, baseUrl) {
-    function request(options) {
-      return new Promise(((resolve, reject) => {
-        var _options$method, _options$timeout;
-        for (const callbackName of [ 'onload', 'onerror', 'ontimeout', 'onabort' ]) {
-          if (callbackName in options) {
-            reject(new TypeError(''.concat(callbackName, ' is not supported; request() is Promise-only')));
-            return;
-          }
-        }
-        const method = ((_options$method = options.method) !== null && _options$method !== void 0 ? _options$method : 'GET').toUpperCase();
-        const resolvedUrl = new URL(options.url, baseUrl);
-        const transportOptions = _objectSpread(_objectSpread({}, options), {}, {
-          method: method,
-          timeout: (_options$timeout = options.timeout) !== null && _options$timeout !== void 0 ? _options$timeout : 2e4
-        });
-        if (method === 'GET' && isPlainObject(options.data)) {
-          for (const [key, value] of new URLSearchParams(options.data)) {
-            resolvedUrl.searchParams.append(key, value);
-          }
-          delete transportOptions.data;
-        }
-        const url = resolvedUrl.toString();
-        gm.GM_xmlhttpRequest(_objectSpread(_objectSpread({}, transportOptions), {}, {
-          url: url,
-          onload(response) {
-            if (response.status < 200 || response.status >= 300) {
-              var _response$responseTex;
-              const status = [ response.status, response.statusText ].filter((part => part !== void 0 && part !== '')).join(' ');
-              const responseText = String((_response$responseTex = response.responseText) !== null && _response$responseTex !== void 0 ? _response$responseTex : '');
-              const excerpt = responseText.replace(/\s+/g, ' ').trim().slice(0, 160);
-              const detail = excerpt ? ': '.concat(excerpt) : '';
-              reject(new Error(''.concat(method, ' ').concat(url, ' failed with ').concat(status).concat(detail)));
-              return;
-            }
-            resolve(response.responseText);
-          },
-          onerror() {
-            reject(new Error(''.concat(method, ' ').concat(url, ' request error')));
-          },
-          ontimeout() {
-            reject(new Error(''.concat(method, ' ').concat(url, ' request timeout')));
-          },
-          onabort() {
-            reject(new Error(''.concat(method, ' ').concat(url, ' request aborted')));
-          }
-        }));
-      }));
-    }
-    function get(url) {
-      return request({
-        method: 'GET',
-        url: url
-      });
-    }
-    function postForm(url, data) {
-      return request({
-        method: 'POST',
-        url: url,
-        data: new URLSearchParams(data).toString(),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        }
-      });
-    }
-    return {
-      request: request,
-      get: get,
-      postForm: postForm
-    };
-  }
-  function isPlainObject(value) {
-    if (value === null || typeof value !== 'object') {
-      return false;
-    }
-    const prototype = Object.getPrototypeOf(value);
-    return prototype === Object.prototype || prototype === null;
-  }
-  var ROOT_KEY = 'GamesForFarmExt';
-  function cloneValue(value) {
-    return value !== null && typeof value === 'object' ? structuredClone(value) : value;
-  }
-  function isRecord(value) {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
-  }
-  function createStorage(gm) {
-    const subscribers = new Set;
-    async function readContainer() {
-      const stored = await gm.GM_getValue(ROOT_KEY, void 0);
-      if (isRecord(stored)) {
-        return cloneValue(stored);
-      }
-      return {};
-    }
-    async function writeContainer(container) {
-      await gm.GM_setValue(ROOT_KEY, cloneValue(container));
-    }
-    async function notify(key, oldValue, newValue) {
-      for (const listener of subscribers) {
-        try {
-          await listener({
-            key: key,
-            oldValue: cloneValue(oldValue),
-            newValue: cloneValue(newValue)
-          });
-        } catch (_unused2) {}
-      }
-    }
-    async function get(key, defaultValue) {
-      const container = await readContainer();
-      return cloneValue(Object.prototype.hasOwnProperty.call(container, key) ? container[key] : defaultValue);
-    }
-    async function getAll() {
-      return cloneValue(await readContainer());
-    }
-    async function set(key, value) {
-      const container = await readContainer();
-      const oldValue = container[key];
-      const newValue = cloneValue(value);
-      container[key] = newValue;
-      await writeContainer(container);
-      await notify(key, oldValue, newValue);
-    }
-    async function setMany(values) {
-      for (const [key, value] of Object.entries(values)) {
-        await set(key, value);
-      }
-    }
-    async function remove(key) {
-      const container = await readContainer();
-      const oldValue = container[key];
-      delete container[key];
-      await writeContainer(container);
-      await notify(key, oldValue, void 0);
-    }
-    async function clear() {
-      const container = await readContainer();
-      const keys = Object.keys(container);
-      await writeContainer({});
-      for (const key of keys) {
-        await notify(key, container[key], void 0);
-      }
-    }
-    async function initialize() {
-      const tasks = await get('tasks', void 0);
-      if (!Array.isArray(tasks)) {
-        await set('tasks', []);
-      }
-      for (const key of [ 'user', 'games', 'settings' ]) {
-        if (!isRecord(await get(key, void 0))) {
-          await set(key, {});
-        }
-      }
-      return getAll();
-    }
-    function subscribe(listener) {
-      subscribers.add(listener);
-      return () => subscribers.delete(listener);
-    }
-    return {
-      get: get,
-      getAll: getAll,
-      set: set,
-      setMany: setMany,
-      remove: remove,
-      clear: clear,
-      initialize: initialize,
-      subscribe: subscribe
-    };
-  }
-  var unixTime = () => Math.floor(Date.now() / 1e3);
-  var onWindowLoad = callback => {
-    if (document.readyState === 'complete') {
-      callback();
-    } else {
-      window.addEventListener('load', callback, {
-        once: true
-      });
-    }
-  };
-  var isValidTask = task => Boolean((task === null || task === void 0 ? void 0 : task.type) && (task === null || task === void 0 ? void 0 : task.data));
-  function createTaskStore(storage) {
-    let now = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : unixTime;
-    let queue = Promise.resolve();
-    async function mutate(type, data, action) {
-      const storedTasks = await storage.get('tasks', []);
-      const tasks = Array.isArray(storedTasks) ? storedTasks : [];
-      const match = task => String(task.type) === String(type) && String(task.data) === String(data);
-      const found = tasks.some((task => isValidTask(task) && match(task)));
-      if (action === 'add' && found || action === 'remove' && !found) {
-        return;
-      }
-      const nextTasks = tasks.filter((task => isValidTask(task) && !match(task)));
-      if (action === 'add') {
-        nextTasks.push({
-          type: type,
-          data: data,
-          time: now()
-        });
-      }
-      await storage.set('tasks', nextTasks);
-    }
-    function update(type, data, action) {
-      if (!type || !data || ![ 'add', 'remove' ].includes(action)) {
-        return Promise.resolve();
-      }
-      const operation = queue.then((() => mutate(type, data, action)));
-      queue = operation.catch((() => {}));
-      return operation;
-    }
-    return {
-      update: update
-    };
-  }
-  async function initFirstGameMarket(_ref1) {
-    let {$: $, storage: storage} = _ref1;
-    const [settings, games] = await Promise.all([ storage.get('settings', {}), storage.get('games', {}) ]);
-    $('.game-list li').each((function markOwned() {
-      var _$item$find$attr;
-      const $item = $(this);
-      const match = String((_$item$find$attr = $item.find('.visual img').attr('src')) !== null && _$item$find$attr !== void 0 ? _$item$find$attr : '').match(/\/apps\/(\d+)\//);
-      const id = match ? Number.parseInt(match[1], 10) : null;
-      if (id && games[id] && settings.hide_games === true) {
-        $item.css('opacity', '.2');
-      }
-    }));
-  }
-  var initFirstGameMarketListener = initFirstGameMarket;
-  var SYNC_DELAY_MS = 50;
-  var TASK_RESULT_DELAY_MS = 1250;
-  var GAME_REFRESH_SECONDS = 24 * 60 * 60;
-  var TASK_MAX_AGE_SECONDS = 2 * 60 * 60;
-  var activeInstances = new WeakMap;
-  var initializationSequence = 0;
-  function detectPageUser($) {
-    const $site = $('.games_for_farm_site').first();
-    return compactUser({
-      steam: $site.data('steam'),
-      avatar: $site.data('avatar'),
-      name: $site.data('name'),
-      lang: $site.data('lang')
-    });
-  }
-  async function initFreeAnywhere(context) {
-    var _context$setTimeout, _context$clearTimeout, _context$now, _context$document, _activeInstances$get;
-    const {$: $, storage: storage, request: request, alert: alert2, console: console2} = context;
-    const schedule = (_context$setTimeout = context.setTimeout) !== null && _context$setTimeout !== void 0 ? _context$setTimeout : globalThis.setTimeout;
-    const cancel = (_context$clearTimeout = context.clearTimeout) !== null && _context$clearTimeout !== void 0 ? _context$clearTimeout : globalThis.clearTimeout;
-    const now = (_context$now = context.now) !== null && _context$now !== void 0 ? _context$now : () => Math.floor(Date.now() / 1e3);
-    const documentRef = (_context$document = context.document) !== null && _context$document !== void 0 ? _context$document : globalThis.document;
-    const eventNamespace = '.gamesForFarm'.concat(++initializationSequence);
-    (_activeInstances$get = activeInstances.get(documentRef)) === null || _activeInstances$get === void 0 || _activeInstances$get.dispose();
-    const pageUser = detectPageUser($);
-    let syncTimer;
-    let disposed = false;
-    let syncSuspended = true;
-    let startupMutated = false;
-    let trackSuspendedMutations = true;
-    let unsubscribe = () => {};
-    let attemptedInitialGameFetch = false;
-    const resultTimers = new Set;
-    const instance = {
-      dispose: dispose
-    };
-    activeInstances.set(documentRef, instance);
-    const logError = (message, error) => {
-      var _console2$error;
-      const logger = (_console2$error = console2 === null || console2 === void 0 ? void 0 : console2.error) !== null && _console2$error !== void 0 ? _console2$error : console2 === null || console2 === void 0 ? void 0 : console2.log;
-      logger === null || logger === void 0 || logger.call(console2, message, error);
-    };
-    const normalizeStorage = value => {
-      const source = isRecord2(value) ? value : {};
-      return _objectSpread(_objectSpread({}, source), {}, {
-        tasks: Array.isArray(source.tasks) ? source.tasks : [],
-        user: isRecord2(source.user) ? source.user : {},
-        games: isRecord2(source.games) ? source.games : {},
-        settings: isRecord2(source.settings) ? source.settings : {}
-      });
-    };
-    const replaceStorage = async nextStorage => {
-      const snapshot = await storage.getAll();
-      try {
-        await clearStorage(storage);
-        await storage.setMany(normalizeStorage(nextStorage));
-      } catch (error) {
-        try {
-          await clearStorage(storage);
-          await storage.setMany(snapshot);
-        } catch (rollbackError) {
-          logError('GamesForFarm: storage rollback failed', rollbackError);
-        }
-        throw error;
-      }
-    };
-    const parseResponse = (value, label) => {
-      try {
-        return JSON.parse(value);
-      } catch (error) {
-        logError('GamesForFarm: invalid '.concat(label, ' JSON'), error);
-        return null;
-      }
-    };
-    const fetchGames = async steam => {
-      try {
-        const response = await request.postForm('/php/extension/user_games_get.php', {
-          steam: steam
-        });
-        if (!response) {
-          return null;
-        }
-        const games = parseResponse(response, 'games');
-        return isRecord2(games) ? games : null;
-      } catch (error) {
-        logError('GamesForFarm: game refresh failed', error);
-        return null;
-      }
-    };
-    const syncStorage = async () => {
-      if (disposed) {
-        return;
-      }
-      try {
-        await request.postForm('/php/extension/user_data_update.php', {
-          extension: JSON.stringify(await storage.getAll())
-        });
-      } catch (error) {
-        logError('GamesForFarm: storage sync failed', error);
-      }
-    };
-    const scheduleSync = () => {
-      if (syncSuspended || disposed || syncTimer !== void 0) {
-        return;
-      }
-      syncTimer = schedule((async () => {
-        syncTimer = void 0;
-        await syncStorage();
-      }), SYNC_DELAY_MS);
-    };
-    unsubscribe = storage.subscribe((() => {
-      if (disposed) {
-        return;
-      }
-      if (syncSuspended) {
-        if (trackSuspendedMutations) {
-          startupMutated = true;
-        }
-        return;
-      }
-      scheduleSync();
-    }));
-    function cancelPendingSync() {
-      if (syncTimer === void 0) {
-        return;
-      }
-      cancel(syncTimer);
-      syncTimer = void 0;
-    }
-    function dispose() {
-      if (disposed) {
-        return;
-      }
-      disposed = true;
-      unsubscribe();
-      $(documentRef).off(eventNamespace);
-      cancelPendingSync();
-      for (const timerId of resultTimers) {
-        cancel(timerId);
-      }
-      resultTimers.clear();
-      if (activeInstances.get(documentRef) === instance) {
-        activeInstances.delete(documentRef);
-      }
-    }
-    const rawStorage = await storage.getAll();
-    if (disposed) {
-      return instance.dispose;
-    }
-    const initializedStorage = normalizeStorage(await storage.initialize());
-    const needsFreshStorage = !hasInitialStorageShape(rawStorage);
-    if (needsFreshStorage) {
-      const freshStorage = _objectSpread(_objectSpread({}, initializedStorage), {}, {
-        tasks: [],
-        user: compactUser(pageUser),
-        games: {},
-        settings: {}
-      });
-      await storage.setMany({
-        tasks: freshStorage.tasks,
-        user: freshStorage.user,
-        games: freshStorage.games,
-        settings: freshStorage.settings
-      });
-      if (pageUser.steam) {
-        attemptedInitialGameFetch = true;
-        const games = await fetchGames(pageUser.steam);
-        if (games) {
-          freshStorage.games = games;
-          freshStorage.settings.game_update = now();
-          await storage.setMany({
-            games: freshStorage.games,
-            settings: freshStorage.settings
-          });
-        }
-      }
-    }
-    let currentStorage = normalizeStorage(await storage.getAll());
-    let restoreSucceeded = false;
-    const accountChanged = pageUser.steam && currentStorage.user.steam && String(currentStorage.user.steam) !== String(pageUser.steam);
-    if (accountChanged) {
-      const mutatedBeforeRestore = startupMutated;
-      try {
-        const response = await request.postForm('/php/extension/user_data_get.php', {
-          steam: pageUser.steam
-        });
-        if (response) {
-          const restored = parseResponse(response, 'user data');
-          if (isRecord2(restored)) {
-            const normalized = normalizeStorage(restored);
-            normalized.user = _objectSpread(_objectSpread({}, normalized.user), compactUser(pageUser));
-            trackSuspendedMutations = false;
-            try {
-              await replaceStorage(normalized);
-              restoreSucceeded = true;
-              startupMutated = false;
-            } finally {
-              trackSuspendedMutations = true;
-            }
-          }
-        }
-      } catch (error) {
-        startupMutated || (startupMutated = mutatedBeforeRestore);
-        logError('GamesForFarm: account restore failed', error);
-      }
-      currentStorage = normalizeStorage(await storage.getAll());
-    }
-    const canApplyPageUser = !accountChanged || restoreSucceeded;
-    if (canApplyPageUser) {
-      const nextUser = _objectSpread(_objectSpread({}, currentStorage.user), compactUser(pageUser));
-      if (!sameJson(nextUser, currentStorage.user)) {
-        await storage.set('user', nextUser);
-      }
-      currentStorage.user = nextUser;
-    }
-    const lastGameUpdate = Number.parseInt(currentStorage.settings.game_update, 10) || 0;
-    if (currentStorage.user.steam && !attemptedInitialGameFetch && now() - lastGameUpdate > GAME_REFRESH_SECONDS) {
-      const games = await fetchGames(currentStorage.user.steam);
-      if (games) {
-        currentStorage.games = games;
-        currentStorage.settings = _objectSpread(_objectSpread({}, currentStorage.settings), {}, {
-          game_update: now()
-        });
-        await storage.setMany({
-          games: currentStorage.games,
-          settings: currentStorage.settings
-        });
-      }
-    }
-    const taskList = Array.isArray(currentStorage.tasks) ? currentStorage.tasks : [];
-    const activeTasks = taskList.filter((task => {
-      if (!(task !== null && task !== void 0 && task.time)) {
-        return true;
-      }
-      const taskTime = Number.parseInt(task.time, 10);
-      return !Number.isFinite(taskTime) || now() - taskTime <= TASK_MAX_AGE_SECONDS;
-    }));
-    if (activeTasks.length !== taskList.length) {
-      await storage.set('tasks', activeTasks);
-    }
-    const discord = await storage.get('discord');
-    if ((discord === null || discord === void 0 ? void 0 : discord.length) > 0) {
-      try {
-        const response = await request.postForm('/php/extension/discord_levels_update.php', {
-          discord: JSON.stringify(discord)
-        });
-        if (String(response).includes('success')) {
-          alert2('Данные discord уровней обновлены');
-        } else {
-          alert2('Возникла ошибка при обновлении discord уровней');
-        }
-      } catch (error) {
-        logError('GamesForFarm: Discord upload failed', error);
-        alert2('Возникла ошибка при обновлении discord уровней');
-      } finally {
-        await storage.remove('discord');
-      }
-    }
-    if ($('.games_for_farm_extension.work').length > 0) {
-      $('.games_for_farm_extension.not_work').remove();
-      $('.games_for_farm_extension.work').slideDown(200);
-    }
-    syncSuspended = false;
-    if (startupMutated) {
-      scheduleSync();
-    }
-    const checkTasksButton = () => {
-      let tasksDone = true;
-      $('.game__content-tasks__task').each((function checkTask() {
-        if (!$(this).hasClass('done')) {
-          tasksDone = false;
-        }
-      }));
-      $('.js-get-key').toggleClass('inactive', !tasksDone);
-    };
-    const resetTaskButton = ($parent, $button, result) => {
-      if (disposed) {
-        return;
-      }
-      let timerId;
-      timerId = schedule((() => {
-        resultTimers.delete(timerId);
-        if (disposed) {
-          return;
-        }
-        $parent.toggleClass('done', result === 'good');
-        $parent.toggleClass('error', result === 'bad');
-        $button.removeClass('loading');
-        checkTasksButton();
-      }), TASK_RESULT_DELAY_MS);
-      resultTimers.add(timerId);
-    };
-    $('.task-check-extension').removeClass('js-extentions-modal');
-    $('.game__content-tasks__task[data-extension=\'1\'] .task-link a').removeClass('js-extentions-modal');
-    $(documentRef).off('click'.concat(eventNamespace), '.game__content-tasks__task .task-check-extension').on('click'.concat(eventNamespace), '.game__content-tasks__task .task-check-extension', (async function taskCheck(event) {
-      if (disposed) {
-        return;
-      }
-      event.preventDefault();
-      const $button = $(this);
-      if ($button.hasClass('loading')) {
-        return;
-      }
-      const $parent = $button.closest('.game__content-tasks__task');
-      if ($parent.data('extension') == false) {
-        return;
-      }
-      const id = $parent.data('id');
-      const type = $parent.data('type');
-      const data = $parent.data('data');
-      if (![ id, type, data ].every(hasTaskValue)) {
-        return;
-      }
-      $button.addClass('loading');
-      try {
-        var _console2$log;
-        await request.postForm('/php/extension/user_data_update.php', {
-          extension: JSON.stringify(await storage.getAll())
-        });
-        if (disposed) {
-          return;
-        }
-        const startedAt = Date.now();
-        const response = await request.postForm('/php/extension/user_task_update.php', {
-          id: id,
-          type: type,
-          data: data
-        });
-        console2 === null || console2 === void 0 || (_console2$log = console2.log) === null || _console2$log === void 0 || _console2$log.call(console2, '👌 checking task in '.concat(Date.now() - startedAt, ' ms'));
-        if (disposed) {
-          return;
-        }
-        const text = String(response);
-        const result = text.includes('good') ? 'good' : text.includes('bad') ? 'bad' : 'neutral';
-        resetTaskButton($parent, $button, result);
-      } catch (error) {
-        logError('GamesForFarm: task check failed', error);
-        if (disposed) {
-          return;
-        }
-        resetTaskButton($parent, $button, 'neutral');
-      }
-    }));
-    return instance.dispose;
-  }
-  var initFreeAnywhereListener = initFreeAnywhere;
-  function compactUser(user) {
-    return Object.fromEntries(Object.entries(user).filter((_ref10 => {
-      let [, value] = _ref10;
-      return value !== void 0 && value !== null && value !== '';
-    })));
-  }
-  function hasInitialStorageShape(storage) {
-    return isRecord2(storage) && Object.prototype.hasOwnProperty.call(storage, 'tasks') && isRecord2(storage.user) && isRecord2(storage.games) && isRecord2(storage.settings);
-  }
-  function isRecord2(value) {
-    return value !== null && typeof value === 'object' && !Array.isArray(value);
-  }
-  function sameJson(left, right) {
-    return JSON.stringify(left) === JSON.stringify(right);
-  }
-  function hasTaskValue(value) {
-    return value !== void 0 && value !== null && value !== '';
-  }
-  async function clearStorage(storage) {
-    const current = await storage.getAll();
-    for (const key of Object.keys(current)) {
-      await storage.remove(key);
-    }
-  }
-  async function updateStoreGameCount(api, count) {
-    const settings = await api.settings.get();
-    if (Number(settings.store_games) !== count) {
-      await api.settings.update({
-        store_games: count
-      });
-    }
-  }
-  async function initGamesForFarmStore(_ref11) {
-    let {$: $, storage: storage, api: api} = _ref11;
-    const [settings, games] = await Promise.all([ storage.get('settings', {}), storage.get('games', {}) ]);
-    const owned = new Set;
-    $('.product__item').each((function markOwned() {
-      const $item = $(this);
-      const id = extractAppId($item.find('.product__box-image img').data('src'), $item.find('.product__box-props a').attr('href'));
-      if (id && games[id]) {
-        owned.add(id);
-        if (settings.hide_games === true) {
-          $item.css('opacity', '.2');
-        }
-      }
-    }));
-    if (Number(settings.store_games) !== owned.size) {
-      if (api) {
-        await updateStoreGameCount(api, owned.size);
-      } else {
-        await storage.set('settings', _objectSpread(_objectSpread({}, settings), {}, {
-          store_games: owned.size
-        }));
-      }
-    }
-  }
-  var initGamesForFarmStoreListener = initGamesForFarmStore;
-  function extractAppId(image, link) {
-    var _String$match;
-    const match = (_String$match = String(image !== null && image !== void 0 ? image : '').match(/\/apps\/(\d+)\//)) !== null && _String$match !== void 0 ? _String$match : String(link !== null && link !== void 0 ? link : '').match(/\/app\/(\d+)(?:\/|$)/);
-    return match ? Number.parseInt(match[1], 10) : null;
-  }
-  var activeInstances2 = new WeakMap;
-  function applyDiscordEntries(api, entries) {
-    return api.discord.update(entries);
-  }
-  function detectMee6Leaderboard($) {
-    const users = [];
-    let complete = false;
-    $('.md\\:block').each((function collectUser() {
-      const user = {
-        name: $(this).find('.justify-start p').text(),
-        level: $(this).find('.leaderboardPlayerStat .items-center').text()
-      };
-      users.push(user);
-      if (Number(user.level) === 0) {
-        complete = true;
-        return false;
-      }
-      return void 0;
-    }));
-    return complete ? users : null;
-  }
-  function initMee6(_ref12) {
-    var _activeInstances2$get;
-    let {$: $, storage: storage, api: api, alert: alert2, document: document2 = globalThis.document} = _ref12;
-    (_activeInstances2$get = activeInstances2.get(document2)) === null || _activeInstances2$get === void 0 || _activeInstances2$get();
-    let shown = false;
-    const handler = async event => {
-      if (event.code !== 'End') {
-        return;
-      }
-      const users = detectMee6Leaderboard($);
-      if (!users) {
-        return;
-      }
-      if (api) {
-        await applyDiscordEntries(api, users);
-      } else {
-        await storage.set('discord', users);
-      }
-      if (!shown) {
-        alert2('Можно переходить на freeanywhere.net');
-        shown = true;
-      }
-    };
-    $(document2).on('keydown.gamesForFarmMee6', handler);
-    const dispose = () => {
-      $(document2).off('.gamesForFarmMee6');
-      if (activeInstances2.get(document2) === dispose) {
-        activeInstances2.delete(document2);
-      }
-    };
-    activeInstances2.set(document2, dispose);
-    return dispose;
-  }
-  var initMee6Listener = initMee6;
-  var activeInstances3 = new WeakMap;
-  var instanceSequence = 0;
-  function detectSteamObservations($) {
-    const observations = [];
-    const curator = $('span[id^=\'CuratorUnFollowBtn_\']').first();
-    if (curator.length) {
-      var _curator$attr;
-      const id = String((_curator$attr = curator.attr('id')) !== null && _curator$attr !== void 0 ? _curator$attr : '').split('_')[1];
-      const action = $('#CuratorFollowBtn_'.concat(id)).css('display') === 'none' ? 'add' : $('#CuratorUnFollowBtn_'.concat(id)).css('display') === 'none' ? 'remove' : null;
-      if (id && action) {
-        observations.push({
-          type: 'steam_curator_sub',
-          data: id,
-          action: action
-        });
-      }
-    }
-    if ($('.followStatsBlock').length) {
-      var _$$attr;
-      const id = String((_$$attr = $('#HeaderUserInfoName a').attr('href')) !== null && _$$attr !== void 0 ? _$$attr : '').split('/').filter(Boolean).pop();
-      const action = $('#FollowUserOptionAdd').css('visibility') === 'hidden' ? 'add' : $('#FollowUserOptionFollowing, .followOption.remove').css('visibility') === 'hidden' ? 'remove' : null;
-      if (id && action) {
-        observations.push({
-          type: 'steam_guides_sub',
-          data: id,
-          action: action
-        });
-      }
-    }
-    if ($('#ScrollingItemControls').length) {
-      const id = $('#PublishedFileFavorite input[name=\'id\']').val();
-      const action = $('#FavoriteItemOptionAdd').css('visibility') === 'hidden' ? 'add' : $('#FavoriteItemOptionFavorited, .favoriteOption.removefavorite').css('visibility') === 'hidden' ? 'remove' : null;
-      if (id && action) {
-        observations.push({
-          type: 'steam_manual_favourite',
-          data: id,
-          action: action
-        });
-      }
-    }
-    if ($('#queueBtnFollow').length) {
-      const id = $('.game_page_background').data('miniprofile-appid');
-      const action = $('#queueBtnFollow .queue_btn_inactive').css('display') === 'none' ? 'add' : $('#queueBtnFollow .queue_btn_active').css('display') === 'none' ? 'remove' : null;
-      if (id && action) {
-        observations.push({
-          type: 'steam_game_sub',
-          data: id,
-          action: action
-        });
-      }
-    }
-    return observations;
-  }
-  function applySteamObservation(api, observation) {
-    return api.tasks.update(observation.type, observation.data, observation.action);
-  }
-  function initSteam(_ref13) {
-    var _activeInstances3$get;
-    let {$: $, taskStore: taskStore, api: api, document: document2 = globalThis.document} = _ref13;
-    (_activeInstances3$get = activeInstances3.get(document2)) === null || _activeInstances3$get === void 0 || _activeInstances3$get();
-    const namespace = '.gamesForFarmSteam'.concat(++instanceSequence);
-    let disposed = false;
-    const update = (type, data, action) => {
-      if (!disposed && data !== void 0 && data !== null && data !== '') {
-        void (api ? api.tasks.update(type, data, action) : taskStore.update(type, data, action));
-      }
-    };
-    for (const observation of detectSteamObservations($)) {
-      void (api ? applySteamObservation(api, observation) : taskStore.update(observation.type, observation.data, observation.action));
-    }
-    const curatorElement = $('span[id^=\'CuratorUnFollowBtn_\']').first();
-    if (curatorElement.length) {
-      var _curatorElement$attr;
-      const curatorId = String((_curatorElement$attr = curatorElement.attr('id')) !== null && _curatorElement$attr !== void 0 ? _curatorElement$attr : '').split('_')[1];
-      const follow = '#CuratorFollowBtn_'.concat(curatorId);
-      const unfollow = '#CuratorUnFollowBtn_'.concat(curatorId);
-      bindPair($, document2, namespace, follow, unfollow, 'steam_curator_sub', curatorId, update);
-    }
-    if ($('.followStatsBlock').length) {
-      var _$$attr2;
-      const userId = String((_$$attr2 = $('#HeaderUserInfoName a').attr('href')) !== null && _$$attr2 !== void 0 ? _$$attr2 : '').split('/').filter(Boolean).pop();
-      const follow = '#FollowUserOptionAdd';
-      const unfollow = '#FollowUserOptionFollowing, .followOption.remove';
-      bindPair($, document2, namespace, follow, unfollow, 'steam_guides_sub', userId, update);
-    }
-    if ($('#ScrollingItemControls').length) {
-      const manualId = $('#PublishedFileFavorite input[name=\'id\']').val();
-      const follow = '#FavoriteItemOptionAdd';
-      const unfollow = '#FavoriteItemOptionFavorited, .favoriteOption.removefavorite';
-      bindPair($, document2, namespace, follow, unfollow, 'steam_manual_favourite', manualId, update);
-    }
-    if ($('#queueBtnFollow').length) {
-      const gameId = $('.game_page_background').data('miniprofile-appid');
-      const follow = '#queueBtnFollow .queue_btn_inactive';
-      const unfollow = '#queueBtnFollow .queue_btn_active';
-      bindPair($, document2, namespace, follow, unfollow, 'steam_game_sub', gameId, update);
-    }
-    function dispose() {
-      if (disposed) {
-        return;
-      }
-      disposed = true;
-      $(document2).off(namespace);
-      if (activeInstances3.get(document2) === dispose) {
-        activeInstances3.delete(document2);
-      }
-    }
-    activeInstances3.set(document2, dispose);
-    return dispose;
-  }
-  var initSteamListener = initSteam;
-  function bindPair($, document2, namespace, follow, unfollow, type, id, update) {
-    if (id === void 0 || id === null || id === '') {
-      return;
-    }
-    $(document2).on('click'.concat(namespace), follow, (() => update(type, id, 'add'))).on('click'.concat(namespace), unfollow, (() => update(type, id, 'remove')));
-  }
-  var SUBSCRIBE = new Set([ 'Подписаться', 'Падпісацца', 'Підписатися', 'Abonnieren', 'Subscribe', 'Suscribirse', 'Mag-subscribe', 'S\'abonner', 'Iscriviti', 'Subskrybuj', 'Subscrever', 'Abonează-te', '订阅', 'チャンネル登録', '訂閱' ]);
-  var SUBSCRIBED = new Set([ 'Вы подписаны', 'Вы падпісаны', 'Ви підписалися', 'Abonniert', 'Subscribed', 'Suscrito', 'Naka-subscribe', 'Abonné', 'Iscritto', 'Subskrybujesz', 'Subscrito', 'Abonat(ă)', '已订阅', '登録済み', '已訂閱' ]);
-  var activeInstances4 = new WeakMap;
-  function detectYouTubeObservations($) {
-    let location2 = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : globalThis.location;
-    const observations = [];
-    const $subscribe = $('yt-subscribe-button-view-model');
-    if ($subscribe.length) {
-      const data = $('meta[itemprop="identifier"]').attr('content');
-      const text = $subscribe.text().trim();
-      let action = null;
-      if (SUBSCRIBE.has(text)) {
-        action = 'remove';
-      } else if (SUBSCRIBED.has(text) || $('.ytSubscribePlusButtonViewModelHost').length) {
-        action = 'add';
-      } else {
-        const color = $subscribe.find('button').css('color');
-        if ([ '#0f0f0f', 'rgb(15, 15, 15)' ].includes(color)) {
-          action = 'remove';
-        }
-        if ([ '#f1f1f1', 'rgb(241, 241, 241)' ].includes(color)) {
-          action = 'add';
-        }
-      }
-      if (data && action) {
-        observations.push({
-          type: 'youtube_channel_sub',
-          data: data,
-          action: action
-        });
-      }
-    }
-    if ($('.ytLikeButtonViewModelHost').length) {
-      var _$$attr3;
-      const data = location2.hostname === 'm.youtube.com' ? new URL((_$$attr3 = $('link[rel="canonical"]').attr('href')) !== null && _$$attr3 !== void 0 ? _$$attr3 : location2.href).searchParams.get('v') : $('meta[itemprop="identifier"]').attr('content');
-      const pressed = $('.ytLikeButtonViewModelHost button').attr('aria-pressed');
-      if (data && (pressed === 'true' || pressed === 'false')) {
-        observations.push({
-          type: 'youtube_video_like',
-          data: data,
-          action: pressed === 'true' ? 'add' : 'remove'
-        });
-      }
-    }
-    return observations;
-  }
-  function initYouTube(context) {
-    var _context$setInterval, _context$clearInterva, _activeInstances4$get;
-    const {$: $, taskStore: taskStore, api: api, document: document2 = globalThis.document, location: location2 = globalThis.location} = context;
-    const setIntervalFn = (_context$setInterval = context.setInterval) !== null && _context$setInterval !== void 0 ? _context$setInterval : globalThis.setInterval;
-    const clearIntervalFn = (_context$clearInterva = context.clearInterval) !== null && _context$clearInterva !== void 0 ? _context$clearInterva : globalThis.clearInterval;
-    (_activeInstances4$get = activeInstances4.get(document2)) === null || _activeInstances4$get === void 0 || _activeInstances4$get();
-    let disposed = false;
-    let lastUrl = location2.href;
-    const states = new Map;
-    const record = (type, id, subscribed) => {
-      if (!id) {
-        return;
-      }
-      const key = ''.concat(type, ':').concat(id);
-      if (states.get(key) === subscribed) {
-        return;
-      }
-      states.set(key, subscribed);
-      void (api ? api.tasks.update(type, id, subscribed ? 'add' : 'remove') : taskStore.update(type, id, subscribed ? 'add' : 'remove'));
-    };
-    const inspect = () => {
-      if (disposed) {
-        return;
-      }
-      if (location2.href !== lastUrl) {
-        lastUrl = location2.href;
-        states.clear();
-      }
-      for (const observation of detectYouTubeObservations($, location2)) {
-        record(observation.type, observation.data, observation.action === 'add');
-      }
-    };
-    const interval = setIntervalFn(inspect, 600);
-    $(document2).on('yt-navigate-finish.gamesForFarmYouTube popstate.gamesForFarmYouTube', inspect);
-    inspect();
-    function dispose() {
-      if (disposed) {
-        return;
-      }
-      disposed = true;
-      clearIntervalFn(interval);
-      $(document2).off('.gamesForFarmYouTube');
-      if (activeInstances4.get(document2) === dispose) {
-        activeInstances4.delete(document2);
-      }
-    }
-    activeInstances4.set(document2, dispose);
-    return dispose;
-  }
-  var initYouTubeListener = initYouTube;
-  async function bootstrap(_ref14) {
-    let {exposeGlobal: exposeGlobal} = _ref14;
-    const gm = {
-      GM_xmlhttpRequest: GM_xmlhttpRequest,
-      GM_setValue: GM_setValue,
-      GM_getValue: GM_getValue
-    };
-    const storage = createStorage(gm);
-    const request = createRequest(gm, location.href);
-    const taskStore = createTaskStore(storage);
-    const api = createGamesForFarmApi(storage, taskStore);
-    await storage.initialize();
-    const route = selectRoute(location.hostname, location.pathname);
-    if (!route) {
-      return api;
-    }
-    const context = {
-      $: jQuery,
-      storage: storage,
-      request: request,
-      taskStore: taskStore,
-      api: api,
-      location: location,
-      document: document,
-      alert: alert,
-      console: console
-    };
-    const initializers = {
-      freeanywhere: initFreeAnywhereListener,
-      steam: initSteamListener,
-      youtube: initYouTubeListener,
-      mee6: initMee6Listener,
-      'gamesforfarm-store': initGamesForFarmStoreListener,
-      firstgamemarket: initFirstGameMarketListener
-    };
-    await new Promise(((resolve, reject) => {
-      onWindowLoad((async () => {
-        try {
-          await initializers[route](context);
-          console.log('👌 gamesforfarm userscript: '.concat(route));
-          resolve();
-        } catch (error) {
-          console.error('GamesForFarm '.concat(route, ' initialization failed'), error);
-          reject(error);
-        }
-      }));
-    }));
-    return api;
-  }
-  var ready = () => bootstrap({
-    exposeGlobal: false
-  });
-  var _ExtAPI2 = new WeakMap;
   var _FreeAnyWhere_brand = new WeakSet;
   class FreeAnyWhere extends Website {
     constructor() {
@@ -10906,7 +9940,6 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'verifyTasks', []);
       _defineProperty(this, 'games', void 0);
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask', 'getKey' ]);
-      _classPrivateFieldInitSpec(this, _ExtAPI2, void 0);
     }
     static test() {
       const isMatch = window.location.host === 'freeanywhere.net';
@@ -10915,20 +9948,6 @@ function _toPrimitive(t, r) {
         isMatch: isMatch
       });
       return isMatch;
-    }
-    async after() {
-      try {
-        debug('开始扩展注入');
-        _classPrivateFieldSet(_ExtAPI2, this, await ready());
-        debug('扩展注入完成', {
-          hasApi: Boolean(_classPrivateFieldGet(_ExtAPI2, this))
-        });
-      } catch (error) {
-        debug('后续操作失败', {
-          error: error
-        });
-        throwError(error, 'GiveawayHopper.after');
-      }
     }
     async init() {
       try {
@@ -10959,6 +9978,11 @@ function _toPrimitive(t, r) {
           success: giveawayIdSuccess,
           id: this.giveawayId
         });
+        if ($('.task-check-extension').length > 0) {
+          debug('需要扩展，暂不支持');
+          logStatus.warning(I18n('needExtensionToDoTask'));
+          return false;
+        }
         this.initialized = true;
         logStatus.success();
         return true;
@@ -11122,10 +10146,10 @@ function _toPrimitive(t, r) {
         const logStatus = echoLog({
           text: I18n('gettingKey')
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest36 = await httpRequest({
           url: 'https://freeanywhere.net/php/user_get_key.php',
           method: 'POST'
-        });
+        }), result = _await$httpRequest36.result, statusText = _await$httpRequest36.statusText, status = _await$httpRequest36.status, data = _await$httpRequest36.data;
         if (result !== 'Success') {
           debug('获取密钥失败', {
             result: result,
@@ -11163,7 +10187,7 @@ function _toPrimitive(t, r) {
         task: task,
         action: action
       });
-      const {id: id, social: social, title: title, type: type, link: link, data: data, isSuccess: isSuccess} = task;
+      const id = task.id, social = task.social, title = task.title, type = task.type, link = task.link, data = task.data, isSuccess = task.isSuccess;
       const taskInfo = {
         id: id,
         title: title,
@@ -11280,7 +10304,7 @@ function _toPrimitive(t, r) {
             done: isSuccess,
             social: 'vk',
             type: 'like',
-            link: ''.concat(link, '&action=like'),
+            link: ''.concat(link, '#action=like'),
             id: id,
             title: title,
             data: data
@@ -11357,14 +10381,14 @@ function _toPrimitive(t, r) {
       const logStatus = echoLog({
         text: I18n('visitingLink')
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest88 = await httpRequest({
         url: 'https://freeanywhere.net/php/user_task_site_visit.php',
         method: 'POST',
         headers: {
           'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
         data: 'id='.concat(id)
-      });
+      }), result = _await$httpRequest88.result, statusText = _await$httpRequest88.statusText, status = _await$httpRequest88.status, data = _await$httpRequest88.data;
       if (result !== 'Success') {
         debug('访问失败', {
           result: result,
@@ -11422,20 +10446,21 @@ function _toPrimitive(t, r) {
         text: ''.concat(I18n('verifyingTask')).concat(task.title.trim(), '...')
       });
       const $parrent = $('.game__content-tasks__task[data-id="'.concat(task.id, '"]'));
-      const extension = $parrent.data('extension');
+      const extension = $parrent.find('.task-check-extension').length > 0 || $parrent.data('extension');
       if (extension) {
         logStatus.warning(I18n('verifyExtensionNeeded'));
+        $parrent.find('.task-check-extension')[0].click();
         return false;
       }
       $parrent.find('.task-check').addClass('loading');
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest89 = await httpRequest({
         url: 'https://freeanywhere.net/php/user_task_update.php',
         method: 'POST',
         headers: {
           'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
         },
         data: 'id='.concat(task.id, '&type=').concat(task.type).concat(task.data && task.data !== 'none' ? '&data='.concat(task.data) : '')
-      });
+      }), result = _await$httpRequest89.result, statusText = _await$httpRequest89.statusText, status = _await$httpRequest89.status, data = _await$httpRequest89.data;
       if (result !== 'Success' || !(data !== null && data !== void 0 && data.responseText)) {
         debug('验证请求失败', {
           result: result,
@@ -11488,14 +10513,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire3 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('giveawayEnded'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire3.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -11511,9 +10536,9 @@ function _toPrimitive(t, r) {
   }
   function _getGiveawayId() {
     try {
-      var _$$attr6;
+      var _$$attr3;
       debug('开始获取抽奖ID');
-      const giveawayId = (_$$attr6 = $('link[rel="canonical"]').attr('href')) === null || _$$attr6 === void 0 || (_$$attr6 = _$$attr6.match(/n=([\d]+)/)) === null || _$$attr6 === void 0 ? void 0 : _$$attr6[1];
+      const giveawayId = (_$$attr3 = $('link[rel="canonical"]').attr('href')) === null || _$$attr3 === void 0 || (_$$attr3 = _$$attr3.match(/n=([\d]+)/)) === null || _$$attr3 === void 0 ? void 0 : _$$attr3[1];
       if (giveawayId) {
         this.giveawayId = giveawayId;
         debug('获取抽奖ID成功', {
@@ -11723,7 +10748,7 @@ function _toPrimitive(t, r) {
         taskIcon: taskIcon,
         taskName: taskName
       });
-      const {TASK_PATTERNS: TASK_PATTERNS} = _GiveawaySu;
+      const TASK_PATTERNS = _GiveawaySu.TASK_PATTERNS;
       if (taskIcon.includes('steam') && TASK_PATTERNS.steamGroup.test(taskName)) {
         debug('添加 Steam 组任务');
         this.addTask('steam', 'group', taskLink, {
@@ -11912,14 +10937,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire4 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('noKeysLeft'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire4.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -11985,7 +11010,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'www.indiedb.com';
       debug('检查网站匹配', {
         host: host,
@@ -12055,7 +11080,7 @@ function _toPrimitive(t, r) {
         text: ''.concat(I18n('joiningGiveaway'), '...')
       });
       debug('发送加入请求');
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest90 = await httpRequest({
         url: currentoption.attr('href'),
         method: 'POST',
         data: 'ajax=t',
@@ -12066,7 +11091,7 @@ function _toPrimitive(t, r) {
           Origin: window.location.origin,
           referer: window.location.href
         }
-      });
+      }), result = _await$httpRequest90.result, statusText = _await$httpRequest90.statusText, status = _await$httpRequest90.status, data = _await$httpRequest90.data;
       if (result !== 'Success') {
         debug('请求失败', {
           result: result,
@@ -12344,7 +11369,7 @@ function _toPrimitive(t, r) {
         }
         const data = getUrlQuery(href);
         data.ajax = 't';
-        const [baseUrl] = href.split(/[?#]/);
+        const _href$split = href.split(/[?#]/), _href$split2 = _slicedToArray(_href$split, 1), baseUrl = _href$split2[0];
         if (!baseUrl) {
           debug('无效的URL');
           status.error('Error: Invalid URL');
@@ -12501,14 +11526,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('抽奖已结束，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire5 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('giveawayEnded'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire5.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -12532,7 +11557,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'key-hub.eu';
       debug('检查网站匹配', {
         host: host,
@@ -12727,8 +11752,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref15) {
-      let {video: video = []} = _ref15;
+    async extraDoTask(_ref18) {
+      let _ref18$video = _ref18.video, video = _ref18$video === void 0 ? [] : _ref18$video;
       try {
         debug('开始执行额外任务', {
           count: video.length
@@ -12761,14 +11786,14 @@ function _toPrimitive(t, r) {
       const logStatus = echoLog({
         text: I18n('doingKeyhubTask')
       });
-      const {result: result, statusText: statusText, status: status, data: response} = await httpRequest({
+      const _await$httpRequest91 = await httpRequest({
         url: '/away?data='.concat(data),
         method: 'GET',
         headers: {
           origin: 'https://key-hub.eu',
           referer: 'https://key-hub.eu/'
         }
-      });
+      }), result = _await$httpRequest91.result, statusText = _await$httpRequest91.statusText, status = _await$httpRequest91.status, response = _await$httpRequest91.data;
       if (result !== 'Success') {
         debug('请求失败', {
           result: result,
@@ -12835,14 +11860,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire6 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('noKeysLeft'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire6.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -13183,14 +12208,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire7 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('noKeysLeft'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire7.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -13769,14 +12794,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire8 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('giveawayEnded'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire8.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -13804,7 +12829,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doFreeTask', 'doPointTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'www.opiumpulses.com';
       debug('检查网站匹配', {
         host: host,
@@ -13932,10 +12957,10 @@ function _toPrimitive(t, r) {
         debug('发送加入请求', {
           url: aElement.attr('href')
         });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest92 = await httpRequest({
           url: aElement.attr('href'),
           method: 'GET'
-        });
+        }), result = _await$httpRequest92.result, statusText = _await$httpRequest92.statusText, status = _await$httpRequest92.status, data = _await$httpRequest92.data;
         if (result !== 'Success') {
           debug('请求失败', {
             result: result,
@@ -13948,10 +12973,10 @@ function _toPrimitive(t, r) {
         debug('发送最终请求', {
           url: data === null || data === void 0 ? void 0 : data.finalUrl
         });
-        const {result: result0, statusText: statusText0, status: status0, data: data0} = await httpRequest({
+        const _await$httpRequest93 = await httpRequest({
           url: data === null || data === void 0 ? void 0 : data.finalUrl,
           method: 'GET'
-        });
+        }), result0 = _await$httpRequest93.result, statusText0 = _await$httpRequest93.statusText, status0 = _await$httpRequest93.status, data0 = _await$httpRequest93.data;
         if (!(data0 !== null && data0 !== void 0 && data0.responseText)) {
           debug('响应无效', {
             result: result0,
@@ -14071,10 +13096,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 giveaway.su 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest37 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest37.result, data = _await$httpRequest37.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14105,10 +13130,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 givee.club 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest38 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest38.result, data = _await$httpRequest38.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14136,14 +13161,14 @@ function _toPrimitive(t, r) {
     },
     async gleam(link) {
       try {
-        var _data$responseText$ma8, _$$attr4;
+        var _data$responseText$ma8, _$$attr;
         debug('开始检查 gleam.io 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest39 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest39.result, data = _await$httpRequest39.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14160,12 +13185,12 @@ function _toPrimitive(t, r) {
           debug('未找到活动信息');
           return false;
         }
-        const campaignString = (_$$attr4 = $(campaignDiv).attr('ng-init')) === null || _$$attr4 === void 0 || (_$$attr4 = _$$attr4.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr4 === void 0 ? void 0 : _$$attr4[1];
+        const campaignString = (_$$attr = $(campaignDiv).attr('ng-init')) === null || _$$attr === void 0 || (_$$attr = _$$attr.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr === void 0 ? void 0 : _$$attr[1];
         if (!campaignString) {
           debug('未找到活动初始化数据');
           return false;
         }
-        const {campaign: campaign} = JSON.parse(campaignString);
+        const _JSON$parse2 = JSON.parse(campaignString), campaign = _JSON$parse2.campaign;
         debug('解析活动数据', {
           campaign: campaign
         });
@@ -14200,10 +13225,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 indiedb.com 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest40 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest40.result, data = _await$httpRequest40.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14235,10 +13260,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 key-hub.eu 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest41 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest41.result, data = _await$httpRequest41.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14274,10 +13299,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 opquests.com 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest42 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest42.result, data = _await$httpRequest42.data;
         if ((data === null || data === void 0 ? void 0 : data.status) === 404) {
           debug('检测到活动不存在');
           return 'Ended';
@@ -14317,10 +13342,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 itch.io 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest43 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest43.result, data = _await$httpRequest43.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14358,10 +13383,10 @@ function _toPrimitive(t, r) {
         debug('开始检查 freeanywhere.net 链接', {
           link: link
         });
-        const {result: result, data: data} = await httpRequest({
+        const _await$httpRequest44 = await httpRequest({
           url: link,
           method: 'GET'
-        });
+        }), result = _await$httpRequest44.result, data = _await$httpRequest44.data;
         if (result !== 'Success' || (data === null || data === void 0 ? void 0 : data.status) !== 200) {
           debug('请求失败', {
             result: result,
@@ -14394,7 +13419,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const link = $('.subforum_left_title_left_up a').eq(3).attr('href');
       const isMatch = host === 'keylol.com' && (!!(link !== null && link !== void 0 && link.includes('319')) || !!(link !== null && link !== void 0 && link.includes('234')));
       debug('检查网站匹配', {
@@ -14540,7 +13565,7 @@ function _toPrimitive(t, r) {
     debug('分类处理链接', {
       href: href
     });
-    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    const LINK_PATTERNS = _Keylol.CONFIG.LINK_PATTERNS;
     switch (true) {
      case LINK_PATTERNS.DISCORD.test(href):
       debug('发现 Discord 链接');
@@ -14593,7 +13618,7 @@ function _toPrimitive(t, r) {
     debug('处理 Steam 商店链接', {
       href: href
     });
-    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    const LINK_PATTERNS = _Keylol.CONFIG.LINK_PATTERNS;
     if (LINK_PATTERNS.STEAM_CURATOR.test(href)) {
       debug('发现 Steam 鉴赏家链接');
       _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'curator', href);
@@ -14613,7 +13638,7 @@ function _toPrimitive(t, r) {
     debug('处理 Steam 社区链接', {
       href: href
     });
-    const {LINK_PATTERNS: LINK_PATTERNS} = _Keylol.CONFIG;
+    const LINK_PATTERNS = _Keylol.CONFIG.LINK_PATTERNS;
     if (LINK_PATTERNS.STEAM_GROUP.test(href)) {
       debug('发现 Steam 组链接');
       _assertClassBrand(_Keylol_brand, this, _addBtn).call(this, element, 'steam', 'group', href);
@@ -14720,7 +13745,7 @@ function _toPrimitive(t, r) {
   function _setupMutationObserver() {
     debug('设置 MutationObserver');
     if ($('#threadindex').length > 0) {
-      const [elementTargetNode] = $('#postlist').children('div[id^="post_"]');
+      const _$$children = $('#postlist').children('div[id^="post_"]'), _$$children2 = _slicedToArray(_$$children, 1), elementTargetNode = _$$children2[0];
       const elementObserver = new MutationObserver((() => {
         debug('检测到 DOM 变化，重新处理页面');
         elementObserver.disconnect();
@@ -14797,7 +13822,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'verifyTask', 'getKey' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'opquests.com';
       debug('检查网站匹配', {
         host: host,
@@ -14822,7 +13847,7 @@ function _toPrimitive(t, r) {
             taskId: taskId
           });
           GM_setValue('opquestsVerifyTasks', opquestsVerifyTasks);
-          const [verifyBtn] = $('#task_id[value="'.concat(taskId, '"]')).parent().find('button[type="button"],button[type="submit"]').has('i.fa-check');
+          const _$$parent$find$has = $('#task_id[value="'.concat(taskId, '"]')).parent().find('button[type="button"],button[type="submit"]').has('i.fa-check'), _$$parent$find$has2 = _slicedToArray(_$$parent$find$has, 1), verifyBtn = _$$parent$find$has2[0];
           if (verifyBtn) {
             debug('点击验证按钮', verifyBtn);
             verifyBtn.click();
@@ -15069,10 +14094,10 @@ function _toPrimitive(t, r) {
           text: I18n('gettingKey')
         });
         debug('发送获取密钥请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest45 = await httpRequest({
           url: 'https://opquests.com/keys',
           method: 'GET'
-        });
+        }), result = _await$httpRequest45.result, statusText = _await$httpRequest45.statusText, status = _await$httpRequest45.status, data = _await$httpRequest45.data;
         if (result !== 'Success') {
           debug('请求失败', {
             result: result,
@@ -15125,7 +14150,7 @@ function _toPrimitive(t, r) {
         html: '<li>'.concat(I18n('confirmingTask'), '...<font></font></li>')
       });
       debug('发送确认请求');
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest94 = await httpRequest({
         url: 'https://opquests.com/quests/'.concat(this.giveawayId, '?confirm=1'),
         method: 'GET',
         nochche: true,
@@ -15133,7 +14158,7 @@ function _toPrimitive(t, r) {
           origin: 'https://opquests.com',
           referer: 'https://opquests.com/warning?id='.concat(this.giveawayId)
         }
-      });
+      }), result = _await$httpRequest94.result, statusText = _await$httpRequest94.statusText, status = _await$httpRequest94.status, data = _await$httpRequest94.data;
       if (result !== 'Success') {
         debug('请求失败', {
           result: result,
@@ -15216,7 +14241,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'gleam.io';
       debug('检查网站匹配', {
         host: host,
@@ -15465,8 +14490,8 @@ function _toPrimitive(t, r) {
         return false;
       }
     }
-    async extraDoTask(_ref16) {
-      let {gleam: gleam = []} = _ref16;
+    async extraDoTask(_ref19) {
+      let _ref19$gleam = _ref19.gleam, gleam = _ref19$gleam === void 0 ? [] : _ref19$gleam;
       try {
         debug('开始执行额外任务', {
           count: gleam.length
@@ -15533,7 +14558,7 @@ function _toPrimitive(t, r) {
           await delay(3e3);
           (_unsafeWindow$$hookTi2 = unsafeWindow.$hookTimer) === null || _unsafeWindow$$hookTi2 === void 0 || _unsafeWindow$$hookTi2.setSpeed(1);
           const expandInfo = $task.find('.expandable');
-          const [input] = expandInfo.find('input');
+          const _expandInfo$find = expandInfo.find('input'), _expandInfo$find2 = _slicedToArray(_expandInfo$find, 1), input = _expandInfo$find2[0];
           if (input && !input.value) {
             var _at;
             debug('处理输入框');
@@ -15674,15 +14699,15 @@ function _toPrimitive(t, r) {
       const logStatus = echoLog({
         text: I18n('gettingGleamLink')
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest95 = await httpRequest({
         url: 'https://www.vloot.io/api/v1/giveaways',
         method: 'GET',
         responseType: 'json'
-      });
+      }), result = _await$httpRequest95.result, statusText = _await$httpRequest95.statusText, status = _await$httpRequest95.status, data = _await$httpRequest95.data;
       if (result === 'Success') {
         var _data$response122, _data$response123;
         if ((data === null || data === void 0 ? void 0 : data.status) === 200 && (data === null || data === void 0 || (_data$response122 = data.response) === null || _data$response122 === void 0 ? void 0 : _data$response122.Success) === true && data !== null && data !== void 0 && (_data$response123 = data.response) !== null && _data$response123 !== void 0 && _data$response123.Data) {
-          const {link: link} = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {};
+          const _ref57 = data.response.Data.find((giveaway => title.replace(/[\s]/g, '').toLowerCase().includes(giveaway.title.replace(/[\s]/g, '').toLowerCase()))) || {}, link = _ref57.link;
           if (link) {
             debug('获取链接成功', {
               link: link
@@ -15718,19 +14743,19 @@ function _toPrimitive(t, r) {
   }
   async function _checkLeftKey7() {
     try {
-      var _$$attr7, _$$attr8;
+      var _$$attr4, _$$attr5;
       debug('检查剩余密钥');
       if (!globalOptions.other.checkLeftKey) {
         debug('跳过密钥检查');
         return true;
       }
-      const campaignString = (_$$attr7 = $('div.popup-blocks-container').attr('ng-init')) === null || _$$attr7 === void 0 || (_$$attr7 = _$$attr7.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr7 === void 0 ? void 0 : _$$attr7[1];
+      const campaignString = (_$$attr4 = $('div.popup-blocks-container').attr('ng-init')) === null || _$$attr4 === void 0 || (_$$attr4 = _$$attr4.match(/initCampaign\(([\w\W]+?)\)$/)) === null || _$$attr4 === void 0 ? void 0 : _$$attr4[1];
       if (!campaignString) {
         debug('未找到活动配置信息');
         return false;
       }
-      const {campaign: campaign, incentive: incentive} = JSON.parse(campaignString);
-      const controllerString = (_$$attr8 = $('div.campaign.reward').attr('ng-init')) === null || _$$attr8 === void 0 || (_$$attr8 = _$$attr8.match(/initContestant\(([\w\W]+?)\);/)) === null || _$$attr8 === void 0 ? void 0 : _$$attr8[1];
+      const _JSON$parse3 = JSON.parse(campaignString), campaign = _JSON$parse3.campaign, incentive = _JSON$parse3.incentive;
+      const controllerString = (_$$attr5 = $('div.campaign.reward').attr('ng-init')) === null || _$$attr5 === void 0 || (_$$attr5 = _$$attr5.match(/initContestant\(([\w\W]+?)\);/)) === null || _$$attr5 === void 0 ? void 0 : _$$attr5[1];
       let ownedKey = false;
       if (controllerString) {
         var _JSON$parse$contestan;
@@ -15751,14 +14776,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('抽奖无效，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire9 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('giveawayNotWork'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire9.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -15786,7 +14811,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = /^sweepwidget\.com$/.test(host);
       debug('检查网站匹配', {
         host: host,
@@ -16091,21 +15116,21 @@ function _toPrimitive(t, r) {
       option: option,
       dataKeys: Object.keys(data)
     });
-    return Object.entries(data).map((_ref17 => {
-      let [socialType, value] = _ref17;
+    return Object.entries(data).map((_ref20 => {
+      let _ref21 = _slicedToArray(_ref20, 2), socialType = _ref21[0], value = _ref21[1];
       return '\n    <tr style="background-color: '.concat(stringToColour(option), '66">\n      ').concat(isFirstOption ? '<th rowspan="'.concat(totalOptions, '" style="background-color: ').concat(headerBackgroundColor, '">').concat(I18n(type), '</th>') : '', '\n      <td>').concat(option, '.').concat(I18n(socialType), '</td>\n      <td>\n        <label>\n          <input type="checkbox" name="').concat(type, '.').concat(option, '.').concat(socialType, '"').concat(value ? ' checked="checked"' : '', '/>\n          <span><i></i></span>\n        </label>\n      </td>\n    </tr>');
     })).join('');
   };
   const generateGlobalOptionsForm = () => {
     debug('开始生成全局选项表单');
-    const formRows = Object.entries(globalOptions).map((_ref18 => {
-      let [type, data1] = _ref18;
+    const formRows = Object.entries(globalOptions).map((_ref22 => {
+      let _ref23 = _slicedToArray(_ref22, 2), type = _ref23[0], data1 = _ref23[1];
       debug('处理选项类型', {
         type: type,
         optionsCount: Object.keys(data1).length
       });
-      return Object.entries(data1).map(((_ref19, index) => {
-        let [option, data2] = _ref19;
+      return Object.entries(data1).map(((_ref24, index) => {
+        let _ref25 = _slicedToArray(_ref24, 2), option = _ref25[0], data2 = _ref25[1];
         const totalOptions = [ 'other', 'position', 'hotKey', 'ASF' ].includes(type) ? Object.keys(data1).length : Object.values(data1).reduce(((acc, cur) => acc + Object.keys(cur).length), 0);
         return generateFormRow(type, option, data2, index === 0, totalOptions);
       })).join('');
@@ -16153,8 +15178,8 @@ function _toPrimitive(t, r) {
           confirmButtonText: I18n('save'),
           showCancelButton: true,
           cancelButtonText: I18n('close')
-        }).then((_ref20 => {
-          let {isConfirmed: isConfirmed} = _ref20;
+        }).then((_ref26 => {
+          let isConfirmed = _ref26.isConfirmed;
           if (isConfirmed) {
             debug('用户确认保存选项');
             saveData();
@@ -16304,7 +15329,7 @@ function _toPrimitive(t, r) {
             if (!storeMatch) {
               break;
             }
-            const [, param1, param2] = storeMatch;
+            const _storeMatch = _slicedToArray(storeMatch, 3), param1 = _storeMatch[1], param2 = _storeMatch[2];
             const steam = new Steam;
             if (await steam.init()) {
               id = await steam.getCuratorId(param1, param2) || '';
@@ -16334,7 +15359,10 @@ function _toPrimitive(t, r) {
     try {
       debug('开始合并白名单');
       const newWhiteList = {};
-      for (const [key, value] of Object.entries(defaultWhiteList)) {
+      for (const _ref27 of Object.entries(defaultWhiteList)) {
+        var _ref28 = _slicedToArray(_ref27, 2);
+        const key = _ref28[0];
+        const value = _ref28[1];
         newWhiteList[key] = _objectSpread(_objectSpread({}, value), whiteList[key]);
       }
       debug('白名单合并完成');
@@ -16354,7 +15382,10 @@ function _toPrimitive(t, r) {
       });
       const whiteList = assignWhiteList(GM_getValue('whiteList') || {});
       let whiteListOptionsForm = '<form id="whiteListForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('website'), '</td>\n            <td>').concat(I18n('type'), '</td>\n            <td>').concat(I18n('edit'), '</td>\n          </tr>\n        </thead>\n        <tbody>');
-      for (const [social, types] of Object.entries(whiteList)) {
+      for (const _ref29 of Object.entries(whiteList)) {
+        var _ref30 = _slicedToArray(_ref29, 2);
+        const social = _ref30[0];
+        const types = _ref30[1];
         const validTypes = Object.keys(types).filter((type => {
           var _disabledType$social;
           return !((_disabledType$social = disabledType[social]) !== null && _disabledType$social !== void 0 && _disabledType$social.includes(type));
@@ -16375,7 +15406,7 @@ function _toPrimitive(t, r) {
         if (!value) {
           return;
         }
-        const [social, type] = value.split('.');
+        const _value$split = value.split('.'), _value$split2 = _slicedToArray(_value$split, 2), social = _value$split2[0], type = _value$split2[1];
         const currentList = (_whiteList$social = whiteList[social]) === null || _whiteList$social === void 0 ? void 0 : _whiteList$social[type];
         if (!currentList) {
           debug('未找到白名单配置', {
@@ -16400,8 +15431,8 @@ function _toPrimitive(t, r) {
           cancelButtonText: I18n('close'),
           showDenyButton: true,
           denyButtonText: I18n('return')
-        }).then((_ref21 => {
-          let {isDenied: isDenied, isConfirmed: isConfirmed, value: value} = _ref21;
+        }).then((_ref31 => {
+          let isDenied = _ref31.isDenied, isConfirmed = _ref31.isConfirmed, value = _ref31.value;
           if (isDenied) {
             debug('返回白名单选项');
             if (showType === 'swal') {}
@@ -16460,7 +15491,7 @@ function _toPrimitive(t, r) {
       debug('准备发送的数据', {
         contentData: contentData
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest46 = await httpRequest({
         url: 'https://api.github.com/gists/'.concat(gistId),
         headers: {
           Accept: 'application/vnd.github.v3+json',
@@ -16470,7 +15501,7 @@ function _toPrimitive(t, r) {
         responseType: 'json',
         method: 'POST',
         timeout: 3e4
-      });
+      }), result = _await$httpRequest46.result, statusText = _await$httpRequest46.statusText, status = _await$httpRequest46.status, data = _await$httpRequest46.data;
       if (result !== 'Success') {
         debug('设置Gist数据失败', {
           result: result,
@@ -16513,7 +15544,7 @@ function _toPrimitive(t, r) {
       const logStatus = echoLog({
         text: I18n('gettingData')
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest47 = await httpRequest({
         url: 'https://api.github.com/gists/'.concat(gistId),
         headers: {
           Accept: 'application/vnd.github.v3+json',
@@ -16522,7 +15553,7 @@ function _toPrimitive(t, r) {
         responseType: 'json',
         method: 'GET',
         timeout: 3e4
-      });
+      }), result = _await$httpRequest47.result, statusText = _await$httpRequest47.statusText, status = _await$httpRequest47.status, data = _await$httpRequest47.data;
       if (result !== 'Success') {
         debug('获取Gist数据失败', {
           result: result,
@@ -16717,7 +15748,10 @@ function _toPrimitive(t, r) {
         });
         const syncHistory = $('#sync-history').prop('checked');
         let savedCount = 0;
-        for (const [name, value] of Object.entries(data)) {
+        for (const _ref32 of Object.entries(data)) {
+          var _ref33 = _slicedToArray(_ref32, 2);
+          const name = _ref33[0];
+          const value = _ref33[1];
           if (!syncHistory && /^[\w]+?Tasks-/.test(name)) {
             continue;
           }
@@ -16776,7 +15810,7 @@ function _toPrimitive(t, r) {
       });
     }
     static test() {
-      const {host: host, pathname: pathname} = window.location;
+      const _window$location = window.location, host = _window$location.host, pathname = _window$location.pathname;
       const isMatch = [ 'auto-task.hclonely.com', 'auto-task-doc.js.org' ].includes(host) && pathname === '/setting.html';
       debug('检查设置页面匹配', {
         host: host,
@@ -16894,7 +15928,7 @@ function _toPrimitive(t, r) {
       debug('获取位置配置失败');
       return;
     }
-    const {distance: distance, sideX: sideX, sideY: sideY} = config;
+    const distance = config.distance, sideX = config.sideX, sideY = config.sideY;
     if (!_assertClassBrand(_Setting_brand, this, _isValidPosition).call(this, distance, sideX, sideY)) {
       debug('无效的位置配置', {
         distance: distance,
@@ -16903,7 +15937,7 @@ function _toPrimitive(t, r) {
       });
       return;
     }
-    const [x, y] = distance.split(',');
+    const _distance$split = distance.split(','), _distance$split2 = _slicedToArray(_distance$split, 2), x = _distance$split2[0], y = _distance$split2[1];
     const target = _assertClassBrand(_Setting_brand, this, _getPositionTarget).call(this, type);
     if (!target) {
       debug('获取目标元素失败');
@@ -17080,7 +16114,7 @@ function _toPrimitive(t, r) {
     }
     static test() {
       try {
-        const {host: host, pathname: pathname} = window.location;
+        const _window$location2 = window.location, host = _window$location2.host, pathname = _window$location2.pathname;
         const isMatch = [ 'auto-task.hclonely.com', 'auto-task-doc.js.org' ].includes(host) && pathname === '/history.html';
         debug('检查是否为历史记录页面', {
           host: host,
@@ -17166,7 +16200,7 @@ function _toPrimitive(t, r) {
         });
         return;
       }
-      const {title: title, link: link} = _assertClassBrand(_History_brand, this, _getTaskInfo).call(this, item);
+      const _assertClassBrand$cal = _assertClassBrand(_History_brand, this, _getTaskInfo).call(this, item), title = _assertClassBrand$cal.title, link = _assertClassBrand$cal.link;
       if (!title || !link) {
         debug('获取任务信息失败', {
           item: item
@@ -17197,7 +16231,7 @@ function _toPrimitive(t, r) {
       debug('开始获取任务信息', {
         item: item
       });
-      const [website, id] = item.split('-');
+      const _item$split = item.split('-'), _item$split2 = _slicedToArray(_item$split, 2), website = _item$split2[0], id = _item$split2[1];
       debug('解析任务标识符', {
         website: website,
         id: id
@@ -17359,7 +16393,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'giveawayhopper.com';
       debug('检查网站匹配', {
         host: host,
@@ -17429,7 +16463,7 @@ function _toPrimitive(t, r) {
           return true;
         }
         debug('请求任务列表');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+        const _await$httpRequest48 = await httpRequest({
           url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/with-auth'),
           method: 'GET',
           responseType: 'json',
@@ -17437,7 +16471,7 @@ function _toPrimitive(t, r) {
             authorization: 'Bearer '.concat(window.sessionStorage.gw_auth),
             'x-xsrf-token': decodeURIComponent((_document$cookie$matc = document.cookie.match(/XSRF-TOKEN=([^;]+)/)) === null || _document$cookie$matc === void 0 ? void 0 : _document$cookie$matc[1])
           }
-        });
+        }), result = _await$httpRequest48.result, statusText = _await$httpRequest48.statusText, status = _await$httpRequest48.status, data = _await$httpRequest48.data;
         if (result !== 'Success') {
           debug('请求任务列表失败', {
             result: result,
@@ -17676,7 +16710,7 @@ function _toPrimitive(t, r) {
     if ([ 'YouTube', 'TikTok' ].includes(task.category)) {
       postData.username = '1';
     }
-    const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+    const _await$httpRequest96 = await httpRequest({
       url: 'https://giveawayhopper.com/api/v1/campaigns/'.concat(this.giveawayId, '/tasks/').concat(task.id, '/complete'),
       method: 'POST',
       headers: {
@@ -17686,7 +16720,7 @@ function _toPrimitive(t, r) {
       },
       dataType: 'json',
       data: JSON.stringify(postData)
-    });
+    }), result = _await$httpRequest96.result, statusText = _await$httpRequest96.statusText, status = _await$httpRequest96.status, data = _await$httpRequest96.data;
     if (result !== 'Success') {
       debug('任务验证请求失败', {
         result: result,
@@ -17774,14 +16808,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire0 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('noKeysLeft'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire0.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -17804,7 +16838,7 @@ function _toPrimitive(t, r) {
       _defineProperty(this, 'buttons', [ 'doTask', 'undoTask', 'verifyTask' ]);
     }
     static test() {
-      const {host: host} = window.location;
+      const host = window.location.host;
       const isMatch = host === 'prys.revadike.com';
       debug('检查网站匹配', {
         host: host,
@@ -17885,7 +16919,10 @@ function _toPrimitive(t, r) {
           }
         }
         const pro = [];
-        for (const [index, step] of Array.from(steps).entries()) {
+        for (const _ref34 of Array.from(steps).entries()) {
+          var _ref35 = _slicedToArray(_ref34, 2);
+          const index = _ref35[0];
+          const step = _ref35[1];
           const stepEle = $(step);
           const isSuccess = stepEle.find('span:contains(Success)').length > 0;
           const title = stepEle.find('td').first().text().trim();
@@ -17979,8 +17016,8 @@ function _toPrimitive(t, r) {
         }
         const pro = [];
         for (const check of checks) {
-          var _$$attr5, _$$parent;
-          const id = (_$$attr5 = $(check).attr('id')) === null || _$$attr5 === void 0 || (_$$attr5 = _$$attr5.match(/[\d]+/)) === null || _$$attr5 === void 0 ? void 0 : _$$attr5[0];
+          var _$$attr2, _$$parent;
+          const id = (_$$attr2 = $(check).attr('id')) === null || _$$attr2 === void 0 || (_$$attr2 = _$$attr2.match(/[\d]+/)) === null || _$$attr2 === void 0 ? void 0 : _$$attr2[0];
           if (!id) {
             debug('跳过无效任务ID');
             continue;
@@ -18047,14 +17084,14 @@ function _toPrimitive(t, r) {
         return true;
       }
       debug('没有剩余密钥，显示确认对话框');
-      const {value: value} = await Swal.fire({
+      const _await$Swal$fire1 = await Swal.fire({
         icon: 'warning',
         title: I18n('notice'),
         text: I18n('noKeysLeft'),
         confirmButtonText: I18n('confirm'),
         cancelButtonText: I18n('cancel'),
         showCancelButton: true
-      });
+      }), value = _await$Swal$fire1.value;
       if (value) {
         debug('用户确认关闭窗口');
         window.close();
@@ -18314,14 +17351,14 @@ function _toPrimitive(t, r) {
       });
       if (giveawayStatus === '0') {
         debug('没有剩余密钥，显示确认对话框');
-        const {value: value} = await Swal.fire({
+        const _await$Swal$fire10 = await Swal.fire({
           icon: 'warning',
           title: I18n('notice'),
           text: I18n('giveawayEnded'),
           confirmButtonText: I18n('confirm'),
           cancelButtonText: I18n('cancel'),
           showCancelButton: true
-        });
+        }), value = _await$Swal$fire10.value;
         if (value) {
           debug('用户确认关闭窗口');
           window.close();
@@ -18342,8 +17379,8 @@ function _toPrimitive(t, r) {
     debug('开始生成网站选项表单HTML', {
       options: options
     });
-    const tableRows = Object.entries(options).map((_ref22 => {
-      let [option, value] = _ref22;
+    const tableRows = Object.entries(options).map((_ref36 => {
+      let _ref37 = _slicedToArray(_ref36, 2), option = _ref37[0], value = _ref37[1];
       return '\n      <tr>\n        <td>'.concat(option, '</td>\n        <td>\n          <input\n            class="editOption"\n            type="text"\n            name="').concat(option, '"\n            value="').concat(value, '"\n          />\n        </td>\n      </tr>\n    ');
     })).join('');
     const formHtml = '\n    <form id="websiteOptionsForm" class="auto-task-form">\n      <table class="auto-task-table">\n        <thead>\n          <tr>\n            <td>'.concat(I18n('option'), '</td>\n            <td>').concat(I18n('value'), '</td>\n          </tr>\n        </thead>\n        <tbody>\n          ').concat(tableRows, '\n        </tbody>\n      </table>\n    </form>\n  ');
@@ -18355,8 +17392,8 @@ function _toPrimitive(t, r) {
       website: website,
       formValues: formValues
     });
-    formValues.forEach((_ref23 => {
-      let {name: name, value: value} = _ref23;
+    formValues.forEach((_ref38 => {
+      let name = _ref38.name, value = _ref38.value;
       options[name] = value;
       debug('更新选项值', {
         name: name,
@@ -18436,12 +17473,12 @@ function _toPrimitive(t, r) {
       debug('构建检查URL', {
         checkUrl: checkUrl
       });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
+      const _await$httpRequest49 = await httpRequest({
         url: checkUrl,
         responseType: 'json',
         method: 'GET',
         timeout: 3e4
-      });
+      }), result = _await$httpRequest49.result, statusText = _await$httpRequest49.statusText, status = _await$httpRequest49.status, data = _await$httpRequest49.data;
       if (result === 'Success' && data !== null && data !== void 0 && (_data$response84 = data.response) !== null && _data$response84 !== void 0 && _data$response84.version) {
         debug('成功获取更新信息', {
           version: data.response.version
@@ -18477,8 +17514,8 @@ function _toPrimitive(t, r) {
         currentVersion: currentVersion,
         remoteVersion: remoteVersion
       });
-      const [currentRealVersion] = currentVersion.split('-');
-      const [remoteRealVersion, isPreview] = remoteVersion.split('-');
+      const _currentVersion$split = currentVersion.split('-'), _currentVersion$split2 = _slicedToArray(_currentVersion$split, 1), currentRealVersion = _currentVersion$split2[0];
+      const _remoteVersion$split = remoteVersion.split('-'), _remoteVersion$split2 = _slicedToArray(_remoteVersion$split, 2), remoteRealVersion = _remoteVersion$split2[0], isPreview = _remoteVersion$split2[1];
       if (isPreview && !globalOptions.other.receivePreview) {
         debug('不接收预览版本', {
           isPreview: isPreview
@@ -18765,14 +17802,14 @@ function _toPrimitive(t, r) {
       return;
     }
     const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 6e4);
-    const {value: value} = await Swal.fire({
+    const _await$Swal$fire2 = await Swal.fire({
       title: I18n('stopPlayTimeTitle'),
       text: I18n('stopPlayTimeText', stopPlayTimeMinutes.toString()),
       icon: 'warning',
       confirmButtonText: I18n('confirm'),
       cancelButtonText: I18n('cancel'),
       showCancelButton: true
-    });
+    }), value = _await$Swal$fire2.value;
     if (!value) {
       return;
     }
@@ -18803,16 +17840,16 @@ function _toPrimitive(t, r) {
   };
   const checkVersionAndNotice = () => {
     debug('检查版本和通知');
-    const {scriptHandler: scriptHandler} = GM_info;
+    const _GM_info = GM_info, scriptHandler = _GM_info.scriptHandler;
     if (scriptHandler === 'Tampermonkey') {
       var _GM_info$version;
-      const [v1, v2] = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [];
+      const _ref39 = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [], _ref40 = _slicedToArray(_ref39, 2), v1 = _ref40[0], v2 = _ref40[1];
       if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
         echoLog({}).error(I18n('versionNotMatched'));
       }
     } else if (scriptHandler !== 'Violentmonkey') {
       var _GM_info$version2;
-      const [v1, v2] = ((_GM_info$version2 = GM_info.version) === null || _GM_info$version2 === void 0 ? void 0 : _GM_info$version2.split('.')) || [];
+      const _ref41 = ((_GM_info$version2 = GM_info.version) === null || _GM_info$version2 === void 0 ? void 0 : _GM_info$version2.split('.')) || [], _ref42 = _slicedToArray(_ref41, 2), v1 = _ref42[0], v2 = _ref42[1];
       if (!(parseInt(v1, 10) >= 2 && parseInt(v2, 10) >= 36)) {
         echoLog({}).error(I18n('versionNotMatched'));
       }

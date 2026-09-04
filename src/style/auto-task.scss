@@ -229,6 +229,7 @@
 
   li {
     // display: flex !important;
+    list-style: none;
     align-items: flex-start !important;
     text-align: left;
     padding: 3px 8px;
@@ -244,18 +245,22 @@
       padding-right: 12px;
     }
 
+    // &::marker {
+    //   list-style: none;
+    // }
+
     &:last-child {
       border-bottom: none;
     }
 
     .before-icon {
       display: inline-block !important;
-      width: 18px !important;
-      height: 18px !important;
+      width: 14px !important;
+      height: 14px !important;
       flex-shrink: 0 !important;
       margin-top: 1px;
       margin-right: 8px;
-      background-size: 18px !important;
+      background-size: 14px !important;
       background-repeat: no-repeat !important;
       border-radius: 50%;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);

@@ -401,10 +401,6 @@ class Steam extends Social {
         return true;
       }
 
-      if (doTask && globalThis.GFF_STU) {
-        globalThis.GFF_STU('steam_game_sub', gameId, 'add'); // eslint-disable-line
-      }
-
       for (const taskExecutor of this.#TaskExecutor) {
         if (await taskExecutor.toggleFollowGame(gameId, doTask)) {
           if (doTask) {
@@ -581,10 +577,6 @@ class Steam extends Social {
         debug('鉴赏家在白名单中，跳过取关', { curatorId });
         echoLog({ type: 'whiteList', text: 'Steam.unfollowCurator', id: curatorId });
         return true;
-      }
-
-      if (doTask && globalThis.GFF_STU) {
-        globalThis.GFF_STU('steam_curator_sub', curatorId, 'add'); // eslint-disable-line
       }
 
       for (const taskExecutor of this.#TaskExecutor) {

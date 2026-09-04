@@ -1,10 +1,8 @@
 {
   "name": "auto-task",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "change": [
-    "修复：Vk点赞任务获取参数失败",
-    "修复：样式编译错误",
-    "移除：Freeanywhere扩展任务支持"
+    "优化：样式优化"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

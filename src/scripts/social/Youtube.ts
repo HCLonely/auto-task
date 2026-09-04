@@ -392,10 +392,6 @@ class Youtube extends Social {
         return true;
       }
 
-      if (doTask && globalThis.GFF_STU) {
-        globalThis.GFF_STU('youtube_channel_sub', channelId, 'add'); // eslint-disable-line
-      }
-
       const logStatus = verify ?
         echoLog({ text: __('verifyingAuth', 'Youtube'), before: '[Youtube]' }) :
         echoLog({ type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel', text: channelId, before: '[Youtube]' });
@@ -506,10 +502,6 @@ class Youtube extends Social {
         debug('YouTube视频在白名单中，跳过取消点赞', { videoId });
         echoLog({ type: 'whiteList', text: 'Youtube.unlikeVideo', id: videoId, before: '[Youtube]' });
         return true;
-      }
-
-      if (doTask && globalThis.GFF_STU) {
-        globalThis.GFF_STU('youtube_video_like', videoId, 'add'); // eslint-disable-line
       }
 
       const logStatus = echoLog({ type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo', text: videoId, before: '[Youtube]' });

@@ -2,7 +2,7 @@
   "name": "auto-task",
   "version": "5.2.2",
   "change": [
-    "优化：部分日志文本"
+    "优化：样式优化"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

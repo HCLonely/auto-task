@@ -12,3 +12,4 @@ XFwdForSdk
 .cache
 
 doc/docs/.vuepress/dist
+docs/

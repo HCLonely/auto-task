@@ -4,6 +4,10 @@
 网站分派器继续使用 `new Steam()`、`new Vk()` 等原有入口及 `init()` / `do()` / `undo()`；
 返回值仍为布尔值或包含 `success`、逐链接 `results` 的对象。
 
+运行时通过用户脚本头部的 `@require` 加载 `dist/auto-task.modules.js`，模块暴露为 `AutoTaskModules`。
+源码保留 TypeScript 导入以进行类型检查；Rollup 将这些导入映射到对应的全局命名空间，不再将模块实现打包进主脚本。
+`npm run rollup` 先构建模块资源，再构建三个主脚本版本；模块资源经过兼容性转换，全依赖版本会内嵌该资源。
+
 - `Social.ts` 的 `ProjectSocial` 继承独立 `SocialAdapter`，接入状态监听并统一释放资源；默认导出保留给尚未迁移、当前禁用的 Instagram。
 - Steam、VK、Twitch、Twitter、Reddit、YouTube 包装负责传入项目配置和各模块提供的 GM HTTP 适配器。SteamWeb、SteamASF 保留兼容入口。
 - `moduleBridge.ts` 将状态事件转为国际化日志。批次与单个任务显示执行结果，内部请求事件仅写入调试日志；日志目标经过 HTML 转义。

@@ -122,6 +122,7 @@
 // @require            https://cdn.jsdelivr.net/gh/tinygo-org/tinygo@3e60eeb368f25f237a512e7553fd6d70f36dc74c/targets/wasm_exec.min.js
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
+// @require            https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.modules.js
 
 // @noframes
 // ==/UserScript==

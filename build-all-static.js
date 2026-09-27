@@ -15,8 +15,10 @@
 
   const headerText = fs.readFileSync('./src/scripts/header.js').toString();
   const requireJsName = [...headerText.matchAll(/\/\/ @require[\s]+?(http.+)/g)]
-    .map((text) => text[1].split('/').at(-1));
-  const requireJsText = requireJsName.map((file) => fs.readFileSync(path.join('./src/static', file)).toString()).join('\n');
+    .map((text) => text[1].trim().split('/').at(-1));
+  const requireJsText = requireJsName.map((file) => fs.readFileSync(path.join(
+    file === 'auto-task.modules.js' ? './dist' : './src/static', file
+  )).toString()).join('\n');
   const resourcesFileName = [...headerText.matchAll(/\/\/ @resource[\s]+?([\w]+?)[\s]+?(http.+)/g)]
     .map((text) => [text[1], text[2].split('/').at(-1)]);
   const resourcesFile = Object.fromEntries(resourcesFileName

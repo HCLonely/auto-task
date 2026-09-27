@@ -9,6 +9,7 @@
 const neededDependencies = ['jQuery', 'Cookies', 'sha1', 'Swal', 'keyboardJS', 'dayjs', 'Go', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
+if (typeof AutoTaskModules === 'undefined') missingDependencies.push('AutoTaskModules');
 
 if (missingDependencies.length > 0) {
   console.log('%c%s', 'color:red', `[Auto-Task] 脚本加载失败，缺少的依赖：${missingDependencies.join(', ')}`);

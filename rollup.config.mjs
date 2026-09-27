@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import path from 'node:path';
 import typescript from '@rollup/plugin-typescript';
 import progress from 'rollup-plugin-progress';
 import sizes from 'rollup-plugin-sizes';
@@ -16,20 +17,53 @@ import svg from 'rollup-plugin-svg-import';
 const VERSION = JSON.parse(fs.readFileSync('package.json')).version;
 const NAME = 'auto-task';
 
-export default {
+const moduleGlobals = new Map(Object.entries({
+  social: 'social',
+  'social/results': 'social',
+  'social/adapter': 'social',
+  steam: 'steam',
+  'steam/steamWeb': 'steamWeb',
+  'steam/steamASF': 'steamASF',
+  vk: 'vk',
+  twitch: 'twitch',
+  twitter: 'twitter',
+  reddit: 'reddit',
+  youtube: 'youtube'
+}).map(([entry, namespace]) => [path.resolve('modules', entry), `AutoTaskModules.${namespace}`]));
+
+const externalGlobals = {
+  sweetalert2: 'Swal',
+  'js-cookie': 'Cookies',
+  'browser-tool': 'browser',
+  keyboardjs: 'keyboardJS',
+  dayjs: 'dayjs',
+  'node-inspect-extracted': 'util'
+};
+const globals = id => moduleGlobals.get(id) || externalGlobals[id];
+const interop = id => moduleGlobals.has(id) ? 'esModule' : 'default';
+
+const modulesBuild = {
+  input: 'modules/browser.ts',
+  output: {
+    file: 'dist/auto-task.modules.js',
+    format: 'iife',
+    name: 'AutoTaskModules',
+    plugins: [
+      getBabelOutputPlugin({ presets: ['@babel/preset-env'], allowAllFormats: true }),
+      terser({ format: { comments: false } })
+    ]
+  },
+  plugins: [nodeResolve(), typescript()]
+};
+
+const userscriptBuild = {
   input: 'src/index.ts',
   output: [
     {
       file: 'dist/auto-task.user.js',
       format: 'iife',
-      globals: {
-        sweetalert2: 'Swal',
-        'js-cookie': 'Cookies',
-        'browser-tool': 'browser',
-        keyboardjs: 'keyboardJS',
-        dayjs: 'dayjs',
-        'node-inspect-extracted': 'util'
-      },
+      globals,
+      interop,
       plugins: [
         // Generate one report; concurrent outputs must not write the same file.
         visualizer({
@@ -58,14 +92,8 @@ export default {
     {
       file: 'dist/auto-task.compatibility.user.js',
       format: 'iife',
-      globals: {
-        sweetalert2: 'Swal',
-        'js-cookie': 'Cookies',
-        'browser-tool': 'browser',
-        keyboardjs: 'keyboardJS',
-        dayjs: 'dayjs',
-        'node-inspect-extracted': 'util'
-      },
+      globals,
+      interop,
       plugins: [
         getBabelOutputPlugin({
           presets: [
@@ -95,14 +123,8 @@ export default {
     {
       file: 'dist/auto-task.min.user.js',
       format: 'iife',
-      globals: {
-        sweetalert2: 'Swal',
-        'js-cookie': 'Cookies',
-        'browser-tool': 'browser',
-        keyboardjs: 'keyboardJS',
-        dayjs: 'dayjs',
-        'node-inspect-extracted': 'util'
-      },
+      globals,
+      interop,
       plugins: [
         getBabelOutputPlugin({
           presets: [
@@ -133,6 +155,14 @@ export default {
     }
   ],
   plugins: [
+    {
+      name: 'userscript-modules',
+      resolveId(source, importer) {
+        if (!importer || !source.startsWith('.')) return null;
+        const id = path.resolve(path.dirname(importer), source);
+        return moduleGlobals.has(id) ? { id, external: true } : null;
+      }
+    },
     progress(),
     sizes({
       details: true,
@@ -155,3 +185,5 @@ export default {
   ],
   external: ['sweetalert2', 'js-cookie', 'keyboardjs', 'dayjs', 'node-inspect-extracted', 'browser-tool']
 };
+
+export default [modulesBuild, userscriptBuild];

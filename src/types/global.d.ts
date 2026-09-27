@@ -80,7 +80,6 @@ declare global {
     error?: Error
   }
   interface socialTasks {
-    servers?: Array<string>
     users?: Array<string>
     reddits?: Array<string>
     channels?: Array<string>
@@ -103,13 +102,10 @@ declare global {
     playtests?: Array<string>
     playTime?: Array<string>
   }
-  type socialType = 'discord' | 'instagram' | 'reddit' | 'steam' | 'twitch' | 'twitter' | 'vk' | 'youtube'
-  type taskTypes = 'servers' | 'users' | 'reddits' | 'channels' | 'retweets' | 'likes' | 'names' | 'groups' | 'officialGroups' | 'publics' | 'walls' |
+  type socialType = 'instagram' | 'reddit' | 'steam' | 'twitch' | 'twitter' | 'vk' | 'youtube'
+  type taskTypes = 'users' | 'reddits' | 'channels' | 'retweets' | 'likes' | 'names' | 'groups' | 'officialGroups' | 'publics' | 'walls' |
     'wishlists' | 'follows' | 'forums' | 'workshops' | 'curators' | 'workshopVotes' | 'curatorLikes' | 'announcements' | 'licenses' | 'playtests' | 'playTime'
 
-  interface discordTasks {
-    servers: Array<string>
-  }
   interface instagramTasks {
     users: Array<string>
   }
@@ -147,7 +143,6 @@ declare global {
     likes: Array<string>
   }
   interface whiteList {
-    discord?: discordTasks
     instagram?: instagramTasks
     twitch?: twitchTasks
     twitter?: twitterTasks

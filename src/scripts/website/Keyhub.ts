@@ -230,11 +230,7 @@ class Keyhub extends Website {
           link = await getRedirectLink(link) || link;
         }
 
-        if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
-          debug('处理 Discord 连接任务');
-          if (!isDone) GM_openInTab(link, { active: true });
-          continue;
-        }
+        if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) { continue; }
 
         if (/steamcommunity\.com\/groups\//.test(link)) {
           debug('处理 Steam 组任务');
@@ -260,11 +256,7 @@ class Keyhub extends Website {
           continue;
         }
 
-        if (/^https?:\/\/discord\.com\/invite\//.test(link)) {
-          debug('处理 Discord 服务器任务');
-          addTask('discord', 'server', link);
-          continue;
-        }
+        if (/^https?:\/\/discord\.com\/invite\//.test(link)) { continue; }
 
         if (/^javascript:videoTask.+/.test(link)) {
           debug('处理视频任务');

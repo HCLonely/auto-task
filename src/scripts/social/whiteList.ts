@@ -20,8 +20,6 @@ import { debug } from '../tools/debug';
  * 默认白名单配置对象，包含各个平台的默认设置。
  *
  * @constant {whiteList} defaultWhiteList
- * @property {Object} discord - Discord 平台的白名单设置。
- * @property {string[]} discord.servers - Discord 服务器的白名单列表。
  *
  * @property {Object} instagram - Instagram 平台的白名单设置。
  * @property {string[]} instagram.users - Instagram 用户的白名单列表。
@@ -59,9 +57,7 @@ import { debug } from '../tools/debug';
  * @property {string[]} steam.playtests - Steam 测试版的白名单列表。
  */
 const defaultWhiteList: whiteList = {
-  discord: {
-    servers: []
-  },
+
   instagram: {
     users: []
   },
@@ -102,7 +98,6 @@ const defaultWhiteList: whiteList = {
 
 // 优化正则表达式常量
 const REGEX_PATTERNS = {
-  DISCORD_INVITE: /invite\/(.+)/,
   INSTAGRAM_USER: /https:\/\/www\.instagram\.com\/(.+)?\//,
   TWITCH_CHANNEL: /https:\/\/(www\.)?twitch\.tv\/(.+)/,
   TWITTER_USER: /https:\/\/twitter\.com\/(.+)/,
@@ -131,7 +126,6 @@ interface DisabledType {
  * 从给定的链接中提取特定类型的 ID。
  *
  * @param {string} type - 链接类型，支持的类型包括：
- *   - discord.servers
  *   - instagram.users
  *   - twitch.channels
  *   - twitter.users
@@ -159,9 +153,6 @@ const link2id = async function (type: string): Promise<string> {
     const link = $('#socialLink').val() as string;
     let id = '';
     switch (type) {
-        case 'discord.servers':
-          id = REGEX_PATTERNS.DISCORD_INVITE.exec(link)?.[1] || '';
-          break;
         case 'instagram.users':
           id = REGEX_PATTERNS.INSTAGRAM_USER.exec(link)?.[1] || '';
           break;
@@ -211,9 +202,9 @@ const link2id = async function (type: string): Promise<string> {
 
             const [, param1, param2] = storeMatch;
             const steam = new Steam();
-            if (await steam.init()) {
-              id = await steam.getCuratorId(param1, param2) || '';
-            }
+            try {
+              if (await steam.init('store')) id = await steam.getCuratorId(param1, param2) || '';
+            } finally { steam.dispose(); }
           }
           break;
         }

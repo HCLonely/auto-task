@@ -30,8 +30,8 @@
 // @include            *://giveawayhopper.com/c/*
 // @include            *://freeru.cc/en/games/giveaways/games/*
 
-// @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
+// @include            *://twitch.tv/*
 // @include            *://www.youtube.com/*
 // @include            *://m.youtube.com/*
 // @include            *://*.reddit.com/*
@@ -70,6 +70,10 @@
 // @grant              window.sessionStorage
 // @grant              window.focus
 
+// @connect            login.vk.com
+// @connect            web.api.vk.com
+// @connect            web.api.vk.ru
+// @connect            vk.ru
 // @connect            auto-task.hclonely.com
 // @connect            auto-task-doc.js.org
 // @connect            cdn.jsdelivr.net
@@ -89,9 +93,6 @@
 // @connect            www.twitch.tv
 // @connect            gql.twitch.tv
 // @connect            github.com
-// @connect            discordapp.com
-// @connect            discord.gg
-// @connect            discord.com
 // @connect            www.reddit.com
 // @connect            oauth.reddit.com
 // @connect            raw.githubusercontent.com

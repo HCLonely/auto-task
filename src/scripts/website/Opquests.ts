@@ -14,7 +14,6 @@ import __ from '../tools/i18n';
 import { globalOptions } from '../globalOptions';
 import httpRequest from '../tools/httpRequest';
 import { debug } from '../tools/debug';
-import { getRedirectLink } from '../tools/tools';
 
 /**
  * Opquests 类用于处理与 Opquests 网站相关的任务和操作。
@@ -306,34 +305,8 @@ class Opquests extends Website {
             continue;
           }
         }
-        if (link.includes('//discord.com/')) {
-          if (/join/gim.test(taskDes)) {
-            debug('添加 Discord 加入任务');
-            this.tasks.push({
-              done: false,
-              social: 'discord',
-              type: 'server',
-              link
-            });
-            continue;
-          }
-        }
-        if (link.includes('//discord.gg/') && /join/gim.test(taskDes)) {
-          debug('获取重定向链接', { link });
-          const taskLink = await getRedirectLink(link, false);
-          if (!taskLink) {
-            debug('获取重定向链接失败');
-            continue;
-          }
-          debug('添加 Discord 加入任务');
-          this.tasks.push({
-            done: false,
-            social: 'discord',
-            type: 'server',
-            link: taskLink
-          });
-          continue;
-        }
+        if (link.includes('//discord.com/')) { continue; }
+        if (link.includes('//discord.gg/') && /join/gim.test(taskDes)) { continue; }
 
         if (/clash\.gg/.test(link)) {
           debug('跳过不支持的 Clash.gg 任务');

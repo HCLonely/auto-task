@@ -30,7 +30,7 @@ import { normalizeStoredTasks } from './taskModel';
  * 该类继承自 GiveawaySu 类，专门处理 GiveeClub 网站的抽奖任务。
  * 提供了任务分类、验证和检查等功能。
  * 使用扁平化的代码结构和提前返回模式来处理各种任务类型。
- * 支持多种社交平台的任务处理，包括 Steam、Discord、Twitter 等。
+ * 支持多种社交平台的任务处理，包括 Steam、Twitter 等。
  *
  * @method static test - 检查当前 URL 是否为有效的 GiveeClub 事件页面。
  * @returns {boolean} 如果当前 URL 匹配 GiveeClub 事件页面的格式，则返回 true；否则返回 false。
@@ -364,11 +364,7 @@ class GiveeClub extends GiveawaySu {
         return;
       }
 
-      if (taskIcon.includes('discord')) {
-        debug('添加 Discord 服务器任务');
-        this.tasks.push({ ...taskInfo, social: 'discord', type: 'server', link: taskLink, done: Boolean(taskInfo.done) });
-        return;
-      }
+      if (taskIcon.includes('discord')) { return; }
 
       if (taskIcon.includes('instagram')) {
         debug('跳过 Instagram 任务');

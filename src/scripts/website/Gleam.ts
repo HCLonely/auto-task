@@ -225,7 +225,6 @@ class Gleam extends Website {
    * 3. 根据社交平台图标和任务文本，将任务分类到相应的列表中：
    *    - Twitter（关注和转发）
    *    - Twitch（关注）
-   *    - Discord（加入服务器）
    *    - YouTube（订阅）
    *    - Steam（加入组、关注鉴赏家、游戏时长）
    *    - Gleam（完成任务）
@@ -310,19 +309,8 @@ class Gleam extends Website {
           continue;
         }
 
-        // 处理Discord任务
-        if (socialIcon.hasClass('fa-discord') && /join/gim.test(taskText)) {
-          let link = $task.find('a[href^="https://discord.com/invite/"]').attr('href');
-          if (!link) {
-            const ggLink = $task.find('a[href^="https://discord.gg/"]').attr('href')
-              ?.match(/discord\.gg\/([^/]+)/)?.[1];
-            if (!ggLink) continue;
-            link = `https://discord.com/invite/${ggLink}`;
-          }
-
-          addTask('discord', 'server', link);
-          continue;
-        }
+        // 跳过已移除的平台
+        if (socialIcon.hasClass('fa-discord') && /join/gim.test(taskText)) { continue; }
 
         // 跳过外部链接任务
         if (socialIcon.hasClass('fa-external-link-square-alt')) continue;

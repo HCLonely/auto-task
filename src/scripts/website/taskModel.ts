@@ -12,7 +12,6 @@ const LEGACY_TYPE_MAP: Record<string, string> = {
   licenseLinks: 'license',
   playTimeLinks: 'playtime',
   playtestLinks: 'playtest',
-  serverLinks: 'server',
   redditLinks: 'post',
   channelLinks: 'channel',
   userLinks: 'user',
@@ -40,7 +39,6 @@ const SOCIAL_PAYLOAD_TYPE_MAP: Record<string, string> = {
   'steam.license': 'licenseLinks',
   'steam.playtime': 'playTimeLinks',
   'steam.playtest': 'playtestLinks',
-  'discord.server': 'serverLinks',
   'reddit.post': 'redditLinks',
   'twitch.channel': 'channelLinks',
   'twitter.user': 'userLinks',
@@ -56,7 +54,7 @@ const isWebsiteTask = (value: unknown): value is WebsiteTask => {
   if (!value || typeof value !== 'object') return false;
   const task = value as Partial<WebsiteTask>;
   return typeof task.done === 'boolean' &&
-    typeof task.social === 'string' &&
+    typeof task.social === 'string' && task.social !== 'discord' &&
     typeof task.type === 'string' &&
     typeof task.link === 'string' &&
     (!('minutes' in task) || typeof task.minutes === 'number') &&
@@ -91,6 +89,7 @@ const normalizeLegacyTasks = (
 ): Array<WebsiteTask> => {
   const result: Array<WebsiteTask> = [];
   for (const [social, legacyTypes] of Object.entries(tasks)) {
+    if (social === 'discord') continue;
     if (Array.isArray(legacyTypes)) {
       for (const link of legacyTypes) {
         result.push({
@@ -135,6 +134,7 @@ const getTaskKey = (task: WebsiteTask): string => JSON.stringify([
 const uniqueWebsiteTasks = (tasks: Array<WebsiteTask>): Array<WebsiteTask> => {
   const seen = new Set<string>();
   return tasks.filter((task) => {
+    if (task.social === 'discord') return false;
     const key = getTaskKey(task);
     if (seen.has(key)) return false;
     seen.add(key);
@@ -146,7 +146,7 @@ const selectTasksForAction = (
   tasks: Array<WebsiteTask>,
   action: 'do' | 'undo'
 ): Array<WebsiteTask> => tasks.filter((task) => (
-  action === 'do' ? !task.done : task.done
+  task.social !== 'discord' && (action === 'do' ? !task.done : task.done)
 ));
 
 const toSocialPayload = (
@@ -155,6 +155,7 @@ const toSocialPayload = (
 ): WebsiteSocialPayload => {
   const payload: WebsiteSocialPayload = {};
   for (const task of tasks) {
+    if (task.social === 'discord') continue;
     if (task.social === 'extra') {
       payload.extra ||= {};
       payload.extra[task.type] ||= [];

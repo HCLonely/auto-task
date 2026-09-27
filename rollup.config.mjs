@@ -31,6 +31,11 @@ export default {
         'node-inspect-extracted': 'util'
       },
       plugins: [
+        // Generate one report; concurrent outputs must not write the same file.
+        visualizer({
+          gzipSize: true,
+          filename: 'doc/docs/.vuepress/public/report.html'
+        }),
         terser({
           sourceMap: false,
           compress: false,
@@ -131,10 +136,6 @@ export default {
     progress(),
     sizes({
       details: true,
-    }),
-    visualizer({
-      gzipSize: true,
-      filename: 'doc/docs/.vuepress/public/report.html'
     }),
     nodeResolve(),
     typescript(),

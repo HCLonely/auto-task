@@ -7,9 +7,6 @@
  * @Description  :
  */
 
-declare interface discordWebTasks {
-  serverLinks?: Array<string>
-}
 declare interface instagramWebTasks {
   userLinks?: Array<string>
 }
@@ -81,7 +78,6 @@ declare type WebsiteStoredTasksInput = WebsiteStoredTasks | {
 }
 
 declare interface WebsiteSocialPayload {
-  discord?: discordWebTasks
   instagram?: instagramWebTasks
   twitch?: twitchWebTasks
   twitter?: twitterWebTasks
@@ -105,7 +101,6 @@ declare interface bindReturn {
   result: boolean | 'skip'
 }
 declare interface socialInitialized {
-  discord: boolean | 'skip'
   instagram: boolean | 'skip'
   reddit: boolean | 'skip'
   twitch: boolean | 'skip'

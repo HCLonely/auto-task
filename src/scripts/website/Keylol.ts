@@ -81,7 +81,6 @@ class Keylol extends Website {
   // 首先添加配置常量
   private static readonly CONFIG = {
     LINK_PATTERNS: {
-      DISCORD: /^https?:\/\/discord\.com\/invite\/.+/,
       REDDIT: /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/,
       INSTAGRAM: /^https:\/\/www\.instagram\.com\/.+/,
       TWITTER: /^https:\/\/(twitter|x)\.com\/.+/,
@@ -146,7 +145,7 @@ class Keylol extends Website {
    *
    * @description
    * 该方法筛选可见的链接并分类不同类型的社交媒体链接。
-   * 包括 Discord、Reddit、Instagram、Twitter、Twitch、VK、Steam 商店、Steam 社区和 YouTube 的链接。
+   * 包括 Reddit、Instagram、Twitter、Twitch、VK、Steam 商店、Steam 社区和 YouTube 的链接。
    * 对于每种类型的链接，调用私有方法 `#addBtn` 将其添加到相应的任务列表中。
    * 还会检查页面中的抽奖链接，并根据状态进行分类。
    * 如果是 Keylol 网站，还会处理特定的 ASF 和 SteamDB 链接。
@@ -199,11 +198,6 @@ class Keylol extends Website {
 
     // 使用 switch-case 替代多个 if-else，提高性能
     switch (true) {
-        case LINK_PATTERNS.DISCORD.test(href):
-          debug('发现 Discord 链接');
-          this.#addBtn($link[0], 'discord', 'server', href);
-          break;
-
         case LINK_PATTERNS.REDDIT.test(href):
           debug('发现 Reddit 链接');
           this.#addBtn($link[0], 'reddit', 'post', href);

@@ -246,7 +246,7 @@ class FreeAnyWhere extends Website {
             break;
           case 'discord_server_sub':
             debug('跳过 Discord 任务');
-            echoLog({}).warning(`${__('discordTaskNotice')}`);
+            echoLog({}).warning(`${__('unSupporttedTaskType')}`);
             break;
           case 'youtube_channel_sub':
             if (link) this.tasks.push({ done: isSuccess, social: 'youtube', type: 'channel', link, id, title, data });

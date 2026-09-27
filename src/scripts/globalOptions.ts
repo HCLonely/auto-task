@@ -12,8 +12,6 @@
  *
  * @constant {globalOptions} defaultGlobalOptions
  * @property {Object} doTask - 执行任务的选项。
- * @property {Object} doTask.discord - Discord 平台的任务设置。
- * @property {boolean} doTask.discord.servers - 是否执行 Discord 服务器任务。
 //  * @property {Object} doTask.instagram - Instagram 平台的任务设置。
 //  * @property {boolean} doTask.instagram.users - 是否执行 Instagram 用户任务。
  * @property {Object} doTask.twitch - Twitch 平台的任务设置。
@@ -79,9 +77,7 @@
  */
 const defaultGlobalOptions: globalOptions = {
   doTask: {
-    discord: {
-      servers: true
-    },
+
     // instagram: {
     //   users: true
     // },
@@ -118,9 +114,7 @@ const defaultGlobalOptions: globalOptions = {
     }
   },
   undoTask: {
-    discord: {
-      servers: true
-    },
+
     // instagram: {
     //   users: true
     // },
@@ -214,6 +208,7 @@ const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
     const result = { ...target };
 
     for (const [key, value] of Object.entries(source)) {
+      if (!Object.hasOwn(target, key)) continue;
       const targetValue = target[key as keyof T];
 
       if (isObject(value) && isObject(targetValue)) {

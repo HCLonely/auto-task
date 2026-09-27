@@ -591,7 +591,10 @@ class Setting {
     if (social === 'twitterUser') {
       const name = link.match(/https:\/\/twitter\.com\/(.+)/)?.[1] || link;
       debug('获取Twitter用户ID', { name });
-      id = await new Twitter().userName2id(name) || '';
+      const twitter = new Twitter();
+      try {
+        if (await twitter.init()) id = await twitter.userName2id(name) || '';
+      } finally { twitter.dispose(); }
     } else if (social === 'youtubeChannel') {
       const name = this.#extractYoutubeUrl(link);
       debug('获取YouTube频道信息', { name });

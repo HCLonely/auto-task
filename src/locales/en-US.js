@@ -7,6 +7,11 @@
  * @Description  : i18n英文
  */
 const data = {
+  moduleInitializing: 'Initializing',
+  moduleTask: 'Running task',
+  moduleFailed: 'Failed; see debug logs',
+  moduleSkipped: 'Skipped',
+
   // 通用任务
   website: 'Website',
   type: 'Type',
@@ -261,19 +266,6 @@ const data = {
   checkingPlayStatus: 'Checking play status...',
   noPlayStatus: 'Game not running',
 
-  // Discord
-  servers: 'Server',
-  joiningDiscordServer: 'Joining Discord Server',
-  leavingDiscordServer: 'Leaving Discord Server',
-  gettingDiscordGuild: 'Getting Discord server Id',
-  getDiscordAuthFailed: 'Failed to get Discord token, please check whether the Discord account is logged in',
-  discordImportantNotice: 'Important Reminder! ! !',
-  discordImportantNoticeText: 'Due to the background update of the Discord website, currently using this script to join a group may cause the Discord account to be forcibly logged out, and two-step verification is required to log in normally, please use it with caution! ! !',
-  continueDiscordTask: 'Do Discord tasks this time.',
-  skipDiscordTask: 'Skip Discord tasks this time.',
-  continueAndDontRemindAgain: 'Always do Discord tasks and do not remind again.',
-  gettingDiscordXContextProperties: 'Getting Discord X context properties...',
-  captchaNeeded: 'Captcha detected, please complete it manually!',
 
   // Instagram
   users: 'User',
@@ -370,7 +362,6 @@ const data = {
   tasksNotCompleted: 'Tasks Not Completed',
   notConnect: 'Social platform is not connectted, skip task: %0',
   tgTaskNotice: 'The telegram task is checked, need to do it yourself!',
-  discordTaskNotice: 'The discord task is checked, need to do it yourself!',
   updatingUserData: 'Updating user data...',
   gettingUserGames: 'Getting user games...',
   skipExtensionToVerifyTask: 'Need extension, skip automatic verification',

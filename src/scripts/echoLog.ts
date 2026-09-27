@@ -10,7 +10,6 @@ import throwError from './tools/throwError';
 import __ from './tools/i18n';
 import ASF from '../assets/images/ASF.svg';
 import Web from '../assets/images/Web.svg';
-import Discord from '../assets/images/Discord.svg';
 import Twitch from '../assets/images/Twitch.svg';
 import Instagram from '../assets/images/Instagram.svg';
 import Twitter from '../assets/images/Twitter.svg';
@@ -19,11 +18,10 @@ import Youtube from '../assets/images/Youtube.svg';
 import Vk from '../assets/images/Vk.svg';
 import AutoTask from '../assets/images/AutoTask.svg';
 
-type IconKeys = '[ASF]' | '[Web]' | '[Discord]' | '[Twitch]' | '[Instagram]' | '[Twitter]' | '[Reddit]' | '[Youtube]' | '[Vk]' | '[AutoTask]';
+type IconKeys = '[ASF]' | '[Web]' | '[Twitch]' | '[Instagram]' | '[Twitter]' | '[Reddit]' | '[Youtube]' | '[Vk]' | '[AutoTask]';
 const ICONS: Record<IconKeys, string> = {
   '[ASF]': ASF,
   '[Web]': Web,
-  '[Discord]': Discord,
   '[Twitch]': Twitch,
   '[Instagram]': Instagram,
   '[Twitter]': Twitter,
@@ -94,10 +92,7 @@ const createPlatformElement = (type: string, text?: string, id?: string): JQuery
     announcement: (text: string, id?: string) => `https://store.steampowered.com/news/app/${text}/view/${id}`,
 
     // 社交平台相关
-    discord: {
-      invite: (text: string) => `https://discord.com/invite/${text}`,
-      server: (text: string) => `https://discord.com/channels/@me/${text}`
-    },
+
     twitch: (text: string) => `https://www.twitch.tv/${text}`,
     instagram: (text: string) => `https://www.instagram.com/${text}/`,
     twitter: (text: string) => `https://x.com/${text}`,
@@ -142,10 +137,6 @@ const createPlatformElement = (type: string, text?: string, id?: string): JQuery
     likingAnnouncement: ['announcement'],
 
     // 社交平台相关
-    joiningDiscordServer: ['discord', 'invite'],
-    gettingDiscordGuild: ['discord', 'invite'],
-    gettingDiscordXContextProperties: ['discord', 'invite'],
-    leavingDiscordServer: ['discord', 'server'],
     followingTwitchChannel: ['twitch'],
     unfollowingTwitchChannel: ['twitch'],
     gettingTwitchChannelId: ['twitch'],

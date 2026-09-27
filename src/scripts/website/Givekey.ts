@@ -497,7 +497,6 @@ class Givekey extends Website {
    *   - 匹配 store.steampowered.com/curator（关注鉴赏家）
    *   - 其他Steam相关任务（点赞鉴赏家）
    * - Twitter关注任务：匹配 twitter.com 且包含 Subscribe 文本
-   * - Discord服务器任务：包含 discord 图标或匹配 discord.com/invite
    *
    * 处理流程：
    * 1. 检查任务链接URL的格式
@@ -558,11 +557,7 @@ class Givekey extends Website {
         return;
       }
 
-      if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
-        debug('添加 Discord 服务器任务');
-        addTask('discord', 'server');
-        return;
-      }
+      if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) { return; }
 
       debug('未识别的任务类型', { href, text });
       echoLog({}).warning(`${__('unKnownTaskType')}: ${text}(${href})`);

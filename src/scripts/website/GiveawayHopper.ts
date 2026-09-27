@@ -239,27 +239,7 @@ class GiveawayHopper extends Website {
           continue;
         }
 
-        if (task.category === 'Discord' && task.type === 'JoinServer') {
-          if (!task.invite_code) {
-            debug('缺少 Discord 邀请码，跳过任务', { taskId: task.id });
-            continue;
-          }
-          const discordLink = `https://discord.gg/${task.invite_code}`;
-          debug('添加 Discord 服务器链接', { action, link: discordLink });
-          this.tasks.push({
-            done: task.isDone,
-            social: 'discord',
-            type: 'server',
-            link: discordLink,
-            id: task.id,
-            title: taskTitle,
-            category: task.category,
-            sourceType: task.type,
-            hash: task.hash,
-            inviteCode: task.invite_code
-          });
-          continue;
-        }
+        if (task.category === 'Discord' && task.type === 'JoinServer') { continue; }
 
         if (['TikTok', 'YouTube', 'General'].includes(task.category)) {
           debug('跳过特殊任务类型', { category: task.category });
@@ -354,7 +334,7 @@ class GiveawayHopper extends Website {
    * 根据任务类型和目标生成对应的链接：
    * - YouTube：生成频道订阅链接
    * - TikTok：生成用户关注链接
-   * - Steam和Discord：返回空字符串（链接在其他地方处理）
+   * - Steam：返回空字符串（链接在其他地方处理）
    */
   #getTaskLink(task: giveawayHopperReturnTaskInfo): string {
     try {
@@ -366,8 +346,6 @@ class GiveawayHopper extends Website {
       } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
         link = `https://www.tiktok.com/@${task.targetName}`;
       } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
-        link = '';
-      } else if (task.category === 'Discord' && task.type === 'JoinServer') {
         link = '';
       }
 

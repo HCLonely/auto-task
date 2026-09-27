@@ -10,7 +10,9 @@
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
 import Swal from 'sweetalert2';
-import Cookies from 'js-cookie';
+import { handleSteamAuthPage } from '../modules/steam';
+import { handleTwitchAuthPage } from '../modules/twitch';
+import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
 import style from './style/auto-task.scss';
 import { Websites } from './scripts/website/index';
 import websiteOptions from './scripts/website/options';
@@ -35,122 +37,6 @@ try {
 window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
 window.DEBUG = !!globalOptions.other?.debug;
 window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'function';
-
-// 处理Twitch认证
-const handleTwitchAuth = async (): Promise<void> => {
-  debug('开始处理Twitch认证');
-  const authToken = Cookies.get('auth-token');
-  const isLogin = !!Cookies.get('login');
-
-  if (isLogin) {
-    const authData: AuthData = {
-      authToken,
-      clientVersion: window.__twilightBuildID,
-      clientId: window.commonOptions?.headers?.['Client-ID'],
-      deviceId: window.commonOptions?.headers?.['Device-ID'],
-      clientSessionId: window.localStorage.local_storage_app_session_id.replace(/"/g, '')
-    };
-    GM_setValue('twitchAuth', authData);
-    window.close();
-    await Swal.fire('', __('closePageNotice'));
-  } else {
-    await Swal.fire('', __('needLogin'));
-  }
-};
-
-// 处理Reddit认证
-const handleRedditAuth = async (): Promise<void> => {
-  debug('开始处理Reddit认证');
-  const betaButton = $('#redesign-beta-optin-btn');
-  if (betaButton.length > 0) {
-    betaButton[0].click();
-    return;
-  }
-  window.close();
-  await Swal.fire('', __('closePageNotice'));
-};
-
-// // 处理Discord认证
-// const handleDiscordAuth = async (): Promise<void> => {
-//   debug('开始处理Discord认证');
-//   const LocalStorage = window.localStorage;
-//   const allLocalStorage = getAllLocalStorageAsObjects(LocalStorage);
-//   const discordAuth = allLocalStorage.token as string;
-
-//   if (discordAuth && discordAuth.length > 0) {
-//     const browserInfo = await browser.getInfo();
-//     GM_setValue('discordAuth', {
-//       auth: discordAuth,
-//       xSuperProperties: window.btoa(JSON.stringify({
-//         os: browserInfo.system,
-//         browser: browserInfo.browser,
-//         device: '',
-//         system_locale: browserInfo.language,
-//         ...((allLocalStorage.deviceProperties as Record<string, string>) || {}),
-//         browser_user_agent: navigator.userAgent,
-//         browser_version: browserInfo.browserVersion,
-//         os_version: browserInfo.systemVersion,
-//         referrer: '',
-//         referring_domain: '',
-//         referrer_current: '',
-//         referring_domain_current: '',
-//         release_channel: 'stable',
-//         client_build_number: unsafeWindow.GLOBAL_ENV.BUILD_NUMBER,
-//         client_event_source: null,
-//         has_client_mods: false,
-//         client_launch_id: uuidv4(),
-//         client_heartbeat_session_id: (allLocalStorage.LAST_CLIENT_HEARTBEAT_SESSION as Record<string, string>)?.uuid,
-//         client_app_state: 'focused'
-//       }))
-//     });
-//     window.close();
-//     Swal.fire('', __('closePageNotice'));
-//   } else {
-//     Swal.fire({
-//       text: __('getDiscordAuthFailed'),
-//       icon: 'error'
-//     });
-//   }
-// };
-
-// 处理Steam商店认证
-const handleSteamStoreAuth = async (): Promise<void> => {
-  debug('开始处理Steam商店认证');
-  const storeSessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
-
-  if (storeSessionID) {
-    GM_deleteValue('ATv4_updateStoreAuth');
-    GM_setValue('steamStoreAuth', { storeSessionID });
-    window.close();
-    await Swal.fire('', __('closePageNotice'));
-  } else {
-    await Swal.fire({
-      title: 'Error: Get "sessionID" failed',
-      icon: 'error'
-    });
-  }
-};
-
-// 处理Steam社区认证
-const handleSteamCommunityAuth = async (): Promise<void> => {
-  debug('开始处理Steam社区认证');
-  const steam64Id = document.body.innerHTML.match(/g_steamID = "(.+?)";/)?.[1];
-  const communitySessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
-
-  if (steam64Id && communitySessionID) {
-    GM_deleteValue('ATv4_updateCommunityAuth');
-    GM_setValue('steamCommunityAuth', { steam64Id, communitySessionID });
-    window.close();
-    await Swal.fire('', __('closePageNotice'));
-  } else {
-    setTimeout(async () => {
-      await Swal.fire({
-        title: 'Error: Get "sessionID" failed',
-        icon: 'error'
-      });
-    }, 3000);
-  }
-};
 
 // 初始化UI元素
 const initializeUI = (website: Website): void => {
@@ -308,6 +194,7 @@ const checkSteamASFStatus = async (): Promise<void> => {
   } catch (error) {
     console.error('SteamASF operation failed:', error);
   } finally {
+    steamASF?.dispose();
     steamASF = null; // 释放 SteamASF 实例
   }
 };
@@ -350,18 +237,6 @@ const checkVersionAndNotice = (): void => {
 
 const loadScript = async (): Promise<void> => {
   debug('主程序入口 loadScript 开始');
-  if (window.name === 'ATv4_twitchAuth' && window.location.hostname === 'www.twitch.tv') {
-    debug('检测到Twitch认证窗口');
-    await handleTwitchAuth();
-    return;
-  }
-
-  if (window.name === 'ATv4_redditAuth' && window.location.hostname === 'www.reddit.com') {
-    debug('检测到Reddit认证窗口');
-    await handleRedditAuth();
-    return;
-  }
-
   let website: Website | undefined;
   for (const Website of (Websites as unknown as WebsiteClass[])) {
     if (Website.test()) {
@@ -410,48 +285,21 @@ const loadScript = async (): Promise<void> => {
   updateChecker();
 };
 
-// 主程序入口
-try {
-  debug('主程序入口开始', { hostname: window.location.hostname, windowName: window.name });
-
-  // if (window.location.hostname === 'discord.com') {
-  //   if (window.name === 'ATv4_discordAuth') {
-  //     debug('检测到Discord认证窗口');
-  //     handleDiscordAuth();
-  //   } else {
-  //     debug('检测到Discord主站');
-  //     const discordAuth = window.localStorage?.getItem('token')?.replace(/^"|"$/g, '');
-  //     if (discordAuth && discordAuth.length > 0) {
-  //       debug('获取到Discord认证token');
-  //       GM_setValue('discordAuth', { auth: discordAuth });
-  //     }
-  //   }
-  // } else
-  if (window.location.hostname === 'opquests.com') {
-    debug('检测到opquests.com，加载主脚本');
-    loadScript();
-  } else if ((window.name === 'ATv4_updateStoreAuth' || GM_getValue('ATv4_updateStoreAuth')) && window.location.host === 'store.steampowered.com') {
-    debug('检测到Steam商店认证窗口');
-    $(() => {
-      if ($('[data-miniprofile]').length === 0) return;
-      handleSteamStoreAuth();
-    });
-  } else if ((window.name === 'ATv4_updateCommunityAuth' || GM_getValue('ATv4_updateCommunityAuth')) && window.location.host === 'steamcommunity.com') {
-    debug('检测到Steam社区认证窗口');
-    $(() => {
-      handleSteamCommunityAuth();
-    });
-  } else {
+// Authentication replies must use the same GM namespace as the requesting module.
+const bootstrap = async (): Promise<void> => {
+  try {
+    if (await handleSteamAuthPage({ namespace: moduleNamespace('steam'), gm: projectGM('steam') })) return;
+    if (await handleTwitchAuthPage({ namespace: moduleNamespace('twitch'), gm: projectGM('twitch') })) return;
     if (window.location.hostname === 'key-hub.eu') {
-      debug('检测到key-hub.eu，设置全局变量');
       // @ts-ignore
       unsafeWindow.keyhubtracker = 1;
       // @ts-ignore
       unsafeWindow.gaData = {};
     }
-    debug('加载主脚本');
-    $(loadScript);
+    await loadScript();
+  } catch (error) {
+    debug('主程序入口发生异常', { error });
   }
-} catch (error) {
-  debug('主程序入口发生异常', { error });
-}
+};
+if (window.location.hostname === 'opquests.com') void bootstrap();
+else $(bootstrap);

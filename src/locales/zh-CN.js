@@ -7,6 +7,11 @@
  * @Description  : i18n中文
  */
 const data = {
+  moduleInitializing: '初始化',
+  moduleTask: '执行任务',
+  moduleFailed: '执行失败，请查看调试日志',
+  moduleSkipped: '已跳过',
+
   // 通用任务
   website: '网站',
   type: '类型',
@@ -244,19 +249,6 @@ const data = {
   checkingPlayStatus: '正在检查挂机状态...',
   noPlayStatus: '游戏未运行',
 
-  // Discord
-  servers: '服务器',
-  joiningDiscordServer: '正在加入Discord服务器',
-  leavingDiscordServer: '正在退出Discord服务器',
-  gettingDiscordGuild: '正在获取Discord服务器Id',
-  getDiscordAuthFailed: '获取Discord凭证失败，请检测Discord帐号是否已登录',
-  discordImportantNotice: '重要提醒！！！',
-  discordImportantNoticeText: '由于Discord网站后台更新，目前使用此脚本加组后可能会导致Discord帐号被强制退出，且需要两步验证才能正常登录，请谨慎使用！！！',
-  continueDiscordTask: '本次执行Discord任务',
-  skipDiscordTask: '本次跳过Discord任务',
-  continueAndDontRemindAgain: '总是执行Discord任务且不再提醒',
-  gettingDiscordXContextProperties: '正在获取Discord加群参数',
-  captchaNeeded: '检测到人机验证，请手动完成！',
 
   // Instagram
   users: '用户',
@@ -351,7 +343,6 @@ const data = {
   tasksNotCompleted: '任务未完成',
   notConnect: '社交平台未连接，跳过任务: %0',
   tgTaskNotice: '检测到Telegram任务，需要手动完成',
-  discordTaskNotice: '检测到Discord任务，需要手动完成',
   updatingUserData: '正在更新用户数据...',
   gettingUserGames: '正在获取用户游戏...',
   skipExtensionToVerifyTask: '需要扩展，跳过自动验证',

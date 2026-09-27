@@ -30,8 +30,8 @@
 // @include            *://giveawayhopper.com/c/*
 // @include            *://freeru.cc/en/games/giveaways/games/*
 
-// @include            *://discord.com/*
 // @include            *://www.twitch.tv/*
+// @include            *://twitch.tv/*
 // @include            *://www.youtube.com/*
 // @include            *://m.youtube.com/*
 // @include            *://*.reddit.com/*
@@ -70,6 +70,10 @@
 // @grant              window.sessionStorage
 // @grant              window.focus
 
+// @connect            login.vk.com
+// @connect            web.api.vk.com
+// @connect            web.api.vk.ru
+// @connect            vk.ru
 // @connect            auto-task.hclonely.com
 // @connect            auto-task-doc.js.org
 // @connect            cdn.jsdelivr.net
@@ -89,9 +93,6 @@
 // @connect            www.twitch.tv
 // @connect            gql.twitch.tv
 // @connect            github.com
-// @connect            discordapp.com
-// @connect            discord.gg
-// @connect            discord.com
 // @connect            www.reddit.com
 // @connect            oauth.reddit.com
 // @connect            raw.githubusercontent.com
@@ -147,7 +148,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(Swal, Cookies, browser, util, dayjs, keyboardJS) {
+(function(Swal, browser, util, dayjs, keyboardJS) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -210,9 +211,6 @@ if (missingDependencies.length > 0) {
   };
   const defaultGlobalOptions = {
     doTask: {
-      discord: {
-        servers: true
-      },
       twitch: {
         channels: true
       },
@@ -246,9 +244,6 @@ if (missingDependencies.length > 0) {
       }
     },
     undoTask: {
-      discord: {
-        servers: true
-      },
       twitch: {
         channels: true
       },
@@ -322,6 +317,9 @@ if (missingDependencies.length > 0) {
         ...target
       };
       for (const [key, value] of Object.entries(source)) {
+        if (!Object.hasOwn(target, key)) {
+          continue;
+        }
         const targetValue = target[key];
         if (isObject(value) && isObject(targetValue)) {
           result[key] = deepMerge(targetValue, value);
@@ -341,8 +339,4143 @@ if (missingDependencies.length > 0) {
   };
   const isObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
-  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{list-style:none;align-items:flex-start !important;text-align:left;padding:3px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:14px !important;height:14px !important;flex-shrink:0 !important;margin-top:1px;margin-right:8px;background-size:14px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
+  function createGMStorage$6(gm, namespace = 'steamASF') {
+    const api = gm || {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value),
+      deleteValue: key => GM_deleteValue(key)
+    };
+    return {
+      async get(key, fallback) {
+        return api.getValue(`${namespace}:${key}`, fallback);
+      },
+      async set(key, value) {
+        await api.setValue(`${namespace}:${key}`, value);
+      },
+      async delete(key) {
+        await api.deleteValue(`${namespace}:${key}`);
+      }
+    };
+  }
+  let StatusEvents$6 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  class OperationError extends Error {
+    code;
+    constructor(code) {
+      super(code);
+      this.code = code;
+    }
+  }
+  let Context$7 = class Context {
+    events=new StatusEvents$6;
+    storage;
+    endpoint;
+    bot;
+    apiKey;
+    state={
+      disposed: false,
+      initialized: false
+    };
+    http;
+    password;
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    constructor(options) {
+      const url = new URL('/Api/Command/', options.AsfIpcUrl);
+      if (![ 'http:', 'https:' ].includes(url.protocol) || url.username || url.password) {
+        throw new Error('Invalid ASF IPC URL');
+      }
+      this.endpoint = url.href;
+      this.bot = options.AsfBotname || 'asf';
+      if (/\s/.test(this.bot)) {
+        throw new Error('Invalid ASF bot name');
+      }
+      this.apiKey = options.steamWebApiKey;
+      this.password = options.AsfIpcPassword;
+      this.http = options.http;
+      this.storage = createGMStorage$6(options.gm, `${options.namespace || 'steamASF'}:${encodeURIComponent(this.endpoint)}:${encodeURIComponent(this.bot)}`);
+    }
+    async run(operation, target, fallback, work, isSuccess) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.operationId = crypto.randomUUID();
+      child.parentOperationId = this.operationId || undefined;
+      child.operation = operation;
+      child.target = target;
+      child.emit('start', 'info', 'OPERATION_STARTED');
+      try {
+        if (child.state.disposed) {
+          throw new OperationError('DISPOSED');
+        }
+        const value = await work(child);
+        const ok = isSuccess ? isSuccess(value) : value !== false && value !== '';
+        child.emit(value === 'skip' ? 'skipped' : ok ? 'success' : 'failure', ok ? 'info' : 'error', value === 'skip' ? 'OPERATION_SKIPPED' : ok ? 'OPERATION_COMPLETED' : 'OPERATION_FAILED');
+        return value;
+      } catch (error) {
+        child.emit('failure', 'error', error instanceof OperationError ? error.code : 'UNEXPECTED_ERROR');
+        return fallback;
+      }
+    }
+    emit(phase, level, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        level: level,
+        code: code,
+        timestamp: Date.now(),
+        details: details
+      });
+    }
+    progress(code, details, level = 'info') {
+      this.emit('progress', level, code, details);
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new OperationError('DISPOSED');
+      }
+      this.progress('HTTP_REQUEST_STARTED', {
+        method: options.method || 'GET'
+      }, 'debug');
+      const response = await this.http(options);
+      if (this.state.disposed) {
+        throw new OperationError('DISPOSED');
+      }
+      this.progress('HTTP_REQUEST_COMPLETED', {
+        transportStatus: response.status,
+        httpStatus: response.data?.status || 0
+      }, 'debug');
+      if (response.result !== 'Success') {
+        throw new OperationError('TRANSPORT_FAILED');
+      }
+      if (response.data?.status !== 200) {
+        throw new OperationError('HTTP_FAILED');
+      }
+      return response.data;
+    }
+    async command(command) {
+      const data = await this.request({
+        url: this.endpoint,
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          accept: 'application/json',
+          'Content-Type': 'application/json',
+          Authentication: this.password
+        },
+        data: JSON.stringify({
+          Command: command
+        })
+      });
+      const body = data.response;
+      if (body?.Success !== true || body.Message !== 'OK' || typeof body.Result !== 'string' || !body.Result.trim()) {
+        throw new OperationError('ASF_COMMAND_FAILED');
+      }
+      return body.Result;
+    }
+  };
+  const SUCCESS = [ '成功', 'Success', 'Успех' ];
+  const JOINED = [ '已加入', '已申请', 'Joined', 'Applied', 'Присоединился', 'costs' ];
+  const PLAYING = [ '正在运行', '正在掛', 'Playing', 'Играет' ];
+  const RESUMED = [ '已经恢复', '已恢复', '已經繼續', '已繼續', 'resumed', 'возобновлён' ];
+  function validIds(value) {
+    return /^\d+(?:,\d+)*$/.test(value);
+  }
+  function requireId(value) {
+    if (!/^\d+$/.test(value)) {
+      throw new OperationError('INVALID_ARGUMENT');
+    }
+  }
+  function containsId(line, id) {
+    return (line.match(/\d+/g) || []).some((value => value === id));
+  }
+  function matchesReply(reply, words = SUCCESS) {
+    if (/(?:\b(?:failed|failure|unsuccessful|not\s+(?:successful|joined|applied|playing|resumed))\b|失败|失敗|неудач|ошибк)/i.test(reply)) {
+      return false;
+    }
+    return words.some((word => new RegExp(/[a-z]/i.test(word) ? `\\b${word}\\b` : word, 'i').test(reply)));
+  }
+  async function execute(ctx, command, words = SUCCESS) {
+    const reply = await ctx.command(command);
+    if (!matchesReply(reply, words)) {
+      throw new OperationError('ASF_RESULT_REJECTED');
+    }
+    return true;
+  }
+  function executeCurator$1(ctx, curatorId, doTask = true) {
+    return ctx.run(doTask ? 'curator.follow' : 'curator.unfollow', curatorId, false, (async child => {
+      requireId(curatorId);
+      return execute(child, `!${doTask ? '' : 'UN'}FOLLOWCURATOR ${child.bot} ${curatorId}`);
+    }));
+  }
+  function doCurator$1(ctx, curatorId) {
+    return executeCurator$1(ctx, curatorId, true);
+  }
+  function undoCurator$1(ctx, curatorId) {
+    return executeCurator$1(ctx, curatorId, false);
+  }
+  function checkGame(ctx, gameId) {
+    return ctx.run('gameStatus.check', gameId, {}, (async child => {
+      requireId(gameId);
+      const reply = await child.command(`!CHECK ${child.bot} ${gameId}`);
+      const rows = reply.split('\n').filter((line => containsId(line.split('|').slice(0, -3).join('|'), gameId)));
+      if (rows.length !== 1) {
+        throw new OperationError('INVALID_GAME_STATUS');
+      }
+      const fields = rows[0].split('|').map((field => field.trim()));
+      if (fields.length <= 3) {
+        throw new OperationError('INVALID_GAME_STATUS');
+      }
+      if (!fields.slice(-3).every((field => [ '√', '×', '✗', '✘', 'X', 'x', '-' ].includes(field)))) {
+        throw new OperationError('INVALID_GAME_STATUS');
+      }
+      return {
+        wishlist: fields.at(-3) === '√' || fields.at(-2) === '√',
+        followed: fields.at(-1) === '√'
+      };
+    }));
+  }
+  function executeFollowGame$1(ctx, gameId, doTask) {
+    return ctx.run(doTask ? 'game.follow' : 'game.unfollow', gameId, false, (async child => {
+      requireId(gameId);
+      const status = await checkGame(child, gameId);
+      if (status.followed === doTask) {
+        child.progress('ALREADY_SATISFIED');
+        return true;
+      }
+      return execute(child, `!${doTask ? '' : 'UN'}FOLLOWGAME ${child.bot} ${gameId}`);
+    }));
+  }
+  function doFollowGame$1(ctx, gameId) {
+    return executeFollowGame$1(ctx, gameId, true);
+  }
+  function undoFollowGame$1(ctx, gameId) {
+    return executeFollowGame$1(ctx, gameId, false);
+  }
+  async function loadGroups(ctx, refresh = false) {
+    if (ctx.state.loadingGroups) {
+      return ctx.state.loadingGroups;
+    }
+    if (!refresh && ctx.state.groups) {
+      return ctx.state.groups;
+    }
+    const work = (async () => {
+      if (!refresh) {
+        const stored = await ctx.storage.get('groups', null);
+        if (stored && typeof stored === 'object' && !Array.isArray(stored)) {
+          const entries = Object.entries(stored).filter((([, value]) => typeof value === 'string' && /^\d+$/.test(value)));
+          if (entries.length) {
+            ctx.state.groups = Object.assign(Object.create(null), Object.fromEntries(entries));
+            return ctx.state.groups;
+          }
+        }
+      }
+      const reply = await ctx.command(`!GROUPLIST ${ctx.bot}`);
+      const groups = Object.create(null);
+      for (const line of reply.split('\n')) {
+        const [, name, id] = line.trim().split('|').map((field => field.trim()));
+        if (name && id && /^\d+$/.test(id)) {
+          groups[name] = id;
+        }
+      }
+      if (!Object.keys(groups).length) {
+        throw new OperationError('GROUP_LIST_INVALID');
+      }
+      await ctx.storage.set('groups', groups);
+      ctx.state.groups = groups;
+      return groups;
+    })();
+    ctx.state.loadingGroups = work.finally((() => {
+      ctx.state.loadingGroups = undefined;
+    }));
+    return ctx.state.loadingGroups;
+  }
+  async function invalidateGroups(ctx) {
+    try {
+      await ctx.state.loadingGroups;
+    } catch {}
+    ctx.state.groups = undefined;
+    await ctx.storage.delete('groups');
+  }
+  function validateGroup(groupName) {
+    if (!groupName || /\s/.test(groupName)) {
+      throw new OperationError('INVALID_ARGUMENT');
+    }
+  }
+  function joinGroup$1(ctx, groupName) {
+    return ctx.run('groups.join', groupName, false, (async child => {
+      validateGroup(groupName);
+      await execute(child, `!JOINGROUP ${child.bot} ${groupName}`, JOINED);
+      await invalidateGroups(child);
+      return true;
+    }));
+  }
+  function leaveGroup$1(ctx, groupName) {
+    return ctx.run('groups.leave', groupName, false, (async child => {
+      validateGroup(groupName);
+      const groupId = await child.run('groups.resolveId', groupName, '', (async lookup => {
+        let groups = await loadGroups(lookup);
+        if (!groups[groupName]) {
+          groups = await loadGroups(lookup, true);
+        }
+        if (!groups[groupName]) {
+          throw new OperationError('GROUP_NOT_FOUND');
+        }
+        return groups[groupName];
+      }));
+      if (!groupId) {
+        throw new OperationError('GROUP_NOT_FOUND');
+      }
+      await execute(child, `!LEAVEGROUP ${child.bot} ${groupId}`);
+      await invalidateGroups(child);
+      return true;
+    }));
+  }
+  function getSteamIdASF(ctx) {
+    return ctx.run('identity.asf', undefined, '', (async child => {
+      const result = await child.command(`!steamid ${child.bot}`);
+      const ids = [ ...new Set(result.match(/\b7656119\d{10}\b/g) || []) ];
+      if (ids.length !== 1) {
+        throw new OperationError('STEAM_ID_UNAVAILABLE');
+      }
+      return ids[0];
+    }));
+  }
+  function getSteamIdWeb(ctx) {
+    return ctx.run('identity.web', undefined, '', (async child => {
+      const data = await child.request({
+        url: 'https://store.steampowered.com',
+        method: 'GET'
+      });
+      const id = data.responseText.match(/steamid&quot;:&quot;(\d+)/)?.[1] || data.responseText.match(/g_steamID\s*=\s*["'](\d+)["']/)?.[1];
+      if (!id || !/^7656119\d{10}$/.test(id)) {
+        throw new OperationError('STEAM_ID_UNAVAILABLE');
+      }
+      return id;
+    }));
+  }
+  function getSteamId(ctx) {
+    return ctx.run('identity.resolve', undefined, '', (async child => await getSteamIdWeb(child) || getSteamIdASF(child)));
+  }
+  function initialize$2(ctx) {
+    if (ctx.state.initializing) {
+      return ctx.state.initializing;
+    }
+    const work = ctx.run('init', undefined, false, (async child => {
+      if (child.state.initialized) {
+        return true;
+      }
+      await child.command('!stats');
+      child.state.initialized = true;
+      return true;
+    }));
+    ctx.state.initializing = work.finally((() => {
+      ctx.state.initializing = undefined;
+    }));
+    return ctx.state.initializing;
+  }
+  function addLicense$1(ctx, id) {
+    return ctx.run('licenses.add', id, false, (async child => {
+      const match = /^(appid|subid)-(\d+(?:,\d+)*)$/.exec(id);
+      if (!match || !validIds(match[2])) {
+        throw new OperationError('INVALID_ARGUMENT');
+      }
+      const [, type, values] = match;
+      const ids = [ ...new Set(values.split(',')) ];
+      const prefix = type === 'appid' ? 'app' : 'sub';
+      const reply = await child.command(`!addlicense ${child.bot} ${ids.map((value => `${prefix}/${value}`)).join(',')}`);
+      const lines = reply.split('\n').filter((line => line.trim()));
+      const words = type === 'appid' ? [ 'AlreadyPurchased', 'OK' ] : [ '成功', 'Success', 'Успех', 'AlreadyPurchased', 'OK' ];
+      let allSucceeded = true;
+      for (const value of ids) {
+        const candidates = lines.filter((line => containsId(line, value)));
+        if (!candidates.length && ids.length === 1 && type === 'appid') {
+          candidates.push(...lines);
+        }
+        const ok = candidates.length > 0 && candidates.every((line => matchesReply(line, words)));
+        child.progress(ok ? 'LICENSE_ADDED' : 'LICENSE_FAILED', {
+          id: value
+        }, ok ? 'info' : 'error');
+        allSucceeded &&= ok;
+      }
+      return allSucceeded;
+    }));
+  }
+  function playGames$1(ctx, ids) {
+    return ctx.run('play.start', ids, false, (async child => {
+      if (!validIds(ids)) {
+        throw new OperationError('INVALID_ARGUMENT');
+      }
+      return execute(child, `!play ${child.bot} ${ids}`, PLAYING);
+    }));
+  }
+  function stopPlayGames$1(ctx) {
+    return ctx.run('play.stop', undefined, false, (child => execute(child, `!resume ${child.bot}`, RESUMED)));
+  }
+  function checkPlayStatus(ctx, ids) {
+    return ctx.run('play.check', ids, false, (async child => {
+      if (!validIds(ids)) {
+        throw new OperationError('INVALID_ARGUMENT');
+      }
+      if (!child.apiKey) {
+        child.progress('API_KEY_MISSING');
+        return 'skip';
+      }
+      const steamId = await getSteamIdASF(child);
+      if (!steamId) {
+        child.progress('BOT_ID_UNAVAILABLE');
+        return 'skip';
+      }
+      const query = new URLSearchParams({
+        key: child.apiKey,
+        steamids: steamId
+      });
+      const data = await child.request({
+        url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?${query}`,
+        method: 'GET',
+        responseType: 'json'
+      });
+      const players = data.response?.response?.players;
+      if (!Array.isArray(players)) {
+        throw new OperationError('PLAYER_STATUS_INVALID');
+      }
+      const player = players.find((entry => entry && typeof entry === 'object' && entry.steamid === steamId));
+      if (!player) {
+        throw new OperationError('PLAYER_STATUS_UNAVAILABLE');
+      }
+      const playing = typeof player.gameid === 'string' && ids.split(',').includes(player.gameid);
+      child.progress(playing ? 'GAME_PLAYING' : 'GAME_NOT_PLAYING');
+      return playing;
+    }), (() => true));
+  }
+  function requestPlayTestAccess$1(ctx, id) {
+    return ctx.run('playtest.request', id, false, (async child => {
+      requireId(id);
+      return execute(child, `!REQUESTACCESS ${child.bot} ${id}`);
+    }));
+  }
+  function unsupported(ctx, name) {
+    return ctx.run(name, undefined, false, (async child => {
+      child.progress('ASF_UNSUPPORTED', undefined, 'warning');
+      return false;
+    }));
+  }
+  function updateWishlist(ctx, gameId, add) {
+    return ctx.run(add ? 'wishlist.add' : 'wishlist.remove', gameId, false, (async child => {
+      requireId(gameId);
+      const status = await checkGame(child, gameId);
+      if (status.wishlist === add) {
+        child.progress('ALREADY_SATISFIED');
+        return true;
+      }
+      return execute(child, `!${add ? 'ADD' : 'REMOVE'}WISHLIST ${child.bot} ${gameId}`);
+    }));
+  }
+  function addToWishlist$1(ctx, gameId) {
+    return updateWishlist(ctx, gameId, true);
+  }
+  function removeFromWishlist$1(ctx, gameId) {
+    return updateWishlist(ctx, gameId, false);
+  }
+  function parseHeaders$7(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$6(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$7(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  let SteamASF$1 = class SteamASF {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context$7(options);
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init() {
+      return initialize$2(this.ctx);
+    }
+    joinGroup(groupName) {
+      return joinGroup$1(this.ctx, groupName);
+    }
+    leaveGroup(groupName) {
+      return leaveGroup$1(this.ctx, groupName);
+    }
+    joinOfficialGroup=this.joinGroup;
+    leaveOfficialGroup=this.leaveGroup;
+    addToWishlist(gameId) {
+      return addToWishlist$1(this.ctx, gameId);
+    }
+    removeFromWishlist(gameId) {
+      return removeFromWishlist$1(this.ctx, gameId);
+    }
+    doFollowGame(gameId) {
+      return doFollowGame$1(this.ctx, gameId);
+    }
+    undoFollowGame(gameId) {
+      return undoFollowGame$1(this.ctx, gameId);
+    }
+    doCurator(curatorId) {
+      return doCurator$1(this.ctx, curatorId);
+    }
+    undoCurator(curatorId) {
+      return undoCurator$1(this.ctx, curatorId);
+    }
+    addLicense(id) {
+      return addLicense$1(this.ctx, id);
+    }
+    requestPlayTestAccess(id) {
+      return requestPlayTestAccess$1(this.ctx, id);
+    }
+    playGames(ids) {
+      return playGames$1(this.ctx, ids);
+    }
+    stopPlayGames() {
+      return stopPlayGames$1(this.ctx);
+    }
+    getSteamIdASF() {
+      return getSteamIdASF(this.ctx);
+    }
+    getSteamIdWeb() {
+      return getSteamIdWeb(this.ctx);
+    }
+    getSteamId() {
+      return getSteamId(this.ctx);
+    }
+    checkPlayStatus(ids) {
+      return checkPlayStatus(this.ctx, ids);
+    }
+    doForum() {
+      return unsupported(this.ctx, 'doForum');
+    }
+    undoForum() {
+      return unsupported(this.ctx, 'undoForum');
+    }
+    doFavoriteWorkshop() {
+      return unsupported(this.ctx, 'doFavoriteWorkshop');
+    }
+    undoFavoriteWorkshop() {
+      return unsupported(this.ctx, 'undoFavoriteWorkshop');
+    }
+    voteUpWorkshop() {
+      return unsupported(this.ctx, 'voteUpWorkshop');
+    }
+    likeAnnouncement() {
+      return unsupported(this.ctx, 'likeAnnouncement');
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      this.ctx.events.clear();
+    }
+  };
+  async function refreshToken(ctx, type = 'steamStore') {
+    return ctx.run('auth.refreshToken', type, (async ctx => {
+      try {
+        const host = {
+          steamStore: 'store.steampowered.com',
+          steamCommunity: 'steamcommunity.com'
+        };
+        const stepStatus = ctx.step('refreshingToken');
+        const formData = new FormData;
+        formData.append('redir', `https://${host[type]}/`);
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://login.steampowered.com/jwt/ajaxrefresh',
+          method: 'POST',
+          responseType: 'json',
+          headers: {
+            Host: 'login.steampowered.com',
+            Origin: `https://${host[type]}`,
+            Referer: `https://${host[type]}/`
+          },
+          data: formData
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || !data.response?.success) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (!await setToken(ctx, data.response, type)) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function setToken(ctx, param, type) {
+    return ctx.run('auth.setToken', undefined, (async ctx => {
+      try {
+        if (![ param.steamID, param.nonce, param.redir, param.auth ].every((value => typeof value === 'string' && value.length > 0))) {
+          ctx.progress('INVALID_TOKEN_RESPONSE', 'error');
+          return false;
+        }
+        const host = {
+          steamStore: 'store.steampowered.com',
+          steamCommunity: 'steamcommunity.com'
+        };
+        const stepStatus = ctx.step('settingToken');
+        const formData = new FormData;
+        formData.append('steamID', param.steamID);
+        formData.append('nonce', param.nonce);
+        formData.append('redir', param.redir);
+        formData.append('auth', param.auth);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://${host[type]}/login/settoken`,
+          method: 'POST',
+          headers: {
+            Accept: 'application/json, text/plain, */*',
+            Host: host[type],
+            Origin: `https://${host[type]}`
+          },
+          data: formData
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function updateStoreAuth(ctx, retry = false) {
+    return ctx.run('auth.store.session', undefined, (async ctx => {
+      try {
+        const stepStatus = ctx.step('updatingAuth');
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/',
+          method: 'GET',
+          headers: {
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Upgrade-Insecure-Requests': '1'
+          },
+          redirect: 'manual'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          if (![ 301, 302 ].includes(data?.status)) {
+            stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+            return false;
+          }
+          if (retry || !await refreshToken(ctx, 'steamStore')) {
+            stepStatus.error('AUTH_REQUIRED');
+            return false;
+          }
+          stepStatus.warning('RETRYING');
+          return updateStoreAuth(ctx, true);
+        }
+        if (!data.responseText.includes('data-miniprofile=')) {
+          if (!retry && await refreshToken(ctx, 'steamStore')) {
+            stepStatus.warning('RETRYING');
+            return updateStoreAuth(ctx, true);
+          }
+          stepStatus.error('AUTH_REQUIRED');
+          return false;
+        }
+        const storeSessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
+        if (!storeSessionID) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        ctx.state.auth.storeSessionID = storeSessionID;
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function updateCommunityAuth(ctx, initStoreResult, retry = false) {
+    return ctx.run('auth.community.session', undefined, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingUserInfo');
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://steamcommunity.com/my',
+          method: 'GET',
+          headers: {
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            Host: 'steamcommunity.com',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate'
+          },
+          redirect: 'follow'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data.finalUrl.includes('https://steamcommunity.com/login/home')) {
+          if (initStoreResult) {
+            if (!retry && await refreshToken(ctx, 'steamCommunity')) {
+              stepStatus.warning('RETRYING');
+              return updateCommunityAuth(ctx, initStoreResult, true);
+            }
+          }
+          stepStatus.error('AUTH_REQUIRED');
+          return false;
+        }
+        const steam64Id = data.responseText.match(/g_steamID = "(.+?)";/)?.[1];
+        const communitySessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
+        if (!steam64Id || steam64Id === '0' || !communitySessionID) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        ctx.state.auth.steam64Id = steam64Id;
+        ctx.state.auth.communitySessionID = communitySessionID;
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  function getDefaultGM$4() {
+    return {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value),
+      deleteValue: key => GM_deleteValue(key),
+      openInTab: (url, options) => GM_openInTab(url, options),
+      addValueChangeListener: (key, listener) => GM_addValueChangeListener(key, listener),
+      removeValueChangeListener: id => GM_removeValueChangeListener(id)
+    };
+  }
+  function createGMStorage$5(gm, namespace = 'steamWeb') {
+    return {
+      get(key, fallback) {
+        return Promise.resolve(gm.getValue(`${namespace}:${key}`, fallback));
+      },
+      set(key, value) {
+        return Promise.resolve(gm.setValue(`${namespace}:${key}`, value));
+      },
+      delete(key) {
+        return Promise.resolve(gm.deleteValue(`${namespace}:${key}`));
+      }
+    };
+  }
+  const hosts$1 = {
+    store: 'store.steampowered.com',
+    community: 'steamcommunity.com'
+  };
+  function validAuth$1(value, target) {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+    const auth = value;
+    const session = target === 'store' ? auth.storeSessionID : auth.communitySessionID;
+    return typeof session === 'string' && session.length > 0 && (target === 'store' || typeof auth.steam64Id === 'string' && /^\d+$/.test(auth.steam64Id));
+  }
+  async function requestTabAuth$1(ctx, target) {
+    if (ctx.state.disposed) {
+      return false;
+    }
+    const {gm: gm} = ctx;
+    const key = `${ctx.namespace}:auth:${target}`;
+    const requestKey = `${key}:pending`;
+    const replyKey = `${key}:reply`;
+    const previous = await gm.getValue(requestKey, null);
+    if (ctx.state.disposed) {
+      return false;
+    }
+    if (previous && previous.expiresAt > Date.now()) {
+      ctx.progress('AUTH_BUSY', 'warning');
+      return false;
+    }
+    const pending = {
+      id: crypto.randomUUID(),
+      expiresAt: Date.now() + ctx.authTimeoutMs
+    };
+    return new Promise((resolve => {
+      let tab;
+      let listener;
+      let settled = false;
+      let setupFinished = false;
+      let finishSetup;
+      const setup = new Promise((done => {
+        finishSetup = done;
+      }));
+      const cancel = () => {
+        void finish(false, 'AUTH_CANCELLED');
+      };
+      const timer = setTimeout((() => {
+        void finish(false, 'AUTH_TIMEOUT');
+      }), ctx.authTimeoutMs);
+      const finish = async (ok, code) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        ctx.state.cleanups.delete(cancel);
+        if (!setupFinished) {
+          await setup;
+        }
+        try {
+          if (listener !== undefined) {
+            await gm.removeValueChangeListener(listener);
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        try {
+          if (tab) {
+            tab.onclose = undefined;
+            tab.close();
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        try {
+          const current = await gm.getValue(requestKey, null);
+          if (current?.id === pending.id) {
+            await gm.deleteValue(requestKey);
+          }
+          const reply = await gm.getValue(replyKey, null);
+          if (reply?.id === pending.id) {
+            await gm.deleteValue(replyKey);
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        ctx.progress(code, ok ? 'info' : 'warning');
+        resolve(ok);
+      };
+      ctx.state.cleanups.add(cancel);
+      void (async () => {
+        try {
+          listener = await gm.addValueChangeListener(replyKey, ((_key, _old, value) => {
+            if (settled || !value || typeof value !== 'object') {
+              return;
+            }
+            const reply = value;
+            if (reply.id !== pending.id || !validAuth$1(reply.auth, target)) {
+              return;
+            }
+            if (target === 'store') {
+              ctx.state.auth.storeSessionID = reply.auth.storeSessionID;
+            } else {
+              ctx.state.auth.communitySessionID = reply.auth.communitySessionID;
+              ctx.state.auth.steam64Id = reply.auth.steam64Id;
+            }
+            void finish(true, 'AUTH_UPDATED');
+          }));
+          if (settled) {
+            return;
+          }
+          await gm.setValue(requestKey, pending);
+          if (settled) {
+            return;
+          }
+          tab = await gm.openInTab(`https://${hosts$1[target]}/${target === 'community' ? 'my' : ''}`, {
+            active: true,
+            setParent: true
+          });
+          if (settled) {
+            return;
+          }
+          tab.onclose = () => {
+            void finish(false, 'AUTH_TAB_CLOSED');
+          };
+          ctx.progress('AUTH_WAITING_FOR_PAGE');
+        } catch {
+          void finish(false, 'AUTH_TAB_FAILED');
+        } finally {
+          setupFinished = true;
+          finishSetup();
+        }
+      })();
+    }));
+  }
+  async function handleSteamAuthPage$1(options = {}) {
+    const target = location.hostname === hosts$1.store ? 'store' : location.hostname === hosts$1.community ? 'community' : undefined;
+    if (!target) {
+      return false;
+    }
+    const gm = options.gm || getDefaultGM$4();
+    const key = `${options.namespace || 'steamWeb'}:auth:${target}`;
+    const pending = await gm.getValue(`${key}:pending`, null);
+    if (!pending || pending.expiresAt <= Date.now()) {
+      return false;
+    }
+    while (Date.now() < pending.expiresAt) {
+      const current = await gm.getValue(`${key}:pending`, null);
+      if (current?.id !== pending.id) {
+        return true;
+      }
+      const html = document.documentElement?.innerHTML || '';
+      const session = html.match(/g_sessionID\s*=\s*["']([^"']+)["']/)?.[1];
+      const steam64Id = html.match(/g_steamID\s*=\s*["'](\d+)["']/)?.[1];
+      const auth = target === 'store' ? {
+        storeSessionID: session
+      } : {
+        communitySessionID: session,
+        steam64Id: steam64Id
+      };
+      const loggedIn = target === 'store' ? /data-miniprofile\s*=/.test(html) : Boolean(steam64Id && steam64Id !== '0');
+      if (loggedIn && validAuth$1(auth, target)) {
+        await gm.setValue(`${key}:reply`, {
+          id: pending.id,
+          auth: auth
+        });
+        return true;
+      }
+      await new Promise((resolve => setTimeout(resolve, 500)));
+    }
+    return true;
+  }
+  function updateStoreAuthTab(ctx) {
+    return ctx.run('auth.store.tab', undefined, (async child => {
+      try {
+        return await requestTabAuth$1(child, 'store');
+      } catch {
+        child.reportError();
+        return false;
+      }
+    }));
+  }
+  function updateCommunityAuthTab(ctx) {
+    return ctx.run('auth.community.tab', undefined, (async child => {
+      try {
+        return await requestTabAuth$1(child, 'community');
+      } catch {
+        child.reportError();
+        return false;
+      }
+    }));
+  }
+  async function loadCache$2(ctx) {
+    if (ctx.state.cacheLoaded) {
+      return;
+    }
+    if (!ctx.state.cacheLoading) {
+      ctx.state.cacheLoading = (async () => {
+        const saved = await ctx.storage.get('cache', {});
+        for (const type of Object.keys(ctx.state.cache)) {
+          const entries = saved && typeof saved[type] === 'object' ? saved[type] : {};
+          ctx.state.cache[type] = Object.assign(Object.create(null), Object.fromEntries(Object.entries(entries || {}).filter((([, value]) => typeof value === 'string'))));
+        }
+        ctx.state.cacheLoaded = true;
+      })().finally((() => {
+        ctx.state.cacheLoading = undefined;
+      }));
+    }
+    await ctx.state.cacheLoading;
+  }
+  async function setCache$2(ctx, type, name, id) {
+    ctx.state.cache[type][name] = id;
+    const write = ctx.state.cacheWrites.then((() => ctx.storage.set('cache', ctx.state.cache)));
+    ctx.state.cacheWrites = write.catch((() => undefined));
+    await write;
+  }
+  let StatusEvents$5 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  let Context$6 = class Context {
+    events;
+    gm;
+    storage;
+    state;
+    namespace;
+    authTimeoutMs;
+    autoChangeRegion;
+    transport;
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    lastError;
+    constructor(options) {
+      this.transport = options.http;
+      this.gm = options.gm || getDefaultGM$4();
+      this.namespace = options.namespace || 'steamWeb';
+      this.authTimeoutMs = options.authTimeoutMs ?? 12e4;
+      if (!Number.isFinite(this.authTimeoutMs) || this.authTimeoutMs <= 0) {
+        throw new Error('Invalid authTimeoutMs');
+      }
+      this.autoChangeRegion = options.autoChangeRegion ?? true;
+      this.storage = createGMStorage$5(this.gm, this.namespace);
+      this.events = new StatusEvents$5;
+      this.state = {
+        auth: {},
+        cache: {
+          group: {},
+          officialGroup: {},
+          forum: {},
+          workshop: {},
+          curator: {}
+        },
+        cacheLoaded: false,
+        cacheWrites: Promise.resolve(),
+        storeInitialized: false,
+        communityInitialized: false,
+        area: 'CN',
+        regionQueue: Promise.resolve(),
+        disposed: false,
+        cleanups: new Set
+      };
+    }
+    async run(operation, target, work, successful) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.operationId = crypto.randomUUID();
+      child.parentOperationId = this.operationId || undefined;
+      child.operation = operation;
+      child.target = target;
+      child.lastError = undefined;
+      child.emit('start', 'info', 'OPERATION_STARTED');
+      try {
+        const value = await work(child);
+        const ok = successful ? successful(value) : value !== false && value !== undefined && value !== null && !(typeof value === 'object' && value !== null && !Array.isArray(value) && Object.keys(value).length === 0) && value !== 'areaLocked';
+        child.emit(value === 'skip' ? 'skipped' : ok ? 'success' : 'failure', ok ? 'info' : 'error', ok ? 'OPERATION_COMPLETED' : child.lastError || 'OPERATION_FAILED');
+        return value;
+      } catch (error) {
+        child.emit('failure', 'error', child.lastError || 'UNEXPECTED_ERROR');
+        throw error;
+      }
+    }
+    emit(phase, level, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        phase: phase,
+        level: level,
+        code: code,
+        target: this.target,
+        timestamp: Date.now(),
+        details: details
+      });
+    }
+    progress(code, level = 'info', details) {
+      if (level === 'error') {
+        this.lastError = code;
+      }
+      this.emit('progress', level, code, details);
+    }
+    reportError() {
+      this.progress('UNEXPECTED_ERROR', 'error');
+    }
+    step(code, target) {
+      this.progress(code, 'info', target ? {
+        target: target
+      } : undefined);
+      const update = (level, fallback) => (reason = fallback) => {
+        this.progress(reason, level, target ? {
+          target: target
+        } : undefined);
+        return status;
+      };
+      const status = {
+        success: update('info', 'STEP_COMPLETED'),
+        error: update('error', 'STEP_FAILED'),
+        warning: update('warning', 'STEP_WARNING'),
+        remove: () => this.progress('STEP_COMPLETED', 'debug')
+      };
+      return status;
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new Error('SteamWeb disposed');
+      }
+      this.progress('HTTP_REQUEST_STARTED', 'debug', {
+        method: options.method || 'GET'
+      });
+      const result = await this.transport(options);
+      if (this.state.disposed) {
+        throw new Error('SteamWeb disposed');
+      }
+      this.progress('HTTP_REQUEST_COMPLETED', result.result === 'Success' ? 'debug' : 'warning', {
+        transportStatus: result.status,
+        httpStatus: result.data?.status || 0
+      });
+      return result;
+    }
+  };
+  function parseHTML(html) {
+    return (new DOMParser).parseFromString(html.replace(/<img\b[^>]*>/gi, ''), 'text/html');
+  }
+  function encodeForm(values) {
+    const params = new URLSearchParams;
+    for (const [key, value] of Object.entries(values)) {
+      params.set(key, value == null ? '' : String(value));
+    }
+    return params.toString();
+  }
+  async function getAnnouncementParams(ctx, appId, viewId) {
+    return ctx.run('announcement.getAnnouncementParams', appId, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingAnnouncementParams', appId);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/events/ajaxgetpartnerevent?appid=${appId}&announcement_gid=${viewId}&lang_list=6_0&last_modified_time=0&origin=https:%2F%2Fstore.steampowered.com&for_edit=false`,
+          method: 'GET',
+          responseType: 'json',
+          headers: {
+            Host: 'store.steampowered.com',
+            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
+          }
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return {};
+        }
+        if (data?.status !== 200 || data?.response?.success !== 1) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return {};
+        }
+        const {clanid: clanid, gid: gid} = data.response.event?.announcement_body || {};
+        if (!clanid) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return {};
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return {
+          clanId: clanid,
+          gid: gid
+        };
+      } catch (error) {
+        ctx.reportError();
+        return {};
+      }
+    }));
+  }
+  async function likeAnnouncement(ctx, id) {
+    return ctx.run('announcement.likeAnnouncement', id, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const [appId, viewId] = id.split('/');
+        if (!(appId && viewId)) {
+          ctx.step('OPERATION_STEP').error('missParams');
+          return false;
+        }
+        const {clanId: clanId, gid: gid} = await getAnnouncementParams(ctx, appId, viewId);
+        if (!clanId) {
+          return false;
+        }
+        const stepStatus = ctx.step('likingAnnouncement', appId);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/updated/ajaxrateupdate/${gid || viewId}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            Host: 'store.steampowered.com',
+            Origin: 'https://store.steampowered.com',
+            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.storeSessionID,
+            voteup: 1,
+            clanid: clanId,
+            ajax: 1
+          }),
+          dataType: 'json'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.response.success !== 1) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function executeCurator(ctx, curatorId, doTask = true) {
+    return ctx.run(doTask ? 'curator.doCurator' : 'curator.undoCurator', curatorId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step(doTask ? 'followingCurator' : 'unfollowingCurator', curatorId);
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/curators/ajaxfollow',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            clanid: curatorId,
+            sessionid: ctx.state.auth.storeSessionID,
+            follow: doTask
+          }),
+          dataType: 'json'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.response?.success?.success === 25) {
+          stepStatus.error('curatorLimitNotice');
+          return false;
+        }
+        if (data?.status !== 200 || data.response?.success?.success !== 1) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  function doCurator(ctx, curatorId) {
+    return executeCurator(ctx, curatorId, true);
+  }
+  function undoCurator(ctx, curatorId) {
+    return executeCurator(ctx, curatorId, false);
+  }
+  async function getAreaInfo(ctx) {
+    return ctx.run('region.getAreaInfo', undefined, (async ctx => {
+      try {
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/cart/',
+          method: 'GET'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          return {};
+        }
+        const html = parseHTML(data.responseText);
+        const config = JSON.parse(html.querySelector('[data-cart_config]')?.getAttribute('data-cart_config') || '{}');
+        const user = JSON.parse(html.querySelector('[data-userinfo]')?.getAttribute('data-userinfo') || '{}');
+        if (!config.rgUserCountryOptions || typeof user.country_code !== 'string') {
+          return {};
+        }
+        const areas = Object.keys(config.rgUserCountryOptions).filter((area => /^[A-Z]{2}$/.test(area)));
+        ctx.state.area = user.country_code;
+        return {
+          currentArea: user.country_code,
+          areas: areas
+        };
+      } catch {
+        ctx.reportError();
+        return {};
+      }
+    }));
+  }
+  function changeArea(ctx, area) {
+    const job = ctx.state.regionQueue.then((() => ctx.run('region.changeArea', area, (async ctx => {
+      try {
+        if (!area && !ctx.autoChangeRegion) {
+          ctx.progress('REGION_CHANGE_DISABLED');
+          return 'skip';
+        }
+        if (area && !/^[A-Z]{2}$/.test(area)) {
+          return false;
+        }
+        const {currentArea: currentArea, areas: areas} = await getAreaInfo(ctx);
+        if (!currentArea || !areas) {
+          return false;
+        }
+        if (area === currentArea || !area && currentArea !== 'CN') {
+          return 'skip';
+        }
+        const target = area || areas.find((candidate => candidate !== 'CN'));
+        if (!target) {
+          ctx.progress('NO_ALTERNATIVE_REGION', 'warning');
+          return false;
+        }
+        if (!ctx.state.oldArea) {
+          ctx.state.oldArea = currentArea;
+        }
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/country/setcountry',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            cc: target,
+            sessionid: ctx.state.auth.storeSessionID
+          })
+        });
+        if (result !== 'Success' || data?.status !== 200 || data.responseText.trim() !== 'true') {
+          return false;
+        }
+        const updated = await getAreaInfo(ctx);
+        if (updated.currentArea !== target) {
+          return false;
+        }
+        return target;
+      } catch {
+        ctx.reportError();
+        return false;
+      }
+    }))));
+    ctx.state.regionQueue = job.catch((() => undefined));
+    return job;
+  }
+  async function resetArea(ctx) {
+    return ctx.run('region.resetArea', undefined, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      await ctx.state.regionQueue;
+      if (!ctx.state.oldArea) {
+        return true;
+      }
+      const original = ctx.state.oldArea;
+      const result = await changeArea(ctx, original);
+      if (result === original || result === 'skip' && ctx.state.area === original) {
+        ctx.state.oldArea = undefined;
+        return true;
+      }
+      return false;
+    }));
+  }
+  async function executeFollowGame(ctx, gameId, doTask, retried = false) {
+    return ctx.run(doTask ? 'followGame.doFollowGame' : 'followGame.undoFollowGame', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        ctx.progress(doTask ? 'followingGame' : 'unfollowingGame');
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/explore/followgame/',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.storeSessionID,
+            appid: gameId,
+            ...!doTask ? {
+              unfollow: '1'
+            } : {}
+          })
+        });
+        if (result === 'Success' && data?.status === 200 && data.responseText.trim() === 'true') {
+          return true;
+        }
+        const followed = await isFollowedGame(ctx, gameId);
+        if (!retried && ctx.state.area === 'CN' && followed === 'areaLocked') {
+          const changed = await changeArea(ctx);
+          if (typeof changed !== 'string' || changed === 'skip' || changed === 'CN') {
+            return false;
+          }
+          return executeFollowGame(ctx, gameId, doTask, true);
+        }
+        return typeof followed === 'boolean' && followed === doTask;
+      } catch {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function isFollowedGame(ctx, gameId) {
+    return ctx.run('followGame.isFollowedGame', gameId, (async ctx => {
+      try {
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/app/${gameId}`,
+          method: 'GET'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          return null;
+        }
+        if (data.responseText.includes('id="error_box"')) {
+          return 'areaLocked';
+        }
+        const page = parseHTML(data.responseText);
+        const control = page.querySelector('.queue_control_button.queue_btn_follow');
+        if (!control) {
+          return null;
+        }
+        const active = control.querySelector('.btnv6_blue_hoverfade.btn_medium.queue_btn_active');
+        return Boolean(active && !active.hidden && active.style.display !== 'none');
+      } catch {
+        ctx.reportError();
+        return null;
+      }
+    }), (value => typeof value === 'boolean'));
+  }
+  function doFollowGame(ctx, gameId, retried = false) {
+    return executeFollowGame(ctx, gameId, true, retried);
+  }
+  function undoFollowGame(ctx, gameId, retried = false) {
+    return executeFollowGame(ctx, gameId, false, retried);
+  }
+  async function executeForum(ctx, gameId, doTask = true) {
+    return ctx.run(doTask ? 'forum.doForum' : 'forum.undoForum', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const forumId = await getForumId(ctx, gameId);
+        if (!forumId) {
+          return false;
+        }
+        const stepStatus = ctx.step(`${doTask ? '' : 'un'}subscribingForum`, gameId);
+        const [id, feature] = forumId.split('_');
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/forum/${id}/General/${doTask ? '' : 'un'}subscribe/${feature || '0'}/`,
+          method: 'POST',
+          responseType: 'json',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.communitySessionID
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.response?.success !== 1 && data.response?.success !== 29) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function getForumId(ctx, gameId) {
+    return ctx.run('forum.getForumId', gameId, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingForumId', gameId);
+        const cachedForumId = ctx.state.cache.forum[gameId];
+        if (cachedForumId) {
+          stepStatus.success('STEP_COMPLETED');
+          return cachedForumId;
+        }
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/app/${gameId}/discussions/`,
+          method: 'GET'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const matchedForumId = data.responseText?.match(/General_([\d]+(_[\d]+)?)/)?.[1];
+        if (!matchedForumId) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        await setCache$2(ctx, 'forum', gameId, matchedForumId);
+        stepStatus.success('STEP_COMPLETED');
+        return matchedForumId;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  function doForum(ctx, gameId) {
+    return executeForum(ctx, gameId, true);
+  }
+  function undoForum(ctx, gameId) {
+    return executeForum(ctx, gameId, false);
+  }
+  async function joinGroup(ctx, groupName) {
+    return ctx.run('groups.joinGroup', groupName, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('joiningSteamGroup', groupName);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/groups/${groupName}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            action: 'join',
+            sessionID: ctx.state.auth.communitySessionID
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.responseText.includes('grouppage_join_area')) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function leaveGroup(ctx, groupName) {
+    return ctx.run('groups.leaveGroup', groupName, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const groupId = await getGroupId(ctx, groupName);
+        if (!groupId) {
+          return false;
+        }
+        const stepStatus = ctx.step('leavingSteamGroup', groupName);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/profiles/${ctx.state.auth.steam64Id}/home_process`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionID: ctx.state.auth.communitySessionID,
+            action: 'leaveGroup',
+            groupId: groupId
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || !data.finalUrl.includes('groups')) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const hasGroupLink = parseHTML(data.responseText.replace(/<img.*?>/g, '').toLowerCase()).querySelectorAll(`a[href='https://steamcommunity.com/groups/${groupName.toLowerCase()}']`).length > 0;
+        if (hasGroupLink) {
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function getGroupId(ctx, groupName) {
+    return ctx.run('groups.getGroupId', groupName, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingSteamGroupId', groupName);
+        const cachedGroupId = ctx.state.cache.group[groupName];
+        if (cachedGroupId) {
+          stepStatus.success('STEP_COMPLETED');
+          return cachedGroupId;
+        }
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/groups/${groupName}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const matchedGroupId = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)?.[1];
+        if (!matchedGroupId) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        await setCache$2(ctx, 'group', groupName, matchedGroupId);
+        stepStatus.success('STEP_COMPLETED');
+        return matchedGroupId;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function appid2subid(ctx, id) {
+    return ctx.run('licenses.appid2subid', id, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingSubid', id);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/app/${id}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data.responseText.includes('ds_owned_flag ds_flag') || data.responseText.includes('class="already_in_library"')) {
+          stepStatus.success('owned');
+          return true;
+        }
+        if (ctx.state.area === 'CN' && data.responseText.includes('id="error_box"')) {
+          stepStatus.warning('changeAreaNotice');
+          const result = await changeArea(ctx);
+          if (!result || result === 'CN' || result === 'skip') {
+            return false;
+          }
+          return await appid2subid(ctx, id);
+        }
+        let subid = data.responseText.match(/name="subid" value="([\d]+?)"/)?.[1];
+        if (subid) {
+          stepStatus.success('STEP_COMPLETED');
+          return subid;
+        }
+        subid = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)?.[1];
+        if (subid) {
+          stepStatus.success('STEP_COMPLETED');
+          return subid;
+        }
+        stepStatus.error('noSubid');
+        return false;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function getLicenses(ctx) {
+    return ctx.run('licenses.getLicenses', undefined, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingLicenses');
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/dynamicstore/userdata/?t=${(new Date).getTime()}`,
+          method: 'GET',
+          responseType: 'json'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.remove();
+        const packages = data.response?.rgOwnedPackages;
+        return Array.isArray(packages) && packages.every((id => typeof id === 'number')) ? packages : false;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function addLicense(ctx, id) {
+    return ctx.run('licenses.addLicense', id, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const [type, ids] = id.split('-');
+        if (!ids || !/^[0-9]+(?:,[0-9]+)*$/.test(ids) || type === 'appid' && ids.includes(',') || type !== 'appid' && type !== 'subid') {
+          return false;
+        }
+        if (type === 'appid') {
+          const subid = await appid2subid(ctx, ids);
+          if (!subid) {
+            return false;
+          }
+          if (subid === true) {
+            return true;
+          }
+          const stepStatus = ctx.step('addingFreeLicense', ids);
+          if (!await addFreeLicense(ctx, subid)) {
+            return false;
+          }
+          const {result: result, data: data} = await ctx.request({
+            url: `https://store.steampowered.com/app/${ids}`,
+            method: 'GET'
+          });
+          if (result !== 'Success') {
+            stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+            return false;
+          }
+          if (data?.status !== 200) {
+            stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+            return false;
+          }
+          if (!data.responseText.includes('ds_owned_flag ds_flag') && !data.responseText.includes('class="already_in_library"')) {
+            stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+            return false;
+          }
+          stepStatus.success('STEP_COMPLETED');
+          return true;
+        }
+        if (ctx.state.area === 'CN') {
+          ctx.step('OPERATION_STEP').success('tryChangeAreaNotice');
+          await changeArea(ctx);
+        }
+        const logStatusArr = {};
+        const idsArr = ids.split(',');
+        for (const subid of idsArr) {
+          const stepStatus = ctx.step('addingFreeLicense', subid);
+          if (!await addFreeLicense(ctx, subid)) {
+            return false;
+          }
+          logStatusArr[subid] = stepStatus;
+        }
+        const licenses = await getLicenses(ctx);
+        if (!licenses) {
+          return false;
+        }
+        let allOwned = true;
+        for (const subid of idsArr) {
+          const hasLicense = licenses.includes(parseInt(subid, 10));
+          if (hasLicense) {
+            logStatusArr[subid].success('STEP_COMPLETED');
+          } else {
+            allOwned = false;
+            logStatusArr[subid].error('REQUEST_OR_RESPONSE_FAILED');
+          }
+        }
+        return allOwned;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function addFreeLicense(ctx, id) {
+    return ctx.run('licenses.addFreeLicense', id, (async ctx => {
+      try {
+        const stepStatus = ctx.step('addingFreeLicenseSubid', id);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/freelicense/addfreelicense/${id}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            Host: 'store.steampowered.com',
+            Origin: 'https://store.steampowered.com',
+            Referer: 'https://store.steampowered.com/account/licenses/'
+          },
+          data: encodeForm({
+            ajax: true,
+            sessionid: ctx.state.auth.storeSessionID
+          }),
+          responseType: 'text'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (ctx.state.area === 'CN' && data.responseText.includes('id="error_box"')) {
+          stepStatus.warning('changeAreaNotice');
+          const result = await changeArea(ctx);
+          if (!result || [ 'CN', 'skip' ].includes(result)) {
+            return false;
+          }
+          return await addFreeLicense(ctx, id);
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function joinOfficialGroup(ctx, gameId) {
+    return ctx.run('officialGroups.joinOfficialGroup', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('joiningSteamOfficialGroup', gameId);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/games/${gameId}?action=join&sessionID=${ctx.state.auth.communitySessionID}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.responseText.includes('id="publicGroupJoin"')) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const groupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
+        if (groupId) {
+          await setCache$2(ctx, 'officialGroup', gameId, groupId);
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function leaveOfficialGroup(ctx, gameId) {
+    return ctx.run('officialGroups.leaveOfficialGroup', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const groupId = await getOfficialGroupId(ctx, gameId);
+        if (!groupId) {
+          return false;
+        }
+        const stepStatus = ctx.step('leavingSteamOfficialGroup', gameId);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/profiles/${ctx.state.auth.steam64Id}/home_process`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionID: ctx.state.auth.communitySessionID,
+            action: 'leaveGroup',
+            groupId: groupId
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const {result: resultR, data: dataR} = await ctx.request({
+          url: `https://steamcommunity.com/games/${gameId}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        });
+        if (resultR !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (dataR?.status !== 200 || !dataR.responseText.includes('id="publicGroupJoin"')) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function getOfficialGroupId(ctx, gameId) {
+    return ctx.run('officialGroups.getOfficialGroupId', gameId, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingSteamOfficialGroupId', gameId);
+        const cachedGroupId = ctx.state.cache.officialGroup[gameId];
+        if (cachedGroupId) {
+          stepStatus.success('STEP_COMPLETED');
+          return cachedGroupId;
+        }
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/games/${gameId}`,
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const matchedGroupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
+        if (!matchedGroupId) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        await setCache$2(ctx, 'officialGroup', gameId, matchedGroupId);
+        stepStatus.success('STEP_COMPLETED');
+        return matchedGroupId;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function requestPlayTestAccess(ctx, id) {
+    return ctx.run('playtest.requestPlayTestAccess', id, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('requestingPlayTestAccess', id);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://store.steampowered.com/ajaxrequestplaytestaccess/${id}`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            Host: 'store.steampowered.com',
+            Origin: 'https://store.steampowered.com',
+            Referer: `https://store.steampowered.com/app/${id}`
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.storeSessionID
+          }),
+          dataType: 'json'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data?.response?.success !== 1) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function addToWishlist(ctx, gameId) {
+    return ctx.run('wishlist.add', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('addingToWishlist', gameId);
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/api/addtowishlist',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.storeSessionID,
+            appid: gameId
+          }),
+          dataType: 'json'
+        });
+        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
+          stepStatus.success('STEP_COMPLETED');
+          return true;
+        }
+        const {result: resultR, data: dataR} = await ctx.request({
+          url: `https://store.steampowered.com/app/${gameId}`,
+          method: 'GET'
+        });
+        if (resultR !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (dataR?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (ctx.state.area === 'CN' && dataR.responseText.includes('id="error_box"')) {
+          const changed = await changeArea(ctx);
+          if (!changed || changed === 'CN' || changed === 'skip') {
+            return false;
+          }
+          return await addToWishlist(ctx, gameId);
+        }
+        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="already_in_library"')) {
+          stepStatus.success('STEP_COMPLETED');
+          return true;
+        }
+        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('id="add_to_wishlist_area_success" style="display: none;') || !dataR.responseText.includes('class="queue_actions_ctn"')) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function removeFromWishlist(ctx, gameId) {
+    return ctx.run('wishlist.remove', gameId, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.storeInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('removingFromWishlist', gameId);
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://store.steampowered.com/api/removefromwishlist',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            sessionid: ctx.state.auth.storeSessionID,
+            appid: gameId
+          }),
+          dataType: 'json'
+        });
+        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
+          stepStatus.success('STEP_COMPLETED');
+          return true;
+        }
+        const {result: resultR, data: dataR} = await ctx.request({
+          url: `https://store.steampowered.com/app/${gameId}`,
+          method: 'GET'
+        });
+        if (resultR !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (dataR?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (ctx.state.area === 'CN' && dataR.responseText.includes('id="error_box"')) {
+          const result = await changeArea(ctx);
+          if (!result || result === 'CN' || result === 'skip') {
+            return false;
+          }
+          return await removeFromWishlist(ctx, gameId);
+        }
+        if (dataR.responseText.includes('class="queue_actions_ctn"') && (dataR.responseText.includes('ds_owned_flag ds_flag') || dataR.responseText.includes('add_to_wishlist_area'))) {
+          stepStatus.success('STEP_COMPLETED');
+          return true;
+        }
+        stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+        return false;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function executeFavoriteWorkshop(ctx, id, doTask = true) {
+    return ctx.run(doTask ? 'workshop.doFavoriteWorkshop' : 'workshop.undoFavoriteWorkshop', id, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const appid = await getWorkshopAppId(ctx, id);
+        if (!appid) {
+          return false;
+        }
+        const stepStatus = ctx.step(doTask ? 'favoritingWorkshop' : 'unfavoritingWorkshop', id);
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/sharedfiles/${doTask ? '' : 'un'}favorite`,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            id: id,
+            appid: appid,
+            sessionid: ctx.state.auth.communitySessionID
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.responseText) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function getWorkshopAppId(ctx, id) {
+    return ctx.run('workshop.getWorkshopAppId', id, (async ctx => {
+      try {
+        const stepStatus = ctx.step('gettingWorkshopAppId', id);
+        const cachedAppId = ctx.state.cache.workshop[id];
+        if (cachedAppId) {
+          stepStatus.success('STEP_COMPLETED');
+          return cachedAppId;
+        }
+        const {result: result, data: data} = await ctx.request({
+          url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`,
+          method: 'GET'
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        const matchedAppId = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)?.[1];
+        if (!matchedAppId) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        await setCache$2(ctx, 'workshop', id, matchedAppId);
+        return matchedAppId;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  async function voteUpWorkshop(ctx, id) {
+    return ctx.run('workshop.voteUpWorkshop', id, (async ctx => {
+      if (ctx.state.disposed || !ctx.state.communityInitialized) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      try {
+        const stepStatus = ctx.step('votingUpWorkshop', id);
+        const {result: result, data: data} = await ctx.request({
+          url: 'https://steamcommunity.com/sharedfiles/voteup',
+          method: 'POST',
+          responseType: 'json',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          },
+          data: encodeForm({
+            id: id,
+            sessionid: ctx.state.auth.communitySessionID
+          })
+        });
+        if (result !== 'Success') {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        if (data?.status !== 200 || data.response?.success !== 1) {
+          stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
+          return false;
+        }
+        stepStatus.success('STEP_COMPLETED');
+        return true;
+      } catch (error) {
+        ctx.reportError();
+        return false;
+      }
+    }));
+  }
+  function doFavoriteWorkshop(ctx, id) {
+    return executeFavoriteWorkshop(ctx, id, true);
+  }
+  function undoFavoriteWorkshop(ctx, id) {
+    return executeFavoriteWorkshop(ctx, id, false);
+  }
+  function parseHeaders$6(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$5(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$6(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  class SteamWeb {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context$6(options);
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init(type = 'all') {
+      return this.ctx.run('init', type, (async ctx => {
+        if (type === 'store') {
+          return this.initializeStore(ctx);
+        }
+        if (type === 'community') {
+          return this.initializeCommunity(ctx, ctx.state.storeInitialized);
+        }
+        if (type !== 'all') {
+          return false;
+        }
+        const store = await this.initializeStore(ctx);
+        const community = await this.initializeCommunity(ctx, store);
+        return store && community;
+      }));
+    }
+    initStore() {
+      return this.initializeStore(this.ctx);
+    }
+    initializeStore(parent) {
+      const {state: state} = this.ctx;
+      if (state.storeInit) {
+        return state.storeInit;
+      }
+      state.storeInit = parent.run('init.store', undefined, (async ctx => {
+        try {
+          if (state.disposed) {
+            ctx.progress('DISPOSED', 'error');
+            return false;
+          }
+          if (state.storeInitialized) {
+            return true;
+          }
+          await loadCache$2(ctx);
+          state.storeInitialized = await updateStoreAuth(ctx) || await updateStoreAuthTab(ctx);
+          return state.storeInitialized;
+        } catch {
+          ctx.reportError();
+          return false;
+        }
+      })).finally((() => {
+        state.storeInit = undefined;
+      }));
+      return state.storeInit;
+    }
+    initCommunity(initStoreResult = this.ctx.state.storeInitialized) {
+      return this.initializeCommunity(this.ctx, initStoreResult);
+    }
+    initializeCommunity(parent, initStoreResult) {
+      const {state: state} = this.ctx;
+      if (state.communityInit) {
+        return state.communityInit;
+      }
+      state.communityInit = parent.run('init.community', undefined, (async ctx => {
+        try {
+          if (state.disposed) {
+            ctx.progress('DISPOSED', 'error');
+            return false;
+          }
+          if (state.communityInitialized) {
+            return true;
+          }
+          await loadCache$2(ctx);
+          state.communityInitialized = await updateCommunityAuth(ctx, initStoreResult) || await updateCommunityAuthTab(ctx);
+          return state.communityInitialized;
+        } catch {
+          ctx.reportError();
+          return false;
+        }
+      })).finally((() => {
+        state.communityInit = undefined;
+      }));
+      return state.communityInit;
+    }
+    joinGroup(groupName) {
+      return joinGroup(this.ctx, groupName);
+    }
+    leaveGroup(groupName) {
+      return leaveGroup(this.ctx, groupName);
+    }
+    joinOfficialGroup(gameId) {
+      return joinOfficialGroup(this.ctx, gameId);
+    }
+    leaveOfficialGroup(gameId) {
+      return leaveOfficialGroup(this.ctx, gameId);
+    }
+    addToWishlist(gameId) {
+      return addToWishlist(this.ctx, gameId);
+    }
+    removeFromWishlist(gameId) {
+      return removeFromWishlist(this.ctx, gameId);
+    }
+    doFollowGame(gameId) {
+      return doFollowGame(this.ctx, gameId);
+    }
+    undoFollowGame(gameId) {
+      return undoFollowGame(this.ctx, gameId);
+    }
+    doForum(gameId) {
+      return doForum(this.ctx, gameId);
+    }
+    undoForum(gameId) {
+      return undoForum(this.ctx, gameId);
+    }
+    doFavoriteWorkshop(id) {
+      return doFavoriteWorkshop(this.ctx, id);
+    }
+    undoFavoriteWorkshop(id) {
+      return undoFavoriteWorkshop(this.ctx, id);
+    }
+    voteUpWorkshop(id) {
+      return voteUpWorkshop(this.ctx, id);
+    }
+    doCurator(curatorId) {
+      return doCurator(this.ctx, curatorId);
+    }
+    undoCurator(curatorId) {
+      return undoCurator(this.ctx, curatorId);
+    }
+    likeAnnouncement(id) {
+      return likeAnnouncement(this.ctx, id);
+    }
+    addLicense(id) {
+      return addLicense(this.ctx, id);
+    }
+    requestPlayTestAccess(id) {
+      return requestPlayTestAccess(this.ctx, id);
+    }
+    resetArea() {
+      return resetArea(this.ctx);
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      for (const cleanup of [ ...this.ctx.state.cleanups ]) {
+        cleanup();
+      }
+      this.ctx.events.clear();
+    }
+  }
+  const taskTypes = [ 'groups', 'officialGroups', 'wishlists', 'follows', 'forums', 'workshops', 'workshopVotes', 'curators', 'curatorLikes', 'announcements', 'licenses', 'playtests', 'playTime' ];
+  function createTasks(value) {
+    return Object.fromEntries(taskTypes.map((key => [ key, [ ...new Set(Array.isArray(value?.[key]) ? value[key].filter((item => typeof item === 'string')) : []) ] ])));
+  }
+  const doDefaults = {
+    groups: true,
+    officialGroups: true,
+    wishlists: true,
+    follows: true,
+    forums: true,
+    workshops: true,
+    workshopVotes: true,
+    curators: true,
+    announcements: true,
+    licenses: true,
+    playtests: true,
+    playTime: true
+  };
+  const undoDefaults = {
+    ...doDefaults,
+    workshopVotes: false,
+    announcements: false,
+    licenses: false,
+    playtests: false
+  };
+  const asfDefaults = {
+    AsfEnabled: false,
+    AsfIpcUrl: '',
+    AsfIpcPassword: '',
+    AsfBotname: 'asf',
+    steamWeb: false,
+    preferASF: false,
+    steamWebApiKey: ''
+  };
+  class SteamEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const value = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(value)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  }
+  class SteamError extends Error {
+    code;
+    constructor(code) {
+      super(code);
+      this.code = code;
+    }
+  }
+  let Context$5 = class Context {
+    events=new SteamEvents;
+    storage;
+    options;
+    executors=[];
+    activeParents=new Map;
+    unsubscribers=[];
+    state={
+      tasks: createTasks(),
+      whiteList: createTasks(),
+      loaded: false,
+      queue: Promise.resolve(),
+      disposed: false
+    };
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    skipped;
+    constructor(options) {
+      this.options = {
+        ...options,
+        namespace: options.namespace || 'steam',
+        ASF: {
+          ...asfDefaults,
+          ...options.ASF
+        },
+        doTask: {
+          ...doDefaults,
+          ...options.doTask
+        },
+        undoTask: {
+          ...undoDefaults,
+          ...options.undoTask
+        },
+        taskDelayMs: options.taskDelayMs ?? 1e3,
+        playRetryDelayMs: options.playRetryDelayMs ?? 3e3
+      };
+      for (const ms of [ this.options.taskDelayMs, this.options.playRetryDelayMs ]) {
+        if (!Number.isFinite(ms) || ms < 0) {
+          throw new Error('Invalid delay');
+        }
+      }
+      const gm = {
+        ...getDefaultGM$4(),
+        ...options.gm
+      };
+      this.storage = createGMStorage$5(gm, this.options.namespace);
+      const asf = this.options.ASF;
+      if (asf.AsfEnabled) {
+        this.executors.push({
+          source: 'steamASF',
+          ready: new Set,
+          client: new SteamASF$1({
+            ...asf,
+            http: options.http,
+            gm: gm,
+            namespace: `${this.options.namespace}:asf`
+          })
+        });
+      }
+      if (!asf.AsfEnabled || asf.steamWeb) {
+        this.executors.push({
+          source: 'steamWeb',
+          ready: new Set,
+          client: new SteamWeb({
+            http: options.http,
+            gm: gm,
+            namespace: `${this.options.namespace}:web`,
+            autoChangeRegion: options.autoChangeRegion,
+            authTimeoutMs: options.authTimeoutMs
+          })
+        });
+      }
+      if (!asf.preferASF) {
+        this.executors.sort(((a, b) => Number(a.source === 'steamASF') - Number(b.source === 'steamASF')));
+      }
+      for (const executor of this.executors) {
+        this.unsubscribers.push(executor.client.on('status', (event => this.events.emit({
+          ...event,
+          source: executor.source,
+          parentOperationId: event.parentOperationId || this.activeParents.get(executor)
+        }))));
+      }
+    }
+    enqueue(work) {
+      const job = this.state.queue.then(work);
+      this.state.queue = job.catch((() => undefined));
+      return job;
+    }
+    async run(operation, target, fallback, work, success) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.operationId = crypto.randomUUID();
+      child.parentOperationId = this.operationId || undefined;
+      child.operation = operation;
+      child.target = target;
+      child.skipped = undefined;
+      child.emit('start', 'OPERATION_STARTED');
+      try {
+        if (child.state.disposed) {
+          throw new SteamError('DISPOSED');
+        }
+        const value = await work(child);
+        const ok = success ? success(value) : value !== false;
+        child.emit(child.skipped ? 'skipped' : ok ? 'success' : 'failure', child.skipped || (ok ? 'OPERATION_COMPLETED' : 'OPERATION_FAILED'));
+        return value;
+      } catch (error) {
+        child.emit('failure', error instanceof SteamError ? error.code : 'UNEXPECTED_ERROR');
+        return fallback;
+      }
+    }
+    emit(phase, code, details) {
+      this.events.emit({
+        source: 'steam',
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        level: phase === 'failure' ? 'error' : 'info',
+        code: code,
+        timestamp: Date.now(),
+        details: details
+      });
+    }
+    progress(code, details) {
+      this.emit('progress', code, details);
+    }
+    skip(code) {
+      this.skipped = code;
+    }
+    async invoke(executor, work) {
+      if (this.state.disposed) {
+        throw new SteamError('DISPOSED');
+      }
+      this.activeParents.set(executor, this.operationId);
+      try {
+        return await work();
+      } finally {
+        this.activeParents.delete(executor);
+      }
+    }
+    async delay(ms = this.options.taskDelayMs) {
+      if (ms) {
+        await new Promise((resolve => setTimeout(resolve, ms)));
+      }
+      if (this.state.disposed) {
+        throw new SteamError('DISPOSED');
+      }
+    }
+  };
+  async function loadState$1(ctx) {
+    if (ctx.state.loaded) {
+      return;
+    }
+    const savedTasks = await ctx.storage.get('tasks', {});
+    const savedWhiteList = await ctx.storage.get('whiteList', {});
+    ctx.state.tasks = createTasks(savedTasks);
+    ctx.state.whiteList = createTasks({
+      ...savedWhiteList,
+      ...ctx.options.whiteList
+    });
+    ctx.state.loaded = true;
+  }
+  async function getPlayState(ctx) {
+    const value = await ctx.storage.get(playStateKey(ctx), {});
+    return {
+      stopPlayTime: Number.isFinite(value?.stopPlayTime) ? value.stopPlayTime : 0,
+      playedGames: Array.isArray(value?.playedGames) ? value.playedGames.filter((id => typeof id === 'string')) : [],
+      taskLink: Array.isArray(value?.taskLink) ? value.taskLink.filter((url => typeof url === 'string')) : []
+    };
+  }
+  function playStateKey(ctx) {
+    return `playState:${encodeURIComponent(ctx.options.ASF.AsfIpcUrl)}:${encodeURIComponent(ctx.options.ASF.AsfBotname)}`;
+  }
+  async function initialize$1(ctx, type) {
+    return ctx.run('init', type, false, (async child => {
+      if (![ 'all', 'store', 'community' ].includes(type)) {
+        throw new SteamError('INVALID_INIT_TYPE');
+      }
+      await loadState$1(child);
+      let any = false;
+      for (const executor of child.executors) {
+        try {
+          const ok = await child.invoke(executor, (() => executor.source === 'steamASF' ? executor.client.init() : executor.client.init(type)));
+          if (ok) {
+            if (executor.source === 'steamASF' || type === 'all') {
+              executor.ready.add('store');
+              executor.ready.add('community');
+            } else {
+              executor.ready.add(type);
+            }
+            any = true;
+          } else {
+            child.progress('EXECUTOR_INIT_FAILED', {
+              executor: executor.source
+            });
+          }
+        } catch {
+          child.progress('EXECUTOR_INIT_FAILED', {
+            executor: executor.source
+          });
+        }
+      }
+      return any;
+    }));
+  }
+  const community = new Set([ 'groups', 'officialGroups', 'forums', 'workshops', 'workshopVotes' ]);
+  const webOnly = new Set([ 'forums', 'workshops', 'workshopVotes', 'announcements' ]);
+  function candidates(ctx, type) {
+    return ctx.executors.filter((executor => executor.ready.has(community.has(type) ? 'community' : 'store') && (!webOnly.has(type) || executor.source === 'steamWeb') && (type !== 'playTime' || executor.source === 'steamASF')));
+  }
+  function dispatch(ctx, type, id, doTask) {
+    return ctx.run(`${type}.${doTask ? 'do' : 'undo'}`, id, false, (async child => {
+      if (!doTask && child.state.whiteList[type].includes(id)) {
+        child.skip('WHITELIST_SKIPPED');
+        return true;
+      }
+      for (const executor of candidates(child, type)) {
+        child.progress('EXECUTOR_ATTEMPT', {
+          executor: executor.source
+        });
+        let ok = false;
+        try {
+          ok = await child.invoke(executor, (() => perform(executor, type, id, doTask)));
+        } catch {
+          child.progress('EXECUTOR_ERROR', {
+            executor: executor.source
+          });
+        }
+        if (ok) {
+          const values = child.state.tasks[type];
+          child.state.tasks[type] = doTask ? [ ...new Set([ ...values, id ]) ] : values.filter((value => value !== id));
+          await child.storage.set('tasks', child.state.tasks);
+          return true;
+        }
+        child.progress('EXECUTOR_FALLBACK', {
+          executor: executor.source
+        });
+      }
+      throw new SteamError('NO_EXECUTOR_SUCCEEDED');
+    }));
+  }
+  async function perform(executor, type, id, doTask) {
+    const client = executor.client;
+    switch (type) {
+     case 'groups':
+      return doTask ? client.joinGroup(id) : client.leaveGroup(id);
+
+     case 'officialGroups':
+      return doTask ? client.joinOfficialGroup(id) : client.leaveOfficialGroup(id);
+
+     case 'wishlists':
+      return doTask ? client.addToWishlist(id) : client.removeFromWishlist(id);
+
+     case 'follows':
+      return client[doTask ? 'doFollowGame' : 'undoFollowGame'](id);
+
+     case 'curators':
+      return client[doTask ? 'doCurator' : 'undoCurator'](id);
+
+     case 'licenses':
+      return client.addLicense(id);
+
+     case 'playtests':
+      return client.requestPlayTestAccess(id);
+
+     case 'forums':
+      return executor.source === 'steamWeb' && executor.client[doTask ? 'doForum' : 'undoForum'](id);
+
+     case 'workshops':
+      return executor.source === 'steamWeb' && executor.client[doTask ? 'doFavoriteWorkshop' : 'undoFavoriteWorkshop'](id);
+
+     case 'workshopVotes':
+      return executor.source === 'steamWeb' && executor.client.voteUpWorkshop(id);
+
+     case 'announcements':
+      return executor.source === 'steamWeb' && executor.client.likeAnnouncement(id);
+
+     default:
+      return false;
+    }
+  }
+  async function resetRegion(ctx) {
+    let success = true;
+    for (const executor of ctx.executors) {
+      if (executor.source !== 'steamWeb' || !executor.ready.has('store')) {
+        continue;
+      }
+      try {
+        success = await ctx.invoke(executor, (() => executor.client.resetArea())) && success;
+      } catch {
+        success = false;
+      }
+    }
+    if (!success) {
+      ctx.progress('REGION_RESET_FAILED');
+    }
+    return success;
+  }
+  async function getHTML(ctx, url) {
+    if (ctx.state.disposed) {
+      throw new SteamError('DISPOSED');
+    }
+    const response = await ctx.options.http({
+      url: url,
+      method: 'GET'
+    });
+    if (ctx.state.disposed) {
+      throw new SteamError('DISPOSED');
+    }
+    ctx.progress('LOOKUP_RESPONSE', {
+      transportStatus: response.status,
+      httpStatus: response.data?.status || 0
+    });
+    if (response.result !== 'Success' || response.data?.status !== 200) {
+      throw new SteamError('LOOKUP_FAILED');
+    }
+    return response.data.responseText;
+  }
+  function getCuratorId(ctx, path, name) {
+    return ctx.run('curator.resolve', `${path}/${name}`, false, (async child => {
+      if (![ 'developer', 'publisher', 'franchise', 'curator' ].includes(path) || !name || /[\r\n/]/.test(name)) {
+        throw new SteamError('INVALID_ARGUMENT');
+      }
+      const key = `curator:${path}:${encodeURIComponent(name)}`;
+      const cached = await child.storage.get(key, null);
+      if (typeof cached === 'string' && /^\d+$/.test(cached)) {
+        return cached;
+      }
+      const html = await getHTML(child, `https://store.steampowered.com/${path}/${encodeURIComponent(name)}`);
+      const id = html.match(/g_pagingData[\s\S]*?"clanid"\s*:\s*(\d+)/)?.[1];
+      if (!id) {
+        throw new SteamError('CURATOR_ID_NOT_FOUND');
+      }
+      await child.storage.set(key, id);
+      return id;
+    }));
+  }
+  function getDemoAppId(ctx, id) {
+    return ctx.run('demo.resolve', id, false, (async child => {
+      const html = await getHTML(child, `https://store.steampowered.com/app/${id}`);
+      const demo = html.match(/steam:\/\/(?:install|run)\/(\d+)/)?.[1];
+      if (!demo) {
+        child.skip('DEMO_NOT_FOUND');
+        return false;
+      }
+      return demo;
+    }));
+  }
+  function stopPlayGames(ctx) {
+    return ctx.run('play.stop', undefined, false, (async child => {
+      const asf = candidates(child, 'playTime').find((executor => executor.source === 'steamASF'));
+      if (!asf || asf.source !== 'steamASF') {
+        throw new SteamError('ASF_REQUIRED');
+      }
+      const record = await getPlayState(child);
+      if (record.playedGames.some((id => child.state.whiteList.playTime.includes(id)))) {
+        child.skip('WHITELIST_SKIPPED');
+        return true;
+      }
+      if (!await child.invoke(asf, (() => asf.client.stopPlayGames()))) {
+        return false;
+      }
+      await child.storage.set(playStateKey(child), {
+        stopPlayTime: 0,
+        playedGames: [],
+        taskLink: []
+      });
+      child.state.tasks.playTime = [];
+      await child.storage.set('tasks', child.state.tasks);
+      return true;
+    }));
+  }
+  function playGames(ctx, ids, minutes) {
+    return ctx.run('play.start', ids.join(','), false, (async child => {
+      const asf = candidates(child, 'playTime').find((executor => executor.source === 'steamASF'));
+      if (!asf || asf.source !== 'steamASF') {
+        throw new SteamError('ASF_REQUIRED');
+      }
+      const expanded = new Set(ids);
+      for (const id of ids) {
+        const demo = await getDemoAppId(child, id);
+        if (demo) {
+          expanded.add(demo);
+        }
+      }
+      const games = [ ...expanded ];
+      for (const id of games) {
+        if (!await dispatch(child, 'licenses', `appid-${id}`, true)) {
+          child.progress('LICENSE_NOT_CONFIRMED', {
+            id: id
+          });
+        }
+      }
+      const start = async () => {
+        const started = await child.invoke(asf, (() => asf.client.playGames(games.join(','))));
+        if (!started) {
+          return false;
+        }
+        const status = await child.invoke(asf, (() => asf.client.checkPlayStatus(games.join(','))));
+        if (status === 'skip') {
+          child.progress('PLAY_STATUS_UNVERIFIED');
+        }
+        return status === true || status === 'skip';
+      };
+      if (!await start()) {
+        await child.delay(child.options.playRetryDelayMs);
+        if (!await start()) {
+          return false;
+        }
+      }
+      const old = await getPlayState(child);
+      const taskUrl = child.options.taskUrl ?? (typeof location === 'undefined' ? '' : location.href);
+      const stopPlayTime = Math.max(old.stopPlayTime, Date.now() + (minutes + 10) * 6e4);
+      await child.storage.set(playStateKey(child), {
+        stopPlayTime: stopPlayTime,
+        playedGames: [ ...new Set([ ...old.playedGames, ...games ]) ],
+        taskLink: [ ...new Set([ ...old.taskLink, ...taskUrl ? [ taskUrl ] : [] ]) ]
+      });
+      child.state.tasks.playTime = [ ...new Set([ ...child.state.tasks.playTime, ...games ]) ];
+      await child.storage.set('tasks', child.state.tasks);
+      child.progress('PLAY_SCHEDULE_RECORDED', {
+        stopPlayTime: stopPlayTime
+      });
+      return true;
+    }));
+  }
+  const linkTasks = [ [ 'groupLinks', 'groups' ], [ 'officialGroupLinks', 'officialGroups' ], [ 'wishlistLinks', 'wishlists' ], [ 'followLinks', 'follows' ], [ 'playTimeLinks', 'playTime' ], [ 'forumLinks', 'forums' ], [ 'workshopLinks', 'workshops' ], [ 'workshopVoteLinks', 'workshopVotes' ], [ 'curatorLinks', 'curators' ], [ 'curatorLikeLinks', 'curatorLikes' ], [ 'announcementLinks', 'announcements' ], [ 'licenseLinks', 'licenses' ], [ 'playtestLinks', 'playtests' ] ];
+  function parseLink(type, link) {
+    if (type === 'licenses') {
+      return /^(appid|subid)-\d+(?:,\d+)*$/.test(link) ? {
+        id: link
+      } : undefined;
+    }
+    let minutes;
+    if (type === 'playTime') {
+      const match = /^(\d+)-(.+)$/.exec(link);
+      if (!match || !Number.isSafeInteger(Number(match[1])) || Number(match[1]) <= 0) {
+        return;
+      }
+      minutes = Number(match[1]);
+      link = match[2];
+    }
+    try {
+      const url = new URL(link);
+      if (![ 'http:', 'https:' ].includes(url.protocol) || url.username || url.password || ![ 'store.steampowered.com', 'steamcommunity.com' ].includes(url.hostname)) {
+        return;
+      }
+      const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      const numeric = value => value && /^\d+$/.test(value) ? value : undefined;
+      let id;
+      switch (type) {
+       case 'groups':
+        id = url.hostname === 'steamcommunity.com' && parts[0] === 'groups' ? parts[1] : undefined;
+        break;
+
+       case 'officialGroups':
+        id = url.hostname === 'steamcommunity.com' && parts[0] === 'games' ? parts[1] : undefined;
+        break;
+
+       case 'wishlists':
+       case 'follows':
+       case 'forums':
+       case 'playtests':
+       case 'playTime':
+        id = parts[0] === 'app' ? numeric(parts[1]) : undefined;
+        break;
+
+       case 'workshops':
+       case 'workshopVotes':
+        id = url.hostname === 'steamcommunity.com' && [ 'sharedfiles', 'workshop' ].includes(parts[0]) ? numeric(url.searchParams.get('id') || '') : undefined;
+        break;
+
+       case 'curators':
+        id = url.hostname === 'store.steampowered.com' && parts[0] === 'curator' ? numeric(parts[1]) : undefined;
+        break;
+
+       case 'curatorLikes':
+        if (url.hostname === 'store.steampowered.com' && [ 'developer', 'publisher', 'franchise' ].includes(parts[0]) && parts[1]) {
+          id = `${parts[0]}/${parts[1]}`;
+        }
+        break;
+
+       case 'announcements':
+        if (url.hostname === 'store.steampowered.com' && parts[0] === 'news' && parts[1] === 'app' && numeric(parts[2]) && parts[3] === 'view' && numeric(parts[4])) {
+          id = `${parts[2]}/${parts[4]}`;
+        }
+        if (url.hostname === 'steamcommunity.com' && parts[0] === 'games' && numeric(parts[1]) && parts[2] === 'announcements' && parts[3] === 'detail' && numeric(parts[4])) {
+          id = `${parts[1]}/${parts[4]}`;
+        }
+        break;
+      }
+      if (id && !/[\r\n]/.test(id)) {
+        return {
+          id: id,
+          minutes: minutes
+        };
+      }
+    } catch {}
+  }
+  function setResult(result, type, link, success) {
+    result.results[type] ||= {};
+    Object.defineProperty(result.results[type], link, {
+      value: success,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+    result.success &&= success;
+  }
+  const irreversible = new Set([ 'workshopVotes', 'announcements', 'licenses', 'playtests' ]);
+  function executeTasks$5(ctx, options, action) {
+    const doTask = action === 'do';
+    return ctx.run(action, undefined, false, (async child => {
+      await loadState$1(child);
+      const result = {
+        success: true,
+        results: {}
+      };
+      if (linkTasks.some((([key]) => options[key]?.length)) && !child.executors.some((executor => executor.ready.size))) {
+        throw new SteamError('NEED_INIT');
+      }
+      try {
+        for (const [key, type] of linkTasks) {
+          const links = [ ...new Set(options[key] || []) ];
+          const flag = type === 'curatorLikes' ? 'curators' : type;
+          const enabled = (doTask ? child.options.doTask[flag] : child.options.undoTask[flag]) && (doTask || !irreversible.has(type));
+          if (!enabled) {
+            for (const link of links) {
+              await child.run('task.skip', link, true, (async step => {
+                step.skip('TASK_DISABLED');
+                return true;
+              }));
+              setResult(result, key, link, true);
+            }
+            continue;
+          }
+          if (type === 'playTime') {
+            const valid = [];
+            for (const link of links) {
+              const parsed = parseLink(type, link);
+              if (!parsed?.minutes) {
+                child.progress('INVALID_LINK', {
+                  type: key
+                });
+                setResult(result, key, link, false);
+              } else {
+                valid.push({
+                  link: link,
+                  id: parsed.id,
+                  minutes: parsed.minutes
+                });
+              }
+            }
+            if (valid.length) {
+              const ok = doTask ? await playGames(child, [ ...new Set(valid.map((item => item.id))) ], Math.max(...valid.map((item => item.minutes)))) : await stopPlayGames(child);
+              for (const item of valid) {
+                setResult(result, key, item.link, ok);
+              }
+              await child.delay();
+            }
+            continue;
+          }
+          for (const link of links) {
+            const ok = await child.run('task.execute', link, false, (async step => {
+              const parsed = parseLink(type, link);
+              if (!parsed) {
+                throw new SteamError('INVALID_LINK');
+              }
+              if (type === 'curatorLikes') {
+                if (!doTask && step.state.whiteList.curatorLikes.includes(parsed.id)) {
+                  step.skip('WHITELIST_SKIPPED');
+                  return true;
+                }
+                const divider = parsed.id.indexOf('/');
+                const id = await getCuratorId(step, parsed.id.slice(0, divider), parsed.id.slice(divider + 1));
+                if (!id) {
+                  return false;
+                }
+                if (!doTask && step.state.whiteList.curators.includes(id)) {
+                  step.skip('WHITELIST_SKIPPED');
+                  return true;
+                }
+                if (!await dispatch(step, 'curators', id, doTask)) {
+                  return false;
+                }
+                const values = step.state.tasks.curatorLikes;
+                step.state.tasks.curatorLikes = doTask ? [ ...new Set([ ...values, parsed.id ]) ] : values.filter((value => value !== parsed.id));
+                await step.storage.set('tasks', step.state.tasks);
+                return true;
+              }
+              if (type === 'licenses') {
+                const [prefix, ids] = parsed.id.split('-');
+                let all = true;
+                for (const id of new Set(ids.split(','))) {
+                  all = await dispatch(step, 'licenses', `${prefix}-${id}`, true) && all;
+                  await step.delay();
+                }
+                return all;
+              }
+              return dispatch(step, type, parsed.id, doTask);
+            }));
+            setResult(result, key, link, ok);
+            await child.delay();
+          }
+        }
+      } finally {
+        if (!await resetRegion(child)) {
+          result.success = false;
+        }
+      }
+      return result;
+    }), (value => typeof value === 'boolean' ? value : value.success));
+  }
+  function doTasks$5(ctx, options = {}) {
+    return executeTasks$5(ctx, options, 'do');
+  }
+  function undoTasks$5(ctx, options = {}) {
+    return executeTasks$5(ctx, options, 'undo');
+  }
+  function handleSteamAuthPage(options = {}) {
+    return handleSteamAuthPage$1({
+      ...options,
+      namespace: `${options.namespace || 'steam'}:web`
+    });
+  }
+  let Steam$1 = class Steam {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context$5(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = createTasks(value);
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = createTasks(value);
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init(type = 'all') {
+      return this.ctx.enqueue((() => initialize$1(this.ctx, type)));
+    }
+    do(options = {}) {
+      return this.ctx.enqueue((() => doTasks$5(this.ctx, options)));
+    }
+    undo(options = {}) {
+      return this.ctx.enqueue((() => undoTasks$5(this.ctx, options)));
+    }
+    getCuratorId(path, name) {
+      return this.ctx.enqueue((() => getCuratorId(this.ctx, path, name)));
+    }
+    setWhiteList(value) {
+      return this.ctx.enqueue((() => this.ctx.run('whitelist.set', undefined, false, (async ctx => {
+        await loadState$1(ctx);
+        const next = createTasks({
+          ...ctx.state.whiteList,
+          ...value
+        });
+        await ctx.storage.set('whiteList', next);
+        ctx.state.whiteList = next;
+        return true;
+      }))));
+    }
+    getPlayState() {
+      return this.ctx.enqueue((() => this.ctx.run('play.state', undefined, false, getPlayState)));
+    }
+    stopPlayGames() {
+      return this.ctx.enqueue((() => stopPlayGames(this.ctx)));
+    }
+    resetArea() {
+      return this.ctx.enqueue((() => this.ctx.run('region.reset', undefined, false, resetRegion)));
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      for (const off of this.ctx.unsubscribers) {
+        off();
+      }
+      for (const executor of this.ctx.executors) {
+        executor.client.dispose();
+      }
+      this.ctx.events.clear();
+    }
+  };
+  function object$1(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  }
+  function authHeaders(ctx, full = false) {
+    const auth = ctx.state.auth;
+    if (!auth) {
+      throw new Error('Auth required');
+    }
+    return {
+      Authorization: `OAuth ${auth.authToken}`,
+      'Client-Id': auth.clientId,
+      ...full ? {
+        Origin: 'https://www.twitch.tv',
+        Referer: 'https://www.twitch.tv/',
+        'Client-Version': auth.clientVersion,
+        'X-Device-Id': auth.deviceId,
+        'Client-Session-Id': auth.clientSessionId
+      } : {}
+    };
+  }
+  async function query(ctx, operationName, variables, hash, mutation = false) {
+    const result = await ctx.request({
+      url: 'https://gql.twitch.tv/gql',
+      method: 'POST',
+      responseType: 'json',
+      ...mutation ? {
+        anonymous: true
+      } : {},
+      headers: {
+        ...authHeaders(ctx, mutation),
+        ...mutation ? {
+          'Client-Integrity': ctx.state.integrityToken
+        } : {}
+      },
+      data: JSON.stringify([ {
+        operationName: operationName,
+        variables: variables,
+        extensions: {
+          persistedQuery: {
+            version: 1,
+            sha256Hash: hash
+          }
+        }
+      } ])
+    });
+    if (result.result !== 'Success' || result.data?.status !== 200) {
+      ctx.progress('REQUEST_FAILED', 'error');
+      return false;
+    }
+    const response = result.data.response;
+    if (!Array.isArray(response) || response.length !== 1) {
+      ctx.progress('INVALID_RESPONSE', 'error');
+      return false;
+    }
+    const entry = object$1(response[0]);
+    if (entry.errors && (!Array.isArray(entry.errors) || entry.errors.length > 0)) {
+      ctx.progress('GRAPHQL_ERROR', 'error');
+      return false;
+    }
+    if (!entry.data || typeof entry.data !== 'object') {
+      ctx.progress('INVALID_RESPONSE', 'error');
+      return false;
+    }
+    return object$1(entry.data);
+  }
+  function checkIntegrity(ctx) {
+    return ctx.run('auth.integrity', undefined, (async ctx => {
+      ctx.state.integrityToken = '';
+      try {
+        let challenge = '';
+        for (let attempt = 0; attempt < 2; attempt++) {
+          const {result: result, data: data} = await ctx.request({
+            url: 'https://gql.twitch.tv/integrity',
+            method: 'POST',
+            responseType: 'json',
+            anonymous: true,
+            headers: {
+              ...authHeaders(ctx, true),
+              'x-kpsdk-ct': challenge
+            }
+          });
+          if (result !== 'Success') {
+            ctx.progress('INTEGRITY_REQUEST_FAILED', 'error');
+            return false;
+          }
+          const token = object$1(data?.response).token;
+          if (data?.status === 200 && typeof token === 'string' && token) {
+            ctx.state.integrityToken = token;
+            return true;
+          }
+          const header = Object.entries(data?.responseHeaders || {}).find((([key]) => key.toLowerCase() === 'x-kpsdk-ct'))?.[1];
+          const next = Array.isArray(header) ? header[0] : header;
+          if (attempt === 0 && next) {
+            challenge = next;
+            ctx.progress('INTEGRITY_RETRY', 'warning');
+            continue;
+          }
+          break;
+        }
+        ctx.progress('INTEGRITY_FAILED', 'error');
+        return false;
+      } catch {
+        ctx.progress('INTEGRITY_FAILED', 'error');
+        return false;
+      }
+    }), Boolean);
+  }
+  const fields = [ 'authToken', 'clientId', 'clientVersion', 'deviceId', 'clientSessionId' ];
+  function validAuth(value) {
+    return typeof value === 'object' && value !== null && fields.every((key => typeof value[key] === 'string' && value[key].trim().length > 0));
+  }
+  function pickAuth(auth) {
+    return Object.fromEntries(fields.map((key => [ key, auth[key] ])));
+  }
+  async function requestTabAuth(ctx) {
+    if (ctx.state.disposed) {
+      return false;
+    }
+    const {gm: gm} = ctx;
+    const key = `${ctx.namespace}:auth`;
+    const requestKey = `${key}:pending`;
+    const replyKey = `${key}:reply`;
+    const previous = await gm.getValue(requestKey, null);
+    if (ctx.state.disposed) {
+      return false;
+    }
+    if (previous && previous.expiresAt > Date.now()) {
+      ctx.progress('AUTH_BUSY', 'warning');
+      return false;
+    }
+    const pending = {
+      id: crypto.randomUUID(),
+      expiresAt: Date.now() + ctx.authTimeoutMs
+    };
+    return new Promise((resolve => {
+      let tab;
+      let listener;
+      let settled = false;
+      let setupFinished = false;
+      let finishSetup;
+      const setup = new Promise((done => {
+        finishSetup = done;
+      }));
+      const cancel = () => {
+        void finish(false, 'AUTH_CANCELLED');
+      };
+      const timer = setTimeout((() => {
+        void finish(false, 'AUTH_TIMEOUT');
+      }), ctx.authTimeoutMs);
+      const finish = async (ok, code) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        ctx.state.cleanups.delete(cancel);
+        if (!setupFinished) {
+          await setup;
+        }
+        try {
+          if (listener !== undefined) {
+            await gm.removeValueChangeListener(listener);
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        try {
+          if (tab) {
+            tab.onclose = undefined;
+            tab.close();
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        try {
+          const current = await gm.getValue(requestKey, null);
+          if (current?.id === pending.id) {
+            await gm.deleteValue(requestKey);
+          }
+          const reply = await gm.getValue(replyKey, null);
+          if (reply?.id === pending.id) {
+            await gm.deleteValue(replyKey);
+          }
+        } catch {
+          ctx.progress('AUTH_CLEANUP_FAILED', 'warning');
+        }
+        ctx.progress(code, ok ? 'info' : 'warning');
+        resolve(ok);
+      };
+      ctx.state.cleanups.add(cancel);
+      void (async () => {
+        try {
+          listener = await gm.addValueChangeListener(replyKey, ((_key, _old, value) => {
+            if (settled || !value || typeof value !== 'object') {
+              return;
+            }
+            const reply = value;
+            if (reply.id !== pending.id || !validAuth(reply.auth)) {
+              return;
+            }
+            ctx.state.auth = pickAuth(reply.auth);
+            void finish(true, 'AUTH_UPDATED');
+          }));
+          if (settled) {
+            return;
+          }
+          await gm.setValue(requestKey, pending);
+          if (settled) {
+            return;
+          }
+          tab = await gm.openInTab('https://www.twitch.tv/', {
+            active: true,
+            setParent: true
+          });
+          if (settled) {
+            return;
+          }
+          tab.onclose = () => {
+            void finish(false, 'AUTH_TAB_CLOSED');
+          };
+          ctx.progress('AUTH_WAITING_FOR_PAGE');
+        } catch {
+          void finish(false, 'AUTH_TAB_FAILED');
+        } finally {
+          setupFinished = true;
+          finishSetup();
+        }
+      })();
+    }));
+  }
+  function verifyToken(ctx) {
+    return ctx.run('auth.verifyToken', undefined, (async ctx => {
+      try {
+        const data = await query(ctx, 'FrontPageNew_User', {
+          limit: 1
+        }, '64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11');
+        if (!data || Object.keys(object$1(data.currentUser)).length === 0) {
+          ctx.progress('AUTH_INVALID', 'error');
+          return false;
+        }
+        return true;
+      } catch {
+        ctx.progress('AUTH_VERIFY_FAILED', 'error');
+        return false;
+      }
+    }), Boolean);
+  }
+  function updateAuth$4(ctx) {
+    return ctx.run('auth.update', undefined, (async ctx => {
+      try {
+        if (!await requestTabAuth(ctx)) {
+          return false;
+        }
+        if (!await verifyToken(ctx) || !await checkIntegrity(ctx)) {
+          return false;
+        }
+        await ctx.storage.set('auth', ctx.state.auth);
+        return true;
+      } catch {
+        ctx.progress('AUTH_UPDATE_FAILED', 'error');
+        return false;
+      }
+    }), Boolean);
+  }
+  function getDefaultGM$3() {
+    return {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value),
+      deleteValue: key => GM_deleteValue(key),
+      openInTab: (url, options) => GM_openInTab(url, options),
+      addValueChangeListener: (key, listener) => GM_addValueChangeListener(key, listener),
+      removeValueChangeListener: id => GM_removeValueChangeListener(id)
+    };
+  }
+  function createGMStorage$4(gm, namespace = 'twitch') {
+    return {
+      get(key, fallback) {
+        return Promise.resolve(gm.getValue(`${namespace}:${key}`, fallback));
+      },
+      set(key, value) {
+        return Promise.resolve(gm.setValue(`${namespace}:${key}`, value));
+      },
+      delete(key) {
+        return Promise.resolve(gm.deleteValue(`${namespace}:${key}`));
+      }
+    };
+  }
+  let StatusEvents$4 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  let Context$4 = class Context {
+    options;
+    events=new StatusEvents$4;
+    gm;
+    storage;
+    namespace;
+    authTimeoutMs;
+    channelDelayMs;
+    followEnabled;
+    unfollowEnabled;
+    state={
+      auth: undefined,
+      integrityToken: '',
+      initialized: false,
+      loaded: false,
+      disposed: false,
+      init: undefined,
+      cache: Object.create(null),
+      tasks: {
+        channels: []
+      },
+      whiteList: {
+        channels: []
+      },
+      tasksOverridden: false,
+      whiteListOverridden: false,
+      cleanups: new Set,
+      batchQueue: Promise.resolve()
+    };
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    code;
+    skipped=false;
+    constructor(options) {
+      this.options = options;
+      this.gm = options.gm || getDefaultGM$3();
+      this.namespace = options.namespace || 'twitch';
+      this.authTimeoutMs = options.authTimeoutMs ?? 12e4;
+      this.channelDelayMs = options.channelDelayMs ?? 1e3;
+      if (!Number.isFinite(this.authTimeoutMs) || this.authTimeoutMs <= 0 || this.authTimeoutMs > 2147483647) {
+        throw new Error('Invalid authTimeoutMs');
+      }
+      if (!Number.isFinite(this.channelDelayMs) || this.channelDelayMs < 0 || this.channelDelayMs > 2147483647) {
+        throw new Error('Invalid channelDelayMs');
+      }
+      this.followEnabled = options.followEnabled ?? true;
+      this.unfollowEnabled = options.unfollowEnabled ?? true;
+      this.storage = createGMStorage$4(this.gm, this.namespace);
+    }
+    async run(operation, target, work, success) {
+      const ctx = Object.assign(Object.create(Context.prototype), this);
+      ctx.operationId = crypto.randomUUID();
+      ctx.parentOperationId = this.operationId || undefined;
+      ctx.operation = operation;
+      ctx.target = target;
+      ctx.code = undefined;
+      ctx.skipped = false;
+      ctx.emit('start', 'info', 'OPERATION_STARTED');
+      try {
+        const result = await work(ctx);
+        const ok = success(result);
+        ctx.emit(ok ? ctx.skipped ? 'skipped' : 'success' : 'failure', ok ? 'info' : 'error', ok ? ctx.skipped ? ctx.code || 'OPERATION_SKIPPED' : 'OPERATION_COMPLETED' : ctx.code || 'OPERATION_FAILED');
+        return result;
+      } catch (error) {
+        ctx.emit('failure', 'error', 'UNEXPECTED_ERROR');
+        throw error;
+      }
+    }
+    emit(phase, level, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        timestamp: Date.now(),
+        phase: phase,
+        level: level,
+        code: code,
+        details: details
+      });
+    }
+    progress(code, level = 'info', details) {
+      if (level === 'error') {
+        this.code = code;
+      }
+      this.emit('progress', level, code, details);
+    }
+    skip(code) {
+      this.skipped = true;
+      this.code = code;
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.progress('HTTP_REQUEST_STARTED', 'debug');
+      const result = await this.options.http(options);
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.progress('HTTP_REQUEST_COMPLETED', 'debug', {
+        transportStatus: result.status,
+        httpStatus: result.data?.status || 0
+      });
+      return result;
+    }
+  };
+  function channels(value) {
+    return Array.isArray(value) ? [ ...new Set(value.filter((v => typeof v === 'string' && /^[a-zA-Z0-9_]+$/.test(v))).map((v => v.toLowerCase()))) ] : [];
+  }
+  async function loadState(ctx) {
+    if (ctx.state.loaded) {
+      return;
+    }
+    const [auth, cache, tasks, whiteList] = await Promise.all([ ctx.storage.get('auth', null), ctx.storage.get('cache', {}), ctx.storage.get('tasks', {}), ctx.storage.get('whiteList', {}) ]);
+    ctx.state.auth = validAuth(auth) ? pickAuth(auth) : undefined;
+    ctx.state.cache = Object.assign(Object.create(null), Object.fromEntries(Object.entries(object$1(cache)).filter((([key, value]) => /^[a-z0-9_]+$/.test(key) && typeof value === 'string' && /^\d+$/.test(value)))));
+    if (!ctx.state.tasksOverridden && ctx.state.tasks.channels.length === 0) {
+      ctx.state.tasks = {
+        channels: channels(object$1(tasks).channels)
+      };
+    }
+    if (!ctx.state.whiteListOverridden && ctx.state.whiteList.channels.length === 0) {
+      ctx.state.whiteList = {
+        channels: channels(object$1(whiteList).channels)
+      };
+    }
+    ctx.state.loaded = true;
+  }
+  function getChannelId(ctx, name) {
+    return ctx.run('channel.resolve', name, (async ctx => {
+      try {
+        if (ctx.state.cache[name]) {
+          return ctx.state.cache[name];
+        }
+        const data = await query(ctx, 'ActiveWatchParty', {
+          channelLogin: name
+        }, '4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30');
+        const id = data && object$1(data.user).id;
+        if (typeof id !== 'string' || !/^\d+$/.test(id)) {
+          ctx.progress('CHANNEL_NOT_FOUND', 'error');
+          return false;
+        }
+        const cache = {
+          ...ctx.state.cache,
+          [name]: id
+        };
+        await ctx.storage.set('cache', cache);
+        ctx.state.cache = Object.assign(Object.create(null), cache);
+        return id;
+      } catch {
+        ctx.progress('CHANNEL_LOOKUP_FAILED', 'error');
+        return false;
+      }
+    }), Boolean);
+  }
+  function executeChannel$1(ctx, name, doTask) {
+    return ctx.run(doTask ? 'channel.follow' : 'channel.unfollow', name, (async ctx => {
+      try {
+        if (ctx.state.disposed || !ctx.state.initialized) {
+          ctx.progress('AUTH_REQUIRED', 'error');
+          return false;
+        }
+        if (!doTask && channels(ctx.state.whiteList.channels).includes(name)) {
+          ctx.skip('WHITELIST_SKIP');
+          return true;
+        }
+        const id = await getChannelId(ctx, name);
+        if (!id) {
+          return false;
+        }
+        const data = await query(ctx, doTask ? 'FollowButton_FollowUser' : 'FollowButton_UnfollowUser', {
+          input: {
+            targetID: id,
+            ...doTask ? {
+              disableNotifications: false
+            } : {}
+          }
+        }, doTask ? '800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08' : 'f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880', true);
+        const payload = data && data[doTask ? 'followUser' : 'unfollowUser'];
+        if (Object.keys(object$1(payload)).length === 0 || object$1(payload).error) {
+          ctx.progress('CHANNEL_UPDATE_FAILED', 'error');
+          return false;
+        }
+        if (doTask) {
+          ctx.state.tasks.channels = [ ...new Set([ ...ctx.state.tasks.channels, name ]) ];
+          try {
+            await ctx.storage.set('tasks', ctx.state.tasks);
+          } catch {
+            ctx.progress('TASKS_PERSIST_FAILED', 'warning');
+          }
+        }
+        return true;
+      } catch {
+        ctx.progress('CHANNEL_UPDATE_FAILED', 'error');
+        return false;
+      }
+    }), Boolean);
+  }
+  function doChannel$1(ctx, name) {
+    return executeChannel$1(ctx, name, true);
+  }
+  function undoChannel$1(ctx, name) {
+    return executeChannel$1(ctx, name, false);
+  }
+  function channelFromLink(link) {
+    try {
+      const url = new URL(link);
+      if (url.protocol !== 'https:' || ![ 'www.twitch.tv', 'twitch.tv' ].includes(url.hostname) || url.username || url.password || url.port) {
+        return undefined;
+      }
+      const match = url.pathname.match(/^\/([a-zA-Z0-9_]+)\/?$/);
+      return match?.[1].toLowerCase();
+    } catch {
+      return undefined;
+    }
+  }
+  function delay$1(ctx) {
+    if (ctx.state.disposed || ctx.channelDelayMs === 0) {
+      return Promise.resolve();
+    }
+    return new Promise((resolve => {
+      const finish = () => {
+        clearTimeout(timer);
+        ctx.state.cleanups.delete(finish);
+        resolve();
+      };
+      const timer = setTimeout(finish, ctx.channelDelayMs);
+      ctx.state.cleanups.add(finish);
+    }));
+  }
+  function executeTasks$4(ctx, {channelLinks: channelLinks = []}, action) {
+    const doTask = action === 'do';
+    const job = ctx.state.batchQueue.then((() => ctx.run(doTask ? 'do' : 'undo', undefined, (async ctx => {
+      if (!ctx.state.initialized || ctx.state.disposed) {
+        ctx.progress(ctx.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+        return false;
+      }
+      const result = {
+        success: true,
+        results: {
+          channelLinks: Object.create(null)
+        }
+      };
+      const done = new Map;
+      const enabled = doTask ? ctx.followEnabled : ctx.unfollowEnabled;
+      let started = false;
+      for (const link of channelLinks) {
+        const name = channelFromLink(link);
+        let ok = false;
+        if (!enabled) {
+          ok = true;
+        } else if (name) {
+          if (!done.has(name)) {
+            if (started) {
+              await delay$1(ctx);
+            }
+            started = true;
+            done.set(name, await (doTask ? doChannel$1 : undoChannel$1)(ctx, name));
+          }
+          ok = done.get(name);
+        } else {
+          ctx.progress('INVALID_CHANNEL_LINK', 'warning');
+        }
+        result.results.channelLinks[link] = ok;
+        result.success = result.success && ok;
+      }
+      if (!enabled) {
+        ctx.skip('CONFIG_SKIP');
+      }
+      return result;
+    }), (value => typeof value === 'boolean' ? value : value.success))));
+    ctx.state.batchQueue = job.catch((() => undefined));
+    return job.catch((() => false));
+  }
+  function doTasks$4(ctx, options = {}) {
+    return executeTasks$4(ctx, options, 'do');
+  }
+  function undoTasks$4(ctx, options = {}) {
+    return executeTasks$4(ctx, options, 'undo');
+  }
+  function parseHeaders$5(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$4(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$5(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  function readTwitchAuth(page) {
+    try {
+      const cookies = Object.fromEntries(page.document.cookie.split(';').map((entry => {
+        const index = entry.indexOf('=');
+        return [ entry.slice(0, index).trim(), decodeURIComponent(entry.slice(index + 1)) ];
+      })));
+      if (!cookies.login) {
+        return undefined;
+      }
+      const headers = page.commonOptions?.headers || {};
+      const getHeader = name => Object.entries(headers).find((([key]) => key.toLowerCase() === name))?.[1];
+      const session = page.localStorage.getItem('local_storage_app_session_id');
+      const auth = {
+        authToken: cookies['auth-token'],
+        clientVersion: page.__twilightBuildID,
+        clientId: getHeader('client-id'),
+        deviceId: getHeader('device-id'),
+        clientSessionId: session?.replace(/^"|"$/g, '')
+      };
+      return validAuth(auth) ? pickAuth(auth) : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+  async function handleTwitchAuthPage(options = {}) {
+    if (![ 'www.twitch.tv', 'twitch.tv' ].includes(location.hostname)) {
+      return false;
+    }
+    const gm = options.gm || getDefaultGM$3();
+    const key = `${options.namespace || 'twitch'}:auth`;
+    const pending = await gm.getValue(`${key}:pending`, null);
+    if (!pending || pending.expiresAt <= Date.now()) {
+      return false;
+    }
+    const page = options.pageWindow || (typeof unsafeWindow !== 'undefined' ? unsafeWindow : window);
+    while (Date.now() < pending.expiresAt) {
+      const current = await gm.getValue(`${key}:pending`, null);
+      if (current?.id !== pending.id) {
+        return true;
+      }
+      const auth = options.readAuth ? await options.readAuth() : readTwitchAuth(page);
+      if (validAuth(auth)) {
+        await gm.setValue(`${key}:reply`, {
+          id: pending.id,
+          auth: pickAuth(auth)
+        });
+        return true;
+      }
+      await new Promise((resolve => setTimeout(resolve, 500)));
+    }
+    return true;
+  }
+  let Twitch$2 = class Twitch {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context$4(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = {
+        channels: channels(value.channels)
+      };
+      this.ctx.state.tasksOverridden = true;
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = {
+        channels: channels(value.channels)
+      };
+      this.ctx.state.whiteListOverridden = true;
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init() {
+      const {state: state} = this.ctx;
+      if (state.init) {
+        return state.init;
+      }
+      state.init = this.ctx.run('init', undefined, (async ctx => {
+        try {
+          if (state.disposed) {
+            ctx.progress('DISPOSED', 'error');
+            return false;
+          }
+          if (state.initialized) {
+            return true;
+          }
+          await loadState(ctx);
+          if (state.auth && await verifyToken(ctx) && await checkIntegrity(ctx)) {
+            state.initialized = true;
+            return true;
+          }
+          state.auth = undefined;
+          state.integrityToken = '';
+          await ctx.storage.delete('auth');
+          state.initialized = await updateAuth$4(ctx);
+          if (!state.initialized) {
+            state.auth = undefined;
+            state.integrityToken = '';
+          }
+          return state.initialized;
+        } catch {
+          ctx.progress('INIT_FAILED', 'error');
+          return false;
+        }
+      }), Boolean).finally((() => {
+        state.init = undefined;
+      }));
+      return state.init;
+    }
+    do(options = {}) {
+      return doTasks$4(this.ctx, options);
+    }
+    undo(options = {}) {
+      return undoTasks$4(this.ctx, options);
+    }
+    async setWhiteList(value) {
+      return this.ctx.run('whiteList.update', undefined, (async ctx => {
+        try {
+          if (ctx.state.disposed) {
+            return false;
+          }
+          const normalized = {
+            channels: channels(value.channels)
+          };
+          await ctx.storage.set('whiteList', normalized);
+          ctx.state.whiteList = normalized;
+          ctx.state.whiteListOverridden = true;
+          return true;
+        } catch {
+          ctx.progress('STORAGE_FAILED', 'error');
+          return false;
+        }
+      }), Boolean);
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      for (const cancel of [ ...this.ctx.state.cleanups ]) {
+        cancel();
+      }
+      this.ctx.events.clear();
+    }
+  };
   const data$1 = {
+    moduleInitializing: '初始化',
+    moduleTask: '执行任务',
+    moduleFailed: '执行失败，请查看调试日志',
+    moduleSkipped: '已跳过',
     website: '网站',
     type: '类型',
     edit: '编辑',
@@ -574,18 +4707,6 @@ if (missingDependencies.length > 0) {
     gettingSteamId: '正在获取Steam ID...',
     checkingPlayStatus: '正在检查挂机状态...',
     noPlayStatus: '游戏未运行',
-    servers: '服务器',
-    joiningDiscordServer: '正在加入Discord服务器',
-    leavingDiscordServer: '正在退出Discord服务器',
-    gettingDiscordGuild: '正在获取Discord服务器Id',
-    getDiscordAuthFailed: '获取Discord凭证失败，请检测Discord帐号是否已登录',
-    discordImportantNotice: '重要提醒！！！',
-    discordImportantNoticeText: '由于Discord网站后台更新，目前使用此脚本加组后可能会导致Discord帐号被强制退出，且需要两步验证才能正常登录，请谨慎使用！！！',
-    continueDiscordTask: '本次执行Discord任务',
-    skipDiscordTask: '本次跳过Discord任务',
-    continueAndDontRemindAgain: '总是执行Discord任务且不再提醒',
-    gettingDiscordXContextProperties: '正在获取Discord加群参数',
-    captchaNeeded: '检测到人机验证，请手动完成！',
     users: '用户',
     loginIns: '请先<a href="https://www.instagram.com/accounts/login/" target="_blank">登录Instagram</a>',
     insBanned: '您的Instagram账户已被封禁',
@@ -652,7 +4773,6 @@ if (missingDependencies.length > 0) {
     tasksNotCompleted: '任务未完成',
     notConnect: '社交平台未连接，跳过任务: %0',
     tgTaskNotice: '检测到Telegram任务，需要手动完成',
-    discordTaskNotice: '检测到Discord任务，需要手动完成',
     updatingUserData: '正在更新用户数据...',
     gettingUserGames: '正在获取用户游戏...',
     skipExtensionToVerifyTask: '需要扩展，跳过自动验证',
@@ -664,6 +4784,10 @@ if (missingDependencies.length > 0) {
     logCopied: '完整日志已复制到剪切板，请前往反馈！'
   };
   const data = {
+    moduleInitializing: 'Initializing',
+    moduleTask: 'Running task',
+    moduleFailed: 'Failed; see debug logs',
+    moduleSkipped: 'Skipped',
     website: 'Website',
     type: 'Type',
     edit: 'Edit',
@@ -894,18 +5018,6 @@ if (missingDependencies.length > 0) {
     gettingSteamId: 'Getting Steam ID...',
     checkingPlayStatus: 'Checking play status...',
     noPlayStatus: 'Game not running',
-    servers: 'Server',
-    joiningDiscordServer: 'Joining Discord Server',
-    leavingDiscordServer: 'Leaving Discord Server',
-    gettingDiscordGuild: 'Getting Discord server Id',
-    getDiscordAuthFailed: 'Failed to get Discord token, please check whether the Discord account is logged in',
-    discordImportantNotice: 'Important Reminder! ! !',
-    discordImportantNoticeText: 'Due to the background update of the Discord website, currently using this script to join a group may cause the Discord account to be forcibly logged out, and two-step verification is required to log in normally, please use it with caution! ! !',
-    continueDiscordTask: 'Do Discord tasks this time.',
-    skipDiscordTask: 'Skip Discord tasks this time.',
-    continueAndDontRemindAgain: 'Always do Discord tasks and do not remind again.',
-    gettingDiscordXContextProperties: 'Getting Discord X context properties...',
-    captchaNeeded: 'Captcha detected, please complete it manually!',
     users: 'User',
     loginIns: 'Please <a href="https://www.instagram.com/accounts/login/" target="_blank">log in to Instagram</a>',
     insBanned: 'Your Instagram account has been banned',
@@ -972,7 +5084,6 @@ if (missingDependencies.length > 0) {
     tasksNotCompleted: 'Tasks Not Completed',
     notConnect: 'Social platform is not connectted, skip task: %0',
     tgTaskNotice: 'The telegram task is checked, need to do it yourself!',
-    discordTaskNotice: 'The discord task is checked, need to do it yourself!',
     updatingUserData: 'Updating user data...',
     gettingUserGames: 'Getting user games...',
     skipExtensionToVerifyTask: 'Need extension, skip automatic verification',
@@ -1233,6 +5344,3548 @@ if (missingDependencies.length > 0) {
       debug('用户取消提交错误报告');
     }
   }
+  var ASF = '<?xml version="1.0" encoding="UTF-8"?>\r\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" version="1.1">\r\n<g id="surface1">\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(11.372549%,17.254902%,26.274511%);fill-opacity:1;" d="M 7.652344 0.175781 C 8.046875 0.351562 8.210938 0.59375 8.441406 0.953125 C 9.007812 1.746094 9.644531 2.539062 10.640625 2.761719 C 12.011719 2.949219 13.429688 2.882812 14.808594 2.796875 C 14.90625 2.792969 15.003906 2.785156 15.101562 2.78125 C 15.1875 2.773438 15.273438 2.769531 15.363281 2.761719 C 15.429688 2.769531 15.496094 2.777344 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.34375 15.976562 4.597656 15.960938 4.851562 C 15.957031 4.925781 15.957031 5 15.953125 5.074219 C 15.945312 5.175781 15.945312 5.175781 15.941406 5.285156 C 15.9375 5.378906 15.9375 5.378906 15.929688 5.480469 C 15.914062 5.652344 15.914062 5.652344 15.824219 5.914062 C 15.816406 6.058594 15.8125 6.203125 15.8125 6.34375 C 15.8125 6.433594 15.8125 6.519531 15.808594 6.613281 C 15.808594 6.707031 15.808594 6.800781 15.808594 6.898438 C 15.804688 7.097656 15.804688 7.300781 15.800781 7.5 C 15.796875 7.816406 15.792969 8.132812 15.792969 8.449219 C 15.789062 8.753906 15.785156 9.058594 15.78125 9.363281 C 15.78125 9.457031 15.78125 9.550781 15.78125 9.648438 C 15.777344 9.738281 15.777344 9.824219 15.773438 9.914062 C 15.773438 10.03125 15.773438 10.03125 15.773438 10.148438 C 15.738281 10.347656 15.738281 10.347656 15.625 10.503906 C 15.386719 10.671875 15.152344 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.6875 12.414062 13.6875 12.414062 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.359375 12.515625 13.359375 12.515625 13.324219 12.683594 C 13.226562 13.144531 13.054688 13.566406 12.871094 14 C 12.75 13.988281 12.628906 13.980469 12.511719 13.96875 C 12.410156 13.957031 12.410156 13.957031 12.308594 13.949219 C 12.050781 13.90625 11.8125 13.828125 11.566406 13.738281 C 11.492188 13.867188 11.492188 13.867188 11.417969 14 C 11.355469 14.113281 11.292969 14.222656 11.226562 14.335938 C 11.195312 14.394531 11.164062 14.449219 11.132812 14.507812 C 11 14.738281 10.882812 14.941406 10.695312 15.128906 C 10.257812 15.097656 9.957031 14.863281 9.601562 14.625 C 9.402344 14.503906 9.402344 14.503906 9.222656 14.542969 C 9.015625 14.617188 8.925781 14.703125 8.777344 14.863281 C 8.730469 14.914062 8.683594 14.964844 8.632812 15.019531 C 8.535156 15.125 8.433594 15.234375 8.335938 15.339844 C 7.972656 15.726562 7.972656 15.726562 7.675781 15.792969 C 7.4375 15.726562 7.367188 15.660156 7.21875 15.460938 C 7 15.1875 6.773438 14.941406 6.523438 14.695312 C 6.375 14.550781 6.230469 14.40625 6.085938 14.261719 C 6.023438 14.195312 5.957031 14.128906 5.890625 14.0625 C 2.175781 10.347656 2.175781 10.347656 1.945312 10.117188 C 1.738281 9.910156 1.527344 9.707031 1.316406 9.503906 C 1.160156 9.351562 1 9.199219 0.84375 9.042969 C 0.722656 8.925781 0.722656 8.925781 0.597656 8.808594 C 0.519531 8.734375 0.445312 8.660156 0.363281 8.582031 C 0.296875 8.515625 0.226562 8.445312 0.152344 8.375 C -0.03125 8.132812 -0.0351562 8.039062 0 7.738281 C 0.117188 7.570312 0.117188 7.570312 0.28125 7.402344 C 0.34375 7.339844 0.40625 7.277344 0.472656 7.210938 C 0.542969 7.144531 0.613281 7.074219 0.683594 7.003906 C 0.757812 6.933594 0.828125 6.859375 0.902344 6.785156 C 1.101562 6.585938 1.304688 6.386719 1.503906 6.1875 C 1.714844 5.980469 1.921875 5.773438 2.132812 5.5625 C 2.480469 5.214844 2.832031 4.863281 3.183594 4.515625 C 3.683594 4.023438 4.175781 3.53125 4.671875 3.039062 C 5.015625 2.695312 5.359375 2.355469 5.699219 2.015625 C 5.785156 1.929688 5.867188 1.847656 5.949219 1.765625 C 6.222656 1.492188 6.496094 1.222656 6.773438 0.949219 C 6.839844 0.882812 6.910156 0.8125 6.980469 0.742188 C 7.078125 0.648438 7.078125 0.648438 7.171875 0.550781 C 7.226562 0.496094 7.285156 0.441406 7.339844 0.386719 C 7.476562 0.261719 7.476562 0.261719 7.652344 0.175781 Z M 7.652344 0.175781 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.332031 15.980469 4.578125 15.96875 4.824219 C 15.964844 4.929688 15.964844 4.929688 15.960938 5.035156 C 15.9375 5.492188 15.863281 5.90625 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.761719 5.195312 13.582031 5.089844 13.40625 4.988281 C 12.996094 4.746094 12.585938 4.507812 12.167969 4.273438 C 10.847656 3.527344 10.847656 3.527344 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 7.566406 5.304688 C 7.878906 5.410156 7.90625 5.480469 8.058594 5.761719 C 8.117188 5.859375 8.117188 5.859375 8.175781 5.964844 C 8.269531 6.195312 8.277344 6.363281 8.261719 6.609375 C 8.355469 6.550781 8.449219 6.492188 8.550781 6.433594 C 8.777344 6.296875 8.855469 6.261719 9.128906 6.261719 C 9.136719 6.425781 9.140625 6.589844 9.148438 6.753906 C 9.152344 6.894531 9.152344 6.894531 9.15625 7.035156 C 9.125 7.34375 9.058594 7.492188 8.871094 7.738281 C 8.703125 7.871094 8.703125 7.871094 8.527344 7.972656 C 8.46875 8.007812 8.410156 8.042969 8.351562 8.078125 C 8.292969 8.109375 8.234375 8.140625 8.175781 8.175781 C 8.113281 8.207031 8.054688 8.238281 7.996094 8.273438 C 7.710938 8.398438 7.511719 8.335938 7.21875 8.261719 C 6.832031 8.070312 6.476562 7.859375 6.261719 7.476562 C 6.167969 7.203125 6.164062 7.007812 6.167969 6.722656 C 6.167969 6.636719 6.171875 6.550781 6.171875 6.460938 C 6.171875 6.394531 6.171875 6.328125 6.175781 6.261719 C 6.492188 6.332031 6.753906 6.457031 7.042969 6.609375 C 7.050781 6.480469 7.050781 6.480469 7.058594 6.347656 C 7.113281 5.9375 7.332031 5.636719 7.566406 5.304688 Z M 7.566406 5.304688 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.882353%,8.235294%,15.294118%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.800781 15.769531 9.878906 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.398438 15.664062 10.472656 15.476562 10.609375 C 15.15625 10.625 15.15625 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.726562 12.421875 13.648438 12.40625 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.449219 12.027344 13.535156 11.730469 13.644531 11.425781 C 13.679688 11.332031 13.710938 11.238281 13.746094 11.144531 C 13.78125 11.046875 13.816406 10.953125 13.851562 10.851562 C 13.902344 10.710938 13.902344 10.710938 13.957031 10.566406 C 14.054688 10.289062 14.160156 10.015625 14.261719 9.738281 C 14.292969 9.65625 14.320312 9.574219 14.351562 9.488281 C 14.613281 8.792969 14.613281 8.792969 14.929688 8.523438 C 15.359375 8.140625 15.347656 7.753906 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(13.725491%,18.431373%,37.254903%);fill-opacity:1;" d="M 13.566406 9.824219 C 13.609375 9.914062 13.609375 9.914062 13.652344 10 C 13.539062 10.21875 13.417969 10.425781 13.289062 10.636719 C 13.207031 10.769531 13.125 10.90625 13.046875 11.039062 C 13.003906 11.109375 12.960938 11.183594 12.914062 11.253906 C 12.691406 11.632812 12.46875 12.015625 12.25 12.398438 C 12.207031 12.472656 12.160156 12.550781 12.117188 12.628906 C 11.8125 13.160156 11.53125 13.703125 11.269531 14.253906 C 11.113281 14.582031 10.933594 14.855469 10.695312 15.128906 C 10.3125 15.078125 10.042969 14.933594 9.710938 14.734375 C 9.574219 14.648438 9.574219 14.648438 9.429688 14.566406 C 9.359375 14.523438 9.289062 14.480469 9.21875 14.433594 C 9.253906 14.046875 9.523438 13.835938 9.789062 13.582031 C 9.832031 13.539062 9.875 13.496094 9.921875 13.449219 C 10.15625 13.21875 10.402344 12.996094 10.65625 12.78125 C 11.15625 12.34375 11.621094 11.871094 12.089844 11.398438 C 12.25 11.238281 12.414062 11.078125 12.574219 10.914062 C 12.679688 10.8125 12.78125 10.707031 12.886719 10.605469 C 12.933594 10.554688 12.980469 10.507812 13.03125 10.457031 C 13.234375 10.253906 13.40625 10.066406 13.566406 9.824219 Z M 13.566406 9.824219 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.294118%,95.686275%,96.078432%);fill-opacity:1;" d="M 6.175781 10.347656 C 6.503906 10.464844 6.769531 10.617188 7.054688 10.820312 C 7.128906 10.871094 7.203125 10.925781 7.277344 10.976562 C 7.445312 11.105469 7.59375 11.234375 7.738281 11.390625 C 7.769531 11.316406 7.769531 11.316406 7.800781 11.238281 C 7.941406 10.992188 8.105469 10.882812 8.335938 10.722656 C 8.410156 10.671875 8.488281 10.617188 8.566406 10.5625 C 8.761719 10.449219 8.90625 10.386719 9.128906 10.347656 C 9.21875 11.453125 9.21875 11.453125 8.914062 11.832031 C 8.617188 12.113281 8.285156 12.273438 7.914062 12.433594 C 7.882812 12.921875 7.855469 13.410156 7.824219 13.914062 C 7.683594 13.914062 7.539062 13.914062 7.390625 13.914062 C 7.390625 13.398438 7.390625 12.878906 7.390625 12.347656 C 7.246094 12.320312 7.105469 12.289062 6.957031 12.261719 C 6.5625 12.078125 6.359375 11.875 6.175781 11.476562 C 6.144531 11.097656 6.152344 10.726562 6.175781 10.347656 Z M 6.175781 10.347656 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(8.235294%,11.764706%,23.137255%);fill-opacity:1;" d="M 14.433594 9.042969 C 14.523438 9.21875 14.523438 9.21875 14.484375 9.378906 C 14.460938 9.445312 14.4375 9.507812 14.414062 9.574219 C 14.386719 9.648438 14.359375 9.71875 14.335938 9.792969 C 14.308594 9.871094 14.277344 9.949219 14.25 10.027344 C 14.222656 10.105469 14.195312 10.183594 14.164062 10.265625 C 14.007812 10.703125 13.84375 11.132812 13.675781 11.566406 C 13.503906 11.996094 13.386719 12.429688 13.285156 12.878906 C 13.179688 13.269531 13.03125 13.632812 12.871094 14 C 12.378906 13.96875 12 13.910156 11.566406 13.652344 C 11.703125 13.144531 11.960938 12.71875 12.222656 12.265625 C 12.269531 12.1875 12.316406 12.105469 12.363281 12.023438 C 12.460938 11.859375 12.554688 11.695312 12.648438 11.53125 C 12.765625 11.332031 12.882812 11.128906 12.996094 10.925781 C 13.402344 10.222656 13.859375 9.621094 14.433594 9.042969 Z M 14.433594 9.042969 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 14.917969 3.957031 14.128906 3.839844 13.324219 3.6875 C 13.066406 3.640625 12.808594 3.59375 12.546875 3.550781 C 12.363281 3.515625 12.175781 3.484375 11.992188 3.449219 C 11.78125 3.414062 11.566406 3.378906 11.355469 3.34375 C 11.226562 3.324219 11.226562 3.324219 11.097656 3.304688 C 11.027344 3.292969 10.953125 3.28125 10.878906 3.273438 C 10.664062 3.207031 10.570312 3.132812 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 9.128906 8.261719 C 9.183594 9.257812 9.183594 9.257812 9.011719 9.695312 C 8.605469 10.082031 8.152344 10.3125 7.597656 10.398438 C 7.09375 10.3125 6.6875 10.128906 6.347656 9.738281 C 6.074219 9.320312 6.136719 8.828125 6.175781 8.347656 C 6.539062 8.394531 6.765625 8.519531 7.066406 8.734375 C 7.140625 8.789062 7.214844 8.839844 7.292969 8.894531 C 7.476562 9.042969 7.476562 9.042969 7.566406 9.21875 C 7.621094 9.21875 7.679688 9.21875 7.738281 9.21875 C 7.835938 9.117188 7.933594 9.015625 8.03125 8.914062 C 8.738281 8.261719 8.738281 8.261719 9.128906 8.261719 Z M 9.128906 8.261719 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(7.843138%,11.372549%,22.745098%);fill-opacity:1;" d="M 11.042969 3.476562 C 11.648438 3.675781 12.246094 3.886719 12.84375 4.101562 C 12.984375 4.152344 12.984375 4.152344 13.125 4.207031 C 14.054688 4.542969 14.984375 4.878906 15.914062 5.21875 C 15.867188 5.597656 15.816406 5.972656 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.667969 5.140625 13.402344 4.984375 13.132812 4.828125 C 12.804688 4.636719 12.476562 4.445312 12.148438 4.253906 C 12.011719 4.179688 11.878906 4.101562 11.746094 4.023438 C 11.683594 3.988281 11.621094 3.949219 11.558594 3.914062 C 11.140625 3.671875 11.140625 3.671875 11.042969 3.476562 Z M 11.042969 3.476562 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0.392157%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.839844 15.769531 9.839844 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.394531 15.664062 10.472656 15.476562 10.609375 C 15.199219 10.625 15.199219 10.625 14.957031 10.609375 C 14.875 10.285156 14.871094 10.046875 14.933594 9.71875 C 14.949219 9.636719 14.964844 9.550781 14.980469 9.464844 C 15 9.378906 15.015625 9.289062 15.03125 9.199219 C 15.050781 9.113281 15.066406 9.027344 15.082031 8.933594 C 15.203125 8.289062 15.203125 8.289062 15.304688 8.085938 C 15.34375 7.792969 15.375 7.5 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(86.274511%,87.450981%,89.019608%);fill-opacity:1;" d="M 8.609375 3.390625 C 8.78125 3.390625 8.953125 3.390625 9.128906 3.390625 C 9.128906 4.109375 9.128906 4.824219 9.128906 5.566406 C 8.988281 5.59375 8.84375 5.621094 8.695312 5.652344 C 8.609375 5.566406 8.609375 5.566406 8.597656 5.355469 C 8.597656 5.265625 8.601562 5.175781 8.601562 5.082031 C 8.601562 4.984375 8.601562 4.886719 8.601562 4.785156 C 8.601562 4.683594 8.601562 4.578125 8.601562 4.472656 C 8.605469 4.371094 8.605469 4.265625 8.605469 4.160156 C 8.605469 3.902344 8.605469 3.648438 8.609375 3.390625 Z M 8.609375 3.390625 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.725491%,94.117647%,94.509804%);fill-opacity:1;" d="M 6.175781 3.390625 C 6.316406 3.390625 6.460938 3.390625 6.609375 3.390625 C 6.609375 4.136719 6.609375 4.882812 6.609375 5.652344 C 6.464844 5.625 6.320312 5.59375 6.175781 5.566406 C 6.175781 4.847656 6.175781 4.128906 6.175781 3.390625 Z M 6.175781 3.390625 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.333334%,93.725491%,94.117647%);fill-opacity:1;" d="M 7.476562 2.433594 C 7.59375 2.433594 7.707031 2.433594 7.824219 2.433594 C 7.824219 3.179688 7.824219 3.925781 7.824219 4.695312 C 7.683594 4.695312 7.539062 4.695312 7.390625 4.695312 C 7.390625 4.335938 7.386719 3.976562 7.386719 3.613281 C 7.386719 3.511719 7.382812 3.410156 7.382812 3.300781 C 7.382812 3.203125 7.382812 3.105469 7.382812 3.003906 C 7.382812 2.914062 7.382812 2.824219 7.382812 2.730469 C 7.390625 2.523438 7.390625 2.523438 7.476562 2.433594 Z M 7.476562 2.433594 "/>\r\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 15.390625 6.871094 C 15.511719 7.203125 15.449219 7.484375 15.390625 7.824219 C 15.304688 7.769531 15.21875 7.710938 15.128906 7.652344 C 15.171875 7.328125 15.207031 7.148438 15.390625 6.871094 Z M 15.390625 6.871094 "/>\r\n</g>\r\n</svg>\r\n';
+  var Web = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\r\n\t<title>favicon</title>\r\n\t<defs>\r\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>\r\n';
+  var Twitch$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\r\n\t<title>favicon-32-e29e246c157142c94346</title>\r\n\t<defs>\r\n\t\t<image  width="28" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAgBAMAAADzmwVxAAAAAXNSR0IB2cksfwAAACdQTFRFAAAAk0b/kUb/////wZf/yKP/j0b/j0X/j0b/kUb/j0D/kUb/j0j/8nvBLQAAAA10Uk5TAH//////gJCgzxDfIMV/78EAAACZSURBVHicY2RgYFRkgANGBgYhAWQuUFIQxnvPCJJE4oJ0InFBOpG4Sgxg7ntBMKI9F81ebFzGdyhc+SvIXKa3dshc+as3kbhMb+MawFygANNbBga2GwwwrvwFBoaKNBhXGCjJXp4A4xoAJWe4McC4QMA51QGZO8sFEuwMDEoQKQS3KoUBiQsyFIkb18CAxFW/yYDMTVgA4wIAtrc0x9ZZthYAAAAASUVORK5CYII="/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="2" y="0"/>\r\n</svg>\r\n';
+  var Instagram = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76" width="16" height="16">\r\n\t<title>lam-fZmwmvn</title>\r\n\t<defs>\r\n\t\t<image  width="76" height="76" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAMAAADwSaEZAAAAAXNSR0IB2cksfwAAAvdQTFRFR3BM1TeUehf6exj7gBn8bxf9bxX9eA32hAnukgXlngTjqATisAPguQLewAThxAHdygLd0AHazwDU3gDA3gDB7ROe1gDY3wDI2gDHYBlFeBf9cxn8gRf9ihf9kQvx3ADW6AC/kRf9oQzxrw3v4wDX5gDO7AC0uAnomRf86wDV8ADG8QPR8wC69AqfoBf8qBf74BTc6xTW8wCr9xOVvzT24WHu3oP39qzy9sr5+N78/ej6/t31+Xrj+lbX9xvS9wnJ//7+//////n69QCesRn7/gLD/gG+/gGy/8vq/ivO/gG5//X7/QKq9wea6k3l+zrS+yq8/gCj+ACPuhr6/gq3/gCc7xbO/A/BxRr4/RO4/gCW/VDD/2nM/gCQ0hzz/7Pe/gGJ/gmw/UG4+h2r/gGC3Bru6Bvd/QJ79BrD/hOt/pDO5Rro/hKk9xu2/gJ08Brf+x6g/hKY/S+j/QJt/SCW/hOQ/SKQ/m+3/haH/SKI/lul/+vw/QBn/EOT/h2B/hV8/iF6/iR0/idu/uHk/i1//QFi/its/oar/T94/ixm/Spd/mON/lZw/snV/i5V/omZ/hNw/kNZ//r2/jNO/jtT/jNi/gBf/l1c/jpJ/nh//tfS/jlc/jFH/jND/khR/jk//T9D/hFn/ipM/kM6/js1/kZB/sS1/R1k/lA9/Us1/kEq/oN1/qmz/g5c/nNI/lEv/hZb/lg2/kgf/h5Z/lgq/lQX/l8m/mI4/iJS/mMY/oxO/mch/mcv/FEP/FwG/pdo/m0b/WUB/rd//mwC/nQY/nQn/m4s/nMC/qOJ/ndk/vHc/noV/noC/oQd/p0//oIS/nsi/unI/tuq/oIC/rA9/ooB/owT/vbn/pAE/pUP/pYB/pwI/p0A/qkf/tBr/GMY/XQD+3QI/qQC/qoC/td8+4QW/q8A/rsW/rQA/rgA/rsA/r4A/YUD/SGH/sEA/JUF/sUA/JIG/skA/DJm/JgH/asD/s0A/EFI+68J/bcE+1E0+0w6/L0Fi9deiwAAAP10Uk5TAA5AcL3X////////////////5a9+QP//zwL/nP////////////////7/////xP//////df/////////////////////////////////l/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+XBcP///z/////////V1f+M/6v/oavV/9VwwMFw5VUJIaQAAAukSURBVHicbZhbbBxXGYD/f2Zn9uZL7NiNL4nTFLnUqZpKlaqKRCBIgApIWhKE1PahPKAiRFNaCdSqL4U+0odKlUorQXkAoSCQQLRqSwlKpIKaFAJNlFtDTdzarr221/a63uvc+S9nZ9eB8Xr27Myc7/zXc/4zCOmBcph2wg35kZ7wxg9Kl9WkQ0gbltVp/y8q/Qik3XZYhHAt2QIbhWU7RQ3B2va1/y8QYEpUko4aZUqjAKVRReBYOSUBrA3D6nD5JmqVsSMJWLAFBJCHJuZa3IrWktHSaAm7WEOCoz4oJFjtkCzoVk1AdLQURe3qetIeilkpiS9lIshwawlTUofDnZ2A/tQUm/lmHty19ZES/x61ykpKx7cjRi2PLI8vqs9Svdq81EtAVDq7sO4wbHR5pBtFmCz4plViEDJhC4cFo3MozYawACplcgBmhg1pC4qaJbrKpDZIEe0jJILERKOnxrDsZRLV3mGlQZIhlAtYS1G7u+JHjpaVNhPU+Gr08PA9gP9CtEduQEENBiQXcAumjY0gcRDXYGhVaAz3XRYtuIzWmLGkaMgsx7Jy3CvR0w2sBKwYIWllNGHWYqH10GngItpjDApZKkENb9pZxhOqm4byW12olwK0XSiNLQKMc5QOAGxgZpfcMihwMjkjqbELSHc0jS2XchixQtGCoa3gbfKEq0oMbzg5MELxx8rfYLNmDGmEJej3IcyNQ3kMFkkwKOC+jj2GYcPJ8qMJeLEzKNb3b6BxeCZBxtEe/rAfcdws7t6k3/14pz7DsQb9C2L5wuqOOUAOgiEjcjsK0qOwNNRg+bI9VY5BBzYHiYpfTB/oh/kCs7wggFpv644rjBpc7zJgt1ebkcteCosO0zYH1/vp8jfaDzjBLBksQW9ojh/2KV/dwQpIzGjmqKGMHzJOOUtm9SeqDj/iAE0g+ABnqibKTJHGLq5Q4mLr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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Twitter$2 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="16" height="16">\r\n\t<title>icon-ios</title>\r\n\t<defs>\r\n\t\t<image  width="1024" height="1024" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAMAAABIw9uxAAAAAXNSR0IB2cksfwAAAwBQTFRFAAAABAQEFxcXGBgYDAwMERERCgoKfn5+wMDAv7+/k5OTFhYWKioqp6enq6urJycnPDw83Nzc////+/v7f39/BwcHKSkpu7u78vLyc3NzXl5e7+/v6+vrU1NTExMTra2t9/f3e3t7BgYGCQkJiIiI+fn50tLSLy8vDw8Pjo6O/f39mJiYrq6ur6+vGRkZCAgIh4eH/v7+Gxsb1NTUhISEAQEBZGRk8PDwvLy8ICAgVVVV6enp7OzsVlZWAwMDWFhY4+Pj0NDQODg4AgIC1tbWNTU1QkJC4eHh2NjYPz8/pKSktLS0Li4uxcXFy8vL+vr6wsLC7u7ubW1tBQUFSEhI5eXl8/PzfHx89vb2Nzc3EhISkpKS/Pz8nZ2dEBAQDQ0NuLi4hYWFIyMjwcHBi4uLYmJi7e3tvr6+Q0ND3d3dXFxczMzMZ2dn8fHx29vbOzs72traQEBAj4+Pvb29Hh4eMjIyx8fHHR0dt7e3JiYmaGhoNjY2oaGh39/fmZmZpqamFRUVrKysl5eXZmZmw8PDJCQkMDAwz8/Pa2tr6urqycnJMzMzUFBQ4uLifX19+Pj4xMTE5+fnFBQUo6OjnJycISEhb29vR0dH5OTkRUVFmpqalJSUcHBw9fX1xsbGJSUleHh4Dg4ObGxsKCgodHR0QUFB5ubmPj4+1dXV4ODgGhoaubm5eXl5hoaGOTk56Ojom5ubkZGRXV1dd3d3qKioUVFRysrKRkZGqqqqtra29PT0aWlpg4ODHBwcCwsLlpaWenp6sbGxcXFxT09Pzs7O19fXSkpK3t7e2dnZIiIijIyMgICAYGBgbm5u0dHRUlJScnJylZWVsLCwurq6Tk5OVFRU09PTNDQ0Ojo6KysrPT09Y2NjZWVlW1tbjY2NtbW1yMjIYWFhn5+fWlpadnZ2TU1Nzc3NpaWlLS0tgYGBV1dXoqKiWVlZS0tLdXV1s7OzHx8fgoKCoKCgkJCQREREX19fTExMSUlJqampMTExLCwsiYmJsrKyampqioqKnp6enA0qUQAAUvtJREFUeJzt3X1gjmX/P/DrZFt5aNTQ4reNzTC5Lasrj9tks7Kk1iwNbR5KMVHa8rDGPM00NzeNodCEydMippIVlqhMSTGR4ksSIk+F7HfXfd9luGzXcb2P6zyv83i//vne9/fb8TnOb+y96zrO4/gcmoWIlKXp/QBEpB8GAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwB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ABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHC/j9GYmsPmw8LugAAAABJRU5ErkJggg=="/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>\r\n';
+  var Reddit$2 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="16" height="16">\r\n\t<title>192x192</title>\r\n\t<defs>\r\n\t\t<image  width="192" height="192" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Youtube$2 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16" height="16">\r\n\t<title>favicon_48x48</title>\r\n\t<defs>\r\n\t\t<image  width="48" height="48" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAAXNSR0IB2cksfwAAARRQTFRF////AAAA/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/xBA/wAz/56x/5uv/xZF/wAz/wAz/6Cz/////+/y/26L/wQ2/wAz/wAz/9Pc/0Bm/6m6/x1K/wAz//X3/3uV/wg5/wAz/93k/01x/7fF/yVR/yZR/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAzgb8Y2wAAAFx0Uk5TAAAJNFp0i52ptMDQ3ODl8Pj/99uoWS+z+zD6uxL+DEhAcm2Vkav/v////7zU///////T6P/////0////8///////8ufSlEEUDVe1/bkyOF13jKC2wd3mqp92XDdJ2BKpAAABRElEQVR4nO2VwUtCQRDG53vV0/DwEhNDXoREdCjC0CK6Rlj9vYHdg04SiSAUEUFE8gwJi0roNb0tHwS7Gzu3iOawh5nvt+zOzs6AhIZ/wAXA1/rdxl7ERMz+K3PukXlmwJwCRWDksHeGvd4nMDv14nic6ShOAK/kqk+Itz5QfnbWE/kRQjwJgIyPhaFATxSg8iAC8lgciIAClu41Z7FvByawHGnOEnBnA8pYvdWcoaqPazNQQe3KACQJx6URiBF4RoAoiwsD8I6tcwtAOaCrxVaQ13cJ008SoKMFfwTUO7WFgHcmAYxHEl56XZ7WnVMjYH84YWnU5MUnLu/dlj1qsIL8iwqbwAYaXVGbqcobGeYgbJW015Y14yTvdZw4yLeBw3SgzFdVNXTW0Dw42myNvWqANJrM+zyJURY4vlHS3zgU/wDwAXpXWYPo2LOhAAAAAElFTkSuQmCC"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var Vk$2 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\r\n\t<title>fav_logo</title>\r\n\t<defs>\r\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  var AutoTask = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\r\n\t<title>favicon</title>\r\n\t<defs>\r\n\t\t<image  width="32" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IB2cksfwAAAgdQTFRFPHjYPnnYUIXbR3/ZUofbaJbgZpTfSIDaPXjYUYfbapfhbJnhZ5XgRn7ZP3rYU4jca5jhbZriaZfgR3/aVIncapjhZZTgRn/aVIjcbpvicp3iZ5bgQXvZVYncjrHorsfutMvvvtLyj7HoVorcdqDj0+H26/H7/v7+////1eH2apfgYpLfm7nq8fX87fP71uL2vNDxnLrq7fL7/v7/7PL7faXkWIvdRH3ZfqXk7vP7/f3+1+P2k7TpkbPpnLrrY5PfRn/ZPXnYXo/eu9DweqPkeKHjtMvwdaDjRX7ZQXvYWYzd1OL2dJ/jaJfgeKHk1eL2bpriWozdkLLoaZfhbZrhdZ/i7PH7WozeeKLk8/b8nbvrr8fvQHrYb5vitszwuM7wapjgfKTkz971/P3+9/n9mrnqtczwuM3wZpXgcp7jwdTyl7fqeaLkvtLxxtfzc53i1OH2+vz+t83wkrPoxNbzdJ7jZpTgjbDo6fD62uX39Pf8rsfvkbPoT4TaYZLfr8fuc57jcJviQnzYja/n+vv+rcbucZziYJHfXpDeqsTtkrPpQnzZd6Dj0+D21uP2UYbcYZHfdqHj8vb8q8Xussnv7/T7YpPfSoLaQHvYX5Dfnbrr0+D1h6vmYJHegajln7zrSYHZw9XzTIPaUIbbT4XbXY7ea5nhUofcW43dV4rdXI7dXI7eX5DeWOgbkgAAAmNJREFUeJx10l1IFFEUB/DzT/c6uTpb9CCIbYFBZVIhpuXLYD6oYCTSt9LXkgj7lL1kPVVbSSGbD5ZhUqD0AUKxrNqTK5KhRoo+WFgbZUHuw6Ls+jEz7jbdGbVYZ3deZuacH/ece+4FxTwAousisX9JXCiJgcDTfJFwIiDqeb1MMD4Q0hDR36oVgXgAGTJ4EdJkdRN+mYFokyPpeg1NS5pNmTGD7JANKz1wgUkz2AMss9UVdInhdeCgHvTLerM7QlY5Dej/D4oHpOHdbCM+ruJ8zIczx/LeroFyvEeRP2Ur+pixzdQc2xdtJz5EAisAlT4UT/+xjpYNzemiBD1sc/5X66gxD5BY7iUmCrtGZHXbjMLUI+P70SsUfM7vUVUhTKiZmgJVYKTQw9sr9Sgn9Ga76PiAtOilk08VFPA8nUJfyXOq5qmOs2ERniBd7K7AE1KdTZAmaA3U4g0qX1fhIY84uwygXkVhaRNbK3FGeUdVFjRzYBOkzAeEOQl089V3RitNWq782A7cW2YkaXqTqUHJxxsQG1wsd2GD3Td/q7Ha3kiaZZGlC0LN3fkok41B3Y+4mF0pyxr0phmDslDZgbbagcFr9drqqOG+fgcvTzf/NiZJatHRsbyhQ7gs/zusVtS7W4UCz5IekiYahiYd/Z0xp5l1o97dNrtXsX2jnMAnONNdftOVEyqWfy4YF8YaXVi6fd4E+NK59ox9NB6Y3tLdXiubQUcdn1g2+b2U7K4xXzn+2Qmn8XH42AU5HqDycw59ny1Jl0IUFxBe1IFakh/5KAEgZAXxzBGihIDEx5b23pjIX32q0uJJAW9GAAAAAElFTkSuQmCC"/>\r\n\t</defs>\r\n\t<style>\r\n\t</style>\r\n\t<use id="Background" href="#img1" x="0" y="0"/>\r\n</svg>';
+  const ICONS = {
+    '[ASF]': ASF,
+    '[Web]': Web,
+    '[Twitch]': Twitch$1,
+    '[Instagram]': Instagram,
+    '[Twitter]': Twitter$2,
+    '[Reddit]': Reddit$2,
+    '[Youtube]': Youtube$2,
+    '[Vk]': Vk$2,
+    '[AutoTask]': AutoTask
+  };
+  const generateLink = (url, text) => `<a href="${url}" target="_blank">${text}</a>`;
+  const createBaseElement = content => $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
+  const createPlatformElement = (type, text, id) => {
+    const urlGenerators = {
+      group: text => `https://steamcommunity.com/groups/${text}`,
+      officialGroup: text => `https://steamcommunity.com/games/${text}`,
+      forum: text => `https://steamcommunity.com/app/${text}/discussions/`,
+      curator: text => `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`,
+      app: text => `https://store.steampowered.com/app/${text}`,
+      sub: text => `https://steamdb.info/sub/${text}/`,
+      workshop: text => `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`,
+      announcement: (text, id) => `https://store.steampowered.com/news/app/${text}/view/${id}`,
+      twitch: text => `https://www.twitch.tv/${text}`,
+      instagram: text => `https://www.instagram.com/${text}/`,
+      twitter: text => `https://x.com/${text}`,
+      reddit: {
+        subreddit: text => `https://www.reddit.com/r/${text}/`,
+        user: text => `https://www.reddit.com/user/${text?.replace('u_', '')}`
+      },
+      youtube: {
+        channel: text => `https://www.youtube.com/channel/${text}`,
+        video: text => `https://www.youtube.com/watch?v=${text}`
+      },
+      vk: text => `https://vk.com/${text}/`
+    };
+    const typeMap = {
+      joiningSteamGroup: [ 'group' ],
+      leavingSteamGroup: [ 'group' ],
+      gettingSteamGroupId: [ 'group' ],
+      joiningSteamOfficialGroup: [ 'officialGroup' ],
+      leavingSteamOfficialGroup: [ 'officialGroup' ],
+      gettingSteamOfficialGroupId: [ 'officialGroup' ],
+      subscribingForum: [ 'forum' ],
+      unsubscribingForum: [ 'forum' ],
+      gettingForumId: [ 'forum' ],
+      followingCurator: [ 'curator' ],
+      unfollowingCurator: [ 'curator' ],
+      gettingCuratorId: [ 'curator' ],
+      addingToWishlist: [ 'app' ],
+      removingFromWishlist: [ 'app' ],
+      followingGame: [ 'app' ],
+      unfollowingGame: [ 'app' ],
+      gettingSubid: [ 'app' ],
+      addingFreeLicense: [ 'app', 'sub' ],
+      requestingPlayTestAccess: [ 'app' ],
+      gettingDemoAppid: [ 'app' ],
+      favoritingWorkshop: [ 'workshop' ],
+      unfavoritingWorkshop: [ 'workshop' ],
+      gettingWorkshopAppId: [ 'workshop' ],
+      votingUpWorkshop: [ 'workshop' ],
+      gettingAnnouncementParams: [ 'announcement' ],
+      likingAnnouncement: [ 'announcement' ],
+      followingTwitchChannel: [ 'twitch' ],
+      unfollowingTwitchChannel: [ 'twitch' ],
+      gettingTwitchChannelId: [ 'twitch' ],
+      gettingInsUserId: [ 'instagram' ],
+      followingIns: [ 'instagram' ],
+      unfollowingIns: [ 'instagram' ],
+      gettingTwitterUserId: [ 'twitter' ],
+      followingTwitterUser: [ 'twitter' ],
+      unfollowingTwitterUser: [ 'twitter' ],
+      joiningReddit: [ 'reddit', 'subreddit' ],
+      leavingReddit: [ 'reddit', 'subreddit' ],
+      gettingRedditSubredditId: [ 'reddit', 'subreddit' ],
+      followingRedditUser: [ 'reddit', 'user' ],
+      unfollowingRedditUser: [ 'reddit', 'user' ],
+      gettingRedditUserId: [ 'reddit', 'user' ],
+      followingYtbChannel: [ 'youtube', 'channel' ],
+      unfollowingYtbChannel: [ 'youtube', 'channel' ],
+      likingYtbVideo: [ 'youtube', 'video' ],
+      unlikingYtbVideo: [ 'youtube', 'video' ],
+      gettingVkId: [ 'vk' ],
+      gettingVkWall: [ 'vk' ],
+      likingVkPublic: [ 'vk' ],
+      unlikingVkPublic: [ 'vk' ],
+      joiningVkGroup: [ 'vk' ],
+      leavingVkGroup: [ 'vk' ],
+      joiningVkPublic: [ 'vk' ],
+      leavingVkPublic: [ 'vk' ],
+      sendingVkWall: [ 'vk' ],
+      deletingVkWall: [ 'vk' ]
+    };
+    const urlConfig = typeMap[type];
+    if (!urlConfig || !text) {
+      return null;
+    }
+    const [platform, subType] = urlConfig;
+    const urlGenerator = urlGenerators[platform];
+    if (typeof urlGenerator === 'function') {
+      const url = urlGenerator(text, id);
+      const displayText = platform === 'announcement' ? id || '' : text;
+      return createBaseElement(`${I18n(type)}[${generateLink(url, displayText)}]...`);
+    }
+    if (subType && typeof urlGenerator === 'object') {
+      const subGenerator = urlGenerator[subType];
+      if (typeof subGenerator === 'function') {
+        const displayText = type.includes('RedditUser') ? text.replace('u_', '') : text;
+        return createBaseElement(`${I18n(type)}[${generateLink(subGenerator(text), displayText)}]...`);
+      }
+    }
+    return null;
+  };
+  const createSpecialElement = (type, text, html, id) => {
+    switch (type) {
+     case 'retweetting':
+     case 'unretweetting':
+      return createBaseElement(`${I18n(type)}${text}...`);
+
+     case 'visitingLink':
+      return createBaseElement(`${I18n('visitingLink')}[${generateLink(text || '', text || '')}]...`);
+
+     case 'verifyingInsAuth':
+     case 'text':
+      return createBaseElement(I18n(text || ''));
+
+     case 'html':
+      return $(text || html || '');
+
+     case 'whiteList':
+      return $(`<li><font class="warning">${I18n('skipTask')}[${text}(${id})](${I18n('whiteList')})</font></li>`);
+
+     case 'globalOptionsSkip':
+      return $(`<li>${I18n('skipTaskOption')}<font class="warning">${text}</font></li>`);
+
+     default:
+      return createBaseElement(`${I18n('unKnown')}:${type}(${text})...`);
+    }
+  };
+  const echoLog = ({type: type, text: text, html: html, id: id, before: before}) => {
+    const emptyStatus = {
+      success: () => emptyStatus,
+      error: () => emptyStatus,
+      warning: () => emptyStatus,
+      info: () => emptyStatus,
+      view: () => emptyStatus,
+      remove: () => emptyStatus
+    };
+    try {
+      let ele;
+      if (!type && !text && !html) {
+        ele = createBaseElement('');
+      } else if (text && !type) {
+        ele = createBaseElement(text);
+      } else if (html && !type) {
+        ele = $(html);
+      } else if (type) {
+        const platformElement = createPlatformElement(type, text, id);
+        ele = platformElement || createSpecialElement(type, text, html, id);
+      } else {
+        ele = createBaseElement('');
+      }
+      if (before) {
+        if (before in ICONS) {
+          const iconKey = before;
+          const svgContent = ICONS[iconKey];
+          const base64Svg = btoa(svgContent);
+          ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
+        } else {
+          ele.prepend(`<font class="before">${before}</font>`);
+        }
+      } else {
+        const base64Svg = btoa(ICONS['[AutoTask]']);
+        ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
+      }
+      ele.addClass('card-text');
+      $('#auto-task-info').append(ele);
+      ele[0]?.scrollIntoView();
+      const font = ele.find('font.log-status');
+      const status = {
+        font: font,
+        success(text = 'Success', html = false) {
+          this.font?.attr('class', '').addClass('success');
+          html ? this.font?.html(text) : this.font?.text(text);
+          return this;
+        },
+        error(text = 'Error', html = false) {
+          this.font?.attr('class', '').addClass('error');
+          html ? this.font?.html(text) : this.font?.text(text);
+          return this;
+        },
+        warning(text = 'Warning', html = false) {
+          this.font?.attr('class', '').addClass('warning');
+          html ? this.font?.html(text) : this.font?.text(text);
+          return this;
+        },
+        info(text = 'Info', html = false) {
+          this.font?.attr('class', '').addClass('info');
+          html ? this.font?.html(text) : this.font?.text(text);
+          return this;
+        },
+        view() {
+          this.font?.[0].scrollIntoView();
+          return this;
+        },
+        remove() {
+          this.font?.parent().remove();
+          return this;
+        }
+      };
+      return status;
+    } catch (error) {
+      throwError(error, 'echoLog');
+      return emptyStatus;
+    }
+  };
+  const moduleNamespace = platform => `autoTask:${platform}`;
+  const projectGM = platform => {
+    const namespace = moduleNamespace(platform);
+    const legacyKeys = {
+      [`${namespace}:auth`]: `${platform}Auth`,
+      [`${namespace}:cache`]: `${platform}Cache`
+    };
+    if (platform === 'steam') {
+      legacyKeys[`${namespace}:web:cache`] = 'steamCache';
+    }
+    const page = typeof location === 'undefined' ? '' : location.href.split('#')[0];
+    const keyFor = key => key === `${namespace}:tasks` ? `${key}:${encodeURIComponent(page)}` : legacyKeys[key] || key;
+    const isPlayState = key => platform === 'steam' && key.startsWith(`${namespace}:playState:`);
+    return {
+      getValue: (key, fallback) => {
+        if (key === `${namespace}:whiteList`) {
+          return GM_getValue('whiteList', {})[platform] ?? fallback;
+        }
+        if (isPlayState(key)) {
+          return {
+            stopPlayTime: GM_getValue('stopPlayTime', 0),
+            playedGames: GM_getValue('playedGames', []),
+            taskLink: GM_getValue('taskLink', [])
+          };
+        }
+        return GM_getValue(keyFor(key), fallback);
+      },
+      setValue: (key, value) => {
+        if (key === `${namespace}:whiteList`) {
+          GM_setValue('whiteList', {
+            ...GM_getValue('whiteList', {}),
+            [platform]: value
+          });
+        } else if (isPlayState(key)) {
+          const state = value;
+          for (const field of [ 'stopPlayTime', 'playedGames', 'taskLink' ]) {
+            GM_setValue(field, state[field]);
+          }
+        } else {
+          GM_setValue(keyFor(key), value);
+        }
+      },
+      deleteValue: key => {
+        if (key === `${namespace}:whiteList`) {
+          const lists = GM_getValue('whiteList', {});
+          delete lists[platform];
+          GM_setValue('whiteList', lists);
+        } else if (isPlayState(key)) {
+          for (const field of [ 'stopPlayTime', 'playedGames', 'taskLink' ]) {
+            GM_deleteValue(field);
+          }
+        } else {
+          GM_deleteValue(keyFor(key));
+        }
+      },
+      openInTab: (url, options) => GM_openInTab(url, options),
+      addValueChangeListener: (key, listener) => GM_addValueChangeListener(keyFor(key), listener),
+      removeValueChangeListener: id => GM_removeValueChangeListener(id)
+    };
+  };
+  const escapeText = value => value.replace(/[&<>"']/g, (char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&#39;'
+  }[char] || char)));
+  const bindModuleStatus = (client, platform) => {
+    const logs = new Map;
+    const parents = new Map;
+    const taskOperations = /^(task\.(execute|skip|do|undo)|users\.(follow|unfollow)|retweets\.(create|delete)|channel\.(follow|unfollow|subscribe|unsubscribe)|video\.(like|unlike)|user\.(follow|unfollow)|subreddit\.(subscribe|unsubscribe))$/;
+    const listener = event => {
+      debug(`${platform}: ${event.operation}`, event);
+      if (event.parentOperationId) {
+        parents.set(event.operationId, event.parentOperationId);
+      }
+      const terminal = [ 'success', 'failure', 'skipped' ].includes(event.phase);
+      if (/AUTH_REQUIRED|LOGIN_REQUIRED|AUTH_WAITING_FOR_PAGE/.test(event.code)) {
+        let id = event.operationId;
+        const visited = new Set;
+        while (id && !visited.has(id)) {
+          visited.add(id);
+          if (logs.has(id)) {
+            logs.get(id)?.warning(I18n('needLogin'));
+            break;
+          }
+          id = parents.get(id);
+        }
+      }
+      if (event.parentOperationId && !(taskOperations.test(event.operation) && (platform !== 'Steam' || event.source === 'steam'))) {
+        if (terminal) {
+          parents.delete(event.operationId);
+        }
+        return;
+      }
+      let log = logs.get(event.operationId);
+      if (!log) {
+        const label = I18n(event.operation.startsWith('init') ? 'moduleInitializing' : 'moduleTask');
+        log = echoLog({
+          text: escapeText(`${platform}: ${label}${event.target ? ` (${event.target})` : ''}`)
+        });
+        logs.set(event.operationId, log);
+      }
+      if (event.phase === 'success') {
+        log.success();
+      } else if (event.phase === 'failure') {
+        log.error(I18n('moduleFailed'));
+      } else if (event.phase === 'skipped') {
+        log.warning(I18n('moduleSkipped'));
+      } else if (/AUTH_REQUIRED|LOGIN_REQUIRED/.test(event.code)) {
+        log.warning(I18n('needLogin'));
+      }
+      if (terminal) {
+        logs.delete(event.operationId);
+        parents.delete(event.operationId);
+      }
+    };
+    const unsubscribe = client.on('status', listener);
+    const onPageHide = event => {
+      if (!event.persisted) {
+        client.dispose();
+      }
+    };
+    window.addEventListener('pagehide', onPageHide);
+    return () => {
+      unsubscribe();
+      logs.clear();
+      parents.clear();
+      window.removeEventListener('pagehide', onPageHide);
+    };
+  };
+  var style = ':root{--at-primary: #2563eb;--at-primary-dark: #1d4ed8;--at-primary-light: #3b82f6;--at-primary-50: rgba(37, 99, 235, 0.05);--at-primary-100: rgba(37, 99, 235, 0.1);--at-primary-200: rgba(37, 99, 235, 0.2);--at-primary-400: rgba(37, 99, 235, 0.4);--at-success: #10b981;--at-success-bg: rgba(16, 185, 129, 0.08);--at-success-border: rgba(16, 185, 129, 0.25);--at-error: #ef4444;--at-warning: #f59e0b;--at-info: #3b82f6;--at-surface: rgba(255, 255, 255, 0.95);--at-border: rgba(226, 232, 240, 0.8);--at-border-light: rgba(226, 232, 240, 0.4);--at-text: #1e293b;--at-text-muted: #64748b;--at-text-light: #94a3b8;--at-radius-sm: 8px;--at-radius: 12px;--at-radius-lg: 16px;--at-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);--at-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 4px 10px -5px rgba(0, 0, 0, 0.04);--at-shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12), 0 8px 16px -5px rgba(0, 0, 0, 0.06);--at-shadow-btn: 0 4px 14px rgba(37, 99, 235, 0.3);--at-shadow-btn-hover: 0 8px 24px rgba(37, 99, 235, 0.4);--at-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);--at-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);--at-blur: blur(20px) saturate(180%)}@keyframes at-fade-in-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes at-fade-in{from{opacity:0}to{opacity:1}}@keyframes at-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}@keyframes at-pulse-glow{0%,100%{box-shadow:0 4px 14px rgba(37,99,235,.3)}50%{box-shadow:0 4px 24px rgba(37,99,235,.55)}}.colorful-button,body.auto-task-options .auto-task-form table button,#auto-task-buttons a.auto-task-website-btn{position:relative !important;display:inline-flex !important;align-items:center !important;justify-content:center !important;padding:7px 14px !important;color:#fff !important;text-decoration:none !important;text-transform:capitalize !important;font-weight:600 !important;font-size:13px !important;letter-spacing:.3px !important;line-height:1.5 !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border:none !important;border-radius:var(--at-radius) !important;box-shadow:var(--at-shadow-btn) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;overflow:hidden !important;cursor:pointer !important;outline:none !important;transition:transform .25s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .25s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important;-webkit-user-select:none !important;user-select:none !important;-webkit-tap-highlight-color:rgba(0,0,0,0) !important}.colorful-button::after,body.auto-task-options .auto-task-form table button::after,#auto-task-buttons a.auto-task-website-btn::after{content:"" !important;position:absolute !important;top:0 !important;left:0 !important;width:100% !important;height:100% !important;background:linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.12) 55%, transparent 60%) !important;transform:translateX(-100%);transition:transform .6s ease !important}.colorful-button:hover,body.auto-task-options .auto-task-form table button:hover,#auto-task-buttons a.auto-task-website-btn:hover{background-position:100% 100% !important;box-shadow:var(--at-shadow-btn-hover) !important;transform:translateY(-2px) !important;color:#fff !important;text-decoration:none !important}.colorful-button:hover::after,body.auto-task-options .auto-task-form table button:hover::after,#auto-task-buttons a.auto-task-website-btn:hover::after{transform:translateX(100%)}.colorful-button:active,body.auto-task-options .auto-task-form table button:active,#auto-task-buttons a.auto-task-website-btn:active{transform:translateY(0px) scale(0.98) !important;box-shadow:var(--at-shadow-btn) !important;color:#fff !important;text-decoration:none !important;transition:transform .1s ease,box-shadow .1s ease !important}.colorful-button:focus-visible,body.auto-task-options .auto-task-form table button:focus-visible,#auto-task-buttons a.auto-task-website-btn:focus-visible{color:#fff !important;text-decoration:none !important;outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important}#auto-task-info{position:fixed !important;bottom:20px !important;right:20px !important;width:60% !important;max-width:480px !important;max-height:50% !important;overflow-y:auto !important;color:var(--at-text) !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;padding:12px 16px !important;z-index:999999999 !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius-lg) !important;font-size:13px !important;box-shadow:var(--at-shadow-lg) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;opacity:1 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:transform var(--at-transition),box-shadow var(--at-transition) !important}#auto-task-info:hover{box-shadow:0 25px 50px -12px rgba(0,0,0,.12),0 12px 24px -6px rgba(0,0,0,.06)}#auto-task-info::-webkit-scrollbar{width:5px}#auto-task-info::-webkit-scrollbar-track{background:rgba(0,0,0,0);margin:8px 0}#auto-task-info::-webkit-scrollbar-thumb{background:linear-gradient(180deg, var(--at-primary-dark), var(--at-primary-light));border-radius:10px}#auto-task-info::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg, var(--at-primary), var(--at-primary-light))}#auto-task-info li{list-style:none;align-items:flex-start !important;text-align:left;padding:3px 8px;border-bottom:1px solid var(--at-border-light);border-radius:6px;transition:background var(--at-transition-fast),padding var(--at-transition-fast)}#auto-task-info li:hover{background:var(--at-primary-50);padding-left:12px;padding-right:12px}#auto-task-info li:last-child{border-bottom:none}#auto-task-info li .before-icon{display:inline-block !important;width:14px !important;height:14px !important;flex-shrink:0 !important;margin-top:1px;margin-right:8px;background-size:14px !important;background-repeat:no-repeat !important;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.1)}#auto-task-info li font.before{color:var(--at-primary) !important;margin-right:6px !important;font-weight:600 !important;font-size:12px !important;flex-shrink:0}#auto-task-info li a.high-light{color:var(--at-primary) !important;font-weight:600 !important;text-decoration:none !important;border-bottom:1.5px solid rgba(0,0,0,0);transition:border-color var(--at-transition-fast)}#auto-task-info li a.high-light:hover{border-bottom-color:var(--at-primary)}#auto-task-info font{display:contents}#auto-task-info .success{color:var(--at-success);font-weight:600}#auto-task-info .error{color:var(--at-error);font-weight:600}#auto-task-info .warning{color:var(--at-warning);font-weight:600}#auto-task-info .info{color:var(--at-info);font-weight:600}#auto-task-info .update-text{color:var(--at-success);background:var(--at-success-bg);border:1px solid var(--at-success-border);margin:12px 0;border-radius:var(--at-radius);padding:12px 16px;font-weight:500;box-shadow:0 2px 8px rgba(16,185,129,.08);transition:box-shadow var(--at-transition-fast),transform var(--at-transition-fast)}#auto-task-info .update-text:hover{box-shadow:0 4px 12px rgba(16,185,129,.12);transform:translateY(-1px)}#auto-task-buttons{position:fixed !important;top:30px !important;right:15px !important;width:138px !important;min-width:138px !important;max-width:138px !important;opacity:1 !important;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.96) 100%) !important;-webkit-backdrop-filter:var(--at-blur) !important;backdrop-filter:var(--at-blur) !important;border:1px solid var(--at-border) !important;border-radius:var(--at-radius) !important;padding:10px 8px !important;box-shadow:var(--at-shadow) !important;z-index:999999998 !important;animation:at-fade-in-up .35s cubic-bezier(0.4, 0, 0.2, 1) both !important;transition:box-shadow var(--at-transition),transform var(--at-transition) !important}#auto-task-buttons:hover{box-shadow:var(--at-shadow-lg)}#auto-task-buttons p{margin:5px 0 !important;line-height:normal !important;height:auto !important;text-align:center !important;padding:0 !important;font-size:13px !important;color:var(--at-text-muted) !important}#auto-task-buttons p:first-child{margin-top:0 !important}#auto-task-buttons p:last-child{margin-bottom:0 !important}#auto-task-buttons a.auto-task-website-btn{width:118px !important;min-height:30px !important;font-size:13px !important;display:flex !important;margin:0 auto !important;padding:6px 12px !important}.show-button-div{position:fixed !important;top:30px !important;right:15px !important;width:40px !important;cursor:pointer !important;padding:4px !important;z-index:999999998 !important;opacity:1 !important;animation:at-fade-in .3s ease both !important}.show-button-div .show-button-link{display:flex !important;align-items:center !important;justify-content:center !important;width:38px !important;height:38px !important;background:linear-gradient(135deg, var(--at-primary-dark) 0%, var(--at-primary) 50%, var(--at-primary-light) 100%) !important;background-size:200% 200% !important;border-radius:50% !important;color:#fff !important;text-decoration:none !important;box-shadow:0 6px 16px rgba(37,99,235,.35) !important;border:none !important;outline:none !important;transition:transform .3s cubic-bezier(0.4, 0, 0.2, 1),box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),background-position .4s ease !important}.show-button-div .show-button-link:hover{background-position:100% 100% !important;box-shadow:0 10px 28px rgba(37,99,235,.5) !important;transform:translateY(-3px) scale(1.05) !important;animation:at-pulse-glow 2s infinite !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:active{transform:translateY(-1px) scale(1.02) !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link:focus-visible{outline:2px solid var(--at-primary-400) !important;outline-offset:2px !important;color:#fff !important;text-decoration:none !important}.show-button-div .show-button-link svg{transition:transform .25s ease !important}.show-button-div .show-button-link:hover svg{transform:translateX(2px) !important}.show-button-div a.auto-task-website-btn{right:-15px !important}.show-button-div a.auto-task-website-btn::after{content:"✓" !important;position:absolute !important;top:50% !important;transform:translateY(-50%) !important;font-size:20px !important;font-weight:bold !important;color:#fff !important}.auto-task-keylol{display:inline-block;text-transform:capitalize;margin-left:10px;text-decoration:none !important;border:1.5px solid var(--at-border);border-radius:6px;padding:1px 6px;font-size:13px;transition:background var(--at-transition-fast),color var(--at-transition-fast),border-color var(--at-transition-fast)}.auto-task-keylol[selected=selected]{background:linear-gradient(135deg, var(--at-primary-dark), var(--at-primary)) !important;color:#fff !important;border-color:rgba(0,0,0,0) !important;box-shadow:0 2px 8px var(--at-primary-200)}.auto-task-form table{width:100%;font-size:13px;color:var(--at-text);border-collapse:separate;border-spacing:0;border:1px solid var(--at-border-light);border-radius:var(--at-radius);overflow:hidden;box-shadow:var(--at-shadow-sm)}.auto-task-form table thead td{padding:10px 12px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--at-text-muted);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);border-bottom:2px solid var(--at-border);border-right:1px solid var(--at-border-light)}.auto-task-form table thead td:last-child{border-right:none}.auto-task-form table tbody tr{background:#fff;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}.auto-task-form table tbody tr:nth-child(even){background:#f8fafc}.auto-task-form table tbody tr:hover{background:#eff6ff !important;box-shadow:inset 0 0 0 1px rgba(37,99,235,.1)}.auto-task-form table tbody tr th{padding:10px 12px;font-weight:600;font-size:12px;text-transform:capitalize;color:var(--at-text);background:#f1f5f9;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td{padding:9px 12px;border-right:1px solid var(--at-border-light);border-bottom:1px solid var(--at-border-light)}.auto-task-form table tbody tr td:last-child{border-right:none}.auto-task-form table tbody tr:last-child th,.auto-task-form table tbody tr:last-child td{border-bottom:none}body.auto-task-options{padding-top:20px;text-align:center;background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-options .auto-task-form{width:80%;max-width:1000px;margin:0 auto;padding-bottom:30px}body.auto-task-options .auto-task-form table input.editOption{width:80%}body.auto-task-options .auto-task-form table #getTwitterUserId,body.auto-task-options .auto-task-form table #getYoutubeChannelId{margin-top:6px}body.auto-task-options .auto-task-form table button{position:relative !important;padding:6px 12px !important;font-size:12px !important;min-height:28px !important;min-width:80px !important;vertical-align:middle !important;white-space:nowrap !important}body.auto-task-options .auto-task-form table input[type=text]{outline:none;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;font-size:14px;color:var(--at-text);background:#fff;transition:border-color var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table input[type=text]::placeholder{color:var(--at-text-light)}body.auto-task-options .auto-task-form table input[type=text]:focus{border-color:var(--at-primary-light);box-shadow:0 0 0 3px var(--at-primary-100),0 1px 3px rgba(0,0,0,.04)}body.auto-task-options .auto-task-form table label{position:relative;display:inline-block;width:44px;height:24px;cursor:pointer;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:middle}body.auto-task-options .auto-task-form table label input{position:absolute;opacity:0;width:0;height:0}body.auto-task-options .auto-task-form table label span{position:absolute;top:0;left:0;width:100%;height:100%;background:#cbd5e1;border-radius:24px;transition:background var(--at-transition-fast),box-shadow var(--at-transition-fast)}body.auto-task-options .auto-task-form table label span i{position:absolute;top:2px;left:2px;width:20px;height:20px;background:#fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);transition:transform var(--at-transition-fast)}body.auto-task-options .auto-task-form table label input:checked~span{background:var(--at-success);box-shadow:0 0 0 2px rgba(16,185,129,.15)}body.auto-task-options .auto-task-form table label input:checked~span i{transform:translateX(20px)}body.auto-task-options .auto-task-form table label input:focus-visible~span{box-shadow:0 0 0 3px var(--at-primary-100)}body.auto-task-history{font-size:15px;font-weight:400;line-height:1.6;color:var(--at-text);background:linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);min-height:100vh}body.auto-task-history .container{padding:20px 0}body.auto-task-history .container a{color:var(--at-primary);text-decoration:none;transition:color var(--at-transition-fast)}body.auto-task-history .container a:hover{color:var(--at-primary-dark)}body.auto-task-history .container .card{width:85%;max-width:800px;margin:24px auto;padding:20px 24px;background:linear-gradient(145deg, var(--at-surface) 0%, rgba(248, 250, 252, 0.97) 100%);border:1px solid var(--at-border);border-radius:var(--at-radius-lg);-webkit-backdrop-filter:var(--at-blur);backdrop-filter:var(--at-blur);box-shadow:var(--at-shadow);position:relative;word-wrap:break-word;animation:at-fade-in-up .5s cubic-bezier(0.4, 0, 0.2, 1);transition:box-shadow var(--at-transition),transform var(--at-transition)}body.auto-task-history .container .card:hover{box-shadow:var(--at-shadow-lg);transform:translateY(-2px)}body.auto-task-history .container .card .title{text-align:center;font-size:26px;font-weight:700;margin:6px 0 12px;color:var(--at-text)}body.auto-task-history .container .card .title a{color:var(--at-primary);padding:2px 8px;border-radius:8px;transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .title a:hover{text-decoration:none;background:rgba(147,225,255,.25);color:var(--at-primary-dark)}body.auto-task-history .container .card ul{margin-bottom:20px;padding-left:0;list-style:none}body.auto-task-history .container .card ul li{position:relative;margin-bottom:6px;padding:4px 0 4px 20px;line-height:1.6}body.auto-task-history .container .card ul li::before{content:"•";position:absolute;left:4px;color:var(--at-primary-light);font-weight:bold}body.auto-task-history .container .card ul li a:hover{text-decoration:underline}body.auto-task-history .container .card .delete-task{position:absolute;right:12px;top:12px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;border-radius:var(--at-radius-sm);color:var(--at-text-muted);transition:background var(--at-transition-fast),color var(--at-transition-fast)}body.auto-task-history .container .card .delete-task:hover{background:rgba(239,68,68,.1);color:var(--at-error)}body.auto-task-history .container .card .time{position:absolute;right:16px;bottom:14px;color:#e83e8c;font-family:"SF Mono","Fira Code","Cascadia Code",Menlo,Monaco,Consolas,monospace;font-size:13px;font-weight:500;letter-spacing:-0.2px}.swal2-modal{width:70% !important;max-width:1000px !important;border-radius:var(--at-radius-lg) !important;overflow:hidden}.swal2-modal #swal2-title{text-align:center !important;font-weight:600 !important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border-color:var(--at-primary-light) !important;box-shadow:0 0 0 3px var(--at-primary-100) !important}.swal2-checkbox-custom{display:flex;align-items:center;justify-content:center;background:#fff;color:inherit;margin:1em auto;gap:6px}.swal2-checkbox-custom input{flex-shrink:0;margin:0 .4em;accent-color:var(--at-primary)}.auto-task-capitalize{text-transform:capitalize !important}.giveaway-actions #getKey{display:none !important}.auto-task-giveaway-status{color:#fff;border-radius:20px;padding:2px 8px;margin-left:6px;font-size:12px;font-weight:600;letter-spacing:.2px}.auto-task-giveaway-status.active{background:linear-gradient(135deg, var(--at-success), #059669);box-shadow:0 2px 6px rgba(16,185,129,.3)}.auto-task-giveaway-status.not-active{background:linear-gradient(135deg, var(--at-error), #dc2626);box-shadow:0 2px 6px rgba(239,68,68,.3)}';
+  function updateAuth$3(ctx) {
+    return ctx.run('auth.session', undefined, (async ctx => {
+      try {
+        const cookies = await ctx.cookies();
+        if (ctx.state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        const token = cookies.find((cookie => cookie.name === 'csrf_token'))?.value;
+        if (!token || typeof token !== 'string') {
+          return ctx.fail('CSRF_TOKEN_MISSING');
+        }
+        ctx.state.csrfToken = token;
+        return true;
+      } catch {
+        return ctx.fail('COOKIE_READ_FAILED');
+      }
+    }), Boolean);
+  }
+  function getDefaultGM$2() {
+    return {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value)
+    };
+  }
+  function createGMStorage$3(gm, namespace = 'reddit') {
+    return {
+      async get(key, fallback) {
+        return gm.getValue(`${namespace}:${key}`, fallback);
+      },
+      async set(key, value) {
+        await gm.setValue(`${namespace}:${key}`, value);
+      }
+    };
+  }
+  function createGMCookieReader$1(list, timeoutMs = 1e4) {
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+      throw new Error('Invalid cookie timeout');
+    }
+    return () => new Promise(((resolve, reject) => {
+      let settled = false;
+      const finish = cookies => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        if (cookies) {
+          resolve(cookies);
+        } else {
+          reject(new Error('COOKIE_READ_FAILED'));
+        }
+      };
+      const timer = setTimeout((() => finish()), timeoutMs);
+      try {
+        const handle = list({
+          url: 'https://www.reddit.com/'
+        }, ((cookies, error) => {
+          if (error || !Array.isArray(cookies)) {
+            finish();
+          } else {
+            finish(cookies);
+          }
+        }));
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => finish()));
+        }
+      } catch {
+        finish();
+      }
+    }));
+  }
+  function getDefaultCookieReader(timeoutMs) {
+    return createGMCookieReader$1(((details, callback) => GM_cookie.list(details, callback)), timeoutMs);
+  }
+  let StatusEvents$3 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  let Context$3 = class Context {
+    state={
+      csrfToken: '',
+      initialized: false,
+      disposed: false,
+      tasks: {
+        reddits: []
+      },
+      whiteList: {
+        reddits: []
+      }
+    };
+    events=new StatusEvents$3;
+    storage;
+    cookies;
+    intervalMs;
+    doTaskEnabled;
+    undoTaskEnabled;
+    cancellations=new Set;
+    http;
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    failureCode;
+    skipped=false;
+    constructor(options) {
+      this.http = options.http;
+      this.storage = createGMStorage$3(options.gm || getDefaultGM$2(), options.namespace || 'reddit');
+      this.cookies = options.cookies || getDefaultCookieReader(options.cookieTimeoutMs);
+      this.intervalMs = options.intervalMs ?? 1e3;
+      if (!Number.isFinite(this.intervalMs) || this.intervalMs < 0) {
+        throw new Error('Invalid intervalMs');
+      }
+      this.doTaskEnabled = options.doTaskEnabled ?? true;
+      this.undoTaskEnabled = options.undoTaskEnabled ?? true;
+    }
+    async run(operation, target, work, success) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.parentOperationId = this.operationId || undefined;
+      child.operationId = crypto.randomUUID();
+      child.operation = operation;
+      child.target = target;
+      child.failureCode = undefined;
+      child.skipped = false;
+      child.emit('start', 'OPERATION_STARTED');
+      try {
+        const result = await work(child);
+        const ok = success(result);
+        child.emit(ok ? child.skipped ? 'skipped' : 'success' : 'failure', ok ? child.skipped ? 'OPERATION_SKIPPED' : 'OPERATION_COMPLETED' : child.failureCode || 'OPERATION_FAILED');
+        return result;
+      } catch (error) {
+        child.emit('failure', child.failureCode || 'UNEXPECTED_ERROR');
+        throw error;
+      }
+    }
+    emit(phase, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        code: code,
+        timestamp: Date.now(),
+        level: phase === 'failure' || code === this.failureCode ? 'error' : code.startsWith('HTTP_') ? 'debug' : 'info',
+        details: details
+      });
+    }
+    progress(code, details) {
+      this.emit('progress', code, details);
+    }
+    fail(code) {
+      this.failureCode = code;
+      this.progress(code);
+      return false;
+    }
+    skip(code) {
+      this.skipped = true;
+      this.progress(code);
+      return true;
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new Error('DISPOSED');
+      }
+      this.progress('HTTP_REQUEST_STARTED', {
+        method: options.method || 'GET'
+      });
+      const result = await this.http(options);
+      if (this.state.disposed) {
+        throw new Error('DISPOSED');
+      }
+      this.progress('HTTP_REQUEST_COMPLETED', {
+        transportStatus: result.status,
+        httpStatus: result.data?.status || 0
+      });
+      return result;
+    }
+    async delay() {
+      if (this.state.disposed || this.intervalMs === 0) {
+        return;
+      }
+      await new Promise((resolve => {
+        const done = () => {
+          clearTimeout(timer);
+          this.cancellations.delete(done);
+          resolve();
+        };
+        const timer = setTimeout(done, this.intervalMs);
+        this.cancellations.add(done);
+      }));
+    }
+  };
+  function parseRedditLink(link) {
+    try {
+      const url = new URL(link);
+      if (![ 'http:', 'https:' ].includes(url.protocol) || ![ 'reddit.com', 'www.reddit.com', 'old.reddit.com' ].includes(url.hostname) || url.username || url.password) {
+        return;
+      }
+      const [kind, name] = url.pathname.split('/').filter(Boolean);
+      if (!name || !/^[A-Za-z0-9_-]+$/.test(name)) {
+        return;
+      }
+      if (kind === 'user' || kind === 'u') {
+        return {
+          kind: 'user',
+          name: name,
+          taskName: `u_${name}`
+        };
+      }
+      if (kind === 'r') {
+        return {
+          kind: 'subreddit',
+          name: name,
+          taskName: name
+        };
+      }
+    } catch {
+      return;
+    }
+  }
+  function record(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value) ? value : undefined;
+  }
+  async function mutate(ctx, operation, input) {
+    const {result: result, data: data} = await ctx.request({
+      url: 'https://www.reddit.com/svc/shreddit/graphql',
+      method: 'POST',
+      responseType: 'json',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: JSON.stringify({
+        operation: operation,
+        variables: {
+          input: input
+        },
+        csrf_token: ctx.state.csrfToken
+      })
+    });
+    if (result !== 'Success') {
+      return ctx.fail('REQUEST_FAILED');
+    }
+    if (data?.status !== 200) {
+      return ctx.fail(data?.status === 401 || data?.status === 403 ? 'AUTH_REQUIRED' : 'HTTP_ERROR');
+    }
+    const payload = record(data.response);
+    const body = record(payload?.data);
+    const mutation = record(body?.[operation] ?? body?.[operation[0].toLowerCase() + operation.slice(1)]);
+    const hasErrors = value => value != null && (!Array.isArray(value) || value.length > 0);
+    if (hasErrors(payload?.errors) || hasErrors(body?.errors) || hasErrors(mutation?.errors)) {
+      return ctx.fail('GRAPHQL_ERROR');
+    }
+    if (mutation?.ok !== true) {
+      return ctx.fail('MUTATION_NOT_CONFIRMED');
+    }
+    return true;
+  }
+  function getSubredditId(ctx, name) {
+    return ctx.run('subreddit.getId', name, (async ctx => {
+      try {
+        const {result: result, data: data} = await ctx.request({
+          url: `https://www.reddit.com/r/${encodeURIComponent(name)}`,
+          method: 'GET'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          return ctx.fail('LOOKUP_FAILED');
+        }
+        const html = (new DOMParser).parseFromString(data.responseText, 'text/html');
+        const id = html.querySelector('shreddit-subreddit-header-buttons[subreddit-id]')?.getAttribute('subreddit-id');
+        return id && /^t5_[a-z0-9]+$/i.test(id) ? id : ctx.fail('SUBREDDIT_ID_MISSING');
+      } catch {
+        return ctx.fail('LOOKUP_FAILED');
+      }
+    }), Boolean);
+  }
+  async function executeSubreddit(ctx, name, subscribe) {
+    const id = await getSubredditId(ctx, name);
+    if (!id) {
+      return false;
+    }
+    return mutate(ctx, 'UpdateSubredditSubscriptions', {
+      inputs: [ {
+        subredditId: id,
+        subscribeState: subscribe ? 'SUBSCRIBED' : 'NONE'
+      } ]
+    });
+  }
+  function doSubreddit(ctx, name) {
+    return executeSubreddit(ctx, name, true);
+  }
+  function undoSubreddit(ctx, name) {
+    return executeSubreddit(ctx, name, false);
+  }
+  function getUserId(ctx, name) {
+    return ctx.run('user.getId', name, (async ctx => {
+      try {
+        const {result: result, data: data} = await ctx.request({
+          url: `https://www.reddit.com/user/${encodeURIComponent(name)}`,
+          method: 'GET'
+        });
+        if (result !== 'Success' || data?.status !== 200) {
+          return ctx.fail('LOOKUP_FAILED');
+        }
+        const html = (new DOMParser).parseFromString(data.responseText, 'text/html');
+        const id = html.querySelector('follow-button[redditor-id]')?.getAttribute('redditor-id');
+        return id && /^t2_[a-z0-9]+$/i.test(id) ? id : ctx.fail('USER_ID_MISSING');
+      } catch {
+        return ctx.fail('LOOKUP_FAILED');
+      }
+    }), Boolean);
+  }
+  async function executeUser$1(ctx, name, follow) {
+    const id = await getUserId(ctx, name);
+    if (!id) {
+      return false;
+    }
+    return mutate(ctx, 'UpdateProfileFollowState', {
+      accountId: id,
+      state: follow ? 'FOLLOWED' : 'NONE'
+    });
+  }
+  function doUser$1(ctx, name) {
+    return executeUser$1(ctx, name, true);
+  }
+  function undoUser$1(ctx, name) {
+    return executeUser$1(ctx, name, false);
+  }
+  function executeTarget(ctx, target, doTask) {
+    const operation = target.kind === 'user' ? doTask ? 'user.follow' : 'user.unfollow' : doTask ? 'subreddit.subscribe' : 'subreddit.unsubscribe';
+    return ctx.run(operation, target.taskName, (async ctx => {
+      try {
+        if (ctx.state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        if (!doTask && ctx.state.whiteList.reddits.some((name => name.toLowerCase() === target.taskName.toLowerCase()))) {
+          return ctx.skip('WHITELIST_SKIPPED');
+        }
+        const ok = await (target.kind === 'user' ? (doTask ? doUser$1 : undoUser$1)(ctx, target.name) : (doTask ? doSubreddit : undoSubreddit)(ctx, target.name));
+        if (ok && doTask && !ctx.state.tasks.reddits.includes(target.taskName)) {
+          ctx.state.tasks.reddits.push(target.taskName);
+        }
+        return ok;
+      } catch {
+        return ctx.fail('UNEXPECTED_ERROR');
+      }
+    }), Boolean);
+  }
+  function executeTasks$3(ctx, options, action) {
+    const doTask = action === 'do';
+    return ctx.run(doTask ? 'do' : 'undo', undefined, (async ctx => {
+      try {
+        if (ctx.state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        if (!ctx.state.initialized) {
+          return ctx.fail('AUTH_REQUIRED');
+        }
+        const {redditLinks: redditLinks = []} = options;
+        if (typeof doTask !== 'boolean' || !Array.isArray(redditLinks) || redditLinks.some((link => typeof link !== 'string'))) {
+          return ctx.fail('INVALID_ARGUMENT');
+        }
+        const result = {
+          success: true,
+          results: {}
+        };
+        const enabled = doTask ? ctx.doTaskEnabled : ctx.undoTaskEnabled;
+        if (!enabled) {
+          ctx.skip('CONFIG_SKIPPED');
+        }
+        for (const [index, link] of [ ...new Set(redditLinks) ].entries()) {
+          if (index > 0 && enabled) {
+            await ctx.delay();
+          }
+          const target = parseRedditLink(link);
+          const ok = ctx.state.disposed ? false : !enabled ? true : target ? await executeTarget(ctx, target, doTask) : false;
+          if (!target && enabled) {
+            ctx.progress('INVALID_LINK');
+          }
+          result.results.redditLinks ||= Object.create(null);
+          result.results.redditLinks[link] = ok;
+          result.success = result.success && ok;
+        }
+        return result;
+      } catch {
+        return ctx.fail('UNEXPECTED_ERROR');
+      }
+    }), (value => typeof value === 'boolean' ? value : value.success));
+  }
+  function doTasks$3(ctx, options = {}) {
+    return executeTasks$3(ctx, options, 'do');
+  }
+  function undoTasks$3(ctx, options = {}) {
+    return executeTasks$3(ctx, options, 'undo');
+  }
+  function validateWhiteList(value) {
+    const reddits = value?.reddits;
+    if (!Array.isArray(reddits) || !reddits.every((name => typeof name === 'string' && /^[A-Za-z0-9_-]+$/.test(name)))) {
+      throw new Error('INVALID_WHITELIST');
+    }
+    return {
+      reddits: [ ...new Set(reddits) ]
+    };
+  }
+  async function loadWhiteList$1(ctx) {
+    ctx.state.whiteList = validateWhiteList(await ctx.storage.get('whiteList', {
+      reddits: []
+    }));
+  }
+  function setWhiteList$1(ctx, value) {
+    return ctx.run('whiteList.save', undefined, (async ctx => {
+      if (ctx.state.disposed) {
+        return ctx.fail('DISPOSED');
+      }
+      try {
+        const validated = validateWhiteList(value);
+        await ctx.storage.set('whiteList', validated);
+        ctx.state.whiteList = validated;
+        return true;
+      } catch {
+        return ctx.fail('WHITELIST_SAVE_FAILED');
+      }
+    }), Boolean);
+  }
+  function parseHeaders$4(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$3(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$4(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  let Reddit$1 = class Reddit {
+    ctx;
+    initializing;
+    queue=Promise.resolve();
+    constructor(options) {
+      this.ctx = new Context$3(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = validateWhiteList(value);
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = validateWhiteList(value);
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init() {
+      if (this.initializing) {
+        return this.initializing;
+      }
+      this.initializing = this.ctx.run('init', undefined, (async ctx => {
+        try {
+          if (ctx.state.disposed) {
+            return ctx.fail('DISPOSED');
+          }
+          if (ctx.state.initialized) {
+            return true;
+          }
+          await loadWhiteList$1(ctx);
+          ctx.state.initialized = await updateAuth$3(ctx);
+          return ctx.state.initialized;
+        } catch {
+          return ctx.fail('INITIALIZATION_FAILED');
+        }
+      }), Boolean).finally((() => {
+        this.initializing = undefined;
+      }));
+      return this.initializing;
+    }
+    do(options = {}) {
+      const job = this.queue.then((() => doTasks$3(this.ctx, options)));
+      this.queue = job.catch((() => undefined));
+      return job;
+    }
+    undo(options = {}) {
+      const job = this.queue.then((() => undoTasks$3(this.ctx, options)));
+      this.queue = job.catch((() => undefined));
+      return job;
+    }
+    setWhiteList(value) {
+      return setWhiteList$1(this.ctx, value);
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      this.ctx.state.csrfToken = '';
+      for (const cancel of [ ...this.ctx.cancellations ]) {
+        cancel();
+      }
+      this.ctx.events.clear();
+    }
+  };
+  function createTaskResult() {
+    return {
+      success: true,
+      results: {}
+    };
+  }
+  function setTaskResult(result, type, value, success) {
+    if (!Object.hasOwn(result.results, type) || !result.results[type]) {
+      Object.defineProperty(result.results, type, {
+        value: {},
+        enumerable: true,
+        writable: true,
+        configurable: true
+      });
+    }
+    Object.defineProperty(result.results[type], value, {
+      value: success,
+      enumerable: true,
+      writable: true,
+      configurable: true
+    });
+    result.success = result.success && success;
+  }
+  function getRealParams(links, doTask, recorded, link2param) {
+    const converted = links.map(link2param).filter((value => value !== undefined));
+    return [ ...new Set([ ...converted, ...!doTask ? recorded : [] ]) ];
+  }
+  class Social {
+    createTaskResult() {
+      return createTaskResult();
+    }
+    setTaskResult(result, type, value, success) {
+      setTaskResult(result, type, value, success);
+    }
+    getRealParams(name, links, doTask, link2param) {
+      const recorded = this.tasks[name];
+      return getRealParams(links, doTask, Array.isArray(recorded) ? recorded : [], link2param);
+    }
+  }
+  class SocialAdapter extends Social {
+    client;
+    constructor(client) {
+      super();
+      this.client = client;
+    }
+    get tasks() {
+      return this.client.tasks;
+    }
+    init(options) {
+      const init = this.client.init;
+      return init.call(this.client, options);
+    }
+    do(options) {
+      const execute = this.client.do;
+      return execute.call(this.client, options);
+    }
+    undo(options) {
+      const execute = this.client.undo;
+      return execute.call(this.client, options);
+    }
+    on(event, listener) {
+      return this.client.on(event, listener);
+    }
+    dispose() {
+      this.client.dispose();
+    }
+  }
+  class ProjectSocial extends SocialAdapter {
+    unsubscribe;
+    constructor(client, platform) {
+      super(client);
+      this.unsubscribe = bindModuleStatus(client, platform);
+    }
+    get tasks() {
+      return this.client.tasks;
+    }
+    set tasks(value) {
+      this.client.tasks = value;
+    }
+    get whiteList() {
+      return this.client.whiteList;
+    }
+    set whiteList(value) {
+      this.client.whiteList = value;
+    }
+    async do(options) {
+      const result = await super.do(options);
+      if (typeof result === 'boolean') {
+        return result;
+      }
+      const results = {};
+      for (const [key, values] of Object.entries(result.results)) {
+        if (values) {
+          Object.defineProperty(results, key, {
+            value: values,
+            enumerable: true,
+            writable: true,
+            configurable: true
+          });
+        }
+      }
+      return {
+        success: result.success,
+        results: results
+      };
+    }
+    async undo(options) {
+      const result = await super.undo(options);
+      if (typeof result === 'boolean') {
+        return result;
+      }
+      const results = {};
+      for (const [key, values] of Object.entries(result.results)) {
+        if (values) {
+          Object.defineProperty(results, key, {
+            value: values,
+            enumerable: true,
+            writable: true,
+            configurable: true
+          });
+        }
+      }
+      return {
+        success: result.success,
+        results: results
+      };
+    }
+    dispose() {
+      this.unsubscribe();
+      super.dispose();
+    }
+  }
+  class Reddit extends ProjectSocial {
+    constructor() {
+      super(new Reddit$1({
+        http: createGMHttpClient$3((options => GM_xmlhttpRequest(options))),
+        gm: projectGM('reddit'),
+        namespace: moduleNamespace('reddit'),
+        doTaskEnabled: globalOptions.doTask.reddit.reddits,
+        undoTaskEnabled: globalOptions.undoTask.reddit.reddits
+      }), 'Reddit');
+    }
+  }
+  class Twitch extends ProjectSocial {
+    constructor() {
+      super(new Twitch$2({
+        http: createGMHttpClient$4((options => GM_xmlhttpRequest(options))),
+        gm: projectGM('twitch'),
+        namespace: moduleNamespace('twitch'),
+        followEnabled: globalOptions.doTask.twitch.channels,
+        unfollowEnabled: globalOptions.undoTask.twitch.channels
+      }), 'Twitch');
+    }
+  }
+  async function loadCache$1(ctx) {
+    const saved = await ctx.storage.get('cache', {});
+    ctx.state.cache = Object.assign(Object.create(null), Object.fromEntries(Object.entries(saved || {}).filter((([, value]) => typeof value === 'string' && /^\d+$/.test(value)))));
+  }
+  async function setCache$1(ctx, name, id) {
+    ctx.state.cache[name.toLowerCase()] = id;
+    const write = ctx.state.writes.then((() => ctx.storage.set('cache', ctx.state.cache)));
+    ctx.state.writes = write.catch((() => undefined));
+    await write;
+  }
+  function getDefaultGM$1() {
+    return {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value),
+      deleteValue: key => GM_deleteValue(key),
+      listCookies: (details, callback) => GM_cookie.list(details, callback)
+    };
+  }
+  function createGMStorage$2(gm, namespace = 'twitter') {
+    return {
+      get(key, fallback) {
+        return Promise.resolve(gm.getValue(`${namespace}:${key}`, fallback));
+      },
+      set(key, value) {
+        return Promise.resolve(gm.setValue(`${namespace}:${key}`, value));
+      },
+      delete(key) {
+        return Promise.resolve(gm.deleteValue(`${namespace}:${key}`));
+      }
+    };
+  }
+  const DEFAULT_API = {
+    bearerToken: 'AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+    userByScreenName: 'jUKA--0QkqGIFhmfRZdWrQ',
+    createRetweet: 'ojPdsZsimiJrUGLR1sjUtA',
+    deleteRetweet: 'iQtK4dl5hBmXewYZuEOKVw',
+    userFeatures: {
+      responsive_web_grok_bio_auto_translation_is_enabled: false,
+      hidden_profile_subscriptions_enabled: true,
+      payments_enabled: false,
+      profile_label_improvements_pcf_label_in_post_enabled: true,
+      rweb_tipjar_consumption_enabled: true,
+      verified_phone_label_enabled: false,
+      subscriptions_verification_info_is_identity_verified_enabled: true,
+      subscriptions_verification_info_verified_since_enabled: true,
+      highlights_tweets_tab_ui_enabled: true,
+      responsive_web_twitter_article_notes_tab_enabled: true,
+      subscriptions_feature_can_gift_premium: true,
+      creator_subscriptions_tweet_preview_api_enabled: true,
+      responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+      responsive_web_graphql_timeline_navigation_enabled: true
+    },
+    userFieldToggles: {
+      withAuxiliaryUserLabels: true
+    }
+  };
+  const DEFAULT_PAIR_URL = 'https://raw.githubusercontent.com/fa0311/x-client-transaction-id-pair-dict/refs/heads/main/pair.json';
+  let StatusEvents$2 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  const emptyTasks = () => ({
+    users: [],
+    retweets: [],
+    likes: []
+  });
+  function normalizeTasks(value) {
+    const result = emptyTasks();
+    for (const key of [ 'users', 'retweets', 'likes' ]) {
+      result[key] = Array.isArray(value?.[key]) ? [ ...new Set(value[key].filter((entry => typeof entry === 'string'))) ] : [];
+    }
+    return result;
+  }
+  let Context$2 = class Context {
+    gm;
+    storage;
+    events=new StatusEvents$2;
+    api;
+    options;
+    state={
+      initialized: false,
+      disposed: false,
+      initPromise: undefined,
+      auth: undefined,
+      getTID: undefined,
+      cache: Object.create(null),
+      writes: Promise.resolve(),
+      tasks: emptyTasks(),
+      whiteList: emptyTasks(),
+      whiteListConfigured: false,
+      cleanups: new Set
+    };
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    failureCode;
+    skipCode;
+    constructor(options) {
+      this.options = {
+        ...options,
+        verifyId: options.verifyId ?? '783214',
+        taskDelayMs: options.taskDelayMs ?? 1e3,
+        cookieTimeoutMs: options.cookieTimeoutMs ?? 3e4,
+        doTask: {
+          users: true,
+          retweets: true,
+          ...options.doTask
+        },
+        undoTask: {
+          users: true,
+          retweets: true,
+          ...options.undoTask
+        }
+      };
+      for (const [name, value] of [ [ 'taskDelayMs', this.options.taskDelayMs ], [ 'cookieTimeoutMs', this.options.cookieTimeoutMs ] ]) {
+        if (!Number.isFinite(value) || value < (name === 'cookieTimeoutMs' ? 1 : 0) || value > 2147483647) {
+          throw new Error(`Invalid ${name}`);
+        }
+      }
+      if (!/^\d+$/.test(this.options.verifyId)) {
+        throw new Error('Invalid verifyId');
+      }
+      this.api = {
+        ...DEFAULT_API,
+        ...options.api
+      };
+      this.gm = options.gm || getDefaultGM$1();
+      this.storage = createGMStorage$2(this.gm, options.namespace || 'twitter');
+      this.state.whiteList = normalizeTasks(options.whiteList);
+    }
+    async run(operation, target, fallback, work) {
+      const ctx = Object.assign(Object.create(Context.prototype), this);
+      ctx.operationId = crypto.randomUUID();
+      ctx.parentOperationId = this.operationId || undefined;
+      ctx.operation = operation;
+      ctx.target = target;
+      ctx.failureCode = undefined;
+      ctx.skipCode = undefined;
+      ctx.emit('start', 'info', 'OPERATION_STARTED');
+      let result = fallback;
+      try {
+        if (ctx.state.disposed) {
+          ctx.progress('DISPOSED', 'error');
+        } else {
+          result = await work(ctx);
+        }
+      } catch {
+        ctx.progress('UNEXPECTED_ERROR', 'error');
+      }
+      const success = result !== false && result !== undefined && result !== null && !(typeof result === 'object' && 'success' in result && result.success === false);
+      ctx.emit(success ? ctx.skipCode ? 'skipped' : 'success' : 'failure', success ? 'info' : 'error', success ? ctx.skipCode || 'OPERATION_COMPLETED' : ctx.failureCode || 'OPERATION_FAILED');
+      return result;
+    }
+    emit(phase, level, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        level: level,
+        code: code,
+        timestamp: Date.now(),
+        details: details
+      });
+    }
+    progress(code, level = 'info', details) {
+      if (level === 'error') {
+        this.failureCode = code;
+      }
+      this.emit('progress', level, code, details);
+    }
+    skip(code) {
+      this.skipCode = code;
+      return true;
+    }
+    ready() {
+      if (this.state.initialized && !this.state.disposed) {
+        return true;
+      }
+      this.progress(this.state.disposed ? 'DISPOSED' : 'AUTH_REQUIRED', 'error');
+      return false;
+    }
+    async delay() {
+      if (!this.options.taskDelayMs || this.state.disposed) {
+        return;
+      }
+      await new Promise((resolve => {
+        const finish = () => {
+          clearTimeout(timer);
+          this.state.cleanups.delete(finish);
+          resolve();
+        };
+        const timer = setTimeout(finish, this.options.taskDelayMs);
+        this.state.cleanups.add(finish);
+      }));
+    }
+  };
+  async function readCookies(ctx) {
+    return new Promise((resolve => {
+      let settled = false;
+      const finish = cookies => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        ctx.state.cleanups.delete(cancel);
+        resolve(cookies);
+      };
+      const cancel = () => finish();
+      const timer = setTimeout((() => {
+        ctx.progress('COOKIE_TIMEOUT', 'error');
+        finish();
+      }), ctx.options.cookieTimeoutMs);
+      ctx.state.cleanups.add(cancel);
+      try {
+        const handle = ctx.gm.listCookies({
+          url: 'https://x.com/settings/account'
+        }, ((cookies, error) => {
+          if (settled) {
+            return;
+          }
+          if (error || !Array.isArray(cookies)) {
+            ctx.progress('COOKIE_READ_FAILED', 'error');
+            finish();
+          } else {
+            finish(cookies);
+          }
+        }));
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => {
+            if (!settled) {
+              ctx.progress('COOKIE_READ_FAILED', 'error');
+              finish();
+            }
+          }));
+        }
+      } catch {
+        ctx.progress('COOKIE_API_UNAVAILABLE', 'error');
+        finish();
+      }
+    }));
+  }
+  function updateAuth$2(ctx) {
+    return ctx.run('auth.cookies', undefined, false, (async ctx => {
+      ctx.state.auth = undefined;
+      const cookies = await readCookies(ctx);
+      if (!cookies || ctx.state.disposed) {
+        return false;
+      }
+      const ct0 = cookies.find((cookie => cookie.name === 'ct0'))?.value;
+      const twid = cookies.find((cookie => cookie.name === 'twid'))?.value;
+      let userId;
+      try {
+        userId = decodeURIComponent(twid || '').match(/^u=(\d+)$/)?.[1];
+      } catch {}
+      if (!ct0 || !userId) {
+        await ctx.storage.delete('auth');
+        ctx.progress('AUTH_REQUIRED', 'error');
+        return false;
+      }
+      const auth = {
+        ct0: ct0,
+        userId: userId,
+        language: cookies.find((cookie => cookie.name === 'lang'))?.value || 'en'
+      };
+      await ctx.storage.set('auth', auth);
+      if (ctx.state.disposed) {
+        return false;
+      }
+      ctx.state.auth = auth;
+      return true;
+    }));
+  }
+  async function refreshCsrf(ctx, response) {
+    const headers = response.data?.responseHeaders;
+    const key = Object.keys(headers || {}).find((name => name.toLowerCase() === 'set-cookie'));
+    const raw = key ? headers?.[key] : undefined;
+    const entries = Array.isArray(raw) ? raw : raw ? [ raw ] : [];
+    const token = entries.map((entry => entry.match(/(?:^|,\s*)ct0=([^;\s,]+)/)?.[1])).find(Boolean);
+    if (!token || !ctx.state.auth) {
+      return false;
+    }
+    const auth = {
+      ...ctx.state.auth,
+      ct0: token
+    };
+    await ctx.storage.set('auth', auth);
+    if (ctx.state.disposed) {
+      return false;
+    }
+    ctx.state.auth = auth;
+    ctx.progress('CSRF_REFRESHED');
+    return true;
+  }
+  async function transport(ctx, options) {
+    if (ctx.state.disposed) {
+      throw new Error('Disposed');
+    }
+    ctx.progress('HTTP_REQUEST_STARTED', 'debug', {
+      method: options.method || 'GET'
+    });
+    const result = await ctx.options.http(options);
+    if (ctx.state.disposed) {
+      throw new Error('Disposed');
+    }
+    ctx.progress('HTTP_REQUEST_COMPLETED', result.result === 'Success' ? 'debug' : 'warning', {
+      transportStatus: result.status,
+      httpStatus: result.data?.status || 0
+    });
+    return result;
+  }
+  function errorCode(response) {
+    return response.data?.response?.errors?.[0]?.code;
+  }
+  function hasErrors(response) {
+    const errors = response.data?.response?.errors;
+    return Array.isArray(errors) && errors.length > 0;
+  }
+  async function apiRequest(ctx, path, options) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (!ctx.state.auth || !ctx.state.getTID) {
+        throw new Error('Not authenticated');
+      }
+      const tid = await ctx.state.getTID(options.method || 'GET', path);
+      if (!tid) {
+        throw new Error('Empty transaction ID');
+      }
+      const response = await transport(ctx, {
+        ...options,
+        url: `https://x.com${path}`,
+        responseType: 'json',
+        headers: {
+          authorization: `Bearer ${ctx.api.bearerToken}`,
+          'X-Twitter-Auth-Type': 'OAuth2Session',
+          'X-Twitter-Active-User': 'yes',
+          ...options.headers,
+          'x-csrf-token': ctx.state.auth.ct0,
+          'x-twitter-client-language': ctx.state.auth.language,
+          'x-client-transaction-id': tid
+        }
+      });
+      if (response.result === 'Success' && response.data?.status === 403 && errorCode(response) === 353 && attempt === 0 && await refreshCsrf(ctx, response)) {
+        ctx.progress('RETRYING', 'warning');
+        continue;
+      }
+      return response;
+    }
+    throw new Error('Retry exhausted');
+  }
+  function reportFailure(ctx, response) {
+    ctx.progress('REQUEST_OR_RESPONSE_FAILED', 'error', {
+      transportStatus: response.status,
+      httpStatus: response.data?.status || 0,
+      ...typeof errorCode(response) === 'number' ? {
+        apiCode: errorCode(response)
+      } : {}
+    });
+    return false;
+  }
+  const encodeSha256 = async data => {
+    const encoder = new TextEncoder;
+    const dataBuffer = encoder.encode(data);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+    return Array.from(new Uint8Array(hashBuffer));
+  };
+  const encodeBase64 = data => {
+    let binary = '';
+    const bytes = new Uint8Array(data);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return btoa(binary).replace(/=/g, '');
+  };
+  const decodeBase64 = data => {
+    const binaryString = atob(data);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return Array.from(bytes);
+  };
+  const generateTransactionId = async (method, path, key, animationKey) => {
+    const DEFAULT_KEYWORD = 'obfiowerehiring';
+    const ADDITIONAL_RANDOM_NUMBER = 3;
+    const timeNow = Math.floor((Date.now() - 1682924400 * 1e3) / 1e3);
+    const timeNowBytes = [ timeNow & 255, timeNow >> 8 & 255, timeNow >> 16 & 255, timeNow >> 24 & 255 ];
+    const data = `${method}!${path}!${timeNow}${DEFAULT_KEYWORD}${animationKey}`;
+    const hashBytes = await encodeSha256(data);
+    const keyBytes = decodeBase64(key);
+    const randomNum = Math.floor(Math.random() * 256);
+    const bytesArr = [ ...keyBytes, ...timeNowBytes, ...hashBytes.slice(0, 16), ADDITIONAL_RANDOM_NUMBER ];
+    const out = new Uint8Array(bytesArr.length + 1);
+    out[0] = randomNum;
+    bytesArr.forEach(((item, index) => {
+      out[index + 1] = item ^ randomNum;
+    }));
+    return encodeBase64(out);
+  };
+  async function createTransactionIdProvider(http, url = DEFAULT_PAIR_URL) {
+    const result = await http({
+      url: url,
+      method: 'GET',
+      responseType: 'json'
+    });
+    if (result.result !== 'Success' || result.data?.status !== 200) {
+      throw new Error('Transaction dictionary unavailable');
+    }
+    const payload = result.data.response;
+    const pairs = Array.isArray(payload) ? payload.filter((pair => {
+      if (!pair || typeof pair.verification !== 'string' || typeof pair.animationKey !== 'string' || !pair.animationKey) {
+        return false;
+      }
+      try {
+        return atob(pair.verification).length > 0;
+      } catch {
+        return false;
+      }
+    })) : [];
+    if (!pairs.length) {
+      throw new Error('Invalid transaction dictionary');
+    }
+    return async (method, path) => {
+      const pair = pairs[Math.floor(Math.random() * pairs.length)];
+      return generateTransactionId(method, path, pair.verification, pair.animationKey);
+    };
+  }
+  function verifyAuth$2(ctx) {
+    return ctx.run('auth.verify', ctx.options.verifyId, false, (async ctx => {
+      const response = await apiRequest(ctx, '/i/api/1.1/friendships/create.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: new URLSearchParams({
+          id: ctx.options.verifyId,
+          skip_status: '1'
+        }).toString()
+      });
+      if (response.result === 'Success' && (response.data?.status === 200 && !hasErrors(response) || response.data?.status === 403 && errorCode(response) === 158)) {
+        return true;
+      }
+      return reportFailure(ctx, response);
+    }));
+  }
+  function initialize(ctx) {
+    if (ctx.state.initPromise) {
+      return ctx.state.initPromise;
+    }
+    ctx.state.initPromise = ctx.run('init', undefined, false, (async ctx => {
+      if (ctx.state.initialized) {
+        return true;
+      }
+      await loadCache$1(ctx);
+      const saved = await ctx.storage.get('whiteList', {});
+      const overrides = ctx.state.whiteListConfigured ? ctx.state.whiteList : ctx.options.whiteList;
+      ctx.state.whiteList = normalizeTasks({
+        ...saved,
+        ...overrides
+      });
+      if (ctx.options.whiteList) {
+        await ctx.storage.set('whiteList', ctx.state.whiteList);
+      }
+      if (!await updateAuth$2(ctx)) {
+        return false;
+      }
+      const tidReady = await ctx.run('transaction.init', undefined, false, (async child => {
+        child.state.getTID = child.options.getTransactionId || await createTransactionIdProvider((options => transport(child, options)), child.options.transactionPairsUrl);
+        return true;
+      }));
+      if (!tidReady) {
+        return false;
+      }
+      for (let attempt = 0; attempt < 2; attempt++) {
+        if (await verifyAuth$2(ctx)) {
+          if (ctx.state.disposed) {
+            return false;
+          }
+          ctx.state.initialized = true;
+          return true;
+        }
+        ctx.state.auth = undefined;
+        await ctx.storage.delete('auth');
+        if (attempt !== 0) {
+          break;
+        }
+        ctx.progress('AUTH_RETRYING', 'warning');
+        if (!await updateAuth$2(ctx)) {
+          break;
+        }
+      }
+      return false;
+    })).finally((() => {
+      ctx.state.initPromise = undefined;
+    }));
+    return ctx.state.initPromise;
+  }
+  function executeRetweet(ctx, retweetId, doTask = true) {
+    return ctx.run(doTask ? 'retweets.create' : 'retweets.delete', retweetId, false, (async ctx => {
+      if (!ctx.ready()) {
+        return false;
+      }
+      if (!/^\d+$/.test(retweetId)) {
+        ctx.progress('INVALID_TWEET_ID', 'error');
+        return false;
+      }
+      if (!doTask && ctx.state.whiteList.retweets.includes(retweetId)) {
+        return ctx.skip('WHITELIST_SKIP');
+      }
+      const queryId = doTask ? ctx.api.createRetweet : ctx.api.deleteRetweet;
+      const action = doTask ? 'CreateRetweet' : 'DeleteRetweet';
+      const response = await apiRequest(ctx, `/i/api/graphql/${queryId}/${action}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          origin: 'https://x.com',
+          referer: 'https://x.com/home'
+        },
+        data: JSON.stringify({
+          variables: {
+            [doTask ? 'tweet_id' : 'source_tweet_id']: retweetId,
+            dark_request: false
+          },
+          queryId: queryId
+        })
+      });
+      const alreadyRetweeted = doTask && errorCode(response) === 327;
+      if (response.result !== 'Success' || response.data?.status !== 200 && !(response.data?.status === 403 && alreadyRetweeted) || hasErrors(response) && !alreadyRetweeted) {
+        return reportFailure(ctx, response);
+      }
+      if (doTask && !ctx.state.tasks.retweets.includes(retweetId)) {
+        ctx.state.tasks.retweets.push(retweetId);
+      }
+      return true;
+    }));
+  }
+  function doRetweet(ctx, retweetId) {
+    return executeRetweet(ctx, retweetId, true);
+  }
+  function undoRetweet(ctx, retweetId) {
+    return executeRetweet(ctx, retweetId, false);
+  }
+  const hosts = new Set([ 'x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com' ]);
+  function normalizeUser(name) {
+    const value = name.replace(/^@/, '');
+    return /^[a-zA-Z0-9_]{1,15}$/.test(value) ? value : undefined;
+  }
+  function path(link) {
+    try {
+      const url = new URL(link);
+      if (url.protocol !== 'https:' || !hosts.has(url.hostname) || url.username || url.password || url.port) {
+        return undefined;
+      }
+      return url.pathname.split('/').filter(Boolean);
+    } catch {
+      return undefined;
+    }
+  }
+  function userFromLink(link) {
+    const parts = path(link);
+    return parts?.length === 1 ? normalizeUser(parts[0]) : undefined;
+  }
+  function tweetFromLink(link) {
+    const parts = path(link);
+    if (!parts) {
+      return undefined;
+    }
+    const id = parts[0] === 'i' && parts[1] === 'web' && parts[2] === 'status' ? parts[3] : normalizeUser(parts[0] || '') && parts[1] === 'status' ? parts[2] : undefined;
+    return id && /^\d+$/.test(id) ? id : undefined;
+  }
+  function userName2id(ctx, name) {
+    return ctx.run('users.lookup', name, false, (async ctx => {
+      if (!ctx.ready()) {
+        return false;
+      }
+      const user = normalizeUser(name);
+      if (!user) {
+        ctx.progress('INVALID_USERNAME', 'error');
+        return false;
+      }
+      const key = user.toLowerCase();
+      if (ctx.state.cache[key]) {
+        return ctx.state.cache[key];
+      }
+      const params = new URLSearchParams({
+        variables: JSON.stringify({
+          screen_name: user
+        }),
+        features: JSON.stringify(ctx.api.userFeatures),
+        fieldToggles: JSON.stringify(ctx.api.userFieldToggles)
+      });
+      const path = `/i/api/graphql/${ctx.api.userByScreenName}/UserByScreenName?${params}`;
+      const response = await apiRequest(ctx, path, {
+        method: 'GET',
+        headers: {
+          'content-type': 'application/json',
+          referer: `https://x.com/${user}`
+        }
+      });
+      if (response.result !== 'Success' || response.data?.status !== 200 || hasErrors(response)) {
+        return reportFailure(ctx, response);
+      }
+      const id = response.data.response?.data?.user?.result?.rest_id;
+      if (typeof id !== 'string' || !/^\d+$/.test(id)) {
+        ctx.progress('USER_ID_NOT_FOUND', 'error');
+        return false;
+      }
+      await setCache$1(ctx, key, id);
+      return id;
+    }));
+  }
+  function executeUser(ctx, name, doTask = true) {
+    return ctx.run(doTask ? 'users.follow' : 'users.unfollow', name, false, (async ctx => {
+      if (!ctx.ready()) {
+        return false;
+      }
+      const user = normalizeUser(name);
+      if (!user) {
+        ctx.progress('INVALID_USERNAME', 'error');
+        return false;
+      }
+      if (!doTask && ctx.state.whiteList.users.some((entry => normalizeUser(entry)?.toLowerCase() === user.toLowerCase()))) {
+        return ctx.skip('WHITELIST_SKIP');
+      }
+      const id = await userName2id(ctx, user);
+      if (!id) {
+        return false;
+      }
+      const response = await apiRequest(ctx, `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: new URLSearchParams({
+          include_profile_interstitial_type: '1',
+          include_blocking: '1',
+          include_blocked_by: '1',
+          include_followed_by: '1',
+          include_want_retweets: '1',
+          include_mute_edge: '1',
+          include_can_dm: '1',
+          include_can_media_tag: '1',
+          skip_status: '1',
+          id: id
+        }).toString()
+      });
+      if (response.result !== 'Success' || response.data?.status !== 200 || hasErrors(response)) {
+        return reportFailure(ctx, response);
+      }
+      if (doTask && !ctx.state.tasks.users.some((entry => entry.toLowerCase() === user.toLowerCase()))) {
+        ctx.state.tasks.users.push(user);
+      }
+      return true;
+    }));
+  }
+  function doUser(ctx, name) {
+    return executeUser(ctx, name, true);
+  }
+  function undoUser(ctx, name) {
+    return executeUser(ctx, name, false);
+  }
+  function executeTasks$2(ctx, {userLinks: userLinks = [], retweetLinks: retweetLinks = []}, action) {
+    const doTask = action === 'do';
+    return ctx.run(doTask ? 'tasks.do' : 'tasks.undo', undefined, false, (async ctx => {
+      if (!ctx.ready()) {
+        return false;
+      }
+      const result = {
+        success: true,
+        results: {}
+      };
+      const flags = doTask ? ctx.options.doTask : ctx.options.undoTask;
+      for (const [kind, links, parse, action] of [ [ 'users', userLinks, userFromLink, doTask ? doUser : undoUser ], [ 'retweets', retweetLinks, tweetFromLink, doTask ? doRetweet : undoRetweet ] ]) {
+        const type = kind === 'users' ? 'userLinks' : 'retweetLinks';
+        for (const link of links) {
+          let success;
+          if (ctx.state.disposed) {
+            success = false;
+          } else if (flags?.[kind] === false) {
+            success = await ctx.run(`${kind}.skip`, link, false, (async child => child.skip('OPTION_DISABLED')));
+          } else {
+            const target = parse(link);
+            if (!target) {
+              success = await ctx.run('links.parse', link, false, (async child => {
+                child.progress('INVALID_LINK', 'error');
+                return false;
+              }));
+            } else {
+              success = await action(ctx, target);
+              await ctx.delay();
+            }
+          }
+          result.results[type] ||= Object.create(null);
+          result.results[type][link] = success;
+          result.success = result.success && success;
+        }
+      }
+      return result;
+    }));
+  }
+  function doTasks$2(ctx, options = {}) {
+    return executeTasks$2(ctx, options, 'do');
+  }
+  function undoTasks$2(ctx, options = {}) {
+    return executeTasks$2(ctx, options, 'undo');
+  }
+  function parseHeaders$3(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$2(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$3(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  let Twitter$1 = class Twitter {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context$2(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = normalizeTasks(value);
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = normalizeTasks(value);
+      this.ctx.state.whiteListConfigured = true;
+    }
+    init() {
+      return initialize(this.ctx);
+    }
+    userName2id(name) {
+      return userName2id(this.ctx, name);
+    }
+    do(options = {}) {
+      return doTasks$2(this.ctx, options);
+    }
+    undo(options = {}) {
+      return undoTasks$2(this.ctx, options);
+    }
+    doUser(name) {
+      return doUser(this.ctx, name);
+    }
+    undoUser(name) {
+      return undoUser(this.ctx, name);
+    }
+    doRetweet(id) {
+      return doRetweet(this.ctx, id);
+    }
+    undoRetweet(id) {
+      return undoRetweet(this.ctx, id);
+    }
+    setWhiteList(value) {
+      return this.ctx.run('whiteList.update', undefined, false, (async ctx => {
+        const whiteList = normalizeTasks({
+          ...ctx.state.whiteList,
+          ...value
+        });
+        await ctx.storage.set('whiteList', whiteList);
+        ctx.state.whiteList = whiteList;
+        ctx.state.whiteListConfigured = true;
+        return true;
+      }));
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      this.ctx.state.initialized = false;
+      for (const cancel of [ ...this.ctx.state.cleanups ]) {
+        cancel();
+      }
+      this.ctx.events.clear();
+    }
+  };
+  class Twitter extends ProjectSocial {
+    constructor() {
+      super(new Twitter$1({
+        http: createGMHttpClient$2((options => GM_xmlhttpRequest(options))),
+        gm: {
+          ...projectGM('twitter'),
+          listCookies: (details, callback) => GM_cookie.list(details, callback)
+        },
+        namespace: moduleNamespace('twitter'),
+        verifyId: globalOptions.other.twitterVerifyId,
+        doTask: globalOptions.doTask.twitter,
+        undoTask: globalOptions.undoTask.twitter
+      }), 'Twitter');
+    }
+    userName2id(name) {
+      return this.client.userName2id(name);
+    }
+  }
+  function verifyAuth$1(ctx) {
+    return ctx.run('auth.verify', undefined, false, (async ctx => {
+      const data = await ctx.request({
+        url: 'https://vk.com/im',
+        method: 'GET'
+      });
+      if (!data) {
+        return false;
+      }
+      const url = new URL(data.finalUrl || 'https://vk.com/im');
+      if (![ 'vk.com', 'vk.ru' ].includes(url.hostname) || /\/login(?:\/|$)/.test(url.pathname)) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      const userId = data.responseText.match(/\bid:\s*(\d+)/)?.[1];
+      if (!userId || userId === '0') {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      ctx.state.userId = userId;
+      const version = data.responseText.match(/"version"\s*:\s*"([\d.]+)"\s*,\s*"response"/)?.[1];
+      const appId = data.responseText.match(/"app_id"\s*:\s*"?(\d+)"?\s*,\s*"is_mobile"/)?.[1];
+      if (version && !ctx.options.apiVersion) {
+        ctx.state.version = version;
+      }
+      if (appId && !ctx.options.appId) {
+        ctx.state.appId = appId;
+      }
+      return true;
+    }));
+  }
+  function updateAuth$1(ctx) {
+    return ctx.run('auth.update', undefined, false, (async ctx => {
+      const data = await ctx.request({
+        url: 'https://login.vk.com/?act=web_token',
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          origin: 'https://vk.com',
+          referer: 'https://vk.com/',
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: new URLSearchParams({
+          version: ctx.state.version,
+          app_id: ctx.state.appId
+        }).toString()
+      });
+      if (!data) {
+        return false;
+      }
+      const token = data.response?.data?.access_token;
+      if (data.response?.type !== 'okay' || typeof token !== 'string' || !token) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      ctx.state.token = token;
+      return true;
+    }));
+  }
+  async function loadCache(ctx) {
+    const saved = await ctx.storage.get(`cache:${ctx.state.userId}`, {});
+    ctx.state.cache = Object.assign(Object.create(null), Object.fromEntries(Object.entries(saved || {}).filter((([, id]) => (typeof id === 'string' || typeof id === 'number') && /^\d+$/.test(String(id)))).map((([name, id]) => [ name, String(id) ]))));
+  }
+  async function setCache(ctx, name, id) {
+    if (id) {
+      ctx.state.cache[name] = id;
+    } else {
+      delete ctx.state.cache[name];
+    }
+    const snapshot = {
+      ...ctx.state.cache
+    };
+    const write = ctx.state.writes.then((() => ctx.storage.set(`cache:${ctx.state.userId}`, snapshot)));
+    ctx.state.writes = write.catch((() => undefined));
+    await write;
+  }
+  function createGMStorage$1(gm = {
+    getValue: (key, fallback) => GM_getValue(key, fallback),
+    setValue: (key, value) => GM_setValue(key, value),
+    deleteValue: key => GM_deleteValue(key)
+  }, namespace = 'vk') {
+    return {
+      get: async (key, fallback) => gm.getValue(`${namespace}:${key}`, fallback),
+      set: async (key, value) => gm.setValue(`${namespace}:${key}`, value),
+      delete: async key => gm.deleteValue(`${namespace}:${key}`)
+    };
+  }
+  let StatusEvents$1 = class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  };
+  let Context$1 = class Context {
+    options;
+    events=new StatusEvents$1;
+    storage;
+    state={
+      initialized: false,
+      disposed: false,
+      token: '',
+      userId: '',
+      version: '',
+      appId: '',
+      tasks: {
+        names: []
+      },
+      whiteList: {
+        names: []
+      },
+      cache: Object.create(null),
+      writes: Promise.resolve(),
+      init: undefined
+    };
+    operationId;
+    parentOperationId;
+    operation='';
+    target;
+    errorCode;
+    skipped=false;
+    constructor(options) {
+      this.options = options;
+      const interval = options.intervalMs ?? 1e3;
+      if (!Number.isFinite(interval) || interval < 0) {
+        throw new Error('Invalid intervalMs');
+      }
+      this.storage = createGMStorage$1(options.gm, options.namespace || 'vk');
+      this.state.version = options.apiVersion || '5.282';
+      this.state.appId = options.appId || '6287487';
+    }
+    async run(operation, target, fallback, work, success = value => value !== false) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.operationId = crypto.randomUUID();
+      child.parentOperationId = this.operationId;
+      child.operation = operation;
+      child.target = target;
+      child.errorCode = undefined;
+      child.skipped = false;
+      child.emit('start', 'OPERATION_STARTED');
+      let value;
+      try {
+        value = await work(child);
+      } catch {
+        child.progress('UNEXPECTED_ERROR', 'error');
+        value = fallback;
+      }
+      const ok = success(value);
+      child.emit(ok ? child.skipped ? 'skipped' : 'success' : 'failure', ok ? child.skipped ? 'OPERATION_SKIPPED' : 'OPERATION_COMPLETED' : child.errorCode || 'OPERATION_FAILED', ok ? 'info' : 'error');
+      return value;
+    }
+    emit(phase, code, level = 'info', details) {
+      this.events.emit({
+        operationId: this.operationId || '',
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        code: code,
+        level: level,
+        details: details,
+        timestamp: Date.now()
+      });
+    }
+    progress(code, level = 'info', details) {
+      if (level === 'error') {
+        this.errorCode = code;
+      }
+      this.emit('progress', code, level, details);
+    }
+    skip(code) {
+      this.skipped = true;
+      this.progress(code);
+      return true;
+    }
+    fail(code) {
+      this.progress(code, 'error');
+      return false;
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.progress('HTTP_REQUEST_STARTED', 'debug', {
+        method: options.method || 'GET'
+      });
+      const response = await this.options.http(options);
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.progress('HTTP_REQUEST_COMPLETED', 'debug', {
+        transportStatus: response.status,
+        httpStatus: response.data?.status || 0
+      });
+      if (response.result !== 'Success' || response.data?.status !== 200) {
+        this.fail('HTTP_REQUEST_FAILED');
+        return false;
+      }
+      return response.data;
+    }
+    async api(method, values, host = 'web.api.vk.com', name = '') {
+      if (!this.state.token) {
+        return this.fail('AUTH_REQUIRED');
+      }
+      const data = await this.request({
+        url: `https://${host}/method/${method}?v=${encodeURIComponent(this.state.version)}&client_id=${encodeURIComponent(this.state.appId)}`,
+        method: 'POST',
+        responseType: 'json',
+        headers: {
+          origin: 'https://vk.com',
+          referer: `https://vk.com/${name}`,
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: new URLSearchParams(Object.entries({
+          ...values,
+          access_token: this.state.token
+        }).map((([key, value]) => [ key, String(value) ]))).toString()
+      });
+      if (!data) {
+        return false;
+      }
+      if (data.response?.error) {
+        const code = data.response.error.error_code;
+        this.progress('VK_API_ERROR', 'error', typeof code === 'number' ? {
+          apiCode: code
+        } : undefined);
+        return false;
+      }
+      return data.response?.response ?? this.fail('INVALID_RESPONSE');
+    }
+    record(name) {
+      if (!this.state.tasks.names.includes(name)) {
+        this.state.tasks.names.push(name);
+      }
+    }
+  };
+  function normalizeLink(link) {
+    try {
+      const url = new URL(link);
+      if (url.protocol !== 'https:' || ![ 'vk.com', 'vk.ru', 'www.vk.com', 'www.vk.ru' ].includes(url.hostname) || url.username || url.password || url.port) {
+        return false;
+      }
+      const name = url.pathname.replace(/^\//, '').replace(/\/$/, '');
+      if (!/^[a-zA-Z0-9_.-]+$/.test(name)) {
+        return false;
+      }
+      return name + (url.searchParams.get('action') === 'like' ? '?action=like' : '');
+    } catch {
+      return false;
+    }
+  }
+  function getTarget(ctx, name) {
+    return ctx.run('target.resolve', name, false, (async ctx => {
+      const [path] = name.split('?');
+      if (/^wall-?\d+_\d+$/.test(path)) {
+        return {
+          type: 'wall',
+          name: path,
+          like: name.endsWith('?action=like')
+        };
+      }
+      const data = await ctx.request({
+        url: `https://vk.com/${path}`,
+        method: 'GET'
+      });
+      if (!data) {
+        return false;
+      }
+      const groupId = data.responseText.match(/"group_id"\s*:\s*"?(\d+)"?\s*,\s*"fields"/)?.[1];
+      const isMember = data.responseText.match(/"is_member"\s*:\s*(0|1)\s*,/)?.[1];
+      if (groupId) {
+        return {
+          type: 'group',
+          params: {
+            groupId: groupId,
+            isMember: isMember
+          }
+        };
+      }
+      return ctx.fail('TARGET_NOT_SUPPORTED');
+    }));
+  }
+  function normalizeNames(names) {
+    return [ ...new Set(names.map((name => normalizeLink(name) || normalizeLink(`https://vk.com/${name}`))).filter((name => Boolean(name)))) ];
+  }
+  async function loadWhiteList(ctx) {
+    const saved = await ctx.storage.get('whiteList', {});
+    const names = Array.isArray(saved?.names) ? saved.names.filter((name => typeof name === 'string')) : [];
+    ctx.state.whiteList = {
+      names: normalizeNames([ ...names, ...ctx.state.whiteList.names ])
+    };
+  }
+  function setWhiteList(ctx, whiteList) {
+    return ctx.run('whiteList.set', undefined, false, (async ctx => {
+      if (ctx.state.disposed) {
+        return ctx.fail('DISPOSED');
+      }
+      const value = {
+        names: normalizeNames(whiteList.names)
+      };
+      await ctx.storage.set('whiteList', value);
+      ctx.state.whiteList = value;
+      return true;
+    }));
+  }
+  function executeGroup(ctx, name, params, doTask = true) {
+    return ctx.run(doTask ? 'group.join' : 'group.leave', name, false, (async ctx => {
+      if (params.isMember === (doTask ? '1' : '0')) {
+        return ctx.skip('ALREADY_IN_DESIRED_STATE');
+      }
+      const result = await ctx.api(`groups.${doTask ? 'join' : 'leave'}`, {
+        group_id: params.groupId,
+        source: '',
+        track_code: ''
+      }, 'web.api.vk.com', name);
+      if (result !== 1) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      if (doTask) {
+        ctx.record(name);
+      }
+      return true;
+    }));
+  }
+  function doGroup(ctx, name, params) {
+    return executeGroup(ctx, name, params, true);
+  }
+  function undoGroup(ctx, name, params) {
+    return executeGroup(ctx, name, params, false);
+  }
+  function getWall(ctx, name) {
+    return ctx.run('wall.get', name, false, (async ctx => {
+      const match = name.match(/^wall(-?\d+)_(\d+)$/);
+      if (!match) {
+        return ctx.fail('INVALID_TARGET');
+      }
+      const response = await ctx.api('wall.get', {
+        domain: match[1],
+        extended: 1,
+        filter: 'owner',
+        start_from: '',
+        count: 10
+      }, 'web.api.vk.ru', name);
+      const payload = response;
+      const items = Array.isArray(payload) ? payload : payload && payload.items;
+      const item = Array.isArray(items) && items.find((entry => entry.id === Number(match[2]) && entry.owner_id === Number(match[1])));
+      if (!item || typeof item.type !== 'string') {
+        return ctx.fail('POST_NOT_FOUND');
+      }
+      return item;
+    }));
+  }
+  function executeLikeWall(ctx, name, doTask = true) {
+    return ctx.run(doTask ? 'wall.like' : 'wall.unlike', name, false, (async ctx => {
+      const item = await getWall(ctx, name);
+      if (!item) {
+        return false;
+      }
+      if (item.likes?.user_likes === undefined) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      if (Boolean(item.likes.user_likes) === doTask) {
+        return ctx.skip('ALREADY_IN_DESIRED_STATE');
+      }
+      const values = {
+        type: item.type,
+        owner_id: item.owner_id,
+        item_id: item.id,
+        track_code: item.track_code || '',
+        ref: 'group'
+      };
+      if (doTask) {
+        values.reaction_id = 0;
+      }
+      const result = await ctx.api(`likes.${doTask ? 'add' : 'delete'}`, values, 'web.api.vk.com', name);
+      if (!result || typeof result !== 'object' || !('likes' in result) || typeof result.likes !== 'number') {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      return true;
+    }));
+  }
+  function doLikeWall(ctx, name) {
+    return executeLikeWall(ctx, name, true);
+  }
+  function undoLikeWall(ctx, name) {
+    return executeLikeWall(ctx, name, false);
+  }
+  function sendWall(ctx, name) {
+    return ctx.run('wall.repost', name, false, (async ctx => {
+      const item = await getWall(ctx, name);
+      if (!item) {
+        return false;
+      }
+      if (item.reposts?.user_reposted === undefined) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      if (item.reposts.user_reposted) {
+        return ctx.skip('ALREADY_IN_DESIRED_STATE');
+      }
+      const result = await ctx.api('wall.repost', {
+        object: name,
+        message: '',
+        group_id: '',
+        ref: 'group',
+        mark_as_ads: 0,
+        friends_only: 0,
+        close_comments: 0,
+        mute_notifications: 0,
+        publish_date: '',
+        entry_point: 'share',
+        track_code: item.track_code || ''
+      }, 'web.api.vk.ru', name);
+      if (!result || result.success !== 1 || !result.post_id || !/^\d+$/.test(String(result.post_id))) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      await setCache(ctx, name, String(result.post_id));
+      ctx.record(name);
+      return true;
+    }));
+  }
+  function deleteWall(ctx, name) {
+    return ctx.run('wall.deleteRepost', name, false, (async ctx => {
+      const item = await getWall(ctx, name);
+      if (!item) {
+        return false;
+      }
+      if (item.reposts?.user_reposted === undefined) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      if (!item.reposts.user_reposted) {
+        return ctx.skip('ALREADY_IN_DESIRED_STATE');
+      }
+      const postId = ctx.state.cache[name];
+      if (!postId) {
+        return ctx.fail('REPOST_ID_NOT_CACHED');
+      }
+      const result = await ctx.api('wall.delete', {
+        owner_id: ctx.state.userId,
+        post_id: postId,
+        creation_entry_point: ''
+      }, 'web.api.vk.ru', name);
+      if (result !== 1) {
+        return ctx.fail('INVALID_RESPONSE');
+      }
+      await setCache(ctx, name);
+      return true;
+    }));
+  }
+  function executeOne(ctx, name, doTask) {
+    return ctx.run(doTask ? 'task.do' : 'task.undo', name, false, (async ctx => {
+      if (ctx.state.disposed) {
+        return ctx.fail('DISPOSED');
+      }
+      if (!doTask && normalizeNames(ctx.state.whiteList.names).includes(name)) {
+        return ctx.skip('WHITELIST_SKIP');
+      }
+      const target = await getTarget(ctx, name);
+      if (!target) {
+        return false;
+      }
+      if (target.type === 'group') {
+        return (doTask ? doGroup : undoGroup)(ctx, name, target.params);
+      }
+      if (target.like) {
+        return (doTask ? doLikeWall : undoLikeWall)(ctx, target.name);
+      }
+      return doTask ? sendWall(ctx, target.name) : deleteWall(ctx, target.name);
+    }));
+  }
+  function executeTasks$1(ctx, {nameLinks: nameLinks = []}, action) {
+    const doTask = action === 'do';
+    return ctx.run(doTask ? 'tasks.do' : 'tasks.undo', undefined, false, (async ctx => {
+      if (ctx.state.disposed) {
+        return ctx.fail('DISPOSED');
+      }
+      if (!ctx.state.initialized) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      const result = {
+        success: true,
+        results: {}
+      };
+      const enabled = doTask ? ctx.options.doTaskEnabled !== false : ctx.options.undoTaskEnabled !== false;
+      const links = [ ...new Set(nameLinks) ];
+      for (let i = 0; i < links.length; i++) {
+        const link = links[i];
+        let success;
+        if (!enabled) {
+          ctx.skip('TASK_DISABLED');
+          success = true;
+        } else {
+          const name = normalizeLink(link);
+          success = name ? await executeOne(ctx, name, doTask) : ctx.fail('INVALID_LINK');
+        }
+        result.results.nameLinks ||= {};
+        Object.defineProperty(result.results.nameLinks, link, {
+          value: success,
+          enumerable: true,
+          configurable: true,
+          writable: true
+        });
+        result.success = result.success && success;
+        if (enabled && i < links.length - 1 && !ctx.state.disposed) {
+          await new Promise((resolve => setTimeout(resolve, ctx.options.intervalMs ?? 1e3)));
+        }
+      }
+      return result;
+    }), (value => typeof value === 'boolean' ? value : value.success));
+  }
+  function doTasks$1(ctx, options = {}) {
+    return executeTasks$1(ctx, options, 'do');
+  }
+  function undoTasks$1(ctx, options = {}) {
+    return executeTasks$1(ctx, options, 'undo');
+  }
+  function parseHeaders$2(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient$1(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$2(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  let Vk$1 = class Vk {
+    ctx;
+    queue=Promise.resolve();
+    constructor(options) {
+      this.ctx = new Context$1(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = value;
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = value;
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init() {
+      const {state: state} = this.ctx;
+      if (state.init) {
+        return state.init;
+      }
+      state.init = this.ctx.run('init', undefined, false, (async ctx => {
+        if (state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        if (state.initialized) {
+          return true;
+        }
+        state.token = '';
+        if (!await verifyAuth$1(ctx) || !await updateAuth$1(ctx)) {
+          return false;
+        }
+        await loadCache(ctx);
+        await loadWhiteList(ctx);
+        if (state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        state.initialized = true;
+        return true;
+      })).finally((() => {
+        state.init = undefined;
+      }));
+      return state.init;
+    }
+    do(options = {}) {
+      const snapshot = {
+        ...options,
+        nameLinks: [ ...options.nameLinks || [] ]
+      };
+      const job = this.queue.then((() => doTasks$1(this.ctx, snapshot)));
+      this.queue = job.catch((() => undefined));
+      return job;
+    }
+    undo(options = {}) {
+      const snapshot = {
+        ...options,
+        nameLinks: [ ...options.nameLinks || [] ]
+      };
+      const job = this.queue.then((() => undoTasks$1(this.ctx, snapshot)));
+      this.queue = job.catch((() => undefined));
+      return job;
+    }
+    setWhiteList(value) {
+      return setWhiteList(this.ctx, value);
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      this.ctx.state.initialized = false;
+      this.ctx.state.token = '';
+      this.ctx.events.clear();
+    }
+  };
+  class Vk extends ProjectSocial {
+    constructor() {
+      super(new Vk$1({
+        http: createGMHttpClient$1((options => GM_xmlhttpRequest(options))),
+        gm: projectGM('vk'),
+        namespace: moduleNamespace('vk'),
+        doTaskEnabled: globalOptions.doTask.vk.names,
+        undoTaskEnabled: globalOptions.undoTask.vk.names
+      }), 'Vk');
+    }
+  }
+  function parseHeaders$1(raw = '') {
+    const headers = Object.create(null);
+    for (const line of raw.split(/\r?\n/)) {
+      const index = line.indexOf(':');
+      if (index < 1) {
+        continue;
+      }
+      const key = line.slice(0, index).trim().toLowerCase();
+      const value = line.slice(index + 1).trim();
+      const previous = headers[key];
+      headers[key] = previous === undefined ? value : [ ...Array.isArray(previous) ? previous : [ previous ], value ];
+    }
+    return headers;
+  }
+  function createGMHttpClient(request) {
+    return options => new Promise((resolve => {
+      let settled = false;
+      const finish = response => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        resolve(response);
+      };
+      const fail = (status, statusText) => finish({
+        result: status === 604 ? 'JsError' : 'Error',
+        status: status,
+        statusText: statusText
+      });
+      const timeout = options.timeout && options.timeout > 0 ? options.timeout : 3e4;
+      let handle;
+      const timer = setTimeout((() => {
+        fail(601, 'Timeout');
+        try {
+          handle?.abort?.();
+        } catch {}
+      }), timeout);
+      const {dataType: dataType, ...requestOptions} = options;
+      const responseType = dataType || options.responseType || 'text';
+      try {
+        handle = request({
+          ...requestOptions,
+          timeout: timeout,
+          responseType: responseType === 'json' ? 'json' : undefined,
+          ontimeout: () => fail(601, 'Timeout'),
+          onabort: () => fail(602, 'Aborted'),
+          onerror: () => fail(603, 'NetworkError'),
+          onload: raw => {
+            try {
+              const responseHeaders = parseHeaders$1(raw.responseHeaders);
+              let response = raw.response;
+              let responseText = '';
+              try {
+                responseText = raw.responseText || '';
+              } catch {}
+              if (responseType === 'json' && (response === undefined || response === null || typeof response === 'string')) {
+                try {
+                  response = JSON.parse(responseText || String(response));
+                } catch {
+                  fail(604, 'InvalidJSON');
+                  return;
+                }
+              }
+              finish({
+                result: 'Success',
+                status: 600,
+                statusText: 'Load',
+                data: {
+                  status: raw.status,
+                  statusText: raw.statusText || '',
+                  responseText: responseText,
+                  response: response,
+                  responseHeaders: responseHeaders,
+                  finalUrl: raw.finalUrl || options.url
+                }
+              });
+            } catch {
+              fail(604, 'InvalidResponse');
+            }
+          }
+        });
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => fail(603, 'NetworkError')));
+        }
+      } catch {
+        fail(604, 'RequestError');
+      }
+    }));
+  }
+  async function updateAuth(ctx) {
+    return ctx.run('auth.updateCookie', undefined, false, (async ctx => {
+      try {
+        const cookies = await ctx.cookies('https://www.youtube.com/@YouTube');
+        if (ctx.state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        const cookie = cookies.find((item => item.name === '__Secure-3PAPISID'));
+        if (!cookie || typeof cookie.value !== 'string' || !cookie.value) {
+          return ctx.fail('AUTH_REQUIRED');
+        }
+        ctx.state.auth = cookie.value;
+        return true;
+      } catch {
+        return ctx.fail('COOKIE_READ_FAILED');
+      }
+    }));
+  }
+  const sha1 = async value => {
+    const digest = await crypto.subtle.digest('SHA-1', (new TextEncoder).encode(value));
+    return Array.from(new Uint8Array(digest), (byte => byte.toString(16).padStart(2, '0'))).join('');
+  };
+  async function signedHeaders(cookie, params, referer, hash) {
+    if (!cookie) {
+      throw new Error('Missing auth');
+    }
+    const now = Math.floor(Date.now() / 1e3);
+    const digest = await hash(`${now} ${cookie} https://www.youtube.com`);
+    if (!/^[0-9a-f]{40}$/i.test(digest)) {
+      throw new Error('Invalid SHA-1 implementation');
+    }
+    return {
+      origin: 'https://www.youtube.com',
+      referer: referer,
+      'content-type': 'application/json',
+      'x-goog-authuser': '0',
+      'x-origin': 'https://www.youtube.com',
+      ...typeof params.client.visitorData === 'string' ? {
+        'x-goog-visitor-id': params.client.visitorData
+      } : {},
+      authorization: `SAPISIDHASH ${now}_${digest}`
+    };
+  }
+  function requestContext(params) {
+    return {
+      client: params.client,
+      request: {
+        sessionId: params.request.sessionId,
+        internalExperimentFlags: [],
+        consistencyTokenJars: []
+      },
+      user: {}
+    };
+  }
+  function normalizeYoutubeLink(link) {
+    try {
+      let url = new URL(link);
+      if ([ 'www.google.com', 'google.com' ].includes(url.hostname) && url.pathname === '/url') {
+        url = new URL(url.searchParams.get('url') || url.searchParams.get('q') || '');
+      }
+      if (url.protocol !== 'https:' || url.username || url.password || url.port) {
+        return undefined;
+      }
+      if (![ 'www.youtube.com', 'youtube.com', 'm.youtube.com', 'youtu.be' ].includes(url.hostname)) {
+        return undefined;
+      }
+      if (url.hostname === 'youtu.be') {
+        const id = url.pathname.slice(1);
+        if (!/^[\w-]+$/.test(id)) {
+          return undefined;
+        }
+        return `https://www.youtube.com/watch?v=${id}`;
+      }
+      url.hostname = 'www.youtube.com';
+      url.hash = '';
+      return url.href;
+    } catch {
+      return undefined;
+    }
+  }
+  function eventTarget(link) {
+    const normalized = normalizeYoutubeLink(link);
+    if (!normalized) {
+      return undefined;
+    }
+    const url = new URL(normalized);
+    return url.pathname === '/watch' ? url.searchParams.get('v') || undefined : url.pathname;
+  }
+  function object(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+  function jsonProperty(text, key) {
+    const matcher = new RegExp(`"${key}"\\s*:\\s*`, 'g');
+    while (matcher.exec(text)) {
+      const start = matcher.lastIndex;
+      let depth = 0;
+      let quoted = false;
+      let escaped = false;
+      for (let i = start; i < text.length; i++) {
+        const char = text[i];
+        if (quoted) {
+          if (escaped) {
+            escaped = false;
+          } else if (char === '\\') {
+            escaped = true;
+          } else if (char === '"') {
+            quoted = false;
+          }
+        } else if (char === '"') {
+          quoted = true;
+        } else if (char === '{' || char === '[') {
+          depth++;
+        } else if (char === '}' || char === ']') {
+          depth--;
+        }
+        if (!quoted && depth === 0) {
+          try {
+            return JSON.parse(text.slice(start, i + 1));
+          } catch {
+            break;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+  async function getInfo$1(ctx, link, type) {
+    return ctx.run('info.get', eventTarget(link), {}, (async ctx => {
+      const url = normalizeYoutubeLink(link);
+      if (!url || ![ 'channel', 'likeVideo' ].includes(type)) {
+        ctx.fail('INVALID_ARGUMENT');
+        return {};
+      }
+      const {result: result, data: data} = await ctx.request({
+        url: url,
+        method: 'GET'
+      });
+      if (result !== 'Success' || data?.status !== 200) {
+        ctx.fail('HTTP_FAILED');
+        return {};
+      }
+      if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube') || new URL(data.finalUrl || url).hostname === 'accounts.google.com') {
+        ctx.fail('AUTH_REQUIRED');
+        return {
+          needLogin: true
+        };
+      }
+      const apiKey = jsonProperty(data.responseText, 'INNERTUBE_API_KEY');
+      const context = jsonProperty(data.responseText, 'INNERTUBE_CONTEXT');
+      if (typeof apiKey !== 'string' || !apiKey || !object(context) || !object(context.client) || !object(context.request)) {
+        ctx.fail('INFO_PARAMS_MISSING');
+        return {};
+      }
+      const client = {
+        ...context.client,
+        hl: 'en'
+      };
+      const params = {
+        apiKey: apiKey,
+        client: client,
+        request: context.request
+      };
+      if (type === 'channel') {
+        const channelId = jsonProperty(data.responseText, 'channelId');
+        if (typeof channelId !== 'string' || !channelId) {
+          ctx.fail('CHANNEL_ID_MISSING');
+          return {};
+        }
+        params.channelId = channelId;
+      } else {
+        const shortlink = data.responseText.match(/<link\b[^>]*rel=["']shortlinkUrl["'][^>]*href=["']https:\/\/youtu\.be\/([^"'?]+)["']/)?.[1];
+        const videoId = shortlink || jsonProperty(data.responseText, 'videoId');
+        const likeParams = jsonProperty(data.responseText, 'likeParams');
+        if (typeof videoId !== 'string' || !videoId) {
+          ctx.fail('VIDEO_ID_MISSING');
+          return {};
+        }
+        params.videoId = videoId;
+        if (typeof likeParams === 'string') {
+          params.likeParams = likeParams;
+        }
+      }
+      return {
+        params: params
+      };
+    }), (value => Boolean(value.params)));
+  }
+  async function executeChannel(ctx, {link: link, doTask: doTask = true, verify: verify = false}) {
+    return ctx.run(verify ? 'auth.verifyChannel' : doTask ? 'channel.subscribe' : 'channel.unsubscribe', eventTarget(link), false, (async ctx => {
+      if (!ctx.state.auth || !verify && !ctx.state.initialized) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      const {params: params, needLogin: needLogin} = await getInfo$1(ctx, link, 'channel');
+      if (needLogin) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      if (!params?.channelId) {
+        return ctx.fail('INFO_PARAMS_MISSING');
+      }
+      const {channelId: channelId, apiKey: apiKey} = params;
+      if (!doTask && !verify && ctx.state.whiteList.channels.includes(channelId)) {
+        return ctx.skip('WHITELIST_SKIPPED');
+      }
+      const {result: result, data: data} = await ctx.request({
+        url: `https://www.youtube.com/youtubei/v1/subscription/${doTask ? '' : 'un'}subscribe?key=${encodeURIComponent(apiKey)}&prettyPrint=false`,
+        method: 'POST',
+        headers: await signedHeaders(ctx.state.auth, params, `https://www.youtube.com/channel/${channelId}`, ctx.hash),
+        data: JSON.stringify({
+          context: requestContext(params),
+          channelIds: [ channelId ],
+          params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
+        })
+      });
+      if (result !== 'Success' || data?.status !== 200) {
+        return ctx.fail('HTTP_FAILED');
+      }
+      const subscribed = doTask && (/"subscribed"\s*:\s*true/.test(data.responseText) || data.responseText.includes('The subscription already exists'));
+      const unsubscribed = !doTask && /"subscribed"\s*:\s*false/.test(data.responseText);
+      const self = verify && data.responseText.includes('You may not subscribe to yourself');
+      if (!(subscribed || unsubscribed || self)) {
+        return ctx.fail('AUTH_OR_OPERATION_REJECTED');
+      }
+      if (doTask && !verify) {
+        ctx.state.tasks.channels = [ ...new Set([ ...ctx.state.tasks.channels, normalizeYoutubeLink(link) ]) ];
+      }
+      return true;
+    }));
+  }
+  function doChannel(ctx, options) {
+    return executeChannel(ctx, {
+      ...options,
+      doTask: true
+    });
+  }
+  function undoChannel(ctx, options) {
+    return executeChannel(ctx, {
+      ...options,
+      doTask: false,
+      verify: false
+    });
+  }
+  async function verifyAuth(ctx) {
+    return ctx.run('auth.verify', undefined, false, (async ctx => {
+      const configured = ctx.options.verifyChannel;
+      const link = normalizeYoutubeLink(configured.startsWith('https://') ? configured : `https://www.youtube.com/channel/${configured}`);
+      if (!link || !configured || !configured.startsWith('https://') && !/^[\w-]+$/.test(configured)) {
+        return ctx.fail('INVALID_VERIFY_CHANNEL');
+      }
+      ctx.progress('VERIFY_BY_SUBSCRIPTION');
+      return doChannel(ctx, {
+        link: link,
+        verify: true
+      });
+    }));
+  }
+  function createGMCookieReader(list, timeoutMs = 3e4) {
+    if (!Number.isFinite(timeoutMs) || timeoutMs <= 0) {
+      throw new Error('Invalid cookie timeout');
+    }
+    return url => new Promise(((resolve, reject) => {
+      let settled = false;
+      const finish = (cookies, failed) => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        clearTimeout(timer);
+        if (failed) {
+          reject(new Error('Cookie read failed'));
+        } else {
+          resolve(cookies);
+        }
+      };
+      const timer = setTimeout((() => finish([], true)), timeoutMs);
+      try {
+        const handle = list({
+          url: url
+        }, ((cookies, error) => finish(cookies, Boolean(error) || !Array.isArray(cookies))));
+        if (handle && typeof handle.then === 'function') {
+          void Promise.resolve(handle).catch((() => finish([], true)));
+        }
+      } catch {
+        finish([], true);
+      }
+    }));
+  }
+  function defaultCookieReader(timeoutMs) {
+    return createGMCookieReader(((details, callback) => GM_cookie.list(details, callback)), timeoutMs);
+  }
+  function getDefaultGM() {
+    return {
+      getValue: (key, fallback) => GM_getValue(key, fallback),
+      setValue: (key, value) => GM_setValue(key, value),
+      deleteValue: key => GM_deleteValue(key)
+    };
+  }
+  function createGMStorage(gm, namespace = 'youtube') {
+    return {
+      async get(key, fallback) {
+        return gm.getValue(`${namespace}:${key}`, fallback);
+      },
+      async set(key, value) {
+        await gm.setValue(`${namespace}:${key}`, value);
+      },
+      async delete(key) {
+        await gm.deleteValue(`${namespace}:${key}`);
+      }
+    };
+  }
+  class StatusEvents {
+    listeners=new Set;
+    on(listener) {
+      this.listeners.add(listener);
+      return () => this.listeners.delete(listener);
+    }
+    emit(event) {
+      const snapshot = Object.freeze({
+        ...event,
+        details: event.details && Object.freeze({
+          ...event.details
+        })
+      });
+      for (const listener of [ ...this.listeners ]) {
+        try {
+          void Promise.resolve(listener(snapshot)).catch((() => undefined));
+        } catch {}
+      }
+    }
+    clear() {
+      this.listeners.clear();
+    }
+  }
+  function tasks(value) {
+    const strings = items => Array.isArray(items) ? [ ...new Set(items.filter((item => typeof item === 'string'))) ] : [];
+    return {
+      channels: strings(value?.channels),
+      likes: strings(value?.likes)
+    };
+  }
+  class Context {
+    events=new StatusEvents;
+    storage;
+    cookies;
+    hash;
+    options;
+    state={
+      auth: '',
+      initialized: false,
+      disposed: false,
+      tasks: tasks(),
+      whiteList: tasks(),
+      whiteListOverride: undefined,
+      init: undefined,
+      cleanups: new Set
+    };
+    operationId='';
+    parentOperationId;
+    operation='';
+    target;
+    failure;
+    skipped;
+    constructor(options) {
+      const taskDelayMs = options.taskDelayMs ?? 1e3;
+      if (!Number.isFinite(taskDelayMs) || taskDelayMs < 0) {
+        throw new Error('Invalid taskDelayMs');
+      }
+      this.options = {
+        ...options,
+        taskDelayMs: taskDelayMs,
+        verifyChannel: options.verifyChannel ?? 'UCrXUsMBcfTVqwAS7DKg9C0Q',
+        doTask: {
+          channels: true,
+          likes: true,
+          ...options.doTask
+        },
+        undoTask: {
+          channels: true,
+          likes: true,
+          ...options.undoTask
+        }
+      };
+      this.storage = createGMStorage(options.gm || getDefaultGM(), options.namespace);
+      this.cookies = options.cookies || defaultCookieReader(options.cookieTimeoutMs ?? 3e4);
+      this.hash = options.sha1 || sha1;
+      if (options.whiteList) {
+        this.state.whiteListOverride = tasks(options.whiteList);
+      }
+      this.state.whiteList = tasks(options.whiteList);
+    }
+    async run(operation, target, fallback, work, success = value => value === true) {
+      const child = Object.assign(Object.create(Context.prototype), this);
+      child.operationId = crypto.randomUUID();
+      child.parentOperationId = this.operationId || undefined;
+      child.operation = operation;
+      child.target = target;
+      child.failure = undefined;
+      child.skipped = undefined;
+      child.emit('start', 'info', 'OPERATION_STARTED');
+      try {
+        if (this.state.disposed) {
+          child.fail('DISPOSED');
+          throw new Error('Disposed');
+        }
+        const value = await work(child);
+        const ok = success(value);
+        child.emit(ok ? child.skipped ? 'skipped' : 'success' : 'failure', ok ? 'info' : 'error', ok ? child.skipped || 'OPERATION_COMPLETED' : child.failure || 'OPERATION_FAILED');
+        return value;
+      } catch {
+        child.emit('failure', 'error', child.failure || 'UNEXPECTED_ERROR');
+        return fallback;
+      }
+    }
+    emit(phase, level, code, details) {
+      this.events.emit({
+        operationId: this.operationId,
+        parentOperationId: this.parentOperationId,
+        operation: this.operation,
+        target: this.target,
+        phase: phase,
+        level: level,
+        code: code,
+        timestamp: Date.now(),
+        details: details
+      });
+    }
+    progress(code, details) {
+      this.emit('progress', 'info', code, details);
+    }
+    fail(code) {
+      this.failure = code;
+      this.emit('progress', 'error', code);
+      return false;
+    }
+    skip(code) {
+      this.skipped = code;
+      return true;
+    }
+    async request(options) {
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.emit('progress', 'debug', 'HTTP_REQUEST_STARTED', {
+        method: options.method || 'GET'
+      });
+      const result = await this.options.http(options);
+      if (this.state.disposed) {
+        throw new Error('Disposed');
+      }
+      this.emit('progress', 'debug', 'HTTP_REQUEST_COMPLETED', {
+        transportStatus: result.status,
+        httpStatus: result.data?.status || 0
+      });
+      return result;
+    }
+    async delay(ms) {
+      if (!ms || this.state.disposed) {
+        return;
+      }
+      await new Promise((resolve => {
+        const finish = () => {
+          clearTimeout(timer);
+          this.state.cleanups.delete(finish);
+          resolve();
+        };
+        const timer = setTimeout(finish, ms);
+        this.state.cleanups.add(finish);
+      }));
+    }
+  }
+  async function executeLikeVideo(ctx, {link: link, doTask: doTask = true}) {
+    return ctx.run(doTask ? 'video.like' : 'video.unlike', eventTarget(link), false, (async ctx => {
+      if (!ctx.state.initialized || !ctx.state.auth) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      const {params: params, needLogin: needLogin} = await getInfo$1(ctx, link, 'likeVideo');
+      if (needLogin) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      if (!params?.videoId) {
+        return ctx.fail('INFO_PARAMS_MISSING');
+      }
+      const {videoId: videoId, apiKey: apiKey, likeParams: likeParams} = params;
+      if (!doTask && ctx.state.whiteList.likes.includes(videoId)) {
+        return ctx.skip('WHITELIST_SKIPPED');
+      }
+      if (doTask && !likeParams) {
+        return ctx.fail('LIKE_PARAMS_MISSING');
+      }
+      const {result: result, data: data} = await ctx.request({
+        url: `https://www.youtube.com/youtubei/v1/like/${doTask ? '' : 'remove'}like?key=${encodeURIComponent(apiKey)}`,
+        method: 'POST',
+        headers: await signedHeaders(ctx.state.auth, params, `https://www.youtube.com/watch?v=${videoId}`, ctx.hash),
+        data: JSON.stringify({
+          context: requestContext(params),
+          target: {
+            videoId: videoId
+          },
+          ...doTask ? {
+            params: likeParams
+          } : {}
+        })
+      });
+      if (result !== 'Success' || data?.status !== 200) {
+        return ctx.fail('HTTP_FAILED');
+      }
+      const liked = doTask && data.responseText.includes('Added to Liked videos');
+      const unliked = !doTask && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'));
+      if (!(liked || unliked)) {
+        return ctx.fail('AUTH_OR_OPERATION_REJECTED');
+      }
+      if (doTask) {
+        ctx.state.tasks.likes = [ ...new Set([ ...ctx.state.tasks.likes, normalizeYoutubeLink(link) ]) ];
+      }
+      return true;
+    }));
+  }
+  function doLikeVideo(ctx, options) {
+    return executeLikeVideo(ctx, {
+      ...options,
+      doTask: true
+    });
+  }
+  function undoLikeVideo(ctx, options) {
+    return executeLikeVideo(ctx, {
+      ...options,
+      doTask: false
+    });
+  }
+  async function executeTasks(ctx, {channelLinks: channelLinks = [], videoLinks: videoLinks = []}, action) {
+    const doTask = action === 'do';
+    return ctx.run(doTask ? 'tasks.do' : 'tasks.undo', undefined, false, (async ctx => {
+      if (!ctx.state.initialized) {
+        return ctx.fail('AUTH_REQUIRED');
+      }
+      if (![ channelLinks, videoLinks ].every((links => Array.isArray(links) && links.every((link => typeof link === 'string'))))) {
+        return ctx.fail('INVALID_ARGUMENT');
+      }
+      const result = {
+        success: true,
+        results: {}
+      };
+      const options = doTask ? ctx.options.doTask : ctx.options.undoTask;
+      const pending = [];
+      const jobs = [ ...channelLinks.map((link => ({
+        link: link,
+        key: 'channelLinks',
+        enabled: options.channels,
+        action: doTask ? doChannel : undoChannel
+      }))), ...videoLinks.map((link => ({
+        link: link,
+        key: 'videoLinks',
+        enabled: options.likes,
+        action: doTask ? doLikeVideo : undoLikeVideo
+      }))) ];
+      for (let index = 0; index < jobs.length; index++) {
+        const {link: link, key: key, enabled: enabled, action: action} = jobs[index];
+        result.results[key] ||= Object.create(null);
+        const promise = enabled ? action(ctx, {
+          link: link
+        }) : ctx.run('tasks.skip', eventTarget(link), false, (async ctx => ctx.skip('OPTION_DISABLED')));
+        pending.push(promise.then((success => {
+          result.results[key][link] = success;
+          result.success = result.success && success;
+        })));
+        if (enabled && index < jobs.length - 1) {
+          await ctx.delay(ctx.options.taskDelayMs);
+        }
+      }
+      await Promise.all(pending);
+      return result;
+    }), (result => typeof result === 'boolean' ? result : result.success));
+  }
+  function doTasks(ctx, options = {}) {
+    return executeTasks(ctx, options, 'do');
+  }
+  function undoTasks(ctx, options = {}) {
+    return executeTasks(ctx, options, 'undo');
+  }
+  let Youtube$1 = class Youtube {
+    ctx;
+    constructor(options) {
+      this.ctx = new Context(options);
+    }
+    get tasks() {
+      return this.ctx.state.tasks;
+    }
+    set tasks(value) {
+      this.ctx.state.tasks = tasks(value);
+    }
+    get whiteList() {
+      return this.ctx.state.whiteList;
+    }
+    set whiteList(value) {
+      this.ctx.state.whiteList = tasks(value);
+      this.ctx.state.whiteListOverride = tasks(value);
+    }
+    on(event, listener) {
+      if (event !== 'status') {
+        throw new Error('Unknown event');
+      }
+      return this.ctx.events.on(listener);
+    }
+    init() {
+      const {state: state} = this.ctx;
+      if (state.init) {
+        return state.init;
+      }
+      state.init = this.ctx.run('init', undefined, false, (async ctx => {
+        if (state.initialized) {
+          return true;
+        }
+        state.whiteList = state.whiteListOverride || tasks(await ctx.storage.get('whiteList', {}));
+        if (state.whiteListOverride) {
+          await ctx.storage.set('whiteList', state.whiteList);
+        }
+        const saved = await ctx.storage.get('auth', null);
+        state.auth = typeof saved?.PAPISID === 'string' ? saved.PAPISID : '';
+        if (state.auth && await verifyAuth(ctx)) {
+          state.initialized = true;
+          return true;
+        }
+        state.auth = '';
+        await ctx.storage.delete('auth');
+        if (!await updateAuth(ctx)) {
+          return false;
+        }
+        if (!await verifyAuth(ctx)) {
+          state.auth = '';
+          return false;
+        }
+        if (state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        await ctx.storage.set('auth', {
+          PAPISID: state.auth
+        });
+        if (state.disposed) {
+          return ctx.fail('DISPOSED');
+        }
+        state.initialized = true;
+        return true;
+      })).finally((() => {
+        state.init = undefined;
+      }));
+      return state.init;
+    }
+    do(options = {}) {
+      return doTasks(this.ctx, options);
+    }
+    undo(options = {}) {
+      return undoTasks(this.ctx, options);
+    }
+    getInfo(link, type) {
+      return getInfo$1(this.ctx, link, type);
+    }
+    doChannel(options) {
+      return doChannel(this.ctx, options);
+    }
+    undoChannel(options) {
+      return undoChannel(this.ctx, options);
+    }
+    doLikeVideo(options) {
+      return doLikeVideo(this.ctx, options);
+    }
+    undoLikeVideo(options) {
+      return undoLikeVideo(this.ctx, options);
+    }
+    saveWhiteList(value = this.whiteList) {
+      return this.ctx.run('whiteList.save', undefined, false, (async ctx => {
+        const next = tasks(value);
+        await ctx.storage.set('whiteList', next);
+        this.whiteList = next;
+        return true;
+      }));
+    }
+    dispose() {
+      this.ctx.state.disposed = true;
+      this.ctx.state.initialized = false;
+      this.ctx.state.auth = '';
+      for (const cancel of [ ...this.ctx.state.cleanups ]) {
+        cancel();
+      }
+      this.ctx.events.clear();
+    }
+  };
+  class Youtube extends ProjectSocial {
+    constructor() {
+      super(new Youtube$1({
+        http: createGMHttpClient((options => GM_xmlhttpRequest(options))),
+        gm: projectGM('youtube'),
+        namespace: moduleNamespace('youtube'),
+        verifyChannel: globalOptions.other.youtubeVerifyChannel,
+        doTask: globalOptions.doTask.youtube,
+        undoTask: globalOptions.undoTask.youtube
+      }), 'Youtube');
+    }
+  }
+  const getInfo = async (link, type) => {
+    if (type !== 'channel' && type !== 'likeVideo') {
+      return {};
+    }
+    const youtube = new Youtube;
+    try {
+      return await youtube.client.getInfo(link, type);
+    } finally {
+      youtube.dispose();
+    }
+  };
+  class Steam extends ProjectSocial {
+    constructor() {
+      super(new Steam$1({
+        http: createGMHttpClient$5((options => GM_xmlhttpRequest(options))),
+        gm: projectGM('steam'),
+        namespace: moduleNamespace('steam'),
+        ASF: globalOptions.ASF,
+        doTask: globalOptions.doTask.steam,
+        undoTask: globalOptions.undoTask.steam,
+        autoChangeRegion: true
+      }), 'Steam');
+    }
+    getCuratorId(path, name) {
+      return this.client.getCuratorId(path, name);
+    }
+  }
   const parseHeaders = headerString => {
     debug('开始解析HTTP头', {
       headerString: headerString
@@ -1389,241 +9042,6 @@ if (missingDependencies.length > 0) {
       };
     }
   };
-  var ASF = '<?xml version="1.0" encoding="UTF-8"?>\n<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" viewBox="0 0 16 16" version="1.1">\n<g id="surface1">\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(11.372549%,17.254902%,26.274511%);fill-opacity:1;" d="M 7.652344 0.175781 C 8.046875 0.351562 8.210938 0.59375 8.441406 0.953125 C 9.007812 1.746094 9.644531 2.539062 10.640625 2.761719 C 12.011719 2.949219 13.429688 2.882812 14.808594 2.796875 C 14.90625 2.792969 15.003906 2.785156 15.101562 2.78125 C 15.1875 2.773438 15.273438 2.769531 15.363281 2.761719 C 15.429688 2.769531 15.496094 2.777344 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.34375 15.976562 4.597656 15.960938 4.851562 C 15.957031 4.925781 15.957031 5 15.953125 5.074219 C 15.945312 5.175781 15.945312 5.175781 15.941406 5.285156 C 15.9375 5.378906 15.9375 5.378906 15.929688 5.480469 C 15.914062 5.652344 15.914062 5.652344 15.824219 5.914062 C 15.816406 6.058594 15.8125 6.203125 15.8125 6.34375 C 15.8125 6.433594 15.8125 6.519531 15.808594 6.613281 C 15.808594 6.707031 15.808594 6.800781 15.808594 6.898438 C 15.804688 7.097656 15.804688 7.300781 15.800781 7.5 C 15.796875 7.816406 15.792969 8.132812 15.792969 8.449219 C 15.789062 8.753906 15.785156 9.058594 15.78125 9.363281 C 15.78125 9.457031 15.78125 9.550781 15.78125 9.648438 C 15.777344 9.738281 15.777344 9.824219 15.773438 9.914062 C 15.773438 10.03125 15.773438 10.03125 15.773438 10.148438 C 15.738281 10.347656 15.738281 10.347656 15.625 10.503906 C 15.386719 10.671875 15.152344 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.6875 12.414062 13.6875 12.414062 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.359375 12.515625 13.359375 12.515625 13.324219 12.683594 C 13.226562 13.144531 13.054688 13.566406 12.871094 14 C 12.75 13.988281 12.628906 13.980469 12.511719 13.96875 C 12.410156 13.957031 12.410156 13.957031 12.308594 13.949219 C 12.050781 13.90625 11.8125 13.828125 11.566406 13.738281 C 11.492188 13.867188 11.492188 13.867188 11.417969 14 C 11.355469 14.113281 11.292969 14.222656 11.226562 14.335938 C 11.195312 14.394531 11.164062 14.449219 11.132812 14.507812 C 11 14.738281 10.882812 14.941406 10.695312 15.128906 C 10.257812 15.097656 9.957031 14.863281 9.601562 14.625 C 9.402344 14.503906 9.402344 14.503906 9.222656 14.542969 C 9.015625 14.617188 8.925781 14.703125 8.777344 14.863281 C 8.730469 14.914062 8.683594 14.964844 8.632812 15.019531 C 8.535156 15.125 8.433594 15.234375 8.335938 15.339844 C 7.972656 15.726562 7.972656 15.726562 7.675781 15.792969 C 7.4375 15.726562 7.367188 15.660156 7.21875 15.460938 C 7 15.1875 6.773438 14.941406 6.523438 14.695312 C 6.375 14.550781 6.230469 14.40625 6.085938 14.261719 C 6.023438 14.195312 5.957031 14.128906 5.890625 14.0625 C 2.175781 10.347656 2.175781 10.347656 1.945312 10.117188 C 1.738281 9.910156 1.527344 9.707031 1.316406 9.503906 C 1.160156 9.351562 1 9.199219 0.84375 9.042969 C 0.722656 8.925781 0.722656 8.925781 0.597656 8.808594 C 0.519531 8.734375 0.445312 8.660156 0.363281 8.582031 C 0.296875 8.515625 0.226562 8.445312 0.152344 8.375 C -0.03125 8.132812 -0.0351562 8.039062 0 7.738281 C 0.117188 7.570312 0.117188 7.570312 0.28125 7.402344 C 0.34375 7.339844 0.40625 7.277344 0.472656 7.210938 C 0.542969 7.144531 0.613281 7.074219 0.683594 7.003906 C 0.757812 6.933594 0.828125 6.859375 0.902344 6.785156 C 1.101562 6.585938 1.304688 6.386719 1.503906 6.1875 C 1.714844 5.980469 1.921875 5.773438 2.132812 5.5625 C 2.480469 5.214844 2.832031 4.863281 3.183594 4.515625 C 3.683594 4.023438 4.175781 3.53125 4.671875 3.039062 C 5.015625 2.695312 5.359375 2.355469 5.699219 2.015625 C 5.785156 1.929688 5.867188 1.847656 5.949219 1.765625 C 6.222656 1.492188 6.496094 1.222656 6.773438 0.949219 C 6.839844 0.882812 6.910156 0.8125 6.980469 0.742188 C 7.078125 0.648438 7.078125 0.648438 7.171875 0.550781 C 7.226562 0.496094 7.285156 0.441406 7.339844 0.386719 C 7.476562 0.261719 7.476562 0.261719 7.652344 0.175781 Z M 7.652344 0.175781 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 15.824219 4.027344 15.910156 4.058594 16 4.085938 C 15.988281 4.332031 15.980469 4.578125 15.96875 4.824219 C 15.964844 4.929688 15.964844 4.929688 15.960938 5.035156 C 15.9375 5.492188 15.863281 5.90625 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.761719 5.195312 13.582031 5.089844 13.40625 4.988281 C 12.996094 4.746094 12.585938 4.507812 12.167969 4.273438 C 10.847656 3.527344 10.847656 3.527344 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 7.566406 5.304688 C 7.878906 5.410156 7.90625 5.480469 8.058594 5.761719 C 8.117188 5.859375 8.117188 5.859375 8.175781 5.964844 C 8.269531 6.195312 8.277344 6.363281 8.261719 6.609375 C 8.355469 6.550781 8.449219 6.492188 8.550781 6.433594 C 8.777344 6.296875 8.855469 6.261719 9.128906 6.261719 C 9.136719 6.425781 9.140625 6.589844 9.148438 6.753906 C 9.152344 6.894531 9.152344 6.894531 9.15625 7.035156 C 9.125 7.34375 9.058594 7.492188 8.871094 7.738281 C 8.703125 7.871094 8.703125 7.871094 8.527344 7.972656 C 8.46875 8.007812 8.410156 8.042969 8.351562 8.078125 C 8.292969 8.109375 8.234375 8.140625 8.175781 8.175781 C 8.113281 8.207031 8.054688 8.238281 7.996094 8.273438 C 7.710938 8.398438 7.511719 8.335938 7.21875 8.261719 C 6.832031 8.070312 6.476562 7.859375 6.261719 7.476562 C 6.167969 7.203125 6.164062 7.007812 6.167969 6.722656 C 6.167969 6.636719 6.171875 6.550781 6.171875 6.460938 C 6.171875 6.394531 6.171875 6.328125 6.175781 6.261719 C 6.492188 6.332031 6.753906 6.457031 7.042969 6.609375 C 7.050781 6.480469 7.050781 6.480469 7.058594 6.347656 C 7.113281 5.9375 7.332031 5.636719 7.566406 5.304688 Z M 7.566406 5.304688 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.882353%,8.235294%,15.294118%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.800781 15.769531 9.878906 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.398438 15.664062 10.472656 15.476562 10.609375 C 15.15625 10.625 15.15625 10.625 14.871094 10.609375 C 14.867188 10.675781 14.859375 10.742188 14.855469 10.808594 C 14.816406 11.367188 14.746094 11.890625 14.609375 12.433594 C 14.3125 12.535156 14.105469 12.507812 13.804688 12.441406 C 13.726562 12.421875 13.648438 12.40625 13.570312 12.390625 C 13.480469 12.367188 13.480469 12.367188 13.390625 12.347656 C 13.449219 12.027344 13.535156 11.730469 13.644531 11.425781 C 13.679688 11.332031 13.710938 11.238281 13.746094 11.144531 C 13.78125 11.046875 13.816406 10.953125 13.851562 10.851562 C 13.902344 10.710938 13.902344 10.710938 13.957031 10.566406 C 14.054688 10.289062 14.160156 10.015625 14.261719 9.738281 C 14.292969 9.65625 14.320312 9.574219 14.351562 9.488281 C 14.613281 8.792969 14.613281 8.792969 14.929688 8.523438 C 15.359375 8.140625 15.347656 7.753906 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(13.725491%,18.431373%,37.254903%);fill-opacity:1;" d="M 13.566406 9.824219 C 13.609375 9.914062 13.609375 9.914062 13.652344 10 C 13.539062 10.21875 13.417969 10.425781 13.289062 10.636719 C 13.207031 10.769531 13.125 10.90625 13.046875 11.039062 C 13.003906 11.109375 12.960938 11.183594 12.914062 11.253906 C 12.691406 11.632812 12.46875 12.015625 12.25 12.398438 C 12.207031 12.472656 12.160156 12.550781 12.117188 12.628906 C 11.8125 13.160156 11.53125 13.703125 11.269531 14.253906 C 11.113281 14.582031 10.933594 14.855469 10.695312 15.128906 C 10.3125 15.078125 10.042969 14.933594 9.710938 14.734375 C 9.574219 14.648438 9.574219 14.648438 9.429688 14.566406 C 9.359375 14.523438 9.289062 14.480469 9.21875 14.433594 C 9.253906 14.046875 9.523438 13.835938 9.789062 13.582031 C 9.832031 13.539062 9.875 13.496094 9.921875 13.449219 C 10.15625 13.21875 10.402344 12.996094 10.65625 12.78125 C 11.15625 12.34375 11.621094 11.871094 12.089844 11.398438 C 12.25 11.238281 12.414062 11.078125 12.574219 10.914062 C 12.679688 10.8125 12.78125 10.707031 12.886719 10.605469 C 12.933594 10.554688 12.980469 10.507812 13.03125 10.457031 C 13.234375 10.253906 13.40625 10.066406 13.566406 9.824219 Z M 13.566406 9.824219 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.294118%,95.686275%,96.078432%);fill-opacity:1;" d="M 6.175781 10.347656 C 6.503906 10.464844 6.769531 10.617188 7.054688 10.820312 C 7.128906 10.871094 7.203125 10.925781 7.277344 10.976562 C 7.445312 11.105469 7.59375 11.234375 7.738281 11.390625 C 7.769531 11.316406 7.769531 11.316406 7.800781 11.238281 C 7.941406 10.992188 8.105469 10.882812 8.335938 10.722656 C 8.410156 10.671875 8.488281 10.617188 8.566406 10.5625 C 8.761719 10.449219 8.90625 10.386719 9.128906 10.347656 C 9.21875 11.453125 9.21875 11.453125 8.914062 11.832031 C 8.617188 12.113281 8.285156 12.273438 7.914062 12.433594 C 7.882812 12.921875 7.855469 13.410156 7.824219 13.914062 C 7.683594 13.914062 7.539062 13.914062 7.390625 13.914062 C 7.390625 13.398438 7.390625 12.878906 7.390625 12.347656 C 7.246094 12.320312 7.105469 12.289062 6.957031 12.261719 C 6.5625 12.078125 6.359375 11.875 6.175781 11.476562 C 6.144531 11.097656 6.152344 10.726562 6.175781 10.347656 Z M 6.175781 10.347656 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(8.235294%,11.764706%,23.137255%);fill-opacity:1;" d="M 14.433594 9.042969 C 14.523438 9.21875 14.523438 9.21875 14.484375 9.378906 C 14.460938 9.445312 14.4375 9.507812 14.414062 9.574219 C 14.386719 9.648438 14.359375 9.71875 14.335938 9.792969 C 14.308594 9.871094 14.277344 9.949219 14.25 10.027344 C 14.222656 10.105469 14.195312 10.183594 14.164062 10.265625 C 14.007812 10.703125 13.84375 11.132812 13.675781 11.566406 C 13.503906 11.996094 13.386719 12.429688 13.285156 12.878906 C 13.179688 13.269531 13.03125 13.632812 12.871094 14 C 12.378906 13.96875 12 13.910156 11.566406 13.652344 C 11.703125 13.144531 11.960938 12.71875 12.222656 12.265625 C 12.269531 12.1875 12.316406 12.105469 12.363281 12.023438 C 12.460938 11.859375 12.554688 11.695312 12.648438 11.53125 C 12.765625 11.332031 12.882812 11.128906 12.996094 10.925781 C 13.402344 10.222656 13.859375 9.621094 14.433594 9.042969 Z M 14.433594 9.042969 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0%);fill-opacity:1;" d="M 10.433594 2.78125 C 11.101562 2.777344 11.765625 2.773438 12.433594 2.769531 C 12.742188 2.769531 13.050781 2.765625 13.359375 2.761719 C 13.714844 2.757812 14.070312 2.757812 14.425781 2.757812 C 14.539062 2.753906 14.648438 2.753906 14.761719 2.753906 C 14.867188 2.753906 14.96875 2.753906 15.074219 2.753906 C 15.210938 2.753906 15.210938 2.753906 15.347656 2.75 C 15.421875 2.761719 15.492188 2.773438 15.566406 2.78125 C 15.761719 3.082031 15.757812 3.191406 15.75 3.539062 C 15.75 3.625 15.746094 3.710938 15.746094 3.800781 C 15.742188 3.867188 15.742188 3.933594 15.738281 4 C 14.917969 3.957031 14.128906 3.839844 13.324219 3.6875 C 13.066406 3.640625 12.808594 3.59375 12.546875 3.550781 C 12.363281 3.515625 12.175781 3.484375 11.992188 3.449219 C 11.78125 3.414062 11.566406 3.378906 11.355469 3.34375 C 11.226562 3.324219 11.226562 3.324219 11.097656 3.304688 C 11.027344 3.292969 10.953125 3.28125 10.878906 3.273438 C 10.664062 3.207031 10.570312 3.132812 10.433594 2.957031 C 10.433594 2.898438 10.433594 2.839844 10.433594 2.78125 Z M 10.433594 2.78125 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(95.686275%,96.078432%,96.470588%);fill-opacity:1;" d="M 9.128906 8.261719 C 9.183594 9.257812 9.183594 9.257812 9.011719 9.695312 C 8.605469 10.082031 8.152344 10.3125 7.597656 10.398438 C 7.09375 10.3125 6.6875 10.128906 6.347656 9.738281 C 6.074219 9.320312 6.136719 8.828125 6.175781 8.347656 C 6.539062 8.394531 6.765625 8.519531 7.066406 8.734375 C 7.140625 8.789062 7.214844 8.839844 7.292969 8.894531 C 7.476562 9.042969 7.476562 9.042969 7.566406 9.21875 C 7.621094 9.21875 7.679688 9.21875 7.738281 9.21875 C 7.835938 9.117188 7.933594 9.015625 8.03125 8.914062 C 8.738281 8.261719 8.738281 8.261719 9.128906 8.261719 Z M 9.128906 8.261719 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(7.843138%,11.372549%,22.745098%);fill-opacity:1;" d="M 11.042969 3.476562 C 11.648438 3.675781 12.246094 3.886719 12.84375 4.101562 C 12.984375 4.152344 12.984375 4.152344 13.125 4.207031 C 14.054688 4.542969 14.984375 4.878906 15.914062 5.21875 C 15.867188 5.597656 15.816406 5.972656 15.738281 6.347656 C 15.675781 6.3125 15.613281 6.273438 15.546875 6.234375 C 15.011719 5.921875 14.472656 5.609375 13.9375 5.296875 C 13.667969 5.140625 13.402344 4.984375 13.132812 4.828125 C 12.804688 4.636719 12.476562 4.445312 12.148438 4.253906 C 12.011719 4.179688 11.878906 4.101562 11.746094 4.023438 C 11.683594 3.988281 11.621094 3.949219 11.558594 3.914062 C 11.140625 3.671875 11.140625 3.671875 11.042969 3.476562 Z M 11.042969 3.476562 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(0%,0%,0.392157%);fill-opacity:1;" d="M 15.652344 6.433594 C 15.679688 6.433594 15.710938 6.433594 15.738281 6.433594 C 15.746094 6.988281 15.75 7.539062 15.753906 8.09375 C 15.753906 8.28125 15.757812 8.46875 15.757812 8.65625 C 15.761719 8.925781 15.761719 9.195312 15.765625 9.464844 C 15.765625 9.550781 15.765625 9.636719 15.769531 9.722656 C 15.769531 9.839844 15.769531 9.839844 15.769531 9.960938 C 15.769531 10.027344 15.769531 10.097656 15.769531 10.167969 C 15.730469 10.394531 15.664062 10.472656 15.476562 10.609375 C 15.199219 10.625 15.199219 10.625 14.957031 10.609375 C 14.875 10.285156 14.871094 10.046875 14.933594 9.71875 C 14.949219 9.636719 14.964844 9.550781 14.980469 9.464844 C 15 9.378906 15.015625 9.289062 15.03125 9.199219 C 15.050781 9.113281 15.066406 9.027344 15.082031 8.933594 C 15.203125 8.289062 15.203125 8.289062 15.304688 8.085938 C 15.34375 7.792969 15.375 7.5 15.40625 7.203125 C 15.441406 6.886719 15.472656 6.707031 15.652344 6.433594 Z M 15.652344 6.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(86.274511%,87.450981%,89.019608%);fill-opacity:1;" d="M 8.609375 3.390625 C 8.78125 3.390625 8.953125 3.390625 9.128906 3.390625 C 9.128906 4.109375 9.128906 4.824219 9.128906 5.566406 C 8.988281 5.59375 8.84375 5.621094 8.695312 5.652344 C 8.609375 5.566406 8.609375 5.566406 8.597656 5.355469 C 8.597656 5.265625 8.601562 5.175781 8.601562 5.082031 C 8.601562 4.984375 8.601562 4.886719 8.601562 4.785156 C 8.601562 4.683594 8.601562 4.578125 8.601562 4.472656 C 8.605469 4.371094 8.605469 4.265625 8.605469 4.160156 C 8.605469 3.902344 8.605469 3.648438 8.609375 3.390625 Z M 8.609375 3.390625 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.725491%,94.117647%,94.509804%);fill-opacity:1;" d="M 6.175781 3.390625 C 6.316406 3.390625 6.460938 3.390625 6.609375 3.390625 C 6.609375 4.136719 6.609375 4.882812 6.609375 5.652344 C 6.464844 5.625 6.320312 5.59375 6.175781 5.566406 C 6.175781 4.847656 6.175781 4.128906 6.175781 3.390625 Z M 6.175781 3.390625 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(93.333334%,93.725491%,94.117647%);fill-opacity:1;" d="M 7.476562 2.433594 C 7.59375 2.433594 7.707031 2.433594 7.824219 2.433594 C 7.824219 3.179688 7.824219 3.925781 7.824219 4.695312 C 7.683594 4.695312 7.539062 4.695312 7.390625 4.695312 C 7.390625 4.335938 7.386719 3.976562 7.386719 3.613281 C 7.386719 3.511719 7.382812 3.410156 7.382812 3.300781 C 7.382812 3.203125 7.382812 3.105469 7.382812 3.003906 C 7.382812 2.914062 7.382812 2.824219 7.382812 2.730469 C 7.390625 2.523438 7.390625 2.523438 7.476562 2.433594 Z M 7.476562 2.433594 "/>\n<path style=" stroke:none;fill-rule:nonzero;fill:rgb(5.490196%,7.843138%,14.901961%);fill-opacity:1;" d="M 15.390625 6.871094 C 15.511719 7.203125 15.449219 7.484375 15.390625 7.824219 C 15.304688 7.769531 15.21875 7.710938 15.128906 7.652344 C 15.171875 7.328125 15.207031 7.148438 15.390625 6.871094 Z M 15.390625 6.871094 "/>\n</g>\n</svg>\n';
-  var Web = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAAAXNSR0IB2cksfwAASRBJREFUeJztnQV4FFcXhodCXHdno5sgpRRPkAQNgeDu0OIQnOAWILgXl+LuFAnuVooVSvtTaClS3N1dzv+d2UCRJAR2N7Ob3O953meSlbl2zrnnjq0kCVmNZP8cks4/p6RNHWinSR3orvEP8HH3D8gEiuLv+iASjACzwCrwM/gdnAAXwU3wEDwFLwDF8DzmtYcxn7kQ8x3+7o6YffE+h8eU0QiU1vgHBmDrh61GmzrAziddFskzTTa1u0lIyLrl65tNyumWQZJTB9ho/AI0Gr/s6eFoxUBjMADMBhvBnzHO+sax33Vqc8FlPAK3wGXwD9gaU6cBMXUs6u4X+A22Gl3q7DZFfSpKev/canerkJBlyj11gKRJE/CVu3+gi7t/jnTYlgZdwEywG5wH90C8Du6ubAPNSMA727jqEPgC3AUXYurObYgEFVC/DO5+AW4av2wp3f2yq93tQkLqyNUvQHLxy84O7wYCQAMwAmwEZ8B98ApQEuE1eBgTyLaDMTFtDgQa9zS5UrqnyaH2sAgJmUfar3NKHpmCMNMHOsDgMcPnqILtkBhnuAKeWYCTJjbc5qvgFzAS1ATfuKGPUqUNlJxTB6o9bEJCXy6td3bJQ5NZ0ugDnbAeDgCtwVJwCjwC7zuEXzIitoDgF/gEnI7po3YgN5YMrlgqpBDLBSGrkItvgOTsEyC56QNc3NiA/QI7gBXgEnihuuNZDy/BNbAFdAN5XPWBLs4+2ZU+FhKyKLn75WRs3PxyfAsiwHpwDbxEICADOQQJJvAdcrwC18E60M5NnzOrxi+HvaM+i6T3C1F76IWSq9z1OSXZN3cKV7+cXjDMKmAq+Bc8V9+BkiwvwHmwANR00+fw1vpmTeGuF1mBUCIJs5Lk5h9oC+PLAiPsDg6AhxbgHMmNx+A30Bvk0uhz2WkQlIWETC5X3xySnXMOOH8OrO1zhIFJ4IybkuKr7gjJHV4iXAQzQBl3vxyusj4/lmS51DYbIWuXq29Oyc25gOTqn0N29ctRG6wGt94Yn6v6xi94B4zHXbCOx8rFL9ADr2GJJq4vEPpMuSLNd/bPghk/pwfW+A3AVvDYNcbpBZYOj1XO3aA58HH0y5nCxU8sD4Q+IRiL5OKfOwXW916u+pyN8P9O8ASQwCp5Bn4FEa7+OX3d9NkkkREIfSQ+jSd9mxepfk4tjKUh2CMcP0nBgWAfaOLin0uXKlM2ySW1yAiSvVz0mPX9c4NcTjCOimCjqyF9VNtgBeaBg/o2UMPFL4ezWBYkY7n45gK5bV30OUPAQhjDXUCCZIA+5wOwmMfe1Tenjas4fZh85KLP9YYMYBS4CkMgA7kEyYK3430J/OCsz/Wtqz53CrYLoaQqr4JY6wdKzr653DDQjcEh8Fp9YxSozCvwN2iFrNDdyTOP5P51VrWtVciUctFjne+XOxUGGel+rmjw2AIMT2BZPAErkRkUdPPNndLVV2QDVi97/zyS7JNNcvbL5Yk0rye45Ky+oQksFGcD50EP4O2nD5Uc9eK0oVUKTi85p86ZEgNZBGwCz53/G2SBID7YVrbBhko463PaOItjA9YjR598fM0+1vpBHs763IjkuS8ZBjW3QJBA3trLNfzdG9mBzlkfJLnpxYNJLFpO/rkk+/QBKTBw+cB68Ex9YxJYOcgGcq8GQY5eOVM4i2MDliln39yMIwYqHPxrAYYjSFqcBE2d9EFOTnrxiHOLkZ1/TsndO1hy1OfSY2DGgvuABAIz8ABMcvbLndpRn1Ny0Qerbf7JW46IxHb+QSmcfHMXwMBsBa8swEgESZvXYLuTb1B+W+cQydFbBAFV5OiLWd83jy0Goh44BUggSEROgNoOvkG2jr5BartD8pITnN/JJ9gNAxAFbluAMQiSJ2x7/Rz1QRonvQgCZpejZ5Dk4B8sOfgG+yPqzgBPLMAIBMkY2OAzMA+kcfQPUmxUyAyC00tanwCk/UE5wWbw2tEwAAKB2rAtbgIBkm8mJUMVMqEc/HJLUkAGdv4i4A8LGHCBIDZ+d/QNDpPSFE7hoM+jttskDTnpgyXX1EFfoWMrghOABAIL5hSoYe+bN6WDrwgCRsleHyTZ6YNSoUMbgEsWMLgCQUK46uibp4mDPq+NowgCXyZ7dJy9Po891v5twU1AAoEVcQu0dvAJsnMQxwQ+T47KOf4gdv6u4J4FDKZA8CXcBZ3tfYIdHEQQSJj44ImjPg93WCS4bwGDKBAYA9twL3vfYCd7EQTiFx80AY4gCjwAJBAkAR6Bfo6wbXFMIA7xmt8OHWTvk6c3eOjgg44TCJIOD2HXUXa+wfZ2Igi8L3ufvHD+fLbooK72ho4igSAJch90ttcH29qLIGCQvTfSfq88qdAxEeCuBQySQGBO7oDWdt5BNnbJ/U5CO8z8Nj4FvkKHNAA3LGBwBILE4BaWBE0c9AW+coAPJEvZ++SXnLyKpED6Xw1cAiQQJCOugur6LGUkB998artj4srOJwiEcAZQDJwGJBAkQ06CwrbeeSV732SSCTj45ILj52Pnzw5+t4BBEAjU5Dd7n3zZ7RAEHPT51XZP88uOj/j75PHDdp0FdL7AgrH1zhMratfLDGzEpJjGLqkfD7BDmmPrm9cdDZ0JXltAxwtUhh3axisPpfIMppSeQZTSIwj/B5OjPj+5pilE7l8XJm36Igr8t2vaQuToV0D5DH+Wv8Pf5X1YcXBgX5hj65tPY5dUjwegcZKtPr+trU++fuAZIh4JkhcYd7Lxzkup4KwpPYLJHk7ukbE4ZQiuTEUrt6D6rXpT175jadj4OTR1TjQtWr6Rotdsp9UbdtLqjTspeu12WhS9kabNjabhP86lyH7jqEFEHypWpSV9m6cKeWJfDvoCyr65DC7L1gLancC+eQ56p/LNY2OT1I4H2Hnnk7xtAiQ0sA64YxtjDILkATtiSs88yt+emUpQvlINqUXnITRx5lLasfsgnTl/me7cvU9Pnz6j169fU0LFn3367Jny3bMXrtDOvX/Q5NnLKKLrUCpQJpy8MpdUykzJGUJMMLBwboFakkaWUiaV5YC9ZwHJxgezv3e+vOA4IEHSx8Y7n+L0Nl55yRuOWKJqKxo6djbt2vc/un7zNr148TLBjv654n3fuHWH9uz/k0ZMmE8V63QkfbYy79VJ7f6JB/YR+Ep++EwSuFoQjeEMwA/bzRbQuQIzw86V0iMPOfuHUO6idanX4Em098BhZZb+nNndlHrw4BEd+P0v6j98GuUr2ZBcUhdS6mjBgWAbSA3Udl/jZMszv08+RzRkPHhlAR0rMBM2XvkUp3JPV4RKVougmQtW08XL1+jlq1eqOH1seoUAdOXqTZq/dD1VQlagTR9mqYHgNZiILIB9R203/jLZeheQXDyKprDxzt8MPAQkSJp85ZmXXNIUpjI129LSVVvp9p17avv6J3Xv/kNauf5nqlS3E7khaH3lkVf1fvwA9pnG2q+LYxItoLY7f55s9LklGy+s/b3zB4OTFtCZAjOQ0pOPYBegvCUb0exFa63C8T/U3XsPaFH0JipcsTnZ+RZEmywqEJwAQYB9SW23TrhskLYAGZVeaQGdKDADPOvrs5WlXkMm07kLV0id1b3pdOnKDRo0aialzVlJCQKpvNTv4xhW2XgX0NlYSwBI5ZNfSuVbICUq3AM8t4AOFJiQVFjr80xZukZb2rbrN3r+/IXavmsyvXz5ivb+dpgqYllgrw9RMhy1+9vG4ENRtl4FU9p6WfhSAJFKSmWgGP6+BEiQdGCH8MhYkqIGTVQOpiVV3bh5h/qPmEHeWcrEBAHV+/4KKJHKu6Bk52nBBwVtUMFUPgV9UNntFtBpAhPCjpA5f01auHwTPX32XG0fNbs4s1mx7mcKCK1tKUFgeyrv/L7Yqu3msYtT/5Q++b5CBXuClxbQYQITkRLr4cIVW9C+g0fU9stE1+9/HqPSNdsp/WA4LqDaOLBP9bX15uW1hQUBW01R5VSFrXfBAuA8VxhbgZVj44Vx9ClI1Rp2o+P/nlPbF1UTH+Ss26I32fuGGPpEjbEw+NQlEGrnVUBK4V9Ebbf/T6gUn/d3w3aZ2kYrMJHBwdDZ4Ou36qscIU/uun7zDrXoOJQc9KGqBYEYVtt4FdRgq7bbG2TnwxVJzUGgBXiituEKjIcN3M4nhBq3HUjXbtxW2/csRrdu36PWkcPVDgJPQSvJtbJkZwlLAVvl0V4hmbD9S6kgDEdgxcSMYd0WfejqtVtq+5zF6ebtu9S84xBkR4WQlqtg74Yy/7I1+JzKzu9dSLLxCk2FigwHr1U3XoHRpPIqSFXqd6WLl68nqmO9ePlSuWHo1JmLym29i1dsoUmzltPwH+fTwFGzFIaNn08TZy6nxdFb6Oc9f9C/+OztO/fNemdhbLp6/RZ937SnOgHgP0bZeYfY2HqrFAT0qfJJNohAqEhBcFltwxUYTyqktYXKN6djJ88miiM9evSE/jp2mmYtXEttuo2kopUj6OvcVckjY2lyTVuU7PWFlDp95ZFfgf/m11zwHn8mXa4qVKRiS4roOpxmzF9Nh4/+Sw8fPk6Uup86e5GKV22t1Eml8bqKzLuIrS8ycE2xxA8Atj6FsAYp5ISKLFTbcAXGw4acIU8N+mXfIbM6Dl9td/b8ZcVha4T3UJzY0b+I4uApPQsoGQjPrDbecdeV3+PP8Gf5O/xdR7/ClCZHZWQvkTR5drSSHXBWYU7t/+NvyhpSS80gsBQ42yb2UiCVd36s+wtzEKgG7gMSWC/sUHKGUjRn8Tqz3bP/Es545J9T1GvIVAoIrac4vcHh4cyKMRvbDgQx7xBlnw4IBlkL1qbuAybRoSMnzLpE4KWKZ8YyMQEr0cfuAahhpy8kpfJMxCBg61sIhOhQ+Fa1jVdgGjr2GktPnj4zuYNwPDl97hL1/WE6fZu3puIoyixv5vYYMokQSh9UnXoMnEQnTl0wS3B79vwFRQ2ajKVJYbXGbhv8Ucc+mSiy0SupP8/+DcETtQ1XYBwp4ShFKraicxeumtw5HmKNP3/pRgouEa6UxU6Z2O17U2bOsAY0c8Eauv/gkcnbefnqDSpVo73SlyqM4VMQ7sBZgFciBAE7Xvv7FPK08wndaesTqroBC74MjJ8yQ3pnLkdrN+8xuVOcv3iVWkeOJE36km+d0E4Fe3lTJtfBLV1xatJ+CP17+qLJ27t152/kl72i0qeJ2U47Qxv32PqG+gDzOn8q78KSo3LeP7QxeMoNFVg3nXqNU9JYU4nTbD6QWLxKG4MjeBf6rPrw5228sEzwxHreo+BbvvIo8PZvfo8/8yX7ZkLKNofDHjDpkoCPM0QNxFLAV5VxfAaaO3oWlmz8zJgFYMaXbL1DvVDYLrUNV2Ac7ECBofXo2AnTnfLjI/w/rdxGGfN8pzhpgusCp0zlyVe5hZLHt2Uoa4HaVKZmB2rcbjB17DlWWWP3HDxFCVbNOw6lCrW7UI7C9cg3S3ly9CuifNfGK+HBgA88fp2rGi1ctlk5OGkqnTp7iYKLhyv7V2FM99rpQ33szJUF2HiFSo6+Rfjof1PwTG0DFnw5vHRz8g+jsVOWmMz4eQacuWAt+WWr9I4zFo6jDobXDZ8rTGkCq1CNRlE0YsJC2vbLQeUiJH5mH2cm787S/PfzFy+UdTxfpXjgj6M0dc5KahAxgDIE1yQHfREl8HAgSUjZvlkr0pTZK02aAXF9XFIXi6lDYsI+WbipIwKAjU9h0wcAw2m/wjK2OwydKLBWUnlyGtzCZDf5sGPOW7KRfLJUeOvU8cGfcdCHUc4iDWjAiFn0x+HjykVBX6qnT5/TP8hkxk1dSqHlW5EzHDCh9fDMWBZOu0rJXkyh6zduU7HKbZQ+VmFsd9h6Kz5qWud38AqT7HwLcxCoAR6pbcCCLwcGQs7+xRSjN5VWrv+F0uao+kmn41kRmSRlzleLho2bT2fOXaZXr0y3Duc9XUFmMHXuKqTijd+WGV+duM76rJVocfRWkx0TmLt4A7mmKf7Jss0A+2Z1IDmYMgjwDhEAnLCNVtuABcbBM1O+Uk1NNvvv++0vypK/9iednx3fNW0JatRmEB3666RJHf9D8Z75noIufSZghi+XgLoVom+CatKO3X+YpHy+g7JwhQi1sgD4aCj7qikDAK/9ixQDtwEJrBd73zAaPn6BSQz90uUbVKZmJ0rlFRpvmez8aXJUozGTl5jlPHxc4qXBklXbKTC0vlKH+OrIbShSsTWdRlZiCk2Yvpwc/YqqMcbso+yrpnF+e58wycG3qC12OF1t4xUYh41XYfo2z/d09PgZow2cnatz7x+VgBJ/maGUPaQerd+yD7O+Or8SxAcL2bltvAt/so9adh5h1PGINzp15hJlK1jvk4HHTEyz8ypia+dtgiBgZ5j9A8EFtQ1YYBypPEOpecdhJnmU9+qNu5X02jYep2Ljz100nH7Za94bjBIiPkhYpmZHJQjGVV9uiyZ9aZq/dJPR5fHpxfZRY9UKABdsfQrnsDM2C7D3LirZ+oVwFtAdvLbjaC+wTmAYbNyrNuwy2rj5QFuJqu3/M+4PyuKsgGfbLAXq0M8mWlebQn8j8+G1+dtMILZ6o015SzY1yVJg0/b9pPu2LNnGUpY5sfct8trep0hPh28LS0ZlAZz+Aw90zB77mA4SWCc8uwUXb0KXTfA8/9GTFpOTf7F4yipCftkq04p1vxhdlqn168G/KRuWJNwfcdXfQV+UBoyYbfSBSn6OYEi5lkrAUWHM99v7FvXG9suc3803vYQdgLBK4KHaBiwwDk59O0SNM3odzmvbXGGN4jRqO58wcklTgoaOmWfSq+xMqQVLN5PHt+WULCC2NnBwyFqgrkmOlfQYOCXeYGNGHoPqQLLRf8EZAYPzF7UFsww7LCqwUtgp3dOVoiUrtxtt0KMn/USOfm9m/w/L4tS/CFVt0EN5gKal6unTZ0ow5H6Jqx28HTByttHXBqzZuJu035SJKSsxx10pb669T1E78MUBICs4q7YBC4zD1juMvs1Ty+i74Pj8dqFyrZBNFIm9HBh56sBqtHOP+gf9PqVjJ89RziLhynIltrZwIAsq1oQuXLpmVDl8m3W2kPpxlmNmzsL52Yc/z/nt9EUkB99iHABag5dqG7DAONhhK9XtRg+MPAcfvXYnab6Oezbj1zv2Gp/oD+n8Uo2fuoyc/EvE0Zai5JqmJM1fYtwZgcePn9L3TfpQKq/Caow9+24bB31RCZPAZ8/+TmCV2sYrMB4OAD0HTTPKkPkmHD5HHt/sny5nDfrtf/8YVU5i6vzFa5S3ZDNlto+93wpT/ZYDjX5S0qBRc5UsTKXxX+vgW9TZ4XOyAHtl9i+WE1wGJLBeDDNZKZq/dLNRRsypcGBowxhD/rgcG68wat5xuEnvrEsMDR07nxz0sfcdtzVj3jpGL52Wr+HMqawyFirYwDUEgWBsE+b8Tv5hSBdKcADoCF6pbcAC42Cj88lSmfb99rdRRrx2816SvykXqxHza9r05Wj1ht1GlaGG/jh8gtLmqIEMJvZ2uaUrY/TBU773wT97NbUCwGvQ1davqOToUzxhsz/SBRds16ttvALjsfUuSpnz18UMbtwPfQwcOUfZV+xlhCGVbq5cIGRt4ucWVm/UK2Zp83HbOLPp3n+KUWXwswtyFA6PM3tKBNiX2ac/HQAcfIszucFVQALrxtarKBWt1E75BZ0v1eMnT6l20/6KM8RWBr8e0XW02Z/Dby6N+HExnCSu/gujSnW6G3UTEz/cpNx3XZWxUMkOrjroi+fCNn7nt9OVkvBBDgAR4KXaxiswHjZgdl524i8VX9GWp3gzsvOO3YBd/EvRjPlrv3j/amvbL7+TV8ZKZO9T7KO2cZuzhzQ06vbpZ8+eU+O2P8QZQBOBV6CtE5YAqfxLxD/7O+qL22O7UG3DFZgGG88watttDL004grA4yfPU7ocNeEMHzsIO41P5sq0+9fDX7x/tcXn6jPmqRNn+/yzVaP/HT5hVBmRfScrY6GiLSyx1xdzAJ9M/9OCEw6+JUhg7RgCQK/B040y3l/2/kk+mSrDGYp/VAY7TYag2nTm3BWjylBTvDwKq9guJkV/v33cZo8MFWnD1l+NKmPwqHnvLAFUsYVTWOakd4hvGYAPMlXAI/WNV2AKbL2K0Q9jFxplvKvW7yY5fYU4A0D+Uq3oxq27RpWhppRjHM0GxBEASpBb2rK0cNkWo8oYN3W52rbw2MGnRA1sY3d+ez+8kbFsCnxguNpGKzAd7LSjJxn39N8FMH52AnaGD/fPAaZktU505+4Do8pQU/x8hOYdRiBb+jgAMM5+pWjqnDVGlTFl9mpywn5UtocRKbJVT2HvVzLO2V8DdqpttALTMh6zjzGavWgDuaQuTfax7JsDQKU6PRL1UV+mFt8h2b7H+DgDgKO+JE2YHm1UGTPmryMX/9Jq28JORz18XB9LFuCgL8lkA5cBCawfdli3dOWQvm41ynhnL9pIrmnKGALAB2XYehenCrWNO02mtjgAtO0+jmwQzGLrR0fM3BNmrDCqDA4Azqk5AKhqE1cRzAKxjTMA1AZP1TZcgWmwQ/pftUEvunHTuPX5ouXbyB2BxD4W4+UAULxKR6teAvDly03bDycb79gDADvutLnGneaczEsA/1Jq28QzUN/hwwDg4FdKsrUvxAFgmNpGKzAN7PyZ8tWj/b8fNdpB1mzcS7oMFWPNALic4OLN6fqNO0aXo5b4IaA1w/sqwezD9nHQ4+C3OHqbUWWMnbJMdZuIYbQkl0lh51vqvwDgqC/FuILNgATWDaeZmnTlkbauNMmPXezZf4R8s1RT9vthWfY+JSl9rlp04tQFo8tRSzdv3aOCZVojmJWItS+9Mlamzdt/M6qMgSP5NGBx1W0DbANu4MMAUDoDtuctoIICI2GnrN9ysHIJqil08vRFOHltZb8flsUO4p2pCm3b+btJylJD/56+RN/krhNn+9IE1KTDf58yqowufSZbSgA47+hXin39owygAnhgARUUGAGfqgsMbWy0wb4rniFDMEPaxzJDMk5+pWn8VOOOkqup1Rv3kO6bSnFkOCUoV5GmRt3o9PTZc2rUeqiyxFDbPhwNPs6+HuP87hUkR38lA+hk+EBpgZXi4FtKMeQ5izaa0D0MPwLSMIINuESs5fLrjVr/oBi6NarfsDnvzP7vt80ObavRsI9y1+CX6u69h1SmRldlX2rbiIFSkU76MpItXxbspC8tOetLpcIbU9SvmMAYOAC07DzaJL9s86GGjVus7D+2cu19SlFAocZ02govB+azF6VrRMI5S8baNjsEhr5DZxtVBj+KPbBQk5ggo76dgBmO+pI2ShbgiEjg6FfGHS/usICKCb4QNtT8JSPoxL/mORi35eeD5JWxaqxBwMG3NLmlLU/zfjLuqUNqaOfeP8k3S/U42lWKZGRUq9bvMaqMg4eOk3+2mnEGUBXYDTRAYucHZdNhexbBgARWhl8ZxQG9M1en5WvM90McV67eojzFWyqzPZf5YT3s8Pp3jfsblSontvgOych+U8net3Ss/Wrva8hszl64alQ5P63YQZqvK5KDPpZy1LGZ8476sunx95sAUKYouOuERgusC8eYbZc+U8y6Bn/58hV16jnxbQD4sB5s3L5ZatDWn63nbMDfx85Q1gKNlAAaW79yUGvecZTRv6WoHGPwjb3fVIJ9PQxIkpNfWaYJeOHkX5YEVoRfWWX2Klq5k3JPu7m1YesB8spUzWDIcdSlfquhVpEFcEDrNXimUm+FD9rDbZS/qWx0VqU8cqxhXyVwqm4v/m/byr7eGCAApEYA8C/XB5DAunCAkaYOrEUbtx0wkVvEL75vvlSNSMXRY6sPlpLkiQCxdNXORKmPMeKHpH4TVA+ZS5lY28JtDC3fnq5ev21UOafPXkaWER5nOerAQaBcf+d0JfkegPI2+Gea+pUSfC4uaSpQ/+HzEvWHOKbOXUdu6SqSYxx1soehh1boYNFnBDiQ1Wo6MF6ndElTnkZPNu4uStbyNbtIzlAFwVF9e/mAWU76CraSY+rybk6py28AJLAe7DHblqsVlehP4r14+QaFlGsPRy8bb/1aR463yKUAp/4/jFtM7l9XMgSxOPo2uEQEZm/jghjfZdi5z5RP9pVKbIbva7AEKO8DDjvjRYF1wLPJN8H16Ze96jyHbxqyAE36yphFYq+fExxL921VGjd1hcX9TFj02l1YNtVW+jDWugNXZDhjpxh/ZSMH5/yl22CpVlZ1m4mlnUex1UvOqStmd05d4ZIz0kmB5cMGys43cuIyo3/q+0vFlwZXrNMLhs1OFHs9HREc/AJq0bwlW1FP429IMoW2/fIHZQtposz8sfYv2sJtKlEtki5fNT6zWrNpH3lmqq6Mmdp2EwuXQXbJOU3F0uA2IIGlY3Cs75oMpFu3v/w5/6bQlp1/UJqcdZX6xFVffu/r3PWVIPBcxUyAb4jcivrmKtoypr4VYq0vO6o+ey3FcY0Vnzps1XWcIUjGUZ7KtnQLlJKc01asDx6qXyFBvKQ1OFS2Qk3p4CHjHlFtCnFqP2jUQnJPX4WcYuoXa50xq/oj5R4/fZUqxwTYEZes3klZCjb5L1h9WNeY/13TVaKowbPo2TPjf9/wnxPnDWVyhhRb36hN2oqPQCMEgEod8cdzpZICC6WS4mRyxuo0Zc5ak9zjbwrdvH2Pajcf8p+Rx1F3R8yAukw1qHW3CXT2vPmvV3ijG1iqDBq9kPxz1PlEHSuSA96vXL+PyQ6qjsASzQUBRX3biZMXIJIDwGAeJBeBxfImAIS3G0n3Hzw2iYGaSkf+OUMFyraPcbB42oD68zascheKXrubHj3+8l8q+pR4Bt++6xBVadAPGUpVpe/i61uue1Dx1nTwT9NkVnympGC5Dsp+1badT9jVcMklXeWpgASWCxtwUInW9NexsyYxUFNr597DFFikpcHRPtEWR3zGJ1stBLNRtH33IZMGAv4Jrt//PEmdek+ldLnrK2W5pP1032ZGqr5p+0GT1WPynHWkyVDtk2VbALMkx9QVo53SVFK7IoI44BnKO+v3tGCZcT9RbW6t3byfMuZvnKAgYFgWVERqXpfqtRpGi1b8TOcuXlcezvm54mMRV67dptWbfqWWXcZThrzhyv6VbOQT9eC6pg9uSMtW7zLZsopn/9CKnQzBxwLs5xOslGo2GbQ5a6Hm5Pp1FVQaHae8UYVcvhaoDsaBx6Ntj4lG/bhnYogdaOWGvZQlpBkZJpQEtC1tZcXm5Iw1KDcynGadxtKk2eto574jypWEfLqRH6bx4OET5QDivfuPlLMf5y5eo72/HaVZizZTu6hJSLc7kleW75V9OaVNgP2mq6LUMXPBprRszS6TnU7lPhg9ZQW5f1PN8n3IUL8dElKwrUePn6ORk5ZTWNVI8nzTkRwIlA9XFagEG3Ohip3p5JlLJjFQc4sdgE8P5ivTXqm7c7qE2E8V5XP8eQfYnRucxy+wLmUs0IRCKnSicrV7U/XGg6hGk0FUvk4fKlK5K2XBhOWfsx7S7OrKd/4rK2Hl8eeDSrahTTt+N+kB1b/hRzmLRRiCkAXYTwL4XUK9d70ZvOs371L0uj3UuP1opFKN3xqhBVQ0WeEK2KD9ctSjlev3msxAE0uHj56h75sNURz0TRBw/Yz2O6f7Lyg4KVmCAac0hv+d01ZJYHCp+l7Z/B239NWocoP+yrECU4pvxe7Qa0rMzKq+DSWwT05wAPjoecf8DLg/Dv9LA0YtpAJIr+RM36HjYwYSHSgwP2yoPQbNNsk5aTXEpwgHjlpEaXM3VN92vq6m1ME/Z33qOWQOXb1m3B1+sYmPQfgjYFuZj1zgABDnBeW8Nrp4+SbNX7adajYdQmlyN0AUrapgAZVPsjhhFin5XRSdv3TD5IaamOKDept+/l1J3bUZayrtSuy+5Flf820NKvVdT1q75YAyuZlap89dxfK5m1KW2rbzmdzgAJCgn4558PAx7dr/N3XHrBRUsh06lQcUaQTv6JvqAhPhjNnq6zzhylo6qYiXllPmrqeQil0SxW5clCBaldzh+HnLdKBx01cpZwrMIT6N2b7nFDiT+rbzBTxIcAB4I76dko/Q8oCWr9uX9IH10NnVFMM17LSG4AtxQf+xgwwa+5PSz0lJfIyJMxo+yl+iZhR5Z6+rOCnbjctb5/nSvquu7IP3xfv0ylaHwqp1h+OvpjPnr5rtykne77QFm9CWOjFtUN+GPpOnnx0A3tWduw+R4v1BrbtPoqyhLcktQ833AoFbBkFC4f7ivqvSaCBds+Lf2fuU2Gn4El1Ox9th5gwu3Z58AuqRMxzozUTCzuTyTVxBwfDefw5v+A4HlNzITNkWV27Yhz68a/ZLprfv/pMyhzRX6q62/XwhLzgA/GNsR/Ba7+jx8zRqygoqVr2HMhhvAoGhoJpqN9TCqakYdOZCLWjPb8b/mKe1iO8QvHjlJm3YfpCGjFtC9VqPoALlO1GG/E3JP1cDxY50mWuRNuN3CjL+5tmd3+PP5CvXieq0Gk6DxiymdVt/UzIMYx/gmVAd+ecsFarUVRk39e3ni3ltkgDwRm9OJa5Yv48atR9D3+ZvRq6cFXB6pAQBQWxw3+iy1Kax01ZbzL3ziS1u9eMnzxT7+efkBdq594hiR/OWbqcZCzcrzMXf0ev30o49h+noifPKLM9r8MS+N+rshWtUqcEAOH8N1W3HSJQAcMQcnfQEg/nHkVM0GJE9tHIk6bLWQSCoYQgE334neAcXpLZ1Wo2g23cfmGMohEyoS1duUZ2IEUnFjpUlgFkf5M5ZwaWrt2hB9M+KkafL0wQGX1PBAjpAdbgfchRvqwRLIcvW5Wu3lcxWbZsxIcpBwES71Iyv595z4Ch1GzSHcpfqQDLSXmc4gCtXJuP35J7M4EHwCqhH05HeWsgt/kJxiG9Wqtt61NtxU9t2TGJ/Gb9XTgP+nNidyXdwnTl/jaYv2EyVGg6i1EHhSKm+UzBUrpbqnZMYcOBr1vlH5RoLIcsVX+NfNXwwHP/N2CUV+6ylXAi0Sc3OvXv/EW3ffZja9ZpGAUXbkjZzbXLJwBlBLUNHZ0qacLDLX74LHT1hnh/zFDJevHzdue8vCqsWhWD9fVK0R+VS4NVqdzSLTyUe+/cijZ2+hop/15t8cjREIPjeEAgy1U5ScJv0ucJp8apdane7UBziswuzftpG2cLaGJzfAuzGDCg3Ay1Wu7PfleFU4j1auXE/NUV6nDGkFRwGWQEGwU39DjNNAAAd+85QzpQIWZ7OXbxBnfvPIt+cjeD8SW8CeoeDHACmqd3hcclwVyKfSlxGhZGGeQY0QCCoZQgEmeuQxgpxxewfVqMXnTqXeA/HFEqY+Jbe9dt/p5K1+ihjxXamtr2YE/jQdg4Ao9Xu+E+Js4LLV2/TwhW/UK2WI+nrfM2VrIAxNKauVeCeqQ6ly9uM1m756A5sIRXF9nXi1CXqNngepYuxLWuyKyNYyQGgHxkuxLIK8eOh9vz2D3UfMo+Cy3YhXfb6mFVjMoIsdS0abdZ61Hv4okS7XFXo07p6/Q5NnLOB8pbvChuqaxV2ZEJmcgBoD6xuMaqcSrxwjaYv2kKVGg2hNHmaIWWro2BoXD21O/c9uF5l6w1Urn0XUl98GfGcJTuoVO3+5JG9gcXajflQ2jmcA0B98FDtATFGd+89ou17jlC73jMooHgHkrMhK8CAuiuNBFkTgZiy3BXqKrOJWwxcl28LRSh1FFJPPGn8e/YKTZi9gUrW7keegY3+s5PEsBHL4oUma/1IDgDlQZK4/1Q5lYi13LiZ65QB9s3dBANcN2aA6yMFNx28P8XhM9dTymBD0iLwcJlp87WgDCERlLFwG8oEMhdpSyMmr0py9/hbg16+eqWcVdq08xB1HjCHcpfpQjLP+LwGNrFNWBNo+0PQkANAPnBN7YEypd7cc75q0wFq0mWi4oSaLPWVWdnYQWenZ+PhoOIf3JRyl+5M37UYSVE/LKDJ8zbRqs0HaPeBf+jPo2fpxOnLdOrsVTp55ooqv4uXXMV3FZ67dIPWbj1IvYYvoqI1e2OsmhnGDQFbbeezEG7BF0pyAEgPLPMnZ0ygJ3wq8chpGjRuGYVW60neORvDEGIygmwNEowhta9P6fK3pLL1B9HAscto08//U+5BZ+dOrrfxqik+mMo/lcbr+cP/nKOVCPg/TFxB9dqNo6CyXUkf1DRm3D5/vJMBl0B2DgDeIOk8gC4OsYPyXYkLV+6i2q3HUPqCEYpDM4YOaRgLDZT3dQGNKE/5bpjlF9LOX4/S7bsPLeYHOpOyuI/ZsRes+IXmLd9JM3/ajixrM5ZTqzGzL6ZWUdOoWrPhlL9SD/o2tA35Kg5fXwnwvNVkbRDP2CZ3GvwN9BwA3Enl+wESWw/4rsSDxyhq2CLKW7E7eQSGkxsbDBtL9oYK7jAefj20em/6cfYGOn3+mljDJ6L4Utz50b9QcPlI8szRmDyRufF4yNkbKWPlysde2Nk5iGOseOw02Rq+HT/BJ9kMNBwA7MActQdcDbFDK3clLtpGVZoOp7T5W8UYU0MYXjcaO3M9Xbh8U8z2iayzF29Qp/5zyD9PC2U8tHD6D5EFxjIT2HIAYIaoPehqi+9K3LH3L+rYbzZ1GTiP/j5xQTh+IotP023ddZhK1xukGCnPVDKWXwITYwgA/XU5GktvAkBrsqKrAc0pPpVorb/GY83i4yqjpq2ljEXaKRmYHBAuMB/PQTh4GwCqgEcq20CSEf+iEp+KUn7R9sFjuv/wCT3C/8+fv1S7ahYnTrL+9/dZqttuPHnlakoanp0UI22stpMkZe6CsHcDQC5g3b9DpZL47MKde4/o6MmLtHzDfmUW6zJ4PjXqPIm+bz2WqjYbSdVbjqL6HSZQRK+ZNGh8NM1dvpP2/n6Crt28l6yDwqPHz2j+il0UXKEHHD+ctIFwekFicF4X0Dg9tm8DgA+Z8PHgyUHs+L8fOU19xyyjMg2GUOZiHck3T0vSIMK6ZWtE7jDoD3HLbnjdM3czSh/algrV6Ett+syipet/pYtXbtGLZHSW4ezF69Rp4Dzyz99K6TM5RxNB4rELaMDbAOACNqhsE1YlPkB4EAGg86D5lKNsJMk5m5A7DFnLHZyTaRoHhkHgz2kQjfk7vnlbUoFqvakPgsmho2eTdFbw4uVL2rbnLypVf7DSF4b+iquvBGZiupyrqQ22bwPAV2CCyrZhleIj1ydOX6Ef52yiMg2Hkn+B1uQOx9a8MexcnwCf0QJNTFDIVrordRu2iP7591KSOwtx6+4DGoElUqZinRD8Etg/AtNiCABdNbmaSPqAlm8DANOWxJmALxb76q07D2jdjv9R86jplKVkF9Lmakbu7NjYyglEExMQ8lTpRVMWblNOTyYFHTp6jup2mEBewS2UNia0PwQm5wHssTy20luRIQCUAPdUtpMkIX6UGafyQyevobA6g8g7XysEgqaGQJC7eYJgJ/HO24oad5uqZAPWKj77sXD1HspbtbchuOVKWPsFZuO8nKvFN9h+FADSgjPqmkvSkvIos2t3aNGavVSv8yTKwKkvz/JvA0GLuAlqQVoOBPhs4VoDadvev6xuScB35HUespD8Q9omrM2CxGAbcAMfBQBXSmb3BCSmHj5+Snv/OEHdRyyhYMyGHpjd3eEUWji6HBwPeJ8/F1i+B63YctAq7jrkA31bEbBKhw8zBLKg5vG3UZCYjNYGh6eQgz/OAJgfVLadJC8+aHjq/DWasng7lW86kvSYHd15ZgxuGS8afCZz6Uhavuk3i84Ebt19SCNmrKeMpboqdf5UuwSJyjNQH0gfiQwB4DsgfqcqkXTzzgNatvEAVWwxmrzytyYNZwN5MFB5WsVCS+X9gApRtGXPX2pX/SNxTDr0zzmq23lyAtoiUImrcnCrAGzjDAAZgfitqkTW9Vv3adzczZQdzq0JjnGavLGA1zVBLalgrYF0xIJ+Uowve16wZi8FV++r1F8bV/0FarMTaECcAUBcEKSSeG2/6/cTVKbpiBgHiogTTXArqtd1Ct26o/6zXM9eukldh/9EqYt0NASveOotUJ3hmSq3ljzyR8QZAJieKttUstbJc9eoVqdJJOeLiKH1R2gxmF4F29LoOZtUOyjIly1v//UolW4yQqkn1ym2ugoshsfafK1rYPux838QBAqD26pYlZCiC1duIQhMjtupeI2N93JU6Y119/lErx/f/DRq9ibKVLY7afIIx7cSToH08QaAR0+eSQ8ePdE9f/Fyf6JbldB7Onn2KpVqOpI0isO3IbnAB+A1fq/1oPn0NJGeX6Ac6Dt2nup3n07ehdob6vZhvQSWSf42P+nytXXANu4AcOHqDc4AUsyM3tVj9Y5Dr27ceUAWfMYpyevn345R1oq9SKMEgLYfocXrGcp0pz3/+9fsdeEr+has/ZXyfDcAjt+GtAVir5PAInkF2niEtJZcgjrFHQBYbkgRHHK3CPQv1vlymRZjaOz8rfTP6SuErMDsRib0vnh9PxKptidmWxlrfrlguw9oqwSHDj8sNuv4nMeSpMvIpeRfrIshGMVaF4Hl0vYqyAXid36WtmA7SS7Y3hnbte4YbF1IO8pZvR91Gr6Edhw4pjzhRijxdPn6XeJA7J4fToex+BANInxA1b4I0pdNXjYf6NvGB/qaj1bK0haMvQ4CC6dgu/XwZxf27U8HgNB2kq5ge0kOad8ZvAakKWgwtHSlu1G1DpNoRvQuOnPppnhMdiJpPlJvn7BOxGMRGx6hHWjq0p0mLfPO/Uc0eu4WylShpzL2cZUtsHjYh7toQjpIHoUSEABYukIdJF1Ih2Bsr+mQfmJLvH0TDLwKd6R8dQZT7wmraP+RM/TwsdX9uLBV6erNe1Si2Sil79+MxX90gIO2o9qR05T7DUyhP49foAZRM8kbQUcb0o7etQGBNaGM2VW5UHv4cvuEOf/bAFCog7MutMNaQLGh5eiCQr7FDFGvxwz6adNvdPnGXYu+Tt2a9cPMDejvOMYC4xBQrR+dPG/cTzw+fvqcFm04gOA+JGZ8Yy9PYFWs0YW2Z19OeADwDu0qaQu3l3ShHVuBF4A+orBhy0aigbH4FutKYY1H0vDZm+jIyUvK47WFTKe9f56ib8pFkawM6vtjwa/5lYiklTsOffH+z12+RZGjl1OaUt2VgPLuGAuslpegjVyoo+RRpGPCA4CSBRTuyGQCZ3SFO1H8wAiBlmcM/J+9en+KGLyQ1v1yRLk7TOQExotPyRZtOuptH3/Y/xq8PnTmxs/er3JF34FjVKbVOMM4Ko7/qfEWWAcdz8Ivs7Avf7awAw4AtroinWYD+hy0bJCYlVKX7k7l206giUt20vGz18SpRCPEfRcxZBG5cwCIpc/5dX7/c/r4zv3HNHr+NspcpS9p2fE/c5wFFs8cuUhHO2w/PwB4FW0j6Yp0lnRhnatj+xjQ5yIDDQzLs2gXylVrMHUatYx2/n5C+aEMoc/XMCyvNIqjftzX/HqVjpPpXgL6ljOywycuUoPec8i7eCQCdqfPHluBxfMIsO9K3mHxXP4bbxYQ1kXyCOvihe0+HZz4iwnrQlpUiklfoTd91206zV37K52/clucSvwMzV6zj7zgsNyfH/Yx923hJqOUpUJ84gN9izcdpHz1hynfkWPZlyBJsB94gS9zfpZH0a6SpjiygKJduoHXxlWoq7Jlg9PA8LxLdKMCjUZQ3ynr6ODRc4phCsWvZdv+R/rSPUiOpX+1YZ0pT70f6Oqt+3F+/8mzFzRg2gZKU66n4vzvjosgSQFf7RqVPqyVpC0a+eUBQMkCinVFAOiaHdtzgEyFDMPTIhiwMWeq1p/C+8+n6O2H6BoMWJxKjF2rdh4mv7JRSt992J/cl4FYZvGp2Lh08+5DKtJsjBKATTmWAovjgq5YZCC2xjn/fwGgiy12OF3H6aepKRapGLQGBszGXbzVOBo+dysd+ZdPJYqDhu9qyZY/yJczgGIf96MWfRiEDODKzbif7H7jjiEA8GfNMpYCy4B9tVgk+6zxAUAJAiUimZLY+R1d8W5kHhAIgCbGOAMwm7UZtpTW7/mbbt9/JE4lQtNX7iXPEt1iBvr9/mOnLtR0dLzHADi7ytdwBGl5ljDbOArURfFR+Go30zg/ywMBALjoSnRbpWMDTAS0HAxgqGkq9KZKnafSpOW76cT568nqBzQ/1IAZG8mdA2Qs/aVBVlC+w2S6E8/NWuev3qGA2kOUvk2scRQkOmvg/C4mDQDexSMluVR3SVeye03wCFBiIbNxw2A9S/WgYMxe3Saspl/+9y89eGSa696tRU+ePafGAxcqjh5bP/HrzQYvivfhIH+evEQZawxU+jQxx1CQaDwGtdj5tRWiTBcAWDoOAKW6ydhu18EZsU1EeigN1HJmANJX60+1es2hBZsO0sXrd63ixzKM1eUb9yh/k9FK+z/qH/SNO4Jk/xnxXwm4ef8xSlu5L8klE3PsBInnIz1+lkv10AHTOj/Lq2wvCcaHINCjCXhmCALqwAasgSP4lOtFoS3G0cBZm+jgP+eVWTKpatOvxyiN4ryx9Afgvli0+fd49zFzza/kWSZKtXETmBX2yaa6Mny8rpfpAwBLVzoK9PTGdi8gtZFLRZG2pMEBMn8/hJoMWUwrdh6m60nsUWYvX72ibhPXKG2NvR/Q/lpD6K/TV+LdT88p68i9RHfVx01gFvbqykSxb5rH+VlwOMkTmQCCQFPwTFemJ1kEpXsqwUADB9FX7EtVu89SDnglFf178QblazKGtGhjbO3ndlfsOoPuxnMZ8P1HT6l6j9nKZ1UfL4GpYV9s7lW6r6Qt0918AYCFgjgAeGH7i65ML7IsEAgQDHwRBFbsPJKILmpejV68kzzK9ooZ7I/bzIxYuCPefZxEEAmsP4K0pWPbh8C66blHV7aXt65sT/M6P8uzXHdEmX4SCmwEnurYMC0MDYy89/SNSWIZ8M/Za5Sv2ViD48bSVhnOn6nWUPr9WPw/Fbb858Okr9QPn1d/fAQmhX2wkbZMH8mjnBnT/3flUa43o9OV670NkKWhgVOU7DCFbt57lEhuah7xtfudflxNMg90PG0NH7w43nsp+NqJztgPf1btsRGYnK3acr1lGT6ZaNJV6Y1lQB9JV753VV25PvexJUsCnUHpag6mHX/E/7z8p89f0K9/n6PLN+9Z5P0HC7b8QWmqD1Laoyvf54N29lFeT1tjEG3cfyze/fCp0oItfyQtBxILGB+BKVDsgX2vmme5fpJ7BTOv/T8KAuUQAMr1dUJFFhoqY1kgKlKPqRvoZTzXCLDTT1ixh0p0mEojsM7+6/RVi7n/4JdDpyhX49FKO+Jqo6Zsb6o7YBE9+MTDQJfs+JN8qwwg2QLGRWBS5ntU7Ouoq9A3cZ2flSFvuCRX6IcsoG8hVOAKIEtCW64P5cesd/ryrXid49zVOxTWbrLy+YBGo6jNmJW06cBxun3/sWr3Hxz45zyFtpmo1Cmu9rEzZ6wzjHYiUMSnR1gaNBzyE2k4kFjAuAhMxkWQXy7fV6o3YmjiBwCWjgNAhX42qMgoC+iQj/Cs1J8mrdz3SYdbvvMIpcGSQQOHY9LUHEIVu8+mKWv2KwEkse4/4FXIjv+dgvNPIm35uJ3/Db1mbPpk3XYfOUMZEChkCxgPgcl4Db8boi0/ICVPwqpKV7G/JFfslwnbIzo4nCWhQWeV6DSNLsVziyyLD6B1nLCW0A7SAd5qyvclr8oDKE+LH6nHtI2056+zSLXN9/sHD588o1kbDlJg4zGk5UHmusTWLrzO75frNkvJXuITL2fajlsV//4E1kfFfn+CDEBd51cCQOWBkkfJjhIq1gw8Ub1zPsCr6kCatOrXTzogO1MFvlCmwvuOomWHAxnqDqc6AxfTou1/0uWb9+mViQ4a8lV+f/57mSKw9PBH5qH9hKNqUT8OErsPn/nkvnn2z1hvhCGwWcBYCEwC+1gLfdlhklzZAgIAS1d5gKSrMsAN22hAloS2Yn8KaTuZTl68+UmH2Y+1d95WE5XvfLgfGZ2vgSP5Vh9MRTpMpaELf6ZDcNwvfZTZU8zOR05fpf5zt1HOZuNIi/1zGfG2Be9/U2c4Ldh66JMBiLOVRj8sjbUtAqtmua7SQHddpQFqu/1/0lXpp2QCqFwhbC/qqgwkiyGm46JmbE7QI7O3HDwJhxxPmjfO+MG+5BhH5L+zho+hRsOW0dzNf9BfZ64p9+I/i6MMLpsv1T12/gYtRhbRYvRKCmgyNsaxB3xc1gfwZ9LU+oEmr9mfoGMSnKn4fzdUqa/qYyAwlS2fBfnwt+RVzkJm/zfyqDIIDE6JyvUBL1XvrHdgJ/im3khav//4Jx2HJ1b+XFDLCQbH/MR+OVB4IyvI0mg0le0+m1qNXUX9522n0cv30AQsPcZgO3D+Dmo9bjVViJpL2RqPJd8aQ5TvaRPonPy59HVH0ETs72kCfnHp+IUbFNp+6ifrL7AqXoBuntUGfuVRdaDa7h67UEEEgYHeuqqDNgOyJLSVB1LJyFl0+srtTzoQa9eRsxTWaYbyPTkB+5cxSBp81h1Ox2hivqf94DVtlYTt7916BzQdRwsxoyckg7mP1D8CwYbro3afC0zKZrnKIC8dJlqLla7qEElXbRAYHAYuAbIk5KqDKWL8GrqXwKcJHT13ncJHRJN3zaFw3EGJXFdDeWWRNfxy+EyCDjryRU8/IkvQf//D2+8LkgSXQXEgaS119n8jXfXBYFBKVLYn/n6hqz6ELAUZnekL5xi+dHeCr/i78+AJjVu5j3K1nEhaBBD5zaCYo47VDPvXwHm/bTiaomZuofPX437M94dave8YZQwfq9RT7b4WmMwmnoMoHS+vqw5W270TJlRc0tUY4ontOtU78APYwdLWG0mzNv8R72XC74ofOfbnqSvUZsJaytBoDGmxD62Jg4DB8QdTaqz16wxZStsPnVbOFCRUvxw+S0ERk0xeL4HqrPCoNkQGart1wuVZ6QdJrokgUH1oHl2NoScAWRJadCzPlIt+PvxZzxPku/N2/32O2k1aT9mbTyCPmj+QhoMBO3D1z6sDf17G9/j7Mv7n+jTEcmPt/uMJXqK80b6jFyik43Q4/xDV+1ZgUo5jIs0NJK+qVhQAWDBwyaHYD8gEhobravzwwAI68z20cMBMTcbTAuXg2udd6ssz899nr9PENQeo5qAllA3BQF97BJx5CLkDDRxbqzD0HQyvv/mMd63hlBnlV+izQFmS/Hb8knLd/udq55GzcP4Zyv7V7lOBSWGfaezYoDUmUytJ/T+UruYwxgH8qPtu2GtAloS2xg+UHjPvBDjylzgf5w58wc3xCzdp+e6jNHDRTmo+bg2ceiGFdJpBuVtPoewtJlLOiMlUEE5aptd8ajx6FfWdtwOB5zAdPnNNuTbgS25F5isIV/16jILaTkU7YDDIRtTuT4HJeI3xnAAcgdpubJzQGEn3/bA02O6wgI79CC0cx6/eKIqcuYUu347/l3UTIs4O2Kmv331EV7C/izfv0eVbD/D/Q7r94ImyjDD2KmIOOhy0Mjb9Uam/2n0oMDlb4TP+2KrtvsZLV2uEJKMh8vfDC4CTgCwNLXc6UvKqA5fQHqynTXWdvzl04tItipi4nnwRtDSot9p9JzA5x0Fe3fcjJO13Kt3ma2rpvh8p+deazkGgDrgt1xqBhloQSn2GKw6VHen66JW/0rU7D9X29ffEdwsu2fU3hUbOJi0HLTYWS+tHgbE2eAvUkjqNlDS1hqvttqaVrvYIxgYN7QueKw22QDRwLM86I6nigJ9oxb5jypV1aorvLdj7zwUKH7Oa/BuORZAarnofCczCM9BbNviI2u5qHulqjWI0cu2Rs8FrQJaKO6Kyf6NxVHfkSlp/8F+s6xP3twgfP3sBx79I7adtpkwtJyEwjSAtG4oF9I3A5LAvzNHWHg7fSKLO/0ZoKJMabLCAjo8XLXCH06UOH0/VhiyjmVsO0akrdxJ0Tf6XiO/y4wORK389TuHj1lKG5hNJU4sdX/2+EJiJOsp2I7apgdruaX55NBgnaTkI1BkVAA7KdUeTRVNnFGmBO5zQs/4YCuo0k9pM3USLdx2l45duKUuEL/1xUj799/DJczpz7S6t2n+Cus3ZQYW6zyM9Mg93DkAol8tXvQ8EZrSv0QcwxtmwleS6ySAAsDS1x0qeDUegwWPC0AmnVB+Ez0DDwaD2KPJpOI6ytZ1GVYYsp6j5P9OMrX/SlkNn6Mi563Tx1n26fu8R3XrwGDyhW/cfK/9fuvWAjl64STuOnKO5O45Q38W76PsRKylnhxmkR5bB++X9ay2gnYJE4SQo7BE+VNJ8P0Ftt0xc6eqMkbyrjksh1xtTHVwGZE1o644hDQbRHQ7rBsf1qD+W0jSdSBlbTaHA9jOoYLd5VLz3IirZd7GyDcHMnqPDTMoUMZXSNptIXg3GKd9leD+8P7XbJEhUroBqqer1lbT1RqvtjupIW2+MpKk39it0REO53tgbMpzIKnkTFGLQxASHjzEEDu27hqB23QVq2MtN0Nir4Y9f6eqPVdsN1ZVcfxz4MRU6JgLcVX1wBALzcge0luuOtcGkp7b7WYbQIRLWQnZyg3HdwENAAkES5D7opGswxlbXQDj/e9I1HCfpGoxzlBuO7wkeABIIkhAPQU9tg/H2QG13s0zpGo1nHOQ3QaDRjyQQJAEeyY3G99M1GufINi4Uj3ThPzIO6LQoIIKAwNq5D3pqwyc4AbXdyzokN5qATGCCoxw+oTu4B0ggsELugI7aRj/ay8L5P09y44nIBCbaoeMiwA05fKLagykQJJzGE25i21rbeKIt/lbbnaxTcpOJktx0UioEg4bgitxkEgkElg9stfHEcG3TSTZa2LCQEeIOdGs6/it0anV07mn1B1cgiJcTmLSqys0mp8RWbfdJGtI1niJ51JueQm4yuajcdPJvgAQCC+QAbDQ0Vc25kiZ8itpuk7Skaz5Jcmk8S0JkzS43m7IRvAYkEFgAbIsbQDbX8DmKrQqZQXKT6ZKuxWRJ12yKv9x86mzwDJBAoCJPwRxd86n+ctPpkkeEOOBndumaT2M0cotpfeSW024BEghU4DZssLe2+XR3bYtpartF8pLcCkGg1TRbueX078FxudV0EgjMTsu32+OgljZiqi3bopAK0raeKjl3GJlCjpiRT241Yzu2rwEJBGbkFWxtG8grh8+Q5JYz1HaD5C1N21mSR7NpyAhmpJYjZk4AD+TWM0kgMDkG25oA/HXt5sHmpqpt/kJvJLeehYxgliO24eCE3GYWBk0gMAEGWzoBGsP5nYDa5i4UmzQRsyWnJjNTyG1mB4HVctvZzwEJBEbwDLa0Um47K8i1/eQU2rbC+S1acqdFyARmStq2czzkdnN6gkuABIIv4ArooWs3V6tpN1vya7NQbfMWSqjktnMluc3cVHK7uWFy+7mbwHNAAkECYFvZIrefU9yjw6xUuvaz1TZnoS+RV5e5knMEAkGHuR5yh3k9wSVAAkE8nAPdte3neXm2XyZphPNbvxAAJG17ZAMd54eAaPAYkEDwDmwTK+SO8/J7d1jwlUfH+WqbrZAp5ddpteTeYTaCwQI3ueOCpnKnBYfBa0CCZM0rcAS00Haa7+6OycIr8ie1zVXIXMJAg3kp5E4LM8idF44CV+TOi0iQHFl4CQxlW/CKXJJC13mx2uYplFjiswXAFoYQIndZtADck7ssJkGy4D7GexEoKHdebAMbUNschdSS3HWxpItc7IhtJbAFPJEjfyJBEqTrT08wvltBVfztBNQ2PyFLkEe3pdK/+wiB4CcdDKUh+Bk8kbstIUGS4BnG81cQro38SfbuNU2Su4l0X+gDeXRfKvn3XgHjWOIBGoHdcvclT+XuS0lghXRb+hRj+CtoCXzk7tEp5G7L1DYzIUsXDEfSdY6W5B5LvGBITcA2ucfSh3KPZfSW7gKL4t2x6bH0CUDwXtoMeOt6L0shRy1V26yErE0ePaMl775rJTlqmRaGVQ2sBHfkqOWk0ENgEfw3HnfAGoxRXV3UUk/PHktS6HoIxxcyUsgEJPe+PyMQLHcBJcF0cFbuGf0CkEBVXmEsLhrGJLqELiraNc345ZJH72i1zUYoKQoGh0CwwhbbzHKv6C5gn9xrxSNAgsQkGn0e/Rvoo+sZncsjarmdLmq52uYhlFwk94mWtP2Wp9D1WuEp91pZTe69YiY4Lfde+RyQwCy8QB+fA3NAdQQCb9deq1Noeq1U2xyEkrPkXqsYW23vlRnlPitbgpXgqtxn1UtAAqNAH668BtaDNiALAoEdAoDawy4k9L48MBP5dlsm6fqucpL7rgoGncEqcEnuu/oFoP9YJXiP9/oGfbXqGtgCuoIgue9KF13/lZLcT8z2QlYgTf9VkttANtjVCAarA7CNAEvAv3K/NY8ACd7jMfrmFPgJtJH7rcqFfnN1H7AyBfelkJDVStNnreTSa70k913rAENPJ/dfUwUMBTvAVbn/2qeAkhdruM1XsN0Jhmv7r6ku91v7ta7fWgdt/3US3lN72ISEzCMEAeYrGLk7CJQHrK0HhoNN4Kw8YN0D8BpQEgFtWcttOg+24e9RhjavC5D7r3PX9V/9la7/GrWHRUhIHcmD10naIeu+kgetc5EHrksPyuPvzthOBFvBGfx/Vx60/jkgi2agUse72J4H+1D3OSBSy20auO4bedAGN3nwhpRA7W4XErJceQxaz6TUDVzvCodKJw9eXxTbRqA3mAY2gr/AJXATPIBTPQdkPtYzL8BDlHfLUPaGv7HdDGaC/iAchGkHbfga72k1gzbY2gzYKbkO3Kx2lwoJWbfkoWskzfBoSTdknQ0c0h3otYM3ZMO2OKgDOoJhYCZYDjaDX+XBG49iexFcA3cAB4un4BXeg1Nv5MDxJOb1G+ACOA5+B9vByph98r4jQUNQCoEgO8rX4/vu8tBNtt4jNkkewzaq3U1Cn6H/Az2fpsO4LV8pAAAAAElFTkSuQmCC"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Discord = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Twitch$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\n\t<title>favicon-32-e29e246c157142c94346</title>\n\t<defs>\n\t\t<image  width="28" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAgBAMAAADzmwVxAAAAAXNSR0IB2cksfwAAACdQTFRFAAAAk0b/kUb/////wZf/yKP/j0b/j0X/j0b/kUb/j0D/kUb/j0j/8nvBLQAAAA10Uk5TAH//////gJCgzxDfIMV/78EAAACZSURBVHicY2RgYFRkgANGBgYhAWQuUFIQxnvPCJJE4oJ0InFBOpG4Sgxg7ntBMKI9F81ebFzGdyhc+SvIXKa3dshc+as3kbhMb+MawFygANNbBga2GwwwrvwFBoaKNBhXGCjJXp4A4xoAJWe4McC4QMA51QGZO8sFEuwMDEoQKQS3KoUBiQsyFIkb18CAxFW/yYDMTVgA4wIAtrc0x9ZZthYAAAAASUVORK5CYII="/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="2" y="0"/>\n</svg>\n';
-  var Instagram = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 76 76" width="16" height="16">\n\t<title>lam-fZmwmvn</title>\n\t<defs>\n\t\t<image  width="76" height="76" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEwAAABMCAMAAADwSaEZAAAAAXNSR0IB2cksfwAAAvdQTFRFR3BM1TeUehf6exj7gBn8bxf9bxX9eA32hAnukgXlngTjqATisAPguQLewAThxAHdygLd0AHazwDU3gDA3gDB7ROe1gDY3wDI2gDHYBlFeBf9cxn8gRf9ihf9kQvx3ADW6AC/kRf9oQzxrw3v4wDX5gDO7AC0uAnomRf86wDV8ADG8QPR8wC69AqfoBf8qBf74BTc6xTW8wCr9xOVvzT24WHu3oP39qzy9sr5+N78/ej6/t31+Xrj+lbX9xvS9wnJ//7+//////n69QCesRn7/gLD/gG+/gGy/8vq/ivO/gG5//X7/QKq9wea6k3l+zrS+yq8/gCj+ACPuhr6/gq3/gCc7xbO/A/BxRr4/RO4/gCW/VDD/2nM/gCQ0hzz/7Pe/gGJ/gmw/UG4+h2r/gGC3Bru6Bvd/QJ79BrD/hOt/pDO5Rro/hKk9xu2/gJ08Brf+x6g/hKY/S+j/QJt/SCW/hOQ/SKQ/m+3/haH/SKI/lul/+vw/QBn/EOT/h2B/hV8/iF6/iR0/idu/uHk/i1//QFi/its/oar/T94/ixm/Spd/mON/lZw/snV/i5V/omZ/hNw/kNZ//r2/jNO/jtT/jNi/gBf/l1c/jpJ/nh//tfS/jlc/jFH/jND/khR/jk//T9D/hFn/ipM/kM6/js1/kZB/sS1/R1k/lA9/Us1/kEq/oN1/qmz/g5c/nNI/lEv/hZb/lg2/kgf/h5Z/lgq/lQX/l8m/mI4/iJS/mMY/oxO/mch/mcv/FEP/FwG/pdo/m0b/WUB/rd//mwC/nQY/nQn/m4s/nMC/qOJ/ndk/vHc/noV/noC/oQd/p0//oIS/nsi/unI/tuq/oIC/rA9/ooB/owT/vbn/pAE/pUP/pYB/pwI/p0A/qkf/tBr/GMY/XQD+3QI/qQC/qoC/td8+4QW/q8A/rsW/rQA/rgA/rsA/r4A/YUD/SGH/sEA/JUF/sUA/JIG/skA/DJm/JgH/asD/s0A/EFI+68J/bcE+1E0+0w6/L0Fi9deiwAAAP10Uk5TAA5AcL3X////////////////5a9+QP//zwL/nP////////////////7/////xP//////df/////////////////////////////////l/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+XBcP///z/////////V1f+M/6v/oavV/9VwwMFw5VUJIaQAAAukSURBVHicbZhbbBxXGYD/f2Zn9uZL7NiNL4nTFLnUqZpKlaqKRCBIgApIWhKE1PahPKAiRFNaCdSqL4U+0odKlUorQXkAoSCQQLRqSwlKpIKaFAJNlFtDTdzarr221/a63uvc+S9nZ9eB8Xr27Myc7/zXc/4zCOmBcph2wg35kZ7wxg9Kl9WkQ0gbltVp/y8q/Qik3XZYhHAt2QIbhWU7RQ3B2va1/y8QYEpUko4aZUqjAKVRReBYOSUBrA3D6nD5JmqVsSMJWLAFBJCHJuZa3IrWktHSaAm7WEOCoz4oJFjtkCzoVk1AdLQURe3qetIeilkpiS9lIshwawlTUofDnZ2A/tQUm/lmHty19ZES/x61ykpKx7cjRi2PLI8vqs9Svdq81EtAVDq7sO4wbHR5pBtFmCz4plViEDJhC4cFo3MozYawACplcgBmhg1pC4qaJbrKpDZIEe0jJILERKOnxrDsZRLV3mGlQZIhlAtYS1G7u+JHjpaVNhPU+Gr08PA9gP9CtEduQEENBiQXcAumjY0gcRDXYGhVaAz3XRYtuIzWmLGkaMgsx7Jy3CvR0w2sBKwYIWllNGHWYqH10GngItpjDApZKkENb9pZxhOqm4byW12olwK0XSiNLQKMc5QOAGxgZpfcMihwMjkjqbELSHc0jS2XchixQtGCoa3gbfKEq0oMbzg5MELxx8rfYLNmDGmEJej3IcyNQ3kMFkkwKOC+jj2GYcPJ8qMJeLEzKNb3b6BxeCZBxtEe/rAfcdws7t6k3/14pz7DsQb9C2L5wuqOOUAOgiEjcjsK0qOwNNRg+bI9VY5BBzYHiYpfTB/oh/kCs7wggFpv644rjBpc7zJgt1ebkcteCosO0zYH1/vp8jfaDzjBLBksQW9ojh/2KV/dwQpIzGjmqKGMHzJOOUtm9SeqDj/iAE0g+ABnqibKTJHGLq5Q4mLr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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Twitter$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="16" height="16">\n\t<title>icon-ios</title>\n\t<defs>\n\t\t<image  width="1024" height="1024" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABAAAAAQACAMAAABIw9uxAAAAAXNSR0IB2cksfwAAAwBQTFRFAAAABAQEFxcXGBgYDAwMERERCgoKfn5+wMDAv7+/k5OTFhYWKioqp6enq6urJycnPDw83Nzc////+/v7f39/BwcHKSkpu7u78vLyc3NzXl5e7+/v6+vrU1NTExMTra2t9/f3e3t7BgYGCQkJiIiI+fn50tLSLy8vDw8Pjo6O/f39mJiYrq6ur6+vGRkZCAgIh4eH/v7+Gxsb1NTUhISEAQEBZGRk8PDwvLy8ICAgVVVV6enp7OzsVlZWAwMDWFhY4+Pj0NDQODg4AgIC1tbWNTU1QkJC4eHh2NjYPz8/pKSktLS0Li4uxcXFy8vL+vr6wsLC7u7ubW1tBQUFSEhI5eXl8/PzfHx89vb2Nzc3EhISkpKS/Pz8nZ2dEBAQDQ0NuLi4hYWFIyMjwcHBi4uLYmJi7e3tvr6+Q0ND3d3dXFxczMzMZ2dn8fHx29vbOzs72traQEBAj4+Pvb29Hh4eMjIyx8fHHR0dt7e3JiYmaGhoNjY2oaGh39/fmZmZpqamFRUVrKysl5eXZmZmw8PDJCQkMDAwz8/Pa2tr6urqycnJMzMzUFBQ4uLifX19+Pj4xMTE5+fnFBQUo6OjnJycISEhb29vR0dH5OTkRUVFmpqalJSUcHBw9fX1xsbGJSUleHh4Dg4ObGxsKCgodHR0QUFB5ubmPj4+1dXV4ODgGhoaubm5eXl5hoaGOTk56Ojom5ubkZGRXV1dd3d3qKioUVFRysrKRkZGqqqqtra29PT0aWlpg4ODHBwcCwsLlpaWenp6sbGxcXFxT09Pzs7O19fXSkpK3t7e2dnZIiIijIyMgICAYGBgbm5u0dHRUlJScnJylZWVsLCwurq6Tk5OVFRU09PTNDQ0Ojo6KysrPT09Y2NjZWVlW1tbjY2NtbW1yMjIYWFhn5+fWlpadnZ2TU1Nzc3NpaWlLS0tgYGBV1dXoqKiWVlZS0tLdXV1s7OzHx8fgoKCoKCgkJCQREREX19fTExMSUlJqampMTExLCwsiYmJsrKyampqioqKnp6enA0qUQAAUvtJREFUeJzt3X1gjmX/P/DrZFt5aNTQ4reNzTC5Lasrj9tks7Kk1iwNbR5KMVHa8rDGPM00NzeNodCEydMippIVlqhMSTGR4ksSIk+F7HfXfd9luGzXcb2P6zyv83i//vne9/fb8TnOb+y96zrO4/gcmoWIlKXp/QBEpB8GAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwB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ABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHCGABECmMAECmMAUCkMAYAkcIYAEQKYwAQKYwBQKQwBgCRwhgARApjABApjAFApDAGAJHC/j9GYmsPmw8LugAAAABJRU5ErkJggg=="/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>\n';
-  var Reddit$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="16" height="16">\n\t<title>192x192</title>\n\t<defs>\n\t\t<image  width="192" height="192" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Youtube$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="16" height="16">\n\t<title>favicon_48x48</title>\n\t<defs>\n\t\t<image  width="48" height="48" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAAXNSR0IB2cksfwAAARRQTFRF////AAAA/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/xBA/wAz/56x/5uv/xZF/wAz/wAz/6Cz/////+/y/26L/wQ2/wAz/wAz/9Pc/0Bm/6m6/x1K/wAz//X3/3uV/wg5/wAz/93k/01x/7fF/yVR/yZR/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAz/wAzgb8Y2wAAAFx0Uk5TAAAJNFp0i52ptMDQ3ODl8Pj/99uoWS+z+zD6uxL+DEhAcm2Vkav/v////7zU///////T6P/////0////8///////8ufSlEEUDVe1/bkyOF13jKC2wd3mqp92XDdJ2BKpAAABRElEQVR4nO2VwUtCQRDG53vV0/DwEhNDXoREdCjC0CK6Rlj9vYHdg04SiSAUEUFE8gwJi0roNb0tHwS7Gzu3iOawh5nvt+zOzs6AhIZ/wAXA1/rdxl7ERMz+K3PukXlmwJwCRWDksHeGvd4nMDv14nic6ShOAK/kqk+Itz5QfnbWE/kRQjwJgIyPhaFATxSg8iAC8lgciIAClu41Z7FvByawHGnOEnBnA8pYvdWcoaqPazNQQe3KACQJx6URiBF4RoAoiwsD8I6tcwtAOaCrxVaQ13cJ008SoKMFfwTUO7WFgHcmAYxHEl56XZ7WnVMjYH84YWnU5MUnLu/dlj1qsIL8iwqbwAYaXVGbqcobGeYgbJW015Y14yTvdZw4yLeBw3SgzFdVNXTW0Dw42myNvWqANJrM+zyJURY4vlHS3zgU/wDwAXpXWYPo2LOhAAAAAElFTkSuQmCC"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var Vk$1 = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="16" height="16">\n\t<title>fav_logo</title>\n\t<defs>\n\t\t<image  width="256" height="256" id="img1" href="data:image/png;base64,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"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  var AutoTask = '<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">\n\t<title>favicon</title>\n\t<defs>\n\t\t<image  width="32" height="32" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IB2cksfwAAAgdQTFRFPHjYPnnYUIXbR3/ZUofbaJbgZpTfSIDaPXjYUYfbapfhbJnhZ5XgRn7ZP3rYU4jca5jhbZriaZfgR3/aVIncapjhZZTgRn/aVIjcbpvicp3iZ5bgQXvZVYncjrHorsfutMvvvtLyj7HoVorcdqDj0+H26/H7/v7+////1eH2apfgYpLfm7nq8fX87fP71uL2vNDxnLrq7fL7/v7/7PL7faXkWIvdRH3ZfqXk7vP7/f3+1+P2k7TpkbPpnLrrY5PfRn/ZPXnYXo/eu9DweqPkeKHjtMvwdaDjRX7ZQXvYWYzd1OL2dJ/jaJfgeKHk1eL2bpriWozdkLLoaZfhbZrhdZ/i7PH7WozeeKLk8/b8nbvrr8fvQHrYb5vitszwuM7wapjgfKTkz971/P3+9/n9mrnqtczwuM3wZpXgcp7jwdTyl7fqeaLkvtLxxtfzc53i1OH2+vz+t83wkrPoxNbzdJ7jZpTgjbDo6fD62uX39Pf8rsfvkbPoT4TaYZLfr8fuc57jcJviQnzYja/n+vv+rcbucZziYJHfXpDeqsTtkrPpQnzZd6Dj0+D21uP2UYbcYZHfdqHj8vb8q8Xussnv7/T7YpPfSoLaQHvYX5Dfnbrr0+D1h6vmYJHegajln7zrSYHZw9XzTIPaUIbbT4XbXY7ea5nhUofcW43dV4rdXI7dXI7eX5DeWOgbkgAAAmNJREFUeJx10l1IFFEUB/DzT/c6uTpb9CCIbYFBZVIhpuXLYD6oYCTSt9LXkgj7lL1kPVVbSSGbD5ZhUqD0AUKxrNqTK5KhRoo+WFgbZUHuw6Ls+jEz7jbdGbVYZ3deZuacH/ece+4FxTwAousisX9JXCiJgcDTfJFwIiDqeb1MMD4Q0hDR36oVgXgAGTJ4EdJkdRN+mYFokyPpeg1NS5pNmTGD7JANKz1wgUkz2AMss9UVdInhdeCgHvTLerM7QlY5Dej/D4oHpOHdbCM+ruJ8zIczx/LeroFyvEeRP2Ur+pixzdQc2xdtJz5EAisAlT4UT/+xjpYNzemiBD1sc/5X66gxD5BY7iUmCrtGZHXbjMLUI+P70SsUfM7vUVUhTKiZmgJVYKTQw9sr9Sgn9Ga76PiAtOilk08VFPA8nUJfyXOq5qmOs2ERniBd7K7AE1KdTZAmaA3U4g0qX1fhIY84uwygXkVhaRNbK3FGeUdVFjRzYBOkzAeEOQl089V3RitNWq782A7cW2YkaXqTqUHJxxsQG1wsd2GD3Td/q7Ha3kiaZZGlC0LN3fkok41B3Y+4mF0pyxr0phmDslDZgbbagcFr9drqqOG+fgcvTzf/NiZJatHRsbyhQ7gs/zusVtS7W4UCz5IekiYahiYd/Z0xp5l1o97dNrtXsX2jnMAnONNdftOVEyqWfy4YF8YaXVi6fd4E+NK59ox9NB6Y3tLdXiubQUcdn1g2+b2U7K4xXzn+2Qmn8XH42AU5HqDycw59ny1Jl0IUFxBe1IFakh/5KAEgZAXxzBGihIDEx5b23pjIX32q0uJJAW9GAAAAAElFTkSuQmCC"/>\n\t</defs>\n\t<style>\n\t</style>\n\t<use id="Background" href="#img1" x="0" y="0"/>\n</svg>';
-  const ICONS = {
-    '[ASF]': ASF,
-    '[Web]': Web,
-    '[Discord]': Discord,
-    '[Twitch]': Twitch$1,
-    '[Instagram]': Instagram,
-    '[Twitter]': Twitter$1,
-    '[Reddit]': Reddit$1,
-    '[Youtube]': Youtube$1,
-    '[Vk]': Vk$1,
-    '[AutoTask]': AutoTask
-  };
-  const generateLink = (url, text) => `<a href="${url}" target="_blank">${text}</a>`;
-  const createBaseElement = content => $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
-  const createPlatformElement = (type, text, id) => {
-    const urlGenerators = {
-      group: text => `https://steamcommunity.com/groups/${text}`,
-      officialGroup: text => `https://steamcommunity.com/games/${text}`,
-      forum: text => `https://steamcommunity.com/app/${text}/discussions/`,
-      curator: text => `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`,
-      app: text => `https://store.steampowered.com/app/${text}`,
-      sub: text => `https://steamdb.info/sub/${text}/`,
-      workshop: text => `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`,
-      announcement: (text, id) => `https://store.steampowered.com/news/app/${text}/view/${id}`,
-      discord: {
-        invite: text => `https://discord.com/invite/${text}`,
-        server: text => `https://discord.com/channels/@me/${text}`
-      },
-      twitch: text => `https://www.twitch.tv/${text}`,
-      instagram: text => `https://www.instagram.com/${text}/`,
-      twitter: text => `https://x.com/${text}`,
-      reddit: {
-        subreddit: text => `https://www.reddit.com/r/${text}/`,
-        user: text => `https://www.reddit.com/user/${text?.replace('u_', '')}`
-      },
-      youtube: {
-        channel: text => `https://www.youtube.com/channel/${text}`,
-        video: text => `https://www.youtube.com/watch?v=${text}`
-      },
-      vk: text => `https://vk.com/${text}/`
-    };
-    const typeMap = {
-      joiningSteamGroup: [ 'group' ],
-      leavingSteamGroup: [ 'group' ],
-      gettingSteamGroupId: [ 'group' ],
-      joiningSteamOfficialGroup: [ 'officialGroup' ],
-      leavingSteamOfficialGroup: [ 'officialGroup' ],
-      gettingSteamOfficialGroupId: [ 'officialGroup' ],
-      subscribingForum: [ 'forum' ],
-      unsubscribingForum: [ 'forum' ],
-      gettingForumId: [ 'forum' ],
-      followingCurator: [ 'curator' ],
-      unfollowingCurator: [ 'curator' ],
-      gettingCuratorId: [ 'curator' ],
-      addingToWishlist: [ 'app' ],
-      removingFromWishlist: [ 'app' ],
-      followingGame: [ 'app' ],
-      unfollowingGame: [ 'app' ],
-      gettingSubid: [ 'app' ],
-      addingFreeLicense: [ 'app', 'sub' ],
-      requestingPlayTestAccess: [ 'app' ],
-      gettingDemoAppid: [ 'app' ],
-      favoritingWorkshop: [ 'workshop' ],
-      unfavoritingWorkshop: [ 'workshop' ],
-      gettingWorkshopAppId: [ 'workshop' ],
-      votingUpWorkshop: [ 'workshop' ],
-      gettingAnnouncementParams: [ 'announcement' ],
-      likingAnnouncement: [ 'announcement' ],
-      joiningDiscordServer: [ 'discord', 'invite' ],
-      gettingDiscordGuild: [ 'discord', 'invite' ],
-      gettingDiscordXContextProperties: [ 'discord', 'invite' ],
-      leavingDiscordServer: [ 'discord', 'server' ],
-      followingTwitchChannel: [ 'twitch' ],
-      unfollowingTwitchChannel: [ 'twitch' ],
-      gettingTwitchChannelId: [ 'twitch' ],
-      gettingInsUserId: [ 'instagram' ],
-      followingIns: [ 'instagram' ],
-      unfollowingIns: [ 'instagram' ],
-      gettingTwitterUserId: [ 'twitter' ],
-      followingTwitterUser: [ 'twitter' ],
-      unfollowingTwitterUser: [ 'twitter' ],
-      joiningReddit: [ 'reddit', 'subreddit' ],
-      leavingReddit: [ 'reddit', 'subreddit' ],
-      gettingRedditSubredditId: [ 'reddit', 'subreddit' ],
-      followingRedditUser: [ 'reddit', 'user' ],
-      unfollowingRedditUser: [ 'reddit', 'user' ],
-      gettingRedditUserId: [ 'reddit', 'user' ],
-      followingYtbChannel: [ 'youtube', 'channel' ],
-      unfollowingYtbChannel: [ 'youtube', 'channel' ],
-      likingYtbVideo: [ 'youtube', 'video' ],
-      unlikingYtbVideo: [ 'youtube', 'video' ],
-      gettingVkId: [ 'vk' ],
-      gettingVkWall: [ 'vk' ],
-      likingVkPublic: [ 'vk' ],
-      unlikingVkPublic: [ 'vk' ],
-      joiningVkGroup: [ 'vk' ],
-      leavingVkGroup: [ 'vk' ],
-      joiningVkPublic: [ 'vk' ],
-      leavingVkPublic: [ 'vk' ],
-      sendingVkWall: [ 'vk' ],
-      deletingVkWall: [ 'vk' ]
-    };
-    const urlConfig = typeMap[type];
-    if (!urlConfig || !text) {
-      return null;
-    }
-    const [platform, subType] = urlConfig;
-    const urlGenerator = urlGenerators[platform];
-    if (typeof urlGenerator === 'function') {
-      const url = urlGenerator(text, id);
-      const displayText = platform === 'announcement' ? id || '' : text;
-      return createBaseElement(`${I18n(type)}[${generateLink(url, displayText)}]...`);
-    }
-    if (subType && typeof urlGenerator === 'object') {
-      const subGenerator = urlGenerator[subType];
-      if (typeof subGenerator === 'function') {
-        const displayText = type.includes('RedditUser') ? text.replace('u_', '') : text;
-        return createBaseElement(`${I18n(type)}[${generateLink(subGenerator(text), displayText)}]...`);
-      }
-    }
-    return null;
-  };
-  const createSpecialElement = (type, text, html, id) => {
-    switch (type) {
-     case 'retweetting':
-     case 'unretweetting':
-      return createBaseElement(`${I18n(type)}${text}...`);
-
-     case 'visitingLink':
-      return createBaseElement(`${I18n('visitingLink')}[${generateLink(text || '', text || '')}]...`);
-
-     case 'verifyingInsAuth':
-     case 'text':
-      return createBaseElement(I18n(text || ''));
-
-     case 'html':
-      return $(text || html || '');
-
-     case 'whiteList':
-      return $(`<li><font class="warning">${I18n('skipTask')}[${text}(${id})](${I18n('whiteList')})</font></li>`);
-
-     case 'globalOptionsSkip':
-      return $(`<li>${I18n('skipTaskOption')}<font class="warning">${text}</font></li>`);
-
-     default:
-      return createBaseElement(`${I18n('unKnown')}:${type}(${text})...`);
-    }
-  };
-  const echoLog = ({type: type, text: text, html: html, id: id, before: before}) => {
-    const emptyStatus = {
-      success: () => emptyStatus,
-      error: () => emptyStatus,
-      warning: () => emptyStatus,
-      info: () => emptyStatus,
-      view: () => emptyStatus,
-      remove: () => emptyStatus
-    };
-    try {
-      let ele;
-      if (!type && !text && !html) {
-        ele = createBaseElement('');
-      } else if (text && !type) {
-        ele = createBaseElement(text);
-      } else if (html && !type) {
-        ele = $(html);
-      } else if (type) {
-        const platformElement = createPlatformElement(type, text, id);
-        ele = platformElement || createSpecialElement(type, text, html, id);
-      } else {
-        ele = createBaseElement('');
-      }
-      if (before) {
-        if (before in ICONS) {
-          const iconKey = before;
-          const svgContent = ICONS[iconKey];
-          const base64Svg = btoa(svgContent);
-          ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
-        } else {
-          ele.prepend(`<font class="before">${before}</font>`);
-        }
-      } else {
-        const base64Svg = btoa(ICONS['[AutoTask]']);
-        ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
-      }
-      ele.addClass('card-text');
-      $('#auto-task-info').append(ele);
-      ele[0]?.scrollIntoView();
-      const font = ele.find('font.log-status');
-      const status = {
-        font: font,
-        success(text = 'Success', html = false) {
-          this.font?.attr('class', '').addClass('success');
-          html ? this.font?.html(text) : this.font?.text(text);
-          return this;
-        },
-        error(text = 'Error', html = false) {
-          this.font?.attr('class', '').addClass('error');
-          html ? this.font?.html(text) : this.font?.text(text);
-          return this;
-        },
-        warning(text = 'Warning', html = false) {
-          this.font?.attr('class', '').addClass('warning');
-          html ? this.font?.html(text) : this.font?.text(text);
-          return this;
-        },
-        info(text = 'Info', html = false) {
-          this.font?.attr('class', '').addClass('info');
-          html ? this.font?.html(text) : this.font?.text(text);
-          return this;
-        },
-        view() {
-          this.font?.[0].scrollIntoView();
-          return this;
-        },
-        remove() {
-          this.font?.parent().remove();
-          return this;
-        }
-      };
-      return status;
-    } catch (error) {
-      throwError(error, 'echoLog');
-      return emptyStatus;
-    }
-  };
   const unique = array => {
     try {
       return Array.from(new Set(array));
@@ -1741,7224 +9159,6 @@ if (missingDependencies.length > 0) {
       return '#ffffff';
     }
   };
-  class Social {
-    tasks;
-    createToggleResult() {
-      return {
-        success: true,
-        results: {}
-      };
-    }
-    setToggleResult(result, type, value, success) {
-      result.results[type] ||= {};
-      result.results[type][value] = success;
-      result.success = result.success && success;
-    }
-    getRealParams(name, links, doTask, link2param) {
-      try {
-        debug('开始获取实际参数', {
-          name: name,
-          linksCount: links.length,
-          doTask: doTask
-        });
-        let realParams = [];
-        if (links.length > 0) {
-          debug('处理链接参数');
-          const convertedLinks = links.map((link => link2param(link))).filter((link => link !== undefined));
-          debug('链接参数处理结果', {
-            convertedLinksCount: convertedLinks.length
-          });
-          realParams = [ ...realParams, ...convertedLinks ];
-        }
-        if (!doTask && this.tasks[name]?.length) {
-          debug('处理任务参数', {
-            taskCount: this.tasks[name].length
-          });
-          realParams = [ ...realParams, ...this.tasks[name] ];
-        }
-        const uniqueParams = unique(realParams);
-        debug('参数处理完成', {
-          originalCount: realParams.length,
-          uniqueCount: uniqueParams.length
-        });
-        return uniqueParams;
-      } catch (error) {
-        debug('获取实际参数时发生错误', {
-          error: error
-        });
-        throwError(error, 'Social.getRealParams');
-        return [];
-      }
-    }
-  }
-  class Reddit extends Social {
-    tasks;
-    whiteList;
-    #auth;
-    #initialized=false;
-    constructor() {
-      super();
-      const defaultTasksTemplate = {
-        reddits: []
-      };
-      debug('初始化Reddit实例');
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.reddit || {}
-      };
-    }
-    async init() {
-      try {
-        debug('开始初始化Reddit模块');
-        if (this.#initialized) {
-          debug('Reddit模块已初始化');
-          return true;
-        }
-        const isVerified = await this.#updateAuth();
-        if (isVerified) {
-          debug('Reddit授权验证成功');
-          echoLog({
-            before: '[Reddit]'
-          }).success(I18n('initSuccess', 'Reddit'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('Reddit初始化失败');
-        echoLog({
-          before: '[Reddit]'
-        }).error(I18n('initFailed', 'Reddit'));
-        return false;
-      } catch (error) {
-        debug('Reddit初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.init');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新Reddit授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Reddit'),
-          before: '[Reddit]'
-        });
-        return await new Promise((resolve => {
-          GM_cookie.list({
-            url: 'https://www.reddit.com/'
-          }, (async (cookies, error) => {
-            if (!error) {
-              const csrftoken = cookies.find((cookie => cookie.name === 'csrf_token'))?.value;
-              if (csrftoken) {
-                debug('成功获取Reddit授权信息');
-                this.#auth = {
-                  csrftoken: csrftoken
-                };
-                logStatus.success();
-                resolve(true);
-              } else {
-                debug('获取Reddit授权失败');
-                logStatus.error('Error: Parameter "csrf_token" not found!');
-                resolve(false);
-              }
-            } else {
-              debug('获取Reddit授权失败', {
-                error: error
-              });
-              logStatus.error('Error: Update reddit auth failed!');
-              resolve(false);
-            }
-          }));
-        }));
-      } catch (error) {
-        debug('更新Reddit授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.updateAuth');
-        return false;
-      }
-    }
-    async #toggleTask({name: name, doTask: doTask = true}) {
-      try {
-        debug('开始处理Reddit任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.reddits.includes(name)) {
-          debug('Reddit在白名单中，跳过取消订阅', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Reddit.undoTask',
-            id: name,
-            before: '[Reddit]'
-          });
-          return true;
-        }
-        let type = doTask ? 'joiningReddit' : 'leavingReddit';
-        let postBody;
-        if (/^u_/.test(name)) {
-          const accountId = await this.#getUserId(name.replace('u_', ''));
-          type = doTask ? 'followingRedditUser' : 'unfollowingRedditUser';
-          postBody = {
-            operation: 'UpdateProfileFollowState',
-            variables: {
-              input: {
-                accountId: accountId,
-                state: doTask ? 'FOLLOWED' : 'NONE'
-              }
-            },
-            csrf_token: this.#auth.csrftoken
-          };
-        } else {
-          const subredditId = await this.#getSubredditId(name);
-          if (!subredditId) {
-            return false;
-          }
-          postBody = {
-            operation: 'UpdateSubredditSubscriptions',
-            variables: {
-              input: {
-                inputs: [ {
-                  subredditId: subredditId,
-                  subscribeState: doTask ? 'SUBSCRIBED' : 'NONE'
-                } ]
-              }
-            },
-            csrf_token: this.#auth.csrftoken
-          };
-        }
-        debug('任务类型', {
-          type: type,
-          name: name
-        });
-        const logStatus = echoLog({
-          type: type,
-          text: name,
-          before: '[Reddit]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://www.reddit.com/svc/shreddit/graphql',
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json'
-          },
-          data: JSON.stringify(postBody)
-        });
-        if (result !== 'Success') {
-          debug('Reddit任务请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit任务状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.response?.data?.[postBody.operation]?.ok) {
-          debug('Reddit推操作出错', {
-            error: data.response?.data?.errors?.[0]
-          });
-          logStatus.error(`Error:${data.response?.data?.errors?.[0]}`);
-          return false;
-        }
-        debug('Reddit任务处理成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.reddits = unique([ ...this.tasks.reddits, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Reddit任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.toggleTask');
-        return false;
-      }
-    }
-    async #getSubredditId(name) {
-      try {
-        const logStatus = echoLog({
-          type: 'gettingRedditSubredditId',
-          text: name,
-          before: '[Reddit]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.reddit.com/r/${name}`,
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('Reddit任务请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit任务状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const id = data.response?.match(/<shreddit-subreddit-header-buttons[^>]*\ssubreddit-id="([^"]+)"/)?.[1];
-        if (!id) {
-          debug('获取Reddit SubredditId操作出错', {
-            error: data.response
-          });
-          logStatus.error('Error');
-          return false;
-        }
-        debug('Reddit任务处理成功', {
-          name: name,
-          id: id
-        });
-        logStatus.success();
-        return id;
-      } catch (error) {
-        debug('获取Reddit SubredditId时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.getSubredditId');
-        return false;
-      }
-    }
-    async #getUserId(name) {
-      try {
-        const logStatus = echoLog({
-          type: 'gettingRedditUserId',
-          text: name,
-          before: '[Reddit]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.reddit.com/user/${name}`,
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('Reddit任务请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Reddit任务状态码错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const id = data.response?.match(/<follow-button[^>]*\sredditor-id="([^"]+)"/)?.[1];
-        if (!id) {
-          debug('获取Reddit UserId操作出错', {
-            error: data.response
-          });
-          logStatus.error('Error');
-          return false;
-        }
-        debug('Reddit任务处理成功', {
-          name: name,
-          id: id
-        });
-        logStatus.success();
-        return id;
-      } catch (error) {
-        debug('获取Reddit UserId时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.getUserId');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, redditLinks: redditLinks = []}) {
-      try {
-        debug('开始处理Reddit链接任务', {
-          doTask: doTask,
-          redditLinksCount: redditLinks.length
-        });
-        if (!this.#initialized) {
-          debug('Reddit模块未初始化');
-          echoLog({
-            text: I18n('needInit'),
-            before: '[Reddit]'
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        if (doTask && !globalOptions.doTask.reddit.reddits || !doTask && !globalOptions.undoTask.reddit.reddits) {
-          debug('根据全局选项跳过Reddit任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'reddit.reddits',
-            before: '[Reddit]'
-          });
-          for (const link of redditLinks) {
-            this.setToggleResult(result, 'redditLinks', link, true);
-          }
-          return result;
-        }
-        if (redditLinks.length === 0) {
-          debug('没有需要处理的Reddit链接');
-          return result;
-        }
-        const prom = [];
-        for (const link of redditLinks) {
-          const name = link.match(/https?:\/\/www\.reddit\.com\/r\/([^/]*)/)?.[1];
-          const userName = link.match(/https?:\/\/www\.reddit\.com\/user\/([^/]*)/)?.[1];
-          const realReddit = name || (userName ? `u_${userName}` : undefined);
-          if (!realReddit) {
-            this.setToggleResult(result, 'redditLinks', link, false);
-            continue;
-          }
-          prom.push(this.#toggleTask({
-            name: realReddit,
-            doTask: doTask
-          }).then((success => {
-            this.setToggleResult(result, 'redditLinks', link, success);
-            return success;
-          })));
-          await delay(1e3);
-        }
-        await Promise.all(prom);
-        return result;
-      } catch (error) {
-        debug('处理Reddit链接任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Reddit.toggle');
-        return false;
-      }
-    }
-  }
-  class Twitch extends Social {
-    tasks;
-    whiteList;
-    #auth=GM_getValue('twitchAuth') || {};
-    #cache=GM_getValue('twitchCache') || {};
-    #initialized=false;
-    #integrityToken;
-    constructor() {
-      super();
-      const defaultTasksTemplate = {
-        channels: []
-      };
-      debug('初始化Twitch实例');
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.twitch || {}
-      };
-    }
-    async init() {
-      try {
-        debug('开始初始化Twitch模块');
-        if (this.#initialized) {
-          debug('Twitch模块已初始化');
-          return true;
-        }
-        if (!this.#auth.authToken || !this.#auth.clientId || !this.#auth.clientVersion || !this.#auth.deviceId || !this.#auth.clientSessionId) {
-          if (await this.#updateAuth()) {
-            this.#initialized = true;
-            return true;
-          }
-          return false;
-        }
-        const isVerified = await this.#verifyAuth(true);
-        if (isVerified) {
-          debug('Twitch授权验证成功');
-          echoLog({
-            before: '[Twitch]'
-          }).success(I18n('initSuccess', 'Twitch'));
-          this.#initialized = true;
-          return true;
-        }
-        GM_setValue('twitchAuth', null);
-        if (await this.#updateAuth()) {
-          debug('Twitch重新授权成功');
-          echoLog({
-            before: '[Twitch]'
-          }).success(I18n('initSuccess', 'Twitch'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('Twitch初始化失败');
-        echoLog({
-          before: '[Twitch]'
-        }).error(I18n('initFailed', 'Twitch'));
-        return false;
-      } catch (error) {
-        debug('Twitch初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.init');
-        return false;
-      }
-    }
-    async #verifyAuth(isFirst) {
-      try {
-        debug('开始验证Twitch授权');
-        const logStatus = echoLog({
-          text: I18n('verifyingAuth', 'Twitch'),
-          before: '[Twitch]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          dataType: 'json',
-          headers: {
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId
-          },
-          data: '[{"operationName":"FrontPageNew_User","variables":{"limit":1},"extensions":{"persistedQuery":{"version":1,' + '"sha256Hash":"64bd07a2cbaca80699d62636d966cf6395a5d14a1f0a14282067dcb28b13eb11"}}}]'
-        });
-        if (result !== 'Success') {
-          debug('Twitch授权验证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || !data.response?.[0]?.data?.currentUser) {
-          debug('Twitch授权验证状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        await this.#integrity(isFirst);
-        debug('Twitch授权验证成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Twitch授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.verifyAuth');
-        return false;
-      }
-    }
-    async #integrity(isFirst = true, ct = '') {
-      try {
-        debug('开始检查Twitch完整性', {
-          isFirst: isFirst,
-          ct: ct
-        });
-        const logStatus = echoLog({
-          text: I18n('checkingTwitchIntegrity'),
-          before: '[Twitch]'
-        });
-        if (isFirst && (!this.#auth.authToken || !this.#auth.clientId || !this.#auth.clientVersion || !this.#auth.deviceId || !this.#auth.clientSessionId)) {
-          return await this.#updateAuth(false);
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/integrity',
-          method: 'POST',
-          dataType: 'json',
-          anonymous: true,
-          headers: {
-            Origin: 'https://www.twitch.tv',
-            Referer: 'https://www.twitch.tv/',
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId,
-            'Client-Version': this.#auth.clientVersion,
-            'X-Device-Id': this.#auth.deviceId,
-            'Client-Session-Id': this.#auth.clientSessionId,
-            'x-kpsdk-ct': ct
-          }
-        });
-        if (result !== 'Success') {
-          debug('Twitch完整性检查请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (!ct && data?.responseHeaders?.['x-kpsdk-ct']) {
-          debug('需要重新检查Twitch完整性');
-          return await this.#integrity(isFirst, data.responseHeaders['x-kpsdk-ct']);
-        }
-        if (data?.status !== 200 || !data.response?.token) {
-          debug('Twitch完整性检查状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        this.#integrityToken = data.response.token;
-        debug('Twitch完整性检查成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Twitch完整性检查发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.integrity');
-        return false;
-      }
-    }
-    async #updateAuth(isFirst = true) {
-      try {
-        debug('开始更新Twitch授权', {
-          isFirst: isFirst
-        });
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Twitch'),
-          before: '[Twitch]'
-        });
-        return await new Promise((resolve => {
-          const newTab = GM_openInTab('https://www.twitch.tv/', {
-            active: true,
-            insert: true,
-            setParent: true
-          });
-          newTab.name = 'ATv4_twitchAuth';
-          newTab.onclose = async () => {
-            const auth = GM_getValue('twitchAuth');
-            if (auth) {
-              debug('成功获取新的Twitch授权');
-              this.#auth = auth;
-              logStatus.success();
-              resolve(await this.#verifyAuth(isFirst));
-            } else {
-              debug('获取Twitch授权失败');
-              logStatus.error('Error: Update twitch auth failed!');
-              resolve(false);
-            }
-          };
-        }));
-      } catch (error) {
-        debug('更新Twitch授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.updateAuth');
-        return false;
-      }
-    }
-    async #toggleChannel({name: name, doTask: doTask = true}) {
-      try {
-        debug('开始处理Twitch频道任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.channels.includes(name)) {
-          debug('Twitch频道在白名单中，跳过取消关注', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitch.unfollowChannel',
-            id: name,
-            before: '[Twitch]'
-          });
-          return true;
-        }
-        const channelId = await this.#getChannelId(name);
-        if (!channelId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingTwitchChannel`,
-          text: name,
-          before: '[Twitch]'
-        });
-        const followData = `[{"operationName":"FollowButton_FollowUser","variables":{"input":{"disableNotifications":false,"targetID":"${channelId}` + '"}},"extensions":{"persistedQuery":{"version":1,"sha256Hash":"800e7346bdf7e5278a3c1d3f21b2b56e2639928f86815677a7126b093b2fdd08"}}}]';
-        const unfollowData = `[{"operationName":"FollowButton_UnfollowUser","variables":{"input":{"targetID":"${channelId}"}},` + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"f7dae976ebf41c755ae2d758546bfd176b4eeb856656098bb40e0a672ca0d880"}}}]';
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          dataType: 'json',
-          anonymous: true,
-          headers: {
-            Origin: 'https://www.twitch.tv',
-            Referer: 'https://www.twitch.tv/',
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId,
-            'Client-Version': this.#auth.clientVersion,
-            'X-Device-Id': this.#auth.deviceId,
-            'Client-Session-Id': this.#auth.clientSessionId,
-            'Client-Integrity': this.#integrityToken
-          },
-          data: doTask ? followData : unfollowData
-        });
-        if (result !== 'Success') {
-          debug('Twitch频道操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.response?.[0] && data.response[0].errors) {
-          debug('Twitch频道操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            errors: data?.response?.[0].errors
-          });
-          logStatus.error(`Error:${data?.response?.[0].errors?.[0]?.message || `${data?.statusText}(${data?.status})`}`);
-          return false;
-        }
-        debug('Twitch频道操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.channels = unique([ ...this.tasks.channels, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Twitch频道任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.toggleChannel');
-        return false;
-      }
-    }
-    async #getChannelId(name) {
-      try {
-        debug('开始获取Twitch频道ID', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'gettingTwitchChannelId',
-          text: name,
-          before: '[Twitch]'
-        });
-        const cachedChannelId = this.#cache[name];
-        if (cachedChannelId) {
-          debug('从缓存获取到Twitch频道ID', {
-            name: name,
-            id: cachedChannelId
-          });
-          logStatus.success();
-          return cachedChannelId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://gql.twitch.tv/gql',
-          method: 'POST',
-          headers: {
-            Authorization: `OAuth ${this.#auth.authToken}`,
-            'Client-Id': this.#auth.clientId
-          },
-          responseType: 'json',
-          data: `[{"operationName":"ActiveWatchParty","variables":{"channelLogin":"${name}"},` + '"extensions":{"persistedQuery":{"version":1,"sha256Hash":"4a8156c97b19e3a36e081cf6d6ddb5dbf9f9b02ae60e4d2ff26ed70aebc80a30"}}}]'
-        });
-        if (result !== 'Success') {
-          debug('获取Twitch频道ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取Twitch频道ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const newChannelId = data.response?.[0]?.data?.user?.id;
-        if (!newChannelId) {
-          debug('未找到Twitch频道ID', {
-            name: name
-          });
-          logStatus.error(`Error:${data?.statusText || 'Unknown'}(${data?.status || 'Unknown'})`);
-          return false;
-        }
-        debug('成功获取Twitch频道ID', {
-          name: name,
-          id: newChannelId
-        });
-        this.#setCache(name, newChannelId);
-        logStatus.success();
-        return newChannelId;
-      } catch (error) {
-        debug('获取Twitch频道ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.getChannelId');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, channelLinks: channelLinks = []}) {
-      try {
-        debug('开始处理Twitch链接任务', {
-          doTask: doTask,
-          channelLinksCount: channelLinks.length
-        });
-        if (!this.#initialized) {
-          debug('Twitch模块未初始化');
-          echoLog({
-            text: I18n('needInit'),
-            before: '[Twitch]'
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        const prom = [];
-        if (doTask && !globalOptions.doTask.twitch.channels || !doTask && !globalOptions.undoTask.twitch.channels) {
-          debug('根据全局选项跳过Twitch任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'twitch.channels',
-            before: '[Twitch]'
-          });
-          for (const link of channelLinks) {
-            this.setToggleResult(result, 'channelLinks', link, true);
-          }
-        } else {
-          for (const link of channelLinks) {
-            const channel = link.match(/https:\/\/(www\.)?twitch\.tv\/(.+)/)?.[2];
-            if (!channel) {
-              this.setToggleResult(result, 'channelLinks', link, false);
-              continue;
-            }
-            prom.push(this.#toggleChannel({
-              name: channel,
-              doTask: doTask
-            }).then((success => {
-              this.setToggleResult(result, 'channelLinks', link, success);
-              return success;
-            })));
-            await delay(1e3);
-          }
-        }
-        await Promise.all(prom);
-        return result;
-      } catch (error) {
-        debug('处理Twitch链接任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.toggle');
-        return false;
-      }
-    }
-    #setCache(name, id) {
-      try {
-        debug('设置Twitch频道ID缓存', {
-          name: name,
-          id: id
-        });
-        this.#cache[name] = id;
-        GM_setValue('twitchCache', this.#cache);
-      } catch (error) {
-        debug('设置Twitch频道ID缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitch.setCache');
-      }
-    }
-  }
-  const encodeSha256 = async data => {
-    const encoder = new TextEncoder;
-    const dataBuffer = encoder.encode(data);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
-    return Array.from(new Uint8Array(hashBuffer));
-  };
-  const encodeBase64 = data => {
-    let binary = '';
-    const bytes = new Uint8Array(data);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary).replace(/=/g, '');
-  };
-  const decodeBase64 = data => {
-    const binaryString = atob(data);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    return Array.from(bytes);
-  };
-  const generateTransactionId = async (method, path, key, animationKey) => {
-    const DEFAULT_KEYWORD = 'obfiowerehiring';
-    const ADDITIONAL_RANDOM_NUMBER = 3;
-    const timeNow = Math.floor((Date.now() - 1682924400 * 1e3) / 1e3);
-    const timeNowBytes = [ timeNow & 255, timeNow >> 8 & 255, timeNow >> 16 & 255, timeNow >> 24 & 255 ];
-    const data = `${method}!${path}!${timeNow}${DEFAULT_KEYWORD}${animationKey}`;
-    const hashBytes = await encodeSha256(data);
-    const keyBytes = decodeBase64(key);
-    const randomNum = Math.floor(Math.random() * 256);
-    const bytesArr = [ ...keyBytes, ...timeNowBytes, ...hashBytes.slice(0, 16), ADDITIONAL_RANDOM_NUMBER ];
-    const out = new Uint8Array(bytesArr.length + 1);
-    out[0] = randomNum;
-    bytesArr.forEach(((item, index) => {
-      out[index + 1] = item ^ randomNum;
-    }));
-    return encodeBase64(out);
-  };
-  const url = 'https://raw.githubusercontent.com/fa0311/x-client-transaction-id-pair-dict/refs/heads/main/pair.json';
-  const getTID = async () => {
-    const res = await fetch(url);
-    const json = await res.json();
-    return async (method, path) => {
-      const randomPair = json[Math.floor(Math.random() * json.length)];
-      const {animationKey: animationKey, verification: verification} = randomPair;
-      const tid = await generateTransactionId(method, path, verification, animationKey);
-      return tid;
-    };
-  };
-  const generateSecCHUA = () => {
-    if (navigator.userAgentData && navigator.userAgentData.brands) {
-      return navigator.userAgentData.brands.map((brand => `"${brand.brand}";v="${brand.version}"`)).join(', ');
-    }
-    return '"Google Chrome";v="125", "Chromium";v="125", "Not-A.Brand";v="99"';
-  };
-  class Twitter extends Social {
-    tasks;
-    whiteList;
-    #verifyId=globalOptions.other.twitterVerifyId;
-    #auth=GM_getValue('twitterAuth') || {};
-    #cache=GM_getValue('twitterCache') || {};
-    #initialized=false;
-    #getTID;
-    #headers={};
-    constructor() {
-      super();
-      const defaultTasksTemplate = {
-        users: [],
-        retweets: [],
-        likes: []
-      };
-      debug('初始化Twitter实例');
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.twitter || {}
-      };
-      this.#headers = {
-        authorization: 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-        'X-Twitter-Auth-Type': 'OAuth2Session',
-        'X-Twitter-Active-User': 'yes',
-        'sec-fetch-dest': 'empty',
-        'sec-fetch-mode': 'cors',
-        'sec-fetch-site': 'same-origin',
-        'sec-ch-ua-platform': '"Windows"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua': generateSecCHUA()
-      };
-    }
-    async init() {
-      try {
-        debug('开始初始化Twitter模块');
-        if (this.#initialized) {
-          debug('Twitter模块已初始化');
-          return true;
-        }
-        debug('获取Twitter授权信息');
-        if (!await this.#updateAuth()) {
-          return false;
-        }
-        debug('创建Twitter会话和SDK');
-        this.#getTID = await getTID();
-        const isVerified = await this.#verifyAuth();
-        if (isVerified) {
-          debug('Twitter授权验证成功');
-          echoLog({
-            before: '[Twitter]'
-          }).success(I18n('initSuccess', 'Twitter'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('Twitter授权失效，尝试重新获取');
-        GM_setValue('twitterAuth', null);
-        if (await this.#updateAuth()) {
-          debug('Twitter重新授权成功');
-          echoLog({
-            before: '[Twitter]'
-          }).success(I18n('initSuccess', 'Twitter'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('Twitter初始化失败');
-        echoLog({
-          before: '[Twitter]'
-        }).error(I18n('initFailed', 'Twitter'));
-        return false;
-      } catch (error) {
-        debug('Twitter初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.init');
-        return false;
-      }
-    }
-    async #verifyAuth() {
-      try {
-        debug('开始验证Twitter授权');
-        return await this.#toggleUser({
-          name: 'verify',
-          doTask: true,
-          verify: true
-        });
-      } catch (error) {
-        debug('Twitter授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.verifyAuth');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新Twitter授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Twitter'),
-          before: '[Twitter]'
-        });
-        return await new Promise((resolve => {
-          GM_cookie.list({
-            url: 'https://x.com/settings/account'
-          }, (async (cookies, error) => {
-            if (!error) {
-              const ct0 = cookies.find((cookie => cookie.name === 'ct0'))?.value;
-              const isLogin = cookies.find((cookie => cookie.name === 'twid'))?.value;
-              if (isLogin && ct0) {
-                debug('成功获取Twitter授权信息');
-                GM_setValue('twitterAuth', {
-                  ct0: ct0
-                });
-                this.#auth = {
-                  ct0: ct0
-                };
-                this.#headers['x-csrf-token'] = ct0;
-                this.#headers['x-twitter-client-language'] = cookies.find((cookie => cookie.name === 'lang'))?.value || 'en';
-                logStatus.success();
-                resolve(true);
-              } else {
-                debug('获取Twitter授权失败：未登录');
-                logStatus.error(I18n('needLogin'));
-                resolve(false);
-              }
-            } else {
-              debug('获取Twitter授权失败', {
-                error: error
-              });
-              logStatus.error('Error: Update twitter auth failed!');
-              resolve(false);
-            }
-          }));
-        }));
-      } catch (error) {
-        debug('更新Twitter授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.updateAuth');
-        return false;
-      }
-    }
-    async #toggleUser({name: name, doTask: doTask = true, verify: verify = false, retry: retry = false}) {
-      try {
-        debug('开始处理Twitter用户任务', {
-          name: name,
-          doTask: doTask,
-          verify: verify,
-          retry: retry
-        });
-        if (!doTask && !verify && this.whiteList.users.includes(name)) {
-          debug('Twitter用户在白名单中，跳过取消关注', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitter.unfollowUser',
-            id: name,
-            before: '[Twitter]'
-          });
-          return true;
-        }
-        const userId = verify ? this.#verifyId : await this.userName2id(name);
-        if (!userId) {
-          return false;
-        }
-        const logStatus = verify ? echoLog({
-          text: I18n('verifyingAuth', 'Twitter'),
-          before: '[Twitter]'
-        }) : echoLog({
-          type: `${doTask ? '' : 'un'}followingTwitterUser`,
-          text: name,
-          before: '[Twitter]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://x.com/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`,
-          method: 'POST',
-          headers: {
-            ...this.#headers,
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/1.1/friendships/${doTask ? 'create' : 'destroy'}.json`)
-          },
-          responseType: 'json',
-          data: $.param({
-            include_profile_interstitial_type: 1,
-            include_blocking: 1,
-            include_blocked_by: 1,
-            include_followed_by: 1,
-            include_want_retweets: 1,
-            include_mute_edge: 1,
-            include_can_dm: 1,
-            include_can_media_tag: 1,
-            skip_status: 1,
-            id: userId
-          })
-        });
-        if (result !== 'Success') {
-          debug('Twitter用户操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200) {
-          debug('Twitter用户操作成功', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          if (doTask && !verify) {
-            this.tasks.users = unique([ ...this.tasks.users, name ]);
-          }
-          return true;
-        }
-        if (verify && data?.status === 403) {
-          if (data.response?.errors?.[0]?.code === 158) {
-            debug('Twitter授权验证成功（已关注）');
-            logStatus.success();
-            return true;
-          }
-          if (data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
-            const newCt0 = data.responseHeaders['set-cookie']?.find((cookie => cookie.includes('ct0=')))?.split(';')?.at(0)?.split('=')?.at(-1);
-            if (newCt0) {
-              debug('获取到新的Twitter授权Token，重试操作');
-              this.#auth.ct0 = newCt0;
-              GM_setValue('twitterAuth', this.#auth);
-              logStatus.warning(I18n('retry'));
-              return this.#toggleUser({
-                name: name,
-                doTask: doTask,
-                verify: verify,
-                retry: true
-              });
-            }
-          }
-        }
-        debug('Twitter用户操作失败', {
-          status: data?.status,
-          statusText: data?.statusText
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('处理Twitter用户任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.toggleUser');
-        return false;
-      }
-    }
-    async userName2id(name) {
-      try {
-        debug('开始获取Twitter用户ID', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'gettingTwitterUserId',
-          text: name,
-          before: '[Twitter]'
-        });
-        const cachedUserId = this.#cache[name];
-        if (cachedUserId) {
-          debug('从缓存获取到Twitter用户ID', {
-            name: name,
-            id: cachedUserId
-          });
-          logStatus.success();
-          return cachedUserId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://x.com/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`,
-          method: 'GET',
-          headers: {
-            ...this.#headers,
-            'content-type': 'application/json',
-            referer: `https://x.com/${name}`,
-            'x-client-transaction-id': await this.#getTID('GET', '/i/api/graphql/jUKA--0QkqGIFhmfRZdWrQ/UserByScreenName' + `?variables=%7B%22screen_name%22%3A%22${name}%22%7D&features=%7B%22responsive_web_grok_bio_auto_translation_is_enabled%22%3Afalse%2C%22hidden_profile_subscriptions_enabled%22%3Atrue%2C%22payments_enabled%22%3Afalse%2C%22profile_label_improvements_pcf_label_in_post_enabled%22%3Atrue%2C%22rweb_tipjar_consumption_enabled%22%3Atrue%2C%22verified_phone_label_enabled%22%3Afalse%2C%22subscriptions_verification_info_is_identity_verified_enabled%22%3Atrue%2C%22subscriptions_verification_info_verified_since_enabled%22%3Atrue%2C%22highlights_tweets_tab_ui_enabled%22%3Atrue%2C%22responsive_web_twitter_article_notes_tab_enabled%22%3Atrue%2C%22subscriptions_feature_can_gift_premium%22%3Atrue%2C%22creator_subscriptions_tweet_preview_api_enabled%22%3Atrue%2C%22responsive_web_graphql_skip_user_profile_image_extensions_enabled%22%3Afalse%2C%22responsive_web_graphql_timeline_navigation_enabled%22%3Atrue%7D&fieldToggles=%7B%22withAuxiliaryUserLabels%22%3Atrue%7D`)
-          },
-          responseType: 'json'
-        });
-        if (result !== 'Success') {
-          debug('获取Twitter用户ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取Twitter用户ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        let response = data.response || (typeof data.responseText === 'object' ? data.responseText : null);
-        if (!response) {
-          try {
-            response = JSON.parse(data.responseText);
-          } catch (error) {
-            response = null;
-          }
-        }
-        const fetchedUserId = response?.data?.user?.result?.rest_id;
-        if (!fetchedUserId) {
-          debug('未找到Twitter用户ID', {
-            name: name
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        debug('成功获取Twitter用户ID', {
-          name: name,
-          id: fetchedUserId
-        });
-        this.#setCache(name, fetchedUserId);
-        logStatus.success();
-        return fetchedUserId;
-      } catch (error) {
-        debug('获取Twitter用户ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.getUserId');
-        return false;
-      }
-    }
-    async #toggleRetweet({retweetId: retweetId, doTask: doTask = true, retry: retry = false}) {
-      try {
-        debug('开始处理Twitter转推任务', {
-          retweetId: retweetId,
-          doTask: doTask,
-          retry: retry
-        });
-        if (!doTask && this.whiteList.retweets.includes(retweetId)) {
-          debug('Twitter转推在白名单中，跳过取消', {
-            retweetId: retweetId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Twitter.unretweet',
-            id: retweetId,
-            before: '[Twitter]'
-          });
-          return true;
-        }
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}retweetting`,
-          text: retweetId,
-          before: '[Twitter]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://x.com/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`,
-          method: 'POST',
-          headers: {
-            ...this.#headers,
-            'Content-Type': 'application/json',
-            origin: 'https://x.com',
-            referer: 'https://x.com/home',
-            'x-client-transaction-id': await this.#getTID('POST', `/i/api/graphql/${doTask ? 'ojPdsZsimiJrUGLR1sjUtA/CreateRetweet' : 'iQtK4dl5hBmXewYZuEOKVw/DeleteRetweet'}`)
-          },
-          data: `{"variables":{"${doTask ? '' : 'source_'}tweet_id":"${retweetId}","dark_request":false},"queryId":"${doTask ? 'ojPdsZsimiJrUGLR1sjUtA' : 'iQtK4dl5hBmXewYZuEOKVw'}"}`,
-          responseType: 'json'
-        });
-        if (result !== 'Success') {
-          debug('Twitter转推操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 403 && data.response?.errors?.[0]?.code === 353 && !retry && data.responseHeaders?.['set-cookie']) {
-          const newCt0 = data.responseHeaders['set-cookie']?.find((cookie => cookie.includes('ct0=')))?.split(';')?.at(0)?.split('=')?.at(-1);
-          if (newCt0) {
-            debug('获取到新的Twitter授权Token，重试操作');
-            this.#auth.ct0 = newCt0;
-            GM_setValue('twitterAuth', this.#auth);
-            logStatus.warning(I18n('retry'));
-            return this.#toggleRetweet({
-              retweetId: retweetId,
-              doTask: doTask,
-              retry: true
-            });
-          }
-        }
-        if (data?.status !== 200 && !(data?.status === 403 && data.response?.errors?.[0]?.code === 327)) {
-          debug('Twitter转推操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.response?.errors && data.response?.errors?.[0]?.code !== 327) {
-          debug('Twitter转推操作出错', {
-            error: data.response?.errors?.[0]?.message
-          });
-          logStatus.error(`Error:${data.response?.errors?.[0]?.message}`);
-          return false;
-        }
-        debug('Twitter转推操作成功', {
-          retweetId: retweetId,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.retweets = unique([ ...this.tasks.retweets, retweetId ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Twitter转推任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.toggleRetweet');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, userLinks: userLinks = [], retweetLinks: retweetLinks = []}) {
-      try {
-        debug('开始处理Twitter链接任务', {
-          doTask: doTask,
-          userLinksCount: userLinks.length,
-          retweetLinksCount: retweetLinks.length
-        });
-        if (!this.#initialized) {
-          debug('Twitter模块未初始化');
-          echoLog({
-            text: I18n('needInit'),
-            before: '[Twitter]'
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        if (doTask && !globalOptions.doTask.twitter.users || !doTask && !globalOptions.undoTask.twitter.users) {
-          debug('根据全局选项跳过Twitter用户任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'twitter.users',
-            before: '[Twitter]'
-          });
-          for (const link of userLinks) {
-            this.setToggleResult(result, 'userLinks', link, true);
-          }
-        } else {
-          for (const link of userLinks) {
-            const user = link.match(/https:\/\/x\.com\/([^/]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/([^/]+)/)?.[1];
-            if (!user) {
-              this.setToggleResult(result, 'userLinks', link, false);
-              continue;
-            }
-            const success = await this.#toggleUser({
-              name: user,
-              doTask: doTask
-            });
-            this.setToggleResult(result, 'userLinks', link, success);
-            await delay(1e3);
-          }
-        }
-        if (doTask && !globalOptions.doTask.twitter.retweets || !doTask && !globalOptions.undoTask.twitter.retweets) {
-          debug('根据全局选项跳过Twitter转推任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'twitter.retweets',
-            before: '[Twitter]'
-          });
-          for (const link of retweetLinks) {
-            this.setToggleResult(result, 'retweetLinks', link, true);
-          }
-        } else {
-          for (const link of retweetLinks) {
-            const retweet = link.match(/https:\/\/x\.com\/.*?\/status\/([\d]+)/)?.[1] || link.match(/https:\/\/twitter\.com\/.*?\/status\/([\d]+)/)?.[1];
-            if (!retweet) {
-              this.setToggleResult(result, 'retweetLinks', link, false);
-              continue;
-            }
-            const success = await this.#toggleRetweet({
-              retweetId: retweet,
-              doTask: doTask
-            });
-            this.setToggleResult(result, 'retweetLinks', link, success);
-            await delay(1e3);
-          }
-        }
-        return result;
-      } catch (error) {
-        debug('处理Twitter链接任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.toggle');
-        return false;
-      }
-    }
-    #setCache(name, id) {
-      try {
-        debug('设置Twitter用户ID缓存', {
-          name: name,
-          id: id
-        });
-        this.#cache[name] = id;
-        GM_setValue('twitterCache', this.#cache);
-      } catch (error) {
-        debug('设置Twitter用户ID缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Twitter.setCache');
-      }
-    }
-  }
-  class Vk extends Social {
-    tasks;
-    whiteList;
-    #userId='';
-    #cache=GM_getValue('vkCache') || {};
-    #initialized=false;
-    #token=null;
-    #version='5.282';
-    #appId='6287487';
-    constructor() {
-      super();
-      const defaultTasksTemplate = {
-        names: []
-      };
-      debug('初始化Vk实例');
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.vk || {}
-      };
-    }
-    async init() {
-      try {
-        debug('开始初始化Vk模块');
-        if (this.#initialized) {
-          debug('Vk模块已初始化');
-          return true;
-        }
-        const result = await this.#updateAuth();
-        const isVerified = await this.#verifyAuth();
-        if (result && isVerified) {
-          debug('Vk授权验证成功');
-          echoLog({
-            before: '[Vk]'
-          }).success(I18n('initSuccess', 'Vk'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('Vk初始化失败');
-        echoLog({
-          before: '[Vk]'
-        }).error(I18n('initFailed', 'Vk'));
-        return false;
-      } catch (error) {
-        debug('Vk初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.init');
-        return false;
-      }
-    }
-    async #verifyAuth() {
-      try {
-        debug('开始验证Vk授权');
-        const logStatus = echoLog({
-          text: I18n('verifyAuth', 'Vk'),
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/im',
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('Vk授权验证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.finalUrl.includes('vk.com/login')) {
-          debug('Vk授权验证失败：需要登录');
-          logStatus.error(`Error:${I18n('loginVk')}`, true);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk授权验证状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        this.#userId = data.responseText.match(/id: (\d+)/)?.[1] || '';
-        this.#version = data.responseText.match(/"version":"(.+?)","response"/)?.[1] || '';
-        this.#appId = data.responseText.match(/"app_id":(.+?),"is_mobile"/)?.[1] || '';
-        debug('Vk授权验证成功');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('Vk授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.verifyAuth');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新Vk授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Vk'),
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://login.vk.com/?act=web_token',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: 'https://vk.com/',
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param({
-            version: this.#version,
-            app_id: this.#appId
-          })
-        });
-        if (result !== 'Success') {
-          debug('更新Vk授权请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('更新Vk授权状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data?.response?.type !== 'okay') {
-          debug('更新Vk授权失败', {
-            response: data?.response
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('更新Vk授权成功', {
-          response: data?.response
-        });
-        this.#token = data.response.data.access_token;
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Vk授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.updateAuth');
-        return false;
-      }
-    }
-    async #toggleGroup(name, dataParam, doTask = true) {
-      try {
-        if (!this.#token || !dataParam.groupId) {
-          debug('缺少关键参数', {
-            token: !!this.#token,
-            groupId: dataParam.groupId
-          });
-          return false;
-        }
-        debug('开始处理Vk群组任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'joiningVkGroup' : 'leavingVkGroup',
-          text: name,
-          before: '[Vk]'
-        });
-        if (dataParam.isMember === '0' && !doTask || dataParam.isMember === '1' && doTask) {
-          debug('Vk群组操作已完成，跳过', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        const reqData = {
-          group_id: dataParam.groupId,
-          source: '',
-          track_code: '',
-          access_token: this.#token
-        };
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://web.api.vk.com/method/groups.${doTask ? 'join' : 'leave'}?v=${this.#version}&client_id=${this.#appId}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param(reqData)
-        });
-        if (result !== 'Success') {
-          debug('Vk群组操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk群组操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Vk群组操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.names = unique([ ...this.tasks.names, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Vk群组任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggleGroup');
-        return false;
-      }
-    }
-    async #togglePublic(name, dataParam, doTask = true) {
-      try {
-        debug('开始处理Vk公共页面任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'joiningVkPublic' : 'leavingVkPublic',
-          text: name,
-          before: '[Vk]'
-        });
-        if (dataParam.publicJoined && doTask || !dataParam.publicJoined && !doTask) {
-          debug('Vk公共页面操作已完成，跳过', {
-            name: name,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://vk.com/al_public.php',
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param({
-            act: doTask ? 'a_enter' : 'a_leave',
-            al: 1,
-            pid: dataParam.publicPid,
-            hash: dataParam.publicHash
-          })
-        });
-        if (result !== 'Success') {
-          debug('Vk公共页面操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('Vk公共页面操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('Vk公共页面操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        if (doTask) {
-          this.tasks.names = unique([ ...this.tasks.names, name ]);
-        }
-        return true;
-      } catch (error) {
-        debug('处理Vk公共页面任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.togglePublic');
-        return false;
-      }
-    }
-    async #getWall(name) {
-      try {
-        debug('开始获取Vk帖子信息', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'gettingVkWall',
-          text: name,
-          before: '[Vk]'
-        });
-        const postData = {
-          extended: '1',
-          fields: 'photo_100,photo_200,photo_base,sex,friend_status,first_name_gen,last_name_gen,screen_name,verified,image_status,has_unseen_stories,is_government_organization,trust_mark,is_verified,social_button_type,url,is_member,can_write_private_message,can_message,member_status,can_publish,can_edit,can_delete',
-          filters: 'post,photo,photo_tag,friends_recomm,ads_app,ads_app_slider,ads_site,ads_site_slider,ads_post,ads_post_snippet_video,ads_app_video,ads_post_pretty_cards,recommended_groups,recommended_game,recommended_mini_app,mini_apps_carousel,videos_for_you_block,clips_block,animated_block,dzen_block',
-          filter: 'owner',
-          domain: name.split('_')[0].replace('wall', ''),
-          start_from: '',
-          count: '10',
-          access_token: this.#token
-        };
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://web.api.vk.ru/method/wall.get?v=${this.#version}&client_id=${this.#appId}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param(postData)
-        });
-        if (resultR !== 'Success') {
-          debug('获取Vk帖子信息失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('获取Vk帖子信息状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        const item = dataR.response?.response?.items?.find((e => e.id === parseInt(name.split('_')[1] || '0', 10)));
-        if (!item) {
-          debug('未找到匹配的Vk帖子信息');
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('获取Vk帖子信息成功', {
-          name: name
-        });
-        logStatus.success();
-        return item;
-      } catch (error) {
-        debug('处理Vk点赞任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.getWall');
-        return false;
-      }
-    }
-    async #toggleLikeWall(name, doTask = true) {
-      try {
-        if (!name) {
-          debug('格式错误', {
-            name: name
-          });
-          return false;
-        }
-        const itemInfo = await this.#getWall(name);
-        if (!itemInfo) {
-          return false;
-        }
-        debug('开始处理Vk点赞任务', {
-          name: name,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'likingVkPublic' : 'unlikingVkPublic',
-          text: name,
-          before: '[Vk]'
-        });
-        if (doTask === !!itemInfo.likes.user_likes) {
-          logStatus.success();
-          return true;
-        }
-        const postData = {
-          type: itemInfo.type,
-          owner_id: itemInfo.owner_id,
-          item_id: itemInfo.id,
-          track_code: itemInfo.track_code,
-          ref: 'group',
-          access_token: this.#token
-        };
-        if (doTask) {
-          postData.reaction_id = 0;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://web.api.vk.com/method/likes.${doTask ? 'add' : 'delete'}?v=${this.#version}&client_id=${this.#appId}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param(postData)
-        });
-        if (resultR !== 'Success') {
-          debug('Vk点赞操作请求失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('Vk点赞操作状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('Vk点赞操作成功', {
-          name: name,
-          doTask: doTask
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理Vk点赞任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggleLikeWall');
-        return false;
-      }
-    }
-    async #sendWall(name) {
-      try {
-        if (!name) {
-          debug('格式错误', {
-            name: name
-          });
-          return false;
-        }
-        const itemInfo = await this.#getWall(name);
-        if (!itemInfo) {
-          return false;
-        }
-        debug('开始处理Vk转发任务', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'sendingVkWall',
-          text: name,
-          before: '[Vk]'
-        });
-        if (itemInfo.reposts.user_reposted) {
-          logStatus.success();
-          return true;
-        }
-        const postData = {
-          object: name,
-          message: '',
-          group_id: '',
-          ref: 'group',
-          mark_as_ads: 0,
-          friends_only: 0,
-          close_comments: 0,
-          mute_notifications: 0,
-          publish_date: '',
-          entry_point: 'share',
-          track_code: itemInfo.track_code,
-          access_token: this.#token
-        };
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://web.api.vk.ru/method/wall.repost?v=${this.#version}&client_id=${this.#appId}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param(postData)
-        });
-        if (resultR !== 'Success') {
-          debug('Vk转发操作请求失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('Vk转发操作状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        if (dataR.response?.response?.success !== 1) {
-          debug('Vk转发操作验证失败');
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('Vk转发操作成功', {
-          name: name,
-          doTask: true
-        });
-        logStatus.success();
-        const postId = dataR.response?.response?.post_id;
-        if (postId) {
-          this.#setCache(name, postId);
-        }
-        this.tasks.names = unique([ ...this.tasks.names, name ]);
-        return true;
-      } catch (error) {
-        debug('处理Vk转发任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.sendWall');
-        return false;
-      }
-    }
-    async #deleteWall(name) {
-      try {
-        if (!name) {
-          debug('格式错误', {
-            name: name
-          });
-          return false;
-        }
-        const itemInfo = await this.#getWall(name);
-        if (!itemInfo) {
-          return false;
-        }
-        debug('开始处理Vk删除转发任务', {
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'deletingVkWall',
-          text: name,
-          before: '[Vk]'
-        });
-        if (!itemInfo.reposts.user_reposted) {
-          logStatus.success();
-          return true;
-        }
-        const postData = {
-          owner_id: this.#userId,
-          post_id: this.#cache[name],
-          creation_entry_point: '',
-          access_token: this.#token
-        };
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://web.api.vk.ru/method/wall.delete?v=${this.#version}&client_id=${this.#appId}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://vk.com',
-            referer: `https://vk.com/${name}`,
-            'content-type': 'application/x-www-form-urlencoded'
-          },
-          responseType: 'json',
-          data: $.param(postData)
-        });
-        if (resultR !== 'Success') {
-          debug('Vk删除转发操作请求失败', {
-            result: resultR,
-            statusText: statusTextR,
-            status: statusR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('Vk删除转发操作状态错误', {
-            status: dataR?.status,
-            statusText: dataR?.statusText
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        if (dataR.response?.response !== 1) {
-          debug('Vk删除转发操作验证失败');
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('Vk删除转发操作成功', {
-          name: name
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理Vk删除转发任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.deleteWall');
-        return false;
-      }
-    }
-    async #getId(name, doTask) {
-      try {
-        debug('开始获取Vk ID', {
-          name: name,
-          doTask: doTask
-        });
-        const url = `https://vk.com/${name}`;
-        if (/^wall-/.test(name.split(/\?|#/)[0])) {
-          const realname = name.match(/wall-\d+?_\d+/)?.[0] || '';
-          if (name.includes('action=like')) {
-            return {
-              type: 'likeWall',
-              name: realname
-            };
-          }
-          if (doTask) {
-            return {
-              type: 'sendWall',
-              name: realname
-            };
-          }
-          return {
-            type: 'deleteWall',
-            name: realname
-          };
-        }
-        const logStatus = echoLog({
-          type: 'gettingVkId',
-          text: name,
-          before: '[Vk]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: url,
-          method: 'GET'
-        });
-        if (result !== 'Success') {
-          debug('获取Vk ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取Vk ID状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const [, groupId] = data.responseText.match(/"group_id":(.+?),"fields"/) || [];
-        const [, isMember] = data.responseText.match(/"is_member":(.+?),/) || [];
-        if (groupId) {
-          debug('获取到Vk群组ID', {
-            groupId: groupId
-          });
-          logStatus.success();
-          return {
-            groupId: groupId,
-            isMember: isMember,
-            type: 'group'
-          };
-        }
-        debug('未找到Vk ID参数');
-        logStatus.error('Error: Parameters not found!');
-        return false;
-      } catch (error) {
-        debug('获取Vk ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.getId');
-        return false;
-      }
-    }
-    async #toggleVk({name: name, doTask: doTask = true}) {
-      try {
-        debug('开始处理Vk任务', {
-          name: name,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.names.includes(name)) {
-          debug('Vk任务在白名单中，跳过', {
-            name: name
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Vk.undoTask',
-            id: name,
-            before: '[Vk]'
-          });
-          return true;
-        }
-        const formatName = name.replace(/\/$/, '');
-        const data = await this.#getId(formatName, doTask);
-        if (!data) {
-          return false;
-        }
-        switch (data.type) {
-         case 'group':
-          return await this.#toggleGroup(formatName, data, doTask);
-
-         case 'public':
-          return await this.#togglePublic(formatName, data, doTask);
-
-         case 'likeWall':
-          return await this.#toggleLikeWall(data.name, doTask);
-
-         case 'sendWall':
-          return doTask ? await this.#sendWall(data.name) : true;
-
-         case 'deleteWall':
-          return doTask ? true : await this.#deleteWall(data.name);
-
-         default:
-          debug('未知的Vk任务类型', {
-            type: data.type
-          });
-          return false;
-        }
-      } catch (error) {
-        debug('处理Vk任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggleVk');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, nameLinks: nameLinks = []}) {
-      try {
-        debug('开始处理Vk链接任务', {
-          doTask: doTask,
-          nameLinksCount: nameLinks.length
-        });
-        if (!this.#initialized) {
-          debug('Vk模块未初始化');
-          echoLog({
-            text: I18n('needInit'),
-            before: '[Vk]'
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        const prom = [];
-        if (doTask && !globalOptions.doTask.vk.names || !doTask && !globalOptions.undoTask.vk.names) {
-          debug('根据全局选项跳过Vk任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'vk.names',
-            before: '[Vk]'
-          });
-          for (const link of nameLinks) {
-            this.setToggleResult(result, 'nameLinks', link, true);
-          }
-        } else {
-          for (const link of nameLinks) {
-            const name = link.match(/https:\/\/vk\.(\w+?)\/([^/]+)/)?.[2];
-            if (!name) {
-              this.setToggleResult(result, 'nameLinks', link, false);
-              continue;
-            }
-            prom.push(this.#toggleVk({
-              name: name,
-              doTask: doTask
-            }).then((success => {
-              this.setToggleResult(result, 'nameLinks', link, success);
-              return success;
-            })));
-            await delay(1e3);
-          }
-        }
-        await Promise.all(prom);
-        return result;
-      } catch (error) {
-        debug('处理Vk链接任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.toggle');
-        return false;
-      }
-    }
-    #setCache(name, postId) {
-      try {
-        debug('设置Vk缓存', {
-          name: name,
-          postId: postId
-        });
-        this.#cache[name] = postId;
-        GM_setValue('vkCache', this.#cache);
-      } catch (error) {
-        debug('设置Vk缓存时发生错误', {
-          error: error
-        });
-        throwError(error, 'Vk.setCache');
-      }
-    }
-  }
-  unsafeWindow.Vk = Vk;
-  const getInfo = async function(link, type) {
-    try {
-      debug('开始获取YouTube信息', {
-        link: link,
-        type: type
-      });
-      const logStatus = echoLog({
-        text: I18n('gettingYtbToken'),
-        before: '[Youtube]'
-      });
-      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-        url: link,
-        method: 'GET'
-      });
-      if (result !== 'Success') {
-        debug('获取YouTube信息请求失败', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return {};
-      }
-      if (data?.status !== 200) {
-        debug('获取YouTube信息状态错误', {
-          status: data?.status,
-          statusText: data?.statusText
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return {};
-      }
-      if (data.responseText.includes('accounts.google.com/ServiceLogin?service=youtube')) {
-        debug('获取YouTube信息失败：需要登录');
-        logStatus.error(`Error:${I18n('loginYtb')}`, true);
-        return {
-          needLogin: true
-        };
-      }
-      const apiKey = data.responseText.match(/"INNERTUBE_API_KEY":"(.*?)"/)?.[1];
-      const context = (data.responseText.match(/\(\{"INNERTUBE_CONTEXT":([\w\W]*?)\}\)/) || data.responseText.match(/"INNERTUBE_CONTEXT":([\w\W]*?\}),"INNERTUBE/))?.[1] || '{}';
-      const {client: client, request: request} = JSON.parse(context);
-      if (!apiKey || !client || !request) {
-        debug('获取YouTube信息失败：缺少必要参数');
-        logStatus.error('Error: Parameter "apiKey" not found!');
-        return {};
-      }
-      client.hl = 'en';
-      if (type === 'channel') {
-        const channelId = data.responseText.match(/"channelId":"(.+?)"/)?.[1];
-        if (!channelId) {
-          debug('获取YouTube频道ID失败');
-          logStatus.error('Error: Get "channelId" failed!');
-          return {};
-        }
-        debug('成功获取YouTube频道信息', {
-          channelId: channelId
-        });
-        logStatus.success();
-        return {
-          params: {
-            apiKey: apiKey,
-            client: client,
-            request: request,
-            channelId: channelId
-          }
-        };
-      }
-      if (type === 'likeVideo') {
-        const videoId = data.responseText.match(/<link rel="shortlinkUrl" href="https:\/\/youtu\.be\/(.*?)">/)?.[1];
-        const likeParams = data.responseText.match(/"likeParams":"(.*?)"/)?.[1];
-        if (!videoId) {
-          debug('获取YouTube视频ID失败');
-          logStatus.error('Error: Get "videoId" failed!');
-          return {};
-        }
-        debug('成功获取YouTube视频信息', {
-          videoId: videoId
-        });
-        logStatus.success();
-        return {
-          params: {
-            apiKey: apiKey,
-            client: client,
-            request: request,
-            videoId: videoId,
-            likeParams: likeParams
-          }
-        };
-      }
-      debug('未知的YouTube信息类型', {
-        type: type
-      });
-      logStatus.error('Error: Unknown type');
-      return {};
-    } catch (error) {
-      debug('获取YouTube信息时发生错误', {
-        error: error
-      });
-      throwError(error, 'Youtube.getInfo');
-      return {};
-    }
-  };
-  class Youtube extends Social {
-    tasks;
-    whiteList;
-    #auth=GM_getValue('youtubeAuth') || {};
-    #initialized=false;
-    #verifyChannel=`https://www.youtube.com/channel/${globalOptions.other.youtubeVerifyChannel}`;
-    constructor() {
-      super();
-      const defaultTasksTemplate = {
-        channels: [],
-        likes: []
-      };
-      debug('初始化YouTube实例');
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.youtube || {}
-      };
-    }
-    async init() {
-      try {
-        debug('开始初始化YouTube模块');
-        if (this.#initialized) {
-          debug('YouTube模块已初始化');
-          return true;
-        }
-        if (!this.#auth.PAPISID) {
-          debug('YouTube授权信息不完整，需要更新授权');
-          if (await this.#updateAuth()) {
-            this.#initialized = true;
-            return true;
-          }
-          return false;
-        }
-        const isVerified = await this.#verifyAuth();
-        if (isVerified) {
-          debug('YouTube授权验证成功');
-          echoLog({
-            before: '[Youtube]'
-          }).success(I18n('initSuccess', 'Youtube'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('YouTube授权失效，尝试重新获取');
-        GM_setValue('youtubeAuth', null);
-        if (await this.#updateAuth()) {
-          debug('YouTube重新授权成功');
-          echoLog({
-            before: '[Youtube]'
-          }).success(I18n('initSuccess', 'Youtube'));
-          this.#initialized = true;
-          return true;
-        }
-        debug('YouTube初始化失败');
-        echoLog({
-          before: '[Youtube]'
-        }).error(I18n('initFailed', 'Youtube'));
-        return false;
-      } catch (error) {
-        debug('YouTube初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.init');
-        return false;
-      }
-    }
-    async #verifyAuth() {
-      try {
-        debug('开始验证YouTube授权');
-        return await this.#toggleChannel({
-          link: this.#verifyChannel,
-          doTask: true,
-          verify: true
-        });
-      } catch (error) {
-        debug('YouTube授权验证发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.verifyAuth');
-        return false;
-      }
-    }
-    async #updateAuth() {
-      try {
-        debug('开始更新YouTube授权');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', 'Youtube'),
-          before: '[Youtube]'
-        });
-        return await new Promise((resolve => {
-          GM_cookie.list({
-            url: 'https://www.youtube.com/@YouTube'
-          }, (async (cookies, error) => {
-            if (!error) {
-              const PAPISID = cookies.find((cookie => cookie.name === '__Secure-3PAPISID'))?.value;
-              if (PAPISID) {
-                debug('成功获取YouTube新授权信息');
-                GM_setValue('youtubeAuth', {
-                  PAPISID: PAPISID
-                });
-                this.#auth = {
-                  PAPISID: PAPISID
-                };
-                logStatus.success();
-                resolve(await this.#verifyAuth());
-              } else {
-                debug('获取YouTube授权失败：未登录');
-                logStatus.error(I18n('needLogin'));
-                resolve(false);
-              }
-            } else {
-              debug('获取YouTube授权失败', {
-                error: error
-              });
-              logStatus.error('Error: Update youtube auth failed!');
-              resolve(false);
-            }
-          }));
-        }));
-      } catch (error) {
-        debug('更新YouTube授权时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.updateAuth');
-        return false;
-      }
-    }
-    #getInfo(link, type) {
-      debug('调用获取YouTube信息方法', {
-        link: link,
-        type: type
-      });
-      return getInfo(link, type);
-    }
-    async #toggleChannel({link: link, doTask: doTask = true, verify: verify = false}) {
-      try {
-        debug('开始处理YouTube频道任务', {
-          link: link,
-          doTask: doTask,
-          verify: verify
-        });
-        const {params: params, needLogin: needLogin} = await this.#getInfo(link, 'channel');
-        const {apiKey: apiKey, client: client, request: request, channelId: channelId} = params || {};
-        if (needLogin) {
-          debug('YouTube频道操作失败：需要登录');
-          echoLog({
-            html: I18n('loginYtb'),
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!(apiKey && client && request && channelId)) {
-          debug('YouTube频道操作失败：获取参数失败');
-          echoLog({
-            text: '"getYtbToken" failed',
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!doTask && !verify && this.whiteList.channels.includes(channelId)) {
-          debug('YouTube频道在白名单中，跳过取消订阅', {
-            channelId: channelId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Youtube.unfollowChannel',
-            id: channelId,
-            before: '[Youtube]'
-          });
-          return true;
-        }
-        const logStatus = verify ? echoLog({
-          text: I18n('verifyingAuth', 'Youtube'),
-          before: '[Youtube]'
-        }) : echoLog({
-          type: doTask ? 'followingYtbChannel' : 'unfollowingYtbChannel',
-          text: channelId,
-          before: '[Youtube]'
-        });
-        const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.youtube.com/youtubei/v1/subscription/${doTask ? '' : 'un'}subscribe?key=${apiKey}&prettyPrint=false`,
-          method: 'POST',
-          headers: {
-            origin: 'https://www.youtube.com',
-            referer: `https://www.youtube.com/channel/${channelId}`,
-            'content-type': 'application/json',
-            'x-goog-authuser': '0',
-            'x-goog-visitor-id': client?.visitorData,
-            'x-origin': 'https://www.youtube.com',
-            authorization: `SAPISIDHASH ${nowTime}_${sha1(`${nowTime} ${this.#auth.PAPISID} https://www.youtube.com`)}`
-          },
-          data: JSON.stringify({
-            context: {
-              client: client,
-              request: {
-                sessionId: request?.sessionId,
-                internalExperimentFlags: [],
-                consistencyTokenJars: []
-              },
-              user: {}
-            },
-            channelIds: [ channelId ],
-            params: doTask ? 'EgIIAhgA' : 'CgIIAhgA'
-          })
-        });
-        if (result !== 'Success') {
-          debug('YouTube频道操作请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('YouTube频道操作状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const isSubscribed = doTask && (/"subscribed":true/.test(data.responseText) || data.responseText.includes('The subscription already exists'));
-        const isUnsubscribed = !doTask && /"subscribed":false/.test(data.responseText);
-        const isVerified = verify && data.responseText.includes('You may not subscribe to yourself');
-        if (isSubscribed || isUnsubscribed || isVerified) {
-          debug('YouTube频道操作成功', {
-            doTask: doTask,
-            verify: verify
-          });
-          logStatus.success();
-          if (doTask && !verify) {
-            this.tasks.channels = unique([ ...this.tasks.channels, link ]);
-          }
-          return true;
-        }
-        debug('YouTube频道操作失败，需要更新授权');
-        logStatus.error(I18n('tryUpdateYtbAuth'), true);
-        return false;
-      } catch (error) {
-        debug('处理YouTube频道任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.toggleChannel');
-        return false;
-      }
-    }
-    async #toggleLikeVideo({link: link, doTask: doTask = true}) {
-      try {
-        debug('开始处理YouTube视频点赞任务', {
-          link: link,
-          doTask: doTask
-        });
-        const {params: params, needLogin: needLogin} = await this.#getInfo(link, 'likeVideo');
-        const {apiKey: apiKey, client: client, request: request, videoId: videoId, likeParams: likeParams} = params || {};
-        if (needLogin) {
-          debug('YouTube视频点赞失败：需要登录');
-          echoLog({
-            html: `${I18n('loginYtb')}`,
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!(apiKey && client && request && videoId && likeParams)) {
-          debug('YouTube视频点赞失败：获取参数失败');
-          echoLog({
-            text: '"getYtbToken" failed',
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        if (!doTask && this.whiteList.likes.includes(videoId)) {
-          debug('YouTube视频在白名单中，跳过取消点赞', {
-            videoId: videoId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Youtube.unlikeVideo',
-            id: videoId,
-            before: '[Youtube]'
-          });
-          return true;
-        }
-        const logStatus = echoLog({
-          type: doTask ? 'likingYtbVideo' : 'unlikingYtbVideo',
-          text: videoId,
-          before: '[Youtube]'
-        });
-        const nowTime = parseInt(String((new Date).getTime() / 1e3), 10);
-        const likeVideoData = {
-          context: {
-            client: client,
-            request: {
-              sessionId: request.sessionId,
-              internalExperimentFlags: [],
-              consistencyTokenJars: []
-            },
-            user: {}
-          },
-          target: {
-            videoId: videoId
-          }
-        };
-        if (doTask && !likeParams) {
-          debug('YouTube视频点赞失败：缺少likeParams参数');
-          logStatus.error('Empty likeParams');
-          return false;
-        }
-        if (doTask) {
-          likeVideoData.params = likeParams;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://www.youtube.com/youtubei/v1/like/${doTask ? '' : 'remove'}like?key=${apiKey}`,
-          method: 'POST',
-          headers: {
-            origin: 'https://www.youtube.com',
-            referer: `https://www.youtube.com/watch?v=${videoId}`,
-            'content-type': 'application/json',
-            'x-goog-authuser': '0',
-            'x-goog-visitor-id': client.visitorData,
-            'x-origin': 'https://www.youtube.com',
-            authorization: `SAPISIDHASH ${nowTime}_${sha1(`${nowTime} ${this.#auth.PAPISID} https://www.youtube.com`)}`
-          },
-          data: JSON.stringify(likeVideoData)
-        });
-        if (result !== 'Success') {
-          debug('YouTube视频点赞请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('YouTube视频点赞状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const isLiked = doTask && data.responseText.includes('Added to Liked videos');
-        const isUnliked = !doTask && (data.responseText.includes('Removed from Liked videos') || data.responseText.includes('Dislike removed'));
-        if (isLiked || isUnliked) {
-          debug('YouTube视频点赞操作成功', {
-            doTask: doTask
-          });
-          logStatus.success();
-          if (doTask) {
-            this.tasks.likes = unique([ ...this.tasks.likes, link ]);
-          }
-          return true;
-        }
-        debug('YouTube视频点赞失败，需要更新授权');
-        logStatus.error(I18n('tryUpdateYtbAuth'), true);
-        return false;
-      } catch (error) {
-        debug('处理YouTube视频点赞任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.toggleLikeVideo');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, channelLinks: channelLinks = [], videoLinks: videoLinks = []}) {
-      try {
-        debug('开始处理YouTube链接任务', {
-          doTask: doTask,
-          channelLinksCount: channelLinks.length,
-          videoLinksCount: videoLinks.length
-        });
-        if (!this.#initialized) {
-          debug('YouTube模块未初始化');
-          echoLog({
-            text: I18n('needInit'),
-            before: '[Youtube]'
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        const prom = [];
-        const shouldProcessChannels = doTask && globalOptions.doTask.youtube.channels || !doTask && globalOptions.undoTask.youtube.channels;
-        const shouldProcessVideos = doTask && globalOptions.doTask.youtube.likes || !doTask && globalOptions.undoTask.youtube.likes;
-        if (!shouldProcessChannels) {
-          debug('根据全局选项跳过YouTube频道任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'youtube.channels',
-            before: '[Youtube]'
-          });
-          for (const link of channelLinks) {
-            this.setToggleResult(result, 'channelLinks', link, true);
-          }
-        } else {
-          const normalizeYoutubeLink = link => {
-            if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
-              return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
-            }
-            return link;
-          };
-          for (const link of channelLinks) {
-            const channel = normalizeYoutubeLink(link);
-            if (!channel) {
-              this.setToggleResult(result, 'channelLinks', link, false);
-              continue;
-            }
-            prom.push(this.#toggleChannel({
-              link: channel,
-              doTask: doTask
-            }).then((success => {
-              this.setToggleResult(result, 'channelLinks', link, success);
-              return success;
-            })));
-            await delay(1e3);
-          }
-        }
-        if (!shouldProcessVideos) {
-          debug('根据全局选项跳过YouTube视频任务', {
-            doTask: doTask
-          });
-          echoLog({
-            type: 'globalOptionsSkip',
-            text: 'youtube.likes',
-            before: '[Youtube]'
-          });
-          for (const link of videoLinks) {
-            this.setToggleResult(result, 'videoLinks', link, true);
-          }
-        } else {
-          const normalizeYoutubeLink = link => {
-            if (/^https:\/\/(www\.)?google\.com.*?\/url\?.*?url=https:\/\/www\.youtube\.com\/.*/.test(link)) {
-              return link.match(/url=(https:\/\/www\.youtube\.com\/.*)/)?.[1];
-            }
-            return link;
-          };
-          for (const link of videoLinks) {
-            const video = normalizeYoutubeLink(link);
-            if (!video) {
-              this.setToggleResult(result, 'videoLinks', link, false);
-              continue;
-            }
-            prom.push(this.#toggleLikeVideo({
-              link: video,
-              doTask: doTask
-            }).then((success => {
-              this.setToggleResult(result, 'videoLinks', link, success);
-              return success;
-            })));
-            await delay(1e3);
-          }
-        }
-        await Promise.all(prom);
-        return result;
-      } catch (error) {
-        debug('处理YouTube链接任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Youtube.toggle');
-        return false;
-      }
-    }
-  }
-  class SteamASF {
-    #asfOptions;
-    #botName='asf';
-    #groupInfo;
-    #steamWebApiKey;
-    #steamId;
-    constructor({AsfIpcUrl: AsfIpcUrl, AsfIpcPassword: AsfIpcPassword, AsfBotname: AsfBotname, steamWebApiKey: steamWebApiKey}) {
-      debug('初始化SteamASF实例', {
-        AsfIpcUrl: AsfIpcUrl,
-        AsfBotname: AsfBotname
-      });
-      const asfCommandsUrl = new URL('/Api/Command/', AsfIpcUrl);
-      this.#asfOptions = {
-        url: asfCommandsUrl.href,
-        method: 'POST',
-        responseType: 'json',
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-          Host: asfCommandsUrl.host,
-          Origin: asfCommandsUrl.origin,
-          Referer: asfCommandsUrl.href,
-          Authentication: AsfIpcPassword
-        }
-      };
-      if (AsfBotname) {
-        this.#botName = AsfBotname;
-      }
-      if (steamWebApiKey) {
-        this.#steamWebApiKey = steamWebApiKey;
-      }
-      debug('SteamASF实例初始化完成', {
-        botName: this.#botName
-      });
-    }
-    async init() {
-      try {
-        debug('开始初始化ASF');
-        const logStatus = echoLog({
-          text: I18n('initingASF'),
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: '{"Command":"!stats"}'
-        });
-        if (result !== 'Success') {
-          debug('ASF初始化请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.response?.Success === true && data.response.Message === 'OK' && data.response.Result) {
-          debug('ASF初始化成功');
-          logStatus.success();
-          return true;
-        }
-        if (data?.response?.Result || data?.response?.Message) {
-          debug('ASF初始化失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
-          });
-          logStatus.error(data?.response?.Result || data.response.Message);
-          return false;
-        }
-        debug('ASF初始化失败', {
-          statusText: data?.statusText,
-          status: data?.status
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('ASF初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.init');
-        return false;
-      }
-    }
-    async joinGroup(groupName) {
-      try {
-        debug('开始加入Steam组', {
-          groupName: groupName
-        });
-        const logStatus = echoLog({
-          type: 'joiningSteamGroup',
-          text: groupName,
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!JOINGROUP ${this.#botName} ${groupName}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('加入Steam组请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '已加入', '已申请', 'Joined', 'Applied', 'Присоединился', 'costs' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功加入Steam组', {
-            groupName: groupName
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('加入Steam组失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('加入Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamASF.joinGroup');
-        return false;
-      }
-    }
-    joinOfficialGroup=this.joinGroup;
-    leaveOfficialGroup=this.leaveGroup;
-    async leaveGroup(groupName) {
-      try {
-        debug('开始退出Steam组', {
-          groupName: groupName
-        });
-        if (!this.#groupInfo) {
-          debug('未找到组信息，尝试获取组ID');
-          if (!await this.#getGroupId()) {
-            return false;
-          }
-        }
-        const groupId = await this.#groupInfo[groupName];
-        if (!groupId) {
-          debug('未找到组ID', {
-            groupName: groupName
-          });
-          return false;
-        }
-        const logStatus = echoLog({
-          type: 'leavingSteamGroup',
-          text: groupName,
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!LEAVEGROUP ${this.#botName} ${groupId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('退出Steam组请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功退出Steam组', {
-            groupName: groupName
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('退出Steam组失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('退出Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamASF.leaveGroup');
-        return false;
-      }
-    }
-    async #getGroupId() {
-      try {
-        debug('开始获取Steam组ID列表');
-        const logStatus = echoLog({
-          type: 'gettingSteamGroupId',
-          text: 'All',
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!GROUPLIST ${this.#botName}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('获取Steam组ID列表请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && data.response?.Result?.includes('|')) {
-          this.#groupInfo = Object.fromEntries(data.response.Result.split('\n').map((line => {
-            const [, name, id] = line.trim().split('|');
-            if (name && id) {
-              return [ name, id ];
-            }
-            return null;
-          })).filter((ele => ele)));
-          debug('成功获取Steam组ID列表', {
-            groupCount: Object.keys(this.#groupInfo).length
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('获取Steam组ID列表失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('获取Steam组ID列表时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.getGroupID');
-        return false;
-      }
-    }
-    async addToWishlist(gameId) {
-      try {
-        debug('开始添加游戏到愿望单', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'addingToWishlist',
-          text: gameId,
-          before: '[ASF]'
-        });
-        const gameStatus = await this.#checkGame(gameId);
-        if (gameStatus.wishlist === true) {
-          debug('游戏已在愿望单中', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!ADDWISHLIST ${this.#botName} ${gameId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('添加游戏到愿望单请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功添加游戏到愿望单', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('添加游戏到愿望单失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('添加游戏到愿望单时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamASF.addToWishlist');
-        return false;
-      }
-    }
-    async removeFromWishlist(gameId) {
-      try {
-        debug('开始从愿望单移除游戏', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'removingFromWishlist',
-          text: gameId,
-          before: '[ASF]'
-        });
-        const gameStatus = await this.#checkGame(gameId);
-        if (gameStatus.wishlist === false) {
-          debug('游戏已不在愿望单中', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!REMOVEWISHLIST ${this.#botName} ${gameId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('从愿望单移除游戏请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功从愿望单移除游戏', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('从愿望单移除游戏失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('从愿望单移除游戏时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamASF.removeFromWishlist');
-        return false;
-      }
-    }
-    async toggleFollowGame(gameId, doTask) {
-      try {
-        debug('开始处理游戏关注状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingGame`,
-          text: gameId,
-          before: '[ASF]'
-        });
-        const gameStatus = await this.#checkGame(gameId);
-        if (doTask && gameStatus.followed === true || !doTask && gameStatus.followed === false) {
-          debug('游戏关注状态已符合要求', {
-            gameId: gameId,
-            doTask: doTask,
-            currentStatus: gameStatus.followed
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!${doTask ? '' : 'UN'}FOLLOWGAME ${this.#botName} ${gameId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('处理游戏关注状态请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功处理游戏关注状态', {
-            gameId: gameId,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('处理游戏关注状态失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('处理游戏关注状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'SteamASF.toggleFollowGame');
-        return false;
-      }
-    }
-    async #checkGame(gameId) {
-      try {
-        debug('开始检查游戏状态', {
-          gameId: gameId
-        });
-        const {result: result, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!CHECK ${this.#botName} ${gameId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('检查游戏状态请求失败', {
-            result: result
-          });
-          return {};
-        }
-        if (data?.status !== 200 || !data.response?.Result?.includes(gameId)) {
-          debug('检查游戏状态响应无效', {
-            status: data?.status
-          });
-          return {};
-        }
-        const matchedResult = data.response.Result.split('\n').find((result => result.includes(gameId)))?.split('|');
-        if (!matchedResult || matchedResult.length <= 3) {
-          debug('未找到游戏状态信息', {
-            gameId: gameId
-          });
-          return {};
-        }
-        const status = {
-          wishlist: matchedResult.at(-3).trim() === '√' || matchedResult.at(-2).trim() === '√',
-          followed: matchedResult.at(-1).trim() === '√'
-        };
-        debug('成功获取游戏状态', {
-          gameId: gameId,
-          status: status
-        });
-        return status;
-      } catch (error) {
-        debug('检查游戏状态时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamASF.checkGame');
-        return {};
-      }
-    }
-    async toggleCurator(curatorId, doTask = true) {
-      try {
-        debug('开始处理鉴赏家关注状态', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'followingCurator' : 'unfollowingCurator',
-          text: curatorId,
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!${doTask ? '' : 'UN'}FOLLOWCURATOR ${this.#botName} ${curatorId}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('处理鉴赏家关注状态请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功处理鉴赏家关注状态', {
-            curatorId: curatorId,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        if (data?.status === 200) {
-          debug('处理鉴赏家关注状态失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
-          });
-          logStatus.error(I18n('curatorLimitNotice'));
-          return false;
-        }
-        debug('处理鉴赏家关注状态失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('处理鉴赏家关注状态时发生错误', {
-          error: error,
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleCurator');
-        return false;
-      }
-    }
-    async addLicense(id) {
-      try {
-        debug('开始添加许可证', {
-          id: id
-        });
-        const [type, ids] = id.split('-');
-        const idsArr = ids.split(',');
-        if (type === 'appid') {
-          const logStatus = echoLog({
-            type: 'addingFreeLicense',
-            text: ids,
-            before: '[ASF]'
-          });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            ...this.#asfOptions,
-            data: JSON.stringify({
-              Command: `!addlicense ${this.#botName} ${idsArr.map((id => `app/${id}`)).join(',')}`
-            })
-          });
-          if (result !== 'Success') {
-            debug('添加应用许可证请求失败', {
-              result: result,
-              statusText: statusText,
-              status: status
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            return false;
-          }
-          if (data?.status === 200 && [ 'AlreadyPurchased', 'OK' ].find((text => data.response?.Result?.includes(text)))) {
-            debug('成功添加应用许可证', {
-              ids: ids
-            });
-            logStatus.success();
-            return true;
-          }
-          debug('添加应用许可证失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
-          });
-          logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (type === 'subid') {
-          const logStatus = echoLog({
-            type: 'addingFreeLicenseSubid',
-            text: ids,
-            before: '[ASF]'
-          });
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            ...this.#asfOptions,
-            data: JSON.stringify({
-              Command: `!addlicense ${this.#botName} ${idsArr.map((id => `sub/${id}`)).join(',')}`
-            })
-          });
-          if (result !== 'Success') {
-            debug('添加订阅许可证请求失败', {
-              result: result,
-              statusText: statusText,
-              status: status
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            return false;
-          }
-          if (data?.status === 200 && data.response?.Result) {
-            const resultLines = data.response.Result.split('\n');
-            debug('处理订阅许可证结果', {
-              resultLines: resultLines
-            });
-            idsArr.forEach((subid => {
-              const targetLine = resultLines.find((text => text.includes(subid)));
-              if (targetLine && [ '成功', 'Success', 'Успех' ].find((text => targetLine.includes(text)))) {
-                debug('成功添加订阅许可证', {
-                  subid: subid
-                });
-                echoLog({
-                  before: '[ASF]'
-                }).success(targetLine);
-              } else {
-                debug('添加订阅许可证失败', {
-                  subid: subid,
-                  targetLine: targetLine
-                });
-                echoLog({
-                  before: '[ASF]'
-                }).error(targetLine);
-              }
-            }));
-            return true;
-          }
-          debug('添加订阅许可证失败', {
-            result: data?.response?.Result,
-            message: data?.response?.Message
-          });
-          logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('无效的许可证类型', {
-          type: type
-        });
-        return false;
-      } catch (error) {
-        debug('添加许可证时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamASF.addLicense');
-        return false;
-      }
-    }
-    async requestPlayTestAccess(id) {
-      try {
-        debug('开始请求游戏试玩权限', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'requestingPlayTestAccess',
-          text: id,
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!REQUESTACCESS ${this.#botName} ${id}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('请求游戏试玩权限请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '成功', 'Success', 'Успех' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功请求游戏试玩权限', {
-            id: id
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('请求游戏试玩权限失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('请求游戏试玩权限时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamASF.requestPlayTestAccess');
-        return false;
-      }
-    }
-    async playGames(ids) {
-      try {
-        debug('开始挂游戏时长', {
-          ids: ids
-        });
-        const logStatus = echoLog({
-          text: I18n('playingGames', ids),
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!play ${this.#botName} ${ids}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('挂游戏时长请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '正在运行', '正在掛', 'Playing', 'Играет' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功开始挂游戏时长', {
-            ids: ids
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('开始挂游戏时长失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('挂游戏时长时发生错误', {
-          error: error,
-          ids: ids
-        });
-        throwError(error, 'SteamASF.playGames');
-        return false;
-      }
-    }
-    async getSteamIdASF() {
-      try {
-        debug('开始获取Steam ID');
-        const logStatus = echoLog({
-          text: I18n('gettingSteamId'),
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!steamid ${this.#botName}`
-          })
-        });
-        if (result !== 'Success' || data?.status !== 200) {
-          debug('获取Steam ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return '';
-        }
-        if (data.response?.Result) {
-          const steamId = data.response.Result.trim()?.split(/\s+/)?.at(-1);
-          if (steamId) {
-            debug('成功获取Steam ID', steamId);
-            logStatus.success();
-            return steamId;
-          }
-        }
-        debug('获取Steam ID失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return '';
-      } catch (error) {
-        debug('获取Steam ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.getSteamIdASF');
-        return '';
-      }
-    }
-    async getSteamIdWeb() {
-      try {
-        debug('开始获取Steam ID');
-        const logStatus = echoLog({
-          text: I18n('gettingSteamId'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com',
-          method: 'GET',
-          headers: {
-            host: 'store.steampowered.com'
-          }
-        });
-        if (result !== 'Success' || data?.status !== 200) {
-          debug('获取Steam ID请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return '';
-        }
-        const steamId = data.responseText.match(/steamid&quot;:&quot;(\d+)/)?.[1];
-        if (steamId) {
-          debug('成功获取Steam ID', steamId);
-          logStatus.success();
-          return steamId;
-        }
-        debug('获取Steam ID失败', {
-          data: data
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return '';
-      } catch (error) {
-        debug('获取Steam ID时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.getSteamIdWeb');
-        return '';
-      }
-    }
-    async getSteamId() {
-      const steamId = await this.getSteamIdWeb();
-      if (steamId) {
-        return steamId;
-      }
-      return this.getSteamIdASF();
-    }
-    async checkPlayStatus(ids) {
-      try {
-        debug('开始检查挂游戏时长状态');
-        if (!this.#steamWebApiKey) {
-          debug('未设置Steam Web API Key');
-          return 'skip';
-        }
-        if (!this.#steamId) {
-          const steamId = await this.getSteamId();
-          if (!steamId) {
-            debug('未获取到Steam ID');
-            return 'skip';
-          }
-          this.#steamId = steamId;
-        }
-        const logStatus = echoLog({
-          text: I18n('checkingPlayStatus'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${this.#steamWebApiKey}&steamids=${this.#steamId}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        if (result !== 'Success') {
-          debug('检查挂游戏时长状态请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200) {
-          debug('挂游戏时长状态正常', {
-            data: data
-          });
-          const playedIds = new Set(data.responseText?.match(/\d+/g));
-          const neededIds = new Set(ids.match(/\d+/g));
-          if (neededIds.intersection(playedIds).size > 0) {
-            logStatus.success();
-            return true;
-          }
-          logStatus.warning(I18n('noPlayStatus'));
-          return false;
-        }
-        debug('挂游戏时长状态异常', {
-          data: data
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('检查挂游戏时长状态时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.checkPlayStatus');
-        return false;
-      }
-    }
-    async stopPlayGames() {
-      try {
-        debug('开始停止挂游戏时长');
-        const logStatus = echoLog({
-          text: I18n('stoppingPlayGames'),
-          before: '[ASF]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          ...this.#asfOptions,
-          data: JSON.stringify({
-            Command: `!resume ${this.#botName}`
-          })
-        });
-        if (result !== 'Success') {
-          debug('停止挂游戏时长请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status === 200 && [ '已经恢复', '已恢复', '已經繼續', '已繼續', 'resumed', 'возобновлён' ].find((text => data.response?.Result?.includes(text)))) {
-          debug('成功停止挂游戏时长');
-          logStatus.success();
-          return true;
-        }
-        debug('停止挂游戏时长失败', {
-          result: data?.response?.Result,
-          message: data?.response?.Message
-        });
-        logStatus.error(`Error:${data?.response?.Result || data?.response?.Message || data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('停止挂游戏时长时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamASF.stopPlayGames');
-        return false;
-      }
-    }
-    async #unsupportted(name) {
-      try {
-        debug('尝试使用不支持的功能', {
-          name: name
-        });
-        echoLog({
-          before: '[ASF]'
-        }).warning(I18n('ASFNotSupportted', name));
-        return false;
-      } catch (error) {
-        debug('处理不支持的功能时发生错误', {
-          error: error,
-          name: name
-        });
-        throwError(error, 'SteamASF.unsupportted');
-        return false;
-      }
-    }
-    async toggleForum() {
-      return this.#unsupportted('toggleForum');
-    }
-    async toggleFavoriteWorkshop() {
-      return this.#unsupportted('toggleFavoriteWorkshop');
-    }
-    async voteUpWorkshop() {
-      return this.#unsupportted('voteUpWorkshop');
-    }
-    async likeAnnouncement() {
-      return this.#unsupportted('likeAnnouncement');
-    }
-  }
-  class SteamWeb {
-    #cache={
-      ...{
-        group: {},
-        officialGroup: {},
-        forum: {},
-        workshop: {},
-        curator: {}
-      },
-      ...GM_getValue('steamCache')
-    };
-    #auth={};
-    #storeInitialized=false;
-    #communityInitialized=false;
-    #area='CN';
-    #oldArea;
-    #areaStatus='end';
-    constructor() {
-      debug('初始化SteamWeb实例');
-    }
-    async init(type = 'all') {
-      try {
-        debug('开始初始化SteamWeb', {
-          type: type
-        });
-        const initStoreResult = await this.initStore();
-        debug('Steam商店初始化完成', {
-          initStoreResult: initStoreResult
-        });
-        if (type === 'store') {
-          return initStoreResult;
-        }
-        const initCommunityResult = await this.initCommunity(initStoreResult);
-        debug('Steam社区初始化完成', {
-          initCommunityResult: initCommunityResult
-        });
-        return initCommunityResult;
-      } catch (error) {
-        debug('SteamWeb初始化发生错误', {
-          error: error,
-          type: type
-        });
-        throwError(error, 'SteamWeb.init');
-        return false;
-      }
-    }
-    async initStore() {
-      try {
-        debug('开始初始化Steam商店');
-        if (this.#storeInitialized) {
-          return true;
-        }
-        let storeInitialized = await this.#updateStoreAuth();
-        if (!storeInitialized) {
-          storeInitialized = await this.#updateStoreAuthTab();
-        }
-        this.#storeInitialized = storeInitialized;
-        if (!this.#storeInitialized) {
-          echoLog({
-            before: '[Web]'
-          }).error(I18n('initFailed', 'Steam'));
-          return false;
-        }
-        echoLog({
-          before: '[Web]'
-        }).success(I18n('initSuccess', 'SteamStore'));
-        debug('Steam商店初始化完成');
-        return true;
-      } catch (error) {
-        debug('Steam商店初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.initStore');
-        return false;
-      }
-    }
-    async initCommunity(initStoreResult) {
-      try {
-        debug('开始初始化Steam社区');
-        if (this.#communityInitialized) {
-          return true;
-        }
-        let communityInitialized = await this.#updateCommunityAuth(initStoreResult);
-        if (!communityInitialized) {
-          communityInitialized = await this.#updateCommunityAuthTab();
-          GM_setValue('steamCommunityAuth', null);
-        }
-        this.#communityInitialized = communityInitialized;
-        if (!this.#communityInitialized) {
-          echoLog({
-            before: '[Web]'
-          }).error(I18n('initFailed', 'Steam'));
-          return false;
-        }
-        echoLog({
-          before: '[Web]'
-        }).success(I18n('initSuccess', 'SteamCommunity'));
-        debug('Steam社区初始化完成');
-        return true;
-      } catch (error) {
-        debug('Steam社区初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.initCommunity');
-        return false;
-      }
-    }
-    async #refreshToken(type = 'steamStore') {
-      try {
-        debug('开始刷新令牌', {
-          type: type
-        });
-        const host = {
-          steamStore: 'store.steampowered.com',
-          steamCommunity: 'steamcommunity.com'
-        };
-        const logStatus = echoLog({
-          text: I18n('refreshingToken', I18n(type)),
-          before: '[Web]'
-        });
-        debug('准备刷新令牌请求数据');
-        const formData = new FormData;
-        formData.append('redir', `https://${host[type]}/`);
-        debug('发送刷新令牌请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://login.steampowered.com/jwt/ajaxrefresh',
-          method: 'POST',
-          responseType: 'json',
-          headers: {
-            Host: 'login.steampowered.com',
-            Origin: `https://${host[type]}`,
-            Referer: `https://${host[type]}/`
-          },
-          data: formData
-        });
-        debug('收到刷新令牌响应', {
-          result: result,
-          status: status,
-          statusText: statusText
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (!data?.response?.success) {
-          debug('响应不成功', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('开始设置新令牌');
-        if (!await this.#setToken(data.response, type)) {
-          debug('设置新令牌失败');
-          logStatus.error('Error');
-          return false;
-        }
-        debug('成功刷新令牌');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('刷新令牌时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.refreshToken');
-        return false;
-      }
-    }
-    async #setToken(param, type) {
-      try {
-        const host = {
-          steamStore: 'store.steampowered.com',
-          steamCommunity: 'steamcommunity.com'
-        };
-        debug('开始设置Steam令牌', {
-          type: type
-        });
-        const logStatus = echoLog({
-          text: I18n('settingToken', I18n(type)),
-          before: '[Web]'
-        });
-        debug('准备表单数据');
-        const formData = new FormData;
-        formData.append('steamID', param.steamID);
-        formData.append('nonce', param.nonce);
-        formData.append('redir', param.redir);
-        formData.append('auth', param.auth);
-        debug('表单数据准备完成', {
-          steamID: param.steamID,
-          nonce: param.nonce,
-          redir: param.redir
-        });
-        debug('发送设置令牌请求');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://${host[type]}/login/settoken`,
-          method: 'POST',
-          headers: {
-            Accept: 'application/json, text/plain, */*',
-            Host: host[type],
-            Origin: `https://${host[type]}`
-          },
-          data: formData
-        });
-        debug('收到设置令牌响应', {
-          result: result,
-          status: status,
-          statusText: statusText
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功设置令牌');
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('设置令牌时发生错误', {
-          error: error,
-          type: type
-        });
-        throwError(error, 'SteamWeb.setToken');
-        return false;
-      }
-    }
-    async #updateStoreAuth(retry = false) {
-      try {
-        debug('开始更新Steam商店身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamStore')),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/',
-          method: 'GET',
-          headers: {
-            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Upgrade-Insecure-Requests': '1'
-          },
-          redirect: 'manual'
-        });
-        debug('收到Steam商店身份验证响应', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (data?.status !== 200) {
-          if (![ 301, 302 ].includes(data?.status)) {
-            debug('Steam商店身份验证状态错误', {
-              status: data?.status
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            return false;
-          }
-          if (!await this.#refreshToken('steamStore')) {
-            debug('Steam商店身份验证刷新失败');
-            logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-            return false;
-          }
-          if (retry) {
-            debug('Steam商店身份验证重试失败');
-            logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-            return false;
-          }
-          debug('Steam商店身份验证重试中');
-          logStatus.warning(I18n('retry'));
-          return this.#updateStoreAuth(true);
-        }
-        if (!data.responseText.includes('data-miniprofile=')) {
-          if (await this.#refreshToken('steamStore')) {
-            debug('Steam商店身份验证需要重试');
-            logStatus.warning(I18n('retry'));
-            if (retry) {
-              debug('Steam商店身份验证重试次数超限');
-              logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-              return false;
-            }
-            return this.#updateStoreAuth(true);
-          }
-          debug('Steam商店身份验证失败：需要登录');
-          logStatus.error(`Error:${I18n('needLoginSteamStore')}`, true);
-          return false;
-        }
-        const storeSessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
-        if (!storeSessionID) {
-          debug('Steam商店身份验证失败：获取sessionID失败');
-          logStatus.error('Error: Get "sessionID" failed');
-          return false;
-        }
-        this.#auth.storeSessionID = storeSessionID;
-        debug('Steam商店身份验证更新成功', {
-          storeSessionID: storeSessionID
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Steam商店身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateStoreAuth');
-        return false;
-      }
-    }
-    async #updateStoreAuthTab() {
-      try {
-        debug('开始通过新标签页更新Steam商店身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamStoreTab')),
-          before: '[Web]'
-        });
-        return await new Promise((resolve => {
-          GM_deleteValue('steamStoreAuth');
-          GM_setValue('ATv4_updateStoreAuth', true);
-          const newTab = GM_openInTab('https://store.steampowered.com/', {
-            active: true,
-            setParent: true
-          });
-          debug('打开Steam商店新标签页');
-          newTab.name = 'ATv4_updateStoreAuth';
-          const listenerId = GM_addValueChangeListener('steamStoreAuth', ((key, oldValue, newValue) => {
-            debug('监听到Steam商店身份验证值变化', {
-              oldValue: oldValue,
-              newValue: newValue
-            });
-            GM_removeValueChangeListener(listenerId);
-            GM_deleteValue('ATv4_updateStoreAuth');
-            newTab?.close();
-            window.focus();
-            if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-              this.#auth.storeSessionID = newValue.storeSessionID;
-              debug('Steam商店身份验证更新成功', {
-                storeSessionID: newValue.storeSessionID
-              });
-              logStatus.success();
-              resolve(true);
-              return;
-            }
-            debug('Steam商店身份验证更新失败');
-            logStatus.error('Failed');
-            resolve(false);
-          }));
-          newTab.onclose = () => {
-            debug('Steam商店新标签页已关闭');
-            GM_deleteValue('ATv4_updateStoreAuth');
-          };
-        }));
-      } catch (error) {
-        debug('通过新标签页更新Steam商店身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateStoreAuthTab');
-        return false;
-      }
-    }
-    async #updateCommunityAuthTab() {
-      try {
-        debug('开始通过新标签页更新Steam社区身份验证');
-        const logStatus = echoLog({
-          text: I18n('updatingAuth', I18n('steamCommunityTab')),
-          before: '[Web]'
-        });
-        return await new Promise((resolve => {
-          GM_deleteValue('steamCommunityAuth');
-          GM_setValue('ATv4_updateCommunityAuth', true);
-          const newTab = GM_openInTab('https://steamcommunity.com/my', {
-            active: true,
-            setParent: true
-          });
-          debug('打开Steam社区新标签页');
-          newTab.name = 'ATv4_updateCommunityAuth';
-          const listenerId = GM_addValueChangeListener('steamCommunityAuth', ((key, oldValue, newValue) => {
-            debug('监听到Steam社区身份验证值变化', {
-              oldValue: oldValue,
-              newValue: newValue
-            });
-            GM_removeValueChangeListener(listenerId);
-            GM_deleteValue('ATv4_updateCommunityAuth');
-            newTab?.close();
-            window.focus();
-            if (newValue && JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-              this.#auth.steam64Id = newValue.steam64Id;
-              this.#auth.communitySessionID = newValue.communitySessionID;
-              debug('Steam社区身份验证更新成功', {
-                steam64Id: newValue.steam64Id,
-                communitySessionID: newValue.communitySessionID
-              });
-              logStatus.success();
-              resolve(true);
-              return;
-            }
-            debug('Steam社区身份验证更新失败');
-            logStatus.error('Failed');
-            resolve(false);
-          }));
-          newTab.onclose = () => {
-            debug('Steam社区新标签页已关闭');
-            GM_deleteValue('ATv4_updateCommunityAuth');
-          };
-        }));
-      } catch (error) {
-        debug('通过新标签页更新Steam社区身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateCommunityAuthTab');
-        return false;
-      }
-    }
-    async #updateCommunityAuth(initStoreResult, retry = false) {
-      try {
-        debug('开始更新Steam社区身份验证');
-        const logStatus = echoLog({
-          text: I18n('gettingUserInfo'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://steamcommunity.com/my',
-          method: 'GET',
-          headers: {
-            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-            Host: 'steamcommunity.com',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate'
-          },
-          redirect: 'follow'
-        });
-        debug('收到Steam社区身份验证响应', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (data?.status !== 200) {
-          debug('Steam社区身份验证状态错误', {
-            status: data?.status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data.finalUrl.includes('https://steamcommunity.com/login/home')) {
-          if (initStoreResult) {
-            if (await this.#refreshToken('steamCommunity')) {
-              debug('Steam社区身份验证需要重试');
-              logStatus.warning(I18n('retry'));
-              if (retry) {
-                debug('Steam社区身份验证重试次数超限');
-                logStatus.error(`Error:${I18n('needLoginSteamCommunity')}`, true);
-                return false;
-              }
-              return this.#updateCommunityAuth(initStoreResult, retry);
-            }
-          }
-          debug('Steam社区身份验证失败：需要登录');
-          logStatus.error(`Error:${I18n('needLoginSteamCommunity')}`, true);
-          return false;
-        }
-        const steam64Id = data.responseText.match(/g_steamID = "(.+?)";/)?.[1];
-        const communitySessionID = data.responseText.match(/g_sessionID = "(.+?)";/)?.[1];
-        if (!steam64Id || !communitySessionID) {
-          debug('Steam社区身份验证失败：获取身份信息失败');
-          logStatus.error('Error: Get "sessionID" failed');
-          return false;
-        }
-        this.#auth.steam64Id = steam64Id;
-        this.#auth.communitySessionID = communitySessionID;
-        debug('Steam社区身份验证更新成功', {
-          steam64Id: steam64Id,
-          communitySessionID: communitySessionID
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('更新Steam社区身份验证时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.updateCommunityAuth');
-        return false;
-      }
-    }
-    async #getAreaInfo() {
-      try {
-        debug('开始获取Steam地区信息');
-        const logStatus = echoLog({
-          text: I18n('gettingAreaInfo'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/cart/',
-          method: 'GET'
-        });
-        debug('获取地区信息请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success' || data?.status !== 200) {
-          debug('获取地区信息失败', {
-            result: result,
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(result === 'Success' ? `Error:${data?.statusText}(${data?.status})` : `${result}:${statusText}(${status})`);
-          return {};
-        }
-        const cartConfigRaw = data.responseText.match(/data-cart_config="(.*?)"/)?.[1];
-        debug('cartConfigRaw提取结果', {
-          cartConfigRaw: cartConfigRaw
-        });
-        const temp = document.createElement('div');
-        temp.innerHTML = cartConfigRaw || '{}';
-        const cartConfigStr = temp.textContent || temp.innerText;
-        let cartConfig;
-        try {
-          cartConfig = JSON.parse(cartConfigStr);
-          debug('cartConfig解析成功', {
-            cartConfig: cartConfig
-          });
-        } catch (error) {
-          debug('cartConfig解析失败', {
-            error: error
-          });
-          logStatus.error('Error: get country info filed');
-          console.error(error);
-          return {};
-        }
-        if (!cartConfig.rgUserCountryOptions) {
-          debug('未找到可更换地区');
-          logStatus.warning('Warning: Area cannot be changed');
-          return {};
-        }
-        const userInfoRaw = data.responseText.match(/data-userinfo="(.*?)"/)?.[1];
-        debug('userInfoRaw提取结果', {
-          userInfoRaw: userInfoRaw
-        });
-        const temp1 = document.createElement('div');
-        temp1.innerHTML = userInfoRaw || '{}';
-        const userInfoStr = temp1.textContent || temp1.innerText;
-        let userInfo;
-        try {
-          userInfo = JSON.parse(userInfoStr);
-          debug('userInfo解析成功', {
-            userInfo: userInfo
-          });
-        } catch (error) {
-          debug('userInfo解析失败', {
-            error: error
-          });
-          logStatus.error('Error: get country info filed');
-          console.error(error);
-          return {};
-        }
-        const currentArea = userInfo.country_code;
-        const areas = Object.keys(cartConfig.rgUserCountryOptions).filter((area => area !== 'help'));
-        debug('地区信息提取', {
-          currentArea: currentArea,
-          areas: areas
-        });
-        if (!currentArea || areas.length === 0) {
-          debug('未获取到当前地区或可更换地区为空', {
-            currentArea: currentArea,
-            areas: areas
-          });
-          logStatus.error('Error: get country info filed');
-          return {};
-        }
-        this.#area = currentArea;
-        debug('获取地区信息成功', {
-          currentArea: currentArea,
-          areas: areas
-        });
-        logStatus.success();
-        return {
-          currentArea: currentArea,
-          areas: areas
-        };
-      } catch (error) {
-        debug('获取地区信息时发生异常', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.getAreaInfo');
-        return {};
-      }
-    }
-    async #changeArea(area) {
-      try {
-        debug('开始更换Steam地区', {
-          area: area
-        });
-        if (this.#areaStatus === 'waiting') {
-          debug('当前地区状态为waiting，等待状态改变');
-          await new Promise((resolve => {
-            const checker = setInterval((() => {
-              if (this.#areaStatus !== 'waiting') {
-                clearInterval(checker);
-                resolve(true);
-              }
-            }));
-          }));
-        }
-        if (this.#area === area || !area && this.#area !== 'CN') {
-          debug('无需更换地区', {
-            currentArea: this.#area,
-            targetArea: area
-          });
-          return true;
-        }
-        this.#areaStatus = 'waiting';
-        let aimedArea = area;
-        if (!aimedArea) {
-          debug('未指定目标地区，自动获取可用地区');
-          const {currentArea: currentArea, areas: areas} = await this.#getAreaInfo();
-          debug('获取到地区信息', {
-            currentArea: currentArea,
-            areas: areas
-          });
-          if (!currentArea || !areas) {
-            debug('获取地区信息失败', {
-              currentArea: currentArea,
-              areas: areas
-            });
-            this.#areaStatus = 'error';
-            return false;
-          }
-          if (currentArea !== 'CN') {
-            debug('当前地区不是CN，无需更换', {
-              currentArea: currentArea
-            });
-            this.#areaStatus = 'skip';
-            echoLog({
-              text: I18n('notNeededChangeArea'),
-              before: '[Web]'
-            });
-            return 'skip';
-          }
-          const anotherArea = areas.filter((area => area && area !== 'CN'));
-          debug('可更换的其他地区', {
-            anotherArea: anotherArea
-          });
-          if (!anotherArea || anotherArea.length === 0) {
-            debug('没有可用的其他地区');
-            this.#areaStatus = 'noAnotherArea';
-            echoLog({
-              text: I18n('noAnotherArea'),
-              before: '[Web]'
-            });
-            return false;
-          }
-          [aimedArea] = anotherArea;
-          debug('选定目标地区', {
-            aimedArea: aimedArea
-          });
-        }
-        const logStatus = echoLog({
-          text: I18n('changingArea', aimedArea),
-          before: '[Web]'
-        });
-        debug('发送更换地区请求', {
-          aimedArea: aimedArea
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/country/setcountry',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            cc: aimedArea,
-            sessionid: this.#auth.storeSessionID
-          })
-        });
-        debug('更换地区请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success' || data?.status !== 200 || data.responseText !== 'true') {
-          debug('更换地区失败', {
-            result: result,
-            status: data?.status,
-            statusText: data?.statusText,
-            responseText: data?.responseText
-          });
-          this.#areaStatus = 'error';
-          logStatus.error(result === 'Success' ? `Error:${data?.statusText}(${data?.status})` : `${result}:${statusText}(${status})`);
-          return 'CN';
-        }
-        const {currentArea: currentArea} = await this.#getAreaInfo();
-        debug('更换后获取到的当前地区', {
-          currentArea: currentArea
-        });
-        if (currentArea) {
-          this.#area = currentArea;
-          if (!this.#oldArea) {
-            this.#oldArea = currentArea;
-          }
-        }
-        if (currentArea !== aimedArea) {
-          debug('更换后当前地区与目标地区不符', {
-            currentArea: currentArea,
-            aimedArea: aimedArea
-          });
-          this.#areaStatus = 'error';
-          logStatus.error('Error: change country filed');
-          return 'CN';
-        }
-        this.#areaStatus = 'success';
-        debug('更换地区成功', {
-          currentArea: currentArea
-        });
-        logStatus.success();
-        return currentArea;
-      } catch (error) {
-        debug('更换地区时发生异常', {
-          error: error
-        });
-        this.#areaStatus = 'error';
-        throwError(error, 'SteamWeb.changeArea');
-        return false;
-      }
-    }
-    async joinGroup(groupName) {
-      try {
-        debug('开始加入Steam组', {
-          groupName: groupName
-        });
-        const logStatus = echoLog({
-          type: 'joiningSteamGroup',
-          text: groupName,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/groups/${groupName}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            action: 'join',
-            sessionID: this.#auth.communitySessionID
-          })
-        });
-        if (result !== 'Success') {
-          debug('加入Steam组请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.responseText.includes('grouppage_join_area')) {
-          debug('加入Steam组失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功加入Steam组', {
-          groupName: groupName
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('加入Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamWeb.joinGroup');
-        return false;
-      }
-    }
-    async leaveGroup(groupName) {
-      try {
-        debug('开始退出Steam组', {
-          groupName: groupName
-        });
-        const groupId = await this.#getGroupId(groupName);
-        if (!groupId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: 'leavingSteamGroup',
-          text: groupName,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/profiles/${this.#auth.steam64Id}/home_process`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            sessionID: this.#auth.communitySessionID,
-            action: 'leaveGroup',
-            groupId: groupId
-          })
-        });
-        if (result !== 'Success') {
-          debug('退出Steam组请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || !data.finalUrl.includes('groups')) {
-          debug('退出Steam组失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const hasGroupLink = $(data.responseText.replace(/<img.*?>/g, '').toLowerCase()).find(`a[href='https://steamcommunity.com/groups/${groupName.toLowerCase()}']`).length > 0;
-        if (hasGroupLink) {
-          debug('Error: Group link still exists');
-          return false;
-        }
-        debug('成功退出Steam组', {
-          groupName: groupName
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('退出Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamWeb.leaveGroup');
-        return false;
-      }
-    }
-    async #getGroupId(groupName) {
-      try {
-        debug('开始获取Steam组ID', {
-          groupName: groupName
-        });
-        const logStatus = echoLog({
-          type: 'gettingSteamGroupId',
-          text: groupName,
-          before: '[Web]'
-        });
-        const cachedGroupId = this.#cache.group[groupName];
-        if (cachedGroupId) {
-          debug('从缓存中获取到组ID', {
-            groupName: groupName,
-            cachedGroupId: cachedGroupId
-          });
-          logStatus.success();
-          return cachedGroupId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/groups/${groupName}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取组ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取组ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取组ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedGroupId = data.responseText.match(/OpenGroupChat\( '([0-9]+)'/)?.[1];
-        debug('正则提取组ID结果', {
-          matchedGroupId: matchedGroupId
-        });
-        if (!matchedGroupId) {
-          debug('未能提取到组ID', {
-            groupName: groupName
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('group', groupName, matchedGroupId);
-        debug('组ID已缓存', {
-          groupName: groupName,
-          matchedGroupId: matchedGroupId
-        });
-        logStatus.success();
-        return matchedGroupId;
-      } catch (error) {
-        debug('获取组ID时发生异常', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'SteamWeb.getGroupID');
-        return false;
-      }
-    }
-    async joinOfficialGroup(gameId) {
-      try {
-        debug('开始加入Steam官方组', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'joiningSteamOfficialGroup',
-          text: gameId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}?action=join&sessionID=${this.#auth.communitySessionID}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        if (result !== 'Success') {
-          debug('加入Steam官方组请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.responseText.includes('id="publicGroupJoin"')) {
-          debug('加入Steam官方组失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const groupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
-        if (groupId) {
-          this.#setCache('officialGroup', gameId, groupId);
-        }
-        debug('成功加入Steam官方组', {
-          gameId: gameId
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('加入Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.joinOfficialGroup');
-        return false;
-      }
-    }
-    async leaveOfficialGroup(gameId) {
-      try {
-        debug('开始退出Steam官方组', {
-          gameId: gameId
-        });
-        const groupId = await this.#getOfficialGroupId(gameId);
-        if (!groupId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: 'leavingSteamOfficialGroup',
-          text: gameId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/profiles/${this.#auth.steam64Id}/home_process`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            sessionID: this.#auth.communitySessionID,
-            action: 'leaveGroup',
-            groupId: groupId
-          })
-        });
-        if (result !== 'Success') {
-          debug('退出Steam官方组请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('退出Steam官方组失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        if (resultR !== 'Success') {
-          debug('退出Steam官方组时发生错误', {
-            error: resultR,
-            status: statusR,
-            statusText: statusTextR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200 || !dataR.responseText.includes('id="publicGroupJoin"')) {
-          debug('退出Steam官方组失败', {
-            status: dataR?.status
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        debug('成功退出Steam官方组', {
-          gameId: gameId
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('退出Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.leaveOfficialGroup');
-        return false;
-      }
-    }
-    async #getOfficialGroupId(gameId) {
-      try {
-        debug('开始获取Steam官方群组ID', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'gettingSteamOfficialGroupId',
-          text: gameId,
-          before: '[Web]'
-        });
-        const cachedGroupId = this.#cache.officialGroup[gameId];
-        if (cachedGroupId) {
-          debug('从缓存中获取到官方群组ID', {
-            gameId: gameId,
-            cachedGroupId: cachedGroupId
-          });
-          logStatus.success();
-          return cachedGroupId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/games/${gameId}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取官方群组ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取官方群组ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取官方群组ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedGroupId = data.responseText.match(/steam:\/\/friends\/joinchat\/([0-9]+)/)?.[1];
-        debug('正则提取官方群组ID结果', {
-          matchedGroupId: matchedGroupId
-        });
-        if (!matchedGroupId) {
-          debug('未能提取到官方群组ID', {
-            gameId: gameId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('officialGroup', gameId, matchedGroupId);
-        debug('官方群组ID已缓存', {
-          gameId: gameId,
-          matchedGroupId: matchedGroupId
-        });
-        logStatus.success();
-        return matchedGroupId;
-      } catch (error) {
-        debug('获取官方群组ID时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.getGroupID');
-        return false;
-      }
-    }
-    async addToWishlist(gameId) {
-      try {
-        debug('开始添加游戏到愿望单', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'addingToWishlist',
-          text: gameId,
-          before: '[Web]'
-        });
-        const {result: result, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/api/addtowishlist',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            sessionid: this.#auth.storeSessionID,
-            appid: gameId
-          }),
-          dataType: 'json'
-        });
-        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
-          debug('成功添加游戏到愿望单', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
-          method: 'GET'
-        });
-        if (resultR !== 'Success') {
-          debug('添加游戏到愿望单请求失败', {
-            result: resultR,
-            status: statusR,
-            statusText: statusTextR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('添加游戏到愿望单失败', {
-            status: dataR?.status
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        if (this.#area === 'CN' && dataR.responseText.includes('id="error_box"')) {
-          debug('changeAreaNotice');
-          if (!await this.#changeArea()) {
-            return false;
-          }
-          return await this.addToWishlist(gameId);
-        }
-        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('class="already_in_library"')) {
-          debug('成功添加游戏到愿望单', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        if (dataR.responseText.includes('class="queue_actions_ctn"') && dataR.responseText.includes('id="add_to_wishlist_area_success" style="display: none;') || !dataR.responseText.includes('class="queue_actions_ctn"')) {
-          debug('添加游戏到愿望单失败', {
-            status: dataR.statusText
-          });
-          logStatus.error(`Error:${dataR.statusText}(${dataR.status})`);
-          return false;
-        }
-        debug('成功添加游戏到愿望单', {
-          gameId: gameId
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('添加游戏到愿望单时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.addToWishlist');
-        return false;
-      }
-    }
-    async removeFromWishlist(gameId) {
-      try {
-        debug('开始从愿望单移除游戏', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'removingFromWishlist',
-          text: gameId,
-          before: '[Web]'
-        });
-        const {result: result, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/api/removefromwishlist',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            sessionid: this.#auth.storeSessionID,
-            appid: gameId
-          }),
-          dataType: 'json'
-        });
-        if (result === 'Success' && data?.status === 200 && data.response?.success === true) {
-          debug('成功从愿望单移除游戏', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        const {result: resultR, statusText: statusTextR, status: statusR, data: dataR} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
-          method: 'GET'
-        });
-        if (resultR !== 'Success') {
-          debug('从愿望单移除游戏请求失败', {
-            result: resultR,
-            status: statusR,
-            statusText: statusTextR
-          });
-          logStatus.error(`${resultR}:${statusTextR}(${statusR})`);
-          return false;
-        }
-        if (dataR?.status !== 200) {
-          debug('从愿望单移除游戏失败', {
-            status: dataR?.status
-          });
-          logStatus.error(`Error:${dataR?.statusText}(${dataR?.status})`);
-          return false;
-        }
-        if (this.#area === 'CN' && dataR.responseText.includes('id="error_box"')) {
-          debug('changeAreaNotice');
-          const result = await this.#changeArea();
-          if (!result || result === 'CN' || result === 'skip') {
-            return false;
-          }
-          return await this.removeFromWishlist(gameId);
-        }
-        if (dataR.responseText.includes('class="queue_actions_ctn"') && (dataR.responseText.includes('ds_owned_flag ds_flag') || dataR.responseText.includes('add_to_wishlist_area'))) {
-          debug('成功从愿望单移除游戏', {
-            gameId: gameId
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('从愿望单移除游戏请求失败', {
-          result: resultR,
-          status: statusR,
-          statusText: statusTextR
-        });
-        logStatus.error(`Error:${dataR.statusText}(${dataR.status})`);
-        return false;
-      } catch (error) {
-        debug('从愿望单移除游戏时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.removeFromWishlist');
-        return false;
-      }
-    }
-    async toggleFollowGame(gameId, doTask) {
-      try {
-        debug('开始处理游戏关注状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}followingGame`,
-          text: gameId,
-          before: '[Web]'
-        });
-        const requestData = {
-          sessionid: this.#auth.storeSessionID,
-          appid: gameId
-        };
-        if (!doTask) {
-          requestData.unfollow = '1';
-        }
-        const {result: result, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/explore/followgame/',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param(requestData)
-        });
-        if (result === 'Success' && data?.status === 200 && data.responseText === 'true') {
-          debug('成功处理游戏关注状态', {
-            gameId: gameId,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        const followed = await this.#isFollowedGame(gameId);
-        if (this.#area === 'CN' && followed === 'areaLocked') {
-          debug('changeAreaNotice');
-          if (!await this.#changeArea()) {
-            return false;
-          }
-          return await this.toggleFollowGame(gameId, doTask);
-        }
-        if (doTask === followed) {
-          debug('成功处理游戏关注状态', {
-            gameId: gameId,
-            doTask: doTask
-          });
-          logStatus.success();
-          return true;
-        }
-        debug('处理游戏关注状态请求失败', {
-          result: result
-        });
-        logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-        return false;
-      } catch (error) {
-        debug('处理游戏关注状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'SteamWeb.toggleFollowGame');
-        return false;
-      }
-    }
-    async #isFollowedGame(gameId) {
-      try {
-        debug('开始判断Steam游戏是否已关注', {
-          gameId: gameId
-        });
-        const {result: result, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${gameId}`,
-          method: 'GET'
-        });
-        debug('获取游戏页面请求结果', {
-          result: result,
-          status: data?.status
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result
-          });
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('响应状态错误', {
-            status: data?.status
-          });
-          return false;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，返回areaLocked', {
-            area: this.#area
-          });
-          return 'areaLocked';
-        }
-        const isFollowed = $(data.responseText.replace(/<img.*?>/g, '')).find('.queue_control_button.queue_btn_follow>.btnv6_blue_hoverfade.btn_medium.queue_btn_active').css('display') !== 'none';
-        debug('关注状态判断结果', {
-          isFollowed: isFollowed
-        });
-        return isFollowed;
-      } catch (error) {
-        debug('判断游戏关注状态时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.isFollowedGame');
-        return false;
-      }
-    }
-    async toggleForum(gameId, doTask = true) {
-      try {
-        debug('开始处理论坛订阅状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        const forumId = await this.#getForumId(gameId);
-        if (!forumId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: `${doTask ? '' : 'un'}subscribingForum`,
-          text: gameId,
-          before: '[Web]'
-        });
-        const [id, feature] = forumId.split('_');
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/forum/${id}/General/${doTask ? '' : 'un'}subscribe/${feature || '0'}/`,
-          method: 'POST',
-          responseType: 'json',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            sessionid: this.#auth.communitySessionID
-          })
-        });
-        if (result !== 'Success') {
-          debug('处理论坛订阅状态请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return true;
-        }
-        if (data?.status !== 200 || data.response?.success !== 1 && data.response?.success !== 29) {
-          debug('处理论坛订阅状态失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return true;
-        }
-        debug('成功处理论坛订阅状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理论坛订阅状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'SteamWeb.toggleForum');
-        return false;
-      }
-    }
-    async #getForumId(gameId) {
-      try {
-        debug('开始获取Steam论坛ID', {
-          gameId: gameId
-        });
-        const logStatus = echoLog({
-          type: 'gettingForumId',
-          text: gameId,
-          before: '[Web]'
-        });
-        const cachedForumId = this.#cache.forum[gameId];
-        if (cachedForumId) {
-          debug('从缓存中获取到论坛ID', {
-            gameId: gameId,
-            cachedForumId: cachedForumId
-          });
-          logStatus.success();
-          return cachedForumId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/app/${gameId}/discussions/`,
-          method: 'GET'
-        });
-        debug('获取论坛ID请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取论坛ID请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取论坛ID响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedForumId = data.responseText?.match(/General_([\d]+(_[\d]+)?)/)?.[1];
-        debug('正则提取论坛ID结果', {
-          matchedForumId: matchedForumId
-        });
-        if (!matchedForumId) {
-          debug('未能提取到论坛ID', {
-            gameId: gameId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return false;
-        }
-        this.#setCache('forum', gameId, matchedForumId);
-        debug('论坛ID已缓存', {
-          gameId: gameId,
-          matchedForumId: matchedForumId
-        });
-        logStatus.success();
-        return matchedForumId;
-      } catch (error) {
-        debug('获取论坛ID时发生异常', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'SteamWeb.getForumId');
-        return false;
-      }
-    }
-    async toggleFavoriteWorkshop(id, doTask = true) {
-      try {
-        debug('开始处理创意工坊收藏状态', {
-          id: id,
-          doTask: doTask
-        });
-        const appid = await this.#getWorkshopAppId(id);
-        if (!appid) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: doTask ? 'favoritingWorkshop' : 'unfavoritingWorkshop',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/sharedfiles/${doTask ? '' : 'un'}favorite`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            id: id,
-            appid: appid,
-            sessionid: this.#auth.communitySessionID
-          })
-        });
-        if (result !== 'Success') {
-          debug('处理创意工坊收藏状态请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.responseText) {
-          debug('处理创意工坊收藏状态失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功处理创意工坊收藏状态', {
-          id: id,
-          doTask: doTask
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理创意工坊收藏状态时发生错误', {
-          error: error,
-          id: id,
-          doTask: doTask
-        });
-        throwError(error, 'SteamWeb.toggleFavoriteWorkshop');
-        return false;
-      }
-    }
-    async #getWorkshopAppId(id) {
-      try {
-        debug('开始获取Steam创意工坊AppId', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingWorkshopAppId',
-          text: id,
-          before: '[Web]'
-        });
-        const cachedAppId = this.#cache.workshop[id];
-        if (cachedAppId) {
-          debug('从缓存中获取到AppId', {
-            id: id,
-            cachedAppId: cachedAppId
-          });
-          logStatus.success();
-          return cachedAppId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://steamcommunity.com/sharedfiles/filedetails/?id=${id}`,
-          method: 'GET'
-        });
-        debug('获取创意工坊AppId请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取创意工坊AppId请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取创意工坊AppId响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        const matchedAppId = data.responseText.match(/<input type="hidden" name="appid" value="([\d]+?)" \/>/)?.[1];
-        debug('正则提取AppId结果', {
-          matchedAppId: matchedAppId
-        });
-        if (!matchedAppId) {
-          debug('未能提取到AppId', {
-            id: id
-          });
-          logStatus.error('Error: getWorkshopAppId failed');
-          return false;
-        }
-        debug('AppId已缓存', {
-          id: id,
-          matchedAppId: matchedAppId
-        });
-        return matchedAppId;
-      } catch (error) {
-        debug('获取创意工坊AppId时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.getWorkshopAppId');
-        return false;
-      }
-    }
-    async voteUpWorkshop(id) {
-      try {
-        debug('开始点赞创意工坊物品', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'votingUpWorkshop',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://steamcommunity.com/sharedfiles/voteup',
-          method: 'POST',
-          responseType: 'json',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            id: id,
-            sessionid: this.#auth.communitySessionID
-          })
-        });
-        if (result !== 'Success') {
-          debug('点赞创意工坊物品请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return true;
-        }
-        if (data?.status !== 200 || data.response?.success !== 1) {
-          debug('点赞创意工坊物品失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return true;
-        }
-        debug('成功点赞创意工坊物品', {
-          id: id
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('点赞创意工坊物品时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.voteUpWorkshop');
-        return false;
-      }
-    }
-    async toggleCurator(curatorId, doTask = true) {
-      try {
-        debug('开始处理鉴赏家关注状态', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        const logStatus = echoLog({
-          type: doTask ? 'followingCurator' : 'unfollowingCurator',
-          text: curatorId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: 'https://store.steampowered.com/curators/ajaxfollow',
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          },
-          data: $.param({
-            clanid: curatorId,
-            sessionid: this.#auth.storeSessionID,
-            follow: doTask
-          }),
-          dataType: 'json'
-        });
-        if (result !== 'Success') {
-          debug('处理鉴赏家关注状态请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.response?.success?.success === 25) {
-          debug('处理鉴赏家关注状态失败', {
-            status: data?.status,
-            success: data?.response?.success,
-            message: data?.response?.msg
-          });
-          logStatus.error(I18n('curatorLimitNotice'));
-          return false;
-        }
-        if (data?.status !== 200 || data.response?.success?.success !== 1) {
-          debug('处理鉴赏家关注状态失败', {
-            status: data?.status,
-            success: data?.response?.success
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.response?.success}` || `${data?.status})`);
-          return false;
-        }
-        debug('成功处理鉴赏家关注状态', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('处理鉴赏家关注状态时发生错误', {
-          error: error,
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        throwError(error, 'SteamWeb.toggleCurator');
-        return false;
-      }
-    }
-    async #getAnnouncementParams(appId, viewId) {
-      try {
-        debug('开始获取Steam公告参数', {
-          appId: appId,
-          viewId: viewId
-        });
-        const logStatus = echoLog({
-          type: 'gettingAnnouncementParams',
-          text: appId,
-          id: viewId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/events/ajaxgetpartnerevent?appid=${appId}&announcement_gid=${viewId}&lang_list=6_0&last_modified_time=0&origin=https:%2F%2Fstore.steampowered.com&for_edit=false`,
-          method: 'GET',
-          responseType: 'json',
-          headers: {
-            Host: 'store.steampowered.com',
-            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
-          }
-        });
-        debug('获取公告参数请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取公告参数请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return {};
-        }
-        if (data?.status !== 200 || data?.response?.success !== 1) {
-          debug('获取公告参数响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            response: data?.response
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return {};
-        }
-        const {clanid: clanid, gid: gid} = data.response.event?.announcement_body || {};
-        debug('公告参数提取', {
-          clanid: clanid,
-          gid: gid
-        });
-        if (!clanid) {
-          debug('未能提取到clanid', {
-            appId: appId,
-            viewId: viewId
-          });
-          logStatus.error(`Error:${data.statusText}(${data.status})`);
-          return {};
-        }
-        logStatus.success();
-        debug('获取公告参数成功', {
-          clanId: clanid,
-          gid: gid
-        });
-        return {
-          clanId: clanid,
-          gid: gid
-        };
-      } catch (error) {
-        debug('获取公告参数时发生异常', {
-          error: error,
-          appId: appId,
-          viewId: viewId
-        });
-        throwError(error, 'SteamWeb.likeAnnouncement');
-        return {};
-      }
-    }
-    async likeAnnouncement(id) {
-      try {
-        debug('开始点赞公告', {
-          id: id
-        });
-        const [appId, viewId] = id.split('/');
-        if (!(appId && viewId)) {
-          echoLog({
-            before: '[Web]'
-          }).error(`${I18n('missParams')}(id)`);
-          return false;
-        }
-        const {clanId: clanId, gid: gid} = await this.#getAnnouncementParams(appId, viewId);
-        if (!clanId) {
-          return false;
-        }
-        const logStatus = echoLog({
-          type: 'likingAnnouncement',
-          text: appId,
-          id: viewId,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/updated/ajaxrateupdate/${gid || viewId}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/news/app/${appId}/view/${viewId}`
-          },
-          data: $.param({
-            sessionid: this.#auth.storeSessionID,
-            voteup: 1,
-            clanid: clanId,
-            ajax: 1
-          }),
-          dataType: 'json'
-        });
-        if (result !== 'Success') {
-          debug('点赞公告请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data.response.success !== 1) {
-          debug('点赞公告失败', {
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功点赞公告', {
-          id: id
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('点赞公告时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.likeAnnouncement');
-        return false;
-      }
-    }
-    async #appid2subid(id) {
-      try {
-        debug('开始将AppId转换为SubId', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingSubid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${id}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        debug('获取App页面请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取App页面请求失败', {
-            result: result
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取App页面响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (data.responseText.includes('ds_owned_flag ds_flag') || data.responseText.includes('class="already_in_library"')) {
-          debug('App已拥有', {
-            id: id
-          });
-          logStatus.success(I18n('owned'));
-          return true;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，尝试更换地区', {
-            area: this.#area
-          });
-          logStatus.warning(I18n('changeAreaNotice'));
-          const result = await this.#changeArea();
-          if (!result || result === 'CN' || result === 'skip') {
-            debug('更换地区失败或未更换', {
-              result: result
-            });
-            return false;
-          }
-          return await this.#appid2subid(id);
-        }
-        let subid = data.responseText.match(/name="subid" value="([\d]+?)"/)?.[1];
-        debug('正则提取subid结果1', {
-          subid: subid
-        });
-        if (subid) {
-          logStatus.success();
-          return subid;
-        }
-        subid = data.responseText.match(/AddFreeLicense\(\s*(\d+)/)?.[1];
-        debug('正则提取subid结果2', {
-          subid: subid
-        });
-        if (subid) {
-          logStatus.success();
-          return subid;
-        }
-        debug('未能提取到subid', {
-          id: id
-        });
-        logStatus.error(`Error:${I18n('noSubid')}`);
-        return false;
-      } catch (error) {
-        debug('AppId转SubId时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.appid2subid');
-        return false;
-      }
-    }
-    async #getLicenses() {
-      try {
-        debug('开始获取Steam用户许可证信息');
-        const logStatus = echoLog({
-          text: I18n('gettingLicenses'),
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/dynamicstore/userdata/?t=${(new Date).getTime()}`,
-          method: 'GET',
-          responseType: 'json'
-        });
-        debug('获取许可证请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('获取许可证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('获取许可证响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('获取到的许可证列表', {
-          licenses: data.response?.rgOwnedPackages
-        });
-        logStatus.remove();
-        return data.response?.rgOwnedPackages;
-      } catch (error) {
-        debug('获取许可证时发生异常', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.getLicenses');
-        return false;
-      }
-    }
-    async addLicense(id) {
-      try {
-        debug('开始添加许可证', {
-          id: id
-        });
-        const [type, ids] = id.split('-');
-        debug('解析许可证ID', {
-          type: type,
-          ids: ids
-        });
-        if (type !== 'appid' && type !== 'subid') {
-          debug('无效的许可证类型', {
-            type: type
-          });
-          return false;
-        }
-        if (type === 'appid') {
-          debug('处理appid类型许可证', {
-            ids: ids
-          });
-          const subid = await this.#appid2subid(ids);
-          debug('appid转换为subid结果', {
-            appid: ids,
-            subid: subid
-          });
-          if (!subid) {
-            debug('appid转换失败', {
-              appid: ids
-            });
-            return false;
-          }
-          if (subid === true) {
-            debug('appid已拥有', {
-              appid: ids
-            });
-            return true;
-          }
-          const logStatus = echoLog({
-            type: 'addingFreeLicense',
-            text: ids,
-            before: '[Web]'
-          });
-          debug('开始添加免费许可证', {
-            subid: subid
-          });
-          if (!await this.#addFreeLicense(subid, logStatus)) {
-            debug('添加免费许可证失败', {
-              subid: subid
-            });
-            return false;
-          }
-          const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-            url: `https://store.steampowered.com/app/${ids}`,
-            method: 'GET'
-          });
-          debug('验证许可证添加状态', {
-            result: result,
-            status: status,
-            statusText: statusText
-          });
-          if (result !== 'Success') {
-            debug('验证请求失败', {
-              result: result,
-              status: status,
-              statusText: statusText
-            });
-            logStatus.error(`${result}:${statusText}(${status})`);
-            return false;
-          }
-          if (data?.status !== 200) {
-            debug('验证响应状态错误', {
-              status: data?.status,
-              statusText: data?.statusText
-            });
-            logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-            return false;
-          }
-          if (!data.responseText.includes('ds_owned_flag ds_flag') && !data.responseText.includes('class="already_in_library"')) {
-            debug('未找到游戏拥有标记', {
-              status: data.status,
-              statusText: data.statusText
-            });
-            logStatus.error(`Error:${data.statusText}(${data.status})`);
-            return false;
-          }
-          debug('appid许可证添加成功', {
-            appid: ids
-          });
-          logStatus.success();
-          return true;
-        }
-        if (this.#area === 'CN') {
-          debug('当前区域为CN，尝试更改区域', {
-            currentArea: this.#area
-          });
-          echoLog({
-            before: '[Web]'
-          }).success(I18n('tryChangeAreaNotice'));
-          await this.#changeArea();
-        }
-        const logStatusArr = {};
-        const idsArr = ids.split(',');
-        debug('处理subid类型许可证', {
-          idsArr: idsArr
-        });
-        for (const subid of idsArr) {
-          debug('开始处理单个subid', {
-            subid: subid
-          });
-          const logStatus = echoLog({
-            type: 'addingFreeLicense',
-            text: subid,
-            before: '[Web]'
-          });
-          if (!await this.#addFreeLicense(subid, logStatus)) {
-            debug('添加subid许可证失败', {
-              subid: subid
-            });
-            return false;
-          }
-          logStatusArr[subid] = logStatus;
-        }
-        const licenses = await this.#getLicenses();
-        debug('获取许可证列表', {
-          licenses: licenses
-        });
-        if (!licenses) {
-          debug('获取许可证列表失败');
-          return false;
-        }
-        for (const subid of idsArr) {
-          const hasLicense = licenses.includes(parseInt(subid, 10));
-          debug('验证许可证添加状态', {
-            subid: subid,
-            hasLicense: hasLicense
-          });
-          if (hasLicense) {
-            logStatusArr[subid].success();
-          } else {
-            logStatusArr[subid].error();
-          }
-        }
-        debug('所有subid许可证处理完成', {
-          idsArr: idsArr
-        });
-        return true;
-      } catch (error) {
-        debug('添加许可证过程发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.addLicense');
-        return false;
-      }
-    }
-    async #addFreeLicense(id, logStatusPre) {
-      try {
-        debug('开始添加免费Steam游戏许可证', {
-          id: id
-        });
-        const logStatus = logStatusPre || echoLog({
-          type: 'addingFreeLicenseSubid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/freelicense/addfreelicense/${id}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: 'https://store.steampowered.com/account/licenses/'
-          },
-          data: $.param({
-            ajax: true,
-            sessionid: this.#auth.storeSessionID
-          }),
-          dataType: 'json'
-        });
-        debug('添加免费许可证请求结果', {
-          result: result,
-          statusText: statusText,
-          status: status
-        });
-        if (result !== 'Success') {
-          debug('添加免费许可证请求失败', {
-            result: result,
-            statusText: statusText,
-            status: status
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200) {
-          debug('添加免费许可证响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        if (this.#area === 'CN' && data.responseText.includes('id="error_box"')) {
-          debug('地区锁定，尝试更换地区', {
-            area: this.#area
-          });
-          logStatus.warning(I18n('changeAreaNotice'));
-          const result = await this.#changeArea();
-          if (!result || [ 'CN', 'skip' ].includes(result)) {
-            debug('更换地区失败或未更换', {
-              result: result
-            });
-            return false;
-          }
-          return await this.#addFreeLicense(id);
-        }
-        debug('成功添加免费许可证', {
-          id: id
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('添加免费许可证时发生异常', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.addFreeLicense');
-        return false;
-      }
-    }
-    async requestPlayTestAccess(id) {
-      debug('开始请求游戏试玩权限', {
-        id: id
-      });
-      try {
-        debug('开始请求游戏试玩权限', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'requestingPlayTestAccess',
-          text: id,
-          before: '[Web]'
-        });
-        debug('准备发送试玩权限请求', {
-          id: id
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/ajaxrequestplaytestaccess/${id}`,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/app/${id}`
-          },
-          data: $.param({
-            sessionid: this.#auth.storeSessionID
-          }),
-          dataType: 'json'
-        });
-        debug('收到试玩权限请求响应', {
-          result: result,
-          status: status,
-          statusText: statusText,
-          responseData: data
-        });
-        if (result !== 'Success') {
-          debug('请求失败', {
-            result: result,
-            status: status,
-            statusText: statusText
-          });
-          logStatus.error(`${result}:${statusText}(${status})`);
-          return false;
-        }
-        if (data?.status !== 200 || data?.response?.success !== 1) {
-          debug('响应状态错误', {
-            status: data?.status,
-            statusText: data?.statusText,
-            success: data?.response?.success
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('成功请求游戏试玩权限', {
-          id: id
-        });
-        logStatus.success();
-        return true;
-      } catch (error) {
-        debug('请求游戏试玩权限时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'SteamWeb.requestPlayTestAccess');
-        return false;
-      }
-    }
-    async resetArea() {
-      try {
-        debug('检查区域设置状态', {
-          currentArea: this.#area,
-          oldArea: this.#oldArea,
-          needReset: Boolean(this.#oldArea && this.#area !== this.#oldArea)
-        });
-        if (this.#oldArea && this.#area !== this.#oldArea) {
-          debug('需要重置区域', {
-            fromArea: this.#area,
-            toArea: this.#oldArea
-          });
-          echoLog({
-            before: '[Web]'
-          }).warning(I18n('steamFinishNotice') + this.#oldArea);
-          const changeResult = await this.#changeArea(this.#oldArea);
-          debug('区域重置结果', {
-            success: changeResult,
-            targetArea: this.#oldArea
-          });
-        } else {
-          debug('无需重置区域', {
-            currentArea: this.#area,
-            oldArea: this.#oldArea
-          });
-        }
-        debug('区域重置流程完成');
-        return true;
-      } catch (error) {
-        debug('重置区域时发生错误', {
-          error: error
-        });
-        throwError(error, 'SteamWeb.resetArea');
-        return false;
-      }
-    }
-    #setCache(type, name, id) {
-      try {
-        debug('开始设置缓存', {
-          type: type,
-          name: name,
-          id: id
-        });
-        this.#cache[type][name] = id;
-        GM_setValue('steamCache', this.#cache);
-        debug('设置缓存成功', {
-          type: type,
-          name: name,
-          id: id
-        });
-      } catch (error) {
-        debug('设置缓存时发生异常', {
-          error: error,
-          type: type,
-          name: name,
-          id: id
-        });
-        throwError(error, 'SteamWeb.setCache');
-      }
-    }
-  }
-  class Steam extends Social {
-    tasks;
-    whiteList;
-    #cache={
-      ...{
-        group: {},
-        officialGroup: {},
-        forum: {},
-        workshop: {},
-        curator: {}
-      },
-      ...GM_getValue('steamCache')
-    };
-    #TaskExecutor=[];
-    constructor() {
-      super();
-      debug('初始化Steam实例');
-      const defaultTasksTemplate = {
-        groups: [],
-        officialGroups: [],
-        wishlists: [],
-        follows: [],
-        forums: [],
-        workshops: [],
-        workshopVotes: [],
-        curators: [],
-        curatorLikes: [],
-        announcements: [],
-        licenses: [],
-        playtests: [],
-        playTime: []
-      };
-      this.tasks = defaultTasksTemplate;
-      this.whiteList = {
-        ...defaultTasksTemplate,
-        ...GM_getValue('whiteList')?.steam || {}
-      };
-      this.#TaskExecutor = this.#getTaskExecutionOrder(globalOptions.ASF.AsfEnabled, globalOptions.ASF.steamWeb, globalOptions.ASF.preferASF);
-      debug('Steam实例初始化完成', {
-        taskExecutorCount: this.#TaskExecutor.length
-      });
-    }
-    async init(type = 'all') {
-      try {
-        debug('开始初始化Steam模块', {
-          type: type
-        });
-        for (let i = 0; i < this.#TaskExecutor.length; i++) {
-          debug(`初始化执行器 ${i + 1}/${this.#TaskExecutor.length}`);
-          if (!await this.#TaskExecutor[i].init(type)) {
-            debug(`执行器 ${i + 1} 初始化失败，移除该执行器`);
-            this.#TaskExecutor.splice(i, 1);
-          }
-        }
-        debug('Steam模块初始化完成', {
-          remainingExecutors: this.#TaskExecutor.length
-        });
-        return this.#TaskExecutor.length > 0;
-      } catch (error) {
-        debug('Steam初始化发生错误', {
-          error: error
-        });
-        throwError(error, 'Steam.init');
-        return false;
-      }
-    }
-    async #joinGroup(groupName) {
-      try {
-        debug('开始加入Steam组', {
-          groupName: groupName
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.joinGroup(groupName)) {
-            debug('成功加入Steam组', {
-              groupName: groupName
-            });
-            this.tasks.groups = unique([ ...this.tasks.groups, groupName ]);
-            return true;
-          }
-        }
-        debug('加入Steam组失败', {
-          groupName: groupName
-        });
-        return false;
-      } catch (error) {
-        debug('加入Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'Steam.joinGroup');
-        return false;
-      }
-    }
-    async #leaveGroup(groupName) {
-      try {
-        debug('开始退出Steam组', {
-          groupName: groupName
-        });
-        if (this.whiteList.groups.includes(groupName)) {
-          debug('Steam组在白名单中，跳过退出', {
-            groupName: groupName
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.leaveGroup',
-            id: groupName
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.leaveGroup(groupName)) {
-            debug('成功退出Steam组', {
-              groupName: groupName
-            });
-            return true;
-          }
-        }
-        debug('退出Steam组失败', {
-          groupName: groupName
-        });
-        return false;
-      } catch (error) {
-        debug('退出Steam组时发生错误', {
-          error: error,
-          groupName: groupName
-        });
-        throwError(error, 'Steam.leaveGroup');
-        return false;
-      }
-    }
-    async #joinOfficialGroup(gameId) {
-      try {
-        debug('开始加入Steam官方组', {
-          gameId: gameId
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.joinOfficialGroup(gameId)) {
-            debug('成功加入Steam官方组', {
-              gameId: gameId
-            });
-            return true;
-          }
-        }
-        debug('加入Steam官方组失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('加入Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.joinOfficialGroup');
-        return false;
-      }
-    }
-    async #leaveOfficialGroup(gameId) {
-      try {
-        debug('开始退出Steam官方组', {
-          gameId: gameId
-        });
-        if (this.whiteList.officialGroups.includes(gameId)) {
-          debug('Steam官方组在白名单中，跳过退出', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.leaveOfficialGroup',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.leaveOfficialGroup(gameId)) {
-            debug('成功退出Steam官方组', {
-              gameId: gameId
-            });
-            this.tasks.officialGroups = unique([ ...this.tasks.officialGroups, gameId ]);
-            return true;
-          }
-        }
-        debug('退出Steam官方组失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('退出Steam官方组时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.leaveOfficialGroup');
-        return false;
-      }
-    }
-    async #addToWishlist(gameId) {
-      try {
-        debug('开始添加游戏到愿望单', {
-          gameId: gameId
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.addToWishlist(gameId)) {
-            debug('成功添加游戏到愿望单', {
-              gameId: gameId
-            });
-            this.tasks.wishlists = unique([ ...this.tasks.wishlists, gameId ]);
-            return true;
-          }
-        }
-        debug('添加游戏到愿望单失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('添加游戏到愿望单时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.addToWishlist');
-        return false;
-      }
-    }
-    async #removeFromWishlist(gameId) {
-      try {
-        debug('开始从愿望单移除游戏', {
-          gameId: gameId
-        });
-        if (this.whiteList.wishlists.includes(gameId)) {
-          debug('游戏在愿望单白名单中，跳过移除', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.removeFromWishlist',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.removeFromWishlist(gameId)) {
-            debug('成功从愿望单移除游戏', {
-              gameId: gameId
-            });
-            return true;
-          }
-        }
-        debug('从愿望单移除游戏失败', {
-          gameId: gameId
-        });
-        return false;
-      } catch (error) {
-        debug('从愿望单移除游戏时发生错误', {
-          error: error,
-          gameId: gameId
-        });
-        throwError(error, 'Steam.removeFromWishlist');
-        return false;
-      }
-    }
-    async #toggleFollowGame(gameId, doTask) {
-      try {
-        debug('开始处理游戏关注状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.follows.includes(gameId)) {
-          debug('游戏在关注白名单中，跳过取关', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfollowGame',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleFollowGame(gameId, doTask)) {
-            if (doTask) {
-              debug('成功关注游戏', {
-                gameId: gameId
-              });
-              this.tasks.follows = unique([ ...this.tasks.follows, gameId ]);
-            } else {
-              debug('成功取关游戏', {
-                gameId: gameId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理游戏关注状态失败', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理游戏关注状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleFollowGame');
-        return false;
-      }
-    }
-    async #toggleForum(gameId, doTask = true) {
-      try {
-        debug('开始处理论坛订阅状态', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.forums.includes(gameId)) {
-          debug('论坛在白名单中，跳过取消订阅', {
-            gameId: gameId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unsubscribeForum',
-            id: gameId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleForum(gameId, doTask)) {
-            if (doTask) {
-              debug('成功订阅论坛', {
-                gameId: gameId
-              });
-              this.tasks.forums = unique([ ...this.tasks.forums, gameId ]);
-            } else {
-              debug('成功取消订阅论坛', {
-                gameId: gameId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理论坛订阅状态失败', {
-          gameId: gameId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理论坛订阅状态时发生错误', {
-          error: error,
-          gameId: gameId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleForum');
-        return true;
-      }
-    }
-    async #toggleFavoriteWorkshop(id, doTask = true) {
-      try {
-        debug('开始处理创意工坊收藏状态', {
-          id: id,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.workshops.includes(id)) {
-          debug('创意工坊物品在白名单中，跳过取消收藏', {
-            id: id
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfavoriteWorkshop',
-            id: id
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleFavoriteWorkshop(id)) {
-            if (doTask) {
-              debug('成功收藏创意工坊物品', {
-                id: id
-              });
-              this.tasks.workshops = unique([ ...this.tasks.workshops, id ]);
-            } else {
-              debug('成功取消收藏创意工坊物品', {
-                id: id
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理创意工坊收藏状态失败', {
-          id: id,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理创意工坊收藏状态时发生错误', {
-          error: error,
-          id: id,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleFavoriteWorkshop');
-        return false;
-      }
-    }
-    async #voteUpWorkshop(id) {
-      try {
-        debug('开始点赞创意工坊物品', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.voteUpWorkshop(id)) {
-            debug('成功点赞创意工坊物品', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('点赞创意工坊物品失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('点赞创意工坊物品时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.voteupWorkshop');
-        return true;
-      }
-    }
-    async #toggleCurator(curatorId, doTask = true) {
-      try {
-        debug('开始处理鉴赏家关注状态', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        if (!doTask && this.whiteList.curators.includes(curatorId)) {
-          debug('鉴赏家在白名单中，跳过取关', {
-            curatorId: curatorId
-          });
-          echoLog({
-            type: 'whiteList',
-            text: 'Steam.unfollowCurator',
-            id: curatorId
-          });
-          return true;
-        }
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.toggleCurator(curatorId, doTask)) {
-            if (doTask) {
-              debug('成功关注鉴赏家', {
-                curatorId: curatorId
-              });
-              this.tasks.curators = unique([ ...this.tasks.curators, curatorId ]);
-            } else {
-              debug('成功取关鉴赏家', {
-                curatorId: curatorId
-              });
-            }
-            return true;
-          }
-        }
-        debug('处理鉴赏家关注状态失败', {
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        return false;
-      } catch (error) {
-        debug('处理鉴赏家关注状态时发生错误', {
-          error: error,
-          curatorId: curatorId,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleCurator');
-        return false;
-      }
-    }
-    async getCuratorId(path, name) {
-      try {
-        debug('开始获取鉴赏家ID', {
-          path: path,
-          name: name
-        });
-        const logStatus = echoLog({
-          type: 'gettingCuratorId',
-          text: `${path}/${name}`,
-          before: '[Web]'
-        });
-        const curatorId = this.#cache.curator[`${path}/${name}`];
-        if (curatorId) {
-          debug('从缓存获取到鉴赏家ID', {
-            path: path,
-            name: name,
-            curatorId: curatorId
-          });
-          logStatus.success();
-          return curatorId;
-        }
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/${path}/${name}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-        });
-        if (result === 'Success') {
-          if (data?.status === 200) {
-            const curatorId = data.responseText.match(/g_pagingData.*?"clanid":([\d]+)/)?.[1];
-            if (curatorId) {
-              debug('成功获取鉴赏家ID', {
-                path: path,
-                name: name,
-                curatorId: curatorId
-              });
-              this.#setCache('curator', `${path}/${name}`, curatorId);
-              logStatus.success();
-              return curatorId;
-            }
-            debug('未找到鉴赏家ID', {
-              path: path,
-              name: name,
-              status: data.status
-            });
-            logStatus.error(`Error:${data.statusText}(${data.status})`);
-            return false;
-          }
-          debug('获取鉴赏家页面失败', {
-            path: path,
-            name: name,
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('请求鉴赏家页面失败', {
-          path: path,
-          name: name,
-          result: result,
-          status: status
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      } catch (error) {
-        debug('获取鉴赏家ID时发生错误', {
-          error: error,
-          path: path,
-          name: name
-        });
-        throwError(error, 'SteamWeb.getCuratorID');
-        return false;
-      }
-    }
-    async #toggleCuratorLike(link, doTask = true) {
-      try {
-        debug('开始处理鉴赏家点赞状态', {
-          link: link,
-          doTask: doTask
-        });
-        const [path, name] = link.split('/');
-        if (!(path && name)) {
-          debug('无效的鉴赏家链接', {
-            link: link
-          });
-          echoLog({
-            text: I18n('errorLink', link),
-            before: '[Web]'
-          });
-          return false;
-        }
-        const curatorId = await this.getCuratorId(path, name);
-        if (curatorId) {
-          debug('获取到鉴赏家ID，开始处理点赞', {
-            curatorId: curatorId,
-            doTask: doTask
-          });
-          return await this.#toggleCurator(curatorId, doTask);
-        }
-        debug('未获取到鉴赏家ID', {
-          link: link
-        });
-        return false;
-      } catch (error) {
-        debug('处理鉴赏家点赞状态时发生错误', {
-          error: error,
-          link: link,
-          doTask: doTask
-        });
-        throwError(error, 'Steam.toggleCuratorLike');
-        return false;
-      }
-    }
-    async #likeAnnouncement(id) {
-      try {
-        debug('开始点赞公告', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.likeAnnouncement(id)) {
-            debug('成功点赞公告', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('点赞公告失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('点赞公告时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.likeAnnouncement');
-        return false;
-      }
-    }
-    async #addLicense(id) {
-      try {
-        debug('开始添加许可证', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.addLicense(id)) {
-            debug('成功添加许可证', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('添加许可证失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('添加许可证时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.addLicense');
-        return false;
-      }
-    }
-    async #requestPlayTestAccess(id) {
-      try {
-        debug('开始请求游戏试玩权限', {
-          id: id
-        });
-        for (const taskExecutor of this.#TaskExecutor) {
-          if (await taskExecutor.requestPlayTestAccess(id)) {
-            debug('成功请求游戏试玩权限', {
-              id: id
-            });
-            return true;
-          }
-        }
-        debug('请求游戏试玩权限失败', {
-          id: id
-        });
-        return false;
-      } catch (error) {
-        debug('请求游戏试玩权限时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.requestPlayTestAccess');
-        return false;
-      }
-    }
-    async #getDemoAppid(id) {
-      try {
-        debug('开始获取游戏试玩ID', {
-          id: id
-        });
-        const logStatus = echoLog({
-          type: 'gettingDemoAppid',
-          text: id,
-          before: '[Web]'
-        });
-        const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
-          url: `https://store.steampowered.com/app/${id}`,
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Host: 'store.steampowered.com',
-            Origin: 'https://store.steampowered.com',
-            Referer: `https://store.steampowered.com/app/${id}`
-          }
-        });
-        if (result === 'Success') {
-          if (data?.status === 200) {
-            const demoAppid = data.responseText.match(/steam:\/\/(install|run)\/(\d+)/)?.[2];
-            debug('成功获取游戏试玩ID', {
-              id: id,
-              demoAppid: demoAppid
-            });
-            logStatus.success();
-            return demoAppid || false;
-          }
-          debug('获取游戏页面失败', {
-            id: id,
-            status: data?.status
-          });
-          logStatus.error(`Error:${data?.statusText}(${data?.status})`);
-          return false;
-        }
-        debug('请求游戏页面失败', {
-          id: id,
-          result: result,
-          status: status
-        });
-        logStatus.error(`${result}:${statusText}(${status})`);
-        return false;
-      } catch (error) {
-        debug('获取游戏试玩ID时发生错误', {
-          error: error,
-          id: id
-        });
-        throwError(error, 'Steam.getDemoAppid');
-        return false;
-      }
-    }
-    async #playGames(ids, playTime, doTask = true) {
-      try {
-        debug('开始处理游戏挂时长', {
-          ids: ids,
-          playTime: playTime,
-          doTask: doTask
-        });
-        if (playTime <= 0) {
-          debug('游戏时长小于等于0，跳过挂时长');
-          return true;
-        }
-        const asf = this.#TaskExecutor.find((e => e instanceof SteamASF));
-        if (!asf) {
-          debug('未找到ASF实例');
-          echoLog({}).warning(I18n('noASFInstance'));
-          return false;
-        }
-        if (!doTask) {
-          debug('停止挂时长');
-          return await asf.stopPlayGames();
-        }
-        const idsArr = await Promise.all(ids.split(',').map((async id => {
-          try {
-            const demoAppid = await this.#getDemoAppid(id);
-            return demoAppid ? `${id},${demoAppid}` : id;
-          } catch (error) {
-            debug('获取游戏试玩ID失败', {
-              error: error,
-              id: id
-            });
-            return id;
-          }
-        })));
-        const uniqueIds = unique(idsArr.join(',').split(','));
-        debug('处理后的游戏ID列表', {
-          uniqueIds: uniqueIds
-        });
-        debug('开始尝试入库游戏', {
-          uniqueIds: uniqueIds
-        });
-        await Promise.all(uniqueIds.map((async id => {
-          for (const taskExecutor of this.#TaskExecutor) {
-            if (await taskExecutor.addLicense(`appid-${id}`)) {
-              debug('成功入库游戏', {
-                id: id
-              });
-              return true;
-            }
-          }
-          return false;
-        })));
-        await asf.playGames(uniqueIds.join(','));
-        const status = await asf.checkPlayStatus(uniqueIds.join(','));
-        if (status !== true) {
-          await delay(3e3);
-          await asf.playGames(uniqueIds.join(','));
-          const status = await asf.checkPlayStatus(uniqueIds.join(','));
-          if (!status) {
-            debug('启动游戏失败');
-            return false;
-          }
-        }
-        const stopPlayTime = Date.now() + (playTime + 10) * 60 * 1e3;
-        const stopPlayTimeOld = GM_getValue('stopPlayTime', 0) || 0;
-        GM_setValue('stopPlayTime', Math.max(stopPlayTime, stopPlayTimeOld));
-        const playedGames = GM_getValue('playedGames', []) || [];
-        GM_setValue('playedGames', unique([ ...playedGames, ...uniqueIds ]));
-        const taskLink = GM_getValue('taskLink', []) || [];
-        GM_setValue('taskLink', unique([ ...taskLink, window.location.href ]));
-        debug('游戏挂时长状态更新完成');
-        return true;
-      } catch (error) {
-        debug('处理游戏挂时长时发生错误', {
-          error: error,
-          ids: ids,
-          playTime: playTime
-        });
-        throwError(error, 'Steam.playGames');
-        return false;
-      }
-    }
-    async toggle({doTask: doTask = true, groupLinks: groupLinks = [], officialGroupLinks: officialGroupLinks = [], wishlistLinks: wishlistLinks = [], followLinks: followLinks = [], forumLinks: forumLinks = [], workshopLinks: workshopLinks = [], workshopVoteLinks: workshopVoteLinks = [], curatorLinks: curatorLinks = [], curatorLikeLinks: curatorLikeLinks = [], announcementLinks: announcementLinks = [], licenseLinks: licenseLinks = [], playtestLinks: playtestLinks = [], playTimeLinks: playTimeLinks = []}) {
-      try {
-        debug('开始处理Steam任务', {
-          doTask: doTask,
-          linksCount: {
-            groups: groupLinks.length,
-            officialGroups: officialGroupLinks.length,
-            wishlists: wishlistLinks.length,
-            follows: followLinks.length,
-            forums: forumLinks.length,
-            workshops: workshopLinks.length,
-            workshopVotes: workshopVoteLinks.length,
-            curators: curatorLinks.length,
-            curatorLikes: curatorLikeLinks.length,
-            announcements: announcementLinks.length,
-            licenses: licenseLinks.length,
-            playtests: playtestLinks.length,
-            playTime: playTimeLinks.length
-          }
-        });
-        const allLinks = [ ...groupLinks, ...officialGroupLinks, ...forumLinks, ...workshopLinks, ...workshopVoteLinks, ...wishlistLinks, ...followLinks, ...curatorLinks, ...curatorLikeLinks, ...announcementLinks, ...licenseLinks, ...playtestLinks, ...playTimeLinks ];
-        if (allLinks.length > 0 && this.#TaskExecutor.length === 0) {
-          debug('Steam模块未初始化');
-          echoLog({
-            text: I18n('needInit')
-          });
-          return false;
-        }
-        const result = this.createToggleResult();
-        const tasks = [];
-        const pushTask = (type, value, task) => {
-          tasks.push(task.then((success => {
-            this.setToggleResult(result, type, value, success);
-            return success;
-          })));
-        };
-        const markSkipped = (type, links) => {
-          for (const link of links) {
-            this.setToggleResult(result, type, link, true);
-          }
-        };
-        if (this.shouldProcessTask('groups', doTask)) {
-          debug('开始处理群组任务');
-          for (const link of groupLinks) {
-            const group = link.match(/groups\/(.+)\/?/)?.[1]?.split('/')?.[0];
-            if (!group) {
-              this.setToggleResult(result, 'groupLinks', link, false);
-              continue;
-            }
-            pushTask('groupLinks', link, doTask ? this.#joinGroup(group) : this.#leaveGroup(group));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('groupLinks', groupLinks);
-        }
-        if (this.shouldProcessTask('officialGroups', doTask)) {
-          for (const link of officialGroupLinks) {
-            const officialGroup = link.match(/games\/(.+)\/?/)?.[1];
-            if (!officialGroup) {
-              this.setToggleResult(result, 'officialGroupLinks', link, false);
-              continue;
-            }
-            pushTask('officialGroupLinks', link, doTask ? this.#joinOfficialGroup(officialGroup) : this.#leaveOfficialGroup(officialGroup));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('officialGroupLinks', officialGroupLinks);
-        }
-        if (this.shouldProcessTask('wishlists', doTask)) {
-          for (const link of wishlistLinks) {
-            const game = link.match(/app\/([\d]+)/)?.[1];
-            if (!game) {
-              this.setToggleResult(result, 'wishlistLinks', link, false);
-              continue;
-            }
-            pushTask('wishlistLinks', link, doTask ? this.#addToWishlist(game) : this.#removeFromWishlist(game));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('wishlistLinks', wishlistLinks);
-        }
-        if (this.shouldProcessTask('follows', doTask)) {
-          for (const link of followLinks) {
-            const game = link.match(/app\/([\d]+)/)?.[1];
-            if (!game) {
-              this.setToggleResult(result, 'followLinks', link, false);
-              continue;
-            }
-            pushTask('followLinks', link, this.#toggleFollowGame(game, doTask));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('followLinks', followLinks);
-        }
-        if (this.shouldProcessTask('playTime', doTask)) {
-          const playInfos = playTimeLinks.map((link => {
-            const time = parseInt(link.split('-')[0], 10) || 0;
-            const game = link.match(/app\/([\d]+)/)?.[1];
-            if (time <= 0 || !game) {
-              this.setToggleResult(result, 'playTimeLinks', link, false);
-            }
-            return {
-              link: link,
-              time: time,
-              game: game
-            };
-          })).filter((info => info.time > 0 && Boolean(info.game)));
-          if (playInfos.length > 0) {
-            const maxTime = Math.max(...playInfos.map((info => info.time)));
-            tasks.push(this.#playGames(playInfos.map((info => info.game)).join(','), maxTime, doTask).then((success => {
-              for (const info of playInfos) {
-                this.setToggleResult(result, 'playTimeLinks', info.link, success);
-              }
-              return success;
-            })));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('playTimeLinks', playTimeLinks);
-        }
-        if (this.shouldProcessTask('forums', doTask)) {
-          for (const link of forumLinks) {
-            const forum = link.match(/app\/([\d]+)/)?.[1];
-            if (!forum) {
-              this.setToggleResult(result, 'forumLinks', link, false);
-              continue;
-            }
-            pushTask('forumLinks', link, this.#toggleForum(forum, doTask));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('forumLinks', forumLinks);
-        }
-        if (this.shouldProcessTask('workshops', doTask)) {
-          for (const link of workshopLinks) {
-            const workshop = link.match(/\?id=([\d]+)/)?.[1];
-            if (!workshop) {
-              this.setToggleResult(result, 'workshopLinks', link, false);
-              continue;
-            }
-            pushTask('workshopLinks', link, this.#toggleFavoriteWorkshop(workshop, doTask));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('workshopLinks', workshopLinks);
-        }
-        if (doTask && globalOptions.doTask.steam.workshopVotes) {
-          for (const link of workshopVoteLinks) {
-            const workshop = link.match(/\?id=([\d]+)/)?.[1];
-            if (!workshop) {
-              this.setToggleResult(result, 'workshopVoteLinks', link, false);
-              continue;
-            }
-            pushTask('workshopVoteLinks', link, this.#voteUpWorkshop(workshop));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('workshopVoteLinks', workshopVoteLinks);
-        }
-        if (this.shouldProcessTask('curators', doTask)) {
-          for (const link of curatorLinks) {
-            const curator = link.match(/curator\/([\d]+)/)?.[1];
-            if (!curator) {
-              this.setToggleResult(result, 'curatorLinks', link, false);
-              continue;
-            }
-            pushTask('curatorLinks', link, this.#toggleCurator(curator, doTask));
-            await delay(1e3);
-          }
-          for (const link of curatorLikeLinks) {
-            const curatorLike = link.match(/https?:\/\/store\.steampowered\.com\/(.*?)\/([^/?]+)/)?.slice(1, 3).join('/');
-            if (!curatorLike) {
-              this.setToggleResult(result, 'curatorLikeLinks', link, false);
-              continue;
-            }
-            pushTask('curatorLikeLinks', link, this.#toggleCuratorLike(curatorLike, doTask));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('curatorLinks', curatorLinks);
-          markSkipped('curatorLikeLinks', curatorLikeLinks);
-        }
-        if (doTask && globalOptions.doTask.steam.announcements) {
-          for (const link of announcementLinks) {
-            const id = link.includes('store.steampowered.com') ? link.match(/store\.steampowered\.com\/news\/app\/([\d]+)\/view\/([\d]+)/)?.slice(1, 3).join('/') : link.match(/steamcommunity\.com\/games\/([\d]+)\/announcements\/detail\/([\d]+)/)?.slice(1, 3).join('/');
-            if (!id) {
-              this.setToggleResult(result, 'announcementLinks', link, false);
-              continue;
-            }
-            pushTask('announcementLinks', link, this.#likeAnnouncement(id));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('announcementLinks', announcementLinks);
-        }
-        if (doTask && globalOptions.doTask.steam.licenses && licenseLinks.length > 0) {
-          for (const link of licenseLinks) {
-            const [type, idsStr] = link.split('-');
-            if (!type || !idsStr) {
-              this.setToggleResult(result, 'licenseLinks', link, false);
-              continue;
-            }
-            const idsArr = idsStr.split(',');
-            if (idsArr.length === 0 || idsArr.some((id => !id))) {
-              this.setToggleResult(result, 'licenseLinks', link, false);
-              continue;
-            }
-            tasks.push(Promise.all(idsArr.map((async id => {
-              const success = await this.#addLicense(`${type}-${id}`);
-              await delay(1e3);
-              return success;
-            }))).then((licenseResults => {
-              const success = licenseResults.every(Boolean);
-              this.setToggleResult(result, 'licenseLinks', link, success);
-              return success;
-            })));
-          }
-        } else {
-          markSkipped('licenseLinks', licenseLinks);
-        }
-        if (doTask && globalOptions.doTask.steam.playtests) {
-          for (const link of playtestLinks) {
-            const id = link.match(/app\/([\d]+)/)?.[1];
-            if (!id) {
-              this.setToggleResult(result, 'playtestLinks', link, false);
-              continue;
-            }
-            pushTask('playtestLinks', link, this.#requestPlayTestAccess(id));
-            await delay(1e3);
-          }
-        } else {
-          markSkipped('playtestLinks', playtestLinks);
-        }
-        debug('开始执行所有任务');
-        const results = await Promise.all(tasks);
-        this.#TaskExecutor.find((e => e instanceof SteamWeb))?.resetArea();
-        debug('所有任务执行完成', {
-          success: results.every((result => result))
-        });
-        return result;
-      } catch (error) {
-        debug('处理Steam任务时发生错误', {
-          error: error
-        });
-        throwError(error, 'Steam.toggle');
-        return false;
-      }
-    }
-    shouldProcessTask(taskType, doTask) {
-      debug('检查是否处理任务', {
-        taskType: taskType,
-        doTask: doTask
-      });
-      if (doTask) {
-        const result = globalOptions.doTask.steam[taskType];
-        debug('检查doTask配置', {
-          taskType: taskType,
-          result: result
-        });
-        return globalOptions.doTask.steam[taskType];
-      }
-      const undoTaskType = taskType;
-      return undoTaskType in globalOptions.undoTask.steam && globalOptions.undoTask.steam[undoTaskType];
-    }
-    #setCache(type, name, id) {
-      try {
-        this.#cache[type][name] = id;
-        GM_setValue('steamCache', this.#cache);
-      } catch (error) {
-        throwError(error, 'SteamWeb.setCache');
-      }
-    }
-    #getTaskExecutionOrder(asfEnabled, steamWebEnabled, preferASF) {
-      if (!asfEnabled) {
-        return [ new SteamWeb ];
-      }
-      if (!steamWebEnabled) {
-        return [ new SteamASF(globalOptions.ASF) ];
-      }
-      return preferASF ? [ new SteamASF(globalOptions.ASF), new SteamWeb ] : [ new SteamWeb, new SteamASF(globalOptions.ASF) ];
-    }
-  }
   const LEGACY_TYPE_MAP = {
     groupLinks: 'group',
     officialGroupLinks: 'officialGroup',
@@ -8973,7 +9173,6 @@ if (missingDependencies.length > 0) {
     licenseLinks: 'license',
     playTimeLinks: 'playtime',
     playtestLinks: 'playtest',
-    serverLinks: 'server',
     redditLinks: 'post',
     channelLinks: 'channel',
     userLinks: 'user',
@@ -9000,7 +9199,6 @@ if (missingDependencies.length > 0) {
     'steam.license': 'licenseLinks',
     'steam.playtime': 'playTimeLinks',
     'steam.playtest': 'playtestLinks',
-    'discord.server': 'serverLinks',
     'reddit.post': 'redditLinks',
     'twitch.channel': 'channelLinks',
     'twitter.user': 'userLinks',
@@ -9016,7 +9214,7 @@ if (missingDependencies.length > 0) {
       return false;
     }
     const task = value;
-    return typeof task.done === 'boolean' && typeof task.social === 'string' && typeof task.type === 'string' && typeof task.link === 'string' && (!('minutes' in task) || typeof task.minutes === 'number') && (!('id' in task) || typeof task.id === 'string' || typeof task.id === 'number') && (!('title' in task) || typeof task.title === 'string') && (!('data' in task) || typeof task.data === 'string');
+    return typeof task.done === 'boolean' && typeof task.social === 'string' && task.social !== 'discord' && typeof task.type === 'string' && typeof task.link === 'string' && (!('minutes' in task) || typeof task.minutes === 'number') && (!('id' in task) || typeof task.id === 'string' || typeof task.id === 'number') && (!('title' in task) || typeof task.title === 'string') && (!('data' in task) || typeof task.data === 'string');
   };
   const normalizePlaytimeTask = (social, type, value, done) => {
     if (social !== 'steam' || type !== 'playtime') {
@@ -9047,6 +9245,9 @@ if (missingDependencies.length > 0) {
   const normalizeLegacyTasks = (tasks, done = true) => {
     const result = [];
     for (const [social, legacyTypes] of Object.entries(tasks)) {
+      if (social === 'discord') {
+        continue;
+      }
       if (Array.isArray(legacyTypes)) {
         for (const link of legacyTypes) {
           result.push({
@@ -9080,6 +9281,9 @@ if (missingDependencies.length > 0) {
   const uniqueWebsiteTasks = tasks => {
     const seen = new Set;
     return tasks.filter((task => {
+      if (task.social === 'discord') {
+        return false;
+      }
       const key = getTaskKey(task);
       if (seen.has(key)) {
         return false;
@@ -9088,10 +9292,13 @@ if (missingDependencies.length > 0) {
       return true;
     }));
   };
-  const selectTasksForAction = (tasks, action) => tasks.filter((task => action === 'do' ? !task.done : task.done));
+  const selectTasksForAction = (tasks, action) => tasks.filter((task => task.social !== 'discord' && (action === 'do' ? !task.done : task.done)));
   const toSocialPayload = (tasks, onUnknownTask) => {
     const payload = {};
     for (const task of tasks) {
+      if (task.social === 'discord') {
+        continue;
+      }
       if (task.social === 'extra') {
         payload.extra ||= {};
         payload.extra[task.type] ||= [];
@@ -9132,7 +9339,6 @@ if (missingDependencies.length > 0) {
     tasks=[];
     giveawayId;
     socialInitialized={
-      discord: false,
       instagram: false,
       reddit: false,
       twitch: false,
@@ -9143,6 +9349,7 @@ if (missingDependencies.length > 0) {
       steamCommunity: false
     };
     initialized=false;
+    socialOptions='';
     steamTaskType={
       steamStore: false,
       steamCommunity: false
@@ -9176,6 +9383,17 @@ if (missingDependencies.length > 0) {
     }
     async initSocial(payload) {
       try {
+        const options = JSON.stringify([ globalOptions.doTask, globalOptions.undoTask, globalOptions.ASF, globalOptions.other.twitterVerifyId, globalOptions.other.youtubeVerifyChannel, GM_getValue('whiteList', {}) ]);
+        if (this.socialOptions && this.socialOptions !== options) {
+          for (const platform of [ 'steam', 'reddit', 'twitch', 'twitter', 'vk', 'youtube' ]) {
+            this.social[platform]?.dispose();
+            delete this.social[platform];
+          }
+          for (const key of Object.keys(this.socialInitialized)) {
+            this.socialInitialized[key] = false;
+          }
+        }
+        this.socialOptions = options;
         debug('开始初始化社交媒体');
         const pro = [];
         this.steamTaskType = {
@@ -9189,6 +9407,7 @@ if (missingDependencies.length > 0) {
           });
           if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
             debug('初始化 Reddit');
+            this.social.reddit?.dispose();
             this.social.reddit = new Reddit;
             pro.push(this.#bind('reddit', this.social.reddit.init()));
           }
@@ -9200,6 +9419,7 @@ if (missingDependencies.length > 0) {
           });
           if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
             debug('初始化 Twitch');
+            this.social.twitch?.dispose();
             this.social.twitch = new Twitch;
             pro.push(this.#bind('twitch', this.social.twitch.init()));
           }
@@ -9211,6 +9431,7 @@ if (missingDependencies.length > 0) {
           });
           if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
             debug('初始化 Twitter');
+            this.social.twitter?.dispose();
             this.social.twitter = new Twitter;
             pro.push(this.#bind('twitter', this.social.twitter.init()));
           }
@@ -9222,6 +9443,7 @@ if (missingDependencies.length > 0) {
           });
           if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
             debug('初始化 VK');
+            this.social.vk?.dispose();
             this.social.vk = new Vk;
             pro.push(this.#bind('vk', this.social.vk.init()));
           }
@@ -9233,6 +9455,7 @@ if (missingDependencies.length > 0) {
           });
           if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
             debug('初始化 YouTube');
+            this.social.youtube?.dispose();
             this.social.youtube = new Youtube;
             pro.push(this.#bind('youtube', this.social.youtube.init()));
           }
@@ -9374,43 +9597,37 @@ if (missingDependencies.length > 0) {
         };
         if (this.socialInitialized.reddit === true && this.social.reddit) {
           debug('处理 Reddit 任务');
-          pushSocialTask('reddit', this.social.reddit.toggle({
-            doTask: doTask,
+          pushSocialTask('reddit', this.social.reddit[doTask ? 'do' : 'undo']({
             ...payload.reddit
           }));
         }
         if (this.socialInitialized.twitch === true && this.social.twitch) {
           debug('处理 Twitch 任务');
-          pushSocialTask('twitch', this.social.twitch.toggle({
-            doTask: doTask,
+          pushSocialTask('twitch', this.social.twitch[doTask ? 'do' : 'undo']({
             ...payload.twitch
           }));
         }
         if (this.socialInitialized.twitter === true && this.social.twitter) {
           debug('处理 Twitter 任务');
-          pushSocialTask('twitter', this.social.twitter.toggle({
-            doTask: doTask,
+          pushSocialTask('twitter', this.social.twitter[doTask ? 'do' : 'undo']({
             ...payload.twitter
           }));
         }
         if (this.socialInitialized.vk === true && this.social.vk) {
           debug('处理 VK 任务');
-          pushSocialTask('vk', this.social.vk.toggle({
-            doTask: doTask,
+          pushSocialTask('vk', this.social.vk[doTask ? 'do' : 'undo']({
             ...payload.vk
           }));
         }
         if (this.socialInitialized.youtube === true && this.social.youtube) {
           debug('处理 YouTube 任务');
-          pushSocialTask('youtube', this.social.youtube.toggle({
-            doTask: doTask,
+          pushSocialTask('youtube', this.social.youtube[doTask ? 'do' : 'undo']({
             ...payload.youtube
           }));
         }
         if ((this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) && (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) && this.social.steam) {
           debug('处理 Steam 任务');
-          pushSocialTask('steam', this.social.steam.toggle({
-            doTask: doTask,
+          pushSocialTask('steam', this.social.steam[doTask ? 'do' : 'undo']({
             ...payload.steam
           }));
         }
@@ -9787,7 +10004,7 @@ if (missingDependencies.length > 0) {
 
          case 'discord_server_sub':
           debug('跳过 Discord 任务');
-          echoLog({}).warning(`${I18n('discordTaskNotice')}`);
+          echoLog({}).warning(`${I18n('unSupporttedTaskType')}`);
           break;
 
          case 'youtube_channel_sub':
@@ -10231,11 +10448,7 @@ if (missingDependencies.length > 0) {
           logStatus.warning(I18n('noTasks'));
           return true;
         }
-        debug('检查并处理 Discord 和 Twitch 绑定');
-        if ($('div.bind-discord').is(':visible')) {
-          debug('点击 Discord 绑定按钮');
-          $('div.bind-discord a')[0]?.click();
-        }
+        debug('检查并处理 Twitch 绑定');
         if ($('div.bind-twitch').is(':visible')) {
           debug('点击 Twitch 绑定按钮');
           $('div.bind-twitch a')[0]?.click();
@@ -10400,11 +10613,6 @@ if (missingDependencies.length > 0) {
           return;
         }
         if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
-          debug('添加 Discord 服务器任务');
-          this.addTask('discord', 'server', taskLink, {
-            title: taskName,
-            icon: taskIcon
-          });
           return;
         }
         if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
@@ -11224,12 +11432,6 @@ if (missingDependencies.length > 0) {
             link = await getRedirectLink(link) || link;
           }
           if (/https?:\/\/key-hub\.eu\/connect\/discord/.test(link)) {
-            debug('处理 Discord 连接任务');
-            if (!isDone) {
-              GM_openInTab(link, {
-                active: true
-              });
-            }
             continue;
           }
           if (/steamcommunity\.com\/groups\//.test(link)) {
@@ -11253,8 +11455,6 @@ if (missingDependencies.length > 0) {
             continue;
           }
           if (/^https?:\/\/discord\.com\/invite\//.test(link)) {
-            debug('处理 Discord 服务器任务');
-            addTask('discord', 'server', link);
             continue;
           }
           if (/^javascript:videoTask.+/.test(link)) {
@@ -11835,8 +12035,6 @@ if (missingDependencies.length > 0) {
           return;
         }
         if (icon.hasClass('fa-discord') || /^https?:\/\/discord\.com\/invite\//.test(href)) {
-          debug('添加 Discord 服务器任务');
-          addTask('discord', 'server');
           return;
         }
         debug('未识别的任务类型', {
@@ -12131,14 +12329,6 @@ if (missingDependencies.length > 0) {
           return;
         }
         if (taskIcon.includes('discord')) {
-          debug('添加 Discord 服务器任务');
-          this.tasks.push({
-            ...taskInfo,
-            social: 'discord',
-            type: 'server',
-            link: taskLink,
-            done: Boolean(taskInfo.done)
-          });
           return;
         }
         if (taskIcon.includes('instagram')) {
@@ -12973,7 +13163,6 @@ if (missingDependencies.length > 0) {
     buttons=[ 'doTask', 'undoTask', 'selectAll', 'selectNone', 'invertSelect' ];
     static CONFIG={
       LINK_PATTERNS: {
-        DISCORD: /^https?:\/\/discord\.com\/invite\/.+/,
         REDDIT: /^https?:\/\/www\.reddit\.com\/(r|user)\/.+/,
         INSTAGRAM: /^https:\/\/www\.instagram\.com\/.+/,
         TWITTER: /^https:\/\/(twitter|x)\.com\/.+/,
@@ -13047,11 +13236,6 @@ if (missingDependencies.length > 0) {
       });
       const {LINK_PATTERNS: LINK_PATTERNS} = Keylol.CONFIG;
       switch (true) {
-       case LINK_PATTERNS.DISCORD.test(href):
-        debug('发现 Discord 链接');
-        this.#addBtn($link[0], 'discord', 'server', href);
-        break;
-
        case LINK_PATTERNS.REDDIT.test(href):
         debug('发现 Reddit 链接');
         this.#addBtn($link[0], 'reddit', 'post', href);
@@ -13548,33 +13732,9 @@ if (missingDependencies.length > 0) {
             }
           }
           if (link.includes('//discord.com/')) {
-            if (/join/gim.test(taskDes)) {
-              debug('添加 Discord 加入任务');
-              this.tasks.push({
-                done: false,
-                social: 'discord',
-                type: 'server',
-                link: link
-              });
-              continue;
-            }
+            continue;
           }
           if (link.includes('//discord.gg/') && /join/gim.test(taskDes)) {
-            debug('获取重定向链接', {
-              link: link
-            });
-            const taskLink = await getRedirectLink(link, false);
-            if (!taskLink) {
-              debug('获取重定向链接失败');
-              continue;
-            }
-            debug('添加 Discord 加入任务');
-            this.tasks.push({
-              done: false,
-              social: 'discord',
-              type: 'server',
-              link: taskLink
-            });
             continue;
           }
           if (/clash\.gg/.test(link)) {
@@ -13920,15 +14080,6 @@ if (missingDependencies.length > 0) {
             continue;
           }
           if (socialIcon.hasClass('fa-discord') && /join/gim.test(taskText)) {
-            let link = $task.find('a[href^="https://discord.com/invite/"]').attr('href');
-            if (!link) {
-              const ggLink = $task.find('a[href^="https://discord.gg/"]').attr('href')?.match(/discord\.gg\/([^/]+)/)?.[1];
-              if (!ggLink) {
-                continue;
-              }
-              link = `https://discord.com/invite/${ggLink}`;
-            }
-            addTask('discord', 'server', link);
             continue;
           }
           if (socialIcon.hasClass('fa-external-link-square-alt')) {
@@ -14717,9 +14868,6 @@ if (missingDependencies.length > 0) {
     }
   };
   const defaultWhiteList = {
-    discord: {
-      servers: []
-    },
     instagram: {
       users: []
     },
@@ -14758,7 +14906,6 @@ if (missingDependencies.length > 0) {
     }
   };
   const REGEX_PATTERNS = {
-    DISCORD_INVITE: /invite\/(.+)/,
     INSTAGRAM_USER: /https:\/\/www\.instagram\.com\/(.+)?\//,
     TWITCH_CHANNEL: /https:\/\/(www\.)?twitch\.tv\/(.+)/,
     TWITTER_USER: /https:\/\/twitter\.com\/(.+)/,
@@ -14780,10 +14927,6 @@ if (missingDependencies.length > 0) {
       const link = $('#socialLink').val();
       let id = '';
       switch (type) {
-       case 'discord.servers':
-        id = REGEX_PATTERNS.DISCORD_INVITE.exec(link)?.[1] || '';
-        break;
-
        case 'instagram.users':
         id = REGEX_PATTERNS.INSTAGRAM_USER.exec(link)?.[1] || '';
         break;
@@ -14847,8 +14990,12 @@ if (missingDependencies.length > 0) {
             }
             const [, param1, param2] = storeMatch;
             const steam = new Steam;
-            if (await steam.init()) {
-              id = await steam.getCuratorId(param1, param2) || '';
+            try {
+              if (await steam.init('store')) {
+                id = await steam.getCuratorId(param1, param2) || '';
+              }
+            } finally {
+              steam.dispose();
             }
           }
           break;
@@ -15568,7 +15715,14 @@ if (missingDependencies.length > 0) {
         debug('获取Twitter用户ID', {
           name: name
         });
-        id = await (new Twitter).userName2id(name) || '';
+        const twitter = new Twitter;
+        try {
+          if (await twitter.init()) {
+            id = await twitter.userName2id(name) || '';
+          }
+        } finally {
+          twitter.dispose();
+        }
       } else if (social === 'youtubeChannel') {
         const name = this.#extractYoutubeUrl(link);
         debug('获取YouTube频道信息', {
@@ -16026,29 +16180,6 @@ if (missingDependencies.length > 0) {
             continue;
           }
           if (task.category === 'Discord' && task.type === 'JoinServer') {
-            if (!task.invite_code) {
-              debug('缺少 Discord 邀请码，跳过任务', {
-                taskId: task.id
-              });
-              continue;
-            }
-            const discordLink = `https://discord.gg/${task.invite_code}`;
-            debug('添加 Discord 服务器链接', {
-              action: action,
-              link: discordLink
-            });
-            this.tasks.push({
-              done: task.isDone,
-              social: 'discord',
-              type: 'server',
-              link: discordLink,
-              id: task.id,
-              title: taskTitle,
-              category: task.category,
-              sourceType: task.type,
-              hash: task.hash,
-              inviteCode: task.invite_code
-            });
             continue;
           }
           if ([ 'TikTok', 'YouTube', 'General' ].includes(task.category)) {
@@ -16144,8 +16275,6 @@ if (missingDependencies.length > 0) {
         } else if (task.category === 'TikTok' && task.type === 'FollowAccount') {
           link = `https://www.tiktok.com/@${task.targetName}`;
         } else if (task.category === 'Steam' && task.type === 'JoinGroup') {
-          link = '';
-        } else if (task.category === 'Discord' && task.type === 'JoinServer') {
           link = '';
         }
         debug('生成的任务链接', {
@@ -17089,6 +17218,22 @@ if (missingDependencies.length > 0) {
       throwError(error, 'updateChecker');
     }
   };
+  class SteamASF extends SteamASF$1 {
+    unsubscribe;
+    constructor(options) {
+      super({
+        ...options,
+        http: createGMHttpClient$6((request => GM_xmlhttpRequest(request))),
+        gm: projectGM('steam'),
+        namespace: `${moduleNamespace('steam')}:asf`
+      });
+      this.unsubscribe = bindModuleStatus(this, 'SteamASF');
+    }
+    dispose() {
+      this.unsubscribe();
+      super.dispose();
+    }
+  }
   try {
     consoleLogHook();
   } catch (error) {
@@ -17097,73 +17242,6 @@ if (missingDependencies.length > 0) {
   window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
   window.DEBUG = !!globalOptions.other?.debug;
   window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'function';
-  const handleTwitchAuth = async () => {
-    debug('开始处理Twitch认证');
-    const authToken = Cookies.get('auth-token');
-    const isLogin = !!Cookies.get('login');
-    if (isLogin) {
-      const authData = {
-        authToken: authToken,
-        clientVersion: window.__twilightBuildID,
-        clientId: window.commonOptions?.headers?.['Client-ID'],
-        deviceId: window.commonOptions?.headers?.['Device-ID'],
-        clientSessionId: window.localStorage.local_storage_app_session_id.replace(/"/g, '')
-      };
-      GM_setValue('twitchAuth', authData);
-      window.close();
-      await Swal.fire('', I18n('closePageNotice'));
-    } else {
-      await Swal.fire('', I18n('needLogin'));
-    }
-  };
-  const handleRedditAuth = async () => {
-    debug('开始处理Reddit认证');
-    const betaButton = $('#redesign-beta-optin-btn');
-    if (betaButton.length > 0) {
-      betaButton[0].click();
-      return;
-    }
-    window.close();
-    await Swal.fire('', I18n('closePageNotice'));
-  };
-  const handleSteamStoreAuth = async () => {
-    debug('开始处理Steam商店认证');
-    const storeSessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
-    if (storeSessionID) {
-      GM_deleteValue('ATv4_updateStoreAuth');
-      GM_setValue('steamStoreAuth', {
-        storeSessionID: storeSessionID
-      });
-      window.close();
-      await Swal.fire('', I18n('closePageNotice'));
-    } else {
-      await Swal.fire({
-        title: 'Error: Get "sessionID" failed',
-        icon: 'error'
-      });
-    }
-  };
-  const handleSteamCommunityAuth = async () => {
-    debug('开始处理Steam社区认证');
-    const steam64Id = document.body.innerHTML.match(/g_steamID = "(.+?)";/)?.[1];
-    const communitySessionID = document.body.innerHTML.match(/g_sessionID = "(.+?)";/)?.[1];
-    if (steam64Id && communitySessionID) {
-      GM_deleteValue('ATv4_updateCommunityAuth');
-      GM_setValue('steamCommunityAuth', {
-        steam64Id: steam64Id,
-        communitySessionID: communitySessionID
-      });
-      window.close();
-      await Swal.fire('', I18n('closePageNotice'));
-    } else {
-      setTimeout((async () => {
-        await Swal.fire({
-          title: 'Error: Get "sessionID" failed',
-          icon: 'error'
-        });
-      }), 3e3);
-    }
-  };
   const initializeUI = website => {
     debug('初始化UI元素', {
       website: website.name
@@ -17284,6 +17362,7 @@ if (missingDependencies.length > 0) {
     } catch (error) {
       console.error('SteamASF operation failed:', error);
     } finally {
+      steamASF?.dispose();
       steamASF = null;
     }
   };
@@ -17326,16 +17405,6 @@ if (missingDependencies.length > 0) {
   };
   const loadScript = async () => {
     debug('主程序入口 loadScript 开始');
-    if (window.name === 'ATv4_twitchAuth' && window.location.hostname === 'www.twitch.tv') {
-      debug('检测到Twitch认证窗口');
-      await handleTwitchAuth();
-      return;
-    }
-    if (window.name === 'ATv4_redditAuth' && window.location.hostname === 'www.reddit.com') {
-      debug('检测到Reddit认证窗口');
-      await handleRedditAuth();
-      return;
-    }
     let website;
     for (const Website of Websites) {
       if (Website.test()) {
@@ -17381,39 +17450,34 @@ if (missingDependencies.length > 0) {
     checkVersionAndNotice();
     updateChecker();
   };
-  try {
-    debug('主程序入口开始', {
-      hostname: window.location.hostname,
-      windowName: window.name
-    });
-    if (window.location.hostname === 'opquests.com') {
-      debug('检测到opquests.com，加载主脚本');
-      loadScript();
-    } else if ((window.name === 'ATv4_updateStoreAuth' || GM_getValue('ATv4_updateStoreAuth')) && window.location.host === 'store.steampowered.com') {
-      debug('检测到Steam商店认证窗口');
-      $((() => {
-        if ($('[data-miniprofile]').length === 0) {
-          return;
-        }
-        handleSteamStoreAuth();
-      }));
-    } else if ((window.name === 'ATv4_updateCommunityAuth' || GM_getValue('ATv4_updateCommunityAuth')) && window.location.host === 'steamcommunity.com') {
-      debug('检测到Steam社区认证窗口');
-      $((() => {
-        handleSteamCommunityAuth();
-      }));
-    } else {
+  const bootstrap = async () => {
+    try {
+      if (await handleSteamAuthPage({
+        namespace: moduleNamespace('steam'),
+        gm: projectGM('steam')
+      })) {
+        return;
+      }
+      if (await handleTwitchAuthPage({
+        namespace: moduleNamespace('twitch'),
+        gm: projectGM('twitch')
+      })) {
+        return;
+      }
       if (window.location.hostname === 'key-hub.eu') {
-        debug('检测到key-hub.eu，设置全局变量');
         unsafeWindow.keyhubtracker = 1;
         unsafeWindow.gaData = {};
       }
-      debug('加载主脚本');
-      $(loadScript);
+      await loadScript();
+    } catch (error) {
+      debug('主程序入口发生异常', {
+        error: error
+      });
     }
-  } catch (error) {
-    debug('主程序入口发生异常', {
-      error: error
-    });
+  };
+  if (window.location.hostname === 'opquests.com') {
+    void bootstrap();
+  } else {
+    $(bootstrap);
   }
-})(Swal, Cookies, browser, util, dayjs, keyboardJS);
+})(Swal, browser, util, dayjs, keyboardJS);

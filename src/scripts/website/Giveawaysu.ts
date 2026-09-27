@@ -200,11 +200,8 @@ class GiveawaySu extends Website {
         return true;
       }
 
-      debug('检查并处理 Discord 和 Twitch 绑定');
-      if ($('div.bind-discord').is(':visible')) {
-        debug('点击 Discord 绑定按钮');
-        $('div.bind-discord a')[0]?.click();
-      }
+      debug('检查并处理 Twitch 绑定');
+
       if ($('div.bind-twitch').is(':visible')) {
         debug('点击 Twitch 绑定按钮');
         $('div.bind-twitch a')[0]?.click();
@@ -355,11 +352,7 @@ class GiveawaySu extends Website {
         return;
       }
 
-      if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) {
-        debug('添加 Discord 服务器任务');
-        this.addTask('discord', 'server', taskLink, { title: taskName, icon: taskIcon });
-        return;
-      }
+      if (taskIcon.includes('discord') || TASK_PATTERNS.discord.test(taskName)) { return; }
 
       if (taskIcon.includes('instagram') || TASK_PATTERNS.instagram.test(taskName)) {
         debug('跳过 Instagram 任务');

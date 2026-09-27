@@ -8,7 +8,10 @@
  */
 
 import throwError from '../tools/throwError';
-import { unique } from '../tools/tools';
+import { getRealParams, setTaskResult } from '../../../modules/social/results';
+import { SocialAdapter } from '../../../modules/social/adapter';
+import type { SocialModule, TaskOptions } from '../../../modules/social/types';
+import { bindModuleStatus } from './moduleBridge';
 import { debug } from '../tools/debug';
 
 interface toggleParams {
@@ -68,9 +71,7 @@ abstract class Social {
     value: string,
     success: boolean
   ): void {
-    result.results[type] ||= {};
-    result.results[type][value] = success;
-    result.success = result.success && success;
+    setTaskResult(result, type, value, success);
   }
 
   /**
@@ -99,30 +100,7 @@ abstract class Social {
   ): Array<string> {
     try {
       debug('开始获取实际参数', { name, linksCount: links.length, doTask });
-      let realParams: Array<string> = [];
-
-      // 处理链接参数
-      if (links.length > 0) {
-        debug('处理链接参数');
-        const convertedLinks = links
-          .map((link) => link2param(link))
-          .filter((link): link is string => link !== undefined);
-        debug('链接参数处理结果', { convertedLinksCount: convertedLinks.length });
-        realParams = [...realParams, ...convertedLinks];
-      }
-
-      // 处理任务参数
-      if (!doTask && this.tasks[name]?.length) {
-        debug('处理任务参数', { taskCount: this.tasks[name].length });
-        realParams = [...realParams, ...this.tasks[name]];
-      }
-
-      const uniqueParams = unique(realParams);
-      debug('参数处理完成', {
-        originalCount: realParams.length,
-        uniqueCount: uniqueParams.length
-      });
-      return uniqueParams;
+      return getRealParams(links, doTask, this.tasks[name] || [], link2param);
     } catch (error) {
       debug('获取实际参数时发生错误', { error });
       throwError(error as Error, 'Social.getRealParams');
@@ -132,3 +110,34 @@ abstract class Social {
 }
 
 export default Social;
+
+/** Project wiring around the standalone Social adapter. */
+export class ProjectSocial<C extends SocialModule & { tasks: object; whiteList: C['tasks'] }> extends SocialAdapter<C> {
+  private readonly unsubscribe: () => void;
+  constructor(client: C, platform: string) {
+    super(client);
+    this.unsubscribe = bindModuleStatus(client, platform);
+  }
+  get tasks(): C['tasks'] { return this.client.tasks; }
+  set tasks(value: C['tasks']) { this.client.tasks = value; }
+  get whiteList(): C['tasks'] { return this.client.whiteList; }
+  set whiteList(value: C['tasks']) { this.client.whiteList = value; }
+  async do(options: TaskOptions<C>): Promise<SocialToggleResult> {
+    const result = await super.do(options);
+    if (typeof result === 'boolean') return result;
+    const results: Record<string, Record<string, boolean>> = {};
+    for (const [key, values] of Object.entries(result.results)) if (values) Object.defineProperty(results, key, { value: values, enumerable: true, writable: true, configurable: true });
+    return { success: result.success, results };
+  }
+  async undo(options: TaskOptions<C>): Promise<SocialToggleResult> {
+    const result = await super.undo(options);
+    if (typeof result === 'boolean') return result;
+    const results: Record<string, Record<string, boolean>> = {};
+    for (const [key, values] of Object.entries(result.results)) if (values) Object.defineProperty(results, key, { value: values, enumerable: true, writable: true, configurable: true });
+    return { success: result.success, results };
+  }
+  dispose(): void {
+    this.unsubscribe();
+    super.dispose();
+  }
+}

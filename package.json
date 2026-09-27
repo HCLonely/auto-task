@@ -2,7 +2,9 @@
   "name": "auto-task",
   "version": "5.2.2",
   "change": [
-    "优化：样式优化"
+    "修复：Vk点赞任务获取参数失败",
+    "修复：样式编译错误",
+    "移除：Freeanywhere扩展任务支持"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {
@@ -10,14 +12,15 @@
   },
   "main": "package.json",
   "scripts": {
-    "test": "npm run lint",
+    "test": "npm run lint && tsc --noEmit && npm run test:social",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "tsc": "tsc",
     "rollup": "rollup -c",
     "build": "npm run lint && npm run rollup && node build-all-static.js",
     "postbuild": "node copy.js && node release.js && node doc-sync.js",
-    "build:all": "npm run build && npm run postbuild"
+    "build:all": "npm run build && npm run postbuild",
+    "test:social": "node modules/social/tests/run.cjs"
   },
   "author": "HCLonely <h1606051253@gmail.com>",
   "license": "MIT",

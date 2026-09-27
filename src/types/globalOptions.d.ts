@@ -8,9 +8,6 @@
 
 interface globalOptions {
   doTask: {
-    discord: {
-      servers: boolean
-    },
     // instagram: {
     //   users: boolean
     // },
@@ -47,9 +44,6 @@ interface globalOptions {
     }
   },
   undoTask: {
-    discord: {
-      servers: boolean
-    },
     // instagram: {
     //   users: boolean
     // },

@@ -385,7 +385,7 @@ class Opquests extends Website {
   async #confirm(): Promise<boolean> {
     try {
       debug('开始确认任务');
-      const logStatus = echoLog({ html: `<li>${__('confirmingTask')}...<font></font></li>` });
+      const logStatus = echoLog({ html: `<li>${__('confirmingTask')}<font></font></li>` });
 
       debug('发送确认请求');
       const { result, statusText, status, data } = await httpRequest({

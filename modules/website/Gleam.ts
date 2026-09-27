@@ -518,7 +518,7 @@ class Gleam extends Website {
   async verifyTask(): Promise<any> {
     try {
       debug('开始验证任务');
-      echoLog({ text: `${__('verifyingTask')}...` });
+      echoLog({ text: `${__('verifyingTask')}` });
 
       const tasks = $('.entry-content .entry-method');
       unsafeWindow._OxA = '_OxA';

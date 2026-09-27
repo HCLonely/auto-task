@@ -337,7 +337,7 @@ class Givekey extends Website {
   async #verify(task: string): Promise<boolean> {
     try {
       debug('验证任务', { taskId: task });
-      const logStatus = echoLog({ html: `<li>${__('verifyingTask')}${task}...<font></font></li>` });
+      const logStatus = echoLog({ html: `<li>${__('verifyingTask')}${task}<font></font></li>` });
       const csrfToken = $('meta[name="csrf-token"]').attr('content');
 
       if (!csrfToken) {

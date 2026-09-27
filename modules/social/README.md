@@ -1,10 +1,10 @@
 # 独立社交模块
 
-统一导入入口为 `modules/social/index.ts`。统一初始化、任务执行及状态监听使用 [`SocialManager`](social/README.md)；各平台也可通过自己的入口单独使用。
+统一导入入口为 `modules/social/index.ts`。各平台通过自己的 `init`、`do` / `undo`、`on` 和 `dispose` 方法完成初始化、任务执行、状态监听及资源清理，也可通过自己的入口单独使用。
 
 | 模块 | 入口与接入说明 |
 | --- | --- |
-| Social 基类、适配器、整合器 | [social](social/README.md) |
+| Social 基类与适配器 | [social](social/README.md) |
 | Steam（管理 SteamWeb/ASF） | [steam](steam/README.md) |
 | VK | [vk](vk/README.md) |
 | Twitch | [twitch](twitch/README.md) |
@@ -19,7 +19,6 @@
 ## 执行与撤销
 
 所有平台批量入口统一为 `do(options)` 与 `undo(options)`，参数仅包含目标链接。
-`SocialManager` 提供 `do(platform, options)` / `undo(platform, options)` 和 `doAll(options)` / `undoAll(options)`。
 旧切换接口及参数类型已删除，不提供兼容别名。结果类型改为 `SocialTaskResult`（Steam / Twitter 同样使用 `Task` 命名）。
 构造选项中的 `doTask` / `undoTask` 仍是两套独立的功能开关，不用于选择当前调用的方向。
 

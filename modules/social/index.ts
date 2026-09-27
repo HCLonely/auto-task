@@ -1,6 +1,6 @@
 /** Unified imports without ambiguous wildcard exports from independent modules. */
-export { Social, SocialAdapter, SocialManager } from './social';
-export type { SocialModule, SocialStatusEvent, ManagerStatusEvent, InitResult, SocialTaskResult, SocialTaskDetailResult } from './social';
+export { Social, SocialAdapter } from './social';
+export type { SocialModule, SocialStatusEvent, InitResult, SocialTaskResult, SocialTaskDetailResult } from './social';
 export { default as Steam, handleSteamAuthPage } from './steam';
 export { default as SteamWeb } from './steam/steamWeb';
 export { default as SteamASF } from './steam/steamASF';

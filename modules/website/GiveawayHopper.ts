@@ -298,7 +298,7 @@ class GiveawayHopper extends Website {
           taskId: task.id,
           name: task.displayName?.replace(':target', task.targetName) || task.name
         });
-        const logStatus = echoLog({ text: `${__('verifyingTask')}[${task.displayName?.replace(':target', task.targetName) || task.name}]...` });
+        const logStatus = echoLog({ text: `${__('verifyingTask')}[${task.displayName?.replace(':target', task.targetName) || task.name}]` });
 
         if (!task.link) {
           debug('获取任务链接');

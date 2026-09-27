@@ -30,6 +30,33 @@ const ICONS: Record<IconKeys, string> = {
   '[Vk]': Vk,
   '[AutoTask]': AutoTask
 };
+
+type StatusKind = 'loading' | 'success' | 'error' | 'warning' | 'info';
+const STATUS_ICONS: Record<StatusKind, string> = {
+  loading: '', success: '✅️', error: '❌️', warning: '⚠️', info: '❓️'
+};
+const STATUS_LABELS: Record<StatusKind, string> = {
+  loading: 'logLoading', success: 'logSuccess', error: 'logError', warning: 'logWarning', info: 'unKnown'
+};
+
+/** Match translated result messages, including their interpolated parameters. */
+const inferStatus = (content: string): StatusKind => {
+  const resultKeys: Partial<Record<StatusKind, string[]>> = {
+    error: ['getFailed', 'getTaskIdFailed', 'initFailed', 'checkLoginFailed', 'checkLeftKeyFailed', 'syncDataFailed', 'checkUpdateFailed', 'moduleFailed'],
+    warning: ['needLogin', 'needInit', 'needJoinGiveaway', 'cannotUndo', 'moduleSkipped', 'skipTask', 'skipTaskOption', 'taskNotFinished', 'campaign', 'verifiedGleamTasks', 'giveeClubVerifyFinished'],
+    success: ['allTasksComplete', 'initSuccess', 'syncDataSuccess', 'clearHistoryFinished', 'clearTaskFinished'],
+    info: ['unKnown', 'unKnownTaskType']
+  };
+  for (const [kind, keys] of Object.entries(resultKeys)) {
+    for (const key of keys) {
+      const pattern = __(key).split(/%\d+/)
+        .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .join('.*');
+      if (new RegExp(`^${pattern}`).test(content)) return kind as StatusKind;
+    }
+  }
+  return 'loading';
+};
 /**
  * 日志状态接口定义
  */
@@ -177,14 +204,14 @@ const createPlatformElement = (type: string, text?: string, id?: string): JQuery
   if (typeof urlGenerator === 'function') {
     const url = urlGenerator(text, id);
     const displayText = platform === 'announcement' ? id || '' : text;
-    return createBaseElement(`${__(type)}[${generateLink(url, displayText)}]...`);
+    return createBaseElement(`${__(type)}[${generateLink(url, displayText)}]`);
   }
 
   if (subType && typeof urlGenerator === 'object') {
     const subGenerator = urlGenerator[subType];
     if (typeof subGenerator === 'function') {
       const displayText = type.includes('RedditUser') ? text.replace('u_', '') : text;
-      return createBaseElement(`${__(type)}[${generateLink(subGenerator(text), displayText)}]...`);
+      return createBaseElement(`${__(type)}[${generateLink(subGenerator(text), displayText)}]`);
     }
   }
 
@@ -203,10 +230,11 @@ const createSpecialElement = (type: string, text?: string, html?: string, id?: s
   switch (type) {
       case 'retweetting':
       case 'unretweetting':
-        return createBaseElement(`${__(type)}${text}...`);
+        return createBaseElement(`${__(type)}${text}`);
       case 'visitingLink':
-        return createBaseElement(`${__('visitingLink')}[${generateLink(text || '', text || '')}]...`);
+        return createBaseElement(`${__('visitingLink')}[${generateLink(text || '', text || '')}]`);
       case 'verifyingInsAuth':
+        return createBaseElement(__(type));
       case 'text':
         return createBaseElement(__(text || ''));
       case 'html':
@@ -216,7 +244,7 @@ const createSpecialElement = (type: string, text?: string, html?: string, id?: s
       case 'globalOptionsSkip':
         return $(`<li>${__('skipTaskOption')}<font class="warning">${text}</font></li>`);
       default:
-        return createBaseElement(`${__('unKnown')}:${type}(${text})...`);
+        return createBaseElement(`${__('unKnown')}:${type}(${text})`);
   }
 };
 
@@ -255,6 +283,30 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
       ele = createBaseElement('');
     }
 
+    if (!ele.length) ele = createBaseElement('');
+    // HTML logs may not supply a status node; keep their original content intact.
+    ele = ele.map((_, node) => (node.nodeType === 1 ? node : $('<li>').append(node)[0]));
+    ele.each((_, node) => {
+      const row = $(node);
+      if (!row.find('font.log-status').length) row.append('<font class="log-status"></font>');
+    });
+    const font = ele.find('font.log-status');
+    const indicators = $('<span class="log-status-icon" role="img"></span>');
+    ele.append(indicators);
+    const icons = ele.children('.log-status-icon');
+    const setState = (kind: StatusKind, targets = icons): void => {
+      targets.attr('data-status', kind).attr('aria-label', __(STATUS_LABELS[kind]))
+        .attr('title', __(STATUS_LABELS[kind]))
+        .text(STATUS_ICONS[kind]);
+    };
+    ele.each((_, node) => {
+      const row = $(node);
+      const initialStatus = type === 'whiteList' || type === 'globalOptionsSkip' || row.is('.warning') || row.find('.warning').length ? 'warning' :
+        row.is('.error') || row.find('.error').length ? 'error' :
+          row.is('.success') || row.find('.success').length ? 'success' : inferStatus(row.text());
+      setState(initialStatus, row.children('.log-status-icon'));
+    });
+
     if (before) {
       if (before in ICONS) {
         const iconKey = before as IconKeys;
@@ -273,35 +325,38 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
     $('#auto-task-info').append(ele);
     ele[0]?.scrollIntoView();
 
-    const font = ele.find('font.log-status');
     const status: logStatus = {
       font,
-      success(text = 'Success', html = false) {
-        this.font?.attr('class', '').addClass('success');
+      success(text = __('logSuccess'), html = false) {
+        this.font?.attr('class', 'log-status success');
         html ? this.font?.html(text) : this.font?.text(text);
+        setState('success');
         return this;
       },
-      error(text = 'Error', html = false) {
-        this.font?.attr('class', '').addClass('error');
+      error(text = __('logError'), html = false) {
+        this.font?.attr('class', 'log-status error');
         html ? this.font?.html(text) : this.font?.text(text);
+        setState('error');
         return this;
       },
-      warning(text = 'Warning', html = false) {
-        this.font?.attr('class', '').addClass('warning');
+      warning(text = __('logWarning'), html = false) {
+        this.font?.attr('class', 'log-status warning');
         html ? this.font?.html(text) : this.font?.text(text);
+        setState('warning');
         return this;
       },
-      info(text = 'Info', html = false) {
-        this.font?.attr('class', '').addClass('info');
+      info(text = __('unKnown'), html = false) {
+        this.font?.attr('class', 'log-status info');
         html ? this.font?.html(text) : this.font?.text(text);
+        setState('info');
         return this;
       },
       view() {
-        this.font?.[0].scrollIntoView();
+        ele[0]?.scrollIntoView();
         return this;
       },
       remove() {
-        this.font?.parent().remove();
+        ele.remove();
         return this;
       }
     };

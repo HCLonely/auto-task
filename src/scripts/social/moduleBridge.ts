@@ -60,7 +60,7 @@ export const bindModuleStatus = (client: { on(event: 'status', listener: StatusL
   const logs = new Map<string, logStatus>();
   const parents = new Map<string, string>();
   const taskOperations = /^(task\.(execute|skip|do|undo)|users\.(follow|unfollow)|retweets\.(create|delete)|channel\.(follow|unfollow|subscribe|unsubscribe)|video\.(like|unlike)|user\.(follow|unfollow)|subreddit\.(subscribe|unsubscribe))$/;
-  const listener = (event: SocialStatusEvent): void => {
+  const listener = (event: SocialStatusEvent & { source?: string }): void => {
     debug(`${platform}: ${event.operation}`, event);
     if (event.parentOperationId) parents.set(event.operationId, event.parentOperationId);
     const terminal = ['success', 'failure', 'skipped'].includes(event.phase);
@@ -73,14 +73,20 @@ export const bindModuleStatus = (client: { on(event: 'status', listener: StatusL
         id = parents.get(id);
       }
     }
-    if (event.parentOperationId && !(taskOperations.test(event.operation) && (platform !== 'Steam' || (event as SocialStatusEvent & { source?: string }).source === 'steam'))) {
+    if (event.parentOperationId && !(taskOperations.test(event.operation) && (platform !== 'Steam' || event.source === 'steam'))) {
       if (terminal) parents.delete(event.operationId);
       return;
     }
     let log = logs.get(event.operationId);
     if (!log) {
       const label = __(event.operation.startsWith('init') ? 'moduleInitializing' : 'moduleTask');
-      log = echoLog({ text: escapeText(`${platform}: ${label}${event.target ? ` (${event.target})` : ''}`) });
+      const source = platform === 'Steam' ? event.source || platform : platform;
+      const prefix = source === 'steamWeb' || source === 'SteamWeb' ? 'Web' :
+        source === 'steamASF' || source === 'SteamASF' ? 'ASF' : platform;
+      log = echoLog({
+        before: `[${escapeText(prefix)}]`,
+        text: escapeText(`${platform}: ${label}${event.target ? ` (${event.target})` : ''}`)
+      });
       logs.set(event.operationId, log);
     }
     if (event.phase === 'success') log.success();

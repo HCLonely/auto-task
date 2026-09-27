@@ -521,7 +521,7 @@ class FreeAnyWhere extends Website {
   async #verifyWithoutExtension(task: fawTaskInfo): Promise<boolean> {
     try {
       debug('验证任务', { task });
-      const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}...` });
+      const logStatus = echoLog({ text: `${__('verifyingTask')}${task.title.trim()}` });
       // $(".game__content-tasks__task .task-check").on('click', function (event) {
       // event.preventDefault();
 

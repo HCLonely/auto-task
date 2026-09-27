@@ -184,7 +184,7 @@ class Indiedb {
         return false;
       }
 
-      const logStatus = echoLog({ text: `${__('joiningGiveaway')}...` });
+      const logStatus = echoLog({ text: `${__('joiningGiveaway')}` });
       debug('发送加入请求');
       const { result, statusText, status, data } = await httpRequest({
         url: currentoption.attr('href') as string,
@@ -312,7 +312,7 @@ class Indiedb {
 
         const taskText = promo.parents('p').text();
         debug('处理任务', { taskText });
-        const status = echoLog({ text: `${__('doing')}:${taskText}...` });
+        const status = echoLog({ text: `${__('doing')}:${taskText}` });
 
         if (/the-challenge-of-adblock/gim.test(promo.attr('href') as string)) {
           debug('跳过未知任务类型');

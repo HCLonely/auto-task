@@ -29,15 +29,3 @@ export interface SocialModule {
 }
 export type InitOptions<C extends SocialModule> = Parameters<C['init']>[0];
 export type TaskOptions<C extends SocialModule> = Parameters<C['do']>[0];
-export interface ManagerStatusEvent extends SocialStatusEvent {
-  /** Registration key, e.g. steam/vk. Original executor source remains on the forwarded event. */
-  readonly platform: string;
-  readonly origin: 'module' | 'manager';
-  readonly source?: string;
-}
-export type ManagerListener = (event: ManagerStatusEvent) => void | Promise<void>;
-export interface BatchResult<R> { success: boolean; results: R }
-
-export function isSuccessful(result: SocialTaskResult): boolean {
-  return typeof result === 'boolean' ? result : result.success;
-}

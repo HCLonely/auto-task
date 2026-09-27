@@ -287,6 +287,30 @@
     }
   }
 
+  .log-status-icon {
+    display: inline-block;
+    margin-left: 0.4em;
+    vertical-align: middle;
+    line-height: 1;
+
+    &[data-status="loading"] {
+      width: 0.85em;
+      height: 0.85em;
+      border: 2px solid var(--at-border);
+      border-top-color: var(--at-primary);
+      border-radius: 50%;
+      animation: at-log-spin 0.8s linear infinite;
+
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    }
+  }
+
+  @keyframes at-log-spin {
+    to { transform: rotate(360deg); }
+  }
+
   font {
     display: contents;
   }

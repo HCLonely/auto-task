@@ -317,7 +317,7 @@ class Prys extends Website {
           ?.html()
           ?.trim();
         debug('验证任务', { id, taskDes });
-        const status = echoLog({ text: `${__('verifyingTask')}${taskDes}...` });
+        const status = echoLog({ text: `${__('verifyingTask')}${taskDes}` });
         pro.push(new Promise((resolve) => {
           this.#checkStep(id, resolve, status);
         }));

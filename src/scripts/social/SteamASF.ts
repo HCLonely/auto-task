@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/steam/steamASF';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/steam/steamASF';
 import { bindModuleStatus, moduleNamespace, projectGM } from './moduleBridge';
 
 export default class SteamASF extends ModuleClient {

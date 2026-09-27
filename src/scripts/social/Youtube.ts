@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/youtube';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/youtube';
 import { globalOptions } from '../globalOptions';
 import { ProjectSocial } from './Social';
 import { moduleNamespace, projectGM } from './moduleBridge';

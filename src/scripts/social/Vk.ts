@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/vk';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/vk';
 import { globalOptions } from '../globalOptions';
 import { ProjectSocial } from './Social';
 import { moduleNamespace, projectGM } from './moduleBridge';

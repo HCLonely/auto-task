@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/steam/steamWeb';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/steam/steamWeb';
 import { bindModuleStatus, moduleNamespace, projectGM } from './moduleBridge';
 
 export default class SteamWeb extends ModuleClient {

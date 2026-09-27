@@ -40,7 +40,7 @@
   settings.on = {
     push: {
       branches: ['main'],
-      paths: ['src/**', '.github/workflows/Release.yml']
+      paths: ['src/**', 'modules/**', '.github/workflows/Release.yml']
     }
   };
   options.prerelease = package.version.includes('-');
@@ -49,6 +49,7 @@
   options.body = changelog;
   options.files = `dist/auto-task.user.js
 dist/auto-task.modules.js
+dist/auto-task.website.js
 dist/auto-task.min.user.js
 dist/auto-task.compatibility.user.js
 dist/auto-task.all.user.js

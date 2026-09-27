@@ -1,5 +1,5 @@
-import type { GMAuthAPI } from '../../../modules/steam';
-import type { SocialStatusEvent, StatusListener } from '../../../modules/social/types';
+import type { GMAuthAPI } from '../../../modules/social/steam';
+import type { SocialStatusEvent, StatusListener } from '../../../modules/social/social/types';
 import echoLog from '../echoLog';
 import __ from '../tools/i18n';
 import { debug } from '../tools/debug';

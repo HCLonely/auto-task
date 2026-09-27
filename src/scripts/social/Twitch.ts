@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/twitch';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/twitch';
 import { globalOptions } from '../globalOptions';
 import { ProjectSocial } from './Social';
 import { moduleNamespace, projectGM } from './moduleBridge';

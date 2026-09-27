@@ -8,9 +8,9 @@
  */
 
 import throwError from '../tools/throwError';
-import { getRealParams, setTaskResult } from '../../../modules/social/results';
-import { SocialAdapter } from '../../../modules/social/adapter';
-import type { SocialModule, TaskOptions } from '../../../modules/social/types';
+import { getRealParams, setTaskResult } from '../../../modules/social/social/results';
+import { SocialAdapter } from '../../../modules/social/social/adapter';
+import type { SocialModule, TaskOptions } from '../../../modules/social/social/types';
 import { bindModuleStatus } from './moduleBridge';
 import { debug } from '../tools/debug';
 

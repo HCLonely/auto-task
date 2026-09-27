@@ -29,7 +29,30 @@ const moduleGlobals = new Map(Object.entries({
   twitter: 'twitter',
   reddit: 'reddit',
   youtube: 'youtube'
-}).map(([entry, namespace]) => [path.resolve('modules', entry), `AutoTaskModules.${namespace}`]));
+}).map(([entry, namespace]) => [path.resolve('modules/social', entry), `AutoTaskModules.${namespace}`]));
+
+const websiteGlobals = new Map([
+  [path.resolve('modules/website/index'), 'AutoTaskWebsite'],
+  [path.resolve('modules/website/options'), 'AutoTaskWebsite.options'],
+  ...Object.entries({
+    globalOptions: 'globalOptions',
+    globalOptionsEdit: 'globalOptionsEdit',
+    echoLog: 'echoLog',
+    'tools/i18n': 'i18n',
+    'tools/debug': 'debug',
+    'social/moduleBridge': 'moduleBridge',
+    'social/SteamASF': 'SteamASF'
+  }).map(([entry, namespace]) => [path.resolve('src/scripts', entry), `AutoTaskWebsite.${namespace}`])
+]);
+
+const externalize = mappings => ({
+  name: 'userscript-modules',
+  resolveId(source, importer) {
+    if (!importer || !source.startsWith('.')) return null;
+    const id = path.resolve(path.dirname(importer), source).replace(/\.ts$/, '');
+    return mappings.has(id) ? { id, external: true } : null;
+  }
+});
 
 const externalGlobals = {
   sweetalert2: 'Swal',
@@ -39,11 +62,11 @@ const externalGlobals = {
   dayjs: 'dayjs',
   'node-inspect-extracted': 'util'
 };
-const globals = id => moduleGlobals.get(id) || externalGlobals[id];
-const interop = id => moduleGlobals.has(id) ? 'esModule' : 'default';
+const globals = id => moduleGlobals.get(id) || websiteGlobals.get(id) || externalGlobals[id];
+const interop = id => moduleGlobals.has(id) || websiteGlobals.has(id) ? 'esModule' : 'default';
 
 const modulesBuild = {
-  input: 'modules/browser.ts',
+  input: 'modules/social/browser.ts',
   output: {
     file: 'dist/auto-task.modules.js',
     format: 'iife',
@@ -155,14 +178,7 @@ const userscriptBuild = {
     }
   ],
   plugins: [
-    {
-      name: 'userscript-modules',
-      resolveId(source, importer) {
-        if (!importer || !source.startsWith('.')) return null;
-        const id = path.resolve(path.dirname(importer), source);
-        return moduleGlobals.has(id) ? { id, external: true } : null;
-      }
-    },
+    externalize(new Map([...moduleGlobals, ...websiteGlobals])),
     progress(),
     sizes({
       details: true,
@@ -186,4 +202,21 @@ const userscriptBuild = {
   external: ['sweetalert2', 'js-cookie', 'keyboardjs', 'dayjs', 'node-inspect-extracted', 'browser-tool']
 };
 
-export default [modulesBuild, userscriptBuild];
+const websiteBuild = {
+  input: 'modules/website/browser.ts',
+  output: {
+    file: 'dist/auto-task.website.js',
+    format: 'iife',
+    name: 'AutoTaskWebsite',
+    globals,
+    interop,
+    plugins: [
+      getBabelOutputPlugin({ presets: ['@babel/preset-env'], allowAllFormats: true }),
+      terser({ format: { comments: false } })
+    ]
+  },
+  plugins: [externalize(moduleGlobals), nodeResolve(), typescript(), svg({ stringify: true })],
+  external: Object.keys(externalGlobals)
+};
+
+export default [modulesBuild, websiteBuild, userscriptBuild];

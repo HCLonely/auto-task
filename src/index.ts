@@ -10,12 +10,12 @@
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
 import Swal from 'sweetalert2';
-import { handleSteamAuthPage } from '../modules/steam';
-import { handleTwitchAuthPage } from '../modules/twitch';
+import { handleSteamAuthPage } from '../modules/social/steam';
+import { handleTwitchAuthPage } from '../modules/social/twitch';
 import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
 import style from './style/auto-task.scss';
-import { Websites } from './scripts/website/index';
-import websiteOptions from './scripts/website/options';
+import { Websites } from '../modules/website/index';
+import websiteOptions from '../modules/website/options';
 import __ from './scripts/tools/i18n';
 import { changeGlobalOptions } from './scripts/globalOptionsEdit';
 import keyboardJS from 'keyboardjs';
@@ -26,7 +26,7 @@ import { debug } from './scripts/tools/debug';
 // import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
 // import browser from 'browser-tool';
 // import { v4 as uuidv4 } from 'uuid';
-// import fawExtension from './scripts/website/freeanywhereExtension';
+// import fawExtension from '../modules/website/freeanywhereExtension';
 
 try {
   consoleLogHook();

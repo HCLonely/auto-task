@@ -5,6 +5,7 @@ name: Release
       - main
     paths:
       - src/**
+      - modules/**
       - .github/workflows/Release.yml
 jobs:
   release:
@@ -28,6 +29,7 @@ jobs:
           files: |-
             dist/auto-task.user.js
             dist/auto-task.modules.js
+            dist/auto-task.website.js
             dist/auto-task.min.user.js
             dist/auto-task.compatibility.user.js
             dist/auto-task.all.user.js

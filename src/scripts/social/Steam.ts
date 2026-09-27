@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/steam';
+import ModuleClient, { createGMHttpClient } from '../../../modules/social/steam';
 import { globalOptions } from '../globalOptions';
 import { ProjectSocial } from './Social';
 import { moduleNamespace, projectGM } from './moduleBridge';

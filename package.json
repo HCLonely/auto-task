@@ -20,7 +20,8 @@
     "build": "npm run lint && npm run rollup && node build-all-static.js",
     "postbuild": "node copy.js && node release.js && node doc-sync.js",
     "build:all": "npm run build && npm run postbuild",
-    "test:social": "node modules/social/tests/run.cjs"
+    "test:social": "node modules/social/social/tests/run.cjs",
+    "test:modules": "npm run rollup && node build-all-static.js && node --test modules/website/tests/bundle.test.cjs"
   },
   "author": "HCLonely <h1606051253@gmail.com>",
   "license": "MIT",

@@ -123,6 +123,7 @@
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
 // @require            https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.modules.js
+// @require            https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.website.js
 
 // @noframes
 // ==/UserScript==

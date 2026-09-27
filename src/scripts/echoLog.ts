@@ -62,6 +62,7 @@ const inferStatus = (content: string): StatusKind => {
  */
 interface logStatus {
   font?: JQuery;
+  setBefore: (before: string) => logStatus;
   success: (text?: string, html?: boolean) => logStatus;
   error: (text?: string, html?: boolean) => logStatus;
   warning: (text?: string, html?: boolean) => logStatus;
@@ -259,6 +260,7 @@ const createSpecialElement = (type: string, text?: string, html?: string, id?: s
  */
 const echoLog = ({ type, text, html, id, before }: { type?: string, text?: string, html?: string, id?: string, before?: string }): logStatus => {
   const emptyStatus: logStatus = {
+    setBefore: () => emptyStatus,
     success: () => emptyStatus,
     error: () => emptyStatus,
     warning: () => emptyStatus,
@@ -307,19 +309,16 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
       setState(initialStatus, row.children('.log-status-icon'));
     });
 
-    if (before) {
-      if (before in ICONS) {
-        const iconKey = before as IconKeys;
-        const svgContent = ICONS[iconKey];
-        const base64Svg = btoa(svgContent);
+    const setBefore = (prefix = '[AutoTask]'): void => {
+      ele.children('.before-icon, .before').remove();
+      if (prefix in ICONS) {
+        const base64Svg = btoa(ICONS[prefix as IconKeys]);
         ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
       } else {
-        ele.prepend(`<font class="before">${before}</font>`);
+        ele.prepend(`<font class="before">${prefix}</font>`);
       }
-    } else {
-      const base64Svg = btoa(ICONS['[AutoTask]']);
-      ele.prepend(`<font class="before-icon" style="background-image: url('data:image/svg+xml;base64,${base64Svg}')"></font>`);
-    }
+    };
+    setBefore(before || undefined);
 
     ele.addClass('card-text');
     $('#auto-task-info').append(ele);
@@ -327,6 +326,10 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
 
     const status: logStatus = {
       font,
+      setBefore(prefix) {
+        setBefore(prefix);
+        return this;
+      },
       success(text = __('logSuccess'), html = false) {
         this.font?.attr('class', 'log-status success');
         html ? this.font?.html(text) : this.font?.text(text);

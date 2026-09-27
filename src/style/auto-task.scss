@@ -289,9 +289,6 @@
 
   .log-status-icon {
     display: inline-block;
-    margin-left: 0.4em;
-    vertical-align: middle;
-    line-height: 1;
 
     &[data-status="loading"] {
       width: 0.85em;

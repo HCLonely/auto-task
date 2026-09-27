@@ -57,13 +57,28 @@ const escapeText = (value: string): string => value.replace(/[&<>"']/g, (char) =
 
 /** Log batch results and individual tasks, without duplicating executor/transport logs. */
 export const bindModuleStatus = (client: { on(event: 'status', listener: StatusListener): () => void; dispose(): void }, platform: string): (() => void) => {
-  const logs = new Map<string, logStatus>();
+  const logs = new Map<string, ReturnType<typeof echoLog>>();
+  const steamTasks = new Set<string>();
   const parents = new Map<string, string>();
   const taskOperations = /^(task\.(execute|skip|do|undo)|users\.(follow|unfollow)|retweets\.(create|delete)|channel\.(follow|unfollow|subscribe|unsubscribe)|video\.(like|unlike)|user\.(follow|unfollow)|subreddit\.(subscribe|unsubscribe))$/;
   const listener = (event: SocialStatusEvent & { source?: string }): void => {
     debug(`${platform}: ${event.operation}`, event);
     if (event.parentOperationId) parents.set(event.operationId, event.parentOperationId);
     const terminal = ['success', 'failure', 'skipped'].includes(event.phase);
+    // Executor events are hidden below, but still identify the owning task's icon.
+    const executor = event.code === 'EXECUTOR_ATTEMPT' ? event.details?.executor : event.source;
+    if (platform === 'Steam' && (executor === 'steamWeb' || executor === 'steamASF')) {
+      let id: string | undefined = event.operationId;
+      const visited = new Set<string>();
+      while (id && !visited.has(id)) {
+        visited.add(id);
+        if (steamTasks.has(id)) {
+          logs.get(id)?.setBefore(executor === 'steamASF' ? '[ASF]' : '[Web]');
+          break;
+        }
+        id = parents.get(id);
+      }
+    }
     if (/AUTH_REQUIRED|LOGIN_REQUIRED|AUTH_WAITING_FOR_PAGE/.test(event.code)) {
       let id: string | undefined = event.operationId;
       const visited = new Set<string>();
@@ -81,25 +96,26 @@ export const bindModuleStatus = (client: { on(event: 'status', listener: StatusL
     if (!log) {
       const label = __(event.operation.startsWith('init') ? 'moduleInitializing' : 'moduleTask');
       const source = platform === 'Steam' ? event.source || platform : platform;
-      const prefix = source === 'steamWeb' || source === 'SteamWeb' ? 'Web' :
+      const prefix = source === 'steam' || source === 'Steam' || source === 'steamWeb' || source === 'SteamWeb' ? 'Web' :
         source === 'steamASF' || source === 'SteamASF' ? 'ASF' : platform;
       log = echoLog({
         before: `[${escapeText(prefix)}]`,
         text: escapeText(`${platform}: ${label}${event.target ? ` (${event.target})` : ''}`)
       });
       logs.set(event.operationId, log);
+      if (platform === 'Steam' && event.parentOperationId) steamTasks.add(event.operationId);
     }
     if (event.phase === 'success') log.success();
     else if (event.phase === 'failure') log.error(__('moduleFailed'));
     else if (event.phase === 'skipped') log.warning(__('moduleSkipped'));
     else if (/AUTH_REQUIRED|LOGIN_REQUIRED/.test(event.code)) log.warning(__('needLogin'));
-    if (terminal) { logs.delete(event.operationId); parents.delete(event.operationId); }
+    if (terminal) { logs.delete(event.operationId); parents.delete(event.operationId); steamTasks.delete(event.operationId); }
   };
   const unsubscribe = client.on('status', listener);
   const onPageHide = (event: PageTransitionEvent): void => { if (!event.persisted) client.dispose(); };
   window.addEventListener('pagehide', onPageHide);
   return () => {
-    unsubscribe(); logs.clear(); parents.clear();
+    unsubscribe(); logs.clear(); parents.clear(); steamTasks.clear();
     window.removeEventListener('pagehide', onPageHide);
   };
 };

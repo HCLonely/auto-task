@@ -3,7 +3,7 @@
  * @Date         : 2021-11-20 19:38:41
  * @LastEditTime : 2026-01-15 14:38:16
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/locales/zh-CN.js
+ * @FilePath     : /auto-task/modules/i18n/locales/zh-CN.js
  * @Description  : i18n中文
  */
 const data = {

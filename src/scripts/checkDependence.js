@@ -10,6 +10,7 @@ const neededDependencies = ['jQuery', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
 if (typeof AutoTaskModules === 'undefined') missingDependencies.push('AutoTaskModules');
+if (typeof AutoTaskI18n === 'undefined') missingDependencies.push('AutoTaskI18n');
 if (typeof AutoTaskWebsite === 'undefined') missingDependencies.push('AutoTaskWebsite');
 
 if (missingDependencies.length > 0) {

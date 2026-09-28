@@ -116,6 +116,7 @@
 // @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.css
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.i18n.js
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.modules.js
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.website.js
 

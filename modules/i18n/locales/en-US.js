@@ -3,7 +3,7 @@
  * @Date         : 2021-12-30 17:08:27
  * @LastEditTime : 2026-04-28 09:19:45
  * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/locales/en-US.js
+ * @FilePath     : /auto-task/modules/i18n/locales/en-US.js
  * @Description  : i18n英文
  */
 const data = {

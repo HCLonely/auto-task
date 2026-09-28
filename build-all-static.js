@@ -22,7 +22,7 @@
     const requireJsName = [...headerText.matchAll(/\/\/ @require[^\S\r\n]+(https?:\/\/\S+)/g)]
       .map((match) => path.posix.basename(new URL(match[1]).pathname));
     const requireJsText = requireJsName.map((file) => fs.readFileSync(path.join(
-      ['auto-task.modules.js', 'auto-task.website.js'].includes(file) ? './dist' : './src/static', file
+      ['auto-task.i18n.js', 'auto-task.modules.js', 'auto-task.website.js'].includes(file) ? './dist' : './src/static', file
     ), 'utf8')).join('\n');
     const resources = Object.fromEntries([...headerText.matchAll(/\/\/ @resource[^\S\r\n]+(\w+)[^\S\r\n]+(https?:\/\/\S+)/g)]
       .map((match) => {

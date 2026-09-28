@@ -17,6 +17,11 @@ import svg from 'rollup-plugin-svg-import';
 const VERSION = JSON.parse(fs.readFileSync('package.json')).version;
 const NAME = 'auto-task';
 
+const i18nGlobals = new Map([
+  [path.resolve('modules/i18n'), 'AutoTaskI18n'],
+  [path.resolve('modules/i18n/index'), 'AutoTaskI18n']
+]);
+
 const moduleGlobals = new Map(Object.entries({
   social: 'social',
   'social/results': 'social',
@@ -59,8 +64,23 @@ const externalGlobals = {
   'browser-tool': 'browser',
   'node-inspect-extracted': 'util'
 };
-const globals = id => moduleGlobals.get(id) || websiteGlobals.get(id) || externalGlobals[id];
-const interop = id => moduleGlobals.has(id) || websiteGlobals.has(id) ? 'esModule' : 'default';
+const globals = id => i18nGlobals.get(id) || moduleGlobals.get(id) || websiteGlobals.get(id) || externalGlobals[id];
+const interop = id => i18nGlobals.has(id) || moduleGlobals.has(id) || websiteGlobals.has(id) ? 'esModule' : 'default';
+
+const i18nBuild = {
+  input: 'modules/i18n/index.ts',
+  output: {
+    file: 'dist/auto-task.i18n.js',
+    format: 'umd',
+    name: 'AutoTaskI18n',
+    exports: 'named',
+    plugins: [
+      getBabelOutputPlugin({ presets: ['@babel/preset-env'], allowAllFormats: true }),
+      terser({ format: { comments: false } })
+    ]
+  },
+  plugins: [nodeResolve(), typescript()]
+};
 
 const modulesBuild = {
   input: 'modules/social/browser.ts',
@@ -175,7 +195,7 @@ const userscriptBuild = {
     }
   ],
   plugins: [
-    externalize(new Map([...moduleGlobals, ...websiteGlobals])),
+    externalize(new Map([...i18nGlobals, ...moduleGlobals, ...websiteGlobals])),
     progress(),
     sizes({
       details: true,
@@ -215,8 +235,8 @@ const websiteBuild = {
       terser({ format: { comments: false } })
     ]
   },
-  plugins: [externalize(moduleGlobals), nodeResolve(), typescript(), svg({ stringify: true })],
+  plugins: [externalize(new Map([...i18nGlobals, ...moduleGlobals])), nodeResolve(), typescript(), svg({ stringify: true })],
   external: Object.keys(externalGlobals)
 };
 
-export default [modulesBuild, websiteBuild, userscriptBuild];
+export default [i18nBuild, modulesBuild, websiteBuild, userscriptBuild];

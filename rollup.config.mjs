@@ -4,7 +4,7 @@ import typescript from '@rollup/plugin-typescript';
 import progress from 'rollup-plugin-progress';
 import sizes from 'rollup-plugin-sizes';
 import { visualizer } from "rollup-plugin-visualizer";
-import scss from 'rollup-plugin-scss';
+import { fileURLToPath } from 'node:url';
 import * as sass from 'sass';
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
@@ -185,16 +185,19 @@ const userscriptBuild = {
     }),
     nodeResolve(),
     typescript(),
-    scss({
-      output: false,
-      sass,
-      processor: async (css) => {
-        const result = await postcss([autoprefixer()]).process(css, { from: undefined });
-        return result.css.replace(/^\uFEFF/, '');
-      },
-      outputStyle: 'compressed',
-      failOnError: true,
-    }),
+    {
+      name: 'project-style',
+      async buildStart() {
+        const compiled = await sass.compileAsync('src/style/auto-task.scss', { style: 'compressed' });
+        for (const url of compiled.loadedUrls) {
+          if (url.protocol === 'file:') this.addWatchFile(fileURLToPath(url));
+        }
+        const result = await postcss([autoprefixer()]).process(compiled.css, { from: undefined });
+        // Write once before the three script outputs, including in watch mode.
+        fs.mkdirSync('dist', { recursive: true });
+        fs.writeFileSync('dist/auto-task.css', result.css.replace(/^\uFEFF/, ''));
+      }
+    },
     svg({
       stringify: true
     })

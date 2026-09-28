@@ -116,6 +116,7 @@
 // @require            https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
 // @require            https://cdn.jsdelivr.net/npm/js-sha1@0.6.0/src/sha1.min.js
 // @require            https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js
+// @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.css
 // @resource           style https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css
 // @require            https://cdn.jsdelivr.net/npm/keyboardjs@2.6.4/dist/keyboard.min.js
 // @require            https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js

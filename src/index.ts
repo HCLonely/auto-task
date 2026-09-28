@@ -13,7 +13,6 @@ import Swal from 'sweetalert2';
 import { handleSteamAuthPage } from '../modules/social/steam';
 import { handleTwitchAuthPage } from '../modules/social/twitch';
 import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
-import style from './style/auto-task.scss';
 import { Websites } from '../modules/website/index';
 import websiteOptions from '../modules/website/options';
 import __ from './scripts/tools/i18n';
@@ -34,7 +33,16 @@ try {
   console.error('Auto-Task[Warning]: consoleLogHook 初始化失败', error);
 }
 
-window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
+try {
+  const style = GM_getResourceText('autoTaskStyle');
+  if (!style?.trim()) {
+    throw new Error('Auto-Task CSS resource is empty');
+  }
+  window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
+} catch (error) {
+  console.error('Auto-Task[Error]: 样式初始化失败，请重新安装脚本或使用全资源版本 (.all.user.js)', error);
+  throw error;
+}
 window.DEBUG = !!globalOptions.other?.debug;
 window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'function';
 

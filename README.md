@@ -21,6 +21,8 @@
 - **正式版**：标准版本，适合大多数用户
 - **兼容版**：当正式版出现兼容性问题时的备选方案
 
+普通版、压缩版和兼容版通过 `@resource` 加载项目样式；对应的 `.all.user.js` 全资源版本将样式和依赖内嵌，适合资源加载受限时使用。脚本仍保留原有六种产物。
+
 ## 🚀 快速开始
 
 1. 安装所需的用户脚本管理器（如 Tampermonkey）
@@ -75,3 +77,9 @@ npm run build
 
 ---
 如果这个项目对您有帮助，请考虑给它一个 Star ⭐️
+
+### 样式资源构建
+
+`npm run rollup` 会将 `src/style/auto-task.scss` 编译为 `dist/auto-task.css`，再由 `node build-all-static.js` 将 CSS 内嵌到三个全资源版本。可运行 `node --test tests/style-build.test.cjs` 验证产物。
+
+发布时需将 CSS 与脚本一起提交到版本 tag 并发布。资源地址固定到 `package.json` 对应的 `v<version>` tag；本地安装测试需使用已包含该 CSS 的 tag 或临时可访问资源地址。

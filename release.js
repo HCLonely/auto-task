@@ -48,6 +48,7 @@
   options.name = package.version;
   options.body = changelog;
   options.files = `dist/auto-task.user.js
+dist/auto-task.css
 dist/auto-task.modules.js
 dist/auto-task.website.js
 dist/auto-task.min.user.js

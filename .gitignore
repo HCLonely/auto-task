@@ -11,7 +11,8 @@ XFwdForSdk
 .temp
 .cache
 
-doc/docs/.vuepress/dist
-doc/docs/.vuepress/public/api/
+doc/docs/.vitepress/dist/
+doc/docs/.vitepress/cache/
+doc/docs/public/api/
 /docs/
 tests/

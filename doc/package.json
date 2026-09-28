@@ -7,16 +7,14 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "@vuepress/bundler-vite": "2.0.0-rc.30",
-    "@vuepress/theme-default": "^2.0.0-rc.26",
-    "sass-embedded": "^1.100.0",
-    "vue": "^3.5.34",
-    "vuepress": "^2.0.0-rc.26"
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.34"
   },
   "scripts": {
     "docs:api": "npm --prefix .. run docs:api",
-    "docs:dev": "npm run docs:api && vuepress dev docs",
-    "docs:build": "npm run docs:api && vuepress build docs",
+    "docs:dev": "npm run docs:api && vitepress dev docs",
+    "docs:build": "npm run docs:api && vitepress build docs",
+    "docs:preview": "vitepress preview docs",
     "update": "git add . && git commit -m \"update\" && git push"
   }
 }

@@ -108,7 +108,7 @@ const userscriptBuild = {
         // Generate one report; concurrent outputs must not write the same file.
         visualizer({
           gzipSize: true,
-          filename: 'doc/docs/.vuepress/public/report.html'
+          filename: 'doc/docs/public/report.html'
         }),
         terser({
           sourceMap: false,

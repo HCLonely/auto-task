@@ -9,5 +9,5 @@
   "excludeInternal": true,
   "excludeExternals": true,
   "readme": "none",
-  "out": "doc/docs/.vuepress/public/api"
+  "out": "doc/docs/public/api"
 }

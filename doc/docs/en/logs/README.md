@@ -9,7 +9,7 @@ The content of this page is translated through Google translation. If the descri
 
 ## V4.0+
 
-See [Logs](/logs).
+See [Logs](/logs/).
 
 ## V3.6
 

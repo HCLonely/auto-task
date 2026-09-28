@@ -1,0 +1,13 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Auto Task API",
+  "entryPoints": ["src/**/*.ts"],
+  "entryPointStrategy": "expand",
+  "tsconfig": "tsconfig.json",
+  "exclude": ["**/*.d.ts", "**/tests/**", "**/Instagram.ts"],
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "excludeExternals": true,
+  "readme": "none",
+  "out": "doc/docs/.vuepress/public/api"
+}

@@ -7,6 +7,7 @@
  * @Description  : 通用工具函数集合
  */
 
+import type { MonkeyXhrDetails } from './httpRequest.types';
 import throwError from './throwError';
 import httpRequest from './httpRequest';
 import echoLog from '../echoLog';

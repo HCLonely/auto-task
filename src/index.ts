@@ -7,6 +7,7 @@
  * @Description  : 入口文件
  */
 
+import type { Website, WebsiteClass, WebsiteOptions } from '../modules/website/types';
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
 import { showDialog } from './scripts/ui/dialog';

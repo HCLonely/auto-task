@@ -7,6 +7,8 @@
  * @Description  : 数据同步
  */
 
+import type { commonObject } from './dataSync.types';
+import type { GlobalOptions } from './globalOptions.types';
 import throwError from './tools/throwError';
 import __ from './tools/i18n';
 import httpRequest from './tools/httpRequest';
@@ -89,7 +91,7 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
  * @param {string} fileName - 要获取的文件名
  * @param {boolean} [test=false] - 可选参数，指示是否进行测试，默认为 false
  *
- * @returns {Promise<boolean | globalOptions>} 返回一个 Promise
+ * @returns {Promise<boolean | GlobalOptions>} 返回一个 Promise
  *          成功时返回全局选项对象，失败时返回 false，测试模式下成功返回 true
  * @throws {Error} 如果在获取 Gist 数据的过程中发生错误
  *
@@ -102,7 +104,7 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
  * 5. 最后尝试解析内容
  * 所有错误都会被记录并返回 false
  */
-const getGistData = async (token: string, gistId: string, fileName: string, test = false): Promise<boolean | globalOptions> => {
+const getGistData = async (token: string, gistId: string, fileName: string, test = false): Promise<boolean | GlobalOptions> => {
   try {
     debug('开始获取Gist数据', { gistId, fileName, test });
     const logStatus = echoLog({ text: __('gettingData') });

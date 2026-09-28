@@ -6,6 +6,7 @@
  * @FilePath     : /auto-task/src/scripts/tools/httpRequest.ts
  * @Description  : http请求函数封装
  */
+import type { httpRequestOptions, httpResponse } from './httpRequest.types';
 import throwError from './throwError';
 import { debug } from './debug';
 

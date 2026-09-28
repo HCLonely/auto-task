@@ -7,6 +7,8 @@
  * @Description  : Social通用模板
  */
 
+import type { socialTasks, taskTypes } from './types';
+import type { SocialToggleDetailResult, SocialToggleResult } from '../../../modules/website/types';
 import throwError from '../tools/throwError';
 import { getRealParams, setTaskResult } from '../../../modules/social/social/results';
 import { SocialAdapter } from '../../../modules/social/social/adapter';

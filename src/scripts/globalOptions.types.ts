@@ -1,12 +1,4 @@
-/*
- * @Author       : HCLonely
- * @Date         : 2021-12-24 17:21:16
- * @LastEditTime : 2025-08-18 19:02:57
- * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/types/globalOptions.d.ts
- */
-
-interface globalOptions {
+export interface GlobalOptions {
   doTask: {
     // instagram: {
     //   users: boolean

@@ -7,6 +7,7 @@
  * @Description  : https://givekey.ru
  */
 
+import type { WebsiteStoredTasksInput, WebsiteTask } from './types';
 import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import echoLog from '../../src/scripts/echoLog';

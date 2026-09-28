@@ -1,19 +1,64 @@
-/*
- * @Author       : HCLonely
- * @Date         : 2021-11-05 11:32:20
- * @LastEditTime : 2025-08-18 19:03:53
- * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/types/Website.d.ts
- * @Description  :
- */
+export interface fawTaskInfo {
+  id: string
+  title: string
+  social?: string
+  type?: string
+  data?: string
+}
 
-declare interface instagramWebTasks {
+export interface fawUserData {
+  tasks?: WebsiteTask[]
+  user?: {
+    avatar?: string
+    lang?: string
+    name?: string
+    steam?: string
+  }
+  games?: Record<string, { playtime_forever: number }>
+  settings?: {
+    game_update?: number
+  }
+}
+
+export interface giveawayHopperReturnTaskInfo {
+  id: number;
+  name: string;
+  isPlatform: boolean;
+  colors: string[];
+  tickets: number;
+  category: string;
+  type: string;
+  displayName: string;
+  targetName: string;
+  creator: number;
+  required: number;
+  isDone: boolean;
+  requiredPlatform: string | null;
+  requiresVisit: boolean;
+  link: string;
+  hash: string;
+  username: string;
+  group_id?: string | number;
+  invite_code?: string;
+}
+
+export interface vlootData {
+  Data: Array<{
+    title: string
+    link: string
+  }>
+  Success: boolean
+}
+
+export interface instagramWebTasks {
   userLinks?: Array<string>
 }
-declare interface redditWebTasks {
+
+export interface redditWebTasks {
   redditLinks?: Array<string>
 }
-declare interface steamWebTasks {
+
+export interface steamWebTasks {
   groupLinks?: Array<string>
   officialGroupLinks?: Array<string>
   wishlistLinks?: Array<string>
@@ -28,26 +73,31 @@ declare interface steamWebTasks {
   playTimeLinks?: Array<string>
   playtestLinks?: Array<string>
 }
-declare interface twitchWebTasks {
+
+export interface twitchWebTasks {
   channelLinks?: Array<string>
 }
-declare interface twitterWebTasks {
+
+export interface twitterWebTasks {
   userLinks?: Array<string>
   retweetLinks?: Array<string>
   likeLinks?: Array<string>
 }
-declare interface vkWebTasks {
+
+export interface vkWebTasks {
   nameLinks?: Array<string>
 }
-declare interface youtubeWebTasks {
+
+export interface youtubeWebTasks {
   channelLinks?: Array<string>
   videoLinks?: Array<string>
 }
-declare interface extraTasks {
+
+export interface extraTasks {
   [name: string]: Array<string>
 }
 
-declare interface WebsiteTask {
+export interface WebsiteTask {
   done: boolean
   social: string
   type: string
@@ -59,25 +109,25 @@ declare interface WebsiteTask {
   [key: string]: unknown
 }
 
-declare type WebsiteUnknownTaskHandler = (task: WebsiteTask) => void
+export type WebsiteUnknownTaskHandler = (task: WebsiteTask) => void
 
-declare interface WebsiteStoredTasks {
+export interface WebsiteStoredTasks {
   tasks: Array<WebsiteTask>
   time: number
 }
 
-declare interface LegacyWebsiteTasks {
+export interface LegacyWebsiteTasks {
   [social: string]: Array<string> | {
     [type: string]: Array<string>
   }
 }
 
-declare type WebsiteStoredTasksInput = WebsiteStoredTasks | {
+export type WebsiteStoredTasksInput = WebsiteStoredTasks | {
   tasks: LegacyWebsiteTasks
   time: number
 }
 
-declare interface WebsiteSocialPayload {
+export interface WebsiteSocialPayload {
   instagram?: instagramWebTasks
   twitch?: twitchWebTasks
   twitter?: twitterWebTasks
@@ -89,18 +139,19 @@ declare interface WebsiteSocialPayload {
   extra?: Record<string, Array<WebsiteTask>>
 }
 
-declare interface SocialToggleDetailResult {
+export interface SocialToggleDetailResult {
   success: boolean
   results: Record<string, Record<string, boolean>>
 }
 
-declare type SocialToggleResult = boolean | SocialToggleDetailResult
+export type SocialToggleResult = boolean | SocialToggleDetailResult
 
-declare interface bindReturn {
+export interface bindReturn {
   name: string
   result: boolean | 'skip'
 }
-declare interface socialInitialized {
+
+export interface socialInitialized {
   instagram: boolean | 'skip'
   reddit: boolean | 'skip'
   twitch: boolean | 'skip'
@@ -111,18 +162,16 @@ declare interface socialInitialized {
   steamCommunity: boolean | 'skip'
 }
 
-declare function initFunction():Promise<boolean>
-
-interface WebsiteButton {
+export interface WebsiteButton {
   name: string;
   action: () => void | Promise<void>;
 }
 
-interface WebsiteOptions {
+export interface WebsiteOptions {
   [key: string]: any;
 }
 
-interface Website {
+export interface Website {
   name: string;
   test: () => boolean;
   before?: () => Promise<void>;
@@ -134,7 +183,7 @@ interface Website {
   [key: string]: any;
 }
 
-interface AuthData {
+export interface AuthData {
   authToken?: string;
   clientVersion?: string;
   clientId?: string;
@@ -146,7 +195,7 @@ interface AuthData {
   communitySessionID?: string;
 }
 
-type WebsiteType =
+export type WebsiteType =
   | 'Gleam'
   | 'FreeAnyWhere'
   | 'GiveawaySu'
@@ -161,7 +210,7 @@ type WebsiteType =
   | 'GiveawayHopper'
   | 'Prys';
 
-interface WebsiteClass {
+export interface WebsiteClass {
   new(): Website;
   test(): boolean;
 }

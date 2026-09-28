@@ -7,6 +7,7 @@
  * @Description  : https://freeanywhere.net
  */
 
+import type { WebsiteStoredTasksInput, WebsiteTask, fawTaskInfo } from './types';
 import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import throwError from '../../src/scripts/tools/throwError';

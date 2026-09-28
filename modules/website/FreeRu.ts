@@ -7,6 +7,7 @@
  * @Description  : https://freeru.cc
  */
 
+import type { WebsiteTask } from './types';
 import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import throwError from '../../src/scripts/tools/throwError';

@@ -7,6 +7,7 @@
  * @Description  : https://givee.club/
  */
 
+import type { WebsiteStoredTasksInput, WebsiteTask } from './types';
 import { showDialog } from '../../src/scripts/ui/dialog';
 import throwError from '../../src/scripts/tools/throwError';
 import echoLog from '../../src/scripts/echoLog';

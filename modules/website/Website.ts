@@ -7,6 +7,8 @@
  * @Description  : 网站类
  */
 
+import type { SocialToggleResult, WebsiteSocialPayload, WebsiteTask, bindReturn, socialInitialized } from './types';
+import type { MonkeyXhrDetails } from '../../src/scripts/tools/httpRequest.types';
 import { globalOptions } from '../../src/scripts/globalOptions';
 import throwError from '../../src/scripts/tools/throwError';
 // import Instagram from '../../src/scripts/social/Instagram';

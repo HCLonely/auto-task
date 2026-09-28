@@ -2,6 +2,14 @@
 
 原 `src/scripts/website/` 已迁移至此目录。`index.ts` 导出 `Websites` 网站列表、各网站类、`Website` 基类、`websiteOptions` 和任务转换工具。
 
+网站业务类型统一在 `types.ts` 中导出，包括任务模型、存储格式、网站接口和各站点 API 数据类型。使用方应显式导入类型：
+
+```ts
+import type { WebsiteTask, WebsiteStoredTasksInput } from './types';
+```
+
+配置、HTTP、日志和社交兼容层类型分别放在 `src/scripts/` 对应的类型模块中，通过 `import type` 引用。`src/types/` 仅保留浏览器/用户脚本环境、第三方模块与资源，以及页面提供的全局函数声明（例如 `Prys.d.ts`），不再提供隐式全局业务类型。
+
 浏览器构建入口为 `browser.ts`，产物为 `dist/auto-task.website.js`，可通过用户脚本的 `@require` 加载：
 
 ```js

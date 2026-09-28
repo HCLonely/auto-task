@@ -7,10 +7,12 @@
  * @Description  : 全局设置选项
  */
 
+import type { GlobalOptions } from './globalOptions.types';
+
 /**
  * 默认全局选项配置对象，包含各个平台的任务设置、位置、热键和其他选项。
  *
- * @constant {globalOptions} defaultGlobalOptions
+ * @constant {GlobalOptions} defaultGlobalOptions
  * @property {Object} doTask - 执行任务的选项。
 //  * @property {Object} doTask.instagram - Instagram 平台的任务设置。
 //  * @property {boolean} doTask.instagram.users - 是否执行 Instagram 用户任务。
@@ -75,7 +77,7 @@
  * @property {boolean} other.debug - 是否启用调试模式。
  * @property {boolean} other.receivePreview - 是否接收预览。
  */
-const defaultGlobalOptions: globalOptions = {
+const defaultGlobalOptions: GlobalOptions = {
   doTask: {
 
     // instagram: {
@@ -189,9 +191,9 @@ const defaultGlobalOptions: globalOptions = {
  * 从存储中获取用户定义的全局选项
  * 使用 GM_getValue 从油猴存储中读取配置，如果不存在则返回空对象
  *
- * @returns {Partial<globalOptions>} 用户定义的全局选项，可能只包含部分配置
+ * @returns {Partial<GlobalOptions>} 用户定义的全局选项，可能只包含部分配置
  */
-const userDefinedGlobalOptions = GM_getValue<Partial<globalOptions>>('globalOptions') || {};
+const userDefinedGlobalOptions = GM_getValue<Partial<GlobalOptions>>('globalOptions') || {};
 
 /**
  * 深度合并两个对象，返回一个新的对象
@@ -243,7 +245,7 @@ const isObject = (value: unknown): value is object => value !== null && typeof v
  * 通过深度合并默认配置和用户定义的配置创建
  * 这个实例将作为应用程序的主要配置对象
  *
- * @type {globalOptions} 完整的全局配置对象
+ * @type {GlobalOptions} 完整的全局配置对象
  */
 const globalOptions = deepMerge(defaultGlobalOptions, userDefinedGlobalOptions);
 

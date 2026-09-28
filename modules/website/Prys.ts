@@ -7,6 +7,8 @@
  * @Description  : https://prys.revadike.com/
  */
 
+import type { WebsiteStoredTasksInput } from './types';
+import type { logStatus } from '../../src/scripts/echoLog.types';
 import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import throwError from '../../src/scripts/tools/throwError';

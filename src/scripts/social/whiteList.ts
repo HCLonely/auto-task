@@ -7,6 +7,7 @@
  * @Description  : 白名单相关
  */
 
+import type { whiteList } from './types';
 import { showDialog, toast } from '../ui/dialog';
 import __ from '../tools/i18n';
 import echoLog from '../echoLog';

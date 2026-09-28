@@ -7,6 +7,7 @@
  * @Description  : 任务历史页面
  */
 
+import type { WebsiteStoredTasksInput, WebsiteTask } from './types';
 import __ from '../../src/scripts/tools/i18n';
 import throwError from '../../src/scripts/tools/throwError';
 import { toast } from '../../src/scripts/ui/dialog';

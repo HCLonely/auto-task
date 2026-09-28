@@ -1,3 +1,4 @@
+import type { LegacyWebsiteTasks, WebsiteSocialPayload, WebsiteStoredTasksInput, WebsiteTask } from './types';
 const LEGACY_TYPE_MAP: Record<string, string> = {
   groupLinks: 'group',
   officialGroupLinks: 'officialGroup',

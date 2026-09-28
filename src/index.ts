@@ -17,7 +17,7 @@ import { Websites } from '../modules/website/index';
 import websiteOptions from '../modules/website/options';
 import __ from './scripts/tools/i18n';
 import { changeGlobalOptions } from './scripts/globalOptionsEdit';
-import keyboardJS from 'keyboardjs';
+import { bindHotkey } from './scripts/tools/hotkeys';
 import updateChecker from './scripts/updateChecker';
 import echoLog from './scripts/echoLog';
 import SteamASF from './scripts/social/SteamASF';
@@ -136,15 +136,15 @@ const initializeUI = (website: Website): void => {
 // 初始化热键
 const initializeHotkeys = (website: Website): void => {
   debug('初始化热键', { website: website.name });
-  keyboardJS.bind(globalOptions.hotKey.doTaskKey, () => {
+  bindHotkey(globalOptions.hotKey.doTaskKey, () => {
     if (website.doTask) website.doTask();
   });
 
-  keyboardJS.bind(globalOptions.hotKey.undoTaskKey, () => {
+  bindHotkey(globalOptions.hotKey.undoTaskKey, () => {
     if (website.undoTask) website.undoTask();
   });
 
-  keyboardJS.bind(globalOptions.hotKey.toggleLogKey, () => {
+  bindHotkey(globalOptions.hotKey.toggleLogKey, () => {
     const $toggleLog = $('#toggle-log');
     const status = $toggleLog.attr('data-status');
     const $autoTaskInfo = $('#auto-task-info');

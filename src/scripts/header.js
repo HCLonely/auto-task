@@ -113,18 +113,13 @@
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
-// @require            https://cdn.jsdelivr.net/npm/js-sha1@0.6.0/src/sha1.min.js
 // @require            https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js
 // @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.css
 // @resource           style https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css
-// @require            https://cdn.jsdelivr.net/npm/keyboardjs@2.6.4/dist/keyboard.min.js
-// @require            https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js
-// @require            https://cdn.jsdelivr.net/gh/tinygo-org/tinygo@3e60eeb368f25f237a512e7553fd6d70f36dc74c/targets/wasm_exec.min.js
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
-// @require            https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.modules.js
-// @require            https://github.com/HCLonely/auto-task/raw/main/dist/auto-task.website.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.modules.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.website.js
 
 // @noframes
 // ==/UserScript==

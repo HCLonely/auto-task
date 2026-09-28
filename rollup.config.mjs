@@ -56,10 +56,7 @@ const externalize = mappings => ({
 
 const externalGlobals = {
   sweetalert2: 'Swal',
-  'js-cookie': 'Cookies',
   'browser-tool': 'browser',
-  keyboardjs: 'keyboardJS',
-  dayjs: 'dayjs',
   'node-inspect-extracted': 'util'
 };
 const globals = id => moduleGlobals.get(id) || websiteGlobals.get(id) || externalGlobals[id];
@@ -202,7 +199,7 @@ const userscriptBuild = {
       stringify: true
     })
   ],
-  external: ['sweetalert2', 'js-cookie', 'keyboardjs', 'dayjs', 'node-inspect-extracted', 'browser-tool']
+  external: Object.keys(externalGlobals)
 };
 
 const websiteBuild = {

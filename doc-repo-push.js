@@ -9,7 +9,9 @@
 
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { spawnSync } = require('child_process');
-const dayjs = require('dayjs');
+const now = new Date();
+const pad = value => String(value).padStart(2, '0');
+const timestamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
 const git = (...args) => {
   const { stdout, stderr } = spawnSync('git', args, { cwd: 'doc' });
@@ -24,5 +26,5 @@ git('config', '--global', 'user.email', 'h1606051253@gmail.com');
 git('init');
 git('remote', 'add', 'origin', `https://${process.env.TOKEN}@github.com/HCLonely/auto-task-doc`);
 git('add', '-A');
-git('commit', '-m', `Update at ${dayjs().format('YYYY-MM-DD HH:mm:ss')}`);
+git('commit', '-m', `Update at ${timestamp}`);
 git('push', 'origin', 'gh-pages', '--force');

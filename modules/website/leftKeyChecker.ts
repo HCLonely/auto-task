@@ -7,7 +7,7 @@
  * @Description  : 剩余Key检测
  */
 
-import dayjs from 'dayjs';
+import { formatDateTime } from '../../src/scripts/tools/formatDateTime';
 import httpRequest from '../../src/scripts/tools/httpRequest';
 import throwError from '../../src/scripts/tools/throwError';
 import { debug } from '../../src/scripts/tools/debug';
@@ -483,7 +483,7 @@ const leftKeyChecker = {
         return 'Ended';
       }
 
-      const formattedEndDate = dayjs(endDate).format('YYYY-MM-DD HH:mm:ss');
+      const formattedEndDate = formatDateTime(endDate);
       debug('检测到活动进行中', { formattedEndDate });
       return `Active(${formattedEndDate})`;
     } catch (error) {

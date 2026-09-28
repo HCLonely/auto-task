@@ -16,3 +16,4 @@ XFwdForSdk
 
 doc/docs/.vuepress/dist
 docs/
+tests/

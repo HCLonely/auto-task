@@ -11,7 +11,7 @@ import __ from '../../src/scripts/tools/i18n';
 import throwError from '../../src/scripts/tools/throwError';
 import Swal from 'sweetalert2';
 import Keylol from './Keylol';
-import dayjs from 'dayjs';
+import { formatDateTime } from '../../src/scripts/tools/formatDateTime';
 import { debug } from '../../src/scripts/tools/debug';
 import { normalizeStoredTasks } from './taskModel';
 
@@ -319,14 +319,14 @@ class History extends Keylol {
    * @description
    * 该方法将任务信息添加到页面容器中。
    * 生成的卡片包含任务标题、链接、删除按钮和时间信息。
-   * 使用dayjs格式化时间戳为可读格式。
+   * 使用本地时间格式化时间戳为可读格式。
    */
   #appendTaskToContainer(item: string, title: string, link: string, html: string, time: number): void {
     try {
       const escapedItem = this.#escapeHtml(item);
       const escapedTitle = this.#escapeHtml(title);
       const escapedLink = this.#escapeHtml(link);
-      const escapedTime = this.#escapeHtml(dayjs(time).format('YYYY-MM-DD HH:mm:ss'));
+      const escapedTime = this.#escapeHtml(formatDateTime(time));
       const titleHtml = /^https?:\/\//i.test(link) ?
         `<a href="${escapedLink}" target="_blank" rel="noopener noreferrer">${escapedTitle}</a>` :
         `<span>${escapedTitle}</span>`;

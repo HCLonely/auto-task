@@ -205,8 +205,6 @@ declare global {
   function GM_addValueChangeListener<T>(key: string, callback: (key: string, old_value: T, new_value: T, remote: boolean) => void): number
   function GM_removeValueChangeListener(listenerId: number): void
 
-  function sha1(value: string): string
-
   interface commonObject {
     [key: string]: any
   }

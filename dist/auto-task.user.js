@@ -113,18 +113,13 @@
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js
-// @require            https://cdn.jsdelivr.net/npm/js-sha1@0.6.0/src/sha1.min.js
 // @require            https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js
-// @resource           autoTaskStyle https://github.com/HCLonely/auto-task/raw/dev/dist/auto-task.website.js
+// @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.css
 // @resource           style https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css
-// @require            https://cdn.jsdelivr.net/npm/keyboardjs@2.6.4/dist/keyboard.min.js
-// @require            https://cdn.jsdelivr.net/npm/dayjs@1.10.7/dayjs.min.js
-// @require            https://cdn.jsdelivr.net/gh/tinygo-org/tinygo@3e60eeb368f25f237a512e7553fd6d70f36dc74c/targets/wasm_exec.min.js
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
-// @require            https://github.com/HCLonely/auto-task/raw/dev/dist/auto-task.modules.js
-// @require            https://github.com/HCLonely/auto-task/raw/dev/dist/auto-task.website.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.modules.js
+// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.website.js
 
 // @noframes
 // ==/UserScript==
@@ -139,7 +134,7 @@ console.log('%c%s', 'color:blue', 'Auto-Task[Load]: 脚本开始加载');
  * @FilePath     : /auto-task/src/scripts/checkDependence.js
  * @Description  :
  */
-const neededDependencies = ['jQuery', 'Cookies', 'sha1', 'Swal', 'keyboardJS', 'dayjs', 'Go', 'util', 'browser'];
+const neededDependencies = ['jQuery', 'Swal', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
 if (typeof AutoTaskModules === 'undefined') missingDependencies.push('AutoTaskModules');
@@ -153,7 +148,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(globalOptions, Swal, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, keyboardJS, browser, debug, echoLog, SteamASF) {
+(function(globalOptions, Swal, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -213,6 +208,40 @@ if (missingDependencies.length > 0) {
       window.__allLogs.push(maskedArgs);
       originalLog.apply(console, maskedArgs);
     };
+  };
+  const bindHotkey = (shortcut, callback, target = document) => {
+    const normalized = shortcut.toLowerCase().trim().replace(/\+\s*\+$/, '+ plus');
+    const parts = (normalized === '+' ? [ 'plus' ] : normalized.split(/\s*\+\s*/)).map((part => part.trim()));
+    const aliases = {
+      control: 'ctrl',
+      command: 'meta',
+      cmd: 'meta',
+      option: 'alt',
+      esc: 'escape',
+      space: ' ',
+      plus: '+'
+    };
+    const keys = parts.map((part => aliases[part] || part));
+    const modifiers = [ 'alt', 'ctrl', 'shift', 'meta' ];
+    const mainKeys = keys.filter((key => !modifiers.some((modifier => modifier === key))));
+    if (mainKeys.length !== 1 || !mainKeys[0]) {
+      return () => {};
+    }
+    const [key] = mainKeys;
+    const listener = event => {
+      if (event.repeat || event.isComposing) {
+        return;
+      }
+      if (modifiers.some((modifier => event[`${modifier}Key`] !== keys.includes(modifier)))) {
+        return;
+      }
+      const pressed = /^[a-z]$/.test(key) && /^Key[A-Z]$/.test(event.code) ? event.code.slice(3).toLowerCase() : event.key.toLowerCase();
+      if (pressed === key) {
+        callback();
+      }
+    };
+    target.addEventListener('keydown', listener);
+    return () => target.removeEventListener('keydown', listener);
   };
   const getRunLogs = () => {
     debug.debug('开始获取运行日志');
@@ -727,17 +756,17 @@ if (missingDependencies.length > 0) {
     debug.debug('初始化热键', {
       website: website.name
     });
-    keyboardJS.bind(globalOptions.globalOptions.hotKey.doTaskKey, (() => {
+    bindHotkey(globalOptions.globalOptions.hotKey.doTaskKey, (() => {
       if (website.doTask) {
         website.doTask();
       }
     }));
-    keyboardJS.bind(globalOptions.globalOptions.hotKey.undoTaskKey, (() => {
+    bindHotkey(globalOptions.globalOptions.hotKey.undoTaskKey, (() => {
       if (website.undoTask) {
         website.undoTask();
       }
     }));
-    keyboardJS.bind(globalOptions.globalOptions.hotKey.toggleLogKey, (() => {
+    bindHotkey(globalOptions.globalOptions.hotKey.toggleLogKey, (() => {
       const $toggleLog = $('#toggle-log');
       const status = $toggleLog.attr('data-status');
       const $autoTaskInfo = $('#auto-task-info');
@@ -911,4 +940,4 @@ if (missingDependencies.length > 0) {
   } else {
     $(bootstrap);
   }
-})(AutoTaskWebsite.globalOptions, Swal, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, keyboardJS, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.SteamASF);
+})(AutoTaskWebsite.globalOptions, Swal, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.SteamASF);

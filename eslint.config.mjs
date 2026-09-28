@@ -44,7 +44,6 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
             ...globals.node,
             GM_getValue: "readonly",
             GM_setValue: "readonly",
-            Swal: "readonly",
             unsafeWindow: true,
             $: true,
         },

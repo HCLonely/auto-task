@@ -35,6 +35,7 @@ const websiteGlobals = new Map([
   [path.resolve('modules/website/index'), 'AutoTaskWebsite'],
   [path.resolve('modules/website/options'), 'AutoTaskWebsite.options'],
   ...Object.entries({
+    'ui/dialog': 'dialog',
     globalOptions: 'globalOptions',
     globalOptionsEdit: 'globalOptionsEdit',
     echoLog: 'echoLog',
@@ -55,7 +56,6 @@ const externalize = mappings => ({
 });
 
 const externalGlobals = {
-  sweetalert2: 'Swal',
   'browser-tool': 'browser',
   'node-inspect-extracted': 'util'
 };

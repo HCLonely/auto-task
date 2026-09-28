@@ -9,7 +9,7 @@
 
 import __ from '../../src/scripts/tools/i18n';
 import throwError from '../../src/scripts/tools/throwError';
-import Swal from 'sweetalert2';
+import { toast } from '../../src/scripts/ui/dialog';
 import Keylol from './Keylol';
 import { formatDateTime } from '../../src/scripts/tools/formatDateTime';
 import { debug } from '../../src/scripts/tools/debug';
@@ -145,7 +145,7 @@ class History extends Keylol {
       });
 
       debug('历史记录清除完成');
-      Swal.fire({
+      toast({
         title: __('clearHistoryFinished'),
         icon: 'success'
       });
@@ -376,7 +376,7 @@ class History extends Keylol {
 
         if (!itemName) {
           debug('删除失败：未找到任务名称');
-          Swal.fire({
+          toast({
             title: __('clearTaskFailed'),
             icon: 'error'
           });
@@ -388,7 +388,7 @@ class History extends Keylol {
           .closest('div.card')
           .remove();
         debug('任务删除成功', { itemName });
-        Swal.fire({
+        toast({
           title: __('clearTaskFinished'),
           text: itemName,
           icon: 'success'

@@ -1,3 +1,4 @@
+@use "dialog";
 // ============================================================
 // Auto-Task Design Tokens
 // ============================================================
@@ -307,7 +308,9 @@
   }
 
   @keyframes at-log-spin {
-    to { transform: rotate(360deg); }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   font {
@@ -876,42 +879,8 @@ body.auto-task-history {
 }
 
 // ============================================================
-// SweetAlert2 Overrides
+// Dialog and Toast
 // ============================================================
-.swal2-modal {
-  width: 70% !important;
-  max-width: 1000px !important;
-  border-radius: var(--at-radius-lg) !important;
-  overflow: hidden;
-
-  #swal2-title {
-    text-align: center !important;
-    font-weight: 600 !important;
-  }
-}
-
-.swal2-file:focus,
-.swal2-input:focus,
-.swal2-textarea:focus {
-  border-color: var(--at-primary-light) !important;
-  box-shadow: 0 0 0 3px var(--at-primary-100) !important;
-}
-
-.swal2-checkbox-custom {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  color: inherit;
-  margin: 1em auto;
-  gap: 6px;
-
-  input {
-    flex-shrink: 0;
-    margin: 0 0.4em;
-    accent-color: var(--at-primary);
-  }
-}
 
 // ============================================================
 // Utilities & Misc

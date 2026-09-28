@@ -10,17 +10,9 @@
 import throwError from './tools/throwError';
 import __ from './tools/i18n';
 import httpRequest from './tools/httpRequest';
-import Swal from 'sweetalert2';
+import { showDialog, toast } from './ui/dialog';
 import echoLog from './echoLog';
 import { debug } from './tools/debug';
-
-// 在文件顶部添加类型声明
-declare global {
-  interface Window {
-    handleUpload: () => Promise<void>;
-    handleDownload: () => Promise<void>;
-  }
-}
 
 /**
  * 设置 Gist 数据
@@ -191,281 +183,93 @@ interface GistOptions {
  * 所有操作都有适当的错误处理和用户反馈
  */
 const syncOptions = async (): Promise<void> => {
+  const saved = GM_getValue<GistOptions>('gistOptions') || { TOKEN: '', GIST_ID: '', FILE_NAME: '', SYNC_HISTORY: true };
   try {
-    debug('开始同步选项配置');
-    const defaultOptions: GistOptions = {
-      TOKEN: '',
-      GIST_ID: '',
-      FILE_NAME: '',
-      SYNC_HISTORY: true
-    };
-
-    let syncOptions = GM_getValue<GistOptions>('gistOptions') || defaultOptions;
-    debug('获取已保存的同步选项', syncOptions);
-
-    const createForm = (options: GistOptions): string => `
-      <div class="gist-options-form">
-        <p>
+    await showDialog({
+      title: __('gistOptions'),
+      html: `
+        <form class="gist-options-form">
           <label for="github-token">Github Token</label>
-          <input
-            id="github-token"
-            class="swal2-input"
-            placeholder="Github Token"
-            value="${options.TOKEN}"
-            autocomplete="off"
-            spellcheck="false"
-          />
-        </p>
-        <p>
+          <input id="github-token" type="password" class="at-input" autocomplete="off" required />
           <label for="gist-id">Gist ID</label>
-          <input
-            id="gist-id"
-            class="swal2-input"
-            placeholder="Gist ID"
-            value="${options.GIST_ID}"
-            autocomplete="off"
-            spellcheck="false"
-          />
-        </p>
-        <p>
+          <input id="gist-id" class="at-input" autocomplete="off" required />
           <label for="file-name">${__('fileName')}</label>
-          <input
-            id="file-name"
-            class="swal2-input"
-            placeholder="${__('fileName')}"
-            value="${options.FILE_NAME}"
-            autocomplete="off"
-            spellcheck="false"
-          />
-        </p>
-        <p class="sync-history-wrapper">
-          <label for="sync-history" class="swal2-checkbox-custom">
-            <input
-              id="sync-history"
-              type="checkbox"
-              ${options.SYNC_HISTORY ? 'checked="checked"' : ''}
-            />
-            <span class="swal2-label">${__('syncHistory')}</span>
-          </label>
-        </p>
-        <div class="button-group">
-          <button id="upload-data" type="button" class="swal2-confirm swal2-styled" onclick="handleUpload()">
-            ${__('upload2gist')}
-          </button>
-          <button id="download-data" type="button" class="swal2-confirm swal2-styled" onclick="handleDownload()">
-            ${__('downloadFromGist')}
-          </button>
-        </div>
-      </div>
-    `;
-
-    /**
-     * 显示配置对话框并处理用户交互
-     *
-     * @returns {Promise<void>} 无返回值
-     * @throws {Error} 如果在显示对话框或处理用户交互过程中发生错误
-     *
-     * @description
-     * 该方法显示一个 SweetAlert2 对话框，允许用户：
-     * 1. 编辑 Gist 配置选项
-     * 2. 测试配置的有效性
-     * 3. 保存配置到存储
-     * 配置测试成功或失败都会显示相应的提示，并重新显示配置对话框
-     */
-    const showConfigDialog = async (): Promise<void> => {
-      debug('显示配置对话框');
-      const result = await Swal.fire({
-        title: __('gistOptions'),
-        html: createForm(syncOptions),
-        focusConfirm: false,
-        showLoaderOnConfirm: true,
-        footer: `<a href="https://auto-task-doc.js.org/guide/#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5" target="_blank">${__('help')}</a>`,
-        preConfirm: async () => {
-          const options: GistOptions = {
-            TOKEN: ($('#github-token').val() as string).trim(),
-            GIST_ID: ($('#gist-id').val() as string).trim(),
-            FILE_NAME: ($('#file-name').val() as string).trim(),
-            SYNC_HISTORY: $('#sync-history').prop('checked')
-          };
-          debug('保存新的同步选项', options);
-
-          GM_setValue('gistOptions', options);
-          syncOptions = options;
-
-          return await getGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME, true);
-        },
-        allowOutsideClick: () => !Swal.isLoading(),
-        confirmButtonText: __('saveAndTest'),
-        showCancelButton: true,
-        cancelButtonText: __('close')
-      });
-
-      if (result.value) {
-        debug('配置测试成功');
-        await Swal.fire({
-          icon: 'success',
-          title: __('testSuccess'),
-          timer: 2000,
-          timerProgressBar: true
-        });
-        await showConfigDialog();
-      } else if (result.value !== undefined) {
-        debug('配置测试失败');
-        await Swal.fire({
-          icon: 'error',
-          title: __('testFailed'),
-          timer: 2000,
-          timerProgressBar: true
-        });
-        await showConfigDialog();
+          <input id="file-name" class="at-input" autocomplete="off" required />
+          <label class="at-checkbox"><input id="sync-history" type="checkbox" />${__('syncHistory')}</label>
+          <div class="button-group">
+            <button id="upload-data" type="button" class="at-button">${__('upload2gist')}</button>
+            <button id="download-data" type="button" class="at-button">${__('downloadFromGist')}</button>
+          </div>
+        </form>`,
+      footer: `<a href="https://auto-task-doc.js.org/guide/#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5" target="_blank" rel="noopener noreferrer">${__('help')}</a>`,
+      confirmButtonText: __('saveAndTest'),
+      showCancelButton: true,
+      cancelButtonText: __('close'),
+      keepOpenOnConfirm: true,
+      preConfirm: async (context) => {
+        const options = readOptions(context.root);
+        GM_setValue('gistOptions', options);
+        context.status(__('processingData'));
+        const success = await getGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME, true);
+        context.status(__(success ? 'testSuccess' : 'testFailed'), success ? 'success' : 'error');
+        return !!success;
+      },
+      onOpen: (context) => {
+        const field = (id: string): HTMLInputElement => context.root.querySelector<HTMLInputElement>(`#${id}`)!;
+        field('github-token').value = saved.TOKEN;
+        field('gist-id').value = saved.GIST_ID;
+        field('file-name').value = saved.FILE_NAME;
+        field('sync-history').checked = saved.SYNC_HISTORY;
+        const transfer = async (direction: 'upload' | 'download'): Promise<void> => {
+          await context.run(async () => {
+            // Snapshot the current form before any asynchronous work. No dialog replacement or global handlers.
+            const options = readOptions(context.root);
+            GM_setValue('gistOptions', options);
+            const include = (name: string): boolean => name !== 'gistOptions' &&
+              !/^[\w]+?Auth$/.test(name) && (options.SYNC_HISTORY || !/^[\w]+?Tasks-/.test(name));
+            if (direction === 'upload') {
+              context.status(__('processingData'));
+              const data: commonObject = {};
+              for (const name of GM_listValues()) {
+                if (include(name)) data[name] = GM_getValue(name);
+              }
+              context.status(__('updatingData'));
+              const success = await setGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME, data);
+              context.status(__(success ? 'syncDataSuccess' : 'syncDataFailed'), success ? 'success' : 'error');
+            } else {
+              context.status(__('downloadingData'));
+              const data = await getGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME);
+              if (!data || typeof data !== 'object' || Array.isArray(data)) {
+                context.status(__('checkedNoData'), 'error');
+                return;
+              }
+              context.status(__('savingData'));
+              for (const [name, value] of Object.entries(data)) {
+                if (include(name)) GM_setValue(name, value);
+              }
+              context.status(__('syncDataSuccess'), 'success');
+            }
+          });
+        };
+        context.root.querySelector('#upload-data')!.addEventListener('click', () => { void transfer('upload'); });
+        context.root.querySelector('#download-data')!.addEventListener('click', () => { void transfer('download'); });
       }
-    };
-
-    /**
-     * 处理数据上传事件
-     *
-     * @returns {Promise<void>} 无返回值
-     * @throws {Error} 如果在上传过程中发生错误
-     *
-     * @description
-     * 该方法执行以下操作：
-     * 1. 验证必要的配置信息是否存在
-     * 2. 收集需要同步的数据
-     * 3. 过滤掉不需要同步的数据（如认证信息）
-     * 4. 根据用户选择决定是否同步历史记录
-     * 5. 上传数据到 Gist
-     * 6. 显示操作结果提示
-     */
-    const handleUpload = async (): Promise<void> => {
-      debug('开始处理数据上传');
-      const options = GM_getValue<GistOptions>('gistOptions');
-      if (!options?.TOKEN || !options?.GIST_ID || !options?.FILE_NAME) {
-        debug('配置信息不完整');
-        await Swal.fire({
-          icon: 'error',
-          title: __('saveAndTestNotice')
-        });
-        await showConfigDialog();
-        return;
-      }
-
-      debug('显示数据处理提示');
-      Swal.fire({
-        icon: 'info',
-        title: __('processingData'),
-        allowOutsideClick: false
-      });
-
-      const data: commonObject = {};
-      const names = GM_listValues();
-      const syncHistory = $('#sync-history').prop('checked');
-      debug('开始收集数据', { namesCount: names.length, syncHistory });
-
-      for (const name of names) {
-        if (name === 'gistOptions' || /^[\w]+?Auth$/.test(name)) continue;
-        if (!syncHistory && /^[\w]+?Tasks-/.test(name)) continue;
-        data[name] = GM_getValue(name);
-      }
-      debug('数据收集完成', { dataKeysCount: Object.keys(data).length });
-
-      Swal.update({
-        icon: 'info',
-        title: __('updatingData')
-      });
-
-      const success = await setGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME, data);
-      debug('数据上传完成', { success });
-      await Swal.fire({
-        icon: success ? 'success' : 'error',
-        title: __(success ? 'syncDataSuccess' : 'syncDataFailed'),
-        timer: 2000,
-        timerProgressBar: true
-      });
-    };
-
-    /**
-     * 处理数据下载事件
-     *
-     * @returns {Promise<void>} 无返回值
-     * @throws {Error} 如果在下载过程中发生错误
-     *
-     * @description
-     * 该方法执行以下操作：
-     * 1. 验证必要的配置信息是否存在
-     * 2. 从 Gist 获取数据
-     * 3. 验证获取的数据是否有效
-     * 4. 根据用户选择决定是否同步历史记录
-     * 5. 将数据保存到本地存储
-     * 6. 显示操作结果提示
-     */
-    const handleDownload = async (): Promise<void> => {
-      debug('开始处理数据下载');
-      const options = GM_getValue<GistOptions>('gistOptions');
-      if (!options?.TOKEN || !options?.GIST_ID || !options?.FILE_NAME) {
-        debug('配置信息不完整');
-        await Swal.fire({
-          icon: 'error',
-          title: __('saveAndTestNotice')
-        });
-        await showConfigDialog();
-        return;
-      }
-
-      debug('显示数据下载提示');
-      Swal.fire({
-        icon: 'info',
-        title: __('downloadingData'),
-        allowOutsideClick: false
-      });
-
-      const data = await getGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME);
-      if (!data || typeof data === 'boolean') {
-        debug('未检测到远程数据');
-        await Swal.fire({
-          icon: 'error',
-          title: __('checkedNoData')
-        });
-        await showConfigDialog();
-        return;
-      }
-
-      debug('开始保存数据');
-      Swal.update({
-        icon: 'info',
-        title: __('savingData')
-      });
-
-      const syncHistory = $('#sync-history').prop('checked');
-      let savedCount = 0;
-      for (const [name, value] of Object.entries(data)) {
-        if (!syncHistory && /^[\w]+?Tasks-/.test(name)) continue;
-        GM_setValue(name, value);
-        savedCount += 1;
-      }
-      debug('数据保存完成', { savedCount });
-
-      await Swal.fire({
-        icon: 'success',
-        title: __('syncDataSuccess'),
-        timer: 2000,
-        timerProgressBar: true
-      });
-    };
-
-    unsafeWindow.handleUpload = handleUpload;
-    unsafeWindow.handleDownload = handleDownload;
-    await showConfigDialog();
-  } catch (error) {
-    debug('同步选项发生错误', { error });
-    throwError(error as Error, 'syncOptions');
-    await Swal.fire({
-      icon: 'error',
-      title: __('error'),
-      text: error instanceof Error ? error.message : 'Unknown error occurred',
-      timer: 3000,
-      timerProgressBar: true
     });
+  } catch (error) {
+    toast({ title: __('error'), text: error instanceof Error ? error.message : String(error), icon: 'error' });
   }
+};
+
+const readOptions = (root: HTMLDialogElement): GistOptions => {
+  const value = (id: string): string => root.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
+  const options = {
+    TOKEN: value('github-token'),
+    GIST_ID: value('gist-id'),
+    FILE_NAME: value('file-name'),
+    SYNC_HISTORY: root.querySelector<HTMLInputElement>('#sync-history')!.checked
+  };
+  if (!options.TOKEN || !options.GIST_ID || !options.FILE_NAME) throw new Error(__('saveAndTestNotice'));
+  return options;
 };
 
 export default syncOptions;

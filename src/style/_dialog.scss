@@ -1,0 +1,220 @@
+dialog.at-dialog {
+  box-sizing: border-box !important;
+  width: min(720px, calc(100vw - 32px)) !important;
+  max-width: 1000px !important;
+  max-height: calc(100dvh - 40px) !important;
+  margin: auto !important;
+  padding: 28px !important;
+  border: 1px solid var(--at-border, #e2e8f0) !important;
+  border-radius: var(--at-radius-lg, 16px) !important;
+  background: #fff !important;
+  color: var(--at-text, #1e293b) !important;
+  box-shadow: var(--at-shadow-lg, 0 20px 40px #0003) !important;
+  font:
+    14px/1.6 Arial,
+    "Microsoft YaHei",
+    sans-serif !important;
+  text-align: left !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+  &::backdrop {
+    background: rgb(15 23 42 / 48%);
+    backdrop-filter: blur(3px);
+  }
+  &[data-tone="warning"] {
+    border-top: 4px solid var(--at-warning, #f59e0b) !important;
+  }
+  &[data-tone="error"] {
+    border-top: 4px solid var(--at-error, #ef4444) !important;
+  }
+  .at-dialog-title {
+    margin: 0 30px 18px 0 !important;
+    font:
+      600 22px/1.4 Arial,
+      "Microsoft YaHei",
+      sans-serif !important;
+    color: inherit !important;
+  }
+  .at-dialog-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    color: var(--at-primary, #2563eb);
+  }
+  &[data-tone="warning"] .at-dialog-icon {
+    color: #b45309;
+  }
+  &[data-tone="error"] .at-dialog-icon {
+    color: #b91c1c;
+  }
+  &[data-tone="success"] .at-dialog-icon {
+    color: #047857;
+  }
+  .at-dialog-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .at-dialog-content {
+    overflow-x: auto;
+  }
+  .at-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .at-dialog-footer {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 20px;
+    padding-top: 12px;
+  }
+  .at-dialog-status:empty {
+    display: none;
+  }
+  .at-dialog-status {
+    padding: 10px 12px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+  }
+  [data-tone="error"] {
+    color: #b91c1c;
+  }
+  [data-tone="success"] {
+    color: #047857;
+  }
+  &[aria-busy="true"] .at-dialog-status::before {
+    content: "";
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 8px;
+    border: 2px solid #cbd5e1;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: at-dialog-spin 0.8s linear infinite;
+  }
+  .at-input {
+    box-sizing: border-box !important;
+    display: block !important;
+    width: 100% !important;
+    padding: 10px 12px !important;
+    margin: 10px 0 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #fff !important;
+    color: #1e293b !important;
+    font: inherit !important;
+  }
+  textarea.at-input {
+    min-height: 160px;
+    resize: vertical;
+  }
+  .at-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0;
+  }
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .at-button {
+    appearance: none !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 9px 16px !important;
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    font:
+      600 14px/1.5 Arial,
+      "Microsoft YaHei",
+      sans-serif !important;
+    cursor: pointer !important;
+  }
+  .at-button[data-action="confirm"],
+  .button-group .at-button {
+    background: var(--at-primary, #2563eb) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+  }
+  .at-button[data-action="close"] {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    padding: 4px 8px !important;
+  }
+  :disabled {
+    opacity: 0.55 !important;
+    cursor: wait !important;
+  }
+  :focus-visible {
+    outline: 3px solid #93c5fd !important;
+    outline-offset: 2px !important;
+  }
+}
+.at-toasts {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+  right: 20px !important;
+  bottom: 20px !important;
+  width: min(360px, calc(100vw - 40px)) !important;
+  display: grid !important;
+  gap: 10px !important;
+}
+.at-toast {
+  position: relative !important;
+  box-sizing: border-box !important;
+  padding: 16px 40px 16px 16px !important;
+  background: #fff !important;
+  color: #1e293b !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 4px solid #10b981 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 28px #0003 !important;
+  font:
+    14px/1.5 Arial,
+    "Microsoft YaHei",
+    sans-serif !important;
+  overflow-wrap: anywhere;
+}
+.at-toast span {
+  display: block;
+}
+.at-toast[data-tone="error"] {
+  border-left-color: #ef4444 !important;
+}
+.at-toast-close {
+  position: absolute !important;
+  right: 8px !important;
+  top: 8px !important;
+  padding: 2px 6px !important;
+  background: transparent !important;
+  border: 0 !important;
+  color: #475569 !important;
+  font: 22px/1 Arial !important;
+  cursor: pointer !important;
+}
+@keyframes at-dialog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog.at-dialog[aria-busy="true"] .at-dialog-status::before {
+    animation: none;
+  }
+}
+@media (max-width: 480px) {
+  dialog.at-dialog {
+    padding: 20px !important;
+  }
+}

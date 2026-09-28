@@ -13,7 +13,7 @@ import whiteListOptions from '../../src/scripts/social/whiteList';
 import throwError from '../../src/scripts/tools/throwError';
 import Twitter from '../../src/scripts/social/Twitter';
 import { getInfo } from '../../src/scripts/social/Youtube';
-import Swal from 'sweetalert2';
+import { showDialog } from '../../src/scripts/ui/dialog';
 import syncOptions from '../../src/scripts/dataSync';
 import { debug } from '../../src/scripts/tools/debug';
 import browser from 'browser-tool';
@@ -530,20 +530,18 @@ class Setting {
   async #getId(social: SocialType): Promise<void> {
     try {
       debug('开始获取社交媒体ID', { social });
-      const result = await Swal.fire({
+      await showDialog({
         title: __('getId', __(social)),
         html: this.#generateIdInputHtml(social),
         showCancelButton: true,
         cancelButtonText: __('close'),
-        showConfirmButton: false
+        showConfirmButton: false,
+        onOpen: (context) => {
+          context.root.querySelector('#link2id')!.addEventListener('click', () => {
+            void context.run(async () => { await this.#handleIdRetrieval(social, context.root); });
+          });
+        }
       });
-
-      if (!result.isDismissed) {
-        debug('用户确认获取ID');
-        await this.#handleIdRetrieval(social);
-      } else {
-        debug('用户取消获取ID');
-      }
     } catch (error) {
       debug('获取社交媒体ID失败', { error });
       throwError(error as Error, 'Setting.getId');
@@ -562,8 +560,8 @@ class Setting {
    */
   #generateIdInputHtml(social: SocialType): string {
     return `
-      <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">
-      <button id="link2id" data-type="${social}" class="swal2-confirm swal2-styled">获取id</button>
+      <input id="socialLink" class="at-input" placeholder="在此处输入链接获取id">
+      <button id="link2id" data-type="${social}" class="at-button">获取id</button>
     `;
   }
 
@@ -579,8 +577,9 @@ class Setting {
    * 根据不同的社交媒体类型调用相应的 API 获取 ID。
    * 获取到 ID 后更新输入框的值。
    */
-  async #handleIdRetrieval(social: SocialType): Promise<void> {
-    const link = $('#socialLink').val() as string;
+  async #handleIdRetrieval(social: SocialType, root: HTMLDialogElement): Promise<void> {
+    const field = root.querySelector<HTMLInputElement>('#socialLink')!;
+    const link = field.value;
     if (!link) {
       debug('链接为空');
       return;
@@ -603,7 +602,7 @@ class Setting {
     }
 
     debug('ID获取结果', { id });
-    $('#socialLink').val(id);
+    field.value = id;
   }
 
   /**

@@ -7,7 +7,7 @@
  * @Description  : 白名单相关
  */
 
-import Swal from 'sweetalert2';
+import { showDialog, toast } from '../ui/dialog';
 import __ from '../tools/i18n';
 import echoLog from '../echoLog';
 import Steam from './Steam';
@@ -147,10 +147,10 @@ interface DisabledType {
  *
  * @throws {Error} 如果在提取过程中发生错误，将抛出错误。
  */
-const link2id = async function (type: string): Promise<string> {
+const link2id = async function (type: string, root: HTMLDialogElement): Promise<string> {
   try {
     debug('开始从链接获取ID', { type });
-    const link = $('#socialLink').val() as string;
+    const link = root.querySelector<HTMLInputElement>('#socialLink')!.value;
     let id = '';
     switch (type) {
         case 'instagram.users':
@@ -257,13 +257,13 @@ const assignWhiteList = (whiteList: whiteList): whiteList => {
 /**
  * 显示白名单选项的表单，允许用户编辑白名单。
  *
- * @param {'page' | 'swal'} showType - 指定显示类型，支持 'page' 或 'swal'。
+ * @param {'page' | 'dialog'} showType - 指定显示类型，支持 'page' 或 'dialog'。
  *
  * @returns {void} 无返回值。
  *
  * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
  */
-const whiteListOptions = function (showType: 'page' | 'swal'): void {
+const whiteListOptions = function (showType: 'page' | 'dialog'): void {
   try {
     debug('开始显示白名单选项', { showType });
     const whiteList = assignWhiteList(GM_getValue<whiteList>('whiteList') || {});
@@ -296,9 +296,9 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
 
     whiteListOptionsForm += '</tbody></table></form>';
 
-    if (showType === 'swal') {
-      debug('使用Swal显示白名单选项');
-      Swal.fire({
+    if (showType === 'dialog') {
+      debug('使用Dialog显示白名单选项');
+      showDialog({
         title: __('whiteListOptions'),
         html: whiteListOptionsForm,
         showConfirmButton: false,
@@ -323,12 +323,12 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
       }
 
       debug('编辑白名单', { social, type });
-      Swal.fire({
+      showDialog<string>({
         title: __('changeWhiteListOption', value),
         input: 'textarea',
         html: `
-          <input id="socialLink" class="swal2-input" placeholder="在此处输入链接获取id">
-          <button id="link2id" data-type="${value}" class="swal2-confirm swal2-styled">获取id</button>
+          <input id="socialLink" class="at-input" placeholder="在此处输入链接获取id">
+          <button id="link2id" data-type="${value}" class="at-button">获取id</button>
           <p style="margin-bottom:0 !important;">在下方填写白名单，每行一个</p>
         `,
         inputValue: currentList.join('\n'),
@@ -337,34 +337,30 @@ const whiteListOptions = function (showType: 'page' | 'swal'): void {
         showCancelButton: true,
         cancelButtonText: __('close'),
         showDenyButton: true,
-        denyButtonText: __('return')
+        denyButtonText: __('return'),
+        onOpen: (context) => {
+          context.root.querySelector('#link2id')!.addEventListener('click', () => {
+            void context.run(async () => {
+              const id = await link2id(value, context.root);
+              context.root.querySelector<HTMLInputElement>('#socialLink')!.value = id || '';
+            });
+          });
+        }
       }).then(({ isDenied, isConfirmed, value }) => {
         if (isDenied) {
           debug('返回白名单选项');
-          if (showType === 'swal') {
-            whiteListOptions(showType);
-          }
           return;
         }
 
-        if (isConfirmed && value) {
+        if (isConfirmed && value !== undefined) {
           debug('保存白名单更改', { social, type, value });
           (whiteList as WhiteList)[social][type] = value.split('\n').filter(Boolean);
           GM_setValue('whiteList', whiteList);
-          Swal.fire({
+          toast({
             title: __('changeWhiteListSuccess'),
             icon: 'success'
           });
         }
-      });
-
-      $('#link2id').on('click', async function () {
-        const type = $(this).attr('data-type');
-        if (!type) return;
-
-        debug('从链接获取ID按钮点击', { type });
-        const id = await link2id(type);
-        $('#socialLink').val(id);
       });
     });
   } catch (error) {

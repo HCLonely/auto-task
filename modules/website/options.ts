@@ -7,7 +7,7 @@
  * @Description  : 网站设置
  */
 
-import Swal from 'sweetalert2';
+import { showDialog, toast } from '../../src/scripts/ui/dialog';
 import __ from '../../src/scripts/tools/i18n';
 import throwError from '../../src/scripts/tools/throwError';
 import { debug } from '../../src/scripts/tools/debug';
@@ -92,7 +92,7 @@ const saveOptions = (website: string, options: WebsiteOptions, formValues: FormV
   GM_setValue(`${website}Options`, options);
   debug('选项已保存到存储', { website });
 
-  Swal.fire({
+  toast({
     title: __('changeWebsiteOptionsSuccess'),
     icon: 'success'
   });
@@ -111,7 +111,7 @@ const saveOptions = (website: string, options: WebsiteOptions, formValues: FormV
  * 对话框包含一个表单，显示当前的选项值。
  * 用户可以修改选项值并保存更改。
  * 所有的操作都包含在 try-catch 块中以处理可能的错误。
- * 使用 SweetAlert2 库来显示对话框和提示信息。
+ * 使用 Dialog 库来显示对话框和提示信息。
  */
 const websiteOptions = async (website: string, options: WebsiteOptions): Promise<void> => {
   try {
@@ -129,25 +129,20 @@ const websiteOptions = async (website: string, options: WebsiteOptions): Promise
 
     // 显示选项编辑对话框
     debug('显示选项编辑对话框');
-    const result = await Swal.fire({
+    const result = await showDialog({
       title: __('websiteOptions'),
       html: generateFormHtml(options),
       showConfirmButton: true,
       confirmButtonText: __('save'),
       showCancelButton: true,
-      cancelButtonText: __('close')
+      cancelButtonText: __('close'),
+      preConfirm: ({ root }) => $(root).find('#websiteOptionsForm').serializeArray()
     });
 
     // 如果用户点击了保存按钮
     if (result.isConfirmed) {
       debug('用户确认保存选项');
-      const form = document.getElementById('websiteOptionsForm') as HTMLFormElement;
-      if (!form) {
-        debug('未找到表单元素');
-        throw new Error('Form element not found');
-      }
-
-      const formData = $('#websiteOptionsForm').serializeArray();
+      const formData = result.value!;
       debug('获取表单数据', { formData });
       saveOptions(website, options, formData);
     } else {

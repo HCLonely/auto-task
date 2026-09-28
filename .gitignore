@@ -3,9 +3,6 @@ node_modules
 
 src/scripts/social/Instagram.ts
 test/*
-!test/socialAdapters.test.cjs
-!test/run-social-tests.cjs
-!test/moduleBridge.test.cjs
 CHANGELOG.md
 
 .claude

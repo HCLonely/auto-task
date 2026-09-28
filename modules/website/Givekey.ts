@@ -7,7 +7,7 @@
  * @Description  : https://givekey.ru
  */
 
-import Swal from 'sweetalert2';
+import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import echoLog from '../../src/scripts/echoLog';
 import __ from '../../src/scripts/tools/i18n';
@@ -453,7 +453,7 @@ class Givekey extends Website {
       if (keysCount) return true;
 
       debug('没有剩余密钥，显示确认对话框');
-      const { value } = await Swal.fire({
+      const { value } = await showDialog({
         icon: 'warning',
         title: __('notice'),
         text: __('noKeysLeft'),

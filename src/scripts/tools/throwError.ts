@@ -7,7 +7,7 @@
  * @Description  : 错误处理函数
  */
 
-import Swal from 'sweetalert2';
+import { showDialog, toast } from '../ui/dialog';
 import browser from 'browser-tool';
 import __ from './i18n';
 import { debug } from './debug';
@@ -174,7 +174,7 @@ export default async function throwError(error: Error, name: string): Promise<vo
   envInfo.logs = errorStack;
 
   debug('显示错误报告对话框');
-  const { isConfirmed } = await Swal.fire({
+  const { isConfirmed } = await showDialog({
     title: __('errorReport'),
     icon: 'error',
     showCancelButton: true,
@@ -186,13 +186,7 @@ export default async function throwError(error: Error, name: string): Promise<vo
     debug('用户确认提交错误报告');
     await handleErrorReport('github', name, errorStack, envInfo);
 
-    Swal.fire({
-      title: __('logCopied'),
-      icon: 'success',
-      showConfirmButton: false,
-      showCancelButton: true,
-      cancelButtonText: __('close')
-    });
+    toast({ title: __('logCopied'), icon: 'success' });
   } else {
     debug('用户取消提交错误报告');
   }

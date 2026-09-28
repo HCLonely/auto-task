@@ -6,7 +6,7 @@
  * @FilePath     : /auto-task/src/scripts/globalOptionsEdit.ts
  * @Description  : 全局选项编辑模块
  */
-import Swal from 'sweetalert2';
+import { showDialog, toast } from './ui/dialog';
 import __ from './tools/i18n';
 import throwError from './tools/throwError';
 import { stringToColour } from './tools/tools';
@@ -26,10 +26,10 @@ interface FormDataItem {
 
 /**
  * 显示类型的类型定义
- * @typedef {('page'|'swal')} ShowType
- * @description 定义选项显示的方式：page-页面内显示，swal-弹窗显示
+ * @typedef {('page'|'dialog')} ShowType
+ * @description 定义选项显示的方式：page-页面内显示，dialog-弹窗显示
  */
-type ShowType = 'page' | 'swal';
+type ShowType = 'page' | 'dialog';
 
 /**
  * 处理表单数据并更新全局选项
@@ -182,29 +182,33 @@ const generateGlobalOptionsForm = (): string => {
  * 将表单中的值序列化并更新 globalOptions 对象
  * @throws {Error} 如果在保存过程中发生错误
  */
-const saveData = (): void => {
+const saveData = (root: ParentNode = document): boolean => {
   try {
     debug('开始保存全局选项数据');
-    const formData = $('#globalOptionsForm').serializeArray();
+    const form = root.querySelector<HTMLFormElement>('#globalOptionsForm');
+    if (!form) throw new Error('Global options form not found');
+    const formData = $(form).serializeArray();
     debug('获取表单数据', { formDataLength: formData.length });
 
     const data = processFormData(formData);
 
     debug('开始更新全局选项');
-    $.makeArray($('#globalOptionsForm input')).forEach((element) => {
+    $.makeArray($(form).find('input')).forEach((element) => {
       updateGlobalOption(element, data);
     });
 
     GM_setValue('globalOptions', globalOptions);
     debug('全局选项保存完成');
 
-    Swal.fire({
+    toast({
       title: __('changeGlobalOptionsSuccess'),
       icon: 'success'
     });
+    return true;
   } catch (error) {
     debug('保存全局选项时发生错误', { error });
     throwError(error as Error, 'saveData');
+    return false;
   }
 };
 
@@ -218,19 +222,22 @@ const changeGlobalOptions = (showType: ShowType): void => {
     debug('开始显示全局选项配置界面', { showType });
     const formHtml = generateGlobalOptionsForm();
 
-    if (showType === 'swal') {
+    if (showType === 'dialog') {
       debug('使用弹窗显示选项');
-      Swal.fire({
+      showDialog({
         title: __('globalOptions'),
         html: formHtml,
         showConfirmButton: true,
         confirmButtonText: __('save'),
         showCancelButton: true,
-        cancelButtonText: __('close')
+        cancelButtonText: __('close'),
+        preConfirm: ({ root }) => {
+          if (!saveData(root)) throw new Error(__('error'));
+          return true;
+        }
       }).then(({ isConfirmed }) => {
         if (isConfirmed) {
           debug('用户确认保存选项');
-          saveData();
         } else {
           debug('用户取消保存选项');
         }

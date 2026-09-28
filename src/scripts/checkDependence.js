@@ -6,7 +6,7 @@
  * @FilePath     : /auto-task/src/scripts/checkDependence.js
  * @Description  :
  */
-const neededDependencies = ['jQuery', 'Swal', 'util', 'browser'];
+const neededDependencies = ['jQuery', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
 if (typeof AutoTaskModules === 'undefined') missingDependencies.push('AutoTaskModules');

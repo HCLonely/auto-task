@@ -7,7 +7,7 @@
  * @Description  : https://prys.revadike.com/
  */
 
-import Swal from 'sweetalert2';
+import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import throwError from '../../src/scripts/tools/throwError';
 import echoLog from '../../src/scripts/echoLog';
@@ -391,7 +391,7 @@ class Prys extends Website {
       if (leftKey !== '0') return true;
 
       debug('没有剩余密钥，显示确认对话框');
-      const { value } = await Swal.fire({
+      const { value } = await showDialog({
         icon: 'warning',
         title: __('notice'),
         text: __('noKeysLeft'),

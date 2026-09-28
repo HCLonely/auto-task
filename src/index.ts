@@ -9,7 +9,7 @@
 
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
-import Swal from 'sweetalert2';
+import { showDialog } from './scripts/ui/dialog';
 import { handleSteamAuthPage } from '../modules/social/steam';
 import { handleTwitchAuthPage } from '../modules/social/twitch';
 import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
@@ -38,7 +38,7 @@ try {
   if (!style?.trim()) {
     throw new Error('Auto-Task CSS resource is empty');
   }
-  window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
+  window.STYLE = GM_addStyle(style);
 } catch (error) {
   console.error('Auto-Task[Error]: 样式初始化失败，请重新安装脚本或使用全资源版本 (.all.user.js)', error);
   throw error;
@@ -172,7 +172,7 @@ const checkSteamASFStatus = async (): Promise<void> => {
   }
 
   const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 60000);
-  const { value } = await Swal.fire({
+  const { value } = await showDialog({
     title: __('stopPlayTimeTitle'),
     text: __('stopPlayTimeText', stopPlayTimeMinutes.toString()),
     icon: 'warning',
@@ -228,10 +228,11 @@ const checkVersionAndNotice = (): void => {
   }
 
   if (!GM_getValue<number>('notice')) {
-    Swal.fire({
-      title: __('swalNotice'),
+    showDialog({
+      title: __('installNotice'),
       icon: 'warning'
-    }).then(() => {
+    }).then(({ isConfirmed }) => {
+      if (!isConfirmed) return;
       GM_openInTab(__('noticeLink'), { active: true });
       GM_setValue('notice', new Date().getTime());
     });
@@ -275,7 +276,7 @@ const loadScript = async (): Promise<void> => {
 
   if (website.name !== 'Setting') {
     debug('注册全局菜单命令');
-    GM_registerMenuCommand(__('changeGlobalOptions'), () => { changeGlobalOptions('swal'); });
+    GM_registerMenuCommand(__('changeGlobalOptions'), () => { changeGlobalOptions('dialog'); });
     GM_registerMenuCommand(__('settingPage'), () => {
       GM_openInTab('https://auto-task.hclonely.com/setting.html', { active: true });
     });

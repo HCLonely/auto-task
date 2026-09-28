@@ -7,7 +7,7 @@
  * @Description  : https://gleam.io
  */
 
-import Swal from 'sweetalert2';
+import { showDialog } from '../../src/scripts/ui/dialog';
 import Website from './Website';
 import throwError from '../../src/scripts/tools/throwError';
 import echoLog from '../../src/scripts/echoLog';
@@ -809,7 +809,7 @@ class Gleam extends Website {
       if (!isGiveawayInvalid) return true;
 
       debug('抽奖无效，显示确认对话框');
-      const { value } = await Swal.fire({
+      const { value } = await showDialog({
         icon: 'warning',
         title: __('notice'),
         text: __('giveawayNotWork'),

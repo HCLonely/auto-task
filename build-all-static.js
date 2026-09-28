@@ -14,8 +14,7 @@
   const chalk = await import('chalk');
 
   const resourcePaths = {
-    autoTaskStyle: './dist/auto-task.css',
-    style: './src/static/sweetalert2.min.css'
+    autoTaskStyle: './dist/auto-task.css'
   };
   for (const name of ['auto-task', 'auto-task.compatibility', 'auto-task.min']) {
     const source = fs.readFileSync(`./dist/${name}.user.js`, 'utf8');

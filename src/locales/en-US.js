@@ -216,7 +216,7 @@ const data = {
   newVersionNotice: 'Checked a new version V%0, <a class="high-light" href="%1" target="_blank">click to update</a>',
   language: 'Language</br> Currently only supports zh: Chinese, en: English',
   gistOptions: 'Gist Settings',
-  swalNotice: 'It is detected that you are installing the V4 version script for the first time' +
+  installNotice: 'It is detected that you are installing the V4 version script for the first time' +
     ', please go to read the READ ME FIRST content before use!',
   echoNotice: 'It is detected that you are installing the V4 version script for the first time' +
     ', please <a class="high-light" href="%0" target="_blank">click here</a> to read the READ ME FIRST content before use!',

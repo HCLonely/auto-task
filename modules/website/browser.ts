@@ -8,3 +8,5 @@ export * as i18n from '../../src/scripts/tools/i18n';
 export * as debug from '../../src/scripts/tools/debug';
 export * as moduleBridge from '../../src/scripts/social/moduleBridge';
 export * as SteamASF from '../../src/scripts/social/SteamASF';
+
+export * as dialog from '../../src/scripts/ui/dialog';

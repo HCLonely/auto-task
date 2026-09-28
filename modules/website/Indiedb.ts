@@ -7,7 +7,7 @@
  * @Description  : https://www.indiedb.com/giveaways
  */
 
-import Swal from 'sweetalert2';
+import { showDialog } from '../../src/scripts/ui/dialog';
 import throwError from '../../src/scripts/tools/throwError';
 import echoLog from '../../src/scripts/echoLog';
 import __ from '../../src/scripts/tools/i18n';
@@ -657,7 +657,7 @@ class Indiedb {
       if (!hasEndedButton) return true;
 
       debug('抽奖已结束，显示确认对话框');
-      const { value } = await Swal.fire({
+      const { value } = await showDialog({
         icon: 'warning',
         title: __('notice'),
         text: __('giveawayEnded'),

@@ -113,9 +113,7 @@
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js
 // @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.css
-// @resource           style https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v__VERSION__/dist/auto-task.modules.js

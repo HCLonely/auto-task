@@ -202,7 +202,7 @@ const data = {
   newVersionNotice: '检测到新版本V%0, <a class="high-light" href="%1" target="_blank">点此更新</a>',
   language: '语言</br>目前仅支持zh: 中文, en: 英文',
   gistOptions: 'Gist 设置',
-  swalNotice: '检测到您第一次安装V4版本脚本，请前往阅读用前必读内容！',
+  installNotice: '检测到您第一次安装V4版本脚本，请前往阅读用前必读内容！',
   echoNotice: '检测到您第一次安装V4版本脚本，请<a class="high-light" href="%0" target="_blank">点此前往</a>阅读用前必读内容！',
   noticeLink: 'https://auto-task-doc.js.org/guide/#用前必读',
   toGithub: '前往Github反馈',

@@ -113,9 +113,7 @@
 // @connect            *
 
 // @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @require            https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js
 // @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.css
-// @resource           style https://cdn.jsdelivr.net/npm/sweetalert2@11.3.5/dist/sweetalert2.min.css
 // @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.1.0/dist/inspect.min.js
 // @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
 // @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.modules.js
@@ -134,7 +132,7 @@ console.log('%c%s', 'color:blue', 'Auto-Task[Load]: 脚本开始加载');
  * @FilePath     : /auto-task/src/scripts/checkDependence.js
  * @Description  :
  */
-const neededDependencies = ['jQuery', 'Swal', 'util', 'browser'];
+const neededDependencies = ['jQuery', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
 if (typeof AutoTaskModules === 'undefined') missingDependencies.push('AutoTaskModules');
@@ -148,7 +146,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(globalOptions, Swal, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF) {
+(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -331,7 +329,7 @@ if (missingDependencies.length > 0) {
     const envInfo = await getEnvironmentInfo();
     envInfo.logs = errorStack;
     debug.debug('显示错误报告对话框');
-    const {isConfirmed: isConfirmed} = await Swal.fire({
+    const {isConfirmed: isConfirmed} = await dialog.showDialog({
       title: __.default('errorReport'),
       icon: 'error',
       showCancelButton: true,
@@ -341,12 +339,9 @@ if (missingDependencies.length > 0) {
     if (isConfirmed) {
       debug.debug('用户确认提交错误报告');
       await handleErrorReport('github', name, errorStack, envInfo);
-      Swal.fire({
+      dialog.toast({
         title: __.default('logCopied'),
-        icon: 'success',
-        showConfirmButton: false,
-        showCancelButton: true,
-        cancelButtonText: __.default('close')
+        icon: 'success'
       });
     } else {
       debug.debug('用户取消提交错误报告');
@@ -695,7 +690,7 @@ if (missingDependencies.length > 0) {
     if (!style?.trim()) {
       throw new Error('Auto-Task CSS resource is empty');
     }
-    window.STYLE = GM_addStyle(style + GM_getResourceText('style'));
+    window.STYLE = GM_addStyle(style);
   } catch (error) {
     console.error('Auto-Task[Error]: 样式初始化失败，请重新安装脚本或使用全资源版本 (.all.user.js)', error);
     throw error;
@@ -789,7 +784,7 @@ if (missingDependencies.length > 0) {
       return;
     }
     const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 6e4);
-    const {value: value} = await Swal.fire({
+    const {value: value} = await dialog.showDialog({
       title: __.default('stopPlayTimeTitle'),
       text: __.default('stopPlayTimeText', stopPlayTimeMinutes.toString()),
       icon: 'warning',
@@ -847,10 +842,13 @@ if (missingDependencies.length > 0) {
       return;
     }
     if (!GM_getValue('notice')) {
-      Swal.fire({
-        title: __.default('swalNotice'),
+      dialog.showDialog({
+        title: __.default('installNotice'),
         icon: 'warning'
-      }).then((() => {
+      }).then((({isConfirmed: isConfirmed}) => {
+        if (!isConfirmed) {
+          return;
+        }
         GM_openInTab(__.default('noticeLink'), {
           active: true
         });
@@ -893,7 +891,7 @@ if (missingDependencies.length > 0) {
     if (website.name !== 'Setting') {
       debug.debug('注册全局菜单命令');
       GM_registerMenuCommand(__.default('changeGlobalOptions'), (() => {
-        globalOptionsEdit.changeGlobalOptions('swal');
+        globalOptionsEdit.changeGlobalOptions('dialog');
       }));
       GM_registerMenuCommand(__.default('settingPage'), (() => {
         GM_openInTab('https://auto-task.hclonely.com/setting.html', {
@@ -940,4 +938,4 @@ if (missingDependencies.length > 0) {
   } else {
     $(bootstrap);
   }
-})(AutoTaskWebsite.globalOptions, Swal, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.SteamASF);
+})(AutoTaskWebsite.globalOptions, AutoTaskWebsite.dialog, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.SteamASF);

@@ -29,10 +29,12 @@ function executeTasks(ctx: Context, { nameLinks = [] }: TaskOptions, action: 'do
     for (let i = 0; i < links.length; i++) {
       const link = links[i];
       let success: boolean;
-      if (!enabled) { ctx.skip('TASK_DISABLED'); success = true; }
-      else {
+      if (!enabled) {
+        ctx.skip('TASK_DISABLED');
+        success = await ctx.forTaskLink(link).run(doTask ? 'task.do' : 'task.undo', normalizeLink(link) || link, false, async (child) => child.skip('TASK_DISABLED'));
+      } else {
         const name = normalizeLink(link);
-        success = name ? await executeOne(ctx, name, doTask) : ctx.fail('INVALID_LINK');
+        success = name ? await executeOne(ctx.forTaskLink(link), name, doTask) : ctx.fail('INVALID_LINK');
       }
       result.results.nameLinks ||= {};
       Object.defineProperty(result.results.nameLinks, link, { value: success, enumerable: true, configurable: true, writable: true });

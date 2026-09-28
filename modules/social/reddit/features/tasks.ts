@@ -31,7 +31,14 @@ function executeTasks(ctx: Context, options: TaskOptions, action: 'do' | 'undo')
       for (const [index, link] of [...new Set(redditLinks)].entries()) {
         if (index > 0 && enabled) await ctx.delay();
         const target = parseRedditLink(link);
-        const ok = ctx.state.disposed ? false : !enabled ? true : target ? await executeTarget(ctx, target, doTask) : false;
+        let ok = false;
+        if (!ctx.state.disposed) {
+          const child = ctx.forTaskLink(link);
+          if (!enabled) {
+            const operation = target?.kind === 'user' ? doTask ? 'user.follow' : 'user.unfollow' : doTask ? 'subreddit.subscribe' : 'subreddit.unsubscribe';
+            ok = await child.run(operation, target?.taskName || link, async (step) => step.skip('CONFIG_SKIPPED'), Boolean);
+          } else if (target) ok = await executeTarget(child, target, doTask);
+        }
         if (!target && enabled) ctx.progress('INVALID_LINK');
         result.results.redditLinks ||= Object.create(null) as Record<string, boolean>;
         result.results.redditLinks[link] = ok;

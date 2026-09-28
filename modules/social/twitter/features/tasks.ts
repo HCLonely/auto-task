@@ -18,13 +18,13 @@ function executeTasks(ctx: Context, { userLinks = [], retweetLinks = [] }: TaskO
         let success: boolean;
         if (ctx.state.disposed) success = false;
         else if (flags?.[kind] === false) {
-          success = await ctx.run(`${kind}.skip`, link, false, async (child) => child.skip('OPTION_DISABLED'));
+          success = await ctx.forTaskLink(link).run(kind === 'users' ? doTask ? 'users.follow' : 'users.unfollow' : doTask ? 'retweets.create' : 'retweets.delete', link, false, async (child) => child.skip('OPTION_DISABLED'));
         } else {
           const target = parse(link);
           if (!target) {
             success = await ctx.run('links.parse', link, false, async (child) => { child.progress('INVALID_LINK', 'error'); return false; });
           } else {
-            success = await action(ctx, target);
+            success = await action(ctx.forTaskLink(link), target);
             await ctx.delay();
           }
         }

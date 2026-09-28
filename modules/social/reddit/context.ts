@@ -21,6 +21,15 @@ export class Context {
   private parentOperationId?: string;
   private operation = '';
   private target?: string;
+  private taskLink?: string;
+
+  /** Scope the original task URL to this operation and its children. */
+  forTaskLink(link: string): Context {
+    const child = Object.assign(Object.create(Context.prototype) as Context, this);
+    child.taskLink = link;
+    return child;
+  }
+
   private failureCode?: string;
   private skipped = false;
 
@@ -58,7 +67,7 @@ export class Context {
   private emit(phase: RedditStatusEvent['phase'], code: string, details?: RedditStatusEvent['details']): void {
     this.events.emit({ operationId: this.operationId, parentOperationId: this.parentOperationId,
       operation: this.operation, target: this.target, phase, code, timestamp: Date.now(),
-      level: phase === 'failure' || code === this.failureCode ? 'error' : code.startsWith('HTTP_') ? 'debug' : 'info', details });
+      level: phase === 'failure' || code === this.failureCode ? 'error' : code.startsWith('HTTP_') ? 'debug' : 'info', details: { ...details, ...(this.taskLink ? { taskLink: this.taskLink } : {}) } });
   }
   progress(code: string, details?: RedditStatusEvent['details']): void { this.emit('progress', code, details); }
   fail(code: string): false { this.failureCode = code; this.progress(code); return false; }

@@ -4,7 +4,7 @@ import { eventTarget, normalizeYoutubeLink } from '../utils/links';
 import { getInfo } from './info';
 
 async function executeLikeVideo(ctx: Context, { link, doTask = true }: { link: string; doTask?: boolean }): Promise<boolean> {
-  return ctx.run(doTask ? 'video.like' : 'video.unlike', eventTarget(link), false, async (ctx) => {
+  return ctx.forTaskLink(link).run(doTask ? 'video.like' : 'video.unlike', eventTarget(link), false, async (ctx) => {
     if (!ctx.state.initialized || !ctx.state.auth) return ctx.fail('AUTH_REQUIRED');
     const { params, needLogin } = await getInfo(ctx, link, 'likeVideo');
     if (needLogin) return ctx.fail('AUTH_REQUIRED');

@@ -4,7 +4,7 @@ import { eventTarget, normalizeYoutubeLink } from '../utils/links';
 import { getInfo } from './info';
 
 async function executeChannel(ctx: Context, { link, doTask = true, verify = false }: { link: string; doTask?: boolean; verify?: boolean }): Promise<boolean> {
-  return ctx.run(verify ? 'auth.verifyChannel' : doTask ? 'channel.subscribe' : 'channel.unsubscribe', eventTarget(link), false, async (ctx) => {
+  return ctx.forTaskLink(link).run(verify ? 'auth.verifyChannel' : doTask ? 'channel.subscribe' : 'channel.unsubscribe', eventTarget(link), false, async (ctx) => {
     if (!ctx.state.auth || (!verify && !ctx.state.initialized)) return ctx.fail('AUTH_REQUIRED');
     const { params, needLogin } = await getInfo(ctx, link, 'channel');
     if (needLogin) return ctx.fail('AUTH_REQUIRED');

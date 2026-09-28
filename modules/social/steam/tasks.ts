@@ -29,7 +29,7 @@ function executeTasks(ctx: Context, options: SteamTaskOptions, action: 'do' | 'u
         const enabled = (doTask ? child.options.doTask[flag] : child.options.undoTask[flag]) && (doTask || !irreversible.has(type));
         if (!enabled) {
           for (const link of links) {
-            await child.run('task.skip', link, true, async (step) => { step.skip('TASK_DISABLED'); return true; });
+            await child.run('task.skip', link, true, async (step) => { step.skip('TASK_DISABLED'); return true; }, undefined, { taskType: type, action });
             setResult(result, key, link, true);
           }
           continue;
@@ -74,7 +74,7 @@ function executeTasks(ctx: Context, options: SteamTaskOptions, action: 'do' | 'u
               return all;
             }
             return dispatch(step, type, parsed.id, doTask);
-          });
+          }, undefined, { taskType: type, action });
           setResult(result, key, link, ok);
           await child.delay();
         }

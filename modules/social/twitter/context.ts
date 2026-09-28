@@ -32,6 +32,15 @@ export class Context {
   private parentOperationId?: string;
   private operation = '';
   private target?: string;
+  private taskLink?: string;
+
+  /** Scope the original task URL to this operation and its children. */
+  forTaskLink(link: string): Context {
+    const child = Object.assign(Object.create(Context.prototype) as Context, this);
+    child.taskLink = link;
+    return child;
+  }
+
   private failureCode?: string;
   private skipCode?: string;
 
@@ -74,7 +83,7 @@ export class Context {
   private emit(phase: StatusPhase, level: StatusLevel, code: string, details?: Record<string, string | number | boolean>): void {
     this.events.emit({
       operationId: this.operationId, parentOperationId: this.parentOperationId, operation: this.operation,
-      target: this.target, phase, level, code, timestamp: Date.now(), details
+      target: this.target, phase, level, code, timestamp: Date.now(), details: { ...details, ...(this.taskLink ? { taskLink: this.taskLink } : {}) }
     });
   }
   progress(code: string, level: StatusLevel = 'info', details?: Record<string, string | number | boolean>): void {

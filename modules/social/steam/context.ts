@@ -23,6 +23,7 @@ export class Context {
   private operation = '';
   private target?: string;
   private skipped?: string;
+  private operationDetails?: Record<string, string | number | boolean>;
 
   constructor(options: SteamOptions) {
     this.options = {
@@ -58,13 +59,14 @@ export class Context {
     return job;
   }
 
-  async run<T>(operation: string, target: string | undefined, fallback: T, work: (ctx: Context) => Promise<T>, success?: (value: T) => boolean): Promise<T> {
+  async run<T>(operation: string, target: string | undefined, fallback: T, work: (ctx: Context) => Promise<T>, success?: (value: T) => boolean, details?: Record<string, string | number | boolean>): Promise<T> {
     const child = Object.assign(Object.create(Context.prototype) as Context, this);
     child.operationId = crypto.randomUUID();
     child.parentOperationId = this.operationId || undefined;
     child.operation = operation;
     child.target = target;
     child.skipped = undefined;
+    child.operationDetails = details;
     child.emit('start', 'OPERATION_STARTED');
     try {
       if (child.state.disposed) throw new SteamError('DISPOSED');
@@ -81,7 +83,7 @@ export class Context {
   private emit(phase: SteamEvent['phase'], code: string, details?: Record<string, string | number | boolean>): void {
     this.events.emit({ source: 'steam', operationId: this.operationId, parentOperationId: this.parentOperationId,
       operation: this.operation, target: this.target, phase, level: phase === 'failure' ? 'error' : 'info',
-      code, timestamp: Date.now(), details });
+      code, timestamp: Date.now(), details: { ...this.operationDetails, ...details } });
   }
   progress(code: string, details?: Record<string, string | number | boolean>): void { this.emit('progress', code, details); }
   skip(code: string): void { this.skipped = code; }

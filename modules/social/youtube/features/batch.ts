@@ -20,8 +20,8 @@ async function executeTasks(ctx: Context, { channelLinks = [], videoLinks = [] }
     for (let index = 0; index < jobs.length; index++) {
       const { link, key, enabled, action } = jobs[index];
       result.results[key] ||= Object.create(null) as Record<string, boolean>;
-      const promise = enabled ? action(ctx, { link }) :
-        ctx.run('tasks.skip', eventTarget(link), false, async (ctx) => ctx.skip('OPTION_DISABLED'));
+      const promise = enabled ? action(ctx.forTaskLink(link), { link }) :
+        ctx.forTaskLink(link).run(key === 'channelLinks' ? doTask ? 'channel.subscribe' : 'channel.unsubscribe' : doTask ? 'video.like' : 'video.unlike', eventTarget(link), false, async (ctx) => ctx.skip('OPTION_DISABLED'));
       pending.push(promise.then((success) => {
         result.results[key][link] = success;
         result.success = result.success && success;

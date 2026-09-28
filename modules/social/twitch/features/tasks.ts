@@ -31,12 +31,12 @@ function executeTasks(ctx: Context, { channelLinks = [] }: TaskOptions, action: 
     for (const link of channelLinks) {
       const name = channelFromLink(link);
       let ok = false;
-      if (!enabled) ok = true;
+      if (!enabled) ok = await ctx.forTaskLink(link).run(doTask ? 'channel.follow' : 'channel.unfollow', name || link, async (child) => { child.skip('CONFIG_SKIP'); return true; }, Boolean);
       else if (name) {
         if (!done.has(name)) {
           if (started) await delay(ctx);
           started = true;
-          done.set(name, await (doTask ? doChannel : undoChannel)(ctx, name));
+          done.set(name, await (doTask ? doChannel : undoChannel)(ctx.forTaskLink(link), name));
         }
         ok = done.get(name)!;
       } else ctx.progress('INVALID_CHANNEL_LINK', 'warning');

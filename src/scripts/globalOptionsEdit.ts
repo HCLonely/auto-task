@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2025-05-31 14:17:14
- * @LastEditTime : 2025-08-18 19:04:25
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/globalOptionsEdit.ts
  * @Description  : 全局选项编辑模块
@@ -33,8 +33,9 @@ type ShowType = 'page' | 'dialog';
 
 /**
  * 处理表单数据并更新全局选项
- * @param {FormDataItem[]} formData - 序列化后的表单数据数组
- * @returns {Record<string, any>} 处理后的数据对象，键为表单项名称，值为表单项的值
+ *
+ * @param formData - 序列化后的表单数据数组
+ * @returns 处理后的数据对象，键为表单项名称，值为表单项的值
  */
 const processFormData = (formData: FormDataItem[]): Record<string, any> => {
   debug('开始处理表单数据', {
@@ -52,9 +53,12 @@ const processFormData = (formData: FormDataItem[]): Record<string, any> => {
 
 /**
  * 更新全局选项值
- * @param {HTMLElement} element - 包含选项数据的 DOM 元素
- * @param {Record<string, any>} data - 处理后的表单数据对象
- * @description 根据表单元素的 name 属性（使用点号分隔的路径）更新 globalOptions 对象中的对应值
+ *
+ * @remarks
+ * 根据表单元素的 name 属性（使用点号分隔的路径）更新 globalOptions 对象中的对应值
+ *
+ * @param element - 包含选项数据的 DOM 元素
+ * @param data - 处理后的表单数据对象
  */
 const updateGlobalOption = (element: HTMLElement, data: Record<string, any>): void => {
   const name = $(element).attr('name');
@@ -94,6 +98,7 @@ const updateGlobalOption = (element: HTMLElement, data: Record<string, any>): vo
 
 /**
  * 生成表单行 HTML
+ *
  * @param type - 选项类型
  * @param option - 选项名称
  * @param data - 选项数据
@@ -179,6 +184,7 @@ const generateFormRow = (
 
 /**
  * 生成全局选项表单
+ *
  * @returns 生成的表单 HTML 字符串
  */
 const generateGlobalOptionsForm = (): string => {
@@ -222,7 +228,12 @@ const generateGlobalOptionsForm = (): string => {
 /**
  * 保存全局选项数据
  * 将表单中的值序列化并更新 globalOptions 对象
- * @throws {Error} 如果在保存过程中发生错误
+ *
+ * @remarks
+ * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+ *
+ * @param root - 查找或渲染的根节点；默认值为 `document`。
+ * @returns 操作结果；成功或无需重复处理时为 true，失败时为 false。
  */
 const saveData = (root: ParentNode = document): boolean => {
   try {
@@ -262,8 +273,8 @@ const saveData = (root: ParentNode = document): boolean => {
 
 /**
  * 显示全局选项配置界面
+ *
  * @param showType - 显示类型，支持页面内显示或弹窗显示
- * @throws {Error} 如果在显示过程中发生错误
  */
 const changeGlobalOptions = (showType: ShowType): void => {
   try {
@@ -281,6 +292,15 @@ const changeGlobalOptions = (showType: ShowType): void => {
         confirmButtonText: __('save'),
         showCancelButton: true,
         cancelButtonText: __('close'),
+        /**
+         * 处理对话框确认前的校验。
+         *
+         * @remarks
+         * 解构参数包含：root（查找或渲染的根节点）。
+         *
+         * @returns 操作结果；成功或无需重复处理时为 true，失败时为 false。
+         * @throws Error - 触发 __('error') 错误条件时抛出。
+         */
         preConfirm: ({ root }) => {
           if (!saveData(root)) {
             throw new Error(__('error'));

@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:35:45
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/links.ts
+ * @Description  : Steam 任务链接解析
+ */
+
 import type { LinkType, TaskType } from './types';
 
 export const linkTasks: Array<[LinkType, TaskType]> = [
@@ -7,6 +16,13 @@ export const linkTasks: Array<[LinkType, TaskType]> = [
   ['curatorLikeLinks', 'curatorLikes'], ['announcementLinks', 'announcements'], ['licenseLinks', 'licenses'], ['playtestLinks', 'playtests']
 ];
 export interface ParsedLink { id: string; minutes?: number }
+/**
+ * 解析任务链接中的任务类型与目标。
+ *
+ * @param type - 操作或数据类型。
+ * @param link - 任务目标链接。
+ * @returns 链接中解析出的任务类型与目标；未取得有效结果时返回 undefined。
+ */
 export function parseLink(type: TaskType, link: string): ParsedLink | undefined {
   if (type === 'licenses') {
     return /^(appid|subid)-\d+(?:,\d+)*$/.test(link) ? {
@@ -29,6 +45,12 @@ export function parseLink(type: TaskType, link: string): ParsedLink | undefined 
       return;
     }
     const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+    /**
+     * 校验并保留仅由数字组成的目标标识。
+     *
+     * @param value - 待处理的值；可省略。
+     * @returns 处理后的字符串；未取得有效结果时返回 undefined。
+     */
     const numeric = (value?: string) => {
       return value && /^\d+$/.test(value) ? value : undefined;
     };

@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:03
- * @LastEditTime : 2026-04-28 09:17:42
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Freeanywhere.ts
- * @Description  : https://freeanywhere.net
+ * @Description  : Freeanywhere 网站任务处理（https://freeanywhere.net）
  */
 
 import type { WebsiteStoredTasksInput, WebsiteTask, fawTaskInfo } from './types';
@@ -22,22 +22,14 @@ import { normalizeStoredTasks } from './taskModel';
 /**
  * FreeAnyWhere 类用于处理与 FreeAnywhere 网站相关的任务和操作。
  *
- * @class FreeAnywhere
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称。
  *
- * @property {string} name - 网站名称。
- * @property {Array<fawTaskInfo>} verifyTasks - 当前验证任务列表。
- * @property {Array<string>} buttons - 可用操作按钮列表。
- * @property {string} giveawayId - 抽奖ID。
+ * - `verifyTasks`（`Array<fawTaskInfo>`）：当前验证任务列表。
  *
- * @method static test - 检查当前窗口的域名是否为 'freeanywhere.net'。
+ * - `buttons`（`Array<string>`）：可用操作按钮列表。
  *
- * @method init - 初始化函数，负责检查用户的登录状态和当前 URL 的有效性。
- * @method classifyTask - 根据指定的操作分类任务。
- * @method verifyTask - 验证任务的异步方法。
- * @method getKey - 获取奖励密钥的异步方法。
- * @method #verify - 验证任务的私有异步方法。
- *
+ * - `giveawayId`（`string`）：抽奖ID。
  */
 class FreeAnyWhere extends Website {
   static type = 'website';
@@ -54,7 +46,7 @@ class FreeAnyWhere extends Website {
   /**
    * 检查当前窗口的域名是否为 'freeanywhere.net'
    *
-   * @returns {boolean} 如果域名匹配则返回 true，否则返回 false
+   * @returns 如果域名匹配则返回 true，否则返回 false
    */
   static test(): boolean {
     const isMatch = window.location.host === 'freeanywhere.net';
@@ -68,14 +60,14 @@ class FreeAnyWhere extends Website {
   /**
    * 初始化函数，负责检查用户的登录状态和当前 URL 的有效性。
    *
-   * @returns {Promise<boolean>} 如果初始化成功返回 true，否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该函数首先记录初始化状态，然后检查用户是否已登录。如果用户未登录，将重定向到登录页面。
    * 接着，函数验证当前 URL 是否符合预期格式。如果不符合，将提取 giveaway ID 并重定向到正确的 URL。
    * 最后，函数检查剩余的密钥数量，并更新初始化状态。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功返回 true，否则返回 false。
    */
   async init(): Promise<boolean> {
     try {
@@ -131,17 +123,17 @@ class FreeAnyWhere extends Website {
   /**
    * 根据指定的操作分类任务。
    *
-   * @param {string} action - 要执行的操作类型，支持 'undo'、'verify' 和 'do'。
-   * @returns {Promise<boolean>} 如果任务分类成功返回 true，否则返回 false。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该函数首先记录获取任务信息的状态，然后根据传入的操作（如 'undo' 或 'verify'）来处理任务。
    * 如果操作为 'undo'，则从存储中获取之前的任务信息。接着，函数通过 API 请求获取当前的任务数据。
    * 如果请求成功，函数将解析任务数据并根据任务类型和操作更新相应的任务列表。
    * 支持的社交平台包括 Steam 和 VK，函数会根据不同的任务类型（如 WL、JTG、STC、GF）将任务链接分类到相应的列表中。
    * 最后，函数会去重任务列表，并将更新后的任务信息存储回本地。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，支持 'undo'、'verify' 和 'do'。
+   * @returns 如果任务分类成功返回 true，否则返回 false。
    */
   async classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> {
     try {
@@ -238,6 +230,13 @@ class FreeAnyWhere extends Website {
     }
   }
 
+  /**
+   * 处理任务信息并分派对应操作。
+   *
+   * @param task - 当前任务数据。
+   * @param action - 待执行的动作。
+   * @returns 在操作完成后兑现的 Promise。
+   */
   async #processTask(task: fawTaskInfo & {
     link?: string
     isSuccess: boolean
@@ -428,16 +427,16 @@ class FreeAnyWhere extends Website {
   /**
    * 验证任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果所有任务成功完成，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查是否已初始化，如果未初始化则调用初始化方法。
    * 然后检查任务列表是否为空，如果为空则尝试分类任务。
    * 对于每个任务，调用私有的验证方法并在每次调用之间延迟 1 秒。
    * 最后，等待所有验证任务完成，并记录成功信息。
    * 如果成功，返回获取的密钥；否则返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果所有任务成功完成，则返回 true；否则返回 false。
    */
   async verifyTask(): Promise<boolean> {
     try {
@@ -501,16 +500,15 @@ class FreeAnyWhere extends Website {
   /**
    * 执行额外任务的异步方法
    *
-   * @param {Object} params - 方法参数对象。
-   * @param {Array<string>} params.website - 包含要执行的额外任务链接的数组。
-   * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历传入的额外任务链接数组，并为每个链接调用私有方法 `#doVisitWebsite`。
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param tasks - 待处理的任务集合。
+   * @returns 如果所有任务成功执行，则返回 true；否则返回 false。
    */
   async extraDoTask(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
@@ -540,10 +538,11 @@ class FreeAnyWhere extends Website {
   /**
    * 访问网站的私有异步方法
    *
-   * @param {string} id - 任务id。
-   * @returns {Promise<boolean>} 如果访问成功，则返回 true；否则返回 false。
+   * @remarks
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
    *
-   * @throws {Error} 如果在访问过程中发生错误，将抛出错误。
+   * @param id - 任务id。
+   * @returns 如果访问成功，则返回 true；否则返回 false。
    */
   async #doVisitWebsite(id: string): Promise<boolean> {
     try {
@@ -598,18 +597,18 @@ class FreeAnyWhere extends Website {
   /**
    * 获取奖励密钥的异步方法
    *
-   * @param {boolean} [initialized] - 可选参数，指示是否已初始化。
-   * @returns {Promise<false | string>} 如果成功获取密钥，则返回密钥字符串；如果失败，则返回 false。
-   *
-   * @throws {Error} 如果在获取密钥过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查是否已初始化，如果未初始化且未成功初始化，则返回 false。
    * 然后记录获取密钥的状态，并发送 HTTP GET 请求以获取奖励信息。
    * 如果请求成功且返回的响应中包含奖励，则记录成功信息并返回奖励。
    * 如果任务未完成，则记录错误信息并返回 false。
    * 如果任务已完成，则调用私有方法检查剩余密钥。
    * 如果请求失败，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param initialized - 可选参数，指示是否已初始化。
+   * @returns 如果成功获取密钥，则返回密钥字符串；如果失败，则返回 false。
    */
   async getKey(initialized?: boolean): Promise<false | string> {
     try {
@@ -667,16 +666,16 @@ class FreeAnyWhere extends Website {
   /**
    * 验证任务的私有异步方法
    *
-   * @param {fawTaskInfo} task - 要验证的任务信息对象
-   * @returns {Promise<boolean>} 如果任务验证成功，则返回true；否则返回false
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法根据页面上是否存在扩展检查元素来决定使用哪种验证方式：
    * 1. 如果存在".task-check-extension"元素，则使用扩展验证方式
    * 2. 如果不存在，则使用普通验证方式
    * 验证失败时会记录错误信息并返回false
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param task - 要验证的任务信息对象
+   * @returns 如果任务验证成功，则返回true；否则返回false
    */
   async #verify(task: fawTaskInfo): Promise<boolean> {
     try {
@@ -704,16 +703,16 @@ class FreeAnyWhere extends Website {
   /**
    * 验证任务的私有异步方法
    *
-   * @param {fawTaskInfo} task - 要验证的任务信息对象。
-   * @returns {Promise<boolean>} 如果任务验证成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法发送一个 HTTP GET 请求以验证指定任务的状态。
    * 首先记录正在验证的任务状态。
    * 如果请求成功且返回的响应中包含任务状态，则记录成功信息并返回 true。
    * 如果请求失败或状态不正确，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param task - 要验证的任务信息对象。
+   * @returns 如果任务验证成功，则返回 true；否则返回 false。
    */
   async #verifyWithoutExtension(task: fawTaskInfo): Promise<boolean> {
     try {
@@ -791,15 +790,16 @@ class FreeAnyWhere extends Website {
   /**
    * 检查剩余密钥数量的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功返回 true，发生错误返回 false
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 检查抽奖是否还有剩余密钥：
    * 1. 检查是否启用了密钥检查功能
    * 2. 获取并解析页面上的密钥数量信息
    * 3. 如果没有剩余密钥，显示确认对话框
    * 4. 根据用户选择决定是否关闭窗口
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功返回 true，发生错误返回 false
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
@@ -846,15 +846,15 @@ class FreeAnyWhere extends Website {
   /**
    * 获取抽奖ID的方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在获取抽奖ID过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法尝试从当前窗口的URL中提取抽奖ID。
    * 使用正则表达式匹配URL中的抽奖ID部分。
    * 如果成功匹配到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
    * 如果未能匹配到抽奖ID，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID，则返回 true；否则返回 false。
    */
   #getGiveawayId(): boolean {
     try {

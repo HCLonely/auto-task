@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-29 19:53:51
- * @LastEditTime : 2025-08-18 19:04:52
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/dataSync.ts
  * @Description  : 数据同步
@@ -19,20 +19,20 @@ import { debug } from './tools/debug';
 /**
  * 设置 Gist 数据
  *
- * @param {string} token - GitHub 访问令牌，用于身份验证
- * @param {string} gistId - 要更新的 Gist 的 ID
- * @param {string} fileName - 要更新的文件名
- * @param {commonObject} content - 要设置的内容对象，将被序列化为 JSON
- *
- * @returns {Promise<boolean>} 返回一个 Promise，解析为布尔值，表示操作是否成功
- * @throws {Error} 如果在设置 Gist 数据的过程中发生错误
- *
- * @description
+ * @remarks
  * 该方法使用提前返回的方式处理错误情况：
  * 1. 首先验证请求是否成功
  * 2. 然后验证状态码和内容是否匹配
  * 3. 最后处理成功情况
  * 所有错误都会被记录并返回 false
+ *
+ * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+ *
+ * @param token - GitHub 访问令牌，用于身份验证
+ * @param gistId - 要更新的 Gist 的 ID
+ * @param fileName - 要更新的文件名
+ * @param content - 要设置的内容对象，将被序列化为 JSON
+ * @returns 返回一个 Promise，解析为布尔值，表示操作是否成功
  */
 const setGistData = async (token: string, gistId: string, fileName: string, content: commonObject): Promise<boolean> => {
   try {
@@ -104,16 +104,7 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
 /**
  * 获取指定 Gist 的数据
  *
- * @param {string} token - GitHub 访问令牌，用于身份验证
- * @param {string} gistId - 要获取的 Gist 的 ID
- * @param {string} fileName - 要获取的文件名
- * @param {boolean} [test=false] - 可选参数，指示是否进行测试，默认为 false
- *
- * @returns {Promise<boolean | GlobalOptions>} 返回一个 Promise
- *          成功时返回全局选项对象，失败时返回 false，测试模式下成功返回 true
- * @throws {Error} 如果在获取 Gist 数据的过程中发生错误
- *
- * @description
+ * @remarks
  * 该方法使用提前返回的方式处理各种情况：
  * 1. 首先验证请求是否成功
  * 2. 然后验证状态码
@@ -121,6 +112,15 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
  * 4. 处理测试模式
  * 5. 最后尝试解析内容
  * 所有错误都会被记录并返回 false
+ *
+ * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+ *
+ * @param token - GitHub 访问令牌，用于身份验证
+ * @param gistId - 要获取的 Gist 的 ID
+ * @param fileName - 要获取的文件名
+ * @param test - 可选参数，指示是否进行测试，默认为 false
+ * @returns 返回一个 Promise
+ * 成功时返回全局选项对象，失败时返回 false，测试模式下成功返回 true
  */
 const getGistData = async (token: string, gistId: string, fileName: string, test = false): Promise<boolean | GlobalOptions> => {
   try {
@@ -212,15 +212,14 @@ interface GistOptions {
 /**
  * 同步 Gist 配置选项
  *
- * @returns {Promise<void>} 无返回值
- * @throws {Error} 如果在同步过程中发生错误
- *
- * @description
+ * @remarks
  * 该方法显示一个配置对话框，允许用户：
  * 1. 设置 GitHub Token、Gist ID 和文件名
  * 2. 选择是否同步历史记录
  * 3. 上传或下载数据
  * 所有操作都有适当的错误处理和用户反馈
+ *
+ * @returns 无返回值
  */
 const syncOptions = async (): Promise<void> => {
   const saved = GM_getValue<GistOptions>('gistOptions') || {
@@ -251,6 +250,12 @@ const syncOptions = async (): Promise<void> => {
       showCancelButton: true,
       cancelButtonText: __('close'),
       keepOpenOnConfirm: true,
+      /**
+       * 处理对话框确认前的校验。
+       *
+       * @param context - 当前运行上下文。
+       * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+       */
       preConfirm: async (context) => {
         const options = readOptions(context.root);
         GM_setValue('gistOptions', options);
@@ -259,7 +264,18 @@ const syncOptions = async (): Promise<void> => {
         context.status(__(success ? 'testSuccess' : 'testFailed'), success ? 'success' : 'error');
         return !!success;
       },
+      /**
+       * 处理对话框打开事件。
+       *
+       * @param context - 当前运行上下文。
+       */
       onOpen: (context) => {
+        /**
+         * 按标识查找数据同步对话框中的输入框。
+         *
+         * @param id - 目标标识。
+         * @returns 匹配的输入框元素。
+         */
         const field = (id: string): HTMLInputElement => {
           return context.root.querySelector<HTMLInputElement>(`#${id}`)!;
         };
@@ -267,11 +283,23 @@ const syncOptions = async (): Promise<void> => {
         field('gist-id').value = saved.GIST_ID;
         field('file-name').value = saved.FILE_NAME;
         field('sync-history').checked = saved.SYNC_HISTORY;
+        /**
+         * 根据同步方向上传或下载 Gist 配置。
+         *
+         * @param direction - 操作方向。
+         * @returns 在操作完成后兑现的 Promise。
+         */
         const transfer = async (direction: 'upload' | 'download'): Promise<void> => {
           await context.run(async () => {
             // Snapshot the current form before any asynchronous work. No dialog replacement or global handlers.
             const options = readOptions(context.root);
             GM_setValue('gistOptions', options);
+            /**
+             * 检查目标是否包含在集合中。
+             *
+             * @param name - 目标名称。
+             * @returns 输入是否满足当前校验条件。
+             */
             const include = (name: string): boolean => {
               return name !== 'gistOptions' &&
               !/^[\w]+?Auth$/.test(name) && (options.SYNC_HISTORY || !/^[\w]+?Tasks-/.test(name));
@@ -321,7 +349,20 @@ const syncOptions = async (): Promise<void> => {
   }
 };
 
+/**
+ * 读取并应用已保存的配置选项。
+ *
+ * @param root - 查找或渲染的根节点。
+ * @returns 从表单读取的 Gist 同步配置。
+ * @throws Error - 触发 __('saveAndTestNotice') 错误条件时抛出。
+ */
 const readOptions = (root: HTMLDialogElement): GistOptions => {
+  /**
+   * 读取当前值。
+   *
+   * @param id - 目标标识。
+   * @returns 处理后的字符串。
+   */
   const value = (id: string): string => {
     return root.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
   };

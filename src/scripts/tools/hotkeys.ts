@@ -1,4 +1,20 @@
-/** Bind the modifier + key combinations produced by the settings page. */
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 14:52:11
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/tools/hotkeys.ts
+ * @Description  : 快捷键绑定工具
+ */
+
+/**
+ * 绑定设置页面生成的修饰键与普通键组合。
+ *
+ * @param shortcut - 快捷键配置。
+ * @param callback - 接收处理结果的回调函数。
+ * @param target - 当前操作的目标；默认值为 `document`。
+ * @returns 供调用方使用的函数。
+ */
 export const bindHotkey = (shortcut: string, callback: () => void, target: Document = document): (() => void) => {
   // Preserve a literal '+' key, including combinations such as 'shift + +'.
   const normalized = shortcut.toLowerCase().trim()
@@ -28,6 +44,11 @@ export const bindHotkey = (shortcut: string, callback: () => void, target: Docum
     return () => {};
   }
   const [key] = mainKeys;
+  /**
+   * 接收并处理状态变化。
+   *
+   * @param event - 事件名称或事件对象。
+   */
   const listener = (event: KeyboardEvent) => {
     if (event.repeat || event.isComposing) {
       return;

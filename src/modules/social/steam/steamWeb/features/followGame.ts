@@ -1,7 +1,25 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/followGame.ts
+ * @Description  : Steam 网页端 游戏关注与取消关注
+ */
+
 import type { Context } from '../context';
 import { encodeForm, parseHTML } from '../utils/html';
 import { changeArea } from './region';
 
+/**
+ * 根据操作方向关注游戏或取消关注游戏。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @param doTask - 是否执行任务；为 false 时执行撤销操作。
+ * @param retried - 是否已经重试；默认值为 `false`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 async function executeFollowGame(ctx: Context, gameId: string, doTask: boolean, retried = false): Promise<boolean> {
   return ctx.run(doTask ? 'followGame.doFollowGame' : 'followGame.undoFollowGame', gameId, async (ctx) => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {
@@ -45,7 +63,13 @@ async function executeFollowGame(ctx: Context, gameId: string, doTask: boolean, 
   });
 }
 
-/** null distinguishes a failed lookup from a valid "not followed" result. */
+/**
+ * 返回 null 表示查询失败，与查询成功但尚未关注的 false 区分。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @returns Promise，完成后返回是否已关注；查询失败时返回 null。
+ */
 export async function isFollowedGame(ctx: Context, gameId: string): Promise<boolean | 'areaLocked' | null> {
   return ctx.run('followGame.isFollowedGame', gameId, async (ctx) => {
     try {
@@ -77,9 +101,25 @@ export async function isFollowedGame(ctx: Context, gameId: string): Promise<bool
   });
 }
 
+/**
+ * 关注游戏。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @param retried - 是否已经重试；默认值为 `false`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function doFollowGame(ctx: Context, gameId: string, retried = false): Promise<boolean> {
   return executeFollowGame(ctx, gameId, true, retried);
 }
+/**
+ * 取消关注游戏。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @param retried - 是否已经重试；默认值为 `false`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function undoFollowGame(ctx: Context, gameId: string, retried = false): Promise<boolean> {
   return executeFollowGame(ctx, gameId, false, retried);
 }

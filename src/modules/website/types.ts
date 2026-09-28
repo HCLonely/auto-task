@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:35:44
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/website/types.ts
+ * @Description  : 网站任务、配置与社交平台交互类型定义
+ */
+
 export interface fawTaskInfo {
   id: string
   title: string
@@ -109,6 +118,11 @@ export interface WebsiteTask {
   [key: string]: unknown
 }
 
+/**
+ * 处理无法识别的网站任务。
+ *
+ * @param task - 当前任务数据。
+ */
 export type WebsiteUnknownTaskHandler = (task: WebsiteTask) => void
 
 export interface WebsiteStoredTasks {
@@ -164,6 +178,11 @@ export interface socialInitialized {
 
 export interface WebsiteButton {
   name: string;
+  /**
+   * 执行指定任务动作。
+   *
+   * @returns 处理结果（void | Promise<void>）。
+   */
   action: () => void | Promise<void>;
 }
 
@@ -173,10 +192,35 @@ export interface WebsiteOptions {
 
 export interface Website {
   name: string;
+  /**
+   * 检查当前页面是否属于此网站处理器支持的页面。
+   *
+   * @returns 检查结果；满足条件时为 true，否则为 false。
+   */
   test: () => boolean;
+  /**
+   * 执行操作前的处理逻辑。
+   *
+   * @returns 在操作完成后兑现的 Promise。
+   */
   before?: () => Promise<void>;
+  /**
+   * 执行操作后的处理逻辑。
+   *
+   * @returns 在操作完成后兑现的 Promise。
+   */
   after?: () => Promise<void>;
+  /**
+   * 执行指定任务。
+   *
+   * @returns 处理结果（void | Promise<void>）。
+   */
   doTask?: () => void | Promise<void>;
+  /**
+   * 撤销指定任务。
+   *
+   * @returns 处理结果（void | Promise<void>）。
+   */
   undoTask?: () => void | Promise<void>;
   buttons?: string[];
   options?: WebsiteOptions;
@@ -211,6 +255,16 @@ export type WebsiteType =
   | 'Prys';
 
 export interface WebsiteClass {
+  /**
+   * 约定网站处理器的实例创建接口。
+   *
+   * @returns 创建的网站任务处理器实例。
+   */
   new(): Website;
+  /**
+   * 检查当前页面是否属于此网站处理器支持的页面。
+   *
+   * @returns 检查结果；满足条件时为 true，否则为 false。
+   */
   test(): boolean;
 }

@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-24 16:41:12
- * @LastEditTime : 2025-08-18 19:04:41
+ * @LastEditTime : 2026-09-28 17:35:44
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/globalOptions.ts
  * @Description  : 全局设置选项
@@ -199,11 +199,10 @@ const userDefinedGlobalOptions = GM_getValue<Partial<GlobalOptions>>('globalOpti
  * 深度合并两个对象，返回一个新的对象
  * 该方法会递归合并所有嵌套的对象属性，保留源对象中未定义的目标对象属性
  *
- * @template T - 对象类型参数，必须是一个对象类型
- * @param {T} target - 目标对象，作为基础配置
- * @param {Partial<T>} source - 源对象，用于覆盖目标对象的配置，可以是部分配置
- * @returns {T} 返回合并后的新对象，类型与目标对象相同
- * @throws {Error} 在合并过程中如果发生错误，会被 try-catch 捕获并记录，返回目标对象
+ * @typeParam T - - 对象类型参数，必须是一个对象类型。
+ * @param target - 目标对象，作为基础配置
+ * @param source - 源对象，用于覆盖目标对象的配置，可以是部分配置
+ * @returns 返回合并后的新对象，类型与目标对象相同
  */
 const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
   try {
@@ -239,8 +238,8 @@ const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
 /**
  * 检查值是否为普通对象（不包括数组和 null）
  *
- * @param {unknown} value - 要检查的值，可以是任意类型
- * @returns {boolean} 如果值是对象且不是数组或 null，返回 true；否则返回 false
+ * @param value - 要检查的值，可以是任意类型
+ * @returns 如果值是对象且不是数组或 null，返回 true；否则返回 false
  */
 const isObject = (value: unknown): value is object => {
   return value !== null && typeof value === 'object' && !Array.isArray(value);

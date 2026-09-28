@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:35:45
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/types.ts
+ * @Description  : Steam 类型定义
+ */
+
 import type SteamASF from './steamASF';
 import type SteamWeb from './steamWeb';
 import type { GMAuthAPI, GMStorageAPI, HttpClient, SteamStatusEvent } from './steamWeb/types';
@@ -50,6 +59,12 @@ export interface PlayState {
 export interface SteamEvent extends SteamStatusEvent {
   readonly source: 'steam' | 'steamWeb' | 'steamASF';
 }
+/**
+ * 接收 Steam 状态事件。
+ *
+ * @param event - 事件名称或事件对象。
+ * @returns 处理结果（void | Promise<void>）。
+ */
 export type SteamListener = (event: SteamEvent) => void | Promise<void>;
 export type Executor = { source: 'steamWeb'; client: SteamWeb; ready: Set<'store' | 'community'> } |
   { source: 'steamASF'; client: SteamASF; ready: Set<'store' | 'community'> };

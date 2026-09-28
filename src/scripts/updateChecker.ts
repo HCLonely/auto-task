@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-30 14:20:30
- * @LastEditTime : 2025-08-18 19:04:18
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/updateChecker.ts
  * @Description  : 更新检测模块，用于检查和通知脚本的新版本
@@ -40,10 +40,13 @@ const UPDATE_LINKS: Record<string, string> = {
 
 /**
  * 检查更新，获取指定链接的 package.json 文件
- * @param {string} updateLink - 更新链接，用于获取 package.json 文件
- * @param {boolean} auto - 是否为自动检查更新的标志，为 true 时不显示错误信息
- * @returns {Promise<PackageJson | false>} 成功返回 package.json 数据，失败返回 false
- * @throws {Error} 在请求过程中发生错误时抛出
+ *
+ * @remarks
+ * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+ *
+ * @param updateLink - 更新链接，用于获取 package.json 文件
+ * @param auto - 是否为自动检查更新的标志，为 true 时不显示错误信息
+ * @returns 成功返回 package.json 数据，失败返回 false
  */
 const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJson | false> => {
   try {
@@ -99,10 +102,13 @@ const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJs
 
 /**
  * 比较版本号，判断是否有新版本可用
- * @param {string} currentVersion - 当前版本号，格式为 x.y.z 或 x.y.z-preview
- * @param {string} remoteVersion - 远程版本号，格式为 x.y.z 或 x.y.z-preview
- * @returns {boolean} 如果远程版本号大于当前版本号，或者接受预览版本时有新的预览版本可用，返回 true
- * @throws {Error} 在版本比较过程中发生错误时抛出
+ *
+ * @remarks
+ * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+ *
+ * @param currentVersion - 当前版本号，格式为 x.y.z 或 x.y.z-preview
+ * @param remoteVersion - 远程版本号，格式为 x.y.z 或 x.y.z-preview
+ * @returns 如果远程版本号大于当前版本号，或者接受预览版本时有新的预览版本可用，返回 true
  */
 const hasNewVersion = (currentVersion: string, remoteVersion: string): boolean => {
   try {
@@ -159,9 +165,12 @@ const hasNewVersion = (currentVersion: string, remoteVersion: string): boolean =
 
 /**
  * 获取更新链接
- * @param {string} updateSource - 更新源标识符（github/jsdelivr/standby）
- * @returns {string} 对应的更新链接，如果提供的更新源无效则返回 GitHub 的更新链接
- * @description 根据提供的更新源标识符返回对应的更新链接，支持不区分大小写的匹配
+ *
+ * @remarks
+ * 根据提供的更新源标识符返回对应的更新链接，支持不区分大小写的匹配
+ *
+ * @param updateSource - 更新源标识符（github/jsdelivr/standby）
+ * @returns 对应的更新链接，如果提供的更新源无效则返回 GitHub 的更新链接
  */
 const getUpdateLink = (updateSource: string): string => {
   debug('获取更新链接', {
@@ -178,10 +187,13 @@ const getUpdateLink = (updateSource: string): string => {
 
 /**
  * 显示更新信息
- * @param {PackageJson} packageData - 包信息，包含版本号和更新日志
- * @param {string} currentVersion - 当前版本号
- * @param {string} updateLink - 更新链接基础URL
- * @description 当检测到新版本时，在日志中显示新版本通知和更新内容列表
+ *
+ * @remarks
+ * 当检测到新版本时，在日志中显示新版本通知和更新内容列表
+ *
+ * @param packageData - 包信息，包含版本号和更新日志
+ * @param currentVersion - 当前版本号
+ * @param updateLink - 更新链接基础URL
  */
 const showUpdateInfo = (packageData: PackageJson, currentVersion: string, updateLink: string): void => {
   debug('准备显示更新信息', {
@@ -213,11 +225,13 @@ const showUpdateInfo = (packageData: PackageJson, currentVersion: string, update
 
 /**
  * 检查更新并获取最新版本信息
- * @returns {Promise<void>}
- * @description 根据配置的更新源检查新版本。如果指定了有效的更新源则直接使用，
- * 否则按照 github -> jsdelivr -> standby 的顺序尝试获取更新信息。
+ *
+ * @remarks
+ * 根据配置的更新源检查新版本。如果指定了有效的更新源则直接使用，
+ * 否则按照 github -\> jsdelivr -\> standby 的顺序尝试获取更新信息。
  * 成功检测到新版本时会显示更新提示和变更日志。
- * @throws {Error} 在更新检查过程中发生错误时抛出
+ *
+ * @returns 在操作完成后兑现的 Promise。
  */
 const updateChecker = async (): Promise<void> => {
   try {

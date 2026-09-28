@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2025-08-18 19:07:15
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/GiveawayHopper.ts
- * @Description  : https://giveawayhopper.com/
+ * @Description  : GiveawayHopper 网站任务处理（https://giveawayhopper.com/）
  */
 
 import type { WebsiteStoredTasksInput, WebsiteTask, giveawayHopperReturnTaskInfo } from './types';
@@ -22,35 +22,14 @@ import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
 /**
  * 表示 GiveawayHopper 网站的任务处理类。
  *
- * @class GiveawayHopper
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称，默认为 'GiveawayHopper'。
  *
- * @property {string} name - 网站名称，默认为 'GiveawayHopper'。
- * @property {Array<WebsiteTask>} tasks - 统一任务列表。
- * @property {Array<giveawayHopperReturnTaskInfo>} rawTasks - API 原始任务列表。
- * @property {Array<string>} buttons - 可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
+ * - `tasks`（`Array<WebsiteTask>`）：统一任务列表。
  *
- * @static
- * @method test - 检查当前域名是否为 GiveawayHopper 网站。
+ * - `rawTasks`（`Array<giveawayHopperReturnTaskInfo>`）：API 原始任务列表。
  *
- * @method before - 在执行操作之前重写全局的确认、警告和提示对话框。
- * @method after - 页面加载后的异步方法，执行后续操作。
- * @method init - 初始化方法，尝试初始化抽奖功能。
- * @method classifyTask - 分类任务的异步方法。
- * @method extraDoTask - 执行额外任务的异步方法。
- * @method verifyTask - 验证任务的异步方法。
- *
- * @private
- * @method #checkSync - 检查同步状态的私有异步方法。
- *
- * @private
- * @method #doGiveawayHopperTask - 执行GiveawayHopper任务的私有异步方法。
- *
- * @private
- * @method #getGiveawayId - 获取抽奖ID的方法。
- *
- * @private
- * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
+ * - `buttons`（`Array<string>`）：可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
  */
 class GiveawayHopper extends Website {
   name = 'GiveawayHopper';
@@ -65,11 +44,11 @@ class GiveawayHopper extends Website {
   /**
    * 检查当前域名是否为 GiveawayHopper 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'giveawayHopper.io'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 GiveawayHopper 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'giveawayHopper.io'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -83,13 +62,12 @@ class GiveawayHopper extends Website {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法在页面加载后执行初始化操作：
    * 1. 检查用户登录状态，如果检查失败则记录警告信息
    * 2. 获取抽奖ID
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -114,14 +92,15 @@ class GiveawayHopper extends Website {
   /**
    * 初始化方法
    *
-   * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法执行以下初始化步骤：
    * 1. 检查剩余密钥数量，如果检查失败则记录警告信息
    * 2. 设置初始化标志
    * 3. 记录成功状态
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   async init(): Promise<boolean> {
     try {
@@ -152,11 +131,7 @@ class GiveawayHopper extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法执行以下步骤：
    * 1. 检查并获取抽奖ID
    * 2. 如果是 'undo' 操作，从存储中恢复任务信息
@@ -164,6 +139,11 @@ class GiveawayHopper extends Website {
    * 4. 遍历任务并根据类型分类到相应的社交任务列表
    * 5. 对任务列表进行去重处理
    * 6. 将更新后的任务信息保存到存储中
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
@@ -328,15 +308,16 @@ class GiveawayHopper extends Website {
   /**
    * 验证任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果所有任务成功验证，则返回 true；否则返回 false。
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历所有未完成的任务，对每个任务：
    * 1. 获取任务链接（如果需要）
    * 2. 访问任务链接（如果存在）
    * 3. 等待指定时间
    * 4. 验证任务完成状态
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果所有任务成功验证，则返回 true；否则返回 false。
    */
   async verifyTask(): Promise<boolean> {
     try {
@@ -393,14 +374,14 @@ class GiveawayHopper extends Website {
   /**
    * 获取任务链接的私有方法
    *
-   * @param {giveawayHopperReturnTaskInfo} task - 任务信息对象
-   * @returns {string} 返回任务对应的链接，如果没有对应链接则返回空字符串
-   *
-   * @description
+   * @remarks
    * 根据任务类型和目标生成对应的链接：
    * - YouTube：生成频道订阅链接
    * - TikTok：生成用户关注链接
    * - Steam：返回空字符串（链接在其他地方处理）
+   *
+   * @param task - 任务信息对象
+   * @returns 返回任务对应的链接，如果没有对应链接则返回空字符串
    */
   #getTaskLink(task: giveawayHopperReturnTaskInfo): string {
     try {
@@ -434,14 +415,14 @@ class GiveawayHopper extends Website {
   /**
    * 访问任务链接的私有异步方法
    *
-   * @param {giveawayHopperReturnTaskInfo} task - 任务信息对象
-   * @returns {Promise<void>} 无返回值
-   *
-   * @description
+   * @remarks
    * 向服务器发送任务访问记录：
    * 1. 构建包含任务信息的URL
    * 2. 发送GET请求记录访问
    * 3. 包含必要的认证信息
+   *
+   * @param task - 任务信息对象
+   * @returns 无返回值
    */
   async #visitTaskLink(task: giveawayHopperReturnTaskInfo): Promise<void> {
     debug('访问任务链接', {
@@ -461,15 +442,15 @@ class GiveawayHopper extends Website {
   /**
    * 验证单个任务的私有异步方法
    *
-   * @param {giveawayHopperReturnTaskInfo} task - 要验证的任务信息
-   * @param {any} logStatus - 日志状态对象，用于记录验证过程
-   * @returns {Promise<boolean>} 如果任务验证成功返回 true，否则返回 false
-   *
-   * @description
+   * @remarks
    * 向服务器发送任务完成验证请求：
    * 1. 构建验证数据（包括特殊处理YouTube和TikTok任务）
    * 2. 发送POST请求进行验证
    * 3. 处理响应结果并更新日志状态
+   *
+   * @param task - 要验证的任务信息
+   * @param logStatus - 日志状态对象，用于记录验证过程
+   * @returns 如果任务验证成功返回 true，否则返回 false
    */
   async #verifyTask(task: giveawayHopperReturnTaskInfo, logStatus: any): Promise<boolean> {
     debug('验证任务', {
@@ -533,14 +514,15 @@ class GiveawayHopper extends Website {
   /**
    * 获取抽奖ID的私有方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID返回 true，否则返回 false
-   * @throws {Error} 如果在获取过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 从当前页面URL中提取抽奖ID：
    * 1. 从路径中获取最后一个部分作为ID
    * 2. 验证ID是否存在
    * 3. 保存ID到实例属性
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID返回 true，否则返回 false
    */
   #getGiveawayId(): boolean {
     try {
@@ -571,14 +553,15 @@ class GiveawayHopper extends Website {
   /**
    * 检查用户登录状态的私有方法
    *
-   * @returns {boolean} 如果用户已登录或不需要检查登录状态返回 true，发生错误返回 false
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 检查用户登录状态：
    * 1. 检查是否启用了登录检查功能
    * 2. 查找登录按钮并在需要时自动点击
    * 3. 返回检查结果
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果用户已登录或不需要检查登录状态返回 true，发生错误返回 false
    */
   #checkLogin(): boolean {
     try {
@@ -609,15 +592,16 @@ class GiveawayHopper extends Website {
   /**
    * 检查剩余密钥数量的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功返回 true，发生错误返回 false
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 检查抽奖是否还有剩余密钥：
    * 1. 检查是否启用了密钥检查功能
    * 2. 获取并解析页面上的密钥数量信息
    * 3. 如果没有剩余密钥，显示确认对话框
    * 4. 根据用户选择决定是否关闭窗口
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功返回 true，发生错误返回 false
    */
   async #checkLeftKey(): Promise<boolean> {
     try {

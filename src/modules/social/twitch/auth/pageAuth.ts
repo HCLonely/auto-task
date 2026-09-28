@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitch/auth/pageAuth.ts
+ * @Description  : Twitch 页面授权信息读取与处理
+ */
+
 import { getDefaultGM } from '../adapters/gmStorage';
 import type { PendingAuth } from '../adapters/gmTabAuth';
 import type { Auth, GMAuthAPI } from '../types';
@@ -11,7 +20,12 @@ export interface TwitchPageWindow {
 }
 declare const unsafeWindow: TwitchPageWindow;
 
-/** Reads Twitch-owned state only; module persistence still exclusively uses GM. */
+/**
+ * 仅读取 Twitch 自有状态，模块持久化数据仍通过 GM 存储。
+ *
+ * @param page - 目标页面。
+ * @returns 校验或提取后的授权信息；未取得有效结果时返回 undefined。
+ */
 export function readTwitchAuth(page: TwitchPageWindow): Auth | undefined {
   try {
     const cookies = Object.fromEntries(page.document.cookie.split(';').map((entry) => {
@@ -22,6 +36,12 @@ export function readTwitchAuth(page: TwitchPageWindow): Auth | undefined {
       return undefined;
     }
     const headers = page.commonOptions?.headers || {};
+    /**
+     * 读取指定响应头。
+     *
+     * @param name - 目标名称。
+     * @returns 处理后的字符串；未取得有效结果时返回 undefined。
+     */
     const getHeader = (name: string) => {
       return Object.entries(headers).find(([key]) => {
         return key.toLowerCase() === name;
@@ -41,9 +61,19 @@ export function readTwitchAuth(page: TwitchPageWindow): Auth | undefined {
   }
 }
 
-/** Invoke on Twitch pages from the same userscript that opened the auth tab. */
+/**
+ * 应在 Twitch 授权页面中由打开授权标签页的同一用户脚本调用。
+ *
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function handleTwitchAuthPage(options: {
   gm?: GMAuthAPI; namespace?: string; pageWindow?: TwitchPageWindow;
+  /**
+   * 读取页面中的授权信息。
+   *
+   * @returns 处理结果（Auth | Promise\<Auth | undefined\>）；未取得有效结果时返回 undefined。
+   */
   readAuth?: () => Auth | undefined | Promise<Auth | undefined>;
 } = {}): Promise<boolean> {
   if (!['www.twitch.tv', 'twitch.tv'].includes(location.hostname)) {

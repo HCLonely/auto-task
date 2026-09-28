@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:28
- * @LastEditTime : 2026-04-28 09:13:42
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Website.ts
  * @Description  : 网站类
@@ -32,41 +32,16 @@ import {
 /**
  * Website 类用于管理社交媒体任务的初始化和切换。
  *
- * @class
- * @property {Array<WebsiteTask>} tasks - 网站任务。
- * @property {string} giveawayId - 抽奖 ID。
- * @property {Object} socialInitialized - 各社交媒体的初始化状态。
- * @property {boolean} initialized - 是否已初始化。
- * @property {Object} social - 存储社交媒体实例。
+ * @remarks
+ * - `tasks`（`Array<WebsiteTask>`）：网站任务。
  *
- * @method #bind - 绑定方法的私有异步方法。
- * @param {string} name - 绑定的名称。
- * @param {Promise<boolean | 'skip'>} init - 初始化的 Promise，可能返回 true、false 或 'skip'。
- * @returns {Promise<{name: string, result: boolean}>} 返回一个包含名称和结果的对象。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `giveawayId`（`string`）：抽奖 ID。
  *
- * @method initSocial - 初始化社交媒体的方法。
- * @param {WebsiteSocialPayload} payload - 已转换的社交任务 payload。
- * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `socialInitialized`（`Object`）：各社交媒体的初始化状态。
  *
- * @method uniqueTasks - 去重任务的保护方法。
- * @param {Array<WebsiteTask>} allTasks - 网站任务。
- * @returns {Array<WebsiteTask>} 返回去重后的网站任务。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `initialized`（`boolean`）：是否已初始化。
  *
- * @method toggleTask - 切换任务的异步方法。
- * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
- * @returns {Promise<boolean>} 如果任务切换成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method doTask - 执行任务的异步方法。
- * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method undoTask - 撤销任务的异步方法。
- * @returns {Promise<boolean>} 如果任务成功撤销，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `social`（`Object`）：存储社交媒体实例。
  */
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
@@ -100,6 +75,13 @@ abstract class Website {
     vk?: Vk
     youtube?: Youtube
     steam?: Steam
+    /**
+     * 访问指定任务链接。
+     *
+     * @param link - 任务目标链接。
+     * @param options - 本次操作的配置选项；可省略。
+     * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+     */
     visitLink?: (link: string, options?: MonkeyXhrDetails) => Promise<boolean>
   } = {};
 
@@ -109,43 +91,37 @@ abstract class Website {
   /**
    * 分类任务的抽象方法
    *
-   * @param {'do' | 'undo' | 'verify'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务，'verify' 表示验证任务。
-   * @returns {Promise<boolean> | boolean} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法用于根据传入的操作类型分类任务。
    * 子类需要实现该方法以处理具体的任务分类逻辑。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务，'verify' 表示验证任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   abstract classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> | boolean;
 
   /**
    * 初始化方法
    *
-   * @returns {boolean | 'skip' | Promise<boolean | 'skip'>} 如果初始化成功，则返回 true；如果跳过初始化，则返回 'skip'；如果是异步操作，则返回 Promise。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法用于初始化相关设置或状态。
    * 子类需要实现该方法以处理具体的初始化逻辑。
    * 如果初始化成功，返回 true；如果需要跳过初始化，返回 'skip'；如果是异步操作，返回一个 Promise。
+   *
+   * @returns 如果初始化成功，则返回 true；如果跳过初始化，则返回 'skip'；如果是异步操作，则返回 Promise。
    */
   abstract init(): boolean | 'skip' | Promise<boolean | 'skip'>;
 
   /**
    * 绑定方法的私有异步方法
    *
-   * @param {string} name - 绑定的名称。
-   * @param {Promise<boolean | 'skip'>} init - 初始化的 Promise，可能返回 true、false 或 'skip'。
-   * @returns {Promise<bindReturn>} 返回一个包含名称和结果的对象。
-   *
-   * @throws {Error} 如果在绑定过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法用于绑定指定名称的任务，并等待初始化的 Promise 完成。
    * 如果初始化成功，则返回包含名称和结果的对象；如果发生错误，则记录错误信息并返回结果为 false 的对象。
+   *
+   * @param name - 绑定的名称。
+   * @param init - 初始化的 Promise，可能返回 true、false 或 'skip'。
+   * @returns 返回一个包含名称和结果的对象。
    */
   async #bind(name: string, init: Promise<boolean | 'skip'>): Promise<bindReturn> {
     try {
@@ -177,16 +153,16 @@ abstract class Website {
   /**
    * 初始化社交媒体的方法
    *
-   * @param {WebsiteSocialPayload} payload - 已转换的社交任务 payload。
-   * @returns {Promise<boolean>} 如果初始化成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型初始化社交媒体任务。
    * 检查每种社交媒体类型（如 Instagram、Reddit、Twitch、Twitter、VK 和 YouTube）是否有待处理的任务。
    * 如果存在待处理的任务且社交媒体尚未初始化，则创建相应的社交媒体实例并调用其初始化方法。
    * 所有初始化操作的结果将通过 Promise.all 进行处理，最终返回所有操作的成功状态。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param payload - 已转换的社交任务 payload。
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   protected async initSocial(payload: WebsiteSocialPayload): Promise<boolean> {
     try {
@@ -382,15 +358,13 @@ abstract class Website {
   /**
    * 去重任务的保护方法
    *
-   * @param {Array<WebsiteTask>} allTasks - 网站任务。
-   * @returns {Array<WebsiteTask>} 返回去重后的网站任务。
-   *
-   * @throws {Error} 如果在绑定过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历传入的所有社交任务，针对每种社交媒体类型和任务类型进行去重处理。
    * 使用 `unique` 函数对每种任务类型的任务数组进行去重，并将结果存储在新的对象中。
    * 最后返回去重后的社交任务对象。
+   *
+   * @param allTasks - 网站任务。
+   * @returns 返回去重后的网站任务。
    */
   protected uniqueTasks(allTasks: Array<WebsiteTask>): Array<WebsiteTask> {
     try {
@@ -410,12 +384,7 @@ abstract class Website {
   /**
    * 切换任务的异步方法
    *
-   * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {Promise<boolean>} 如果任务切换成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在切换过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型切换任务状态。
    * 首先检查是否已初始化，如果未初始化则调用初始化方法。
    * 然后根据操作类型分类任务，并初始化社交媒体。
@@ -423,6 +392,11 @@ abstract class Website {
    * 如果存在链接任务，则执行访问链接的操作。
    * 如果存在额外任务，则调用额外任务处理方法。
    * 最后，等待所有任务完成并记录成功信息。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务切换成功，则返回 true；否则返回 false。
    */
   protected async toggleTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
@@ -459,6 +433,12 @@ abstract class Website {
       const doTask = action === 'do';
       const targetDone = doTask;
 
+      /**
+       * 将社交平台执行结果应用到网站任务状态。
+       *
+       * @param social - 社交平台实例或名称。
+       * @param result - 当前操作结果。
+       */
       const applySocialResult = (social: string, result: SocialToggleResult) => {
         const socialTasks = selectedTasks.filter((task) => {
           return task.social === social;
@@ -484,6 +464,12 @@ abstract class Website {
         }
       };
 
+      /**
+       * 将解析后的目标加入对应社交平台任务列表。
+       *
+       * @param social - 社交平台实例或名称。
+       * @param promise - 等待完成的异步操作。
+       */
       const pushSocialTask = (
         social: string,
         promise: Promise<SocialToggleResult>
@@ -643,13 +629,13 @@ abstract class Website {
   /**
    * 执行任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法调用 `toggleTask` 方法以执行任务。
    * 如果在执行过程中发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果任务成功执行，则返回 true；否则返回 false。
    */
   async doTask(): Promise<boolean> {
     try {
@@ -671,13 +657,13 @@ abstract class Website {
   /**
    * 撤销任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果任务成功撤销，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在撤销过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法调用 `toggleTask` 方法以撤销任务。
    * 如果在撤销过程中发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果任务成功撤销，则返回 true；否则返回 false。
    */
   async undoTask(): Promise<boolean> {
     try {
@@ -700,6 +686,12 @@ abstract class Website {
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 interface Website {
+  /**
+   * 执行网站特有的附加任务。
+   *
+   * @param tasks - 待处理的任务集合。
+   * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+   */
   extraDoTask?(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean>;
 }
 

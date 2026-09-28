@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-13 17:57:40
- * @LastEditTime : 2025-08-18 19:06:52
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Givekey.ts
- * @Description  : https://givekey.ru
+ * @Description  : Givekey 网站任务处理（https://givekey.ru）
  */
 
 import type { WebsiteStoredTasksInput, WebsiteTask } from './types';
@@ -21,47 +21,16 @@ import { normalizeStoredTasks } from './taskModel';
 /**
  * 表示 Givekey 网站的任务处理类。
  *
- * @class Givekey
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称。
  *
- * @property {string} name - 网站名称。
- * @property {Array<WebsiteTask>} tasks - 存储社交任务的数组。
- * @property {Array<string>} verifyTaskIds - 存储验证任务ID的数组。
- * @property {string} userId - 用户ID。
- * @property {Array<string>} buttons - 包含 'doTask'、'undoTask' 和 'verifyTask' 的按钮数组。
+ * - `tasks`（`Array<WebsiteTask>`）：存储社交任务的数组。
  *
- * @method static test - 检查当前域名是否为 Givekey 网站。
- * @returns {boolean} 如果当前域名为 'givekey.ru'，则返回 true；否则返回 false。
+ * - `verifyTaskIds`（`Array<string>`）：存储验证任务ID的数组。
  *
- * @method after - 页面加载后的异步方法。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
+ * - `userId`（`string`）：用户ID。
  *
- * @method init - 初始化方法。
- * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
- *
- * @method classifyTask - 分类任务的异步方法。
- * @param {'do' | 'undo' | 'verify'} action - 要执行的操作类型。
- * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
- *
- * @method verifyTask - 验证任务的异步方法。
- * @returns {Promise<boolean>} 如果所有任务成功验证，则返回 true；否则返回 false。
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
- *
- * @method #verify - 验证任务的私有异步方法。
- * @param {string} task - 要验证的任务ID。
- * @returns {Promise<boolean>} 如果任务验证成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
- *
- * @method #getGiveawayId - 获取抽奖ID的方法。
- * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
- * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `buttons`（`Array<string>`）：包含 'doTask'、'undoTask' 和 'verifyTask' 的按钮数组。
  */
 class Givekey extends Website {
   name = 'Givekey';
@@ -76,11 +45,11 @@ class Givekey extends Website {
   /**
    * 检查当前域名是否为 Givekey 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'givekey.ru'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 Givekey 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'givekey.ru'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const url = window.location.host;
@@ -95,14 +64,12 @@ class Givekey extends Website {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先等待导航栏元素的出现，使用定时器检查元素是否存在。
    * 一旦找到元素，清除定时器并继续执行后续操作。
    * 然后检查剩余密钥的状态，如果检查失败，则记录相应的警告信息。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -131,16 +98,16 @@ class Givekey extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法尝试初始化抽奖功能。
    * 首先记录初始化状态。如果页面中存在 Steam 登录链接，则重定向用户到 Steam 登录页面，并记录警告信息。
    * 然后调用私有方法获取抽奖ID，如果获取失败，则返回 false。
    * 接着从页面的 meta 标签中获取用户ID，如果未找到用户ID，则记录错误信息并返回 false。
    * 如果成功获取用户ID，则将其赋值给实例属性 `userId`，并将 `initialized` 属性设置为 true，最后记录成功信息。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   init(): boolean {
     try {
@@ -183,11 +150,7 @@ class Givekey extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {'do' | 'undo' | 'verify'} action - 要执行的操作类型
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型分类任务：
    * - 'undo': 从存储中恢复之前保存的任务信息
    * - 'verify': 仅收集任务ID用于验证
@@ -197,6 +160,11 @@ class Givekey extends Website {
    * 1. 获取页面中的所有任务元素
    * 2. 对每个任务进行分类处理
    * 3. 更新任务列表并保存到存储中
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型
+   * @returns 如果任务分类成功，则返回 true；否则返回 false
    */
   async classifyTask(action: 'do' | 'undo' | 'verify'): Promise<boolean> {
     try {
@@ -312,16 +280,16 @@ class Givekey extends Website {
   /**
    * 验证任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果所有任务成功验证，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查是否已初始化，如果未初始化则调用初始化方法。
    * 然后检查任务列表是否为空，如果为空则调用分类任务的方法进行分类。
    * 接着记录验证前的提示信息，并依次验证每个任务。
    * 在验证每个任务之间，等待 15 秒的延迟。
    * 最后记录所有任务完成的信息，并返回 true。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果所有任务成功验证，则返回 true；否则返回 false。
    */
   async verifyTask(): Promise<boolean> {
     try {
@@ -366,18 +334,18 @@ class Givekey extends Website {
   /**
    * 验证任务的私有异步方法
    *
-   * @param {string} task - 要验证的任务ID。
-   * @returns {Promise<boolean>} 如果任务验证成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法向服务器发送请求以验证指定的任务。
    * 首先记录正在验证的任务状态。
    * 发送 POST 请求到指定的 URL，并传递任务ID和用户ID。
    * 如果请求成功且返回状态为 'ok'，则更新按钮状态并记录成功信息。
    * 如果返回状态为 'end'，则记录成功信息并返回密钥。
    * 如果发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param task - 要验证的任务ID。
+   * @returns 如果任务验证成功，则返回 true；否则返回 false。
    */
   async #verify(task: string): Promise<boolean> {
     try {
@@ -450,15 +418,15 @@ class Givekey extends Website {
   /**
    * 获取抽奖ID的方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从当前窗口的URL中提取抽奖ID。
    * 使用正则表达式匹配URL中的抽奖ID部分。
    * 如果成功匹配到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
    * 如果未能匹配到抽奖ID，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID，则返回 true；否则返回 false。
    */
   #getGiveawayId(): boolean {
     try {
@@ -488,10 +456,7 @@ class Givekey extends Website {
   /**
    * 检查剩余密钥的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法检查是否还有可用的密钥：
    * 1. 首先检查是否启用了密钥检查功能
    * 2. 检查页面上是否显示有剩余密钥
@@ -500,6 +465,10 @@ class Givekey extends Website {
    *    - 用户确认后关闭窗口
    *    - 用户取消则继续执行
    * 4. 所有情况下返回 true，除非发生错误
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
@@ -544,17 +513,7 @@ class Givekey extends Website {
   /**
    * 分类单个任务类型的私有异步方法
    *
-   * @private
-   * @async
-   * @param {string} href - 任务链接URL
-   * @param {string} text - 任务描述文本
-   * @param {JQuery} icon - 任务图标的jQuery对象
-   * @param {boolean} isSuccess - 任务是否已完成的标志
-   * @param {string | undefined} taskId - 任务ID
-   * @returns {Promise<void>} 无返回值的Promise
-   * @throws {Error} 在任务分类过程中发生错误时抛出
-   *
-   * @description
+   * @remarks
    * 该方法根据任务的属性将其分类到不同的社交平台任务类别中。
    * 支持的任务类型包括：
    * - VK社交平台任务：匹配 vk.com 域名
@@ -570,6 +529,13 @@ class Givekey extends Website {
    * 2. 根据URL、文本内容和图标类型确定任务类别
    * 3. 将任务添加到扁平任务列表中
    * 4. 如果无法识别任务类型，记录警告信息
+   *
+   * @param href - 任务链接URL
+   * @param text - 任务描述文本
+   * @param icon - 任务图标的jQuery对象
+   * @param isSuccess - 任务是否已完成的标志
+   * @param taskId - 任务ID
+   * @returns 无返回值的Promise
    */
   async #classifyTaskByType(href: string, text: string, icon: JQuery, isSuccess: boolean, taskId?: string): Promise<void> {
     try {
@@ -579,6 +545,12 @@ class Givekey extends Website {
         isSuccess,
         taskId
       });
+      /**
+       * 将任务加入待处理列表。
+       *
+       * @param social - 社交平台实例或名称。
+       * @param type - 操作或数据类型。
+       */
       const addTask = (social: string, type: string) => {
         const task: WebsiteTask = {
           done: isSuccess,

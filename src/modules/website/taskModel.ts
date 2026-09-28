@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/website/taskModel.ts
+ * @Description  : 网站任务模型转换、去重与执行筛选
+ */
+
 import type { LegacyWebsiteTasks, WebsiteSocialPayload, WebsiteStoredTasksInput, WebsiteTask } from './types';
 const LEGACY_TYPE_MAP: Record<string, string> = {
   groupLinks: 'group',
@@ -51,6 +60,12 @@ const SOCIAL_PAYLOAD_TYPE_MAP: Record<string, string> = {
   'youtube.like': 'videoLinks'
 };
 
+/**
+ * 检查数据是否符合网站任务结构。
+ *
+ * @param value - 待处理的值。
+ * @returns 检查结果；满足条件时为 true，否则为 false。
+ */
 const isWebsiteTask = (value: unknown): value is WebsiteTask => {
   if (!value || typeof value !== 'object') {
     return false;
@@ -66,6 +81,15 @@ const isWebsiteTask = (value: unknown): value is WebsiteTask => {
     (!('data' in task) || typeof task.data === 'string');
 };
 
+/**
+ * 规范化游戏时长任务的数据结构。
+ *
+ * @param social - 社交平台实例或名称。
+ * @param type - 操作或数据类型。
+ * @param value - 待处理的值。
+ * @param done - 操作结束回调。
+ * @returns 处理结果（WebsiteTask）。
+ */
 const normalizePlaytimeTask = (
   social: string,
   type: string,
@@ -98,6 +122,13 @@ const normalizePlaytimeTask = (
   };
 };
 
+/**
+ * 将旧版任务数据转换为统一任务模型。
+ *
+ * @param tasks - 待处理的任务集合。
+ * @param done - 操作结束回调；默认值为 `true`。
+ * @returns 处理后的数据列表。
+ */
 const normalizeLegacyTasks = (
   tasks: LegacyWebsiteTasks,
   done = true
@@ -128,6 +159,12 @@ const normalizeLegacyTasks = (
   return result;
 };
 
+/**
+ * 将已存储任务转换为统一任务模型。
+ *
+ * @param value - 待处理的值；可省略。
+ * @returns 处理后的数据列表。
+ */
 const normalizeStoredTasks = (
   value?: WebsiteStoredTasksInput | null
 ): Array<WebsiteTask> => {
@@ -140,6 +177,12 @@ const normalizeStoredTasks = (
   return normalizeLegacyTasks(value.tasks, true);
 };
 
+/**
+ * 生成用于识别重复网站任务的键。
+ *
+ * @param task - 当前任务数据。
+ * @returns 处理后的字符串。
+ */
 const getTaskKey = (task: WebsiteTask): string => {
   return JSON.stringify([
     task.done,
@@ -152,6 +195,12 @@ const getTaskKey = (task: WebsiteTask): string => {
   ]);
 };
 
+/**
+ * 根据任务键去除重复的网站任务。
+ *
+ * @param tasks - 待处理的任务集合。
+ * @returns 处理后的数据列表。
+ */
 const uniqueWebsiteTasks = (tasks: Array<WebsiteTask>): Array<WebsiteTask> => {
   const seen = new Set<string>();
   return tasks.filter((task) => {
@@ -167,6 +216,13 @@ const uniqueWebsiteTasks = (tasks: Array<WebsiteTask>): Array<WebsiteTask> => {
   });
 };
 
+/**
+ * 根据执行或撤销选项筛选网站任务。
+ *
+ * @param tasks - 待处理的任务集合。
+ * @param action - 待执行的动作。
+ * @returns 处理后的数据列表。
+ */
 const selectTasksForAction = (
   tasks: Array<WebsiteTask>,
   action: 'do' | 'undo'
@@ -178,6 +234,13 @@ const selectTasksForAction = (
   });
 };
 
+/**
+ * 将网站任务转换为社交平台模块的输入数据。
+ *
+ * @param tasks - 待处理的任务集合。
+ * @param onUnknownTask - 处理未知任务的回调。
+ * @returns 处理结果（WebsiteSocialPayload）。
+ */
 const toSocialPayload = (
   tasks: Array<WebsiteTask>,
   onUnknownTask: (task: WebsiteTask) => void
@@ -215,6 +278,12 @@ const toSocialPayload = (
   return payload;
 };
 
+/**
+ * 获取指定平台任务的输入数据项。
+ *
+ * @param task - 当前任务数据。
+ * @returns 处理后的数据对象；未取得有效结果时返回 null。
+ */
 const getSocialPayloadEntry = (
   task: WebsiteTask
 ): { type: string; value: string } | null => {

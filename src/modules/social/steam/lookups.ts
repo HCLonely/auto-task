@@ -1,5 +1,23 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/lookups.ts
+ * @Description  : Steam 鉴赏家与试玩游戏标识查询
+ */
+
 import { Context, SteamError } from './context';
 
+/**
+ * 请求并解析网页内容。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param url - 请求或访问的 URL。
+ * @returns Promise，完成后返回处理后的字符串。
+ * @throws SteamError - 触发 'DISPOSED' 错误条件时抛出。
+ * @throws SteamError - 触发 'LOOKUP_FAILED' 错误条件时抛出。
+ */
 async function getHTML(ctx: Context, url: string): Promise<string> {
   if (ctx.state.disposed) {
     throw new SteamError('DISPOSED');
@@ -20,6 +38,14 @@ async function getHTML(ctx: Context, url: string): Promise<string> {
   }
   return response.data.responseText;
 }
+/**
+ * 查询 Steam 鉴赏家标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param path - 请求路径。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回处理后的字符串；未取得有效结果时返回 false。
+ */
 export function getCuratorId(ctx: Context, path: string, name: string): Promise<string | false> {
   return ctx.run<string | false>('curator.resolve', `${path}/${name}`, false, async (child) => {
     if (!['developer', 'publisher', 'franchise', 'curator'].includes(path) || !name || /[\r\n/]/.test(name)) {
@@ -39,6 +65,13 @@ export function getCuratorId(ctx: Context, path: string, name: string): Promise<
     return id;
   });
 }
+/**
+ * 查询游戏对应的试玩应用标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param id - 目标标识。
+ * @returns Promise，完成后返回处理后的字符串；未取得有效结果时返回 false。
+ */
 export function getDemoAppId(ctx: Context, id: string): Promise<string | false> {
   return ctx.run<string | false>('demo.resolve', id, false, async (child) => {
     const html = await getHTML(child, `https://store.steampowered.com/app/${id}`);

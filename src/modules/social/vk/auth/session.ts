@@ -1,6 +1,20 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/vk/auth/session.ts
+ * @Description  : VK 会话授权管理
+ */
+
 import type { Context } from '../context';
 
-/** Verify the browser session and obtain the account ID and current page API parameters. */
+/**
+ * 验证浏览器会话，并获取账号标识与当前页面的接口参数。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回检查结果；满足条件时为 true，否则为 false。
+ */
 export function verifyAuth(ctx: Context): Promise<boolean> {
   return ctx.run('auth.verify', undefined, false, async (ctx) => {
     const data = await ctx.request({

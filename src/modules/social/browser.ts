@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/browser.ts
+ * @Description  : 社交平台模块的浏览器入口
+ */
+
 /** Namespaces exposed to userscripts through @require. */
 export * as social from './social';
 export * as steam from './steam';

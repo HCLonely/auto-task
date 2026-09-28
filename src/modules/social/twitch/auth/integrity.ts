@@ -1,6 +1,21 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitch/auth/integrity.ts
+ * @Description  : Twitch 客户端完整性校验
+ */
+
 import type { Context } from '../context';
 import { authHeaders, object } from '../graphql';
 
+/**
+ * 检查 Twitch 客户端完整性凭据。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回检查结果；满足条件时为 true，否则为 false。
+ */
 export function checkIntegrity(ctx: Context): Promise<boolean> {
   return ctx.run('auth.integrity', undefined, async (ctx) => {
     ctx.state.integrityToken = '';

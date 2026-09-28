@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-28 18:53:41
- * @LastEditTime : 2025-08-18 20:00:58
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/History.ts
  * @Description  : 任务历史页面
@@ -46,6 +46,9 @@ type TasksData = WebsiteStoredTasksInput;
 
 const TASK_HISTORY_PATTERN = /^(?:faw|gas|gc|gk|gleam|giveawayHopper|kh|prys)Tasks-/;
 
+/**
+ * 管理任务历史记录的展示与操作。
+ */
 class History extends Keylol {
   name = 'History';
   buttons: Array<string> = [
@@ -60,11 +63,13 @@ class History extends Keylol {
   /**
    * 检查当前域名和路径是否为历史记录页面的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名和路径来判断是否为历史记录页面。
    * 如果域名和路径匹配，则返回 true；否则返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/history.html'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     try {
@@ -90,11 +95,7 @@ class History extends Keylol {
   /**
    * 在执行操作之前的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法在执行操作之前清空页面的主体内容，并为主体添加 'auto-task-history' 类。
    * 然后获取存储中的所有值，并筛选出以 'Tasks-' 开头的任务历史记录。
    * 遍历每个任务历史记录，调用私有方法 `#addItem` 将其添加到页面中。
@@ -140,11 +141,7 @@ class History extends Keylol {
   /**
    * 清除历史记录的方法
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在清除过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从存储中获取所有值，并筛选出以 'Tasks-' 开头的任务历史记录。
    * 遍历每个任务历史记录，调用 `GM_deleteValue` 删除对应的值。
    * 清除完成后，弹出成功提示框。
@@ -191,15 +188,12 @@ class History extends Keylol {
   /**
    * 添加任务项的方法
    *
-   * @param {string} item - 要添加的任务项名称。
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在添加过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从存储中获取指定任务项的数据，并根据任务项的类型生成相应的 HTML。
    * 然后将生成的 HTML 添加到页面的容器中，以便用户查看。
    * 如果在过程中发生错误，则记录错误信息。
+   *
+   * @param item - 要添加的任务项名称。
    */
   #addItem(item: string): void {
     try {
@@ -248,14 +242,13 @@ class History extends Keylol {
   /**
    * 获取任务信息的私有方法
    *
-   * @param {string} item - 任务项的标识符，格式为 "website-id"
-   * @returns {{ title: string; link: string }} 返回包含任务标题和链接的对象
-   * @throws {Error} 如果在获取过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法解析任务项标识符，从中提取网站标识和任务ID。
    * 根据不同的网站类型，生成对应的任务标题和链接。
    * 如果发生错误或找不到匹配的网站类型，则返回空标题和链接。
+   *
+   * @param item - 任务项的标识符，格式为 "website-id"
+   * @returns 返回包含任务标题和链接的对象
    */
   #getTaskInfo(item: string): { title: string; link: string } {
     try {
@@ -323,15 +316,14 @@ class History extends Keylol {
   /**
    * 生成任务HTML的私有方法
    *
-   * @param {Array<WebsiteTask>} tasks - 任务数据对象
-   * @returns {string} 返回生成的HTML字符串
-   * @throws {Error} 如果在生成过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法遍历任务数据对象，为每个任务生成对应的HTML列表项。
    * 对于过长的任务链接，会进行截断处理。
    * 生成的HTML包含任务的社交平台、类型和链接信息。
    * 如果发生错误，则返回空字符串。
+   *
+   * @param tasks - 任务数据对象
+   * @returns 返回生成的HTML字符串
    */
   #generateTaskHtml(tasks: Array<WebsiteTask>): string {
     try {
@@ -366,6 +358,12 @@ class History extends Keylol {
     }
   }
 
+  /**
+   * 转义文本中的 HTML 特殊字符。
+   *
+   * @param value - 待处理的值。
+   * @returns 处理后的字符串。
+   */
   #escapeHtml(value: string): string {
     const htmlEntities: Record<string, string> = {
       '&': '&amp;',
@@ -382,18 +380,16 @@ class History extends Keylol {
   /**
    * 将任务添加到容器的私有方法
    *
-   * @param {string} item - 任务项的标识符
-   * @param {string} title - 任务的标题
-   * @param {string} link - 任务的链接
-   * @param {string} html - 任务的HTML内容
-   * @param {number} time - 任务的时间戳
-   * @returns {void}
-   * @throws {Error} 如果在添加过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法将任务信息添加到页面容器中。
    * 生成的卡片包含任务标题、链接、删除按钮和时间信息。
    * 使用本地时间格式化时间戳为可读格式。
+   *
+   * @param item - 任务项的标识符
+   * @param title - 任务的标题
+   * @param link - 任务的链接
+   * @param html - 任务的HTML内容
+   * @param time - 任务的时间戳
    */
   #appendTaskToContainer(item: string, title: string, link: string, html: string, time: number): void {
     try {
@@ -441,10 +437,7 @@ class History extends Keylol {
   /**
    * 绑定删除事件的私有方法
    *
-   * @returns {void}
-   * @throws {Error} 如果在绑定过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法为所有删除按钮绑定点击事件。
    * 点击删除按钮时，会从存储中删除对应的任务数据，
    * 并从页面中移除相应的任务卡片元素。

@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/tasks.ts
+ * @Description  : Steam 批量任务执行与结果汇总
+ */
+
 import { Context, SteamError } from './context';
 import { dispatch, resetRegion } from './executors';
 import { linkTasks, parseLink } from './links';
@@ -6,6 +15,14 @@ import { playGames, stopPlayGames } from './playTime';
 import { loadState } from './storage';
 import type { LinkType, SteamTaskDetailResult, SteamTaskOptions, SteamTaskResult, TaskType } from './types';
 
+/**
+ * 写入任务执行结果。
+ *
+ * @param result - 当前操作结果。
+ * @param type - 操作或数据类型。
+ * @param link - 任务目标链接。
+ * @param success - 成功状态或成功判定回调。
+ */
 function setResult(result: SteamTaskDetailResult, type: LinkType, link: string, success: boolean): void {
   result.results[type] ||= {};
   // Keep ordinary result objects without allowing special input keys to change their prototype.
@@ -19,6 +36,14 @@ function setResult(result: SteamTaskDetailResult, type: LinkType, link: string, 
 }
 const irreversible = new Set<TaskType>(['workshopVotes', 'announcements', 'licenses', 'playtests']);
 
+/**
+ * 按选项调度批量任务并记录每项结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项。
+ * @param action - 待执行的动作。
+ * @returns Promise，完成后返回Steam 任务执行汇总。
+ */
 function executeTasks(ctx: Context, options: SteamTaskOptions, action: 'do' | 'undo'): Promise<SteamTaskResult> {
   const doTask = action === 'do';
   return ctx.run<SteamTaskResult>(action, undefined, false, async (child) => {
@@ -141,9 +166,23 @@ function executeTasks(ctx: Context, options: SteamTaskOptions, action: 'do' | 'u
   });
 }
 
+/**
+ * 执行所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回Steam 任务执行汇总。
+ */
 export function doTasks(ctx: Context, options: SteamTaskOptions = {}): Promise<SteamTaskResult> {
   return executeTasks(ctx, options, 'do');
 }
+/**
+ * 撤销所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回Steam 任务执行汇总。
+ */
 export function undoTasks(ctx: Context, options: SteamTaskOptions = {}): Promise<SteamTaskResult> {
   return executeTasks(ctx, options, 'undo');
 }

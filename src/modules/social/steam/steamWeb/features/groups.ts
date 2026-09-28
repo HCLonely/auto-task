@@ -1,7 +1,23 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/groups.ts
+ * @Description  : Steam 网页端 群组加入与退出
+ */
+
 import { setCache } from '../cache';
 import type { Context } from '../context';
 import { encodeForm, parseHTML } from '../utils/html';
 
+/**
+ * 加入指定群组。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param groupName - 群组名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function joinGroup(ctx: Context, groupName: string): Promise<boolean> {
   return ctx.run('groups.joinGroup', groupName, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.communityInitialized) {
@@ -40,6 +56,13 @@ export async function joinGroup(ctx: Context, groupName: string): Promise<boolea
   });
 }
 
+/**
+ * 退出指定群组。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param groupName - 群组名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function leaveGroup(ctx: Context, groupName: string): Promise<boolean> {
   return ctx.run('groups.leaveGroup', groupName, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.communityInitialized) {
@@ -88,6 +111,13 @@ export async function leaveGroup(ctx: Context, groupName: string): Promise<boole
   });
 }
 
+/**
+ * 查询 Steam 群组标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param groupName - 群组名称。
+ * @returns Promise，完成后返回处理后的字符串；未取得有效结果时返回 false。
+ */
 export async function getGroupId(ctx: Context, groupName: string): Promise<false | string> {
   return ctx.run('groups.getGroupId', groupName, async (ctx): Promise<false | string> => {
     try {

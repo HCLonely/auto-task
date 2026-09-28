@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-06 13:16:38
- * @LastEditTime : 2025-08-18 19:08:27
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/social/whiteList.ts
  * @Description  : 白名单相关
@@ -126,27 +126,25 @@ interface DisabledType {
 /**
  * 从给定的链接中提取特定类型的 ID。
  *
- * @param {string} type - 链接类型，支持的类型包括：
- *   - instagram.users
- *   - twitch.channels
- *   - twitter.users
- *   - twitter.retweets
- *   - vk.names
- *   - youtube.channels
- *   - youtube.likes
- *   - reddit.reddits
- *   - steam.groups
- *   - steam.wishlists
- *   - steam.follows
- *   - steam.playtests
- *   - steam.playTime
- *   - steam.forums
- *   - steam.workshops
- *   - steam.curators
- *
- * @returns {Promise<string>} 提取到的 ID，如果未找到则返回空字符串。
- *
- * @throws {Error} 如果在提取过程中发生错误，将抛出错误。
+ * @param type - 链接类型，支持的类型包括：
+ * - instagram.users
+ * - twitch.channels
+ * - twitter.users
+ * - twitter.retweets
+ * - vk.names
+ * - youtube.channels
+ * - youtube.likes
+ * - reddit.reddits
+ * - steam.groups
+ * - steam.wishlists
+ * - steam.follows
+ * - steam.playtests
+ * - steam.playTime
+ * - steam.forums
+ * - steam.workshops
+ * - steam.curators
+ * @param root - 查找或渲染的根节点。
+ * @returns 提取到的 ID，如果未找到则返回空字符串。
  */
 const link2id = async function (type: string, root: HTMLDialogElement): Promise<string> {
   try {
@@ -247,10 +245,8 @@ const disabledType: DisabledType = {
 /**
  * 合并给定的白名单与默认白名单，返回新的白名单对象。
  *
- * @param {whiteList} whiteList - 要合并的白名单对象。
- * @returns {whiteList} 合并后的新白名单对象。
- *
- * @throws {Error} 如果在合并过程中发生错误，将抛出错误。
+ * @param whiteList - 要合并的白名单对象。
+ * @returns 合并后的新白名单对象。
  */
 const assignWhiteList = (whiteList: whiteList): whiteList => {
   try {
@@ -276,11 +272,7 @@ const assignWhiteList = (whiteList: whiteList): whiteList => {
 /**
  * 显示白名单选项的表单，允许用户编辑白名单。
  *
- * @param {'page' | 'dialog'} showType - 指定显示类型，支持 'page' 或 'dialog'。
- *
- * @returns {void} 无返回值。
- *
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
+ * @param showType - 指定显示类型，支持 'page' 或 'dialog'。
  */
 const whiteListOptions = function (showType: 'page' | 'dialog'): void {
   try {
@@ -369,6 +361,11 @@ const whiteListOptions = function (showType: 'page' | 'dialog'): void {
         cancelButtonText: __('close'),
         showDenyButton: true,
         denyButtonText: __('return'),
+        /**
+         * 处理对话框打开事件。
+         *
+         * @param context - 当前运行上下文。
+         */
         onOpen: (context) => {
           context.root.querySelector('#link2id')!.addEventListener('click', () => {
             void context.run(async () => {

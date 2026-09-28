@@ -1,5 +1,21 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamASF/cache.ts
+ * @Description  : Steam ASF 缓存读取与更新
+ */
+
 import { Context, OperationError } from './context';
 
+/**
+ * 读取并缓存群组信息。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param refresh - 是否刷新已有数据；默认值为 `false`。
+ * @returns Promise，完成后返回处理后的数据对象。
+ */
 export async function loadGroups(ctx: Context, refresh = false): Promise<Record<string, string>> {
   if (ctx.state.loadingGroups) {
     return ctx.state.loadingGroups;
@@ -43,6 +59,12 @@ export async function loadGroups(ctx: Context, refresh = false): Promise<Record<
   return ctx.state.loadingGroups;
 }
 
+/**
+ * 使已缓存的群组信息失效。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns 在操作完成后兑现的 Promise。
+ */
 export async function invalidateGroups(ctx: Context): Promise<void> {
   // Complete an older lookup before invalidating it, so it cannot re-save stale membership.
   try {

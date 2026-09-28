@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-15 13:58:41
- * @LastEditTime : 2025-08-18 19:06:11
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Keylol.ts
- * @Description  : https://keylol.com/f319-1
+ * @Description  : Keylol 网站任务处理（https://keylol.com/f319-1）
  */
 
 import throwError from '../../scripts/tools/throwError';
@@ -17,56 +17,45 @@ import { debug } from '../../scripts/tools/debug';
 type TaskAction = 'do' | 'undo';
 
 interface TaskButton extends HTMLElement {
+  /**
+   * 读取元素的指定属性。
+   *
+   * @param name - 目标名称。
+   * @returns 处理后的字符串；未取得有效结果时返回 null。
+   */
   getAttribute(name: 'data-social'): string | null;
+  /**
+   * 读取元素的指定属性。
+   *
+   * @param name - 目标名称。
+   * @returns 处理后的字符串；未取得有效结果时返回 null。
+   */
   getAttribute(name: 'data-type'): string | null;
+  /**
+   * 读取元素的指定属性。
+   *
+   * @param name - 目标名称。
+   * @returns 处理后的字符串；未取得有效结果时返回 null。
+   */
   getAttribute(name: 'data-link'): string | null;
+  /**
+   * 读取元素的指定属性。
+   *
+   * @param name - 目标名称。
+   * @returns 处理后的字符串；未取得有效结果时返回 null。
+   */
   getAttribute(name: 'selected'): string | null;
 }
 
 /**
  * Keylol 类用于处理 Keylol 网站的自动任务。
  *
- * @class Keylol
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称，默认为 'Keylol'。
  *
- * @property {string} name - 网站名称，默认为 'Keylol'。
- * @property {Array<WebsiteTask>} tasks - 统一任务列表。
- * @property {Array<string>} buttons - 可用的操作按钮数组。
+ * - `tasks`（`Array<WebsiteTask>`）：统一任务列表。
  *
- * @method static test - 检查当前域名是否为 Keylol 网站。
- * @returns {boolean} 如果当前域名为 'keylol.com' 且特定链接存在，则返回 true；否则返回 false。
- *
- * @method init - 初始化方法。
- * @returns {boolean} 总是返回 true，表示初始化成功。
- *
- * @method after - 抽奖后续操作的方法。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
- *
- * @method classifyTask - 分类任务的方法。
- * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
- * @returns {boolean} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
- *
- * @method selectAll - 选择所有可见任务的函数。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在选择过程中发生错误，将抛出错误。
- *
- * @method selectNone - 取消选择所有可见任务的函数。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在取消选择过程中发生错误，将抛出错误。
- *
- * @method invertSelect - 反转选择所有可见任务的函数。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在反转选择过程中发生错误，将抛出错误。
- *
- * @method #addBtn - 添加按钮的方法。
- * @param {HTMLElement} before - 在该元素之后插入新按钮。
- * @param {string} social - 社交媒体类型。
- * @param {string} linkType - 链接类型。
- * @param {string} link - 要添加的链接。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在添加按钮过程中发生错误，将抛出错误。
+ * - `buttons`（`Array<string>`）：可用的操作按钮数组。
  */
 class Keylol extends Website {
   name = 'Keylol';
@@ -106,12 +95,12 @@ class Keylol extends Website {
   /**
    * 检查当前域名是否为 Keylol 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'keylol.com' 且特定链接存在，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 Keylol 网站。
    * 同时检查页面中是否存在特定的链接（索引为 3 的链接），
    * 如果该链接的 href 属性包含 '319' 或 '234'，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'keylol.com' 且特定链接存在，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -129,11 +118,11 @@ class Keylol extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 总是返回 true，表示初始化成功。
-   *
-   * @description
+   * @remarks
    * 该方法用于初始化相关设置或状态。
    * 当前实现仅返回 true，表示初始化过程已完成。
+   *
+   * @returns 总是返回 true，表示初始化成功。
    */
   init(): boolean {
     debug('初始化 Keylol');
@@ -143,11 +132,7 @@ class Keylol extends Website {
   /**
    * 页面加载后的方法
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法筛选可见的链接并分类不同类型的社交媒体链接。
    * 包括 Reddit、Instagram、Twitter、Twitch、VK、Steam 商店、Steam 社区和 YouTube 的链接。
    * 对于每种类型的链接，调用私有方法 `#addBtn` 将其添加到相应的任务列表中。
@@ -201,6 +186,9 @@ class Keylol extends Website {
 
   /**
    * 分类并处理单个链接
+   *
+   * @param $link - 链接对应的 jQuery 对象。
+   * @param href - 目标链接地址。
    */
   #classifyAndProcessLink($link: JQuery<HTMLElement>, href: string): void {
     debug('分类处理链接', {
@@ -260,6 +248,9 @@ class Keylol extends Website {
 
   /**
    * 处理 Steam 商店链接
+   *
+   * @param element - 目标 DOM 元素。
+   * @param href - 目标链接地址。
    */
   #processSteamStoreLink(element: HTMLElement, href: string): void {
     debug('处理 Steam 商店链接', {
@@ -285,6 +276,9 @@ class Keylol extends Website {
 
   /**
    * 处理 Steam 社区链接
+   *
+   * @param element - 目标 DOM 元素。
+   * @param href - 目标链接地址。
    */
   #processSteamCommunityLink(element: HTMLElement, href: string): void {
     debug('处理 Steam 社区链接', {
@@ -303,6 +297,8 @@ class Keylol extends Website {
 
   /**
    * 处理抽奖链接
+   *
+   * @param mainPost - 主动态信息。
    */
   #processGiveawayLinks(mainPost: JQuery<HTMLElement>): void {
     debug('开始处理抽奖链接');
@@ -360,6 +356,8 @@ class Keylol extends Website {
 
   /**
    * 处理 Keylol 特定的链接
+   *
+   * @param mainPost - 主动态信息。
    */
   #processKeylolSpecificLinks(mainPost: JQuery<HTMLElement>): void {
     debug('开始处理 Keylol 特定链接');
@@ -464,17 +462,17 @@ class Keylol extends Website {
   /**
    * 分类任务的方法
    *
-   * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {boolean} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型分类任务。
    * 首先重置统一任务列表。
    * 然后遍历所有被选中的按钮，提取社交媒体类型、任务类型和链接。
    * 根据操作类型，将链接添加到相应的任务列表中。
    * 最后，去重任务列表并返回成功状态。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   classifyTask(action: TaskAction): boolean {
     try {
@@ -528,11 +526,7 @@ class Keylol extends Website {
   /**
    * 选择所有可见任务的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在选择过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法选择所有可见的自动任务，并将其标记为选中状态。
    * 使用 jQuery 选择器查找所有可见的 `.auto-task-keylol` 元素，并设置其 `selected` 属性为 'selected'。
    */
@@ -555,11 +549,7 @@ class Keylol extends Website {
   /**
    * 取消选择所有可见任务的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在取消选择过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法取消所有可见的自动任务的选中状态。
    * 使用 jQuery 选择器查找所有可见的 `.auto-task-keylol` 元素，并移除其 `selected` 属性。
    */
@@ -582,11 +572,7 @@ class Keylol extends Website {
   /**
    * 反转选择所有可见任务的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在反转选择过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历所有可见的自动任务，并根据当前状态反转其选中状态。
    * 如果任务当前被选中，则移除其 `selected` 属性；如果未被选中，则添加 `selected` 属性。
    */
@@ -616,18 +602,15 @@ class Keylol extends Website {
   /**
    * 添加按钮的方法
    *
-   * @param {HTMLElement} before - 在该元素之后插入新按钮。
-   * @param {string} social - 社交媒体类型。
-   * @param {string} linkType - 链接类型。
-   * @param {string} link - 要添加的链接。
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在添加按钮过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法在指定的元素之后插入一个新的按钮。
    * 按钮的点击事件会根据当前状态切换 `selected` 属性。
    * 按钮还包含社交媒体类型、链接类型和链接信息，以便后续操作使用。
+   *
+   * @param before - 在该元素之后插入新按钮。
+   * @param social - 社交媒体类型。
+   * @param linkType - 链接类型。
+   * @param link - 要添加的链接。
    */
   #addBtn(before: HTMLElement, social: string, linkType: string, link: string): void {
     try {

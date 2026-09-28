@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 15:40:46
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/ui/dialog.ts
+ * @Description  : 对话框与提示消息管理
+ */
+
 import __ from '../tools/i18n';
 
 type Tone = 'success' | 'error' | 'warning' | 'info';
@@ -9,7 +18,19 @@ export interface DialogResult<T> {
 }
 export interface DialogContext {
   root: HTMLDialogElement;
+  /**
+   * 更新操作状态。
+   *
+   * @param text - 待处理的文本。
+   * @param tone - 提示消息的视觉类型；可省略。
+   */
   status: (text: string, tone?: Tone) => void;
+  /**
+   * 在独立操作上下文中执行任务并发送状态事件。
+   *
+   * @param operation - 操作名称或执行函数。
+   * @returns 在操作完成后兑现的 Promise。
+   */
   run: (operation: () => Promise<void>) => Promise<void>;
 }
 interface DialogOptions<T> {
@@ -29,7 +50,18 @@ interface DialogOptions<T> {
   cancelButtonText?: string;
   denyButtonText?: string;
   keepOpenOnConfirm?: boolean;
+  /**
+   * 处理对话框打开事件。
+   *
+   * @param context - 当前运行上下文。
+   */
   onOpen?: (context: DialogContext) => void;
+  /**
+   * 处理对话框确认前的校验。
+   *
+   * @param context - 当前运行上下文。
+   * @returns 处理结果（T | Promise<T>）。
+   */
   preConfirm?: (context: DialogContext) => T | Promise<T>;
 }
 
@@ -38,6 +70,15 @@ let sequence = 0;
 let savedOverflow = '';
 let savedOverflowPriority = '';
 
+/**
+ * 根据模板创建界面元素。
+ *
+ * @typeParam K - 目标键的类型。
+ * @param tag - 目标元素的标签名。
+ * @param className - 元素样式类名。
+ * @param text - 待处理的文本；可省略。
+ * @returns 处理结果（HTMLElementTagNameMap[K]）。
+ */
 const element = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, text?: string): HTMLElementTagNameMap[K] => {
   const node = document.createElement(tag);
   node.className = className;
@@ -47,7 +88,13 @@ const element = <K extends keyof HTMLElementTagNameMap>(tag: K, className: strin
   return node;
 };
 
-/** Every invocation owns its DOM, listeners and result. Nested dialogs use the browser's top layer. */
+/**
+ * 每次调用独立管理 DOM、监听器和结果；嵌套对话框使用浏览器顶层显示。
+ *
+ * @typeParam T - 操作处理的数据或返回值类型。
+ * @param options - 本次操作的配置选项。
+ * @returns Promise，完成后返回处理结果（DialogResult<T>）。
+ */
 export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Promise<DialogResult<T>> => {
   return new Promise((resolve, reject) => {
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -101,11 +148,21 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
     let busy = false;
     let settled = false;
     const listeners = new AbortController();
+    /**
+     * 注册事件监听器。
+     *
+     * @param target - 当前操作的目标。
+     * @param type - 操作或数据类型。
+     * @param handler - 事件或任务处理函数。
+     */
     const listen = (target: EventTarget, type: string, handler: EventListener): void => {
       target.addEventListener(type, handler, {
         signal: listeners.signal
       });
     };
+    /**
+     * 释放模块资源并结束待处理的监听或等待。
+     */
     const dispose = (): void => {
       settled = true;
       listeners.abort();
@@ -127,6 +184,12 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
         previousFocus.focus();
       }
     };
+    /**
+     * 完成当前操作并交付结果。
+     *
+     * @param action - 待执行的动作。
+     * @param value - 待处理的值；可省略。
+     */
     const finish = (action: 'confirm' | 'cancel' | 'back', value?: T): void => {
       if (settled || busy) {
         return;
@@ -141,10 +204,22 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
     };
     const context: DialogContext = {
       root,
+      /**
+       * 更新操作状态。
+       *
+       * @param text - 待处理的文本。
+       * @param tone - 提示消息的视觉类型；默认值为 `'info'`。
+       */
       status: (text, tone = 'info') => {
         status.textContent = text;
         status.dataset.tone = tone;
       },
+      /**
+       * 在独立操作上下文中执行任务并发送状态事件。
+       *
+       * @param operation - 操作名称或执行函数。
+       * @returns 在操作完成后兑现的 Promise。
+       */
       run: async (operation) => {
         if (busy || settled) {
           return;
@@ -173,6 +248,11 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
         }
       }
     };
+    /**
+     * 提交当前表单或任务。
+     *
+     * @returns 在操作完成后兑现的 Promise。
+     */
     const submit = async (): Promise<void> => {
       if (busy || settled) {
         return;
@@ -193,6 +273,14 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
         finish('confirm', value);
       }
     };
+    /**
+     * 创建对话框按钮并绑定点击处理函数。
+     *
+     * @param label - 显示标签。
+     * @param action - 待执行的动作。
+     * @param handler - 事件或任务处理函数。
+     * @returns 创建的按钮元素。
+     */
     const button = (label: string, action: string, handler: () => void): HTMLButtonElement => {
       const node = element('button', 'at-button', label);
       node.type = 'button';
@@ -228,6 +316,12 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
       return finish('cancel');
     });
     let backdropStart = false;
+    /**
+     * 处理点击对话框外部的事件。
+     *
+     * @param event - 事件名称或事件对象。
+     * @returns 操作结果；成功或无需重复处理时为 true，失败时为 false。
+     */
     const outside = (event: MouseEvent): boolean => {
       const box = root.getBoundingClientRect();
       return event.target === root && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom);
@@ -274,6 +368,11 @@ export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Pro
   });
 };
 
+/**
+ * 显示短暂的提示消息。
+ *
+ * @param options - 本次操作的配置选项。
+ */
 export const toast = (options: { title: string; text?: string; icon?: Tone; duration?: number }): void => {
   const host = dialogs[dialogs.length - 1] ?? document.body;
   let region = host.querySelector<HTMLElement>(':scope > .at-toasts');
@@ -294,6 +393,9 @@ export const toast = (options: { title: string; text?: string; icon?: Tone; dura
   item.append(close);
   region.append(item);
   let timer: ReturnType<typeof setTimeout> | undefined;
+  /**
+   * 移除指定记录或界面元素。
+   */
   const remove = (): void => {
     clearTimeout(timer);
     item.remove();
@@ -301,6 +403,9 @@ export const toast = (options: { title: string; text?: string; icon?: Tone; dura
       region?.remove();
     }
   };
+  /**
+   * 标记操作开始。
+   */
   const start = (): void => {
     clearTimeout(timer);
     const duration = options.duration ?? (options.icon === 'error' ? 0 : 4000);

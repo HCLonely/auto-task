@@ -1,6 +1,22 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/auth/token.ts
+ * @Description  : Steam 网页端 访问令牌管理
+ */
+
 import type { Context } from '../context';
 import type { StoreTokenParam } from '../types';
 
+/**
+ * 刷新并保存访问令牌。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param type - 操作或数据类型；默认值为 `'steamStore'`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function refreshToken(ctx: Context, type: 'steamStore' | 'steamCommunity' = 'steamStore'): Promise<boolean> {
   return ctx.run('auth.refreshToken', type, async (ctx): Promise<boolean> => {
     try {
@@ -45,6 +61,14 @@ export async function refreshToken(ctx: Context, type: 'steamStore' | 'steamComm
   });
 }
 
+/**
+ * 设置当前访问令牌。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param param - 操作参数。
+ * @param type - 操作或数据类型。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function setToken(ctx: Context, param: StoreTokenParam, type: 'steamStore' | 'steamCommunity'): Promise<boolean> {
   return ctx.run('auth.setToken', undefined, async (ctx): Promise<boolean> => {
     try {

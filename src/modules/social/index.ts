@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/index.ts
+ * @Description  : 社交平台模块统一导出
+ */
+
 /** Unified imports without ambiguous wildcard exports from independent modules. */
 export { Social, SocialAdapter } from './social';
 export type { SocialModule, SocialStatusEvent, InitResult, SocialTaskResult, SocialTaskDetailResult } from './social';

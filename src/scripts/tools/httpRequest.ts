@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-13 13:55:36
- * @LastEditTime : 2025-08-18 19:07:58
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/tools/httpRequest.ts
  * @Description  : http请求函数封装
@@ -22,13 +22,13 @@ interface Headers {
 /**
  * 解析 HTTP 头字符串为对象
  *
- * @param {string} [headerString] - HTTP 头字符串，每行一个头部
- * @returns {Headers} 解析后的头部对象
- *
- * @description
+ * @remarks
  * 该函数将原始的 HTTP 头字符串解析为结构化的对象。
  * 处理多值头部（如 set-cookie）时会将值转换为数组。
  * 如果输入为空，则返回空对象。
+ *
+ * @param headerString - HTTP 头字符串，每行一个头部
+ * @returns 解析后的头部对象
  */
 const parseHeaders = (headerString?: string): Headers => {
   debug('开始解析HTTP头', {
@@ -67,15 +67,14 @@ const parseHeaders = (headerString?: string): Headers => {
 /**
  * 处理 HTTP 响应数据
  *
- * @param {any} data - 原始响应数据
- * @param {httpRequestOptions} options - 请求配置选项
- * @returns {void}
- *
- * @description
+ * @remarks
  * 该函数处理 HTTP 响应数据，包括：
  * 1. 解析响应头
  * 2. 设置最终 URL
  * 3. 如果响应类型为 JSON，尝试解析响应文本
+ *
+ * @param data - 原始响应数据
+ * @param options - 请求配置选项
  */
 const processResponse = (data: any, options: httpRequestOptions): void => {
   debug('开始处理响应数据', {
@@ -103,11 +102,7 @@ const processResponse = (data: any, options: httpRequestOptions): void => {
 /**
  * 发送 HTTP 请求并返回响应结果
  *
- * @param {httpRequestOptions} options - 请求配置选项，包括 URL、方法、数据等
- * @param {number} [times=0] - 当前重试次数，默认为 0
- * @returns {Promise<httpResponse>} HTTP 响应对象的 Promise
- *
- * @description
+ * @remarks
  * 该函数使用 GM_xmlhttpRequest 发送 HTTP 请求，支持以下特性：
  * 1. 自动重试（最多2次）
  * 2. 超时处理（默认30秒）
@@ -121,6 +116,10 @@ const processResponse = (data: any, options: httpRequestOptions): void => {
  * - 602: 已中止
  * - 603: 请求错误
  * - 604: JavaScript 错误
+ *
+ * @param options - 请求配置选项，包括 URL、方法、数据等
+ * @param times - 当前重试次数，默认为 0
+ * @returns HTTP 响应对象的 Promise
  */
 const httpRequest = async (options: httpRequestOptions, times = 0): Promise<httpResponse> => {
   debug('开始HTTP请求', {
@@ -136,6 +135,11 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
       const requestObj: httpRequestOptions = {
         fetch: true,
         timeout: 30000,
+        /**
+         * 处理请求超时事件。
+         *
+         * @param data - 待处理的数据。
+         */
         ontimeout: (data) => {
           debug('请求超时', {
             url: options.url
@@ -148,6 +152,9 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
             options
           });
         },
+        /**
+         * 处理请求中止事件。
+         */
         onabort: () => {
           debug('请求被中止', {
             url: options.url
@@ -160,6 +167,11 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
             options
           });
         },
+        /**
+         * 处理请求失败事件。
+         *
+         * @param data - 待处理的数据。
+         */
         onerror: (data) => {
           debug('请求发生错误', {
             url: options.url,
@@ -173,6 +185,11 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
             options
           });
         },
+        /**
+         * 处理请求加载完成事件。
+         *
+         * @param data - 待处理的数据。
+         */
         onload: (data) => {
           debug('请求加载完成', {
             url: options.url,

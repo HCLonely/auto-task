@@ -1,10 +1,28 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/youtube/features/batch.ts
+ * @Description  : YouTube 批量任务执行与撤销
+ */
+
 import type { Context } from '../context';
 import type { SocialTaskDetailResult, SocialTaskResult, TaskOptions } from '../types';
 import { eventTarget } from '../utils/links';
 import { doChannel, undoChannel } from './channels';
 import { doLikeVideo, undoLikeVideo } from './videos';
 
-/** Preserve per-original-link results and the original staggered concurrent scheduling. */
+/**
+ * 按原始链接记录结果，并保留错开启动时间的并发调度方式。
+ *
+ * @remarks
+ * 解构参数包含：channelLinks（对应字段值）、videoLinks（对应字段值）。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param action - 待执行的动作。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 async function executeTasks(ctx: Context, {
   channelLinks = [], videoLinks = []
 }: TaskOptions, action: 'do' | 'undo'): Promise<SocialTaskResult> {
@@ -70,9 +88,23 @@ async function executeTasks(ctx: Context, {
   });
 }
 
+/**
+ * 执行所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function doTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'do');
 }
+/**
+ * 撤销所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function undoTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'undo');
 }

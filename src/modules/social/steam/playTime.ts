@@ -1,8 +1,23 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/playTime.ts
+ * @Description  : Steam 游戏时长任务管理
+ */
+
 import { Context, SteamError } from './context';
 import { candidates, dispatch } from './executors';
 import { getDemoAppId } from './lookups';
 import { getPlayState, playStateKey } from './storage';
 
+/**
+ * 停止正在执行的游戏运行任务。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function stopPlayGames(ctx: Context): Promise<boolean> {
   return ctx.run('play.stop', undefined, false, async (child) => {
     const asf = candidates(child, 'playTime').find((executor) => {
@@ -34,6 +49,14 @@ export function stopPlayGames(ctx: Context): Promise<boolean> {
   });
 }
 
+/**
+ * 启动游戏运行或游戏时长任务。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param ids - 目标标识列表。
+ * @param minutes - 游戏运行时长，单位为分钟。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function playGames(ctx: Context, ids: string[], minutes: number): Promise<boolean> {
   return ctx.run('play.start', ids.join(','), false, async (child) => {
     const asf = candidates(child, 'playTime').find((executor) => {
@@ -57,6 +80,11 @@ export function playGames(ctx: Context, ids: string[], minutes: number): Promise
         });
       }
     }
+    /**
+     * 标记操作开始。
+     *
+     * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+     */
     const start = async () => {
       const started = await child.invoke(asf, () => {
         return asf.client.playGames(games.join(','));

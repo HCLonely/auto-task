@@ -1,8 +1,26 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/youtube/features/videos.ts
+ * @Description  : YouTube 视频点赞与取消点赞
+ */
+
 import { requestContext, signedHeaders } from '../auth/signature';
 import type { Context } from '../context';
 import { eventTarget, normalizeYoutubeLink } from '../utils/links';
 import { getInfo } from './info';
 
+/**
+ * 根据操作方向为视频点赞或取消视频点赞。
+ *
+ * @remarks
+ * 解构参数包含：link（任务目标链接）、doTask（是否执行任务；为 false 时执行撤销操作）。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 async function executeLikeVideo(ctx: Context, {
   link, doTask = true
 }: { link: string; doTask?: boolean }): Promise<boolean> {
@@ -60,12 +78,26 @@ async function executeLikeVideo(ctx: Context, {
   });
 }
 
+/**
+ * 为视频点赞。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function doLikeVideo(ctx: Context, options: { link: string; }): Promise<boolean> {
   return executeLikeVideo(ctx, {
     ...options,
     doTask: true
   });
 }
+/**
+ * 取消视频点赞。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function undoLikeVideo(ctx: Context, options: { link: string; }): Promise<boolean> {
   return executeLikeVideo(ctx, {
     ...options,

@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-11 14:02:46
- * @LastEditTime : 2025-08-18 19:06:20
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Keyhub.ts
- * @Description  : https://key-hub.eu/
+ * @Description  : Keyhub 网站任务处理（https://key-hub.eu/）
  */
 
 import type { WebsiteStoredTasksInput, WebsiteTask } from './types';
@@ -22,55 +22,12 @@ import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
 /**
  * Keyhub 类用于处理与 Keyhub 网站相关的任务和操作。
  *
- * @class Keyhub
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称，默认为 'Keyhub'。
  *
- * @property {string} name - 网站名称，默认为 'Keyhub'。
- * @property {Array<WebsiteTask>} tasks - 统一任务列表。
- * @property {Array<string>} buttons - 可用的操作按钮数组。
+ * - `tasks`（`Array<WebsiteTask>`）：统一任务列表。
  *
- * @method static test - 检查当前域名是否为 Keyhub 网站。
- * @returns {boolean} 如果当前域名为 'key-hub.eu'，则返回 true；否则返回 false。
- *
- * @method after - 页面加载后的异步方法，检查用户登录状态和剩余密钥。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method init - 初始化方法，尝试初始化抽奖功能。
- * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method classifyTask - 分类任务的异步方法，根据操作类型分类任务。
- * @param {string} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
- * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method extraDoTask - 执行额外视频任务的异步方法。
- * @param {Object} params - 方法参数对象。
- * @param {Array<string>} params.videoTasks - 包含要执行的视频任务数据的数组。
- * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #doScriptTask - 执行脚本任务的私有异步方法。
- * @param {string} data - 要执行的任务数据。
- * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #getGiveawayId - 获取抽奖ID的方法。
- * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
- * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLogin - 检查用户是否已登录的私有方法。
- * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `buttons`（`Array<string>`）：可用的操作按钮数组。
  */
 class Keyhub extends Website {
   name = 'Keyhub';
@@ -83,11 +40,11 @@ class Keyhub extends Website {
   /**
    * 检查当前域名是否为 Keyhub 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'key-hub.eu'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 Keyhub 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'key-hub.eu'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -102,14 +59,12 @@ class Keyhub extends Website {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查用户是否已登录，如果未登录，则记录警告信息。
    * 然后检查剩余密钥的状态，如果检查失败，则记录相应的警告信息。
    * 最后，隐藏页面中的 NSFW 内容。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -135,16 +90,16 @@ class Keyhub extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法尝试初始化抽奖功能。
    * 首先记录初始化状态。如果页面中存在 Steam 登录链接，则重定向用户到 Steam 登录页面，并记录警告信息。
    * 然后调用私有方法获取抽奖ID，如果获取失败，则返回 false。
    * 隐藏 VPN 覆盖层并显示主文章部分。
    * 如果成功初始化，则将 `initialized` 属性设置为 true，并记录成功信息。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   init(): boolean {
     try {
@@ -181,16 +136,16 @@ class Keyhub extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {string} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型分类任务。
    * 如果操作为 'undo'，则从存储中获取任务信息。
    * 遍历页面中的任务，提取任务链接并根据任务类型分类到相应的社交任务列表中。
    * 处理完成后，记录成功信息并将分类后的任务存储到本地。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
@@ -224,6 +179,14 @@ class Keyhub extends Website {
           link
         });
 
+        /**
+         * 将任务加入待处理列表。
+         *
+         * @param social - 社交平台实例或名称。
+         * @param type - 操作或数据类型。
+         * @param taskLink - 原始任务链接。
+         * @param options - 本次操作的配置选项；默认值为 `{}`。
+         */
         const addTask = (
           social: string,
           type: string,
@@ -351,10 +314,7 @@ class Keyhub extends Website {
   /**
    * 检查链接是否为可跳过的类型
    *
-   * @param {string} link - 要检查的链接
-   * @returns {boolean} 如果链接属于可跳过的类型则返回 true，否则返回 false
-   *
-   * @description
+   * @remarks
    * 该方法检查给定的链接是否属于以下可跳过的类型：
    * - Instagram 链接
    * - Twitter 链接
@@ -367,6 +327,9 @@ class Keyhub extends Website {
    * - Steam 应用链接
    * - StreamElements 链接
    * - Steam 新闻链接
+   *
+   * @param link - 要检查的链接
+   * @returns 如果链接属于可跳过的类型则返回 true，否则返回 false
    */
   #isSkippableLink(link: string): boolean {
     return /^https?:\/\/www\.instagram\.com\/.*/.test(link) ||
@@ -385,18 +348,18 @@ class Keyhub extends Website {
   /**
    * 执行脚本任务的私有异步方法
    *
-   * @param {string} data - 要执行的任务数据。
-   * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法按以下顺序执行：
    * 1. 向指定的 URL 发送 GET 请求以执行脚本任务
    * 2. 如果请求结果不是 'Success'，记录错误信息并返回 false
    * 3. 如果响应状态码不是 200，记录错误信息并返回 false
    * 4. 如果以上检查都通过，记录成功信息并返回 true
    * 请求头中包含来源和引用信息以确保请求的合法性
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param data - 要执行的任务数据。
+   * @returns 如果任务成功执行，则返回 true；否则返回 false。
    */
   async #doScriptTask(data: string): Promise<boolean> {
     try {
@@ -451,16 +414,16 @@ class Keyhub extends Website {
   /**
    * 执行额外视频任务的异步方法
    *
-   * @param {Object} params - 方法参数对象。
-   * @param {Array<string>} params.videoTasks - 包含要执行的视频任务数据的数组。
-   * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历传入的视频任务数组，并为每个任务调用私有方法 `#doScriptTask`。
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * 解构参数包含：video（对应字段值）。
+   *
+   * @returns 如果所有任务成功执行，则返回 true；否则返回 false。
    */
   async extraDoTask({ video = [] }: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
@@ -489,15 +452,15 @@ class Keyhub extends Website {
   /**
    * 获取抽奖ID的方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从当前窗口的URL中提取抽奖ID。
    * 使用正则表达式匹配URL中的抽奖ID部分。
    * 如果成功匹配到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
    * 如果未能匹配到抽奖ID，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID，则返回 true；否则返回 false。
    */
   #getGiveawayId(): boolean {
     try {
@@ -525,15 +488,15 @@ class Keyhub extends Website {
   /**
    * 检查剩余密钥的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查全局选项中是否启用了检查剩余密钥的功能。
    * 如果启用且剩余密钥为 0，则弹出警告框提示用户没有剩余密钥。
    * 用户可以选择确认或取消，确认后将关闭窗口。
    * 如果没有错误发生，则返回 true。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功，则返回 true；如果发生错误，则返回 false。
    */
   async #checkLeftKey(): Promise<boolean> {
     try {
@@ -580,14 +543,14 @@ class Keyhub extends Website {
   /**
    * 检查用户是否已登录的私有方法
    *
-   * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查全局选项中是否启用了登录检查功能。
    * 如果启用且页面中存在"连接Steam"的链接，则重定向用户到Steam登录页面。
    * 如果没有找到登录链接，则返回 true，表示用户已登录或不需要登录。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果用户已登录，则返回 true；否则返回 false。
    */
   #checkLogin(): boolean {
     try {

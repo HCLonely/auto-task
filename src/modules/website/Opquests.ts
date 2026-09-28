@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-18 13:31:23
- * @LastEditTime : 2025-10-02 22:42:10
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Opquests.ts
- * @Description  : https://opquests.com/
+ * @Description  : Opquests 网站任务处理（https://opquests.com/）
  */
 
 import Website from './Website';
@@ -18,57 +18,12 @@ import { debug } from '../../scripts/tools/debug';
 /**
  * Opquests 类用于处理与 Opquests 网站相关的任务和操作。
  *
- * @class Opquests
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称，默认为 'Opquests'。
  *
- * @property {string} name - 网站名称，默认为 'Opquests'。
- * @property {Array<WebsiteTask>} tasks - 存储未完成任务的数组。
- * @property {Array<string>} buttons - 可用的操作按钮列表。
+ * - `tasks`（`Array<WebsiteTask>`）：存储未完成任务的数组。
  *
- * @static
- * @method test - 检查当前域名是否为 Opquests 网站。
- * @returns {boolean} 如果当前域名为 'opquests.com'，则返回 true；否则返回 false。
- *
- * @async
- * @method before - 在执行操作之前的异步方法。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
- *
- * @async
- * @method after - 页面加载后的异步方法。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
- *
- * @method init - 初始化方法。
- * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
- *
- * @async
- * @method classifyTask - 分类任务的异步方法。
- * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
- * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
- *
- * @async
- * @method verifyTask - 验证任务的异步方法。
- * @returns {Promise<boolean>} 如果任务验证成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
- *
- * @async
- * @method getKey - 获取密钥的异步方法。
- * @param {boolean} [isButton] - 可选参数，指示是否通过按钮获取密钥。
- * @returns {Promise<boolean>} 如果成功获取密钥，则返回 true；否则返回 false。
- * @throws {Error} 如果在获取过程中发生错误，将抛出错误。
- *
- * @private
- * @method #getGiveawayId - 获取抽奖ID的方法。
- * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLogin - 检查用户是否已登录的私有方法。
- * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `buttons`（`Array<string>`）：可用的操作按钮列表。
  */
 class Opquests extends Website {
   name = 'Opquests';
@@ -81,11 +36,11 @@ class Opquests extends Website {
   /**
    * 检查当前域名是否为 Opquests 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'opquests.com'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 Opquests 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'opquests.com'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -100,13 +55,11 @@ class Opquests extends Website {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查用户是否已登录，如果未登录，则记录警告信息。
    * 如果在检查过程中发生错误，则记录错误信息。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -152,15 +105,15 @@ class Opquests extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法尝试初始化抽奖功能。
    * 首先记录初始化状态。如果页面中存在重定向链接，则重定向用户到登录页面，并记录警告信息。
    * 然后调用私有方法获取抽奖ID，如果获取失败，则返回 false。
    * 如果成功获取抽奖ID，则将 `initialized` 属性设置为 true，并记录成功信息。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   init(): boolean {
     try {
@@ -194,12 +147,7 @@ class Opquests extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法按以下步骤处理任务分类：
    * 1. 检查操作类型，如果是 'undo' 则返回 false（不支持撤销操作）
    * 2. 获取所有包含 "Validate" 的任务元素
@@ -213,6 +161,11 @@ class Opquests extends Website {
    *      * Clash.gg 任务（不支持）
    *    - 对于未知类型的任务，记录警告信息
    * 4. 去重并保存任务列表
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
@@ -367,16 +320,16 @@ class Opquests extends Website {
   /**
    * 验证任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果任务验证成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查是否已初始化，如果未初始化则调用初始化方法。
    * 然后从页面中提取所有任务ID，并将其存储在数组中。
    * 调用私有方法 `#confirm` 进行确认操作。
    * 从任务数组中弹出最后一个任务ID，并将剩余任务ID存储到 GM 值中。
    * 最后，点击对应任务的提交按钮以执行验证。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果任务验证成功，则返回 true；否则返回 false。
    */
   async verifyTask(): Promise<boolean> {
     try {
@@ -410,17 +363,17 @@ class Opquests extends Website {
   /**
    * 确认任务的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果确认成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在确认过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法按以下步骤确认任务：
    * 1. 向指定URL发送GET请求以确认任务
    * 2. 验证请求结果：
    *    - 如果请求结果不是 'Success'，记录错误并返回 false
    *    - 如果响应状态码不是 200，记录错误并返回 false
    * 3. 如果所有检查都通过，记录成功并返回 true
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果确认成功，则返回 true；否则返回 false。
    */
   async #confirm(): Promise<boolean> {
     try {
@@ -476,16 +429,16 @@ class Opquests extends Website {
   /**
    * 获取密钥的异步方法
    *
-   * @param {boolean} [isButton] - 可选参数，指示是否通过按钮获取密钥。
-   * @returns {Promise<boolean>} 如果成功获取密钥，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在获取过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法向指定的 URL 发送 GET 请求以获取密钥。
    * 如果请求成功且返回的响应中包含密钥，则记录成功信息并返回密钥。
    * 如果未找到密钥，则记录错误信息，并在需要时重定向用户到密钥页面。
    * 如果请求失败，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param isButton - 可选参数，指示是否通过按钮获取密钥。
+   * @returns 如果成功获取密钥，则返回 true；否则返回 false。
    */
   async getKey(isButton?: boolean): Promise<boolean> {
     try {
@@ -568,15 +521,15 @@ class Opquests extends Website {
   /**
    * 获取抽奖ID的方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从当前窗口的URL中提取抽奖ID。
    * 使用正则表达式匹配URL中的抽奖ID部分。
    * 如果成功匹配到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
    * 如果未能匹配到抽奖ID，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID，则返回 true；否则返回 false。
    */
   #getGiveawayId(): boolean {
     try {
@@ -604,14 +557,14 @@ class Opquests extends Website {
   /**
    * 检查用户是否已登录的私有方法
    *
-   * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查全局选项中是否启用了登录检查功能。
    * 如果启用且页面中存在重定向链接，则重定向用户到登录页面。
    * 如果没有找到登录链接，则返回 true，表示用户已登录或不需要登录。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果用户已登录，则返回 true；否则返回 false。
    */
   #checkLogin(): boolean {
     try {

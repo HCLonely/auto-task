@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-25 19:00:53
- * @LastEditTime : 2026-01-22 15:15:26
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Setting.ts
  * @Description  : 设置页面
@@ -36,22 +36,15 @@ interface PositionConfig {
 /**
  * 表示设置页面的类。
  *
- * @class Setting
- * @description
+ * @remarks
  * 该类用于管理设置页面的功能，包括保存全局选项、同步数据、查看任务历史记录等。
  * 提供了一系列方法来处理用户输入和界面交互。
  *
- * @property {string} name - 设置页面的名称。
- * @property {Array<string>} buttons - 包含可用按钮的名称数组。
- * @property {Function} syncData - 同步数据的选项。
+ * - `name`（`string`）：设置页面的名称。
  *
- * @method tasksHistory - 打开任务历史记录页面。
- * @method static test - 检查当前域名和路径是否为设置页面。
- * @method before - 在执行操作之前清空页面内容并添加类。
- * @method after - 初始化页面设置并处理用户输入。
- * @method saveGlobalOptions - 保存当前的全局设置。
- * @method #getId - 获取社交媒体ID。
- * @method #environment - 展示环境信息。
+ * - `buttons`（`Array<string>`）：包含可用按钮的名称数组。
+ *
+ * - `syncData`（`Function`）：同步数据的选项。
  */
 class Setting {
   readonly name = 'Setting';
@@ -75,9 +68,7 @@ class Setting {
   /**
    * 打开任务历史记录的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @description
+   * @remarks
    * 该方法用于在新标签页中打开任务历史记录页面。
    * 用户可以通过此方法查看之前的任务记录。
    */
@@ -91,11 +82,11 @@ class Setting {
   /**
    * 检查当前域名和路径是否为设置页面的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/setting.html'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名和路径来判断是否为设置页面。
    * 如果域名和路径匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'auto-task.hclonely.com' 或 'auto-task-doc.js.org' 且路径为 '/setting.html'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const {
@@ -113,9 +104,7 @@ class Setting {
   /**
    * 在执行操作之前的函数
    *
-   * @returns {void} 无返回值。
-   *
-   * @description
+   * @remarks
    * 该方法在执行操作之前清空页面的主体内容，并为主体添加 'auto-task-options' 类。
    * 这通常用于重置页面状态，以便进行新的操作或设置。
    */
@@ -137,15 +126,13 @@ class Setting {
   /**
    * 页面加载后的的方法
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法用于初始化页面设置，包括环境配置和全局选项的更改。
    * 为 Twitter 和 YouTube 的验证输入框添加按钮，并绑定点击事件以获取用户ID。
    * 监听与按钮位置相关的输入框变化，根据输入的值动态调整按钮和显示区域的位置。
    * 处理热键输入，允许用户通过按键组合设置热键。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -180,9 +167,7 @@ class Setting {
   /**
    * 保存全局选项的方法
    *
-   * @returns {void} 无返回值。
-   *
-   * @description
+   * @remarks
    * 该方法用于保存当前的全局设置。
    * 调用 `saveData` 函数以执行保存操作。
    */
@@ -202,13 +187,11 @@ class Setting {
   /**
    * 初始化环境设置
    *
-   * @private
-   * @returns {void} 无返回值
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法获取用户代理信息并生成环境信息的 HTML 表单。
    * 将生成的环境信息添加到页面主体中。
+   *
+   * @returns 无返回值
    */
   async #initializeEnvironment(): Promise<void> {
     try {
@@ -231,13 +214,12 @@ class Setting {
   /**
    * 生成环境信息HTML
    *
-   * @private
-   * @param {any} userAgent - 用户代理信息对象，包含操作系统和浏览器信息
-   * @returns {string} 包含环境信息的 HTML 表格字符串
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的用户代理信息生成一个包含环境详情的 HTML 表格。
    * 表格包含操作系统、浏览器、脚本管理器和脚本本身的信息。
+   *
+   * @param userAgent - 用户代理信息对象，包含操作系统和浏览器信息
+   * @returns 包含环境信息的 HTML 表格字符串
    */
   #generateEnvironmentHtml(userAgent: any): string {
     return `
@@ -280,10 +262,7 @@ class Setting {
   /**
    * 初始化全局设置
    *
-   * @private
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法初始化页面的全局选项和白名单选项。
    * 调用 changeGlobalOptions 和 whiteListOptions 方法进行初始化。
    */
@@ -297,10 +276,7 @@ class Setting {
   /**
    * 设置社交媒体按钮
    *
-   * @private
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法为 Twitter 和 YouTube 验证添加获取 ID 的按钮。
    * 为每个按钮绑定点击事件处理器。
    */
@@ -314,15 +290,13 @@ class Setting {
   /**
    * 添加社交媒体按钮
    *
-   * @private
-   * @param {string} inputName - 输入框的 name 属性值
-   * @param {string} buttonId - 按钮的 ID
-   * @param {SocialType} socialType - 社交媒体类型
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法在指定的输入框后添加一个按钮，用于获取社交媒体 ID。
    * 为添加的按钮绑定点击事件，点击时调用 #getId 方法。
+   *
+   * @param inputName - 输入框的 name 属性值
+   * @param buttonId - 按钮的 ID
+   * @param socialType - 社交媒体类型
    */
   #addSocialButton(inputName: string, buttonId: string, socialType: SocialType): void {
     debug('添加社交媒体按钮', {
@@ -342,10 +316,7 @@ class Setting {
   /**
    * 设置位置处理器
    *
-   * @private
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法为所有位置相关的输入框添加输入事件监听器。
    * 当输入值改变时，更新相应元素的位置。
    */
@@ -370,13 +341,11 @@ class Setting {
   /**
    * 处理位置变化
    *
-   * @private
-   * @param {string} type - 位置类型
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法处理位置输入的变化，获取新的位置配置并更新目标元素的位置。
    * 包括验证位置值的有效性和更新 DOM 元素的样式。
+   *
+   * @param type - 位置类型
    */
   #handlePositionChange(type: string): void {
     debug('开始处理位置变化', {
@@ -420,13 +389,12 @@ class Setting {
   /**
    * 获取位置配置
    *
-   * @private
-   * @param {string} type - 位置类型
-   * @returns {PositionConfig | null} 返回位置配置对象，如果无法获取则返回 null
-   *
-   * @description
+   * @remarks
    * 该方法根据类型获取位置相关的配置信息，包括距离和方向。
    * 从对应的输入框中获取值并返回配置对象。
+   *
+   * @param type - 位置类型
+   * @returns 返回位置配置对象，如果无法获取则返回 null
    */
   #getPositionConfig(type: string): PositionConfig | null {
     debug('获取位置配置', {
@@ -449,14 +417,13 @@ class Setting {
   /**
    * 验证位置是否有效
    *
-   * @private
-   * @param {string} distance - 距离值，格式为 "x,y"
-   * @param {SideX} sideX - 水平方向
-   * @param {SideY} sideY - 垂直方向
-   * @returns {boolean} 如果位置配置有效则返回 true，否则返回 false
-   *
-   * @description
+   * @remarks
    * 该方法验证位置配置的有效性，检查方向值是否有效以及距离格式是否正确。
+   *
+   * @param distance - 距离值，格式为 "x,y"
+   * @param sideX - 水平方向
+   * @param sideY - 垂直方向
+   * @returns 如果位置配置有效则返回 true，否则返回 false
    */
   #isValidPosition(distance: string, sideX: SideX, sideY: SideY): boolean {
     const isValid = VALID_SIDES_X.includes(sideX) &&
@@ -474,13 +441,12 @@ class Setting {
   /**
    * 获取位置目标元素
    *
-   * @private
-   * @param {string} type - 位置类型
-   * @returns {string} 返回目标元素的选择器
-   *
-   * @description
+   * @remarks
    * 该方法根据位置类型返回对应的 DOM 元素选择器。
    * 支持按钮、显示按钮和日志元素的选择器获取。
+   *
+   * @param type - 位置类型
+   * @returns 返回目标元素的选择器
    */
   #getPositionTarget(type: string): string {
     const targetMap = {
@@ -496,17 +462,15 @@ class Setting {
   /**
    * 更新元素位置
    *
-   * @private
-   * @param {string} selector - 目标元素的选择器
-   * @param {SideX} sideX - 水平方向
-   * @param {SideY} sideY - 垂直方向
-   * @param {string} x - X 坐标值
-   * @param {string} y - Y 坐标值
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法更新指定元素的位置样式。
    * 设置元素的位置并清除相反方向的样式。
+   *
+   * @param selector - 目标元素的选择器
+   * @param sideX - 水平方向
+   * @param sideY - 垂直方向
+   * @param x - X 坐标值
+   * @param y - Y 坐标值
    */
   #updateElementPosition(selector: string, sideX: SideX, sideY: SideY, x: string, y: string): void {
     debug('更新元素位置', {
@@ -531,10 +495,7 @@ class Setting {
   /**
    * 设置热键处理器
    *
-   * @private
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法为热键输入框设置事件处理器。
    * 将输入框设置为只读并添加键盘事件监听器。
    */
@@ -550,13 +511,11 @@ class Setting {
   /**
    * 处理热键按下事件
    *
-   * @private
-   * @param {JQuery.KeyDownEvent} event - 键盘事件对象
-   * @returns {void} 无返回值
-   *
-   * @description
+   * @remarks
    * 该方法处理热键输入框的键盘事件。
    * 检测功能键（Alt、Ctrl、Shift）的组合并更新输入框的值。
+   *
+   * @param event - 键盘事件对象
    */
   #handleHotKeyPress(event: JQuery.KeyDownEvent): void {
     debug('处理热键按下事件', {
@@ -586,15 +545,13 @@ class Setting {
   /**
    * 获取社交媒体ID的方法
    *
-   * @param {string} social - 社交媒体类型，例如 'twitterUser' 或 'youtubeChannel'。
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在获取过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法弹出一个输入框，允许用户输入社交媒体链接以获取对应的ID。
    * 根据社交媒体类型，调用相应的API获取ID并将其填入输入框中。
    * 如果输入的链接为空，则不执行任何操作。
+   *
+   * @param social - 社交媒体类型，例如 'twitterUser' 或 'youtubeChannel'。
+   * @returns 无返回值。
    */
   async #getId(social: SocialType): Promise<void> {
     try {
@@ -607,6 +564,11 @@ class Setting {
         showCancelButton: true,
         cancelButtonText: __('close'),
         showConfirmButton: false,
+        /**
+         * 处理对话框打开事件。
+         *
+         * @param context - 当前运行上下文。
+         */
         onOpen: (context) => {
           context.root.querySelector('#link2id')!.addEventListener('click', () => {
             void context.run(async () => {
@@ -626,12 +588,11 @@ class Setting {
   /**
    * 生成ID输入HTML
    *
-   * @private
-   * @param {SocialType} social - 社交媒体类型
-   * @returns {string} 返回包含输入框和按钮的 HTML 字符串
-   *
-   * @description
+   * @remarks
    * 该方法生成用于获取社交媒体 ID 的输入框和按钮的 HTML。
+   *
+   * @param social - 社交媒体类型
+   * @returns 返回包含输入框和按钮的 HTML 字符串
    */
   #generateIdInputHtml(social: SocialType): string {
     return `
@@ -643,14 +604,14 @@ class Setting {
   /**
    * 处理ID获取
    *
-   * @private
-   * @param {SocialType} social - 社交媒体类型
-   * @returns {Promise<void>} 无返回值的 Promise
-   *
-   * @description
+   * @remarks
    * 该方法处理社交媒体 ID 的获取过程。
    * 根据不同的社交媒体类型调用相应的 API 获取 ID。
    * 获取到 ID 后更新输入框的值。
+   *
+   * @param social - 社交媒体类型
+   * @param root - 查找或渲染的根节点。
+   * @returns 无返回值的 Promise
    */
   async #handleIdRetrieval(social: SocialType, root: HTMLDialogElement): Promise<void> {
     const field = root.querySelector<HTMLInputElement>('#socialLink')!;
@@ -696,14 +657,13 @@ class Setting {
   /**
    * 提取YouTube URL
    *
-   * @private
-   * @param {string} link - 原始链接
-   * @returns {string} 提取后的 YouTube URL
-   *
-   * @description
+   * @remarks
    * 该方法从 Google 搜索结果链接中提取 YouTube URL。
    * 如果输入的是 Google 搜索结果链接，则提取其中的 YouTube URL；
    * 否则返回原始链接。
+   *
+   * @param link - 原始链接
+   * @returns 提取后的 YouTube URL
    */
   #extractYoutubeUrl(link: string): string {
     debug('提取YouTube URL', {

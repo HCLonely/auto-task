@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-04 14:02:03
- * @LastEditTime : 2025-08-18 19:07:18
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/FreeRu.ts
- * @Description  : https://freeru.cc
+ * @Description  : FreeRu 网站任务处理（https://freeru.cc）
  */
 
 import type { WebsiteTask } from './types';
@@ -20,22 +20,14 @@ import { globalOptions } from '../../scripts/globalOptions';
 /**
  * FreeRu 类用于处理与 FreeRu 网站相关的任务和操作。
  *
- * @class FreeRu
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称。
  *
- * @property {string} name - 网站名称。
- * @property {Array<WebsiteTask>} tasks - 当前任务列表。
- * @property {Array<string>} buttons - 可用操作按钮列表。
- * @property {string} giveawayId - 抽奖ID。
+ * - `tasks`（`Array<WebsiteTask>`）：当前任务列表。
  *
- * @method static test - 检查当前窗口的域名是否为 'freeru.cc'。
+ * - `buttons`（`Array<string>`）：可用操作按钮列表。
  *
- * @method init - 初始化函数，负责检查用户的登录状态和当前 URL 的有效性。
- * @method classifyTask - 根据指定的操作分类任务。
- * @method verifyTask - 验证任务的异步方法。
- * @method getKey - 获取奖励密钥的异步方法。
- * @method #verify - 验证任务的私有异步方法。
- *
+ * - `giveawayId`（`string`）：抽奖ID。
  */
 class FreeRu extends Website {
   name = 'FreeRu';
@@ -48,7 +40,7 @@ class FreeRu extends Website {
   /**
    * 检查当前窗口的域名是否为 'freeru.cc'
    *
-   * @returns {boolean} 如果域名匹配则返回 true，否则返回 false
+   * @returns 如果域名匹配则返回 true，否则返回 false
    */
   static test(): boolean {
     const isMatch = window.location.host === 'freeru.cc';
@@ -62,14 +54,14 @@ class FreeRu extends Website {
   /**
    * 初始化函数，负责检查用户的登录状态和当前 URL 的有效性。
    *
-   * @returns {Promise<boolean>} 如果初始化成功返回 true，否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该函数首先记录初始化状态，然后检查用户是否已登录。如果用户未登录，将重定向到登录页面。
    * 接着，函数验证当前 URL 是否符合预期格式。如果不符合，将提取 giveaway ID 并重定向到正确的 URL。
    * 最后，函数检查剩余的密钥数量，并更新初始化状态。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功返回 true，否则返回 false。
    */
   async init(): Promise<boolean> {
     try {
@@ -108,17 +100,17 @@ class FreeRu extends Website {
   /**
    * 根据指定的操作分类任务。
    *
-   * @param {string} action - 要执行的操作类型，支持 'undo'、'verify' 和 'do'。
-   * @returns {Promise<boolean>} 如果任务分类成功返回 true，否则返回 false。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该函数首先记录获取任务信息的状态，然后根据传入的操作（如 'undo' 或 'verify'）来处理任务。
    * 如果操作为 'undo'，则从存储中获取之前的任务信息。接着，函数通过 API 请求获取当前的任务数据。
    * 如果请求成功，函数将解析任务数据并根据任务类型和操作更新相应的任务列表。
    * 支持的社交平台包括 Steam 和 VK，函数会根据不同的任务类型（如 WL、JTG、STC、GF）将任务链接分类到相应的列表中。
    * 最后，函数会去重任务列表，并将更新后的任务信息存储回本地。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，支持 'undo'、'verify' 和 'do'。
+   * @returns 如果任务分类成功返回 true，否则返回 false。
    */
   async classifyTask(action: string): Promise<boolean> {
     try {
@@ -164,16 +156,15 @@ class FreeRu extends Website {
   /**
    * 执行额外任务的异步方法
    *
-   * @param {Object} params - 方法参数对象。
-   * @param {Array<string>} params.website - 包含要执行的额外任务链接的数组。
-   * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历传入的额外任务链接数组，并为每个链接调用私有方法 `#doVisitWebsite`。
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param tasks - 待处理的任务集合。
+   * @returns 如果所有任务成功执行，则返回 true；否则返回 false。
    */
   async extraDoTask(tasks: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
@@ -210,16 +201,15 @@ class FreeRu extends Website {
   /**
    * 验证任务的私有异步方法
    *
-   * @param {fruTaskInfo} task - 要验证的任务信息对象
-   * @returns {Promise<boolean>} 如果任务验证成功，则返回true；否则返回false
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 该方法根据页面上是否存在扩展检查元素来决定使用哪种验证方式：
    * 1. 如果存在".task-check-extension"元素，则使用扩展验证方式
    * 2. 如果不存在，则使用普通验证方式
    * 验证失败时会记录错误信息并返回false
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果任务验证成功，则返回true；否则返回false
    */
   async verifyTask(): Promise<boolean> {
     try {
@@ -262,15 +252,16 @@ class FreeRu extends Website {
   /**
    * 检查剩余密钥数量的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功返回 true，发生错误返回 false
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误
-   *
-   * @description
+   * @remarks
    * 检查抽奖是否还有剩余密钥：
    * 1. 检查是否启用了密钥检查功能
    * 2. 获取并解析页面上的密钥数量信息
    * 3. 如果没有剩余密钥，显示确认对话框
    * 4. 根据用户选择决定是否关闭窗口
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功返回 true，发生错误返回 false
    */
   async #checkLeftKey(): Promise<boolean> {
     try {

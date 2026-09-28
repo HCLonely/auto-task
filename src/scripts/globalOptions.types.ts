@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 16:24:42
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/globalOptions.types.ts
+ * @Description  : 全局设置选项类型定义
+ */
+
 export interface GlobalOptions {
   doTask: {
     // instagram: {

@@ -1,9 +1,20 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitter/transaction/encode.ts
+ * @Description  : Twitter 请求事务标识编码与生成
+ */
+
 /** Transaction-ID encoding migrated from src/scripts/social/XTID/encode.ts. */
 // 参考：https://github.com/fa0311/x-client-transaction-id-generater/blob/main/src/encode.js
 
 /**
- * @param {string} data
- * @returns {Promise<number[]>}
+ * 计算文本的 SHA-256 摘要并转换为字节数组。
+ *
+ * @param data - 需要计算摘要的原始文本。
+ * @returns Promise，完成后返回 SHA-256 摘要的字节数组。
  */
 const encodeSha256 = async (data: string): Promise<number[]> => {
   const encoder = new TextEncoder();
@@ -13,8 +24,10 @@ const encodeSha256 = async (data: string): Promise<number[]> => {
 };
 
 /**
- * @param {Uint8Array} data
- * @returns {string}
+ * 将字节数组编码为 Base64 字符串。
+ *
+ * @param data - 待编码的字节数组。
+ * @returns 去除末尾填充符的 Base64 字符串。
  */
 const encodeBase64 = (data: Uint8Array): string => {
   let binary = '';
@@ -27,8 +40,10 @@ const encodeBase64 = (data: Uint8Array): string => {
 };
 
 /**
- * @param {string} data
- * @returns {number[]}
+ * 将 Base64 字符串解码为字节数组。
+ *
+ * @param data - 待解码的 Base64 字符串。
+ * @returns 解码后的字节数组。
  */
 const decodeBase64 = (data: string): number[] => {
   const binaryString = atob(data);
@@ -41,11 +56,13 @@ const decodeBase64 = (data: string): number[] => {
 };
 
 /**
- * @param {string} method
- * @param {string} path
- * @param {string} key
- * @param {string} animationKey
- * @returns {Promise<string>}
+ * 根据请求方法、路径和密钥生成请求事务标识。
+ *
+ * @param method - HTTP 请求方法。
+ * @param path - 请求路径。
+ * @param key - Base64 编码的事务签名密钥。
+ * @param animationKey - 事务标识使用的动画密钥。
+ * @returns Promise，完成后返回包含时间与随机分量的请求事务标识。
  */
 const generateTransactionId = async (
   method: string,

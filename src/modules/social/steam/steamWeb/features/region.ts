@@ -1,7 +1,22 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/region.ts
+ * @Description  : Steam 网页端 商店地区查询、切换与恢复
+ */
+
 import type { Context } from '../context';
 import type { Areas } from '../types';
 import { encodeForm, parseHTML } from '../utils/html';
 
+/**
+ * 读取 Steam 商店地区信息。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回可用的 Steam 商店地区信息。
+ */
 export async function getAreaInfo(ctx: Context): Promise<Areas> {
   return ctx.run('region.getAreaInfo', undefined, async (ctx) => {
     try {
@@ -35,7 +50,13 @@ export async function getAreaInfo(ctx: Context): Promise<Areas> {
   });
 }
 
-/** Serialize changes with a promise queue instead of polling a mutable flag. */
+/**
+ * 通过 Promise 队列串行执行变更。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param area - 目标商店地区；可省略。
+ * @returns Promise，完成后返回处理结果（string | boolean）。
+ */
 export function changeArea(ctx: Context, area?: string): Promise<boolean | string> {
   const job = ctx.state.regionQueue.then(() => {
     return ctx.run('region.changeArea', area, async (ctx): Promise<boolean | string> => {
@@ -100,6 +121,12 @@ export function changeArea(ctx: Context, area?: string): Promise<boolean | strin
   return job;
 }
 
+/**
+ * 恢复 Steam 商店地区。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function resetArea(ctx: Context): Promise<boolean> {
   return ctx.run('region.resetArea', undefined, async (ctx) => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {

@@ -1,9 +1,26 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/reddit/features/tasks.ts
+ * @Description  : Reddit 批量任务执行与撤销
+ */
+
 import type { Context } from '../context';
 import type { RedditTarget, SocialTaskDetailResult, SocialTaskResult, TaskOptions } from '../types';
 import { parseRedditLink } from '../utils/links';
 import { doSubreddit, undoSubreddit } from './subreddit';
 import { doUser, undoUser } from './user';
 
+/**
+ * 执行单个解析后的任务目标。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param target - 当前操作的目标。
+ * @param doTask - 是否执行任务；为 false 时执行撤销操作。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 function executeTarget(ctx: Context, target: RedditTarget, doTask: boolean): Promise<boolean> {
   const operation = target.kind === 'user' ? (doTask ? 'user.follow' : 'user.unfollow') : (doTask ? 'subreddit.subscribe' : 'subreddit.unsubscribe');
   return ctx.run(operation, target.taskName, async (ctx) => {
@@ -27,6 +44,14 @@ function executeTarget(ctx: Context, target: RedditTarget, doTask: boolean): Pro
   }, Boolean);
 }
 
+/**
+ * 按选项调度批量任务并记录每项结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项。
+ * @param action - 待执行的动作。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 function executeTasks(ctx: Context, options: TaskOptions, action: 'do' | 'undo'): Promise<SocialTaskResult> {
   const doTask = action === 'do';
   return ctx.run(doTask ? 'do' : 'undo', undefined, async (ctx): Promise<SocialTaskResult> => {
@@ -84,9 +109,23 @@ function executeTasks(ctx: Context, options: TaskOptions, action: 'do' | 'undo')
   });
 }
 
+/**
+ * 执行所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function doTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'do');
 }
+/**
+ * 撤销所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function undoTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'undo');
 }

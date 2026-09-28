@@ -1,8 +1,25 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/youtube/features/info.ts
+ * @Description  : YouTube 频道与视频信息获取
+ */
+
 import type { Context } from '../context';
 import type { InfoType, YoutubeInfo } from '../types';
 import { jsonProperty, object } from '../utils/json';
 import { eventTarget, normalizeYoutubeLink } from '../utils/links';
 
+/**
+ * 获取频道或视频信息。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param link - 任务目标链接。
+ * @param type - 操作或数据类型。
+ * @returns Promise，完成后返回YouTube 频道或视频信息。
+ */
 export async function getInfo(ctx: Context, link: string, type: InfoType): Promise<YoutubeInfo> {
   return ctx.run('info.get', eventTarget(link), {}, async (ctx): Promise<YoutubeInfo> => {
     const url = normalizeYoutubeLink(link);

@@ -1,7 +1,23 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/wishlist.ts
+ * @Description  : Steam 网页端 愿望单添加与移除
+ */
+
 import type { Context } from '../context';
 import { changeArea } from '../features/region';
 import { encodeForm } from '../utils/html';
 
+/**
+ * 将游戏添加到愿望单。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function addToWishlist(ctx: Context, gameId: string): Promise<boolean> {
   return ctx.run('wishlist.add', gameId, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {
@@ -68,6 +84,13 @@ export async function addToWishlist(ctx: Context, gameId: string): Promise<boole
   });
 }
 
+/**
+ * 将游戏从愿望单移除。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param gameId - Steam 游戏标识。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function removeFromWishlist(ctx: Context, gameId: string): Promise<boolean> {
   return ctx.run('wishlist.remove', gameId, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {

@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-27 20:48:06
+ * @LastEditTime : 2026-09-28 17:38:06
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/social/moduleBridge.ts
+ * @Description  : 社交平台模块桥接与任务状态日志绑定
+ */
+
 import type { GMAuthAPI } from '../../modules/social/steam';
 import type { SocialStatusEvent, StatusListener } from '../../modules/social/social/types';
 import echoLog from '../echoLog';
@@ -6,11 +15,22 @@ import { debug } from '../tools/debug';
 import { parseLink, linkTasks } from '../../modules/social/steam/links';
 import type { TaskType } from '../../modules/social/steam/types';
 
+/**
+ * 生成社交平台模块使用的存储命名空间。
+ *
+ * @param platform - 社交平台名称。
+ * @returns 处理后的字符串。
+ */
 export const moduleNamespace = (platform: string): string => {
   return `autoTask:${platform}`;
 };
 
-/** Keep compatible project data in GM storage; authentication handshakes remain namespaced. */
+/**
+ * 通过 GM 存储兼容项目数据，并使用命名空间隔离授权握手。
+ *
+ * @param platform - 社交平台名称。
+ * @returns 处理结果（GMAuthAPI）。
+ */
 export const projectGM = (platform: string): GMAuthAPI => {
   const namespace = moduleNamespace(platform);
   const legacyKeys: Record<string, string> = {
@@ -22,13 +42,33 @@ export const projectGM = (platform: string): GMAuthAPI => {
   }
   // Website history is scoped by giveaway; never undo tasks recorded on another page.
   const page = typeof location === 'undefined' ? '' : location.href.split('#')[0];
+  /**
+   * 生成带命名空间的存储键。
+   *
+   * @param key - 目标数据的键名。
+   * @returns 处理后的字符串。
+   */
   const keyFor = (key: string): string => {
     return (key === `${namespace}:tasks` ? `${key}:${encodeURIComponent(page)}` : (legacyKeys[key] || key));
   };
+  /**
+   * 检查数据是否符合游戏时长任务状态结构。
+   *
+   * @param key - 目标数据的键名。
+   * @returns 检查结果；满足条件时为 true，否则为 false。
+   */
   const isPlayState = (key: string): boolean => {
     return platform === 'steam' && key.startsWith(`${namespace}:playState:`);
   };
   return {
+    /**
+     * 读取指定 GM 存储项。
+     *
+     * @typeParam T - 操作处理的数据或返回值类型。
+     * @param key - 目标数据的键名。
+     * @param fallback - 未取得有效数据时使用的默认值。
+     * @returns 工作函数或存储读取产生的泛型结果。
+     */
     getValue: <T>(key: string, fallback: T): T => {
       if (key === `${namespace}:whiteList`) {
         return GM_getValue<Record<string, T>>('whiteList', {})[platform] ?? fallback;
@@ -42,6 +82,12 @@ export const projectGM = (platform: string): GMAuthAPI => {
       }
       return GM_getValue(keyFor(key), fallback);
     },
+    /**
+     * 写入指定 GM 存储项。
+     *
+     * @param key - 目标数据的键名。
+     * @param value - 待处理的值。
+     */
     setValue: (key, value) => {
       if (key === `${namespace}:whiteList`) {
         GM_setValue('whiteList', {
@@ -57,6 +103,11 @@ export const projectGM = (platform: string): GMAuthAPI => {
         GM_setValue(keyFor(key), value);
       }
     },
+    /**
+     * 删除指定 GM 存储项。
+     *
+     * @param key - 目标数据的键名。
+     */
     deleteValue: (key) => {
       if (key === `${namespace}:whiteList`) {
         const lists = GM_getValue<Record<string, unknown>>('whiteList', {});
@@ -70,18 +121,43 @@ export const projectGM = (platform: string): GMAuthAPI => {
         GM_deleteValue(keyFor(key));
       }
     },
+    /**
+     * 在新标签页中打开链接。
+     *
+     * @param url - 请求或访问的 URL。
+     * @param options - 本次操作的配置选项。
+     * @returns 处理结果（Tampermonkey.OpenTabObject）。
+     */
     openInTab: (url, options) => {
       return GM_openInTab(url, options);
     },
+    /**
+     * 注册 GM 存储值变化监听器。
+     *
+     * @param key - 目标数据的键名。
+     * @param listener - 接收状态变化的监听函数。
+     * @returns 计算得到的数值。
+     */
     addValueChangeListener: (key, listener) => {
       return GM_addValueChangeListener(keyFor(key), listener);
     },
+    /**
+     * 移除 GM 存储值变化监听器。
+     *
+     * @param id - 目标标识。
+     */
     removeValueChangeListener: (id) => {
       return GM_removeValueChangeListener(id);
     }
   };
 };
 
+/**
+ * 转义文本中的 HTML 特殊字符。
+ *
+ * @param value - 待处理的值。
+ * @returns 处理后的字符串。
+ */
 const escapeText = (value: string): string => {
   return value.replace(/[&<>"']/g, (char) => {
     return {
@@ -94,6 +170,12 @@ const escapeText = (value: string): string => {
   });
 };
 
+/**
+ * 将 Steam 操作名称转换为项目任务类型。
+ *
+ * @param event - 事件名称或事件对象。
+ * @returns 处理结果（TaskType）；未取得有效结果时返回 undefined。
+ */
 const steamTaskType = (event: SocialStatusEvent): TaskType | undefined => {
   return (
     linkTasks.find(([, type]) => {
@@ -137,6 +219,13 @@ const socialLabels: Record<string, Record<string, string>> = {
   }
 };
 
+/**
+ * 获取社交任务的显示名称。
+ *
+ * @param event - 事件名称或事件对象。
+ * @param platform - 社交平台名称。
+ * @returns 处理后的字符串。
+ */
 const taskLabel = (event: SocialStatusEvent, platform: string): string => {
   const type = platform === 'Steam' ? steamTaskType(event) : undefined;
   if (type && (event.details?.action === 'do' || event.details?.action === 'undo')) {
@@ -159,7 +248,13 @@ const taskLabel = (event: SocialStatusEvent, platform: string): string => {
   return __(event.operation.startsWith('init') ? 'moduleInitializing' : 'moduleTask');
 };
 
-/** Extract the visible identifier without replacing the original link. */
+/**
+ * 提取用于显示的标识，同时保留原始链接。
+ *
+ * @param url - 请求或访问的 URL。
+ * @param platform - 社交平台名称。
+ * @returns 处理后的字符串；未取得有效结果时返回 undefined。
+ */
 const socialTargetId = (url: URL, platform: string): string | undefined => {
   const parts = url.pathname.split('/').filter(Boolean)
     .map(decodeURIComponent);
@@ -194,7 +289,13 @@ const socialTargetId = (url: URL, platform: string): string | undefined => {
   return undefined;
 };
 
-/** Direct module calls may only supply an ID; batches always retain their original URL. */
+/**
+ * 直接调用模块时可只传入标识；批量任务保留原始 URL。
+ *
+ * @param event - 事件名称或事件对象。
+ * @param platform - 社交平台名称。
+ * @returns 处理后的字符串；未取得有效结果时返回 undefined。
+ */
 const socialTargetLink = (event: SocialStatusEvent, platform: string): string | undefined => {
   const target = event.target || '';
   if (platform === 'Twitter' && /^users\.(follow|unfollow)$/.test(event.operation) && /^@?\w+$/.test(target)) {
@@ -228,6 +329,13 @@ const socialTargetLink = (event: SocialStatusEvent, platform: string): string | 
   return undefined;
 };
 
+/**
+ * 提取社交任务的目标信息。
+ *
+ * @param event - 事件名称或事件对象。
+ * @param platform - 社交平台名称。
+ * @returns 处理后的字符串。
+ */
 const taskTarget = (event: SocialStatusEvent, platform: string): string => {
   const target = typeof event.details?.taskLink === 'string' ? event.details.taskLink : event.target;
   if (!target) {
@@ -250,12 +358,23 @@ const taskTarget = (event: SocialStatusEvent, platform: string): string => {
   }
 };
 
-/** Log batch results and individual tasks, without duplicating executor/transport logs. */
-export const bindModuleStatus = (client: { on(event: 'status', listener: StatusListener): () => void; dispose(): void }, platform: string): (() => void) => {
+/**
+ * 记录批量结果和单项任务，避免重复记录执行器与传输日志。
+ *
+ * @param client - 目标模块客户端。
+ * @param platform - 社交平台名称。
+ * @returns 供调用方使用的函数。
+ */
+export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @param event - 要订阅的事件名称。 @param listener - 接收状态变化的监听函数。 @returns 用于移除当前监听器的清理函数。 */ on(event: 'status', listener: StatusListener): () => void; /** 释放模块资源并结束待处理的监听或等待。 */ dispose(): void }, platform: string): (() => void) => {
   const logs = new Map<string, ReturnType<typeof echoLog>>();
   const steamTasks = new Set<string>();
   const parents = new Map<string, string>();
   const taskOperations = /^(task\.(execute|skip|do|undo)|play\.(start|stop)|users\.(follow|unfollow)|retweets\.(create|delete)|channel\.(follow|unfollow|subscribe|unsubscribe)|video\.(like|unlike)|user\.(follow|unfollow)|subreddit\.(subscribe|unsubscribe))$/;
+  /**
+   * 接收并处理状态变化。
+   *
+   * @param event - 事件名称或事件对象。
+   */
   const listener = (event: SocialStatusEvent & { source?: string }): void => {
     debug(`${platform}: ${event.operation}`, event);
     if (event.parentOperationId) {
@@ -325,6 +444,11 @@ export const bindModuleStatus = (client: { on(event: 'status', listener: StatusL
     }
   };
   const unsubscribe = client.on('status', listener);
+  /**
+   * 处理页面离开时的资源清理。
+   *
+   * @param event - 事件名称或事件对象。
+   */
   const onPageHide = (event: PageTransitionEvent): void => {
     if (!event.persisted) {
       client.dispose();

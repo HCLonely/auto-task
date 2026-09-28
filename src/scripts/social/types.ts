@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 16:24:42
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/social/types.ts
+ * @Description  : 社交平台任务、授权与缓存类型定义
+ */
+
 export interface socialTasks {
   users?: Array<string>
   reddits?: Array<string>

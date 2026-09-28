@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2023-10-26 14:58:11
- * @LastEditTime : 2025-08-18 19:08:05
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/tools/debug.ts
  * @Description  : 调试工具函数
@@ -56,6 +56,11 @@ class Debugger {
   private config: DebugConfig;
   private levelPriority: { [key in DebugLevel]: number };
 
+  /**
+   * 创建 Debugger 实例并初始化所需状态。
+   *
+   * @param config - 配置数据；默认值为 `{}`。
+   */
   constructor(config: Partial<DebugConfig> = {}) {
     this.config = {
       ...defaultConfig,
@@ -72,6 +77,8 @@ class Debugger {
 
   /**
    * 获取当前时间戳
+   *
+   * @returns 处理后的字符串。
    */
   private getTimestamp(): string {
     return new Date().toLocaleString();
@@ -79,6 +86,9 @@ class Debugger {
 
   /**
    * 检查是否应该输出日志
+   *
+   * @param level - 日志级别。
+   * @returns 操作结果；成功或无需重复处理时为 true，失败时为 false。
    */
   private shouldLog(level: DebugLevel): boolean {
     return (
@@ -89,6 +99,10 @@ class Debugger {
 
   /**
    * 格式化日志消息
+   *
+   * @param level - 日志级别。
+   * @param message - 消息文本。
+   * @returns 处理后的字符串。
    */
   private formatMessage(level: DebugLevel, message: string): string {
     const parts = [this.config.prefix];
@@ -105,6 +119,10 @@ class Debugger {
 
   /**
    * 输出日志
+   *
+   * @param level - 日志级别。
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   private log(level: DebugLevel, message: string, ...args: unknown[]): void {
     if (!this.shouldLog(level)) {
@@ -136,6 +154,9 @@ class Debugger {
 
   /**
    * 错误级别日志
+   *
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   error(message: string, ...args: unknown[]): void {
     this.log(DebugLevel.ERROR, message, ...args);
@@ -143,6 +164,9 @@ class Debugger {
 
   /**
    * 警告级别日志
+   *
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   warn(message: string, ...args: unknown[]): void {
     this.log(DebugLevel.WARN, message, ...args);
@@ -150,6 +174,9 @@ class Debugger {
 
   /**
    * 信息级别日志
+   *
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   info(message: string, ...args: unknown[]): void {
     this.log(DebugLevel.INFO, message, ...args);
@@ -157,6 +184,9 @@ class Debugger {
 
   /**
    * 调试级别日志
+   *
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   debug(message: string, ...args: unknown[]): void {
     this.log(DebugLevel.DEBUG, message, ...args);
@@ -164,6 +194,9 @@ class Debugger {
 
   /**
    * 跟踪级别日志
+   *
+   * @param message - 消息文本。
+   * @param args - 传递给目标操作的参数列表，按调用顺序传入。
    */
   trace(message: string, ...args: unknown[]): void {
     this.log(DebugLevel.TRACE, message, ...args);
@@ -174,6 +207,8 @@ class Debugger {
 
   /**
    * 更新调试配置
+   *
+   * @param config - 配置数据。
    */
   updateConfig(config: Partial<DebugConfig>): void {
     this.config = {
@@ -198,6 +233,8 @@ class Debugger {
 
   /**
    * 设置调试级别
+   *
+   * @param level - 日志级别。
    */
   setLevel(level: DebugLevel): void {
     this.config.level = level;
@@ -206,6 +243,11 @@ class Debugger {
 
 let debugInstance: Debugger;
 
+/**
+ * 初始化调试工具配置。
+ *
+ * @returns 处理结果（Debugger）。
+ */
 const initDebug = () => {
   if (!debugInstance) {
     debugInstance = new Debugger({
@@ -218,6 +260,11 @@ const initDebug = () => {
   return debugInstance;
 };
 
+/**
+ * 记录调试信息。
+ *
+ * @param args - 传递给目标操作的参数列表，按调用顺序传入。
+ */
 const debug = (...args: Parameters<typeof debugInstance.debug>) => {
   const instance = initDebug();
   return instance.debug(...args);

@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-19 14:42:43
- * @LastEditTime : 2025-10-31 09:11:11
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Gleam.ts
- * @Description  : https://gleam.io
+ * @Description  : Gleam 网站任务处理（https://gleam.io）
  */
 
 import type { WebsiteStoredTasksInput, WebsiteTask, vlootData } from './types';
@@ -29,64 +29,12 @@ declare global {
 /**
  * 表示 Gleam 网站的任务处理类。
  *
- * @class Gleam
- * @extends Website
+ * @remarks
+ * - `name`（`string`）：网站名称，默认为 'Gleam'。
  *
- * @property {string} name - 网站名称，默认为 'Gleam'。
- * @property {Array<WebsiteTask>} tasks - 统一任务列表。
- * @property {Array<string>} buttons - 可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
+ * - `tasks`（`Array<WebsiteTask>`）：统一任务列表。
  *
- * @static
- * @method test - 检查当前域名是否为 Gleam 网站。
- * @returns {boolean} 如果当前域名为 'gleam.io'，则返回 true；否则返回 false。
- *
- * @method before - 在执行操作之前重写全局的确认、警告和提示对话框。
- * @returns {void} 无返回值。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method after - 页面加载后的异步方法，执行后续操作。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
- *
- * @method init - 初始化方法，尝试初始化抽奖功能。
- * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
- *
- * @method classifyTask - 分类任务的异步方法。
- * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
- * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
- * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
- *
- * @method extraDoTask - 执行额外任务的异步方法。
- * @param {Object} params - 方法参数对象。
- * @param {Array<string>} params.gleam - 包含要执行的Gleam任务链接的数组。
- * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
- *
- * @method verifyTask - 验证任务的异步方法。
- * @returns {Promise<any>} 如果所有任务成功验证，则返回 true；如果发生错误，则返回 false；如果需要人机验证，则返回验证提示。
- * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkSync - 检查同步状态的私有异步方法。
- * @returns {Promise<boolean>} 如果同步完成，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #doGleamTask - 执行Gleam任务的私有异步方法。
- * @param {string} link - 要执行的Gleam任务链接。
- * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
- *
- * @private
- * @method #getGiveawayId - 获取抽奖ID的方法。
- * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
- * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
+ * - `buttons`（`Array<string>`）：可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
  */
 class Gleam extends Website {
   name = 'Gleam';
@@ -100,11 +48,11 @@ class Gleam extends Website {
   /**
    * 检查当前域名是否为 Gleam 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'gleam.io'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 Gleam 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'gleam.io'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -119,11 +67,7 @@ class Gleam extends Website {
   /**
    * 在执行操作之前重写全局的确认、警告和提示对话框
    *
-   * @returns {void} 无返回值。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法在执行操作之前，将全局的 `confirm`、`alert` 和 `prompt` 方法重写为空函数。
    * 这样可以防止在执行过程中弹出任何对话框，确保用户体验不受干扰。
    */
@@ -146,11 +90,7 @@ class Gleam extends Website {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法在特定条件下执行后续操作。
    * 首先检查当前URL中是否包含特定的查询参数。
    * 如果包含，则设置一个定时器，检查任务是否完成。
@@ -158,6 +98,8 @@ class Gleam extends Website {
    * 在每次点击后，等待 1 秒钟以确保操作完成。
    * 如果未找到特定查询参数，则检查剩余密钥的状态。
    * 如果检查失败，则记录相应的警告信息。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -189,14 +131,14 @@ class Gleam extends Website {
   /**
    * 初始化方法
    *
-   * @returns {boolean} 如果初始化成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在初始化过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法尝试初始化抽奖功能。
    * 首先记录初始化状态。如果获取抽奖ID失败，则返回 false。
    * 如果成功获取抽奖ID，则将 `initialized` 属性设置为 true，并记录成功信息。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果初始化成功，则返回 true；否则返回 false。
    */
   init(): boolean {
     try {
@@ -224,12 +166,7 @@ class Gleam extends Website {
   /**
    * 分类任务的异步方法
    *
-   * @param {'do' | 'undo'} action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
-   * @returns {Promise<boolean>} 如果任务分类成功，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在分类过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法根据传入的操作类型分类任务。
    * 首先检查操作类型，如果是'undo'，则从存储中获取任务信息。
    * 然后遍历页面中的任务，按以下步骤处理每个任务：
@@ -244,6 +181,11 @@ class Gleam extends Website {
    * 4. 跳过已知的其他任务类型
    * 5. 记录未知任务类型
    * 最后去重并保存任务列表到本地存储。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param action - 要执行的操作类型，'do' 表示执行任务，'undo' 表示撤销任务。
+   * @returns 如果任务分类成功，则返回 true；否则返回 false。
    */
   async classifyTask(action: 'do' | 'undo'): Promise<boolean> {
     try {
@@ -280,6 +222,14 @@ class Gleam extends Website {
           taskText
         });
 
+        /**
+         * 将任务加入待处理列表。
+         *
+         * @param social - 社交平台实例或名称。
+         * @param type - 操作或数据类型。
+         * @param link - 任务目标链接。
+         * @param options - 本次操作的配置选项；默认值为 `{}`。
+         */
         const addTask = (
           social: string,
           type: string,
@@ -489,16 +439,16 @@ class Gleam extends Website {
   /**
    * 执行额外任务的异步方法
    *
-   * @param {Object} params - 方法参数对象。
-   * @param {Array<string>} params.gleam - 包含要执行的Gleam任务链接的数组。
-   * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历传入的Gleam任务链接数组，并为每个链接调用私有方法 `#doGleamTask`。
    * 所有任务的执行结果将通过 `Promise.all` 进行处理。
    * 如果所有任务成功完成，则返回 true；如果发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * 解构参数包含：gleam（对应字段值）。
+   *
+   * @returns 如果所有任务成功执行，则返回 true；否则返回 false。
    */
   async extraDoTask({ gleam = [] }: Record<string, Array<WebsiteTask>>): Promise<boolean> {
     try {
@@ -526,17 +476,17 @@ class Gleam extends Website {
   /**
    * 检查人机验证的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检测到人机验证，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查页面中是否存在人机验证。
    * 如果检测到验证元素（campaign-key属性），则：
    * 1. 等待3秒
    * 2. 显示重试提示
    * 3. 递归调用自身直到验证消失
    * 验证通过后记录成功状态。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检测到人机验证，则返回 true；否则返回 false。
    */
   async #checkCampaign(): Promise<boolean> {
     try {
@@ -566,11 +516,7 @@ class Gleam extends Website {
   /**
    * 验证任务的异步方法
    *
-   * @returns {Promise<any>} 如果所有任务成功验证，则返回 true；如果发生错误，则返回 false；如果需要人机验证，则返回验证提示。
-   *
-   * @throws {Error} 如果在验证过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法遍历页面中的所有任务，按顺序执行以下步骤：
    * 1. 检查是否存在人机验证，如果存在则立即返回
    * 2. 对于每个未完成的任务：
@@ -582,6 +528,10 @@ class Gleam extends Website {
    *    - 点击继续按钮完成验证
    * 3. 记录任务验证完成的状态
    * 所有任务处理完成后返回true，如果发生错误则返回false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果所有任务成功验证，则返回 true；如果发生错误，则返回 false；如果需要人机验证，则返回验证提示。
    */
   async verifyTask(): Promise<any> {
     try {
@@ -685,14 +635,14 @@ class Gleam extends Website {
   /**
    * 检查同步状态的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果同步完成，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法使用定时器检查页面中是否存在同步图标。
    * 如果同步图标不存在，则清除定时器并解析 Promise 为 true。
    * 如果在过程中发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果同步完成，则返回 true；如果发生错误，则返回 false。
    */
   async #checkSync(): Promise<boolean> {
     try {
@@ -718,15 +668,15 @@ class Gleam extends Website {
   /**
    * 执行Gleam任务的私有异步方法
    *
-   * @param {string} link - 要执行的Gleam任务链接。
-   * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法打开一个新的标签页以执行指定的Gleam任务。
    * 使用 `GM_openInTab` 方法打开任务链接，并在标签页关闭时记录成功信息。
    * 如果在过程中发生错误，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param link - 要执行的Gleam任务链接。
+   * @returns 如果任务成功执行，则返回 true；否则返回 false。
    */
   async #doGleamTask(link: string): Promise<boolean> {
     try {
@@ -761,14 +711,14 @@ class Gleam extends Website {
   /**
    * 获取抽奖ID的方法
    *
-   * @returns {boolean} 如果成功获取抽奖ID，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法从当前窗口的路径中提取抽奖ID。
    * 如果成功获取到抽奖ID，则将其赋值给实例属性 `giveawayId` 并返回 true。
    * 如果未能获取到抽奖ID，则记录错误信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功获取抽奖ID，则返回 true；否则返回 false。
    */
   #getGiveawayId(): boolean {
     try {
@@ -798,12 +748,7 @@ class Gleam extends Website {
   /**
    * 获取Gleam链接的异步方法
    *
-   * @param {string} title - 要查找的抽奖标题。
-   * @returns {Promise<string | false>} 如果成功获取链接，则返回链接字符串；如果失败，则返回 false。
-   *
-   * @throws {Error} 如果在获取过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法通过以下步骤获取Gleam任务链接：
    * 1. 向vloot.io的API发送GET请求获取抽奖列表
    * 2. 检查API响应的有效性：
@@ -813,6 +758,11 @@ class Gleam extends Website {
    * 3. 在返回的数据中查找标题匹配的抽奖活动
    * 4. 如果找到匹配的活动，返回其链接
    * 5. 如果任何步骤失败，记录相应的错误信息并返回false
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param title - 要查找的抽奖标题。
+   * @returns 如果成功获取链接，则返回链接字符串；如果失败，则返回 false。
    */
   async #getGleamLink(title: string): Promise<string | false> {
     try {
@@ -872,11 +822,7 @@ class Gleam extends Website {
   /**
    * 检查剩余密钥的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法按以下步骤检查抽奖活动的状态：
    * 1. 如果未启用检查功能，直接返回true
    * 2. 获取并解析活动配置信息，如果获取失败则返回false
@@ -886,6 +832,10 @@ class Gleam extends Website {
    *    - 显示警告对话框
    *    - 如果用户确认，则关闭窗口
    * 6. 返回检查结果
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功，则返回 true；如果发生错误，则返回 false。
    */
   async #checkLeftKey(): Promise<boolean> {
     try {

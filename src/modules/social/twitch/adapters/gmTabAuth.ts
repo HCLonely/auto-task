@@ -1,9 +1,24 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitch/adapters/gmTabAuth.ts
+ * @Description  : Twitch 浏览器标签页授权适配
+ */
+
 import type { Context } from '../context';
 import type { Auth, GMTab } from '../types';
 import { validAuth, pickAuth } from '../auth/data';
 export interface PendingAuth { id: string; expiresAt: number }
 interface AuthReply { id: string; auth: Auth }
 
+/**
+ * 打开授权标签页并等待授权结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function requestTabAuth(ctx: Context): Promise<boolean> {
   if (ctx.state.disposed) {
     return false;
@@ -33,12 +48,22 @@ export async function requestTabAuth(ctx: Context): Promise<boolean> {
     const setup = new Promise<void>((done) => {
       finishSetup = done;
     });
+    /**
+     * 取消当前操作或等待。
+     */
     const cancel = () => {
       void finish(false, 'AUTH_CANCELLED');
     };
     const timer = setTimeout(() => {
       void finish(false, 'AUTH_TIMEOUT');
     }, ctx.authTimeoutMs);
+    /**
+     * 完成当前操作并交付结果。
+     *
+     * @param ok - 操作是否成功。
+     * @param code - 状态代码。
+     * @returns 在操作完成后兑现的 Promise。
+     */
     const finish = async (ok: boolean, code: string) => {
       if (settled) {
         return;

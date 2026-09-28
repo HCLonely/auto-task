@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/context.ts
+ * @Description  : Steam 网页端 运行上下文与状态管理
+ */
+
 import { createGMStorage, getDefaultGM } from './adapters/gmStorage';
 import { StatusEvents } from './events';
 import type { Auth, GMAuthAPI, HttpClient, StatusLevel, SteamCache, SteamWebOptions, StepStatus } from './types';
@@ -19,7 +28,9 @@ export interface State {
   cleanups: Set<() => void>;
 }
 
-/** A child context changes only the operation identity; account state remains instance-local. */
+/**
+ * 子上下文仅替换操作标识，账号状态仍由当前实例共享。
+ */
 export class Context {
   readonly events: StatusEvents;
   readonly gm: GMAuthAPI;
@@ -35,6 +46,15 @@ export class Context {
   private target?: string;
   private lastError?: string;
 
+  /**
+   * 创建 Context 实例并初始化所需状态。
+   *
+   * @remarks
+   * 注入的请求、存储和授权依赖由当前实例持有。
+   *
+   * @param options - 本次操作的配置选项。
+   * @throws Error - 触发 'Invalid authTimeoutMs' 错误条件时抛出。
+   */
   constructor(options: SteamWebOptions) {
     this.transport = options.http;
     this.gm = options.gm || getDefaultGM();
@@ -66,6 +86,17 @@ export class Context {
     };
   }
 
+  /**
+   * 在独立操作上下文中执行任务并发送状态事件。
+   *
+   * @typeParam T - 操作处理的数据或返回值类型。
+   * @param operation - 操作名称或执行函数。
+   * @param target - 当前操作的目标。
+   * @param work - 在当前上下文中执行的工作函数。
+   * @param successful - 操作是否成功；可省略。
+   * @returns Promise，完成后返回工作函数或存储读取产生的泛型结果。
+   * @throws 执行过程中发生的异常会继续向调用方传播。
+   */
   async run<T>(operation: string, target: string | undefined, work: (ctx: Context) => Promise<T>, successful?: (value: T) => boolean): Promise<T> {
     const child = Object.assign(Object.create(Context.prototype) as Context, this);
     child.operationId = crypto.randomUUID();
@@ -87,6 +118,14 @@ export class Context {
     }
   }
 
+  /**
+   * 向监听器发送状态事件。
+   *
+   * @param phase - 操作所处阶段。
+   * @param level - 日志级别。
+   * @param code - 状态代码。
+   * @param details - 状态事件的补充信息；可省略。
+   */
   private emit(phase: 'start' | 'progress' | 'success' | 'failure' | 'skipped', level: StatusLevel, code: string,
     details?: Record<string, string | number | boolean>): void {
     this.events.emit({
@@ -102,6 +141,13 @@ export class Context {
     });
   }
 
+  /**
+   * 发送操作进度状态。
+   *
+   * @param code - 状态代码。
+   * @param level - 日志级别；默认值为 `'info'`。
+   * @param details - 状态事件的补充信息；可省略。
+   */
   progress(code: string, level: StatusLevel = 'info', details?: Record<string, string | number | boolean>): void {
     if (level === 'error') {
       this.lastError = code;
@@ -109,15 +155,31 @@ export class Context {
     this.emit('progress', level, code, details);
   }
 
+  /**
+   * 报告当前操作的异常状态。
+   */
   reportError(): void {
     this.progress('UNEXPECTED_ERROR', 'error');
   }
 
-  /** Step updates never emit terminal operation events. */
+  /**
+   * 步骤状态更新不发送整个操作的结束事件。
+   *
+   * @param code - 状态代码。
+   * @param target - 当前操作的目标；可省略。
+   * @returns 可继续报告同一步骤状态的控制器。
+   */
   step(code: string, target?: string): StepStatus {
     this.progress(code, 'info', target ? {
       target
     } : undefined);
+    /**
+     * 创建指定日志级别的步骤状态更新函数。
+     *
+     * @param level - 日志级别。
+     * @param fallback - 未取得有效数据时使用的默认值。
+     * @returns 供调用方使用的函数。
+     */
     const update = (level: StatusLevel, fallback: string) => {
       return (reason = fallback): StepStatus => {
         this.progress(reason, level, target ? {
@@ -130,6 +192,9 @@ export class Context {
       success: update('info', 'STEP_COMPLETED'),
       error: update('error', 'STEP_FAILED'),
       warning: update('warning', 'STEP_WARNING'),
+      /**
+       * 移除指定记录或界面元素。
+       */
       remove: () => {
         return this.progress('STEP_COMPLETED', 'debug');
       }
@@ -137,6 +202,13 @@ export class Context {
     return status;
   }
 
+  /**
+   * 发送 HTTP 请求并处理传输状态。
+   *
+   * @param options - 本次操作的配置选项。
+   * @returns Promise，完成后返回处理结果。
+   * @throws Error - 触发 'SteamWeb disposed' 错误条件时抛出。
+   */
   async request(options: Parameters<HttpClient>[0]): ReturnType<HttpClient> {
     if (this.state.disposed) {
       throw new Error('SteamWeb disposed');

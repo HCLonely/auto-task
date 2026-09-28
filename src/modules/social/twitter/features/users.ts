@@ -1,8 +1,24 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitter/features/users.ts
+ * @Description  : Twitter 用户查询、关注与取消关注
+ */
+
 import { setCache } from '../cache';
 import type { Context } from '../context';
 import { apiRequest, hasErrors, reportFailure } from '../requests';
 import { normalizeUser } from '../utils/links';
 
+/**
+ * 将用户名称转换为用户标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回处理后的字符串；未取得有效结果时返回 false。
+ */
 export function userName2id(ctx: Context, name: string): Promise<string | false> {
   return ctx.run<string | false>('users.lookup', name, false, async (ctx) => {
     if (!ctx.ready()) {
@@ -45,6 +61,14 @@ export function userName2id(ctx: Context, name: string): Promise<string | false>
   });
 }
 
+/**
+ * 根据操作方向关注用户或取消关注用户。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @param doTask - 是否执行任务；为 false 时执行撤销操作；默认值为 `true`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 function executeUser(ctx: Context, name: string, doTask = true): Promise<boolean> {
   return ctx.run(doTask ? 'users.follow' : 'users.unfollow', name, false, async (ctx) => {
     if (!ctx.ready()) {
@@ -94,9 +118,23 @@ function executeUser(ctx: Context, name: string, doTask = true): Promise<boolean
   });
 }
 
+/**
+ * 关注用户。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function doUser(ctx: Context, name: string): Promise<boolean> {
   return executeUser(ctx, name, true);
 }
+/**
+ * 取消关注用户。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function undoUser(ctx: Context, name: string): Promise<boolean> {
   return executeUser(ctx, name, false);
 }

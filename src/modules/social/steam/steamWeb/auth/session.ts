@@ -1,6 +1,22 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/auth/session.ts
+ * @Description  : Steam 网页端 会话授权管理
+ */
+
 import { refreshToken } from '../auth/token';
 import type { Context } from '../context';
 
+/**
+ * 更新 Steam 商店会话授权。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param retry - 当前重试状态或次数；默认值为 `false`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function updateStoreAuth(ctx: Context, retry = false): Promise<boolean> {
   return ctx.run('auth.store.session', undefined, async (ctx): Promise<boolean> => {
     try {
@@ -53,6 +69,14 @@ export async function updateStoreAuth(ctx: Context, retry = false): Promise<bool
   });
 }
 
+/**
+ * 更新 Steam 社区会话授权。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param initStoreResult - 商店初始化结果。
+ * @param retry - 当前重试状态或次数；默认值为 `false`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function updateCommunityAuth(ctx: Context, initStoreResult: boolean, retry = false): Promise<boolean> {
   return ctx.run('auth.community.session', undefined, async (ctx): Promise<boolean> => {
     try {

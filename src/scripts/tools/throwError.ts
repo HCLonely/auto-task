@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-13 14:08:18
- * @LastEditTime : 2025-08-18 19:07:44
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/tools/throwError.ts
  * @Description  : 错误处理函数
@@ -46,7 +46,8 @@ interface GithubIssueParams extends Record<string, string> {
 
 /**
  * 获取运行日志
- * @returns {string} 格式化的运行日志
+ *
+ * @returns 格式化的运行日志
  */
 const getRunLogs = (): string => {
   debug('开始获取运行日志');
@@ -63,7 +64,8 @@ const getRunLogs = (): string => {
 
 /**
  * 获取环境信息
- * @returns {ErrorReportData} 错误报告所需的环境信息
+ *
+ * @returns 错误报告所需的环境信息
  */
 const getEnvironmentInfo = async (): Promise<ErrorReportData> => {
   debug('开始获取环境信息');
@@ -81,10 +83,11 @@ const getEnvironmentInfo = async (): Promise<ErrorReportData> => {
 
 /**
  * 构建GitHub Issue参数
- * @param {string} name - 错误名称
- * @param {string} errorStack - 错误堆栈信息
- * @param {ErrorReportData} envInfo - 环境信息
- * @returns {GithubIssueParams} GitHub Issue参数对象
+ *
+ * @param name - 错误名称
+ * @param errorStack - 错误堆栈信息
+ * @param envInfo - 环境信息
+ * @returns GitHub Issue参数对象
  */
 const buildGithubIssueParams = async (name: string, errorStack: string, envInfo: ErrorReportData): Promise<GithubIssueParams> => {
   debug('开始构建GitHub Issue参数', {
@@ -112,10 +115,11 @@ const buildGithubIssueParams = async (name: string, errorStack: string, envInfo:
 
 /**
  * 生成GitHub issue链接
- * @param {string} name - 错误名称
- * @param {string} errorStack - 错误堆栈信息
- * @param {ErrorReportData} envInfo - 环境信息
- * @returns {string} GitHub issue链接
+ *
+ * @param name - 错误名称
+ * @param errorStack - 错误堆栈信息
+ * @param envInfo - 环境信息
+ * @returns GitHub issue链接
  */
 const generateGithubLink = async (name: string, errorStack: string, envInfo: ErrorReportData): Promise<string> => {
   debug('开始生成GitHub Issue链接');
@@ -129,8 +133,9 @@ const generateGithubLink = async (name: string, errorStack: string, envInfo: Err
 
 /**
  * 记录错误日志
- * @param {string} name - 错误名称
- * @param {string} errorStack - 错误堆栈信息
+ *
+ * @param name - 错误名称
+ * @param errorStack - 错误堆栈信息
  */
 const logError = (name: string, errorStack: string): void => {
   debug('记录错误日志', {
@@ -141,10 +146,12 @@ const logError = (name: string, errorStack: string): void => {
 
 /**
  * 处理错误报告提交
- * @param {ReportPlatform} platform - 报告平台
- * @param {string} name - 错误名称
- * @param {string} errorStack - 错误堆栈信息
- * @param {ErrorReportData} envInfo - 环境信息
+ *
+ * @param platform - 报告平台
+ * @param name - 错误名称
+ * @param errorStack - 错误堆栈信息
+ * @param envInfo - 环境信息
+ * @returns 在操作完成后兑现的 Promise。
  */
 const handleErrorReport = async (platform: ReportPlatform, name: string, errorStack: string, envInfo: ErrorReportData): Promise<void> => {
   debug('开始处理错误报告', {
@@ -165,16 +172,16 @@ const handleErrorReport = async (platform: ReportPlatform, name: string, errorSt
 /**
  * 处理错误并显示相应的提示框
  *
- * @param {Error} error - 错误对象
- * @param {string} name - 错误名称
- * @returns {Promise<void>}
- *
- * @description
+ * @remarks
  * 该函数处理错误并提供以下功能：
  * 1. 显示错误报告对话框
  * 2. 支持提交到 GitHub Issues
  * 3. 自动收集环境信息和错误日志
  * 4. 提供错误信息的复制功能
+ *
+ * @param error - 错误对象
+ * @param name - 错误名称
+ * @returns 在操作完成后兑现的 Promise。
  */
 export default async function throwError(error: Error, name: string): Promise<void> {
   debug('开始处理错误', {

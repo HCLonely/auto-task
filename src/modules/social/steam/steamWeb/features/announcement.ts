@@ -1,7 +1,24 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/announcement.ts
+ * @Description  : Steam 网页端 游戏公告参数解析与点赞
+ */
+
 import type { Context } from '../context';
 import type { AnnouncementParams } from '../types';
 import { encodeForm } from '../utils/html';
 
+/**
+ * 解析游戏公告操作所需的参数。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param appId - Steam 应用标识。
+ * @param viewId - 界面视图标识。
+ * @returns Promise，完成后返回公告所属应用与公告标识等操作参数。
+ */
 export async function getAnnouncementParams(ctx: Context, appId: string, viewId: string): Promise<AnnouncementParams> {
   return ctx.run('announcement.getAnnouncementParams', appId, async (ctx): Promise<AnnouncementParams> => {
     try {
@@ -44,6 +61,13 @@ export async function getAnnouncementParams(ctx: Context, appId: string, viewId:
   });
 }
 
+/**
+ * 为游戏公告点赞。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param id - 目标标识。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function likeAnnouncement(ctx: Context, id: string): Promise<boolean> {
   return ctx.run('announcement.likeAnnouncement', id, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {

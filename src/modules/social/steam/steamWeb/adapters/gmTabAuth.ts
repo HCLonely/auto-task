@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/adapters/gmTabAuth.ts
+ * @Description  : Steam 网页端 浏览器标签页授权适配
+ */
+
 import type { Context } from '../context';
 import type { Auth, GMAuthAPI, GMTab } from '../types';
 import { getDefaultGM } from './gmStorage';
@@ -10,6 +19,13 @@ const hosts = {
   community: 'steamcommunity.com'
 };
 
+/**
+ * 检查授权数据是否包含所需字段。
+ *
+ * @param value - 待处理的值。
+ * @param target - 当前操作的目标。
+ * @returns 检查结果；满足条件时为 true，否则为 false。
+ */
 function validAuth(value: unknown, target: AuthTarget): value is Auth {
   if (!value || typeof value !== 'object') {
     return false;
@@ -20,6 +36,13 @@ function validAuth(value: unknown, target: AuthTarget): value is Auth {
     (target === 'store' || (typeof auth.steam64Id === 'string' && /^\d+$/.test(auth.steam64Id)));
 }
 
+/**
+ * 打开授权标签页并等待授权结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param target - 当前操作的目标。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function requestTabAuth(ctx: Context, target: AuthTarget): Promise<boolean> {
   if (ctx.state.disposed) {
     return false;
@@ -49,12 +72,22 @@ export async function requestTabAuth(ctx: Context, target: AuthTarget): Promise<
     const setup = new Promise<void>((done) => {
       finishSetup = done;
     });
+    /**
+     * 取消当前操作或等待。
+     */
     const cancel = () => {
       void finish(false, 'AUTH_CANCELLED');
     };
     const timer = setTimeout(() => {
       void finish(false, 'AUTH_TIMEOUT');
     }, ctx.authTimeoutMs);
+    /**
+     * 完成当前操作并交付结果。
+     *
+     * @param ok - 操作是否成功。
+     * @param code - 状态代码。
+     * @returns 在操作完成后兑现的 Promise。
+     */
     const finish = async (ok: boolean, code: string) => {
       if (settled) {
         return;
@@ -143,9 +176,11 @@ export async function requestTabAuth(ctx: Context, target: AuthTarget): Promise<
   });
 }
 
-/** Call at userscript startup on matched Steam pages, before starting tasks.
- * The same userscript must own both the opener and the authentication page.
- * Returns true when this page belongs to a pending authentication flow.
+/**
+ * 在匹配的 Steam 页面启动时调用，并在执行任务前完成处理。发起页面和授权页面必须由同一用户脚本管理。返回 true 表示当前页面属于待处理的授权流程。
+ *
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
  */
 export async function handleSteamAuthPage(options: { gm?: GMAuthAPI; namespace?: string } = {}): Promise<boolean> {
   const target = location.hostname === hosts.store ? 'store' : (location.hostname === hosts.community ? 'community' : undefined);

@@ -1,8 +1,24 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/steam/steamWeb/features/licenses.ts
+ * @Description  : Steam 网页端 游戏许可获取与添加
+ */
+
 import type { Context } from '../context';
 import { changeArea } from '../features/region';
 import type { StepStatus } from '../types';
 import { encodeForm } from '../utils/html';
 
+/**
+ * 将应用标识转换为许可包标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param id - 目标标识。
+ * @returns Promise，完成后返回处理结果（string | boolean）。
+ */
 export async function appid2subid(ctx: Context, id: string): Promise<string | boolean> {
   return ctx.run('licenses.appid2subid', id, async (ctx): Promise<string | boolean> => {
     try {
@@ -55,6 +71,12 @@ export async function appid2subid(ctx: Context, id: string): Promise<string | bo
   });
 }
 
+/**
+ * 查询游戏许可信息。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @returns Promise，完成后返回处理后的数值列表；未取得有效结果时返回 false。
+ */
 export async function getLicenses(ctx: Context): Promise<Array<number> | false> {
   return ctx.run('licenses.getLicenses', undefined, async (ctx): Promise<Array<number> | false> => {
     try {
@@ -86,6 +108,13 @@ export async function getLicenses(ctx: Context): Promise<Array<number> | false> 
   });
 }
 
+/**
+ * 为账号添加游戏许可。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param id - 目标标识。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function addLicense(ctx: Context, id: string): Promise<boolean> {
   return ctx.run('licenses.addLicense', id, async (ctx): Promise<boolean> => {
     if (ctx.state.disposed || !ctx.state.storeInitialized) {
@@ -165,6 +194,13 @@ export async function addLicense(ctx: Context, id: string): Promise<boolean> {
   });
 }
 
+/**
+ * 为账号添加免费游戏许可。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param id - 目标标识。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export async function addFreeLicense(ctx: Context, id: string): Promise<boolean> {
   return ctx.run('licenses.addFreeLicense', id, async (ctx): Promise<boolean> => {
     try {

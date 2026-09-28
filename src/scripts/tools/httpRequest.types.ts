@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 16:24:42
+ * @LastEditTime : 2026-09-28 17:35:45
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/scripts/tools/httpRequest.types.ts
+ * @Description  : HTTP 请求与响应类型定义
+ */
+
 export interface MonkeyXhrResponse {
   finalUrl: string
   readyState: number
@@ -29,12 +38,45 @@ export interface MonkeyXhrBasicDetails {
 }
 
 export interface MonkeyXhrDetails extends MonkeyXhrBasicDetails {
+  /**
+   * 处理请求中止事件。
+   */
   onabort?: () => void
+  /**
+   * 处理请求失败事件。
+   *
+   * @param response - 请求响应数据。
+   */
   onerror?: (response: MonkeyXhrResponse) => void
+  /**
+   * 处理请求开始加载事件。
+   *
+   * @param response - 请求响应数据。
+   */
   onloadstart?: (response: MonkeyXhrResponse) => void
+  /**
+   * 处理请求传输进度事件。
+   *
+   * @param response - 请求响应数据。
+   */
   onprogress?: (response: MonkeyXhrResponse) => void
+  /**
+   * 处理请求状态变化事件。
+   *
+   * @param response - 请求响应数据。
+   */
   onreadystatechange?: (response: MonkeyXhrResponse) => void
+  /**
+   * 处理请求超时事件。
+   *
+   * @param response - 请求响应数据。
+   */
   ontimeout?: (response: MonkeyXhrResponse) => void
+  /**
+   * 处理请求加载完成事件。
+   *
+   * @param response - 请求响应数据。
+   */
   onload?: (response: MonkeyXhrResponse) => void
 }
 

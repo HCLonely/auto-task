@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-12-11 13:22:26
- * @LastEditTime : 2025-08-18 19:05:44
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/options.ts
  * @Description  : 网站设置
@@ -23,13 +23,13 @@ interface FormValue {
 /**
  * 生成网站选项表单的 HTML
  *
- * @param {WebsiteOptions} options - 包含网站选项的对象，键为选项名，值为选项值
- * @returns {string} 返回生成的表单 HTML 字符串
- *
- * @description
+ * @remarks
  * 该方法根据传入的选项对象生成一个包含表单的 HTML 字符串。
  * 表单包含一个表格，每行显示一个选项及其对应的输入框。
  * 生成的表单具有 'auto-task-form' 类，表格具有 'auto-task-table' 类。
+ *
+ * @param options - 包含网站选项的对象，键为选项名，值为选项值
+ * @returns 返回生成的表单 HTML 字符串
  */
 const generateFormHtml = (options: WebsiteOptions): string => {
   debug('开始生成网站选项表单HTML', {
@@ -75,16 +75,15 @@ const generateFormHtml = (options: WebsiteOptions): string => {
 /**
  * 保存网站选项到存储
  *
- * @param {string} website - 网站的名称
- * @param {WebsiteOptions} options - 包含网站选项的对象
- * @param {FormValue[]} formValues - 表单中的值数组，每个元素包含 name 和 value
- * @returns {void} 无返回值
- *
- * @description
+ * @remarks
  * 该方法将表单中的值保存到存储中。
  * 遍历表单值数组，更新选项对象中对应的值。
  * 使用 GM_setValue 将更新后的选项保存到存储中。
  * 保存成功后显示成功提示。
+ *
+ * @param website - 网站的名称
+ * @param options - 包含网站选项的对象
+ * @param formValues - 表单中的值数组，每个元素包含 name 和 value
  */
 const saveOptions = (website: string, options: WebsiteOptions, formValues: FormValue[]): void => {
   debug('开始保存网站选项', {
@@ -115,17 +114,16 @@ const saveOptions = (website: string, options: WebsiteOptions, formValues: FormV
 /**
  * 设置网站选项的函数
  *
- * @param {string} website - 网站的名称，用于存储和识别不同网站的选项
- * @param {WebsiteOptions} options - 包含网站选项的对象，键为选项名，值为选项值
- * @returns {Promise<void>} 无返回值的 Promise
- * @throws {Error} 如果参数无效或在设置过程中发生错误，将抛出错误
- *
- * @description
+ * @remarks
  * 该方法显示一个对话框，允许用户编辑网站的选项。
  * 对话框包含一个表单，显示当前的选项值。
  * 用户可以修改选项值并保存更改。
  * 所有的操作都包含在 try-catch 块中以处理可能的错误。
  * 使用 Dialog 库来显示对话框和提示信息。
+ *
+ * @param website - 网站的名称，用于存储和识别不同网站的选项
+ * @param options - 包含网站选项的对象，键为选项名，值为选项值
+ * @returns 无返回值的 Promise
  */
 const websiteOptions = async (website: string, options: WebsiteOptions): Promise<void> => {
   try {
@@ -156,6 +154,14 @@ const websiteOptions = async (website: string, options: WebsiteOptions): Promise
       confirmButtonText: __('save'),
       showCancelButton: true,
       cancelButtonText: __('close'),
+      /**
+       * 处理对话框确认前的校验。
+       *
+       * @remarks
+       * 解构参数包含：root（查找或渲染的根节点）。
+       *
+       * @returns 处理后的数据列表。
+       */
       preConfirm: ({ root }) => {
         return $(root).find('#websiteOptionsForm').serializeArray();
       }

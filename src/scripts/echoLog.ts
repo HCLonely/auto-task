@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-26 15:03:26
- * @LastEditTime : 2025-08-18 19:04:47
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/echoLog.ts
  * @Description  : 日志记录模块，用于显示和管理任务执行状态的日志信息
@@ -47,7 +47,12 @@ const STATUS_LABELS: Record<StatusKind, string> = {
   info: 'unKnown'
 };
 
-/** Match translated result messages, including their interpolated parameters. */
+/**
+ * 匹配翻译后的结果消息及其中的插值参数。
+ *
+ * @param content - 待处理的内容。
+ * @returns 用于界面显示的日志状态类别。
+ */
 const inferStatus = (content: string): StatusKind => {
   const resultKeys: Partial<Record<StatusKind, string[]>> = {
     error: ['getFailed', 'getTaskIdFailed', 'initFailed', 'checkLoginFailed', 'checkLeftKeyFailed', 'syncDataFailed', 'checkUpdateFailed', 'moduleFailed'],
@@ -74,12 +79,56 @@ const inferStatus = (content: string): StatusKind => {
  */
 interface logStatus {
   font?: JQuery;
+  /**
+   * 设置操作前置处理器。
+   *
+   * @param before - 执行前的状态或前置处理函数。
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   setBefore: (before: string) => logStatus;
+  /**
+   * 记录操作成功状态。
+   *
+   * @param text - 待处理的文本；可省略。
+   * @param html - 待解析或显示的 HTML 内容；可省略。
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   success: (text?: string, html?: boolean) => logStatus;
+  /**
+   * 记录错误状态。
+   *
+   * @param text - 待处理的文本；可省略。
+   * @param html - 待解析或显示的 HTML 内容；可省略。
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   error: (text?: string, html?: boolean) => logStatus;
+  /**
+   * 记录警告状态。
+   *
+   * @param text - 待处理的文本；可省略。
+   * @param html - 待解析或显示的 HTML 内容；可省略。
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   warning: (text?: string, html?: boolean) => logStatus;
+  /**
+   * 记录信息状态。
+   *
+   * @param text - 待处理的文本；可省略。
+   * @param html - 待解析或显示的 HTML 内容；可省略。
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   info: (text?: string, html?: boolean) => logStatus;
+  /**
+   * 更新界面视图。
+   *
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   view: () => logStatus;
+  /**
+   * 移除指定记录或界面元素。
+   *
+   * @returns 可继续更新同一条日志的状态控制器。
+   */
   remove: () => logStatus;
 }
 
@@ -99,9 +148,10 @@ type UrlGenerators = {
 
 /**
  * 生成链接HTML
- * @param {string} url - 链接URL
- * @param {string} text - 链接文本
- * @returns {string} 生成的HTML字符串
+ *
+ * @param url - 链接URL
+ * @param text - 链接文本
+ * @returns 生成的HTML字符串
  */
 const generateLink = (url: string, text: string): string => {
   return `<a href="${url}" target="_blank">${text}</a>`;
@@ -109,8 +159,9 @@ const generateLink = (url: string, text: string): string => {
 
 /**
  * 生成基础日志元素
- * @param {string} content - 日志内容
- * @returns {JQuery} jQuery元素
+ *
+ * @param content - 日志内容
+ * @returns jQuery元素
  */
 const createBaseElement = (content: string): JQuery => {
   return $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
@@ -118,66 +169,164 @@ const createBaseElement = (content: string): JQuery => {
 
 /**
  * 生成平台相关日志元素
- * @param {string} type - 日志类型
- * @param {string} text - 文本内容
- * @param {string} [id] - 相关ID
- * @returns {JQuery | null} 生成的jQuery元素或null
+ *
+ * @param type - 日志类型
+ * @param text - 文本内容
+ * @param id - 相关ID
+ * @returns 生成的jQuery元素或null
  */
 const createPlatformElement = (type: string, text?: string, id?: string): JQuery | null => {
   const urlGenerators: UrlGenerators = {
     // Steam相关
+    /**
+     * 处理群组任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     group: (text: string) => {
       return `https://steamcommunity.com/groups/${text}`;
     },
+    /**
+     * 处理游戏官方组任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     officialGroup: (text: string) => {
       return `https://steamcommunity.com/games/${text}`;
     },
+    /**
+     * 处理论坛任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     forum: (text: string) => {
       return `https://steamcommunity.com/app/${text}/discussions/`;
     },
+    /**
+     * 处理鉴赏家任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     curator: (text: string) => {
       return `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`;
     },
+    /**
+     * 处理指定应用任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     app: (text: string) => {
       return `https://store.steampowered.com/app/${text}`;
     },
+    /**
+     * 处理指定许可包任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     sub: (text: string) => {
       return `https://steamdb.info/sub/${text}/`;
     },
+    /**
+     * 处理创意工坊任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     workshop: (text: string) => {
       return `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`;
     },
+    /**
+     * 处理游戏公告任务。
+     *
+     * @param text - 待处理的文本。
+     * @param id - 目标标识；可省略。
+     * @returns 处理后的字符串。
+     */
     announcement: (text: string, id?: string) => {
       return `https://store.steampowered.com/news/app/${text}/view/${id}`;
     },
 
     // 社交平台相关
 
+    /**
+     * 处理 Twitch 平台任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     twitch: (text: string) => {
       return `https://www.twitch.tv/${text}`;
     },
+    /**
+     * 处理 Instagram 平台任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     instagram: (text: string) => {
       return `https://www.instagram.com/${text}/`;
     },
+    /**
+     * 处理 Twitter 平台任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     twitter: (text: string) => {
       return `https://x.com/${text}`;
     },
     reddit: {
+      /**
+       * 处理 Reddit 社区任务。
+       *
+       * @param text - 待处理的文本。
+       * @returns 处理后的字符串。
+       */
       subreddit: (text: string) => {
         return `https://www.reddit.com/r/${text}/`;
       },
+      /**
+       * 处理用户任务。
+       *
+       * @param text - 待处理的文本。
+       * @returns 处理后的字符串。
+       */
       user: (text: string) => {
         return `https://www.reddit.com/user/${text?.replace('u_', '')}`;
       }
     },
     youtube: {
+      /**
+       * 处理频道任务。
+       *
+       * @param text - 待处理的文本。
+       * @returns 处理后的字符串。
+       */
       channel: (text: string) => {
         return `https://www.youtube.com/channel/${text}`;
       },
+      /**
+       * 处理视频任务。
+       *
+       * @param text - 待处理的文本。
+       * @returns 处理后的字符串。
+       */
       video: (text: string) => {
         return `https://www.youtube.com/watch?v=${text}`;
       }
     },
+    /**
+     * 处理 VK 平台任务。
+     *
+     * @param text - 待处理的文本。
+     * @returns 处理后的字符串。
+     */
     vk: (text: string) => {
       return `https://vk.com/${text}/`;
     }
@@ -271,11 +420,12 @@ const createPlatformElement = (type: string, text?: string, id?: string): JQuery
 
 /**
  * 生成特殊类型日志元素
- * @param {string} type - 日志类型
- * @param {string} text - 文本内容
- * @param {string} [html] - HTML内容
- * @param {string} [id] - 相关ID
- * @returns {JQuery} 生成的jQuery元素
+ *
+ * @param type - 日志类型
+ * @param text - 文本内容
+ * @param html - HTML内容
+ * @param id - 相关ID
+ * @returns 生成的jQuery元素
  */
 const createSpecialElement = (type: string, text?: string, html?: string, id?: string): JQuery => {
   switch (type) {
@@ -301,35 +451,69 @@ const createSpecialElement = (type: string, text?: string, html?: string, id?: s
 
 /**
  * 记录日志信息并返回日志状态对象
- * @param {Object} options - 日志选项对象
- * @param {string} [options.type] - 日志类型
- * @param {string} [options.text] - 日志文本内容
- * @param {string} [options.html] - 日志的HTML内容
- * @param {string} [options.id] - 相关ID
- * @returns {logStatus} 日志状态对象
+ *
+ * @remarks
+ * 解构参数包含：type（操作或数据类型）、text（待处理的文本）、html（待解析或显示的 HTML 内容）、id（目标标识）、before（执行前的状态或前置处理函数）。
+ *
+ * @returns 日志状态对象
  */
 const echoLog = ({
   type, text, html, id, before
 }: { type?: string, text?: string, html?: string, id?: string, before?: string }): logStatus => {
   const emptyStatus: logStatus = {
+    /**
+     * 设置操作前置处理器。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     setBefore: () => {
       return emptyStatus;
     },
+    /**
+     * 记录操作成功状态。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     success: () => {
       return emptyStatus;
     },
+    /**
+     * 记录错误状态。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     error: () => {
       return emptyStatus;
     },
+    /**
+     * 记录警告状态。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     warning: () => {
       return emptyStatus;
     },
+    /**
+     * 记录信息状态。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     info: () => {
       return emptyStatus;
     },
+    /**
+     * 更新界面视图。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     view: () => {
       return emptyStatus;
     },
+    /**
+     * 移除指定记录或界面元素。
+     *
+     * @returns 可继续更新同一条日志的状态控制器。
+     */
     remove: () => {
       return emptyStatus;
     }
@@ -368,6 +552,12 @@ const echoLog = ({
     const indicators = $('<span class="log-status-icon" role="img"></span>');
     ele.append(indicators);
     const icons = ele.children('.log-status-icon');
+    /**
+     * 更新当前状态。
+     *
+     * @param kind - 目标类别。
+     * @param targets - 当前操作的目标列表；默认值为 `icons`。
+     */
     const setState = (kind: StatusKind, targets = icons): void => {
       targets.attr('data-status', kind).attr('aria-label', __(STATUS_LABELS[kind]))
         .attr('title', __(STATUS_LABELS[kind]))
@@ -381,6 +571,11 @@ const echoLog = ({
       setState(initialStatus, row.children('.log-status-icon'));
     });
 
+    /**
+     * 设置操作前置处理器。
+     *
+     * @param prefix - 生成内容使用的前缀；默认值为 `'[AutoTask]'`。
+     */
     const setBefore = (prefix = '[AutoTask]'): void => {
       ele.children('.before-icon, .before').remove();
       if (prefix in ICONS) {
@@ -398,38 +593,82 @@ const echoLog = ({
 
     const status: logStatus = {
       font,
+      /**
+       * 设置操作前置处理器。
+       *
+       * @param prefix - 生成内容使用的前缀。
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       setBefore(prefix) {
         setBefore(prefix);
         return this;
       },
+      /**
+       * 记录操作成功状态。
+       *
+       * @param text - 待处理的文本；默认值为 `__('logSuccess')`。
+       * @param html - 待解析或显示的 HTML 内容；默认值为 `false`。
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       success(text = __('logSuccess'), html = false) {
         this.font?.attr('class', 'log-status success');
         html ? this.font?.html(text) : this.font?.text(text);
         setState('success');
         return this;
       },
+      /**
+       * 记录错误状态。
+       *
+       * @param text - 待处理的文本；默认值为 `__('logError')`。
+       * @param html - 待解析或显示的 HTML 内容；默认值为 `false`。
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       error(text = __('logError'), html = false) {
         this.font?.attr('class', 'log-status error');
         html ? this.font?.html(text) : this.font?.text(text);
         setState('error');
         return this;
       },
+      /**
+       * 记录警告状态。
+       *
+       * @param text - 待处理的文本；默认值为 `__('logWarning')`。
+       * @param html - 待解析或显示的 HTML 内容；默认值为 `false`。
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       warning(text = __('logWarning'), html = false) {
         this.font?.attr('class', 'log-status warning');
         html ? this.font?.html(text) : this.font?.text(text);
         setState('warning');
         return this;
       },
+      /**
+       * 记录信息状态。
+       *
+       * @param text - 待处理的文本；默认值为 `__('unKnown')`。
+       * @param html - 待解析或显示的 HTML 内容；默认值为 `false`。
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       info(text = __('unKnown'), html = false) {
         this.font?.attr('class', 'log-status info');
         html ? this.font?.html(text) : this.font?.text(text);
         setState('info');
         return this;
       },
+      /**
+       * 更新界面视图。
+       *
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       view() {
         ele[0]?.scrollIntoView();
         return this;
       },
+      /**
+       * 移除指定记录或界面元素。
+       *
+       * @returns 可继续更新同一条日志的状态控制器。
+       */
       remove() {
         ele.remove();
         return this;

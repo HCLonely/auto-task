@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2025-06-14 12:31:06
- * @LastEditTime : 2025-08-18 19:07:47
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/scripts/tools/consoleLogHook.ts
  * @Description  : 日志钩子
@@ -24,6 +24,12 @@ const tokenStringPatterns = [
   /\b(eyJ[A-Za-z0-9\-_]+)\b/g
 ];
 
+/**
+ * 隐藏令牌中的敏感内容。
+ *
+ * @param str - 待处理的字符串。
+ * @returns 处理后的字符串。
+ */
 const maskToken = (str: string): string => {
   if (typeof str !== 'string' || str.length < 8) {
     return str;
@@ -32,6 +38,12 @@ const maskToken = (str: string): string => {
   return str.replace(/^([A-Za-z0-9\-_+/=]{4})[A-Za-z0-9\-_+/=]+([A-Za-z0-9\-_+/=]{4})$/, '$1***$2');
 };
 
+/**
+ * 递归处理对象中的敏感字段。
+ *
+ * @param obj - 待处理的对象。
+ * @returns 处理结果。
+ */
 const maskObject = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(maskObject);
@@ -52,6 +64,12 @@ const maskObject = (obj: any): any => {
   return obj;
 };
 
+/**
+ * 对字符串中的令牌信息脱敏。
+ *
+ * @param str - 待处理的字符串。
+ * @returns 处理后的字符串。
+ */
 const maskString = (str: string): string => {
   let masked = str;
   for (const pattern of tokenStringPatterns) {
@@ -72,6 +90,12 @@ const maskString = (str: string): string => {
   return masked;
 };
 
+/**
+ * 对日志参数中的敏感信息脱敏。
+ *
+ * @param args - 传递给目标操作的参数列表。
+ * @returns 处理后的数据列表。
+ */
 const maskArgs = (args: any[]): any[] => {
   return args.map((arg) => {
     if (typeof arg === 'string') {
@@ -83,6 +107,9 @@ const maskArgs = (args: any[]): any[] => {
   });
 };
 
+/**
+ * 挂接控制台日志并对敏感字段脱敏。
+ */
 const consoleLogHook = () => {
   const originalLog = console.log;
   window.__allLogs = window.__allLogs || [];

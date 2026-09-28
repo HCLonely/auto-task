@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/website/browser.ts
+ * @Description  : 网站任务模块的浏览器入口
+ */
+
 /** Website API and shared project state exposed through userscript @require. */
 export * from './index';
 export * as options from './options';

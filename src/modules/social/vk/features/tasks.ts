@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/vk/features/tasks.ts
+ * @Description  : VK 批量任务执行与撤销
+ */
+
 import type { Context } from '../context';
 import type { SocialTaskDetailResult, SocialTaskResult, TaskOptions } from '../types';
 import { getTarget, normalizeLink } from '../utils/targets';
@@ -6,6 +15,14 @@ import { doGroup, undoGroup } from './groups';
 import { doLikeWall, undoLikeWall } from './likes';
 import { deleteWall, sendWall } from './reposts';
 
+/**
+ * 执行单项任务操作。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @param doTask - 是否执行任务；为 false 时执行撤销操作。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 function executeOne(ctx: Context, name: string, doTask: boolean): Promise<boolean> {
   return ctx.run(doTask ? 'task.do' : 'task.undo', name, false, async (ctx) => {
     if (ctx.state.disposed) {
@@ -28,6 +45,16 @@ function executeOne(ctx: Context, name: string, doTask: boolean): Promise<boolea
   });
 }
 
+/**
+ * 按选项调度批量任务并记录每项结果。
+ *
+ * @remarks
+ * 解构参数包含：nameLinks（对应字段值）。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param action - 待执行的动作。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 function executeTasks(ctx: Context, { nameLinks = [] }: TaskOptions, action: 'do' | 'undo'): Promise<SocialTaskResult> {
   const doTask = action === 'do';
   return ctx.run<SocialTaskResult>(doTask ? 'tasks.do' : 'tasks.undo', undefined, false, async (ctx) => {
@@ -76,9 +103,23 @@ function executeTasks(ctx: Context, { nameLinks = [] }: TaskOptions, action: 'do
   });
 }
 
+/**
+ * 执行所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function doTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'do');
 }
+/**
+ * 撤销所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回包含各任务执行情况的汇总结果。
+ */
 export function undoTasks(ctx: Context, options: TaskOptions = {}): Promise<SocialTaskResult> {
   return executeTasks(ctx, options, 'undo');
 }

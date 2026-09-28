@@ -1,10 +1,10 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-11-08 14:37:33
- * @LastEditTime : 2025-08-18 19:06:27
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/modules/website/Indiedb.ts
- * @Description  : https://www.indiedb.com/giveaways
+ * @Description  : Indiedb 网站任务处理（https://www.indiedb.com/giveaways）
  */
 
 import { showDialog } from '../../scripts/ui/dialog';
@@ -16,50 +16,24 @@ import httpRequest from '../../scripts/tools/httpRequest';
 import { globalOptions } from '../../scripts/globalOptions';
 import { debug } from '../../scripts/tools/debug';
 
+/**
+ * 提取 URL 路径。
+ *
+ * @param value - 待处理的值；可省略。
+ * @returns 处理后的字符串。
+ */
 declare function urlPath(value?: string): string
 
 /**
  * 表示 IndieDB 网站的操作类。
  *
- * @class Indiedb
- * @description
+ * @remarks
  * 该类提供了与 IndieDB 网站交互的功能，包括检查用户登录状态、执行任务和加入抽奖等操作。
  *
- * @property {string} name - 类的名称。
- * @property {Array<string>} buttons - 可用的按钮列表。
+ * - `name`（`string`）：类的名称。
  *
- * @method static test - 检查当前域名是否为 IndieDB 网站。
- * @returns {boolean} 如果当前域名为 'www.indiedb.com'，则返回 true；否则返回 false。
+ * - `buttons`（`Array<string>`）：可用的按钮列表。
  *
- * @method after - 页面加载后的异步方法，检查用户登录状态和剩余密钥状态。
- * @returns {Promise<void>} 无返回值。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @method doTask - 执行任务的异步方法。
- * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #join - 加入抽奖的私有异步方法。
- * @returns {Promise<boolean>} 如果成功加入抽奖，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #do - 执行任务的私有异步方法。
- * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLogin - 检查用户是否已登录的私有方法。
- * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @private
- * @method #checkLeftKey - 检查剩余密钥的私有异步方法。
- * @returns {Promise<boolean>} 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false。
- * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
- *
- * @description
  * 该方法按以下顺序执行：
  * 1. 首先检查全局选项中是否启用了检查剩余密钥的功能，如果未启用直接返回 true。
  * 2. 检查页面中是否存在"下次"或"抽奖已关闭"的按钮，如果不存在直接返回 true。
@@ -76,11 +50,11 @@ class Indiedb {
   /**
    * 检查当前域名是否为 IndieDB 网站的静态方法
    *
-   * @returns {boolean} 如果当前域名为 'www.indiedb.com'，则返回 true；否则返回 false。
-   *
-   * @description
+   * @remarks
    * 该方法通过比较当前窗口的域名来判断是否为 IndieDB 网站。
    * 如果域名匹配，则返回 true；否则返回 false。
+   *
+   * @returns 如果当前域名为 'www.indiedb.com'，则返回 true；否则返回 false。
    */
   static test(): boolean {
     const { host } = window.location;
@@ -95,13 +69,11 @@ class Indiedb {
   /**
    * 页面加载后的异步方法
    *
-   * @returns {Promise<void>} 无返回值。
-   *
-   * @throws {Error} 如果在处理过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先检查用户是否已登录，如果未登录，则记录警告信息。
    * 然后检查剩余密钥的状态，如果检查失败，则记录相应的警告信息。
+   *
+   * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
@@ -125,14 +97,14 @@ class Indiedb {
   /**
    * 执行任务的异步方法
    *
-   * @returns {Promise<boolean>} 如果任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先调用私有方法 `#join` 来加入任务。
    * 如果加入失败，则返回 false。
    * 如果成功加入，则调用私有方法 `#do` 执行任务并返回其结果。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果任务成功执行，则返回 true；否则返回 false。
    */
   async doTask(): Promise<boolean> {
     try {
@@ -154,11 +126,7 @@ class Indiedb {
   /**
    * 加入抽奖的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果成功加入抽奖，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在加入过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查用户是否已登录，如果未登录，则记录错误信息并返回 false。
    * 然后检查当前按钮是否为"加入抽奖"按钮。
    * 如果是，则发送 POST 请求以加入抽奖。
@@ -166,6 +134,10 @@ class Indiedb {
    * 如果请求失败或返回错误信息，则记录相应的错误信息并返回 false。
    * 如果按钮文本为"成功"，则直接返回 true。
    * 如果按钮文本不符合预期，则记录警告信息并返回 false。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果成功加入抽奖，则返回 true；否则返回 false。
    */
   async #join(): Promise<boolean> {
     try {
@@ -260,6 +232,14 @@ class Indiedb {
     }
   }
 
+  /**
+   * 执行后续的活动参与请求。
+   *
+   * @remarks
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+   */
   async #join2(): Promise<boolean> {
     try {
       debug('开始备用加入方法');
@@ -296,17 +276,17 @@ class Indiedb {
   /**
    * 执行任务的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果所有任务成功执行，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在执行过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法首先从页面中的脚本标签中提取任务ID。
    * 如果成功提取到ID，则遍历已加入的抽奖任务，并对每个任务执行相应的操作。
    * 根据任务的类型（如 Facebook、Twitter、邮件订阅等），发送相应的 AJAX 请求。
    * 如果请求成功且返回状态为成功，则更新任务的状态并记录成功信息。
    * 如果请求失败，则记录错误信息。
    * 最后，等待所有任务完成并返回结果。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果所有任务成功执行，则返回 true；否则返回 false。
    */
   async #do(): Promise<boolean> {
     try {
@@ -396,18 +376,20 @@ class Indiedb {
   /**
    * 处理社交媒体相关的任务
    *
-   * @param {string} text - 任务类型，可能是 'facebookpromo'、'twitterpromo' 或 'visitpromo'
-   * @param {string} id - 任务的唯一标识符
-   * @param {any} status - 用于显示任务状态的日志对象
-   * @param {JQuery<HTMLElement>} promo - 任务对应的 DOM 元素的 jQuery 对象
-   * @returns {Promise<boolean>} 始终返回 true，表示任务已处理（无论成功与否）
-   *
-   * @description
+   * @remarks
    * 该方法通过 AJAX 请求处理社交媒体相关的任务：
    * 1. 发送 POST 请求到对应的任务 URL
    * 2. 如果请求成功且返回成功状态，更新按钮状态并显示成功信息
    * 3. 如果请求失败或返回失败状态，显示错误信息
    * 4. 无论成功与否，都会返回 true 表示任务已处理
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param text - 任务类型，可能是 'facebookpromo'、'twitterpromo' 或 'visitpromo'
+   * @param id - 任务的唯一标识符
+   * @param status - 用于显示任务状态的日志对象
+   * @param promo - 任务对应的 DOM 元素的 jQuery 对象
+   * @returns 始终返回 true，表示任务已处理（无论成功与否）
    */
   async #handleSocialPromo(text: string, id: string, status: any, promo: JQuery<HTMLElement>): Promise<boolean> {
     try {
@@ -424,6 +406,13 @@ class Indiedb {
           data: {
             ajax: 't'
           },
+          /**
+           * 记录错误状态。
+           *
+           * @param response - 请求响应数据。
+           * @param error - 捕获的异常或失败数据。
+           * @param exception - 捕获的异常。
+           */
           error(response, error, exception) {
             debug('请求失败', {
               response,
@@ -440,6 +429,11 @@ class Indiedb {
             status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
           },
+          /**
+           * 记录操作成功状态。
+           *
+           * @param response - 请求响应数据。
+           */
           success(response) {
             if (response.success) {
               debug('任务完成', {
@@ -471,17 +465,19 @@ class Indiedb {
   /**
    * 处理邮件订阅相关的任务
    *
-   * @param {string} id - 任务的唯一标识符
-   * @param {any} status - 用于显示任务状态的日志对象
-   * @param {JQuery<HTMLElement>} promo - 任务对应的 DOM 元素的 jQuery 对象
-   * @returns {Promise<boolean>} 始终返回 true，表示任务已处理（无论成功与否）
-   *
-   * @description
+   * @remarks
    * 该方法通过 AJAX 请求处理邮件订阅任务：
    * 1. 发送 POST 请求到邮件订阅的 URL，包含必要的 emailsystoggle 参数
    * 2. 如果请求成功且返回成功状态，切换按钮状态并显示成功信息
    * 3. 如果请求失败或返回失败状态，显示错误信息
    * 4. 无论成功与否，都会返回 true 表示任务已处理
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param id - 任务的唯一标识符
+   * @param status - 用于显示任务状态的日志对象
+   * @param promo - 任务对应的 DOM 元素的 jQuery 对象
+   * @returns 始终返回 true，表示任务已处理（无论成功与否）
    */
   async #handleEmailPromo(id: string, status: any, promo: JQuery<HTMLElement>): Promise<boolean> {
     try {
@@ -498,6 +494,13 @@ class Indiedb {
             ajax: 't',
             emailsystoggle: 4
           },
+          /**
+           * 记录错误状态。
+           *
+           * @param response - 请求响应数据。
+           * @param error - 捕获的异常或失败数据。
+           * @param exception - 捕获的异常。
+           */
           error(response, error, exception) {
             debug('请求失败', {
               response,
@@ -514,6 +517,11 @@ class Indiedb {
             status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
           },
+          /**
+           * 记录操作成功状态。
+           *
+           * @param response - 请求响应数据。
+           */
           success(response) {
             if (response.success) {
               debug('任务完成', {
@@ -545,11 +553,7 @@ class Indiedb {
   /**
    * 处理关注相关的任务
    *
-   * @param {JQuery<HTMLElement>} promo - 任务对应的 DOM 元素的 jQuery 对象
-   * @param {any} status - 用于显示任务状态的日志对象
-   * @returns {Promise<boolean>} 始终返回 true，表示任务已处理（无论成功与否）
-   *
-   * @description
+   * @remarks
    * 该方法通过 AJAX 请求处理关注类任务：
    * 1. 首先验证任务链接的有效性
    * 2. 从 URL 中提取查询参数并添加必要的 ajax 参数
@@ -557,6 +561,12 @@ class Indiedb {
    * 4. 如果请求成功且返回成功状态，切换按钮状态并显示成功信息
    * 5. 如果在任何步骤中发生错误，显示相应的错误信息
    * 6. 无论成功与否，都会返回 true 表示任务已处理
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param promo - 任务对应的 DOM 元素的 jQuery 对象
+   * @param status - 用于显示任务状态的日志对象
+   * @returns 始终返回 true，表示任务已处理（无论成功与否）
    */
   async #handleWatchingPromo(promo: JQuery<HTMLElement>, status: any): Promise<boolean> {
     try {
@@ -590,6 +600,13 @@ class Indiedb {
           timeout: 60000,
           dataType: 'json',
           data,
+          /**
+           * 记录错误状态。
+           *
+           * @param response - 请求响应数据。
+           * @param error - 捕获的异常或失败数据。
+           * @param exception - 捕获的异常。
+           */
           error(response, error, exception) {
             debug('请求失败', {
               response,
@@ -606,6 +623,11 @@ class Indiedb {
             status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
           },
+          /**
+           * 记录操作成功状态。
+           *
+           * @param response - 请求响应数据。
+           */
           success(response) {
             if (response.success) {
               debug('任务完成', {
@@ -637,17 +659,19 @@ class Indiedb {
   /**
    * 处理默认类型的任务
    *
-   * @param {JQuery<HTMLElement>} promo - 任务对应的 DOM 元素的 jQuery 对象
-   * @param {any} status - 用于显示任务状态的日志对象
-   * @returns {Promise<boolean>} 始终返回 true，表示任务已处理（无论成功与否）
-   *
-   * @description
+   * @remarks
    * 该方法通过 AJAX 请求处理不属于其他特定类型的任务：
    * 1. 首先验证任务链接的有效性
    * 2. 发送带有 ajax 参数的 POST 请求到任务 URL
    * 3. 如果请求成功且返回成功状态，切换按钮状态并显示成功信息
    * 4. 如果在任何步骤中发生错误，显示相应的错误信息
    * 5. 无论成功与否，都会返回 true 表示任务已处理
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @param promo - 任务对应的 DOM 元素的 jQuery 对象
+   * @param status - 用于显示任务状态的日志对象
+   * @returns 始终返回 true，表示任务已处理（无论成功与否）
    */
   async #handleDefaultPromo(promo: JQuery<HTMLElement>, status: any): Promise<boolean> {
     try {
@@ -672,6 +696,13 @@ class Indiedb {
           data: {
             ajax: 't'
           },
+          /**
+           * 记录错误状态。
+           *
+           * @param response - 请求响应数据。
+           * @param error - 捕获的异常或失败数据。
+           * @param exception - 捕获的异常。
+           */
           error(response, error, exception) {
             debug('请求失败', {
               response,
@@ -688,6 +719,11 @@ class Indiedb {
             status.error('Error:An error has occurred performing the action requested. Please try again shortly.');
             resolve(true);
           },
+          /**
+           * 记录操作成功状态。
+           *
+           * @param response - 请求响应数据。
+           */
           success(response) {
             if (response.success) {
               debug('任务完成', {
@@ -719,14 +755,14 @@ class Indiedb {
   /**
    * 检查用户是否已登录的私有方法
    *
-   * @returns {boolean} 如果用户已登录，则返回 true；否则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法检查全局选项中是否启用了登录检查功能。
    * 如果启用且页面中存在"注册以加入"按钮，则重定向用户到登录页面。
    * 如果没有找到登录链接，则返回 true，表示用户已登录或不需要登录。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果用户已登录，则返回 true；否则返回 false。
    */
   #checkLogin(): boolean {
     try {
@@ -753,17 +789,17 @@ class Indiedb {
   /**
    * 检查剩余密钥的私有异步方法
    *
-   * @returns {Promise<boolean>} 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false。
-   *
-   * @throws {Error} 如果在检查过程中发生错误，将抛出错误。
-   *
-   * @description
+   * @remarks
    * 该方法按以下顺序执行：
    * 1. 首先检查全局选项中是否启用了检查剩余密钥的功能，如果未启用直接返回 true。
    * 2. 检查页面中是否存在"下次"或"抽奖已关闭"的按钮，如果不存在直接返回 true。
    * 3. 如果存在结束按钮，则弹出警告框提示用户抽奖已结束。
    * 4. 用户在警告框中选择确认时，将关闭当前窗口。
    * 5. 无论用户选择确认还是取消，最终都返回 true（除非发生错误）。
+   *
+   * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
+   *
+   * @returns 如果检查成功或不需要检查，则返回 true；如果发生错误，则返回 false。
    */
   async #checkLeftKey(): Promise<boolean> {
     try {

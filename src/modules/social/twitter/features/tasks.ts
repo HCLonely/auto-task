@@ -1,9 +1,28 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitter/features/tasks.ts
+ * @Description  : Twitter 批量任务执行与撤销
+ */
+
 import type { Context } from '../context';
 import type { TaskOptions, TwitterTaskDetailResult, TwitterTaskResult } from '../types';
 import { tweetFromLink, userFromLink } from '../utils/links';
 import { doRetweet, undoRetweet } from './retweets';
 import { doUser, undoUser } from './users';
 
+/**
+ * 按选项调度批量任务并记录每项结果。
+ *
+ * @remarks
+ * 解构参数包含：userLinks（对应字段值）、retweetLinks（对应字段值）。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param action - 待执行的动作。
+ * @returns Promise，完成后返回Twitter 任务执行汇总。
+ */
 function executeTasks(ctx: Context, {
   userLinks = [], retweetLinks = []
 }: TaskOptions, action: 'do' | 'undo'): Promise<TwitterTaskResult> {
@@ -50,9 +69,23 @@ function executeTasks(ctx: Context, {
   });
 }
 
+/**
+ * 执行所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回Twitter 任务执行汇总。
+ */
 export function doTasks(ctx: Context, options: TaskOptions = {}): Promise<TwitterTaskResult> {
   return executeTasks(ctx, options, 'do');
 }
+/**
+ * 撤销所选社交任务并汇总结果。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param options - 本次操作的配置选项；默认值为 `{}`。
+ * @returns Promise，完成后返回Twitter 任务执行汇总。
+ */
 export function undoTasks(ctx: Context, options: TaskOptions = {}): Promise<TwitterTaskResult> {
   return executeTasks(ctx, options, 'undo');
 }

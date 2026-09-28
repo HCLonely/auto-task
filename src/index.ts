@@ -1,7 +1,7 @@
 /*
  * @Author       : HCLonely
  * @Date         : 2021-10-26 15:44:54
- * @LastEditTime : 2026-04-28 09:14:01
+ * @LastEditTime : 2026-09-28 17:38:06
  * @LastEditors  : HCLonely
  * @FilePath     : /auto-task/src/index.ts
  * @Description  : 入口文件
@@ -48,6 +48,11 @@ window.DEBUG = !!globalOptions.other?.debug;
 window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'function';
 
 // 初始化UI元素
+/**
+ * 初始化脚本界面。
+ *
+ * @param website - 网站任务实例。
+ */
 const initializeUI = (website: Website): void => {
   debug('初始化UI元素', {
     website: website.name
@@ -114,6 +119,9 @@ const initializeUI = (website: Website): void => {
 
   const toggleLogElement = $(`<p><a id="toggle-log" class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self" data-status="${globalOptions.other.defaultShowLog ? 'show' : 'hide'}">${globalOptions.other.defaultShowLog ? __('hideLog') : __('showLog')}</a></p>`);
 
+  /**
+   * 切换日志显示状态。
+   */
   const toggleLog = () => {
     const $toggleLog = $('#toggle-log');
     const status = $toggleLog.attr('data-status');
@@ -139,6 +147,11 @@ const initializeUI = (website: Website): void => {
 };
 
 // 初始化热键
+/**
+ * 初始化脚本快捷键。
+ *
+ * @param website - 网站任务实例。
+ */
 const initializeHotkeys = (website: Website): void => {
   debug('初始化热键', {
     website: website.name
@@ -171,6 +184,11 @@ const initializeHotkeys = (website: Website): void => {
 };
 
 // 检查Steam ASF状态
+/**
+ * 检查 Steam ASF 配置与运行状态。
+ *
+ * @returns 在操作完成后兑现的 Promise。
+ */
 const checkSteamASFStatus = async (): Promise<void> => {
   debug('检查Steam ASF状态');
   if (!globalOptions.ASF.AsfEnabled || !globalOptions.ASF.AsfIpcUrl || !globalOptions.ASF.AsfIpcPassword) {
@@ -227,6 +245,9 @@ const checkSteamASFStatus = async (): Promise<void> => {
 };
 
 // 检查版本和通知
+/**
+ * 检查脚本版本并显示更新提示。
+ */
 const checkVersionAndNotice = (): void => {
   debug('检查版本和通知');
   const { scriptHandler } = GM_info;
@@ -271,6 +292,11 @@ const checkVersionAndNotice = (): void => {
   }
 };
 
+/**
+ * 加载网站任务脚本并初始化运行环境。
+ *
+ * @returns 在操作完成后兑现的 Promise。
+ */
 const loadScript = async (): Promise<void> => {
   debug('主程序入口 loadScript 开始');
   let website: Website | undefined;
@@ -328,6 +354,11 @@ const loadScript = async (): Promise<void> => {
 };
 
 // Authentication replies must use the same GM namespace as the requesting module.
+/**
+ * 启动脚本并安排初始化流程。
+ *
+ * @returns 在操作完成后兑现的 Promise。
+ */
 const bootstrap = async (): Promise<void> => {
   try {
     if (await handleSteamAuthPage({

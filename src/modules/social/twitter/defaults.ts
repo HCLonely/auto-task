@@ -1,3 +1,12 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:14:18
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitter/defaults.ts
+ * @Description  : Twitter 默认配置
+ */
+
 import type { ApiConfig } from './types';
 
 /** Endpoint identifiers and browser bearer copied from the original implementation. */

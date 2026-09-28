@@ -1,7 +1,23 @@
+/*
+ * @Author       : HCLonely
+ * @Date         : 2026-09-28 17:09:58
+ * @LastEditTime : 2026-09-28 17:38:07
+ * @LastEditors  : HCLonely
+ * @FilePath     : /auto-task/src/modules/social/twitch/features/channel.ts
+ * @Description  : Twitch 频道查询、关注与取消关注
+ */
+
 import type { Context } from '../context';
 import { object, query } from '../graphql';
 import { channels } from '../storage';
 
+/**
+ * 查询频道标识。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回处理后的字符串；未取得有效结果时返回 false。
+ */
 export function getChannelId(ctx: Context, name: string): Promise<string | false> {
   return ctx.run('channel.resolve', name, async (ctx) => {
     try {
@@ -30,6 +46,14 @@ export function getChannelId(ctx: Context, name: string): Promise<string | false
   }, Boolean);
 }
 
+/**
+ * 根据操作方向关注频道或取消关注频道。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @param doTask - 是否执行任务；为 false 时执行撤销操作。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 function executeChannel(ctx: Context, name: string, doTask: boolean): Promise<boolean> {
   return ctx.run(doTask ? 'channel.follow' : 'channel.unfollow', name, async (ctx) => {
     try {
@@ -77,9 +101,23 @@ function executeChannel(ctx: Context, name: string, doTask: boolean): Promise<bo
   }, Boolean);
 }
 
+/**
+ * 关注频道。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function doChannel(ctx: Context, name: string): Promise<boolean> {
   return executeChannel(ctx, name, true);
 }
+/**
+ * 取消关注频道。
+ *
+ * @param ctx - 当前操作上下文，包含授权、存储和状态事件。
+ * @param name - 目标名称。
+ * @returns Promise，完成后返回操作结果；成功或无需重复处理时为 true，失败时为 false。
+ */
 export function undoChannel(ctx: Context, name: string): Promise<boolean> {
   return executeChannel(ctx, name, false);
 }

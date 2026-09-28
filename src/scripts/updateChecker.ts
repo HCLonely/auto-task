@@ -47,11 +47,18 @@ const UPDATE_LINKS: Record<string, string> = {
  */
 const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJson | false> => {
   try {
-    debug('开始检查更新', { updateLink, auto });
+    debug('开始检查更新', {
+      updateLink,
+      auto
+    });
     const checkUrl = `${updateLink}package.json?time=${Date.now()}`;
-    debug('构建检查URL', { checkUrl });
+    debug('构建检查URL', {
+      checkUrl
+    });
 
-    const { result, statusText, status, data } = await httpRequest({
+    const {
+      result, statusText, status, data
+    } = await httpRequest({
       url: checkUrl,
       responseType: 'json',
       method: 'GET',
@@ -59,7 +66,9 @@ const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJs
     });
 
     if (result === 'Success' && data?.response?.version) {
-      debug('成功获取更新信息', { version: data.response.version });
+      debug('成功获取更新信息', {
+        version: data.response.version
+      });
       return data.response;
     }
 
@@ -67,14 +76,22 @@ const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJs
       const errorMessage = data?.response?.version ?
         `${__('checkUpdateFailed')}[${data?.statusText}(${data?.status})]` :
         `${__('checkUpdateFailed')}[${result}:${statusText}(${status})]`;
-      debug('检查更新失败', { errorMessage });
+      debug('检查更新失败', {
+        errorMessage
+      });
       echoLog({}).error(errorMessage);
     } else {
-      debug('自动检查更新失败', { result, statusText, status });
+      debug('自动检查更新失败', {
+        result,
+        statusText,
+        status
+      });
     }
     return false;
   } catch (error) {
-    debug('检查更新发生错误', { error });
+    debug('检查更新发生错误', {
+      error
+    });
     throwError(error as Error, 'checkUpdate');
     return false;
   }
@@ -89,26 +106,42 @@ const checkUpdate = async (updateLink: string, auto: boolean): Promise<PackageJs
  */
 const hasNewVersion = (currentVersion: string, remoteVersion: string): boolean => {
   try {
-    debug('开始比较版本号', { currentVersion, remoteVersion });
+    debug('开始比较版本号', {
+      currentVersion,
+      remoteVersion
+    });
     const [currentRealVersion] = currentVersion.split('-');
     const [remoteRealVersion, isPreview] = remoteVersion.split('-');
 
     if (isPreview && !globalOptions.other.receivePreview) {
-      debug('不接收预览版本', { isPreview });
+      debug('不接收预览版本', {
+        isPreview
+      });
       return false;
     }
 
     const currentVersionParts = currentRealVersion.split('.').map(Number);
     const remoteVersionParts = remoteRealVersion.split('.').map(Number);
-    debug('版本号解析', { currentVersionParts, remoteVersionParts });
+    debug('版本号解析', {
+      currentVersionParts,
+      remoteVersionParts
+    });
 
     for (let i = 0; i < 3; i++) {
       if (remoteVersionParts[i] > currentVersionParts[i]) {
-        debug('发现新版本', { position: i, current: currentVersion, remote: remoteVersion });
+        debug('发现新版本', {
+          position: i,
+          current: currentVersion,
+          remote: remoteVersion
+        });
         return true;
       }
       if (remoteVersionParts[i] < currentVersionParts[i]) {
-        debug('远程版本较旧', { position: i, current: currentVersion, remote: remoteVersion });
+        debug('远程版本较旧', {
+          position: i,
+          current: currentVersion,
+          remote: remoteVersion
+        });
         return false;
       }
     }
@@ -116,7 +149,9 @@ const hasNewVersion = (currentVersion: string, remoteVersion: string): boolean =
     debug('版本号相同');
     return false;
   } catch (error) {
-    debug('比较版本号时发生错误', { error });
+    debug('比较版本号时发生错误', {
+      error
+    });
     throwError(error as Error, 'compareVersion');
     return false;
   }
@@ -129,10 +164,15 @@ const hasNewVersion = (currentVersion: string, remoteVersion: string): boolean =
  * @description 根据提供的更新源标识符返回对应的更新链接，支持不区分大小写的匹配
  */
 const getUpdateLink = (updateSource: string): string => {
-  debug('获取更新链接', { updateSource });
+  debug('获取更新链接', {
+    updateSource
+  });
   const source = updateSource.toLowerCase();
   const link = UPDATE_LINKS[source as keyof typeof UPDATE_LINKS] || UPDATE_LINKS.github;
-  debug('选择的更新链接', { source, link });
+  debug('选择的更新链接', {
+    source,
+    link
+  });
   return link;
 };
 
@@ -144,16 +184,25 @@ const getUpdateLink = (updateSource: string): string => {
  * @description 当检测到新版本时，在日志中显示新版本通知和更新内容列表
  */
 const showUpdateInfo = (packageData: PackageJson, currentVersion: string, updateLink: string): void => {
-  debug('准备显示更新信息', { currentVersion, newVersion: packageData.version });
+  debug('准备显示更新信息', {
+    currentVersion,
+    newVersion: packageData.version
+  });
   if (hasNewVersion(currentVersion, packageData.version)) {
     const scriptUrl = `${updateLink}dist/${GM_info.script.name}.user.js`;
-    debug('发现新版本，显示更新通知', { scriptUrl });
+    debug('发现新版本，显示更新通知', {
+      scriptUrl
+    });
     echoLog({
       html: `<li><font>${__('newVersionNotice', packageData.version, scriptUrl)}</font></li>`
     });
 
-    const changeList = packageData.change?.map((change) => `<li>${change}</li>`).join('') || '';
-    debug('显示更新日志', { changeListLength: packageData.change?.length });
+    const changeList = packageData.change?.map((change) => {
+      return `<li>${change}</li>`;
+    }).join('') || '';
+    debug('显示更新日志', {
+      changeListLength: packageData.change?.length
+    });
     echoLog({
       html: `<li>${__('updateText', packageData.version)}</li><ol class="update-text">${changeList}<li>${__('updateHistory')}</li></ol>`
     });
@@ -175,21 +224,30 @@ const updateChecker = async (): Promise<void> => {
     debug('开始检查更新流程');
     const currentVersion = GM_info.script.version;
     const updateSource = globalOptions.other.autoUpdateSource;
-    debug('当前配置', { currentVersion, updateSource });
+    debug('当前配置', {
+      currentVersion,
+      updateSource
+    });
 
     let packageData: PackageJson | false = false;
 
     if (['github', 'jsdelivr', 'standby'].includes(updateSource.toLowerCase())) {
-      debug('使用指定的更新源', { updateSource });
+      debug('使用指定的更新源', {
+        updateSource
+      });
       const updateLink = getUpdateLink(updateSource);
       packageData = await checkUpdate(updateLink, false);
     } else {
       debug('按优先级尝试不同的更新源');
       for (const source of ['github', 'jsdelivr', 'standby'] as const) {
-        debug('尝试更新源', { source });
+        debug('尝试更新源', {
+          source
+        });
         packageData = await checkUpdate(UPDATE_LINKS[source], true);
         if (packageData) {
-          debug('成功获取更新信息', { source });
+          debug('成功获取更新信息', {
+            source
+          });
           break;
         }
       }
@@ -203,7 +261,9 @@ const updateChecker = async (): Promise<void> => {
 
     showUpdateInfo(packageData, currentVersion, getUpdateLink(updateSource));
   } catch (error) {
-    debug('更新检查过程发生错误', { error });
+    debug('更新检查过程发生错误', {
+      error
+    });
     throwError(error as Error, 'updateChecker');
   }
 };

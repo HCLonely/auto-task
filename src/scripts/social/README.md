@@ -1,6 +1,6 @@
 # 项目社交模块接入
 
-`src/scripts/social/` 是项目兼容层，平台请求与任务实现位于根目录 `modules/social/`。
+`src/scripts/social/` 是项目兼容层，平台请求与任务实现位于`src/modules/social/`。
 网站分派器继续使用 `new Steam()`、`new Vk()` 等原有入口及 `init()` / `do()` / `undo()`；
 返回值仍为布尔值或包含 `success`、逐链接 `results` 的对象。
 

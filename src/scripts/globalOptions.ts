@@ -207,10 +207,14 @@ const userDefinedGlobalOptions = GM_getValue<Partial<GlobalOptions>>('globalOpti
  */
 const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
   try {
-    const result = { ...target };
+    const result = {
+      ...target
+    };
 
     for (const [key, value] of Object.entries(source)) {
-      if (!Object.hasOwn(target, key)) continue;
+      if (!Object.hasOwn(target, key)) {
+        continue;
+      }
       const targetValue = target[key as keyof T];
 
       if (isObject(value) && isObject(targetValue)) {
@@ -238,7 +242,9 @@ const deepMerge = <T extends object>(target: T, source: Partial<T>): T => {
  * @param {unknown} value - 要检查的值，可以是任意类型
  * @returns {boolean} 如果值是对象且不是数组或 null，返回 true；否则返回 false
  */
-const isObject = (value: unknown): value is object => value !== null && typeof value === 'object' && !Array.isArray(value);
+const isObject = (value: unknown): value is object => {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+};
 
 /**
  * 全局配置实例

@@ -57,7 +57,10 @@ class Debugger {
   private levelPriority: { [key in DebugLevel]: number };
 
   constructor(config: Partial<DebugConfig> = {}) {
-    this.config = { ...defaultConfig, ...config };
+    this.config = {
+      ...defaultConfig,
+      ...config
+    };
     this.levelPriority = {
       error: 0,
       warn: 1,
@@ -104,7 +107,9 @@ class Debugger {
    * 输出日志
    */
   private log(level: DebugLevel, message: string, ...args: unknown[]): void {
-    if (!this.shouldLog(level)) return;
+    if (!this.shouldLog(level)) {
+      return;
+    }
 
     const formattedMessage = this.formatMessage(level, message);
     const style = this.config.styles[level];
@@ -112,7 +117,11 @@ class Debugger {
     if (args.length > 0) {
       console.groupCollapsed('%c%s', style, formattedMessage);
       args.forEach((arg) => {
-        console.log(util.inspect(arg, { showHidden: true, depth: null, colors: false }));
+        console.log(util.inspect(arg, {
+          showHidden: true,
+          depth: null,
+          colors: false
+        }));
         // if (typeof arg === 'object' && arg !== null) {
         //   console.dir(arg);
         // } else {
@@ -167,7 +176,10 @@ class Debugger {
    * 更新调试配置
    */
   updateConfig(config: Partial<DebugConfig>): void {
-    this.config = { ...this.config, ...config };
+    this.config = {
+      ...this.config,
+      ...config
+    };
   }
 
   /**

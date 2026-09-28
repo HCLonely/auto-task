@@ -17,11 +17,10 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
-    "modules/**/*.ts"
+    "src/**/*.d.ts"
   ],
   "exclude": [
     "src/**/Instagram.ts",
-    "modules/**/tests/**"
+    "src/modules/**/tests/**"
   ]
 }

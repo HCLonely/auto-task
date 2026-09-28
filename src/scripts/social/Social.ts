@@ -8,11 +8,11 @@
  */
 
 import type { socialTasks, taskTypes } from './types';
-import type { SocialToggleDetailResult, SocialToggleResult } from '../../../modules/website/types';
+import type { SocialToggleDetailResult, SocialToggleResult } from '../../modules/website/types';
 import throwError from '../tools/throwError';
-import { getRealParams, setTaskResult } from '../../../modules/social/social/results';
-import { SocialAdapter } from '../../../modules/social/social/adapter';
-import type { SocialModule, TaskOptions } from '../../../modules/social/social/types';
+import { getRealParams, setTaskResult } from '../../modules/social/social/results';
+import { SocialAdapter } from '../../modules/social/social/adapter';
+import type { SocialModule, TaskOptions } from '../../modules/social/social/types';
 import { bindModuleStatus } from './moduleBridge';
 import { debug } from '../tools/debug';
 
@@ -101,10 +101,16 @@ abstract class Social {
     link2param: (link: string) => string | undefined
   ): Array<string> {
     try {
-      debug('开始获取实际参数', { name, linksCount: links.length, doTask });
+      debug('开始获取实际参数', {
+        name,
+        linksCount: links.length,
+        doTask
+      });
       return getRealParams(links, doTask, this.tasks[name] || [], link2param);
     } catch (error) {
-      debug('获取实际参数时发生错误', { error });
+      debug('获取实际参数时发生错误', {
+        error
+      });
       throwError(error as Error, 'Social.getRealParams');
       return [];
     }
@@ -120,23 +126,59 @@ export class ProjectSocial<C extends SocialModule & { tasks: object; whiteList: 
     super(client);
     this.unsubscribe = bindModuleStatus(client, platform);
   }
-  get tasks(): C['tasks'] { return this.client.tasks; }
-  set tasks(value: C['tasks']) { this.client.tasks = value; }
-  get whiteList(): C['tasks'] { return this.client.whiteList; }
-  set whiteList(value: C['tasks']) { this.client.whiteList = value; }
+  get tasks(): C['tasks'] {
+    return this.client.tasks;
+  }
+  set tasks(value: C['tasks']) {
+    this.client.tasks = value;
+  }
+  get whiteList(): C['tasks'] {
+    return this.client.whiteList;
+  }
+  set whiteList(value: C['tasks']) {
+    this.client.whiteList = value;
+  }
   async do(options: TaskOptions<C>): Promise<SocialToggleResult> {
     const result = await super.do(options);
-    if (typeof result === 'boolean') return result;
+    if (typeof result === 'boolean') {
+      return result;
+    }
     const results: Record<string, Record<string, boolean>> = {};
-    for (const [key, values] of Object.entries(result.results)) if (values) Object.defineProperty(results, key, { value: values, enumerable: true, writable: true, configurable: true });
-    return { success: result.success, results };
+    for (const [key, values] of Object.entries(result.results)) {
+      if (values) {
+        Object.defineProperty(results, key, {
+          value: values,
+          enumerable: true,
+          writable: true,
+          configurable: true
+        });
+      }
+    }
+    return {
+      success: result.success,
+      results
+    };
   }
   async undo(options: TaskOptions<C>): Promise<SocialToggleResult> {
     const result = await super.undo(options);
-    if (typeof result === 'boolean') return result;
+    if (typeof result === 'boolean') {
+      return result;
+    }
     const results: Record<string, Record<string, boolean>> = {};
-    for (const [key, values] of Object.entries(result.results)) if (values) Object.defineProperty(results, key, { value: values, enumerable: true, writable: true, configurable: true });
-    return { success: result.success, results };
+    for (const [key, values] of Object.entries(result.results)) {
+      if (values) {
+        Object.defineProperty(results, key, {
+          value: values,
+          enumerable: true,
+          writable: true,
+          configurable: true
+        });
+      }
+    }
+    return {
+      success: result.success,
+      results
+    };
   }
   dispose(): void {
     this.unsubscribe();

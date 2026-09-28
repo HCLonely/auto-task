@@ -37,12 +37,16 @@ type ShowType = 'page' | 'dialog';
  * @returns {Record<string, any>} 处理后的数据对象，键为表单项名称，值为表单项的值
  */
 const processFormData = (formData: FormDataItem[]): Record<string, any> => {
-  debug('开始处理表单数据', { formDataLength: formData.length });
+  debug('开始处理表单数据', {
+    formDataLength: formData.length
+  });
   const data: Record<string, any> = {};
   formData.forEach((value) => {
     data[value.name] = value.value;
   });
-  debug('表单数据处理完成', { processedData: data });
+  debug('表单数据处理完成', {
+    processedData: data
+  });
   return data;
 };
 
@@ -55,22 +59,36 @@ const processFormData = (formData: FormDataItem[]): Record<string, any> => {
 const updateGlobalOption = (element: HTMLElement, data: Record<string, any>): void => {
   const name = $(element).attr('name');
   if (!name) {
-    debug('元素缺少name属性', { element });
+    debug('元素缺少name属性', {
+      element
+    });
     return;
   }
 
-  debug('开始更新全局选项', { name });
+  debug('开始更新全局选项', {
+    name
+  });
   const keys = name.split('.');
   const value = data[name];
   const processedValue = value ? (value === 'on' ? true : value) : (value ?? false);
-  debug('处理选项值', { keys, originalValue: value, processedValue });
+  debug('处理选项值', {
+    keys,
+    originalValue: value,
+    processedValue
+  });
 
   if (keys.length === 3) {
     (globalOptions as any)[keys[0]][keys[1]][keys[2]] = processedValue;
-    debug('更新三级选项', { path: keys.join('.'), value: processedValue });
+    debug('更新三级选项', {
+      path: keys.join('.'),
+      value: processedValue
+    });
   } else if (keys.length === 2) {
     (globalOptions as any)[keys[0]][keys[1]] = processedValue;
-    debug('更新二级选项', { path: keys.join('.'), value: processedValue });
+    debug('更新二级选项', {
+      path: keys.join('.'),
+      value: processedValue
+    });
   }
 };
 
@@ -90,7 +108,12 @@ const generateFormRow = (
   isFirstOption: boolean,
   totalOptions: number
 ): string => {
-  debug('开始生成表单行', { type, option, isFirstOption, totalOptions });
+  debug('开始生成表单行', {
+    type,
+    option,
+    isFirstOption,
+    totalOptions
+  });
   const backgroundColor = `${stringToColour(type)}44`;
   const headerBackgroundColor = `${stringToColour(type)}66`;
 
@@ -100,7 +123,11 @@ const generateFormRow = (
       '';
 
     if (typeof data === 'boolean') {
-      debug('生成布尔类型选项行', { type, option, value: data });
+      debug('生成布尔类型选项行', {
+        type,
+        option,
+        value: data
+      });
       return `
         <tr style="background-color: ${backgroundColor}">
           ${header}
@@ -114,7 +141,11 @@ const generateFormRow = (
         </tr>`;
     }
 
-    debug('生成文本类型选项行', { type, option, value: data });
+    debug('生成文本类型选项行', {
+      type,
+      option,
+      value: data
+    });
     return `
       <tr style="background-color: ${backgroundColor}">
         ${header}
@@ -125,8 +156,13 @@ const generateFormRow = (
       </tr>`;
   }
 
-  debug('生成社交媒体选项行', { type, option, dataKeys: Object.keys(data) });
-  return Object.entries(data as Record<string, boolean>).map(([socialType, value]) => `
+  debug('生成社交媒体选项行', {
+    type,
+    option,
+    dataKeys: Object.keys(data)
+  });
+  return Object.entries(data as Record<string, boolean>).map(([socialType, value]) => {
+    return `
     <tr style="background-color: ${stringToColour(option)}66">
       ${isFirstOption ? `<th rowspan="${totalOptions}" style="background-color: ${headerBackgroundColor}">${__(type)}</th>` : ''}
       <td>${option}.${__(socialType)}</td>
@@ -136,7 +172,8 @@ const generateFormRow = (
           <span><i></i></span>
         </label>
       </td>
-    </tr>`)
+    </tr>`;
+  })
     .join('');
 };
 
@@ -147,11 +184,16 @@ const generateFormRow = (
 const generateGlobalOptionsForm = (): string => {
   debug('开始生成全局选项表单');
   const formRows = Object.entries(globalOptions).map(([type, data1]) => {
-    debug('处理选项类型', { type, optionsCount: Object.keys(data1).length });
+    debug('处理选项类型', {
+      type,
+      optionsCount: Object.keys(data1).length
+    });
     return Object.entries(data1).map(([option, data2], index) => {
       const totalOptions = ['other', 'position', 'hotKey', 'ASF'].includes(type) ?
         Object.keys(data1).length :
-        Object.values(data1).reduce((acc: number, cur) => acc + Object.keys(cur as object).length, 0);
+        Object.values(data1).reduce((acc: number, cur) => {
+          return acc + Object.keys(cur as object).length;
+        }, 0);
 
       return generateFormRow(type, option, data2, index === 0, totalOptions);
     })
@@ -186,9 +228,13 @@ const saveData = (root: ParentNode = document): boolean => {
   try {
     debug('开始保存全局选项数据');
     const form = root.querySelector<HTMLFormElement>('#globalOptionsForm');
-    if (!form) throw new Error('Global options form not found');
+    if (!form) {
+      throw new Error('Global options form not found');
+    }
     const formData = $(form).serializeArray();
-    debug('获取表单数据', { formDataLength: formData.length });
+    debug('获取表单数据', {
+      formDataLength: formData.length
+    });
 
     const data = processFormData(formData);
 
@@ -206,7 +252,9 @@ const saveData = (root: ParentNode = document): boolean => {
     });
     return true;
   } catch (error) {
-    debug('保存全局选项时发生错误', { error });
+    debug('保存全局选项时发生错误', {
+      error
+    });
     throwError(error as Error, 'saveData');
     return false;
   }
@@ -219,7 +267,9 @@ const saveData = (root: ParentNode = document): boolean => {
  */
 const changeGlobalOptions = (showType: ShowType): void => {
   try {
-    debug('开始显示全局选项配置界面', { showType });
+    debug('开始显示全局选项配置界面', {
+      showType
+    });
     const formHtml = generateGlobalOptionsForm();
 
     if (showType === 'dialog') {
@@ -232,7 +282,9 @@ const changeGlobalOptions = (showType: ShowType): void => {
         showCancelButton: true,
         cancelButtonText: __('close'),
         preConfirm: ({ root }) => {
-          if (!saveData(root)) throw new Error(__('error'));
+          if (!saveData(root)) {
+            throw new Error(__('error'));
+          }
           return true;
         }
       }).then(({ isConfirmed }) => {
@@ -247,7 +299,9 @@ const changeGlobalOptions = (showType: ShowType): void => {
       $('body').append(`<h2>${__('globalOptions')}</h2>${formHtml}`);
     }
   } catch (error) {
-    debug('显示全局选项配置界面时发生错误', { error });
+    debug('显示全局选项配置界面时发生错误', {
+      error
+    });
     throwError(error as Error, 'changeGlobalOptions');
   }
 };

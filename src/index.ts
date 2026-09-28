@@ -7,15 +7,15 @@
  * @Description  : 入口文件
  */
 
-import type { Website, WebsiteClass, WebsiteOptions } from '../modules/website/types';
+import type { Website, WebsiteClass, WebsiteOptions } from './modules/website/types';
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
 import { showDialog } from './scripts/ui/dialog';
-import { handleSteamAuthPage } from '../modules/social/steam';
-import { handleTwitchAuthPage } from '../modules/social/twitch';
+import { handleSteamAuthPage } from './modules/social/steam';
+import { handleTwitchAuthPage } from './modules/social/twitch';
 import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
-import { Websites } from '../modules/website/index';
-import websiteOptions from '../modules/website/options';
+import { Websites } from './modules/website/index';
+import websiteOptions from './modules/website/options';
 import __ from './scripts/tools/i18n';
 import { changeGlobalOptions } from './scripts/globalOptionsEdit';
 import { bindHotkey } from './scripts/tools/hotkeys';
@@ -26,7 +26,7 @@ import { debug } from './scripts/tools/debug';
 // import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
 // import browser from 'browser-tool';
 // import { v4 as uuidv4 } from 'uuid';
-// import fawExtension from '../modules/website/freeanywhereExtension';
+// import fawExtension from './modules/website/freeanywhereExtension';
 
 try {
   consoleLogHook();
@@ -49,7 +49,9 @@ window.TRACE = !!globalOptions.other?.debug && typeof console.trace === 'functio
 
 // 初始化UI元素
 const initializeUI = (website: Website): void => {
-  debug('初始化UI元素', { website: website.name });
+  debug('初始化UI元素', {
+    website: website.name
+  });
   const $body = $('body');
   $body.append(`
     <div id="auto-task-info"
@@ -96,7 +98,9 @@ const initializeUI = (website: Website): void => {
       // const buttonMethod = website[button] as (() => void) | undefined;
       if (website[button]) {
         const btnElement = $(`<p><a class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self">${__(button)}</a></p>`);
-        btnElement.find('a.auto-task-website-btn').on('click', () => { website[button](); });
+        btnElement.find('a.auto-task-website-btn').on('click', () => {
+          website[button]();
+        });
         $autoTaskButtons.append(btnElement);
       }
     }
@@ -136,13 +140,19 @@ const initializeUI = (website: Website): void => {
 
 // 初始化热键
 const initializeHotkeys = (website: Website): void => {
-  debug('初始化热键', { website: website.name });
+  debug('初始化热键', {
+    website: website.name
+  });
   bindHotkey(globalOptions.hotKey.doTaskKey, () => {
-    if (website.doTask) website.doTask();
+    if (website.doTask) {
+      website.doTask();
+    }
   });
 
   bindHotkey(globalOptions.hotKey.undoTaskKey, () => {
-    if (website.undoTask) website.undoTask();
+    if (website.undoTask) {
+      website.undoTask();
+    }
   });
 
   bindHotkey(globalOptions.hotKey.toggleLogKey, () => {
@@ -182,19 +192,27 @@ const checkSteamASFStatus = async (): Promise<void> => {
     showCancelButton: true
   });
 
-  if (!value) return;
+  if (!value) {
+    return;
+  }
 
   let steamASF: SteamASF | null = new SteamASF(globalOptions.ASF);
   try {
     const isInitialized = await steamASF.init();
-    if (!isInitialized) return;
+    if (!isInitialized) {
+      return;
+    }
 
     const isGamesStopped = await steamASF.stopPlayGames();
-    if (!isGamesStopped) return;
+    if (!isGamesStopped) {
+      return;
+    }
 
     const taskLink = GM_getValue<Array<string>>('taskLink', []) || [];
     for (const link of taskLink) {
-      GM_openInTab(link, { active: true });
+      GM_openInTab(link, {
+        active: true
+      });
     }
 
     GM_setValue('stopPlayTime', 0);
@@ -223,7 +241,9 @@ const checkVersionAndNotice = (): void => {
       echoLog({}).error(__('versionNotMatched'));
     }
   } else {
-    debug('未知脚本管理器', { scriptHandler });
+    debug('未知脚本管理器', {
+      scriptHandler
+    });
     echoLog({}).warning(__('unknownScriptHandler'));
     return;
   }
@@ -233,12 +253,18 @@ const checkVersionAndNotice = (): void => {
       title: __('installNotice'),
       icon: 'warning'
     }).then(({ isConfirmed }) => {
-      if (!isConfirmed) return;
-      GM_openInTab(__('noticeLink'), { active: true });
+      if (!isConfirmed) {
+        return;
+      }
+      GM_openInTab(__('noticeLink'), {
+        active: true
+      });
       GM_setValue('notice', new Date().getTime());
     });
 
-    echoLog({ html: `<li><font class="warning">${__('echoNotice', __('noticeLink'))}</font></li>` })
+    echoLog({
+      html: `<li><font class="warning">${__('echoNotice', __('noticeLink'))}</font></li>`
+    })
       .font?.find('a').on('click', () => {
         GM_setValue('notice', new Date().getTime());
       });
@@ -250,7 +276,9 @@ const loadScript = async (): Promise<void> => {
   let website: Website | undefined;
   for (const Website of (Websites as unknown as WebsiteClass[])) {
     if (Website.test()) {
-      debug('识别到支持的网站', { website: Website.name });
+      debug('识别到支持的网站', {
+        website: Website.name
+      });
       website = new Website();
       break;
     }
@@ -277,9 +305,13 @@ const loadScript = async (): Promise<void> => {
 
   if (website.name !== 'Setting') {
     debug('注册全局菜单命令');
-    GM_registerMenuCommand(__('changeGlobalOptions'), () => { changeGlobalOptions('dialog'); });
+    GM_registerMenuCommand(__('changeGlobalOptions'), () => {
+      changeGlobalOptions('dialog');
+    });
     GM_registerMenuCommand(__('settingPage'), () => {
-      GM_openInTab('https://auto-task.hclonely.com/setting.html', { active: true });
+      GM_openInTab('https://auto-task.hclonely.com/setting.html', {
+        active: true
+      });
     });
   }
 
@@ -298,8 +330,18 @@ const loadScript = async (): Promise<void> => {
 // Authentication replies must use the same GM namespace as the requesting module.
 const bootstrap = async (): Promise<void> => {
   try {
-    if (await handleSteamAuthPage({ namespace: moduleNamespace('steam'), gm: projectGM('steam') })) return;
-    if (await handleTwitchAuthPage({ namespace: moduleNamespace('twitch'), gm: projectGM('twitch') })) return;
+    if (await handleSteamAuthPage({
+      namespace: moduleNamespace('steam'),
+      gm: projectGM('steam')
+    })) {
+      return;
+    }
+    if (await handleTwitchAuthPage({
+      namespace: moduleNamespace('twitch'),
+      gm: projectGM('twitch')
+    })) {
+      return;
+    }
     if (window.location.hostname === 'key-hub.eu') {
       // @ts-ignore
       unsafeWindow.keyhubtracker = 1;
@@ -308,8 +350,13 @@ const bootstrap = async (): Promise<void> => {
     }
     await loadScript();
   } catch (error) {
-    debug('主程序入口发生异常', { error });
+    debug('主程序入口发生异常', {
+      error
+    });
   }
 };
-if (window.location.hostname === 'opquests.com') void bootstrap();
-else $(bootstrap);
+if (window.location.hostname === 'opquests.com') {
+  void bootstrap();
+} else {
+  $(bootstrap);
+}

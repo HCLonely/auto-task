@@ -150,7 +150,9 @@ interface DisabledType {
  */
 const link2id = async function (type: string, root: HTMLDialogElement): Promise<string> {
   try {
-    debug('开始从链接获取ID', { type });
+    debug('开始从链接获取ID', {
+      type
+    });
     const link = root.querySelector<HTMLInputElement>('#socialLink')!.value;
     let id = '';
     switch (type) {
@@ -199,21 +201,32 @@ const link2id = async function (type: string, root: HTMLDialogElement): Promise<
             id = REGEX_PATTERNS.STEAM_CURATOR.exec(link)?.[1] || '';
           } else {
             const storeMatch = REGEX_PATTERNS.STEAM_STORE.exec(link);
-            if (!storeMatch) break;
+            if (!storeMatch) {
+              break;
+            }
 
             const [, param1, param2] = storeMatch;
             const steam = new Steam();
             try {
-              if (await steam.init('store')) id = await steam.getCuratorId(param1, param2) || '';
-            } finally { steam.dispose(); }
+              if (await steam.init('store')) {
+                id = await steam.getCuratorId(param1, param2) || '';
+              }
+            } finally {
+              steam.dispose();
+            }
           }
           break;
         }
     }
-    debug('从链接获取ID结果', { type, id });
+    debug('从链接获取ID结果', {
+      type,
+      id
+    });
     return id;
   } catch (error) {
-    debug('从链接获取ID时发生错误', { error });
+    debug('从链接获取ID时发生错误', {
+      error
+    });
     throwError(error as Error, 'link2id');
     return __('getFailed', 'id');
   }
@@ -244,12 +257,17 @@ const assignWhiteList = (whiteList: whiteList): whiteList => {
     debug('开始合并白名单');
     const newWhiteList: whiteList = {};
     for (const [key, value] of Object.entries(defaultWhiteList)) {
-      newWhiteList[key as keyof whiteList] = { ...value, ...whiteList[key as keyof whiteList] };
+      newWhiteList[key as keyof whiteList] = {
+        ...value,
+        ...whiteList[key as keyof whiteList]
+      };
     }
     debug('白名单合并完成');
     return newWhiteList;
   } catch (error) {
-    debug('合并白名单时发生错误', { error });
+    debug('合并白名单时发生错误', {
+      error
+    });
     throwError(error as Error, 'assignWhiteList');
     return defaultWhiteList;
   }
@@ -266,7 +284,9 @@ const assignWhiteList = (whiteList: whiteList): whiteList => {
  */
 const whiteListOptions = function (showType: 'page' | 'dialog'): void {
   try {
-    debug('开始显示白名单选项', { showType });
+    debug('开始显示白名单选项', {
+      showType
+    });
     const whiteList = assignWhiteList(GM_getValue<whiteList>('whiteList') || {});
     let whiteListOptionsForm = `<form id="whiteListForm" class="auto-task-form">
       <table class="auto-task-table">
@@ -281,7 +301,9 @@ const whiteListOptions = function (showType: 'page' | 'dialog'): void {
 
     for (const [social, types] of Object.entries(whiteList)) {
       const validTypes = Object.keys(types).filter(
-        (type) => !disabledType[social as keyof DisabledType]?.includes(type)
+        (type) => {
+          return !disabledType[social as keyof DisabledType]?.includes(type);
+        }
       );
 
       whiteListOptionsForm += validTypes.map((type, index) => {
@@ -312,18 +334,26 @@ const whiteListOptions = function (showType: 'page' | 'dialog'): void {
 
     $('.editWhiteList').on('click', function () {
       const value = $(this).attr('data-value');
-      if (!value) return;
+      if (!value) {
+        return;
+      }
 
       const [social, type] = value.split('.');
       const currentList = (whiteList as WhiteList)[social]?.[type];
 
       if (!currentList) {
-        debug('未找到白名单配置', { social, type });
+        debug('未找到白名单配置', {
+          social,
+          type
+        });
         echoLog({}).warning(__('whiteListNotFound', value));
         return;
       }
 
-      debug('编辑白名单', { social, type });
+      debug('编辑白名单', {
+        social,
+        type
+      });
       showDialog<string>({
         title: __('changeWhiteListOption', value),
         input: 'textarea',
@@ -347,14 +377,20 @@ const whiteListOptions = function (showType: 'page' | 'dialog'): void {
             });
           });
         }
-      }).then(({ isDenied, isConfirmed, value }) => {
+      }).then(({
+        isDenied, isConfirmed, value
+      }) => {
         if (isDenied) {
           debug('返回白名单选项');
           return;
         }
 
         if (isConfirmed && value !== undefined) {
-          debug('保存白名单更改', { social, type, value });
+          debug('保存白名单更改', {
+            social,
+            type,
+            value
+          });
           (whiteList as WhiteList)[social][type] = value.split('\n').filter(Boolean);
           GM_setValue('whiteList', whiteList);
           toast({
@@ -365,7 +401,9 @@ const whiteListOptions = function (showType: 'page' | 'dialog'): void {
       });
     });
   } catch (error) {
-    debug('显示白名单选项时发生错误', { error });
+    debug('显示白名单选项时发生错误', {
+      error
+    });
     throwError(error as Error, 'whiteListOptions');
   }
 };

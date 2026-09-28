@@ -51,9 +51,13 @@ interface GithubIssueParams extends Record<string, string> {
 const getRunLogs = (): string => {
   debug('开始获取运行日志');
   const logElements = $('#auto-task-info>li');
-  const logs = logElements.length > 0 ? $.makeArray(logElements).map((element) => element.innerText)
+  const logs = logElements.length > 0 ? $.makeArray(logElements).map((element) => {
+    return element.innerText;
+  })
     .join('\n') : '';
-  debug('运行日志获取完成', { logsLength: logs.length });
+  debug('运行日志获取完成', {
+    logsLength: logs.length
+  });
   return logs;
 };
 
@@ -83,7 +87,10 @@ const getEnvironmentInfo = async (): Promise<ErrorReportData> => {
  * @returns {GithubIssueParams} GitHub Issue参数对象
  */
 const buildGithubIssueParams = async (name: string, errorStack: string, envInfo: ErrorReportData): Promise<GithubIssueParams> => {
-  debug('开始构建GitHub Issue参数', { name, errorStackLength: errorStack.length });
+  debug('开始构建GitHub Issue参数', {
+    name,
+    errorStackLength: errorStack.length
+  });
   const params = {
     title: `[BUG] 脚本报错: ${name}`,
     labels: 'bug',
@@ -114,7 +121,9 @@ const generateGithubLink = async (name: string, errorStack: string, envInfo: Err
   debug('开始生成GitHub Issue链接');
   const params = new URLSearchParams(await buildGithubIssueParams(name, errorStack, envInfo) as Record<string, string>);
   const link = `https://github.com/HCLonely/auto-task/issues/new?${params.toString()}`;
-  debug('GitHub Issue链接生成完成', { link });
+  debug('GitHub Issue链接生成完成', {
+    link
+  });
   return link;
 };
 
@@ -124,7 +133,9 @@ const generateGithubLink = async (name: string, errorStack: string, envInfo: Err
  * @param {string} errorStack - 错误堆栈信息
  */
 const logError = (name: string, errorStack: string): void => {
-  debug('记录错误日志', { name });
+  debug('记录错误日志', {
+    name
+  });
   console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: ${name}\n${errorStack}`);
 };
 
@@ -136,11 +147,18 @@ const logError = (name: string, errorStack: string): void => {
  * @param {ErrorReportData} envInfo - 环境信息
  */
 const handleErrorReport = async (platform: ReportPlatform, name: string, errorStack: string, envInfo: ErrorReportData): Promise<void> => {
-  debug('开始处理错误报告', { platform, name });
+  debug('开始处理错误报告', {
+    platform,
+    name
+  });
   if (platform === 'github') {
     const githubLink = await generateGithubLink(name, errorStack, envInfo);
-    debug('打开GitHub Issue链接', { githubLink });
-    GM_openInTab(githubLink, { active: true });
+    debug('打开GitHub Issue链接', {
+      githubLink
+    });
+    GM_openInTab(githubLink, {
+      active: true
+    });
   }
 };
 
@@ -159,7 +177,10 @@ const handleErrorReport = async (platform: ReportPlatform, name: string, errorSt
  * 4. 提供错误信息的复制功能
  */
 export default async function throwError(error: Error, name: string): Promise<void> {
-  debug('开始处理错误', { name, error });
+  debug('开始处理错误', {
+    name,
+    error
+  });
 
   if (window.TRACE) {
     debug('启用跟踪模式');
@@ -186,7 +207,10 @@ export default async function throwError(error: Error, name: string): Promise<vo
     debug('用户确认提交错误报告');
     await handleErrorReport('github', name, errorStack, envInfo);
 
-    toast({ title: __('logCopied'), icon: 'success' });
+    toast({
+      title: __('logCopied'),
+      icon: 'success'
+    });
   } else {
     debug('用户取消提交错误报告');
   }

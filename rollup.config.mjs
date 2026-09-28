@@ -18,8 +18,8 @@ const VERSION = JSON.parse(fs.readFileSync('package.json')).version;
 const NAME = 'auto-task';
 
 const i18nGlobals = new Map([
-  [path.resolve('modules/i18n'), 'AutoTaskI18n'],
-  [path.resolve('modules/i18n/index'), 'AutoTaskI18n']
+  [path.resolve('src/modules/i18n'), 'AutoTaskI18n'],
+  [path.resolve('src/modules/i18n/index'), 'AutoTaskI18n']
 ]);
 
 const moduleGlobals = new Map(Object.entries({
@@ -34,11 +34,11 @@ const moduleGlobals = new Map(Object.entries({
   twitter: 'twitter',
   reddit: 'reddit',
   youtube: 'youtube'
-}).map(([entry, namespace]) => [path.resolve('modules/social', entry), `AutoTaskModules.${namespace}`]));
+}).map(([entry, namespace]) => [path.resolve('src/modules/social', entry), `AutoTaskModules.${namespace}`]));
 
 const websiteGlobals = new Map([
-  [path.resolve('modules/website/index'), 'AutoTaskWebsite'],
-  [path.resolve('modules/website/options'), 'AutoTaskWebsite.options'],
+  [path.resolve('src/modules/website/index'), 'AutoTaskWebsite'],
+  [path.resolve('src/modules/website/options'), 'AutoTaskWebsite.options'],
   ...Object.entries({
     'ui/dialog': 'dialog',
     globalOptions: 'globalOptions',
@@ -68,7 +68,7 @@ const globals = id => i18nGlobals.get(id) || moduleGlobals.get(id) || websiteGlo
 const interop = id => i18nGlobals.has(id) || moduleGlobals.has(id) || websiteGlobals.has(id) ? 'esModule' : 'default';
 
 const i18nBuild = {
-  input: 'modules/i18n/index.ts',
+  input: 'src/modules/i18n/index.ts',
   output: {
     file: 'dist/auto-task.i18n.js',
     format: 'umd',
@@ -83,7 +83,7 @@ const i18nBuild = {
 };
 
 const modulesBuild = {
-  input: 'modules/social/browser.ts',
+  input: 'src/modules/social/browser.ts',
   output: {
     file: 'dist/auto-task.modules.js',
     format: 'iife',
@@ -223,7 +223,7 @@ const userscriptBuild = {
 };
 
 const websiteBuild = {
-  input: 'modules/website/browser.ts',
+  input: 'src/modules/website/browser.ts',
   output: {
     file: 'dist/auto-task.website.js',
     format: 'iife',

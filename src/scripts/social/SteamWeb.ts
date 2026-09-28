@@ -1,4 +1,4 @@
-import ModuleClient, { createGMHttpClient } from '../../../modules/social/steam/steamWeb';
+import ModuleClient, { createGMHttpClient } from '../../modules/social/steam/steamWeb';
 import { bindModuleStatus, moduleNamespace, projectGM } from './moduleBridge';
 
 export default class SteamWeb extends ModuleClient {
@@ -6,11 +6,16 @@ export default class SteamWeb extends ModuleClient {
   constructor() {
     super({
       autoChangeRegion: true,
-      http: createGMHttpClient((request) => GM_xmlhttpRequest(request)),
+      http: createGMHttpClient((request) => {
+        return GM_xmlhttpRequest(request);
+      }),
       gm: projectGM('steam'),
       namespace: `${moduleNamespace('steam')}:web`
     });
     this.unsubscribe = bindModuleStatus(this, 'SteamWeb');
   }
-  dispose(): void { this.unsubscribe(); super.dispose(); }
+  dispose(): void {
+    this.unsubscribe();
+    super.dispose();
+  }
 }

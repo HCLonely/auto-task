@@ -33,10 +33,18 @@ const ICONS: Record<IconKeys, string> = {
 
 type StatusKind = 'loading' | 'success' | 'error' | 'warning' | 'info';
 const STATUS_ICONS: Record<StatusKind, string> = {
-  loading: '', success: '✅️', error: '❌️', warning: '⚠️', info: '❓️'
+  loading: '',
+  success: '✅️',
+  error: '❌️',
+  warning: '⚠️',
+  info: '❓️'
 };
 const STATUS_LABELS: Record<StatusKind, string> = {
-  loading: 'logLoading', success: 'logSuccess', error: 'logError', warning: 'logWarning', info: 'unKnown'
+  loading: 'logLoading',
+  success: 'logSuccess',
+  error: 'logError',
+  warning: 'logWarning',
+  info: 'unKnown'
 };
 
 /** Match translated result messages, including their interpolated parameters. */
@@ -50,9 +58,13 @@ const inferStatus = (content: string): StatusKind => {
   for (const [kind, keys] of Object.entries(resultKeys)) {
     for (const key of keys) {
       const pattern = __(key).split(/%\d+/)
-        .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+        .map((part) => {
+          return part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        })
         .join('.*');
-      if (new RegExp(`^${pattern}`).test(content)) return kind as StatusKind;
+      if (new RegExp(`^${pattern}`).test(content)) {
+        return kind as StatusKind;
+      }
     }
   }
   return 'loading';
@@ -91,14 +103,18 @@ type UrlGenerators = {
  * @param {string} text - 链接文本
  * @returns {string} 生成的HTML字符串
  */
-const generateLink = (url: string, text: string): string => `<a href="${url}" target="_blank">${text}</a>`;
+const generateLink = (url: string, text: string): string => {
+  return `<a href="${url}" target="_blank">${text}</a>`;
+};
 
 /**
  * 生成基础日志元素
  * @param {string} content - 日志内容
  * @returns {JQuery} jQuery元素
  */
-const createBaseElement = (content: string): JQuery => $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
+const createBaseElement = (content: string): JQuery => {
+  return $(`<li>${content}<font class="log-status"></font></li>`).addClass('card-text');
+};
 
 /**
  * 生成平台相关日志元素
@@ -110,29 +126,61 @@ const createBaseElement = (content: string): JQuery => $(`<li>${content}<font cl
 const createPlatformElement = (type: string, text?: string, id?: string): JQuery | null => {
   const urlGenerators: UrlGenerators = {
     // Steam相关
-    group: (text: string) => `https://steamcommunity.com/groups/${text}`,
-    officialGroup: (text: string) => `https://steamcommunity.com/games/${text}`,
-    forum: (text: string) => `https://steamcommunity.com/app/${text}/discussions/`,
-    curator: (text: string) => `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`,
-    app: (text: string) => `https://store.steampowered.com/app/${text}`,
-    sub: (text: string) => `https://steamdb.info/sub/${text}/`,
-    workshop: (text: string) => `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`,
-    announcement: (text: string, id?: string) => `https://store.steampowered.com/news/app/${text}/view/${id}`,
+    group: (text: string) => {
+      return `https://steamcommunity.com/groups/${text}`;
+    },
+    officialGroup: (text: string) => {
+      return `https://steamcommunity.com/games/${text}`;
+    },
+    forum: (text: string) => {
+      return `https://steamcommunity.com/app/${text}/discussions/`;
+    },
+    curator: (text: string) => {
+      return `https://store.steampowered.com/${text?.includes('/') ? text : `curator/${text}`}`;
+    },
+    app: (text: string) => {
+      return `https://store.steampowered.com/app/${text}`;
+    },
+    sub: (text: string) => {
+      return `https://steamdb.info/sub/${text}/`;
+    },
+    workshop: (text: string) => {
+      return `https://steamcommunity.com/sharedfiles/filedetails/?id=${text}`;
+    },
+    announcement: (text: string, id?: string) => {
+      return `https://store.steampowered.com/news/app/${text}/view/${id}`;
+    },
 
     // 社交平台相关
 
-    twitch: (text: string) => `https://www.twitch.tv/${text}`,
-    instagram: (text: string) => `https://www.instagram.com/${text}/`,
-    twitter: (text: string) => `https://x.com/${text}`,
+    twitch: (text: string) => {
+      return `https://www.twitch.tv/${text}`;
+    },
+    instagram: (text: string) => {
+      return `https://www.instagram.com/${text}/`;
+    },
+    twitter: (text: string) => {
+      return `https://x.com/${text}`;
+    },
     reddit: {
-      subreddit: (text: string) => `https://www.reddit.com/r/${text}/`,
-      user: (text: string) => `https://www.reddit.com/user/${text?.replace('u_', '')}`
+      subreddit: (text: string) => {
+        return `https://www.reddit.com/r/${text}/`;
+      },
+      user: (text: string) => {
+        return `https://www.reddit.com/user/${text?.replace('u_', '')}`;
+      }
     },
     youtube: {
-      channel: (text: string) => `https://www.youtube.com/channel/${text}`,
-      video: (text: string) => `https://www.youtube.com/watch?v=${text}`
+      channel: (text: string) => {
+        return `https://www.youtube.com/channel/${text}`;
+      },
+      video: (text: string) => {
+        return `https://www.youtube.com/watch?v=${text}`;
+      }
     },
-    vk: (text: string) => `https://vk.com/${text}/`
+    vk: (text: string) => {
+      return `https://vk.com/${text}/`;
+    }
   };
 
   const typeMap = {
@@ -197,14 +245,16 @@ const createPlatformElement = (type: string, text?: string, id?: string): JQuery
   } as const;
 
   const urlConfig = typeMap[type as keyof typeof typeMap];
-  if (!urlConfig || !text) return null;
+  if (!urlConfig || !text) {
+    return null;
+  }
 
   const [platform, subType] = urlConfig;
   const urlGenerator = urlGenerators[platform];
 
   if (typeof urlGenerator === 'function') {
     const url = urlGenerator(text, id);
-    const displayText = platform === 'announcement' ? id || '' : text;
+    const displayText = platform === 'announcement' ? (id || '') : text;
     return createBaseElement(`${__(type)}[${generateLink(url, displayText)}]`);
   }
 
@@ -258,15 +308,31 @@ const createSpecialElement = (type: string, text?: string, html?: string, id?: s
  * @param {string} [options.id] - 相关ID
  * @returns {logStatus} 日志状态对象
  */
-const echoLog = ({ type, text, html, id, before }: { type?: string, text?: string, html?: string, id?: string, before?: string }): logStatus => {
+const echoLog = ({
+  type, text, html, id, before
+}: { type?: string, text?: string, html?: string, id?: string, before?: string }): logStatus => {
   const emptyStatus: logStatus = {
-    setBefore: () => emptyStatus,
-    success: () => emptyStatus,
-    error: () => emptyStatus,
-    warning: () => emptyStatus,
-    info: () => emptyStatus,
-    view: () => emptyStatus,
-    remove: () => emptyStatus
+    setBefore: () => {
+      return emptyStatus;
+    },
+    success: () => {
+      return emptyStatus;
+    },
+    error: () => {
+      return emptyStatus;
+    },
+    warning: () => {
+      return emptyStatus;
+    },
+    info: () => {
+      return emptyStatus;
+    },
+    view: () => {
+      return emptyStatus;
+    },
+    remove: () => {
+      return emptyStatus;
+    }
   };
 
   try {
@@ -285,12 +351,18 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
       ele = createBaseElement('');
     }
 
-    if (!ele.length) ele = createBaseElement('');
+    if (!ele.length) {
+      ele = createBaseElement('');
+    }
     // HTML logs may not supply a status node; keep their original content intact.
-    ele = ele.map((_, node) => (node.nodeType === 1 ? node : $('<li>').append(node)[0]));
+    ele = ele.map((_, node) => {
+      return (node.nodeType === 1 ? node : $('<li>').append(node)[0]);
+    });
     ele.each((_, node) => {
       const row = $(node);
-      if (!row.find('font.log-status').length) row.append('<font class="log-status"></font>');
+      if (!row.find('font.log-status').length) {
+        row.append('<font class="log-status"></font>');
+      }
     });
     const font = ele.find('font.log-status');
     const indicators = $('<span class="log-status-icon" role="img"></span>');
@@ -303,9 +375,9 @@ const echoLog = ({ type, text, html, id, before }: { type?: string, text?: strin
     };
     ele.each((_, node) => {
       const row = $(node);
-      const initialStatus = type === 'whiteList' || type === 'globalOptionsSkip' || row.is('.warning') || row.find('.warning').length ? 'warning' :
-        row.is('.error') || row.find('.error').length ? 'error' :
-          row.is('.success') || row.find('.success').length ? 'success' : inferStatus(row.text());
+      const initialStatus = (type === 'whiteList' || type === 'globalOptionsSkip' || row.is('.warning') || row.find('.warning').length) ? 'warning' :
+        ((row.is('.error') || row.find('.error').length) ? 'error' :
+          ((row.is('.success') || row.find('.success').length) ? 'success' : inferStatus(row.text())));
       setState(initialStatus, row.children('.log-status-icon'));
     });
 

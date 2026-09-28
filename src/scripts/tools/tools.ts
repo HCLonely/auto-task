@@ -47,7 +47,13 @@ const unique = <T>(array: Array<T>): Array<T> => {
  * @param {number} [time=1000] - 延迟时间（毫秒）
  * @returns {Promise<true>} 延迟完成后的 Promise
  */
-const delay = (time = 1000): Promise<true> => new Promise((resolve) => setTimeout(() => resolve(true), time));
+const delay = (time = 1000): Promise<true> => {
+  return new Promise((resolve) => {
+    return setTimeout(() => {
+      return resolve(true);
+    }, time);
+  });
+};
 
 /**
  * 获取重定向链接
@@ -57,12 +63,17 @@ const delay = (time = 1000): Promise<true> => new Promise((resolve) => setTimeou
  */
 const getRedirectLink = async (link?: string, redirectOnce = false): Promise<string | null> => {
   try {
-    if (!link) return null;
+    if (!link) {
+      return null;
+    }
 
     const redirectLinksCache = GM_getValue<RedirectLinksCache>('redirectLinks') || {};
     const cachedLink = redirectLinksCache[link];
     if (cachedLink) {
-      debug('使用缓存的重定向链接', { original: link, cached: cachedLink });
+      debug('使用缓存的重定向链接', {
+        original: link,
+        cached: cachedLink
+      });
       return cachedLink;
     }
 
@@ -75,11 +86,16 @@ const getRedirectLink = async (link?: string, redirectOnce = false): Promise<str
     if (data?.finalUrl) {
       redirectLinksCache[link] = data.finalUrl;
       GM_setValue('redirectLinks', redirectLinksCache);
-      debug('获取新的重定向链接', { original: link, final: data.finalUrl });
+      debug('获取新的重定向链接', {
+        original: link,
+        final: data.finalUrl
+      });
       return data.finalUrl;
     }
 
-    debug('未找到重定向链接', { link });
+    debug('未找到重定向链接', {
+      link
+    });
     return null;
   } catch (error) {
     throwError(error as Error, 'getRedirectLink');
@@ -95,22 +111,37 @@ const getRedirectLink = async (link?: string, redirectOnce = false): Promise<str
  */
 const visitLink = async (link: string, options?: MonkeyXhrDetails): Promise<boolean> => {
   try {
-    debug('开始访问链接', { link, options });
-    const logStatus = echoLog({ type: 'visitingLink', text: link });
+    debug('开始访问链接', {
+      link,
+      options
+    });
+    const logStatus = echoLog({
+      type: 'visitingLink',
+      text: link
+    });
 
-    const { result, statusText, status } = await httpRequest({
+    const {
+      result, statusText, status
+    } = await httpRequest({
       url: link,
       method: 'GET',
       ...options
     });
 
     if (result === 'Success') {
-      debug('链接访问成功', { link });
+      debug('链接访问成功', {
+        link
+      });
       logStatus.success();
       return true;
     }
 
-    debug('链接访问失败', { link, result, statusText, status });
+    debug('链接访问失败', {
+      link,
+      result,
+      statusText,
+      status
+    });
     logStatus.error(`${result}:${statusText}(${status})`);
     return false;
   } catch (error) {
@@ -126,7 +157,9 @@ const visitLink = async (link: string, options?: MonkeyXhrDetails): Promise<bool
  */
 const getUrlQuery = (url?: string): UrlQuery => {
   try {
-    debug('开始解析URL查询参数', { url: url || window.location.href });
+    debug('开始解析URL查询参数', {
+      url: url || window.location.href
+    });
     const searchParams = url ? new URL(url, window.location.origin).searchParams : new URLSearchParams(window.location.search);
 
     const query: UrlQuery = {};
@@ -150,7 +183,9 @@ const getUuid = (): string => {
   const uuidUrl = URL.createObjectURL(new Blob());
   const uuid = uuidUrl.slice(uuidUrl.lastIndexOf('/') + 1);
   URL.revokeObjectURL(uuidUrl); // 释放资源
-  debug('生成UUID', { uuid });
+  debug('生成UUID', {
+    uuid
+  });
   return uuid;
 };
 
@@ -166,7 +201,9 @@ const stringToColour = (str: string): string => {
       hash = str.charCodeAt(i) + ((hash << 5) - hash);
     }
 
-    const rgb = Array.from({ length: 3 }, (_, i) => {
+    const rgb = Array.from({
+      length: 3
+    }, (_, i) => {
       const value = (hash >> (i * 8)) & 0xFF;
       return value.toString(16).padStart(2, '0');
     });
@@ -190,7 +227,9 @@ const getAllLocalStorageAsObjects = (localStorage: Storage): Record<string, stri
 
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
-      if (!key) continue;
+      if (!key) {
+        continue;
+      }
       const value = localStorage.getItem(key);
 
       try {
@@ -204,7 +243,9 @@ const getAllLocalStorageAsObjects = (localStorage: Storage): Record<string, stri
     debug('所有LocalStorage转换为对象完成', result);
     return result;
   } catch (error) {
-    debug('将所有LocalStorage转换为对象失败', { error });
+    debug('将所有LocalStorage转换为对象失败', {
+      error
+    });
     throwError(error as Error, 'getAllLocalStorageAsObjects');
     return {};
   }

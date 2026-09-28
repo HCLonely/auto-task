@@ -1,6 +1,0 @@
-{
-  "name": "@auto-task/i18n",
-  "private": true,
-  "main": "../../dist/auto-task.i18n.js",
-  "types": "index.ts"
-}

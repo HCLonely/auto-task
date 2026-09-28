@@ -41,163 +41,238 @@ let savedOverflowPriority = '';
 const element = <K extends keyof HTMLElementTagNameMap>(tag: K, className: string, text?: string): HTMLElementTagNameMap[K] => {
   const node = document.createElement(tag);
   node.className = className;
-  if (text !== undefined) node.textContent = text;
+  if (text !== undefined) {
+    node.textContent = text;
+  }
   return node;
 };
 
 /** Every invocation owns its DOM, listeners and result. Nested dialogs use the browser's top layer. */
-export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Promise<DialogResult<T>> => new Promise((resolve, reject) => {
-  const previousFocus = document.activeElement as HTMLElement | null;
-  const root = element('dialog', 'at-dialog');
-  sequence += 1;
-  const title = element('h2', 'at-dialog-title', options.title);
-  title.id = `at-dialog-title-${sequence}`;
-  root.setAttribute('aria-labelledby', title.id);
-  root.setAttribute('aria-modal', 'true');
-  root.append(title);
-  if (options.icon) {
-    root.dataset.tone = options.icon;
-    const icon = element('span', 'at-dialog-icon', { success: '✓', error: '×', warning: '!', info: 'i' }[options.icon]);
-    icon.setAttribute('aria-hidden', 'true');
-    title.prepend(icon);
-  }
-  if (options.text) {
-    const description = element('p', 'at-dialog-text', options.text);
-    description.id = `at-dialog-description-${sequence}`;
-    root.setAttribute('aria-describedby', description.id);
-    root.append(description);
-  }
-  const content = element('div', 'at-dialog-content');
-  if (options.html) content.innerHTML = options.html;
-  root.append(content);
-  let input: HTMLTextAreaElement | undefined;
-  if (options.input === 'textarea') {
-    input = element('textarea', 'at-input');
-    input.value = options.inputValue ?? '';
-    input.setAttribute('aria-label', options.title);
-    content.append(input);
-  }
-  const status = element('p', 'at-dialog-status');
-  status.setAttribute('role', 'status');
-  status.setAttribute('aria-live', 'polite');
-  root.append(status);
-  const actions = element('div', 'at-dialog-actions');
-  root.append(actions);
-  if (options.footer) {
-    const footer = element('div', 'at-dialog-footer');
-    footer.innerHTML = options.footer;
-    root.append(footer);
-  }
-  let busy = false;
-  let settled = false;
-  const listeners = new AbortController();
-  const listen = (target: EventTarget, type: string, handler: EventListener): void => {
-    target.addEventListener(type, handler, { signal: listeners.signal });
-  };
-  const dispose = (): void => {
-    settled = true;
-    listeners.abort();
-    const index = dialogs.indexOf(root);
-    if (index !== -1) dialogs.splice(index, 1);
-    root.querySelectorAll(':scope > .at-toasts').forEach((notifications) => {
-      (dialogs[dialogs.length - 1] ?? document.body).append(notifications);
-    });
-    if (root.open) root.close();
-    root.remove();
-    if (!dialogs.length) {
-      document.documentElement.style.setProperty('overflow', savedOverflow, savedOverflowPriority);
+export const showDialog = <T = boolean | string>(options: DialogOptions<T>): Promise<DialogResult<T>> => {
+  return new Promise((resolve, reject) => {
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const root = element('dialog', 'at-dialog');
+    sequence += 1;
+    const title = element('h2', 'at-dialog-title', options.title);
+    title.id = `at-dialog-title-${sequence}`;
+    root.setAttribute('aria-labelledby', title.id);
+    root.setAttribute('aria-modal', 'true');
+    root.append(title);
+    if (options.icon) {
+      root.dataset.tone = options.icon;
+      const icon = element('span', 'at-dialog-icon', {
+        success: '✓',
+        error: '×',
+        warning: '!',
+        info: 'i'
+      }[options.icon]);
+      icon.setAttribute('aria-hidden', 'true');
+      title.prepend(icon);
     }
-    if (previousFocus?.isConnected) previousFocus.focus();
-  };
-  const finish = (action: 'confirm' | 'cancel' | 'back', value?: T): void => {
-    if (settled || busy) return;
-    dispose();
-    resolve({ isConfirmed: action === 'confirm', isDenied: action === 'back', isDismissed: action === 'cancel', value });
-  };
-  const context: DialogContext = {
-    root,
-    status: (text, tone = 'info') => {
-      status.textContent = text;
-      status.dataset.tone = tone;
-    },
-    run: async (operation) => {
-      if (busy || settled) return;
-      busy = true;
-      root.setAttribute('aria-busy', 'true');
-      const controls = Array.from(root.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement | HTMLSelectElement>('input, button, textarea, select'));
-      const disabled = controls.map((control) => control.disabled);
-      try {
-        // Start synchronously so callers can snapshot form values before controls are disabled.
-        const pending = operation();
-        controls.forEach((control) => { control.disabled = true; });
-        await pending;
-      } catch (error) {
-        context.status(error instanceof Error ? error.message : String(error), 'error');
-      } finally {
-        controls.forEach((control, index) => { control.disabled = disabled[index]; });
-        busy = false;
-        root.removeAttribute('aria-busy');
+    if (options.text) {
+      const description = element('p', 'at-dialog-text', options.text);
+      description.id = `at-dialog-description-${sequence}`;
+      root.setAttribute('aria-describedby', description.id);
+      root.append(description);
+    }
+    const content = element('div', 'at-dialog-content');
+    if (options.html) {
+      content.innerHTML = options.html;
+    }
+    root.append(content);
+    let input: HTMLTextAreaElement | undefined;
+    if (options.input === 'textarea') {
+      input = element('textarea', 'at-input');
+      input.value = options.inputValue ?? '';
+      input.setAttribute('aria-label', options.title);
+      content.append(input);
+    }
+    const status = element('p', 'at-dialog-status');
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    root.append(status);
+    const actions = element('div', 'at-dialog-actions');
+    root.append(actions);
+    if (options.footer) {
+      const footer = element('div', 'at-dialog-footer');
+      footer.innerHTML = options.footer;
+      root.append(footer);
+    }
+    let busy = false;
+    let settled = false;
+    const listeners = new AbortController();
+    const listen = (target: EventTarget, type: string, handler: EventListener): void => {
+      target.addEventListener(type, handler, {
+        signal: listeners.signal
+      });
+    };
+    const dispose = (): void => {
+      settled = true;
+      listeners.abort();
+      const index = dialogs.indexOf(root);
+      if (index !== -1) {
+        dialogs.splice(index, 1);
       }
+      root.querySelectorAll(':scope > .at-toasts').forEach((notifications) => {
+        (dialogs[dialogs.length - 1] ?? document.body).append(notifications);
+      });
+      if (root.open) {
+        root.close();
+      }
+      root.remove();
+      if (!dialogs.length) {
+        document.documentElement.style.setProperty('overflow', savedOverflow, savedOverflowPriority);
+      }
+      if (previousFocus?.isConnected) {
+        previousFocus.focus();
+      }
+    };
+    const finish = (action: 'confirm' | 'cancel' | 'back', value?: T): void => {
+      if (settled || busy) {
+        return;
+      }
+      dispose();
+      resolve({
+        isConfirmed: action === 'confirm',
+        isDenied: action === 'back',
+        isDismissed: action === 'cancel',
+        value
+      });
+    };
+    const context: DialogContext = {
+      root,
+      status: (text, tone = 'info') => {
+        status.textContent = text;
+        status.dataset.tone = tone;
+      },
+      run: async (operation) => {
+        if (busy || settled) {
+          return;
+        }
+        busy = true;
+        root.setAttribute('aria-busy', 'true');
+        const controls = Array.from(root.querySelectorAll<HTMLInputElement | HTMLButtonElement | HTMLTextAreaElement | HTMLSelectElement>('input, button, textarea, select'));
+        const disabled = controls.map((control) => {
+          return control.disabled;
+        });
+        try {
+        // Start synchronously so callers can snapshot form values before controls are disabled.
+          const pending = operation();
+          controls.forEach((control) => {
+            control.disabled = true;
+          });
+          await pending;
+        } catch (error) {
+          context.status(error instanceof Error ? error.message : String(error), 'error');
+        } finally {
+          controls.forEach((control, index) => {
+            control.disabled = disabled[index];
+          });
+          busy = false;
+          root.removeAttribute('aria-busy');
+        }
+      }
+    };
+    const submit = async (): Promise<void> => {
+      if (busy || settled) {
+        return;
+      }
+      if (Array.from(content.querySelectorAll('form')).some((form) => {
+        return !form.reportValidity();
+      })) {
+        return;
+      }
+      // Capture inputs before disabling controls (disabled fields are excluded by FormData/serializeArray).
+      let value: T | undefined;
+      let successful = false;
+      await context.run(async () => {
+        value = options.preConfirm ? await options.preConfirm(context) : (input ? input.value : true) as T;
+        successful = true;
+      });
+      if (successful && !options.keepOpenOnConfirm) {
+        finish('confirm', value);
+      }
+    };
+    const button = (label: string, action: string, handler: () => void): HTMLButtonElement => {
+      const node = element('button', 'at-button', label);
+      node.type = 'button';
+      node.dataset.action = action;
+      listen(node, 'click', handler);
+      return node;
+    };
+    if (options.showConfirmButton !== false) {
+      actions.append(button(options.confirmButtonText ?? __('confirm'), 'confirm', () => {
+        void submit();
+      }));
     }
-  };
-  const submit = async (): Promise<void> => {
-    if (busy || settled) return;
-    if (Array.from(content.querySelectorAll('form')).some((form) => !form.reportValidity())) return;
-    // Capture inputs before disabling controls (disabled fields are excluded by FormData/serializeArray).
-    let value: T | undefined;
-    let successful = false;
-    await context.run(async () => {
-      value = options.preConfirm ? await options.preConfirm(context) : (input ? input.value : true) as T;
-      successful = true;
-    });
-    if (successful && !options.keepOpenOnConfirm) finish('confirm', value);
-  };
-  const button = (label: string, action: string, handler: () => void): HTMLButtonElement => {
-    const node = element('button', 'at-button', label);
-    node.type = 'button';
-    node.dataset.action = action;
-    listen(node, 'click', handler);
-    return node;
-  };
-  if (options.showConfirmButton !== false) actions.append(button(options.confirmButtonText ?? __('confirm'), 'confirm', () => { void submit(); }));
-  if (options.showDenyButton) actions.append(button(options.denyButtonText ?? __('return'), 'back', () => finish('back')));
-  if (options.showCancelButton) actions.append(button(options.cancelButtonText ?? __('cancel'), 'cancel', () => finish('cancel')));
-  if (options.showCloseButton) root.prepend(button(__('close'), 'close', () => finish('cancel')));
-  listen(root, 'cancel', (event) => { event.preventDefault(); finish('cancel'); });
-  listen(root, 'close', () => finish('cancel'));
-  let backdropStart = false;
-  const outside = (event: MouseEvent): boolean => {
-    const box = root.getBoundingClientRect();
-    return event.target === root && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom);
-  };
-  listen(root, 'pointerdown', (event) => { backdropStart = outside(event as MouseEvent); });
-  listen(root, 'click', (event) => { if (backdropStart && outside(event as MouseEvent)) finish('cancel'); backdropStart = false; });
-  listen(root, 'submit', (event) => { event.preventDefault(); if (options.showConfirmButton !== false) void submit(); });
-  listen(root, 'keydown', (event) => {
-    const key = event as KeyboardEvent;
-    if (key.key === 'Enter' && !key.isComposing && event.target instanceof HTMLInputElement && options.showConfirmButton !== false) {
+    if (options.showDenyButton) {
+      actions.append(button(options.denyButtonText ?? __('return'), 'back', () => {
+        return finish('back');
+      }));
+    }
+    if (options.showCancelButton) {
+      actions.append(button(options.cancelButtonText ?? __('cancel'), 'cancel', () => {
+        return finish('cancel');
+      }));
+    }
+    if (options.showCloseButton) {
+      root.prepend(button(__('close'), 'close', () => {
+        return finish('cancel');
+      }));
+    }
+    listen(root, 'cancel', (event) => {
       event.preventDefault();
-      void submit();
+      finish('cancel');
+    });
+    listen(root, 'close', () => {
+      return finish('cancel');
+    });
+    let backdropStart = false;
+    const outside = (event: MouseEvent): boolean => {
+      const box = root.getBoundingClientRect();
+      return event.target === root && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom);
+    };
+    listen(root, 'pointerdown', (event) => {
+      backdropStart = outside(event as MouseEvent);
+    });
+    listen(root, 'click', (event) => {
+      if (backdropStart && outside(event as MouseEvent)) {
+        finish('cancel');
+      }
+      backdropStart = false;
+    });
+    listen(root, 'submit', (event) => {
+      event.preventDefault();
+      if (options.showConfirmButton !== false) {
+        void submit();
+      }
+    });
+    listen(root, 'keydown', (event) => {
+      const key = event as KeyboardEvent;
+      if (key.key === 'Enter' && !key.isComposing && event.target instanceof HTMLInputElement && options.showConfirmButton !== false) {
+        event.preventDefault();
+        void submit();
+      }
+    });
+    try {
+      if (!dialogs.length) {
+        savedOverflow = document.documentElement.style.getPropertyValue('overflow');
+        savedOverflowPriority = document.documentElement.style.getPropertyPriority('overflow');
+        document.documentElement.style.setProperty('overflow', 'hidden');
+      }
+      document.body.append(root);
+      dialogs.push(root);
+      root.showModal();
+      options.onOpen?.(context);
+      const focusTarget = root.querySelector<HTMLElement>('textarea, input') ??
+      root.querySelector<HTMLElement>('[data-action="cancel"]') ?? root.querySelector<HTMLElement>('button');
+      focusTarget?.focus();
+    } catch (error) {
+      dispose();
+      reject(error);
     }
   });
-  try {
-    if (!dialogs.length) {
-      savedOverflow = document.documentElement.style.getPropertyValue('overflow');
-      savedOverflowPriority = document.documentElement.style.getPropertyPriority('overflow');
-      document.documentElement.style.setProperty('overflow', 'hidden');
-    }
-    document.body.append(root);
-    dialogs.push(root);
-    root.showModal();
-    options.onOpen?.(context);
-    const focusTarget = root.querySelector<HTMLElement>('textarea, input') ??
-      root.querySelector<HTMLElement>('[data-action="cancel"]') ?? root.querySelector<HTMLElement>('button');
-    focusTarget?.focus();
-  } catch (error) {
-    dispose();
-    reject(error);
-  }
-});
+};
 
 export const toast = (options: { title: string; text?: string; icon?: Tone; duration?: number }): void => {
   const host = dialogs[dialogs.length - 1] ?? document.body;
@@ -210,23 +285,39 @@ export const toast = (options: { title: string; text?: string; icon?: Tone; dura
   item.dataset.tone = options.icon ?? 'success';
   item.setAttribute('role', options.icon === 'error' ? 'alert' : 'status');
   item.append(element('strong', '', options.title));
-  if (options.text) item.append(element('span', '', options.text));
+  if (options.text) {
+    item.append(element('span', '', options.text));
+  }
   const close = element('button', 'at-toast-close', '×');
   close.type = 'button';
   close.setAttribute('aria-label', __('close'));
   item.append(close);
   region.append(item);
   let timer: ReturnType<typeof setTimeout> | undefined;
-  const remove = (): void => { clearTimeout(timer); item.remove(); if (!region?.children.length) region?.remove(); };
+  const remove = (): void => {
+    clearTimeout(timer);
+    item.remove();
+    if (!region?.children.length) {
+      region?.remove();
+    }
+  };
   const start = (): void => {
     clearTimeout(timer);
     const duration = options.duration ?? (options.icon === 'error' ? 0 : 4000);
-    if (duration > 0) timer = setTimeout(remove, duration);
+    if (duration > 0) {
+      timer = setTimeout(remove, duration);
+    }
   };
-  close.addEventListener('click', remove, { once: true });
-  item.addEventListener('mouseenter', () => clearTimeout(timer));
+  close.addEventListener('click', remove, {
+    once: true
+  });
+  item.addEventListener('mouseenter', () => {
+    return clearTimeout(timer);
+  });
   item.addEventListener('mouseleave', start);
-  item.addEventListener('focusin', () => clearTimeout(timer));
+  item.addEventListener('focusin', () => {
+    return clearTimeout(timer);
+  });
   item.addEventListener('focusout', start);
   start();
 };

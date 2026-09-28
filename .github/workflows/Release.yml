@@ -5,7 +5,6 @@ name: Release
       - main
     paths:
       - src/**
-      - modules/**
       - .github/workflows/Release.yml
 jobs:
   release:

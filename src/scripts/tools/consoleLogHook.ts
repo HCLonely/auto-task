@@ -25,7 +25,9 @@ const tokenStringPatterns = [
 ];
 
 const maskToken = (str: string): string => {
-  if (typeof str !== 'string' || str.length < 8) return str;
+  if (typeof str !== 'string' || str.length < 8) {
+    return str;
+  }
   // 只保留前4和后4
   return str.replace(/^([A-Za-z0-9\-_+/=]{4})[A-Za-z0-9\-_+/=]+([A-Za-z0-9\-_+/=]{4})$/, '$1***$2');
 };
@@ -56,7 +58,9 @@ const maskString = (str: string): string => {
     masked = masked.replace(pattern, (match, ...groups) => {
       // 对JWT等分段处理
       if (groups.length >= 3 && match.includes('.')) {
-        return groups.map((seg) => (seg.length > 8 ? `${seg.slice(0, 4)}***${seg.slice(-4)}` : seg)).join('.');
+        return groups.map((seg) => {
+          return (seg.length > 8 ? `${seg.slice(0, 4)}***${seg.slice(-4)}` : seg);
+        }).join('.');
       }
       // 其它token串
       if (match.length > 8) {
@@ -68,14 +72,16 @@ const maskString = (str: string): string => {
   return masked;
 };
 
-const maskArgs = (args: any[]): any[] => args.map((arg) => {
-  if (typeof arg === 'string') {
-    return maskString(arg);
-  } else if (typeof arg === 'object' && arg !== null) {
-    return maskObject(arg);
-  }
-  return arg;
-});
+const maskArgs = (args: any[]): any[] => {
+  return args.map((arg) => {
+    if (typeof arg === 'string') {
+      return maskString(arg);
+    } else if (typeof arg === 'object' && arg !== null) {
+      return maskObject(arg);
+    }
+    return arg;
+  });
+};
 
 const consoleLogHook = () => {
   const originalLog = console.log;

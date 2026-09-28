@@ -62,7 +62,7 @@
   settings.on = {
     push: {
       branches: ['main'],
-      paths: ['src/**', 'modules/**', '.github/workflows/Release.yml']
+      paths: ['src/**', '.github/workflows/Release.yml']
     }
   };
   options.prerelease = package.version.includes('-');

@@ -16,6 +16,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import readabilityRules, { readabilityPlugin } from "./eslint.readability.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ const compat = new FlatCompat({
 
 export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".history/**/*", "node_modules/**/*", "**/*.user.js", "*.config.js", "test/**/*", "*.js"]), {
     files: ["src/**/*.ts"],
+    ignores: ["src/modules/**"],
     extends: fixupConfigRules(compat.extends(
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
@@ -34,6 +36,7 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
     )),
 
     plugins: {
+        readability: readabilityPlugin,
         import: fixupPluginRules(_import),
         "@typescript-eslint": fixupPluginRules(typescriptEslint),
     },
@@ -54,9 +57,7 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
     },
 
     rules: {
-        indent: ["error", 2, {
-            SwitchCase: 2
-        }],
+        ...readabilityRules,
         "linebreak-style": "off",
         quotes: ["error", "single"],
         semi: ["error", "always"],
@@ -101,7 +102,6 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
         "prefer-arrow-callback": "error",
         "arrow-spacing": "error",
         "arrow-parens": "error",
-        "arrow-body-style": "error",
 
         "no-confusing-arrow": ["error", {
             allowParens: true,
@@ -116,11 +116,6 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
         "import/first": "error",
         "import/no-named-as-default-member": "off",
 
-        "object-curly-newline": ["error", {
-            ObjectPattern: {
-                multiline: true,
-            },
-        }],
 
         "import/no-webpack-loader-syntax": "error",
         "import/extensions": 0,
@@ -138,11 +133,7 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
         "no-nested-ternary": "off",
         "no-unneeded-ternary": "error",
         "no-mixed-operators": "error",
-        "nonblock-statement-body-position": ["error", "beside"],
 
-        "brace-style": ["error", "1tbs", {
-            allowSingleLine: true,
-        }],
 
         "no-else-return": "error",
         "spaced-comment": ["error", "always"],
@@ -251,5 +242,20 @@ export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".hist
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-unused-expressions": "off",
         "@typescript-eslint/no-explicit-any": "off",
+    },
+}, {
+    files: ["src/modules/**/*.ts"],
+    plugins: {
+        readability: readabilityPlugin,
+        "@typescript-eslint": fixupPluginRules(typescriptEslint),
+    },
+    languageOptions: {
+        parser: tsParser,
+        ecmaVersion: "latest",
+        sourceType: "module",
+    },
+    rules: {
+        ...readabilityRules,
+        "@typescript-eslint/no-unsafe-declaration-merging": "error",
     },
 }]);

@@ -31,7 +31,9 @@ interface Headers {
  * 如果输入为空，则返回空对象。
  */
 const parseHeaders = (headerString?: string): Headers => {
-  debug('开始解析HTTP头', { headerString });
+  debug('开始解析HTTP头', {
+    headerString
+  });
   const headers: Headers = {};
   if (!headerString) {
     debug('HTTP头为空，返回空对象');
@@ -41,7 +43,9 @@ const parseHeaders = (headerString?: string): Headers => {
   headerString.split('\n').forEach((header: string) => {
     const [name, ...values] = header.trim().split(':');
     const value = values.join(':').trim();
-    if (!name || !value) return;
+    if (!name || !value) {
+      return;
+    }
 
     if (headers[name]) {
       headers[name] = Array.isArray(headers[name]) ? [...headers[name] as Array<string>, value] : [headers[name] as string, value];
@@ -54,7 +58,9 @@ const parseHeaders = (headerString?: string): Headers => {
     headers['set-cookie'] = [headers['set-cookie'] as string];
   }
 
-  debug('HTTP头解析完成', { headers });
+  debug('HTTP头解析完成', {
+    headers
+  });
   return headers;
 };
 
@@ -72,12 +78,16 @@ const parseHeaders = (headerString?: string): Headers => {
  * 3. 如果响应类型为 JSON，尝试解析响应文本
  */
 const processResponse = (data: any, options: httpRequestOptions): void => {
-  debug('开始处理响应数据', { responseType: options.responseType });
+  debug('开始处理响应数据', {
+    responseType: options.responseType
+  });
   const headers = parseHeaders(data.responseHeaders);
   data.responseHeadersText = data.responseHeaders;
   data.responseHeaders = headers;
   data.finalUrl = headers.location || data.finalUrl;
-  debug('响应头处理完成', { finalUrl: data.finalUrl });
+  debug('响应头处理完成', {
+    finalUrl: data.finalUrl
+  });
 
   if (options.responseType === 'json' && data?.response && typeof data.response !== 'object') {
     debug('尝试解析JSON响应');
@@ -113,15 +123,23 @@ const processResponse = (data: any, options: httpRequestOptions): void => {
  * - 604: JavaScript 错误
  */
 const httpRequest = async (options: httpRequestOptions, times = 0): Promise<httpResponse> => {
-  debug('开始HTTP请求', { url: options.url, method: options.method, retryTimes: times });
-  if (window.TRACE) console.trace('%cAuto-Task[Trace]:', 'color:blue');
+  debug('开始HTTP请求', {
+    url: options.url,
+    method: options.method,
+    retryTimes: times
+  });
+  if (window.TRACE) {
+    console.trace('%cAuto-Task[Trace]:', 'color:blue');
+  }
   try {
     const result = await new Promise<httpResponse>((resolve) => {
       const requestObj: httpRequestOptions = {
         fetch: true,
         timeout: 30000,
         ontimeout: (data) => {
-          debug('请求超时', { url: options.url });
+          debug('请求超时', {
+            url: options.url
+          });
           resolve({
             result: 'Error',
             statusText: 'Timeout',
@@ -131,7 +149,9 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
           });
         },
         onabort: () => {
-          debug('请求被中止', { url: options.url });
+          debug('请求被中止', {
+            url: options.url
+          });
           resolve({
             result: 'Error',
             statusText: 'Aborted',
@@ -141,7 +161,10 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
           });
         },
         onerror: (data) => {
-          debug('请求发生错误', { url: options.url, error: data });
+          debug('请求发生错误', {
+            url: options.url,
+            error: data
+          });
           resolve({
             result: 'Error',
             statusText: 'Error',
@@ -151,7 +174,10 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
           });
         },
         onload: (data) => {
-          debug('请求加载完成', { url: options.url, status: data.status });
+          debug('请求加载完成', {
+            url: options.url,
+            status: data.status
+          });
           processResponse(data, options);
           resolve({
             result: 'Success',
@@ -165,22 +191,43 @@ const httpRequest = async (options: httpRequestOptions, times = 0): Promise<http
         responseType: options.dataType || options.responseType
       };
 
-      debug('发送请求', { requestObj });
+      debug('发送请求', {
+        requestObj
+      });
       // @ts-ignore
       GM_xmlhttpRequest(requestObj);
     });
-    if (window.DEBUG) console.log('%cAuto-Task[httpRequest]:', 'color:blue', result);
+    if (window.DEBUG) {
+      console.log('%cAuto-Task[httpRequest]:', 'color:blue', result);
+    }
     if (result.status !== 600 && times < 2) {
-      debug('请求失败，准备重试', { status: result.status, retryTimes: times + 1 });
+      debug('请求失败，准备重试', {
+        status: result.status,
+        retryTimes: times + 1
+      });
       return await httpRequest(options, times + 1);
     }
-    debug('请求完成', { status: result.status, result: result.result });
+    debug('请求完成', {
+      status: result.status,
+      result: result.result
+    });
     return result;
   } catch (error) {
-    debug('请求发生JavaScript错误', { error });
-    console.log('%cAuto-Task[httpRequest]:', 'color:red', JSON.stringify({ errorMsg: error, options }));
+    debug('请求发生JavaScript错误', {
+      error
+    });
+    console.log('%cAuto-Task[httpRequest]:', 'color:red', JSON.stringify({
+      errorMsg: error,
+      options
+    }));
     throwError(error as Error, 'httpRequest');
-    return { result: 'JsError', statusText: 'Error', status: 604, error: error as Error, options };
+    return {
+      result: 'JsError',
+      statusText: 'Error',
+      status: 604,
+      error: error as Error,
+      options
+    };
   }
 };
 

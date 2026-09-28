@@ -36,8 +36,13 @@ import { debug } from './tools/debug';
  */
 const setGistData = async (token: string, gistId: string, fileName: string, content: commonObject): Promise<boolean> => {
   try {
-    debug('开始设置Gist数据', { gistId, fileName });
-    const logStatus = echoLog({ text: __('settingData') });
+    debug('开始设置Gist数据', {
+      gistId,
+      fileName
+    });
+    const logStatus = echoLog({
+      text: __('settingData')
+    });
 
     const contentData = JSON.stringify({
       files: {
@@ -46,9 +51,13 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
         }
       }
     });
-    debug('准备发送的数据', { contentData });
+    debug('准备发送的数据', {
+      contentData
+    });
 
-    const { result, statusText, status, data } = await httpRequest({
+    const {
+      result, statusText, status, data
+    } = await httpRequest({
       url: `https://api.github.com/gists/${gistId}`,
       headers: {
         Accept: 'application/vnd.github.v3+json',
@@ -61,14 +70,21 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
     });
 
     if (result !== 'Success') {
-      debug('设置Gist数据失败', { result, statusText, status });
+      debug('设置Gist数据失败', {
+        result,
+        statusText,
+        status
+      });
       logStatus.error(`${result}:${statusText}(${status})`);
       return false;
     }
 
     const expectedContent = JSON.stringify(content);
     if (data?.status !== 200 || data?.response?.files?.[fileName]?.content !== expectedContent) {
-      debug('设置Gist数据验证失败', { status: data?.status, content: data?.response?.files?.[fileName]?.content });
+      debug('设置Gist数据验证失败', {
+        status: data?.status,
+        content: data?.response?.files?.[fileName]?.content
+      });
       logStatus.error(`Error:${data?.statusText}(${data?.status})`);
       return false;
     }
@@ -77,7 +93,9 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
     logStatus.success();
     return true;
   } catch (error) {
-    debug('设置Gist数据发生错误', { error });
+    debug('设置Gist数据发生错误', {
+      error
+    });
     throwError(error as Error, 'setGistData');
     return false;
   }
@@ -106,10 +124,18 @@ const setGistData = async (token: string, gistId: string, fileName: string, cont
  */
 const getGistData = async (token: string, gistId: string, fileName: string, test = false): Promise<boolean | GlobalOptions> => {
   try {
-    debug('开始获取Gist数据', { gistId, fileName, test });
-    const logStatus = echoLog({ text: __('gettingData') });
+    debug('开始获取Gist数据', {
+      gistId,
+      fileName,
+      test
+    });
+    const logStatus = echoLog({
+      text: __('gettingData')
+    });
 
-    const { result, statusText, status, data } = await httpRequest({
+    const {
+      result, statusText, status, data
+    } = await httpRequest({
       url: `https://api.github.com/gists/${gistId}`,
       headers: {
         Accept: 'application/vnd.github.v3+json',
@@ -121,13 +147,19 @@ const getGistData = async (token: string, gistId: string, fileName: string, test
     });
 
     if (result !== 'Success') {
-      debug('获取Gist数据失败', { result, statusText, status });
+      debug('获取Gist数据失败', {
+        result,
+        statusText,
+        status
+      });
       logStatus.error(`${result}:${statusText}(${status})`);
       return false;
     }
 
     if (data?.status !== 200) {
-      debug('获取Gist数据状态码错误', { status: data?.status });
+      debug('获取Gist数据状态码错误', {
+        status: data?.status
+      });
       logStatus.error(`Error:${data?.statusText}(${data?.status})`);
       return false;
     }
@@ -148,17 +180,23 @@ const getGistData = async (token: string, gistId: string, fileName: string, test
 
     try {
       const formatedContent = JSON.parse(content);
-      debug('Gist数据解析成功', { contentLength: Object.keys(formatedContent).length });
+      debug('Gist数据解析成功', {
+        contentLength: Object.keys(formatedContent).length
+      });
       logStatus.success();
       return formatedContent;
     } catch (error) {
-      debug('Gist数据解析失败', { error });
+      debug('Gist数据解析失败', {
+        error
+      });
       logStatus.error(`Error:${__('errorRemoteDataFormat')}`);
       console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: getGistData\n${(error as Error).stack}`);
       return false;
     }
   } catch (error) {
-    debug('获取Gist数据发生错误', { error });
+    debug('获取Gist数据发生错误', {
+      error
+    });
     throwError(error as Error, 'getGistData');
     return false;
   }
@@ -185,7 +223,12 @@ interface GistOptions {
  * 所有操作都有适当的错误处理和用户反馈
  */
 const syncOptions = async (): Promise<void> => {
-  const saved = GM_getValue<GistOptions>('gistOptions') || { TOKEN: '', GIST_ID: '', FILE_NAME: '', SYNC_HISTORY: true };
+  const saved = GM_getValue<GistOptions>('gistOptions') || {
+    TOKEN: '',
+    GIST_ID: '',
+    FILE_NAME: '',
+    SYNC_HISTORY: true
+  };
   try {
     await showDialog({
       title: __('gistOptions'),
@@ -217,7 +260,9 @@ const syncOptions = async (): Promise<void> => {
         return !!success;
       },
       onOpen: (context) => {
-        const field = (id: string): HTMLInputElement => context.root.querySelector<HTMLInputElement>(`#${id}`)!;
+        const field = (id: string): HTMLInputElement => {
+          return context.root.querySelector<HTMLInputElement>(`#${id}`)!;
+        };
         field('github-token').value = saved.TOKEN;
         field('gist-id').value = saved.GIST_ID;
         field('file-name').value = saved.FILE_NAME;
@@ -227,13 +272,17 @@ const syncOptions = async (): Promise<void> => {
             // Snapshot the current form before any asynchronous work. No dialog replacement or global handlers.
             const options = readOptions(context.root);
             GM_setValue('gistOptions', options);
-            const include = (name: string): boolean => name !== 'gistOptions' &&
+            const include = (name: string): boolean => {
+              return name !== 'gistOptions' &&
               !/^[\w]+?Auth$/.test(name) && (options.SYNC_HISTORY || !/^[\w]+?Tasks-/.test(name));
+            };
             if (direction === 'upload') {
               context.status(__('processingData'));
               const data: commonObject = {};
               for (const name of GM_listValues()) {
-                if (include(name)) data[name] = GM_getValue(name);
+                if (include(name)) {
+                  data[name] = GM_getValue(name);
+                }
               }
               context.status(__('updatingData'));
               const success = await setGistData(options.TOKEN, options.GIST_ID, options.FILE_NAME, data);
@@ -247,30 +296,44 @@ const syncOptions = async (): Promise<void> => {
               }
               context.status(__('savingData'));
               for (const [name, value] of Object.entries(data)) {
-                if (include(name)) GM_setValue(name, value);
+                if (include(name)) {
+                  GM_setValue(name, value);
+                }
               }
               context.status(__('syncDataSuccess'), 'success');
             }
           });
         };
-        context.root.querySelector('#upload-data')!.addEventListener('click', () => { void transfer('upload'); });
-        context.root.querySelector('#download-data')!.addEventListener('click', () => { void transfer('download'); });
+        context.root.querySelector('#upload-data')!.addEventListener('click', () => {
+          void transfer('upload');
+        });
+        context.root.querySelector('#download-data')!.addEventListener('click', () => {
+          void transfer('download');
+        });
       }
     });
   } catch (error) {
-    toast({ title: __('error'), text: error instanceof Error ? error.message : String(error), icon: 'error' });
+    toast({
+      title: __('error'),
+      text: error instanceof Error ? error.message : String(error),
+      icon: 'error'
+    });
   }
 };
 
 const readOptions = (root: HTMLDialogElement): GistOptions => {
-  const value = (id: string): string => root.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
+  const value = (id: string): string => {
+    return root.querySelector<HTMLInputElement>(`#${id}`)!.value.trim();
+  };
   const options = {
     TOKEN: value('github-token'),
     GIST_ID: value('gist-id'),
     FILE_NAME: value('file-name'),
     SYNC_HISTORY: root.querySelector<HTMLInputElement>('#sync-history')!.checked
   };
-  if (!options.TOKEN || !options.GIST_ID || !options.FILE_NAME) throw new Error(__('saveAndTestNotice'));
+  if (!options.TOKEN || !options.GIST_ID || !options.FILE_NAME) {
+    throw new Error(__('saveAndTestNotice'));
+  }
   return options;
 };
 

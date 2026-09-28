@@ -258,7 +258,8 @@
       width: 14px !important;
       height: 14px !important;
       flex-shrink: 0 !important;
-      margin-top: 1px;
+      vertical-align: middle;
+      margin-top: 0;
       margin-right: 8px;
       background-size: 14px !important;
       background-repeat: no-repeat !important;
@@ -291,6 +292,7 @@
     display: inline-block;
 
     &[data-status="loading"] {
+      vertical-align: middle;
       width: 0.85em;
       height: 0.85em;
       border: 2px solid var(--at-border);
@@ -356,6 +358,7 @@
 // Button Container
 // ============================================================
 #auto-task-buttons {
+  box-sizing: border-box !important;
   position: fixed !important;
   top: 30px !important;
   right: 15px !important;
@@ -403,9 +406,18 @@
 
   a.auto-task-website-btn {
     @extend .colorful-button;
+    box-sizing: border-box !important;
     width: 118px !important;
-    min-height: 30px !important;
+    min-width: 118px !important;
+    max-width: 118px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+    flex: 0 0 auto !important;
+    font-family: Arial, "Microsoft YaHei", sans-serif !important;
     font-size: 13px !important;
+    line-height: 20px !important;
+    white-space: nowrap !important;
     display: flex !important;
     margin: 0 auto !important;
     padding: 6px 12px !important;

@@ -2,7 +2,7 @@
 node_modules
 
 src/scripts/social/Instagram.ts
-test/*
+test/
 CHANGELOG.md
 
 .claude

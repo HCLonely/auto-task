@@ -13,6 +13,25 @@
   const yaml = require('js-yaml');
   const chalk = await import('chalk');
 
+  const writeIfChanged = async (file, content) => {
+    if (fs.existsSync(file) && fs.readFileSync(file, 'utf8') === content) {
+      return;
+    }
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        fs.writeFileSync(file, content);
+        return;
+      } catch (error) {
+        // Windows may temporarily deny opening a file held by another process.
+        if (process.platform !== 'win32' || error.syscall !== 'open'
+          || !['UNKNOWN', 'EBUSY', 'EPERM', 'EACCES'].includes(error.code) || attempt >= 4) {
+          throw error;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100 * (attempt + 1)));
+      }
+    }
+  };
+
   const settings = yaml.load(fs.readFileSync('./.github/workflows/Release.yml', 'utf8'));
   if (!settings) {
     return console.log(`'./.github/workflows/Release.yml' ${chalk.default.red.bold('not found')}!`);
@@ -26,15 +45,18 @@
   const options = {};
 
   if (!fs.existsSync('./CHANGELOG.md')) {
-    fs.writeFileSync('./CHANGELOG.md', '');
+    await writeIfChanged('./CHANGELOG.md', '');
   }
   const changelog = fs.readFileSync('./CHANGELOG.md', 'utf8').trim();
   const package = fs.readJSONSync('./package.json');
-  package.change = changelog.split('\n').map(line => line.replace(/^-\s*/, '').trim()).filter(line => line);
-  fs.writeFileSync('./package.json', JSON.stringify(package, null, 2));
+  const changes = changelog.split('\n').map(line => line.replace(/^-\s*/, '').trim()).filter(line => line);
+  if (JSON.stringify(package.change) !== JSON.stringify(changes)) {
+    package.change = changes;
+    await writeIfChanged('./package.json', JSON.stringify(package, null, 2));
+  }
   if (package.version === releaseStep.with.name) {
     settings.on = 'workflow_dispatch';
-    fs.writeFileSync('./.github/workflows/Release.yml', yaml.dump(settings));
+    await writeIfChanged('./.github/workflows/Release.yml', yaml.dump(settings));
     console.log(`Version ${chalk.default.yellow.bold('not be changed')}!`);
   }
   settings.on = {
@@ -59,7 +81,7 @@ dist/auto-task.min.all.user.js
 dist/auto-task.compatibility.all.user.js`;
   options.token = '${{ github.TOKEN }}';
   releaseStep.with = options;
-  fs.writeFileSync('./.github/workflows/Release.yml', yaml.dump(settings));
+  await writeIfChanged('./.github/workflows/Release.yml', yaml.dump(settings));
   console.log(`Release action changed ${chalk.default.green.bold('successfully')}!`);
 
 })();

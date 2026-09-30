@@ -125,14 +125,6 @@
 
 console.log('%c%s', 'color:blue', 'Auto-Task[Load]: 脚本开始加载');
 
-/*
- * @Author       : HCLonely
- * @Date         : 2025-06-15 14:59:17
- * @LastEditTime : 2025-08-18 19:05:01
- * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/scripts/checkDependence.js
- * @Description  :
- */
 const neededDependencies = ['jQuery', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');

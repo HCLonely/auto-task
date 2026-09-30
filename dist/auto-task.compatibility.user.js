@@ -125,14 +125,6 @@
 
 console.log('%c%s', 'color:blue', 'Auto-Task[Load]: 脚本开始加载');
 
-/*
- * @Author       : HCLonely
- * @Date         : 2025-06-15 14:59:17
- * @LastEditTime : 2025-08-18 19:05:01
- * @LastEditors  : HCLonely
- * @FilePath     : /auto-task/src/scripts/checkDependence.js
- * @Description  :
- */
 const neededDependencies = ['jQuery', 'util', 'browser'];
 
 const missingDependencies = neededDependencies.filter(dependency => typeof window[dependency] === 'undefined');
@@ -148,131 +140,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-function ownKeys(e, r) {
-  var t = Object.keys(e);
-  if (Object.getOwnPropertySymbols) {
-    var o = Object.getOwnPropertySymbols(e);
-    r && (o = o.filter((function(r) {
-      return Object.getOwnPropertyDescriptor(e, r).enumerable;
-    }))), t.push.apply(t, o);
-  }
-  return t;
-}
-
-function _objectSpread(e) {
-  for (var r = 1; r < arguments.length; r++) {
-    var t = null != arguments[r] ? arguments[r] : {};
-    r % 2 ? ownKeys(Object(t), !0).forEach((function(r) {
-      _defineProperty(e, r, t[r]);
-    })) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach((function(r) {
-      Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r));
-    }));
-  }
-  return e;
-}
-
-function _defineProperty(e, r, t) {
-  return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
-    value: t,
-    enumerable: !0,
-    configurable: !0,
-    writable: !0
-  }) : e[r] = t, e;
-}
-
-function _toPropertyKey(t) {
-  var i = _toPrimitive(t, 'string');
-  return 'symbol' == typeof i ? i : i + '';
-}
-
-function _toPrimitive(t, r) {
-  if ('object' != typeof t || !t) {
-    return t;
-  }
-  var e = t[Symbol.toPrimitive];
-  if (void 0 !== e) {
-    var i = e.call(t, r || 'default');
-    if ('object' != typeof i) {
-      return i;
-    }
-    throw new TypeError('@@toPrimitive must return a primitive value.');
-  }
-  return ('string' === r ? String : Number)(t);
-}
-
-function _toArray(r) {
-  return _arrayWithHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableRest();
-}
-
-function _iterableToArray(r) {
-  if ('undefined' != typeof Symbol && null != r[Symbol.iterator] || null != r['@@iterator']) {
-    return Array.from(r);
-  }
-}
-
-function _slicedToArray(r, e) {
-  return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest();
-}
-
-function _nonIterableRest() {
-  throw new TypeError('Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.');
-}
-
-function _unsupportedIterableToArray(r, a) {
-  if (r) {
-    if ('string' == typeof r) {
-      return _arrayLikeToArray(r, a);
-    }
-    var t = {}.toString.call(r).slice(8, -1);
-    return 'Object' === t && r.constructor && (t = r.constructor.name), 'Map' === t || 'Set' === t ? Array.from(r) : 'Arguments' === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0;
-  }
-}
-
-function _arrayLikeToArray(r, a) {
-  (null == a || a > r.length) && (a = r.length);
-  for (var e = 0, n = Array(a); e < a; e++) {
-    n[e] = r[e];
-  }
-  return n;
-}
-
-function _iterableToArrayLimit(r, l) {
-  var t = null == r ? null : 'undefined' != typeof Symbol && r[Symbol.iterator] || r['@@iterator'];
-  if (null != t) {
-    var e, n, i, u, a = [], f = !0, o = !1;
-    try {
-      if (i = (t = t.call(r)).next, 0 === l) {
-        if (Object(t) !== t) {
-          return;
-        }
-        f = !1;
-      } else {
-        for (;!(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) {}
-      }
-    } catch (r) {
-      o = !0, n = r;
-    } finally {
-      try {
-        if (!f && null != t.return && (u = t.return(), Object(u) !== u)) {
-          return;
-        }
-      } finally {
-        if (o) {
-          throw n;
-        }
-      }
-    }
-    return a;
-  }
-}
-
-function _arrayWithHoles(r) {
-  if (Array.isArray(r)) {
-    return r;
-  }
-}
-
-(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF, _globalOptions$global, _globalOptions$global2) {
+(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -304,15 +172,12 @@ function _arrayWithHoles(r) {
   const maskString = str => {
     let masked = str;
     for (const pattern of tokenStringPatterns) {
-      masked = masked.replace(pattern, (function(match) {
-        for (var _len = arguments.length, groups = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          groups[_key - 1] = arguments[_key];
-        }
+      masked = masked.replace(pattern, ((match, ...groups) => {
         if (groups.length >= 3 && match.includes('.')) {
-          return groups.map((seg => seg.length > 8 ? ''.concat(seg.slice(0, 4), '***').concat(seg.slice(-4)) : seg)).join('.');
+          return groups.map((seg => seg.length > 8 ? `${seg.slice(0, 4)}***${seg.slice(-4)}` : seg)).join('.');
         }
         if (match.length > 8) {
-          return ''.concat(match.slice(0, 4), '***').concat(match.slice(-4));
+          return `${match.slice(0, 4)}***${match.slice(-4)}`;
         }
         return match;
       }));
@@ -330,17 +195,13 @@ function _arrayWithHoles(r) {
   const consoleLogHook = () => {
     const originalLog = console.log;
     window.__allLogs = window.__allLogs || [];
-    console.log = function() {
-      for (var _len2 = arguments.length, args = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        args[_key2] = arguments[_key2];
-      }
+    console.log = function(...args) {
       const maskedArgs = maskArgs(args);
       window.__allLogs.push(maskedArgs);
       originalLog.apply(console, maskedArgs);
     };
   };
-  const bindHotkey = function(shortcut, callback) {
-    let target = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : document;
+  const bindHotkey = (shortcut, callback, target = document) => {
     const normalized = shortcut.toLowerCase().trim().replace(/\+\s*\+$/, '+ plus');
     const parts = (normalized === '+' ? [ 'plus' ] : normalized.split(/\s*\+\s*/)).map((part => part.trim()));
     const aliases = {
@@ -358,12 +219,12 @@ function _arrayWithHoles(r) {
     if (mainKeys.length !== 1 || !mainKeys[0]) {
       return () => {};
     }
-    const _mainKeys = _slicedToArray(mainKeys, 1), key = _mainKeys[0];
+    const [key] = mainKeys;
     const listener = event => {
       if (event.repeat || event.isComposing) {
         return;
       }
-      if (modifiers.some((modifier => event[''.concat(modifier, 'Key')] !== keys.includes(modifier)))) {
+      if (modifiers.some((modifier => event[`${modifier}Key`] !== keys.includes(modifier)))) {
         return;
       }
       const pressed = /^[a-z]$/.test(key) && /^Key[A-Z]$/.test(event.code) ? event.code.slice(3).toLowerCase() : event.key.toLowerCase();
@@ -388,7 +249,7 @@ function _arrayWithHoles(r) {
     const envInfo = {
       website: window.location.href,
       browser: JSON.stringify(await browser.getInfo(), null, 2),
-      manager: ''.concat(GM_info.scriptHandler, ' ').concat(GM_info.version),
+      manager: `${GM_info.scriptHandler} ${GM_info.version}`,
       userScript: GM_info.script.version,
       logs: '',
       runLogs: getRunLogs()
@@ -402,7 +263,7 @@ function _arrayWithHoles(r) {
       errorStackLength: errorStack.length
     });
     const params = {
-      title: '[BUG] 脚本报错: '.concat(name),
+      title: `[BUG] 脚本报错: ${name}`,
       labels: 'bug',
       template: 'bug_report.yml',
       website: envInfo.website,
@@ -420,7 +281,7 @@ function _arrayWithHoles(r) {
   const generateGithubLink = async (name, errorStack, envInfo) => {
     debug.debug('开始生成GitHub Issue链接');
     const params = new URLSearchParams(await buildGithubIssueParams(name, errorStack, envInfo));
-    const link = 'https://github.com/HCLonely/auto-task/issues/new?'.concat(params.toString());
+    const link = `https://github.com/HCLonely/auto-task/issues/new?${params.toString()}`;
     debug.debug('GitHub Issue链接生成完成', {
       link: link
     });
@@ -430,7 +291,7 @@ function _arrayWithHoles(r) {
     debug.debug('记录错误日志', {
       name: name
     });
-    console.log('%c%s', 'color:white;background:red', 'Auto-Task[Error]: '.concat(name, '\n').concat(errorStack));
+    console.log('%c%s', 'color:white;background:red', `Auto-Task[Error]: ${name}\n${errorStack}`);
   };
   const handleErrorReport = async (platform, name, errorStack, envInfo) => {
     debug.debug('开始处理错误报告', {
@@ -462,13 +323,13 @@ function _arrayWithHoles(r) {
     const envInfo = await getEnvironmentInfo();
     envInfo.logs = errorStack;
     debug.debug('显示错误报告对话框');
-    const _await$dialog$showDia = await dialog.showDialog({
+    const {isConfirmed: isConfirmed} = await dialog.showDialog({
       title: __.default('errorReport'),
       icon: 'error',
       showCancelButton: true,
       confirmButtonText: __.default('toGithub'),
       cancelButtonText: __.default('close')
-    }), isConfirmed = _await$dialog$showDia.isConfirmed;
+    });
     if (isConfirmed) {
       debug.debug('用户确认提交错误报告');
       await handleErrorReport('github', name, errorStack, envInfo);
@@ -490,7 +351,7 @@ function _arrayWithHoles(r) {
       return headers;
     }
     headerString.split('\n').forEach((header => {
-      const _header$trim$split = header.trim().split(':'), _header$trim$split2 = _toArray(_header$trim$split), name = _header$trim$split2[0], values = _header$trim$split2.slice(1);
+      const [name, ...values] = header.trim().split(':');
       const value = values.join(':').trim();
       if (!name || !value) {
         return;
@@ -520,18 +381,17 @@ function _arrayWithHoles(r) {
     debug.debug('响应头处理完成', {
       finalUrl: data.finalUrl
     });
-    if (options.responseType === 'json' && data !== null && data !== void 0 && data.response && typeof data.response !== 'object') {
+    if (options.responseType === 'json' && data?.response && typeof data.response !== 'object') {
       debug.debug('尝试解析JSON响应');
       try {
         data.response = JSON.parse(data.responseText);
         debug.debug('JSON解析成功');
-      } catch (_unused) {
+      } catch {
         debug.debug('JSON解析失败，保持原始响应');
       }
     }
   };
-  const httpRequest = async function(options) {
-    let times = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  const httpRequest = async (options, times = 0) => {
     debug.debug('开始HTTP请求', {
       url: options.url,
       method: options.method,
@@ -542,7 +402,7 @@ function _arrayWithHoles(r) {
     }
     try {
       const result = await new Promise((resolve => {
-        const requestObj = _objectSpread(_objectSpread({
+        const requestObj = {
           fetch: true,
           timeout: 3e4,
           ontimeout: data => {
@@ -595,10 +455,10 @@ function _arrayWithHoles(r) {
               data: data,
               options: options
             });
-          }
-        }, options), {}, {
+          },
+          ...options,
           responseType: options.dataType || options.responseType
-        });
+        };
         debug.debug('发送请求', {
           requestObj: requestObj
         });
@@ -644,30 +504,28 @@ function _arrayWithHoles(r) {
   };
   const checkUpdate = async (updateLink, auto) => {
     try {
-      var _data$response;
       debug.debug('开始检查更新', {
         updateLink: updateLink,
         auto: auto
       });
-      const checkUrl = ''.concat(updateLink, 'package.json?time=').concat(Date.now());
+      const checkUrl = `${updateLink}package.json?time=${Date.now()}`;
       debug.debug('构建检查URL', {
         checkUrl: checkUrl
       });
-      const _await$httpRequest = await httpRequest({
+      const {result: result, statusText: statusText, status: status, data: data} = await httpRequest({
         url: checkUrl,
         responseType: 'json',
         method: 'GET',
         timeout: 3e4
-      }), result = _await$httpRequest.result, statusText = _await$httpRequest.statusText, status = _await$httpRequest.status, data = _await$httpRequest.data;
-      if (result === 'Success' && data !== null && data !== void 0 && (_data$response = data.response) !== null && _data$response !== void 0 && _data$response.version) {
+      });
+      if (result === 'Success' && data?.response?.version) {
         debug.debug('成功获取更新信息', {
           version: data.response.version
         });
         return data.response;
       }
       if (!auto) {
-        var _data$response2;
-        const errorMessage = data !== null && data !== void 0 && (_data$response2 = data.response) !== null && _data$response2 !== void 0 && _data$response2.version ? ''.concat(__.default('checkUpdateFailed'), '[').concat(data === null || data === void 0 ? void 0 : data.statusText, '(').concat(data === null || data === void 0 ? void 0 : data.status, ')]') : ''.concat(__.default('checkUpdateFailed'), '[').concat(result, ':').concat(statusText, '(').concat(status, ')]');
+        const errorMessage = data?.response?.version ? `${__.default('checkUpdateFailed')}[${data?.statusText}(${data?.status})]` : `${__.default('checkUpdateFailed')}[${result}:${statusText}(${status})]`;
         debug.debug('检查更新失败', {
           errorMessage: errorMessage
         });
@@ -694,8 +552,8 @@ function _arrayWithHoles(r) {
         currentVersion: currentVersion,
         remoteVersion: remoteVersion
       });
-      const _currentVersion$split = currentVersion.split('-'), _currentVersion$split2 = _slicedToArray(_currentVersion$split, 1), currentRealVersion = _currentVersion$split2[0];
-      const _remoteVersion$split = remoteVersion.split('-'), _remoteVersion$split2 = _slicedToArray(_remoteVersion$split, 2), remoteRealVersion = _remoteVersion$split2[0], isPreview = _remoteVersion$split2[1];
+      const [currentRealVersion] = currentVersion.split('-');
+      const [remoteRealVersion, isPreview] = remoteVersion.split('-');
       if (isPreview && !globalOptions.globalOptions.other.receivePreview) {
         debug.debug('不接收预览版本', {
           isPreview: isPreview
@@ -754,20 +612,19 @@ function _arrayWithHoles(r) {
       newVersion: packageData.version
     });
     if (hasNewVersion(currentVersion, packageData.version)) {
-      var _packageData$change, _packageData$change2;
-      const scriptUrl = ''.concat(updateLink, 'dist/').concat(GM_info.script.name, '.user.js');
+      const scriptUrl = `${updateLink}dist/${GM_info.script.name}.user.js`;
       debug.debug('发现新版本，显示更新通知', {
         scriptUrl: scriptUrl
       });
       echoLog.default({
-        html: '<li><font>'.concat(__.default('newVersionNotice', packageData.version, scriptUrl), '</font></li>')
+        html: `<li><font>${__.default('newVersionNotice', packageData.version, scriptUrl)}</font></li>`
       });
-      const changeList = ((_packageData$change = packageData.change) === null || _packageData$change === void 0 ? void 0 : _packageData$change.map((change => '<li>'.concat(change, '</li>'))).join('')) || '';
+      const changeList = packageData.change?.map((change => `<li>${change}</li>`)).join('') || '';
       debug.debug('显示更新日志', {
-        changeListLength: (_packageData$change2 = packageData.change) === null || _packageData$change2 === void 0 ? void 0 : _packageData$change2.length
+        changeListLength: packageData.change?.length
       });
       echoLog.default({
-        html: '<li>'.concat(__.default('updateText', packageData.version), '</li><ol class="update-text">').concat(changeList, '<li>').concat(__.default('updateHistory'), '</li></ol>')
+        html: `<li>${__.default('updateText', packageData.version)}</li><ol class="update-text">${changeList}<li>${__.default('updateHistory')}</li></ol>`
       });
     } else {
       debug.debug('当前已是最新版本');
@@ -824,7 +681,7 @@ function _arrayWithHoles(r) {
   }
   try {
     const style = GM_getResourceText('autoTaskStyle');
-    if (!(style !== null && style !== void 0 && style.trim())) {
+    if (!style?.trim()) {
       throw new Error('Auto-Task CSS resource is empty');
     }
     window.STYLE = GM_addStyle(style);
@@ -832,14 +689,14 @@ function _arrayWithHoles(r) {
     console.error('Auto-Task[Error]: 样式初始化失败，请重新安装脚本或使用全资源版本 (.all.user.js)', error);
     throw error;
   }
-  window.DEBUG = !!((_globalOptions$global = globalOptions.globalOptions.other) !== null && _globalOptions$global !== void 0 && _globalOptions$global.debug);
-  window.TRACE = !!((_globalOptions$global2 = globalOptions.globalOptions.other) !== null && _globalOptions$global2 !== void 0 && _globalOptions$global2.debug) && typeof console.trace === 'function';
+  window.DEBUG = !!globalOptions.globalOptions.other?.debug;
+  window.TRACE = !!globalOptions.globalOptions.other?.debug && typeof console.trace === 'function';
   const initializeUI = website => {
     debug.debug('初始化UI元素', {
       website: website.name
     });
     const $body = $('body');
-    $body.append('\n    <div id="auto-task-info"\n        style="display:'.concat(globalOptions.globalOptions.other.defaultShowLog ? 'block' : 'none', ';\n                ').concat(globalOptions.globalOptions.position.logSideX, ':').concat(globalOptions.globalOptions.position.logDistance.split(',')[0], 'px;\n                ').concat(globalOptions.globalOptions.position.logSideY, ':').concat(globalOptions.globalOptions.position.logDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease forwards;">\n    </div>\n    <div id="auto-task-buttons"\n        style="display:').concat(globalOptions.globalOptions.other.defaultShowButton ? 'block' : 'none', ';\n                ').concat(globalOptions.globalOptions.position.buttonSideX, ':').concat(globalOptions.globalOptions.position.buttonDistance.split(',')[0], 'px;\n                ').concat(globalOptions.globalOptions.position.buttonSideY, ':').concat(globalOptions.globalOptions.position.buttonDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease 0.2s forwards;">\n    </div>\n    <div class="show-button-div"\n        style="display:').concat(globalOptions.globalOptions.other.defaultShowButton ? 'none' : 'block', ';\n                ').concat(globalOptions.globalOptions.position.showButtonSideX, ':').concat(globalOptions.globalOptions.position.showButtonDistance.split(',')[0], 'px;\n                ').concat(globalOptions.globalOptions.position.showButtonSideY, ':').concat(globalOptions.globalOptions.position.showButtonDistance.split(',')[1], 'px;\n                opacity: 0;\n                animation: fadeInScale 0.5s ease 0.4s forwards;">\n      <a class="auto-task-website-btn show-button-link"\n        href="javascript:void(0);"\n        target="_self"\n        title="').concat(__.default('showButton'), '">\n      </a>\n    </div>\n  '));
+    $body.append(`\n    <div id="auto-task-info"\n        style="display:${globalOptions.globalOptions.other.defaultShowLog ? 'block' : 'none'};\n                ${globalOptions.globalOptions.position.logSideX}:${globalOptions.globalOptions.position.logDistance.split(',')[0]}px;\n                ${globalOptions.globalOptions.position.logSideY}:${globalOptions.globalOptions.position.logDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease forwards;">\n    </div>\n    <div id="auto-task-buttons"\n        style="display:${globalOptions.globalOptions.other.defaultShowButton ? 'block' : 'none'};\n                ${globalOptions.globalOptions.position.buttonSideX}:${globalOptions.globalOptions.position.buttonDistance.split(',')[0]}px;\n                ${globalOptions.globalOptions.position.buttonSideY}:${globalOptions.globalOptions.position.buttonDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInUp 0.6s ease 0.2s forwards;">\n    </div>\n    <div class="show-button-div"\n        style="display:${globalOptions.globalOptions.other.defaultShowButton ? 'none' : 'block'};\n                ${globalOptions.globalOptions.position.showButtonSideX}:${globalOptions.globalOptions.position.showButtonDistance.split(',')[0]}px;\n                ${globalOptions.globalOptions.position.showButtonSideY}:${globalOptions.globalOptions.position.showButtonDistance.split(',')[1]}px;\n                opacity: 0;\n                animation: fadeInScale 0.5s ease 0.4s forwards;">\n      <a class="auto-task-website-btn show-button-link"\n        href="javascript:void(0);"\n        target="_self"\n        title="${__.default('showButton')}">\n      </a>\n    </div>\n  `);
     const $autoTaskInfo = $('#auto-task-info');
     const $autoTaskButtons = $('#auto-task-buttons');
     const $showButtonDiv = $('div.show-button-div');
@@ -848,10 +705,10 @@ function _arrayWithHoles(r) {
       $showButtonDiv.hide();
     }));
     if (website.buttons && $autoTaskButtons.children().length === 0) {
-      $autoTaskButtons.addClass(''.concat(website.name, '-buttons'));
+      $autoTaskButtons.addClass(`${website.name}-buttons`);
       for (const button of website.buttons) {
         if (website[button]) {
-          const btnElement = $('<p><a class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self">').concat(__.default(button), '</a></p>'));
+          const btnElement = $(`<p><a class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self">${__.default(button)}</a></p>`);
           btnElement.find('a.auto-task-website-btn').on('click', (() => {
             website[button]();
           }));
@@ -859,12 +716,12 @@ function _arrayWithHoles(r) {
         }
       }
     }
-    const hideButtonElement = $('<p><a class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self">').concat(__.default('hideButton'), '</a></p>'));
+    const hideButtonElement = $(`<p><a class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self">${__.default('hideButton')}</a></p>`);
     hideButtonElement.find('a.auto-task-website-btn').on('click', (() => {
       $autoTaskButtons.hide();
       $showButtonDiv.show();
     }));
-    const toggleLogElement = $('<p><a id="toggle-log" class="auto-task-website-btn '.concat(website.name, '-button" href="javascript:void(0);" target="_self" data-status="').concat(globalOptions.globalOptions.other.defaultShowLog ? 'show' : 'hide', '">').concat(globalOptions.globalOptions.other.defaultShowLog ? __.default('hideLog') : __.default('showLog'), '</a></p>'));
+    const toggleLogElement = $(`<p><a id="toggle-log" class="auto-task-website-btn ${website.name}-button" href="javascript:void(0);" target="_self" data-status="${globalOptions.globalOptions.other.defaultShowLog ? 'show' : 'hide'}">${globalOptions.globalOptions.other.defaultShowLog ? __.default('hideLog') : __.default('showLog')}</a></p>`);
     const toggleLog = () => {
       const $toggleLog = $('#toggle-log');
       const status = $toggleLog.attr('data-status');
@@ -921,14 +778,14 @@ function _arrayWithHoles(r) {
       return;
     }
     const stopPlayTimeMinutes = Math.floor((Date.now() - stopPlayTime) / 6e4);
-    const _await$dialog$showDia2 = await dialog.showDialog({
+    const {value: value} = await dialog.showDialog({
       title: __.default('stopPlayTimeTitle'),
       text: __.default('stopPlayTimeText', stopPlayTimeMinutes.toString()),
       icon: 'warning',
       confirmButtonText: __.default('confirm'),
       cancelButtonText: __.default('cancel'),
       showCancelButton: true
-    }), value = _await$dialog$showDia2.value;
+    });
     if (!value) {
       return;
     }
@@ -954,23 +811,20 @@ function _arrayWithHoles(r) {
     } catch (error) {
       console.error('SteamASF operation failed:', error);
     } finally {
-      var _steamASF;
-      (_steamASF = steamASF) === null || _steamASF === void 0 || _steamASF.dispose();
+      steamASF?.dispose();
       steamASF = null;
     }
   };
   const checkVersionAndNotice = () => {
     debug.debug('检查版本和通知');
-    const _GM_info = GM_info, scriptHandler = _GM_info.scriptHandler;
+    const {scriptHandler: scriptHandler} = GM_info;
     if (scriptHandler === 'Tampermonkey') {
-      var _GM_info$version;
-      const _ref = ((_GM_info$version = GM_info.version) === null || _GM_info$version === void 0 ? void 0 : _GM_info$version.split('.')) || [], _ref2 = _slicedToArray(_ref, 2), v1 = _ref2[0], v2 = _ref2[1];
+      const [v1, v2] = GM_info.version?.split('.') || [];
       if (!(parseInt(v1, 10) >= 5 && parseInt(v2, 10) >= 2)) {
         echoLog.default({}).error(__.default('versionNotMatched'));
       }
     } else if (scriptHandler !== 'Violentmonkey') {
-      var _GM_info$version2;
-      const _ref3 = ((_GM_info$version2 = GM_info.version) === null || _GM_info$version2 === void 0 ? void 0 : _GM_info$version2.split('.')) || [], _ref4 = _slicedToArray(_ref3, 2), v1 = _ref4[0], v2 = _ref4[1];
+      const [v1, v2] = GM_info.version?.split('.') || [];
       if (!(parseInt(v1, 10) >= 2 && parseInt(v2, 10) >= 36)) {
         echoLog.default({}).error(__.default('versionNotMatched'));
       }
@@ -982,12 +836,10 @@ function _arrayWithHoles(r) {
       return;
     }
     if (!GM_getValue('notice')) {
-      var _echoLog$default$font;
       dialog.showDialog({
         title: __.default('installNotice'),
         icon: 'warning'
-      }).then((_ref5 => {
-        let isConfirmed = _ref5.isConfirmed;
+      }).then((({isConfirmed: isConfirmed}) => {
         if (!isConfirmed) {
           return;
         }
@@ -996,9 +848,9 @@ function _arrayWithHoles(r) {
         });
         GM_setValue('notice', (new Date).getTime());
       }));
-      (_echoLog$default$font = echoLog.default({
-        html: '<li><font class="warning">'.concat(__.default('echoNotice', __.default('noticeLink')), '</font></li>')
-      }).font) === null || _echoLog$default$font === void 0 || _echoLog$default$font.find('a').on('click', (() => {
+      echoLog.default({
+        html: `<li><font class="warning">${__.default('echoNotice', __.default('noticeLink'))}</font></li>`
+      }).font?.find('a').on('click', (() => {
         GM_setValue('notice', (new Date).getTime());
       }));
     }

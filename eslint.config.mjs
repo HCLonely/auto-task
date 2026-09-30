@@ -26,7 +26,17 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default defineConfig([globalIgnores(["dist/**/*", "src/header.js", ".history/**/*", "node_modules/**/*", "**/*.user.js", "*.config.js", "test/**/*", "*.js"]), {
+export default defineConfig([globalIgnores([
+    "dist/**/*",
+    "src/header.js",
+    ".history/**/*",
+    "node_modules/**/*",
+    "**/*.user.js",
+    "*.config.js",
+    "test/**/*",
+    "doc/docs/.vitepress/**/*",
+    "*.js"
+]), {
     files: ["src/**/*.ts"],
     ignores: ["src/modules/**"],
     extends: fixupConfigRules(compat.extends(

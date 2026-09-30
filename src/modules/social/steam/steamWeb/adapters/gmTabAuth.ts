@@ -11,7 +11,7 @@ import type { Context } from '../context';
 import type { Auth, GMAuthAPI, GMTab } from '../types';
 import { getDefaultGM } from './gmStorage';
 
-type AuthTarget = 'store' | 'community';
+export type AuthTarget = 'store' | 'community';
 interface PendingAuth { id: string; expiresAt: number }
 interface AuthReply { id: string; auth: Auth }
 const hosts = {

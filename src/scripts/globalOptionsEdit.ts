@@ -29,7 +29,7 @@ interface FormDataItem {
  * @typedef {('page'|'dialog')} ShowType
  * @description 定义选项显示的方式：page-页面内显示，dialog-弹窗显示
  */
-type ShowType = 'page' | 'dialog';
+export type ShowType = 'page' | 'dialog';
 
 /**
  * 处理表单数据并更新全局选项

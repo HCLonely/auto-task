@@ -16,7 +16,7 @@ import type { SocialModule, TaskOptions } from '../../modules/social/social/type
 import { bindModuleStatus } from './moduleBridge';
 import { debug } from '../tools/debug';
 
-interface toggleParams {
+export interface toggleParams {
   [name:string]:unknown
 }
 

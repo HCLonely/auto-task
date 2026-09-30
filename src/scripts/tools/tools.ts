@@ -23,7 +23,7 @@ interface RedirectLinksCache {
 /**
  * URL查询参数接口
  */
-interface UrlQuery {
+export interface UrlQuery {
   [name: string]: string;
 }
 

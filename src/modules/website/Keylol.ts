@@ -14,7 +14,7 @@ import __ from '../../scripts/tools/i18n';
 import { debug } from '../../scripts/tools/debug';
 
 // 添加更详细的类型定义
-type TaskAction = 'do' | 'undo';
+export type TaskAction = 'do' | 'undo';
 
 interface TaskButton extends HTMLElement {
   /**

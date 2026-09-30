@@ -12,7 +12,7 @@ import httpRequest from '../../scripts/tools/httpRequest';
 import throwError from '../../scripts/tools/throwError';
 import { debug } from '../../scripts/tools/debug';
 
-type status = 'Ended' | 'Won' | 'Active' | `Active(${string})` | 'Banned' | 'Paused' | 'NotStart' | false;
+export type status = 'Ended' | 'Won' | 'Active' | `Active(${string})` | 'Banned' | 'Paused' | 'NotStart' | false;
 
 /**
  * leftKeyChecker 是一个用于分类和检测不同链接状态的对象。

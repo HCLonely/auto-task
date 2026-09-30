@@ -9,7 +9,7 @@
 
 import __ from '../tools/i18n';
 
-type Tone = 'success' | 'error' | 'warning' | 'info';
+export type Tone = 'success' | 'error' | 'warning' | 'info';
 export interface DialogResult<T> {
   isConfirmed: boolean;
   isDenied: boolean;
@@ -33,7 +33,7 @@ export interface DialogContext {
    */
   run: (operation: () => Promise<void>) => Promise<void>;
 }
-interface DialogOptions<T> {
+export interface DialogOptions<T> {
   title: string;
   text?: string;
   /** Only application-owned templates belong here; put external values in textContent/value. */

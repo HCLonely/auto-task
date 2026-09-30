@@ -77,7 +77,7 @@ const inferStatus = (content: string): StatusKind => {
 /**
  * 日志状态接口定义
  */
-interface logStatus {
+export interface logStatus {
   font?: JQuery;
   /**
    * 设置操作前置处理器。

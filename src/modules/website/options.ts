@@ -11,7 +11,7 @@ import { showDialog, toast } from '../../scripts/ui/dialog';
 import __ from '../../scripts/tools/i18n';
 import throwError from '../../scripts/tools/throwError';
 import { debug } from '../../scripts/tools/debug';
-interface WebsiteOptions {
+export interface WebsiteOptions {
   [name: string]: string;
 }
 

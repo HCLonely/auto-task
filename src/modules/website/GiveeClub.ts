@@ -33,6 +33,8 @@ import { normalizeStoredTasks } from './taskModel';
  */
 class GiveeClub extends GiveawaySu {
   name = 'GiveeClub';
+  protected resetSteamAreaAfterTasks = false;
+  #submitListenerBound = false;
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -116,6 +118,20 @@ class GiveeClub extends GiveawaySu {
       if (!giveawayIdResult) {
         debug('获取抽奖ID失败');
         return false;
+      }
+
+      if (!this.#submitListenerBound) {
+        // 捕获阶段监听，兼容动态插入的按钮及按钮内的图标点击。
+        document.addEventListener('click', (event) => {
+          if (!event.isTrusted || !(event.target instanceof Element) ||
+            !event.target.closest('button#submitEventActions')) {
+            return;
+          }
+          void this.social.steam?.client.resetArea().catch((error: unknown) => {
+            throwError(error as Error, 'GiveeClub.submitEventActions->resetArea');
+          });
+        }, true);
+        this.#submitListenerBound = true;
       }
 
       this.initialized = true;

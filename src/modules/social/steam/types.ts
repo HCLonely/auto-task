@@ -20,7 +20,10 @@ export type TaskFlags = Record<Exclude<TaskType, 'curatorLikes'>, boolean>;
 export type LinkType = 'groupLinks' | 'officialGroupLinks' | 'wishlistLinks' | 'followLinks' | 'forumLinks' |
   'workshopLinks' | 'workshopVoteLinks' | 'curatorLinks' | 'curatorLikeLinks' | 'announcementLinks' |
   'licenseLinks' | 'playtestLinks' | 'playTimeLinks';
-export type SteamTaskOptions = Partial<Record<LinkType, string[]>>;
+export type SteamTaskOptions = Partial<Record<LinkType, string[]>> & {
+  /** 是否在批次结束后恢复商店地区，默认 true；关闭后需显式调用 resetArea()。 */
+  resetAreaAfterTasks?: boolean;
+};
 export interface SteamTaskDetailResult {
   success: boolean;
   results: Partial<Record<LinkType, Record<string, boolean>>>;

@@ -32,31 +32,7 @@
 
 ## 🛠 开发相关
 
-### 环境要求
-
-- Node.js: >=18.0.0
-- npm 或 yarn
-
-### 安装依赖
-
-```bash
-npm install
-# 或
-yarn install
-```
-
-### 构建命令
-
-```bash
-# 运行 ESLint 检查
-npm run lint
-
-# 修复 ESLint 问题
-npm run lint:fix
-
-# 构建项目
-npm run build
-```
+环境配置、构建、测试与排错见[开发指南](doc/docs/dev/README.md)。
 
 ## 📖 使用文档
 
@@ -77,9 +53,3 @@ npm run build
 
 ---
 如果这个项目对您有帮助，请考虑给它一个 Star ⭐️
-
-### 样式资源构建
-
-`npm run rollup` 会将 `src/style/auto-task.scss` 编译为 `dist/auto-task.css`，再由 `node build-all-static.js` 将 CSS 内嵌到三个全资源版本。可运行 `node --test tests/style-build.test.cjs` 验证产物。
-
-发布时需将 CSS 与脚本一起提交到版本 tag 并发布。资源地址固定到 `package.json` 对应的 `v<version>` tag；本地安装测试需使用已包含该 CSS 的 tag 或临时可访问资源地址。

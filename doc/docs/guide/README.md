@@ -66,6 +66,8 @@ lang: zh-CN
 
 ### Giveawaysu & GiveeClub
 
+> GiveeClub 任务执行完成后会保留临时切换的 Steam 商店地区，直到您点击网站的提交按钮（`button#submitEventActions`）才恢复原地区。
+
 - 登录检测（没登录则自动跳转到登录页面）
 - 剩余 Key 检测，如果赠 Key 结束则弹窗提醒
 - 做任务 & 撤销任务

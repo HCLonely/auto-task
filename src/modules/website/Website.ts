@@ -62,6 +62,7 @@ abstract class Website {
     steamCommunity: false
   };
   protected initialized = false;
+  protected resetSteamAreaAfterTasks = true;
   private socialOptions = '';
   protected steamTaskType = {
     steamStore: false,
@@ -524,7 +525,8 @@ abstract class Website {
       ) {
         debug('处理 Steam 任务');
         pushSocialTask('steam', this.social.steam[doTask ? 'do' : 'undo']({
-          ...payload.steam
+          ...payload.steam,
+          resetAreaAfterTasks: this.resetSteamAreaAfterTasks
         }));
       }
 

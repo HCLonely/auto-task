@@ -156,7 +156,7 @@ function executeTasks(ctx: Context, options: SteamTaskOptions, action: 'do' | 'u
         }
       }
     } finally {
-      if (!await resetRegion(child)) {
+      if (options.resetAreaAfterTasks !== false && !await resetRegion(child)) {
         result.success = false;
       }
     }

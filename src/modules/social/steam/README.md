@@ -134,7 +134,9 @@ Web 认证页与任务页须属于同一个用户脚本。整合入口导出的 
 | `licenseLinks` | `appid-123,456`、`subid-123,456` |
 | `playTimeLinks` | `30-https://store.steampowered.com/app/123/`，前缀为分钟数 |
 
-以上参数均为字符串数组。`doTask` 默认 `true`，设为 `false` 撤销指定链接；不会自动撤销未提供链接的全部历史任务。重复链接在同一分类内去重，非法链接逐项标记失败。
+以上链接参数均为字符串数组。使用 `do()` 执行、`undo()` 撤销指定链接；不会自动撤销未提供链接的全部历史任务。重复链接在同一分类内去重，非法链接逐项标记失败。
+
+`resetAreaAfterTasks` 默认为 `true`，批次结束后自动恢复商店地区。设为 `false` 时保留切换后的地区，由调用方显式调用 `resetArea()` 恢复。项目中的 GiveeClub 使用此选项，用户点击 `button#submitEventActions` 时才恢复地区；其他网站维持自动恢复。
 
 正常完成返回原有详细结果结构：
 

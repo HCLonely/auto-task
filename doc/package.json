@@ -8,7 +8,12 @@
   "type": "module",
   "devDependencies": {
     "vitepress": "^1.6.4",
-    "vue": "^3.5.34"
+    "vue": "^3.5.42"
+  },
+  "overrides": {
+    "vitepress": {
+      "vite": "^6.4.4"
+    }
   },
   "scripts": {
     "docs:api": "npm --prefix .. run docs:api",

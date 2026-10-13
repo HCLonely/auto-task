@@ -5,6 +5,8 @@
 
 文档站使用 VitePress，保留中英文内容和现有目录形式的访问路径。
 
+在完整仓库开发时，Node.js 版本遵循根目录 `package.json`，建议使用 22.20+ 或 24.12+。依赖审计、Vite 安全版本覆盖与更新验证方法见[开发指南](docs/dev/README.md#依赖安全维护)。
+
 请在完整的 `auto-task` 源码仓库中运行。TSDoc 生成需要上级目录中的 `src/`、`tsconfig.json`、`typedoc.json` 和根目录依赖，仅复制 `doc/` 目录无法生成 API 文档。
 
 在仓库根目录执行：

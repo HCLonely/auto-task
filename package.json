@@ -6,7 +6,7 @@
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {
-    "node": ">=18.0.0"
+    "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
   },
   "main": "package.json",
   "scripts": {

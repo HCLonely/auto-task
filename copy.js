@@ -14,13 +14,13 @@
 
   // fs.copySync('./dist', './page/dist');
   fs.copySync('./dist', './doc/docs/.vitepress/dist/dist');
-  fs.copySync('./package.json', './page/package.json');
+  // fs.copySync('./package.json', './page/package.json');
 
-  fs.copySync('./page', './doc/docs/public', {
-    filter: (src) => {
-      return !src.includes('index.html') && !src.includes('vercel.json') && !src.includes('package.json');
-    }
-  });
+  // fs.copySync('./page', './doc/docs/public', {
+  //   filter: (src) => {
+  //     return !src.includes('index.html') && !src.includes('vercel.json') && !src.includes('package.json');
+  //   }
+  // });
 
   console.log(`Files copied ${chalk.default.green.bold('successfully')}!`);
 })();

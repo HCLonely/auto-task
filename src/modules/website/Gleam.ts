@@ -104,7 +104,7 @@ class Gleam extends Website {
   async after(): Promise<void> {
     try {
       debug('开始执行后续操作');
-      if (window.location.search.includes('8b07d23f4bfa65f9')) {
+      if (window.location.hash.includes('8b07d23f4bfa65f9')) {
         debug('检测到特殊查询参数，开始处理任务');
         const checkComplete = setInterval(() => {
           if ($('.entry-content .entry-method i.fa-check').length > 0) {
@@ -687,7 +687,7 @@ class Gleam extends Website {
         text: __('doingGleamTask')
       });
       return await new Promise((resolve) => {
-        GM_openInTab(`${link}?8b07d23f4bfa65f9`,
+        GM_openInTab(`${link}#8b07d23f4bfa65f9`,
           {
             active: true,
             insert: true,

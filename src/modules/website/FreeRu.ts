@@ -225,6 +225,7 @@ class FreeRu extends Website {
       const tasks = $('.giveaway-tasks__list button.task-card__button').toArray();
       if (tasks.length === 0) {
         debug('任务列表为空', tasks);
+        logStatus.success();
         return false;
       }
 

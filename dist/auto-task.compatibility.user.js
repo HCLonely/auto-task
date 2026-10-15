@@ -76,7 +76,7 @@
 // @connect            vk.ru
 // @connect            auto-task.hclonely.com
 // @connect            auto-task-doc.js.org
-// @connect            cdn.jsdelivr.net
+// @connect            testingcf.jsdelivr.net
 // @connect            store.steampowered.com
 // @connect            steamcommunity.com
 // @connect            login.steampowered.com
@@ -112,13 +112,13 @@
 // @connect            freeanywhere.net
 // @connect            *
 
-// @require            https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
-// @resource           autoTaskStyle https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.css
-// @require            https://cdn.jsdelivr.net/npm/node-inspect-extracted@3.3.1/dist/inspect.min.js
-// @require            https://cdn.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.i18n.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.modules.js
-// @require            https://cdn.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.website.js
+// @require            https://testingcf.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js
+// @resource           autoTaskStyle https://testingcf.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.css
+// @require            https://testingcf.jsdelivr.net/npm/node-inspect-extracted@3.3.1/dist/inspect.min.js
+// @require            https://testingcf.jsdelivr.net/npm/browser-tool@1.3.2/dist/browser.min.js
+// @require            https://testingcf.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.i18n.js
+// @require            https://testingcf.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.modules.js
+// @require            https://testingcf.jsdelivr.net/gh/HCLonely/auto-task@v5.2.2/dist/auto-task.website.js
 
 // @noframes
 // ==/UserScript==

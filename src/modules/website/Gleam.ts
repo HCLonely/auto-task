@@ -536,7 +536,7 @@ class Gleam extends Website {
   async verifyTask(): Promise<any> {
     try {
       debug('开始验证任务');
-      echoLog({
+      const logStatus = echoLog({
         text: `${__('verifyingTask')}`
       });
 
@@ -619,6 +619,7 @@ class Gleam extends Website {
       }
 
       debug('任务验证完成');
+      logStatus.success();
       echoLog({
         text: __('verifiedGleamTasks')
       });

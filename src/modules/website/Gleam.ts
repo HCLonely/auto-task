@@ -537,7 +537,7 @@ class Gleam extends Website {
     try {
       debug('开始验证任务');
       const logStatus = echoLog({
-        text: `${__('verifyingTask')}`
+        text: __('verifyingTask')
       });
 
       const tasks = $('.entry-content .entry-method');
@@ -546,6 +546,7 @@ class Gleam extends Website {
       for (const task of tasks) {
         const campaign = await this.#checkCampaign();
         if (campaign) {
+          logStatus.warning(__('campaignNeeded'));
           return this.verifyTask();
         }
 

@@ -291,8 +291,8 @@ class Opquests extends Website {
           continue;
         }
 
-        if (/clash\.gg/.test(link)) {
-          debug('跳过不支持的 Clash.gg 任务');
+        if (/clash\.gg/.test(link) || /opcases\.com/.test(link)) {
+          debug('跳过不支持的 Clash.gg/OPCases.com 任务');
           echoLog({}).warning(`${__('unSupporttedTaskType')}: ${taskDes}(${link})`);
           continue;
         }

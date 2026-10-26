@@ -24,7 +24,7 @@ jobs:
           prerelease: false
           tag_name: v5.2.2
           name: 5.2.2
-          body: '- 优化：样式优化'
+          body: '- 修复：换区功能失效'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.css

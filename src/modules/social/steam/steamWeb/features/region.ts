@@ -30,17 +30,19 @@ export async function getAreaInfo(ctx: Context): Promise<Areas> {
         return {};
       }
       const html = parseHTML(data.responseText);
-      const config = JSON.parse(html.querySelector('[data-cart_config]')?.getAttribute('data-cart_config') || '{}');
-      const user = JSON.parse(html.querySelector('[data-userinfo]')?.getAttribute('data-userinfo') || '{}');
-      if (!config.rgUserCountryOptions || typeof user.country_code !== 'string') {
+      const config = JSON.parse(html.querySelector('#valve-ssr-data')?.innerHTML || '{}');
+      const areasInfo = JSON.parse(config.loaderData?.find((LD: string) => {
+        return LD.includes('countryOptions');
+      }));
+      if (!areasInfo.countryOptions || typeof config.UserConfig?.country_code !== 'string') {
         return {};
       }
-      const areas = Object.keys(config.rgUserCountryOptions).filter((area) => {
-        return /^[A-Z]{2}$/.test(area);
+      const areas = Object.values(areasInfo.countryOptions).filter((area): area is string => {
+        return typeof area === 'string' && /^[A-Z]{2}$/.test(area);
       });
-      ctx.state.area = user.country_code;
+      ctx.state.area = config.UserConfig.country_code;
       return {
-        currentArea: user.country_code,
+        currentArea: config.UserConfig.country_code,
         areas
       };
     } catch {

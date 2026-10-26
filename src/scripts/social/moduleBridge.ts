@@ -14,6 +14,7 @@ import __ from '../tools/i18n';
 import { debug } from '../tools/debug';
 import { parseLink, linkTasks } from '../../modules/social/steam/links';
 import type { TaskType } from '../../modules/social/steam/types';
+import { failureReason, type FailureReason } from './failureReason';
 
 /**
  * 生成社交平台模块使用的存储命名空间。
@@ -369,6 +370,7 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
   const logs = new Map<string, ReturnType<typeof echoLog>>();
   const steamTasks = new Set<string>();
   const parents = new Map<string, string>();
+  const reasons = new Map<string, FailureReason>();
   const taskOperations = /^(task\.(execute|skip|do|undo)|play\.(start|stop)|users\.(follow|unfollow)|retweets\.(create|delete)|channel\.(follow|unfollow|subscribe|unsubscribe)|video\.(like|unlike)|user\.(follow|unfollow)|subreddit\.(subscribe|unsubscribe))$/;
   /**
    * 接收并处理状态变化。
@@ -381,6 +383,30 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
       parents.set(event.operationId, event.parentOperationId);
     }
     const terminal = ['success', 'failure', 'skipped'].includes(event.phase);
+    // 每次请求重新收集原因，避免重试成功后沿用上一次响应中的错误。
+    if (event.code === 'HTTP_REQUEST_STARTED' || event.code === 'EXECUTOR_ATTEMPT') {
+      reasons.delete(event.operationId);
+    }
+    const reason = failureReason(event);
+    if (reason && reason.priority >= (reasons.get(event.operationId)?.priority || 0)) {
+      reasons.set(event.operationId, reason);
+    }
+    if (event.phase === 'failure') {
+      let id = parents.get(event.operationId);
+      const visited = new Set<string>();
+      while (id && !visited.has(id)) {
+        visited.add(id);
+        const childReason = reasons.get(event.operationId);
+        if (childReason && childReason.priority >= (reasons.get(id)?.priority || 0)) {
+          reasons.set(id, childReason);
+        }
+        // 原因只归属最近的可见任务，不能混入并行执行的其他任务或批次。
+        if (logs.has(id)) {
+          break;
+        }
+        id = parents.get(id);
+      }
+    }
     // Executor events are hidden below, but still identify the owning task's icon.
     const executor = event.code === 'EXECUTOR_ATTEMPT' ? event.details?.executor : event.source;
     if (platform === 'Steam' && (executor === 'steamWeb' || executor === 'steamASF')) {
@@ -410,6 +436,7 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
     if (event.parentOperationId && !(taskOperations.test(event.operation) && (platform !== 'Steam' || event.source === 'steam'))) {
       if (terminal) {
         parents.delete(event.operationId);
+        reasons.delete(event.operationId);
       }
       return;
     }
@@ -431,7 +458,7 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
     if (event.phase === 'success') {
       log.success();
     } else if (event.phase === 'failure') {
-      log.error(__('moduleFailed'));
+      log.error(reasons.get(event.operationId)?.text || __('moduleFailed'));
     } else if (event.phase === 'skipped') {
       log.warning(__('moduleSkipped'));
     } else if (/AUTH_REQUIRED|LOGIN_REQUIRED/.test(event.code)) {
@@ -441,6 +468,7 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
       logs.delete(event.operationId);
       parents.delete(event.operationId);
       steamTasks.delete(event.operationId);
+      reasons.delete(event.operationId);
     }
   };
   const unsubscribe = client.on('status', listener);
@@ -460,6 +488,7 @@ export const bindModuleStatus = (client: { /** 注册状态事件监听器。 @p
     logs.clear();
     parents.clear();
     steamTasks.clear();
+    reasons.clear();
     window.removeEventListener('pagehide', onPageHide);
   };
 };

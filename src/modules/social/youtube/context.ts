@@ -7,6 +7,7 @@
  * @Description  : YouTube 运行上下文与状态管理
  */
 
+import { httpFailureDetails } from '../httpFailure';
 import { defaultCookieReader } from './adapters/gmCookies';
 import { createGMStorage, getDefaultGM } from './adapters/gmStorage';
 import { sha1 } from './auth/signature';
@@ -229,7 +230,8 @@ export class Context {
     }
     this.emit('progress', 'debug', 'HTTP_REQUEST_COMPLETED', {
       transportStatus: result.status,
-      httpStatus: result.data?.status || 0
+      httpStatus: result.data?.status || 0,
+      ...httpFailureDetails(result)
     });
     return result;
   }

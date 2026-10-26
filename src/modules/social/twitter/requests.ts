@@ -7,6 +7,7 @@
  * @Description  : Twitter 接口请求与错误处理
  */
 
+import { httpFailureDetails } from '../httpFailure';
 import { refreshCsrf } from './auth/cookies';
 import type { Context } from './context';
 import type { HttpRequestOptions, HttpResponse } from './types';
@@ -32,7 +33,8 @@ export async function transport(ctx: Context, options: HttpRequestOptions): Prom
   }
   ctx.progress('HTTP_REQUEST_COMPLETED', result.result === 'Success' ? 'debug' : 'warning', {
     transportStatus: result.status,
-    httpStatus: result.data?.status || 0
+    httpStatus: result.data?.status || 0,
+    ...httpFailureDetails(result)
   });
   return result;
 }

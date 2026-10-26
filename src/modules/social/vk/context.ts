@@ -7,6 +7,7 @@
  * @Description  : VK 运行上下文与状态管理
  */
 
+import { httpFailureDetails } from '../httpFailure';
 import { createGMStorage } from './adapters/gmStorage';
 import { StatusEvents } from './events';
 import type { HttpRequestOptions, StatusLevel, VkOptions, VkTasks } from './types';
@@ -190,7 +191,8 @@ export class Context {
     }
     this.progress('HTTP_REQUEST_COMPLETED', 'debug', {
       transportStatus: response.status,
-      httpStatus: response.data?.status || 0
+      httpStatus: response.data?.status || 0,
+      ...httpFailureDetails(response)
     });
     if (response.result !== 'Success' || response.data?.status !== 200) {
       this.fail('HTTP_REQUEST_FAILED');

@@ -7,6 +7,7 @@
  * @Description  : Twitch 运行上下文与状态管理
  */
 
+import { httpFailureDetails } from '../httpFailure';
 import { createGMStorage, getDefaultGM } from './adapters/gmStorage';
 import { StatusEvents } from './events';
 import type { Auth, HttpRequestOptions, StatusLevel, TwitchOptions, TwitchTasks } from './types';
@@ -188,7 +189,8 @@ export class Context {
     }
     this.progress('HTTP_REQUEST_COMPLETED', 'debug', {
       transportStatus: result.status,
-      httpStatus: result.data?.status || 0
+      httpStatus: result.data?.status || 0,
+      ...httpFailureDetails(result)
     });
     return result;
   }

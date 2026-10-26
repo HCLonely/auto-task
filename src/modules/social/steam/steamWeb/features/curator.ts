@@ -41,15 +41,12 @@ async function executeCurator(ctx: Context, curatorId: string, doTask = true): P
         }),
         dataType: 'json'
       });
-      if (result !== 'Success') {
-        stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
-        return false;
-      }
       if (data?.response?.success?.success === 25) {
-        stepStatus.error('curatorLimitNotice');
+        // 25 有多种可能原因，优先保留接口原文，不能一律判定为关注数量上限。
+        stepStatus.error(data.response.msg ? 'REQUEST_OR_RESPONSE_FAILED' : 'curatorFollowRejected');
         return false;
       }
-      if (data?.status !== 200 || data.response?.success?.success !== 1) {
+      if (result !== 'Success' || data?.status !== 200 || data.response?.success?.success !== 1) {
         stepStatus.error('REQUEST_OR_RESPONSE_FAILED');
         return false;
       }

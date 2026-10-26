@@ -75,6 +75,9 @@ export function matchesReply(reply: string, words = SUCCESS): boolean {
 export async function execute(ctx: Context, command: string, words = SUCCESS): Promise<boolean> {
   const reply = await ctx.command(command);
   if (!matchesReply(reply, words)) {
+    ctx.progress('ASF_RESULT_REJECTED', {
+      message: reply.slice(0, 2000)
+    }, 'error');
     throw new OperationError('ASF_RESULT_REJECTED');
   }
   return true;

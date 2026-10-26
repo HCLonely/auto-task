@@ -46,7 +46,10 @@ export function addLicense(ctx: Context, id: string): Promise<boolean> {
         return matchesReply(line, words);
       });
       child.progress(ok ? 'LICENSE_ADDED' : 'LICENSE_FAILED', {
-        id: value
+        id: value,
+        ...(!ok ? {
+          message: (candidates.length ? candidates.join('\n') : reply).slice(0, 2000)
+        } : {})
       }, ok ? 'info' : 'error');
       allSucceeded &&= ok;
     }

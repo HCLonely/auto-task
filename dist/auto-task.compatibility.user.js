@@ -140,7 +140,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, SteamASF) {
+(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, clients) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -789,7 +789,7 @@ if (missingDependencies.length > 0) {
     if (!value) {
       return;
     }
-    let steamASF = new SteamASF.default(globalOptions.globalOptions.ASF);
+    const steamASF = clients.createSteamASF(globalOptions.globalOptions.ASF);
     try {
       const isInitialized = await steamASF.init();
       if (!isInitialized) {
@@ -811,8 +811,7 @@ if (missingDependencies.length > 0) {
     } catch (error) {
       console.error('SteamASF operation failed:', error);
     } finally {
-      steamASF?.dispose();
-      steamASF = null;
+      steamASF.dispose();
     }
   };
   const checkVersionAndNotice = () => {
@@ -932,4 +931,4 @@ if (missingDependencies.length > 0) {
   } else {
     $(bootstrap);
   }
-})(AutoTaskWebsite.globalOptions, AutoTaskWebsite.dialog, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.SteamASF);
+})(AutoTaskWebsite.globalOptions, AutoTaskWebsite.dialog, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.socialClients);

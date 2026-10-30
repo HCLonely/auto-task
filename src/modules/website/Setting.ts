@@ -11,8 +11,7 @@ import __ from '../../scripts/tools/i18n';
 import { changeGlobalOptions, saveData } from '../../scripts/globalOptionsEdit';
 import whiteListOptions from '../../scripts/social/whiteList';
 import throwError from '../../scripts/tools/throwError';
-import Twitter from '../../scripts/social/Twitter';
-import { getInfo } from '../../scripts/social/Youtube';
+import { createTwitter, getYoutubeInfo } from '../../scripts/social/clients';
 import { showDialog } from '../../scripts/ui/dialog';
 import syncOptions from '../../scripts/dataSync';
 import { debug } from '../../scripts/tools/debug';
@@ -631,7 +630,7 @@ class Setting {
       debug('获取Twitter用户ID', {
         name
       });
-      const twitter = new Twitter();
+      const twitter = createTwitter();
       try {
         if (await twitter.init()) {
           id = await twitter.userName2id(name) || '';
@@ -644,7 +643,7 @@ class Setting {
       debug('获取YouTube频道信息', {
         name
       });
-      const info = await getInfo(name, 'channel');
+      const info = await getYoutubeInfo(name, 'channel');
       id = info?.params?.channelId || '';
     }
 

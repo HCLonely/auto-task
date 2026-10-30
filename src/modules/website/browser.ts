@@ -16,6 +16,6 @@ export * as echoLog from '../../scripts/echoLog';
 export * as i18n from '../../scripts/tools/i18n';
 export * as debug from '../../scripts/tools/debug';
 export * as moduleBridge from '../../scripts/social/moduleBridge';
-export * as SteamASF from '../../scripts/social/SteamASF';
+export * as socialClients from '../../scripts/social/clients';
 
 export * as dialog from '../../scripts/ui/dialog';

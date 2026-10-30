@@ -49,7 +49,7 @@ const websiteGlobals = new Map([
     'tools/i18n': 'i18n',
     'tools/debug': 'debug',
     'social/moduleBridge': 'moduleBridge',
-    'social/SteamASF': 'SteamASF'
+    'social/clients': 'socialClients'
   }).map(([entry, namespace]) => [path.resolve('src/scripts', entry), `AutoTaskWebsite.${namespace}`])
 ]);
 

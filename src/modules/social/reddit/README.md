@@ -2,7 +2,7 @@
 
 面向 Tampermonkey 等浏览器用户脚本。通过 `index.ts` 引入，由外部项目打包为用户脚本；没有运行时第三方依赖，也不依赖 SteamWeb 模块。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。模块替代了原来的 `Social`、`globalOptions`、日志、国际化及错误弹窗依赖。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。模块替代了原来的 `Social`、`globalOptions`、日志、国际化及错误弹窗依赖。
 
 ## 接入示例
 

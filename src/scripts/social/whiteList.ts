@@ -11,8 +11,7 @@ import type { whiteList } from './types';
 import { showDialog, toast } from '../ui/dialog';
 import __ from '../tools/i18n';
 import echoLog from '../echoLog';
-import Steam from './Steam';
-import { getInfo } from './Youtube';
+import { createSteam, getYoutubeInfo } from './clients';
 import { stringToColour } from '../tools/tools';
 import throwError from '../tools/throwError';
 import { debug } from '../tools/debug';
@@ -170,10 +169,10 @@ const link2id = async function (type: string, root: HTMLDialogElement): Promise<
           id = REGEX_PATTERNS.VK_NAME.exec(link)?.[1] || '';
           break;
         case 'youtube.channels':
-          id = (await getInfo(link, 'channel'))?.params?.channelId || '';
+          id = (await getYoutubeInfo(link, 'channel'))?.params?.channelId || '';
           break;
         case 'youtube.likes':
-          id = (await getInfo(link, 'likeVideo'))?.params?.videoId || '';
+          id = (await getYoutubeInfo(link, 'likeVideo'))?.params?.videoId || '';
           break;
         case 'reddit.reddits': {
           const userMatch = REGEX_PATTERNS.REDDIT_USER.exec(link);
@@ -204,7 +203,7 @@ const link2id = async function (type: string, root: HTMLDialogElement): Promise<
             }
 
             const [, param1, param2] = storeMatch;
-            const steam = new Steam();
+            const steam = createSteam();
             try {
               if (await steam.init('store')) {
                 id = await steam.getCuratorId(param1, param2) || '';

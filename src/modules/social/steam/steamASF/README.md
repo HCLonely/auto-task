@@ -2,7 +2,7 @@
 
 面向 Tampermonkey 等浏览器用户脚本的 ASF IPC 客户端。将此目录复制到其他项目后，通过打包器引入 `index.ts` 即可使用。没有运行时第三方依赖，也不依赖 `steamWeb`、Auto-Task 日志/国际化/弹窗或项目全局类型。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../../scripts/social/README.md)。本模块继承原文件使用的 ASF 命令；服务端仍须支持这些命令及原实现所识别的回复格式。ASF IPC 认证通过 `Authentication` 请求头完成，不需要 SteamWeb 的开页认证流程。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../../scripts/social/README.md)。本模块继承原文件使用的 ASF 命令；服务端仍须支持这些命令及原实现所识别的回复格式。ASF IPC 认证通过 `Authentication` 请求头完成，不需要 SteamWeb 的开页认证流程。
 
 ## 接入示例
 

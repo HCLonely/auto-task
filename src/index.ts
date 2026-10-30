@@ -21,7 +21,7 @@ import { changeGlobalOptions } from './scripts/globalOptionsEdit';
 import { bindHotkey } from './scripts/tools/hotkeys';
 import updateChecker from './scripts/updateChecker';
 import echoLog from './scripts/echoLog';
-import SteamASF from './scripts/social/SteamASF';
+import { createSteamASF } from './scripts/social/clients';
 import { debug } from './scripts/tools/debug';
 // import { getAllLocalStorageAsObjects } from './scripts/tools/tools';
 // import browser from 'browser-tool';
@@ -214,7 +214,7 @@ const checkSteamASFStatus = async (): Promise<void> => {
     return;
   }
 
-  let steamASF: SteamASF | null = new SteamASF(globalOptions.ASF);
+  const steamASF = createSteamASF(globalOptions.ASF);
   try {
     const isInitialized = await steamASF.init();
     if (!isInitialized) {
@@ -239,8 +239,7 @@ const checkSteamASFStatus = async (): Promise<void> => {
   } catch (error) {
     console.error('SteamASF operation failed:', error);
   } finally {
-    steamASF?.dispose();
-    steamASF = null; // 释放 SteamASF 实例
+    steamASF.dispose();
   }
 };
 

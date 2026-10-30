@@ -1,6 +1,6 @@
 # Social 独立基类与适配器
 
-项目 `src/scripts/social/` 通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。本目录不引用 `src`，不依赖 GM、HTTP、日志工具、全局任务类型或第三方运行库。
+项目 `src/scripts/social/` 通过 clients.ts 工厂接入模块公共类型与辅助函数，业务直接调用原生模块实例，详见 [项目接入说明](../../../scripts/social/README.md)。本目录不引用 `src`，不依赖 GM、HTTP、日志工具、全局任务类型或第三方运行库。
 
 | 导出 | 用途 |
 | --- | --- |

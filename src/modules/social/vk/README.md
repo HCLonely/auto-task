@@ -1,6 +1,6 @@
 # Vk 独立 TS 模块
 
-面向 Tampermonkey 等浏览器用户脚本，入口为 `index.ts`。项目 `src/scripts/social/Vk.ts` 通过兼容包装接入本模块；模块自身不依赖原 `Social`、全局配置、jQuery、日志或国际化工具，也不依赖 SteamWeb 模块。不注册 `unsafeWindow.Vk`。
+面向 Tampermonkey 等浏览器用户脚本，入口为 `index.ts`。项目 `src/scripts/social/clients.ts` 通过工厂创建原生实例并接入本模块；模块自身不依赖原 `Social`、全局配置、jQuery、日志或国际化工具，也不依赖 SteamWeb 模块。不注册 `unsafeWindow.Vk`。
 
 ## 接入示例
 

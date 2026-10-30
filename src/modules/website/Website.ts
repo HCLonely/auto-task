@@ -7,17 +7,18 @@
  * @Description  : 网站类
  */
 
-import type { SocialToggleResult, WebsiteSocialPayload, WebsiteTask, bindReturn, socialInitialized } from './types';
+import type { WebsiteSocialPayload, WebsiteTask, bindReturn, socialInitialized } from './types';
 import type { MonkeyXhrDetails } from '../../scripts/tools/httpRequest.types';
 import { globalOptions } from '../../scripts/globalOptions';
 import throwError from '../../scripts/tools/throwError';
-// import Instagram from '../../scripts/social/Instagram';
-import Reddit from '../../scripts/social/Reddit';
-import Twitch from '../../scripts/social/Twitch';
-import Twitter from '../../scripts/social/Twitter';
-import Vk from '../../scripts/social/Vk';
-import { Youtube } from '../../scripts/social/Youtube';
-import Steam from '../../scripts/social/Steam';
+import type Reddit from '../social/reddit';
+import type Twitch from '../social/twitch';
+import type Twitter from '../social/twitter';
+import type Vk from '../social/vk';
+import type Youtube from '../social/youtube';
+import type Steam from '../social/steam';
+import { createSteam, createReddit, createTwitch, createTwitter, createVk, createYoutube } from '../../scripts/social/clients';
+import type { SocialTaskResult } from '../social/social/types';
 import { visitLink } from '../../scripts/tools/tools';
 import echoLog from '../../scripts/echoLog';
 import __ from '../../scripts/tools/i18n';
@@ -207,7 +208,7 @@ abstract class Website {
         if (hasReddit && (!this.socialInitialized.reddit || !this.social.reddit)) {
           debug('初始化 Reddit');
           this.social.reddit?.dispose();
-          this.social.reddit = new Reddit();
+          this.social.reddit = createReddit();
           pro.push(this.#bind('reddit', this.social.reddit.init()));
         }
       }
@@ -223,7 +224,7 @@ abstract class Website {
         if (hasTwitch && (!this.socialInitialized.twitch || !this.social.twitch)) {
           debug('初始化 Twitch');
           this.social.twitch?.dispose();
-          this.social.twitch = new Twitch();
+          this.social.twitch = createTwitch();
           pro.push(this.#bind('twitch', this.social.twitch.init()));
         }
       }
@@ -239,7 +240,7 @@ abstract class Website {
         if (hasTwitter && (!this.socialInitialized.twitter || !this.social.twitter)) {
           debug('初始化 Twitter');
           this.social.twitter?.dispose();
-          this.social.twitter = new Twitter();
+          this.social.twitter = createTwitter();
           pro.push(this.#bind('twitter', this.social.twitter.init()));
         }
       }
@@ -255,7 +256,7 @@ abstract class Website {
         if (hasVk && (!this.socialInitialized.vk || !this.social.vk)) {
           debug('初始化 VK');
           this.social.vk?.dispose();
-          this.social.vk = new Vk();
+          this.social.vk = createVk();
           pro.push(this.#bind('vk', this.social.vk.init()));
         }
       }
@@ -271,7 +272,7 @@ abstract class Website {
         if (hasYoutube && (!this.socialInitialized.youtube || !this.social.youtube)) {
           debug('初始化 YouTube');
           this.social.youtube?.dispose();
-          this.social.youtube = new Youtube();
+          this.social.youtube = createYoutube();
           pro.push(this.#bind('youtube', this.social.youtube.init()));
         }
       }
@@ -287,7 +288,7 @@ abstract class Website {
         if (steamLength > 0) {
           if (!this.social.steam) {
             debug('创建 Steam 实例');
-            this.social.steam = new Steam();
+            this.social.steam = createSteam();
           }
           const steamCommunityLength = Object.keys(payload.steam).map((type) => {
             return (
@@ -429,7 +430,7 @@ abstract class Website {
       }
       const pro: Array<Promise<{
         social: string;
-        result: SocialToggleResult;
+        result: SocialTaskResult;
       }>> = [];
       const doTask = action === 'do';
       const targetDone = doTask;
@@ -440,7 +441,7 @@ abstract class Website {
        * @param social - 社交平台实例或名称。
        * @param result - 当前操作结果。
        */
-      const applySocialResult = (social: string, result: SocialToggleResult) => {
+      const applySocialResult = (social: string, result: SocialTaskResult) => {
         const socialTasks = selectedTasks.filter((task) => {
           return task.social === social;
         });
@@ -473,7 +474,7 @@ abstract class Website {
        */
       const pushSocialTask = (
         social: string,
-        promise: Promise<SocialToggleResult>
+        promise: Promise<SocialTaskResult>
       ) => {
         pro.push(promise.then((result) => {
           return {

@@ -2,7 +2,7 @@
 
 独立浏览器用户脚本 TS 模块，统一编排 `steamWeb` 与 `steamASF`。从 `index.ts` 导入 `Steam`，由外部打包器构建成用户脚本。整合层及两个子模块均没有运行时第三方依赖。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。整合层不依赖 `Social`、`globalOptions`、日志 UI、国际化、jQuery 或项目全局类型。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。整合层不依赖 `Social`、`globalOptions`、日志 UI、国际化、jQuery 或项目全局类型。
 
 ## 使用示例
 

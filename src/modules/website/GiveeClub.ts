@@ -127,7 +127,7 @@ class GiveeClub extends GiveawaySu {
             !event.target.closest('button#submitEventActions')) {
             return;
           }
-          void this.social.steam?.client.resetArea().catch((error: unknown) => {
+          void this.social.steam?.resetArea().catch((error: unknown) => {
             throwError(error as Error, 'GiveeClub.submitEventActions->resetArea');
           });
         }, true);

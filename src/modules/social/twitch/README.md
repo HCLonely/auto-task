@@ -2,7 +2,7 @@
 
 入口为 `index.ts`，面向 Tampermonkey 等浏览器用户脚本。通过外部项目的 TS 打包器引入；没有运行时第三方依赖，不依赖 SteamWeb 模块或原项目的 Social、日志、国际化、弹窗、全局配置及全局类型。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。
 
 ## 接入示例
 

@@ -14,7 +14,7 @@
 
 统一入口使用显式命名导出，避免各模块同名 `HttpClient`、`TaskOptions`、`createGMHttpClient` 等冲突。这些平台专用类型和适配器从各自入口导入。
 
-项目 `src/scripts/social/` 已通过兼容包装使用这些模块，详见[项目接入说明](../../scripts/social/README.md)。外部用户脚本也可通过自己的 TS 打包器独立引入模块。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建并直接使用这些模块，详见[项目接入说明](../../scripts/social/README.md)。外部用户脚本也可通过自己的 TS 打包器独立引入模块。
 
 ## 执行与撤销
 

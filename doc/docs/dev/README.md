@@ -20,6 +20,12 @@ lang: zh-CN
 - `npm test`：运行 ESLint 和 TypeScript 类型检查。
 - `npm run build`：检查并构建脚本及全资源版本。
 
+### 社交模块接入
+
+`src/scripts/social/clients.ts` 的工厂集中注入配置、GM 存储和日志，返回 `src/modules/social/` 的原生实例。网站直接调用业务方法；项目仅为 `dispose()` 接入幂等监听清理。新平台应在工厂中接入依赖，不新增平台包装类或方法转发。网站结果直接使用 `SocialTaskResult`，读取逐项结果时保留可选链。
+
+`src/modules/website/browser.ts` 通过 `socialClients` 导出工厂，主脚本导入该文件时由 Rollup 映射到 `AutoTaskWebsite.socialClients`。修改入口时需同步这两处，并运行 `npm test`、`npm run rollup` 和 `node build-all-static.js`。本地若存在 `tests/social-clients.cjs`、`tests/module-failure.cjs`，可分别验证实例与存储兼容及失败日志；后者需要本机 Edge，均不连接真实社交账户。测试目录按项目约定忽略。更多职责见 [社交模块接入说明](https://github.com/HCLonely/auto-task/blob/dev/src/scripts/social/README.md)。
+
 ### 依赖安全维护
 
 根目录和 `doc/` 各自维护 `package-lock.json`，应分别运行 `npm ci` 和 `npm --prefix doc ci`。使用 `npm audit` 和 `npm --prefix doc audit` 检查全部依赖，包括构建工具；不要通过排除开发依赖隐藏漏洞。

@@ -2,7 +2,7 @@
 
 面向 Tampermonkey 等浏览器用户脚本，入口为 `index.ts`。通过调用方的 TS 打包器引入，没有运行时第三方依赖，不引用项目原文件或 Steam 模块。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。模块保留 `Youtube` 命名导出、`init()`、`do()` / `undo()`、独立 `getInfo()`、`tasks` 和 `whiteList`，并提供默认导出。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。模块保留 `Youtube` 命名导出、`init()`、`do()` / `undo()`、独立 `getInfo()`、`tasks` 和 `whiteList`，并提供默认导出。
 
 **认证行为沿用原实现：`init()` 通过尝试订阅验证频道检查凭证，可能实际订阅该频道。** 默认验证频道沿用原配置 `UCrXUsMBcfTVqwAS7DKg9C0Q`，可通过 `verifyChannel` 改为自己的频道。验证操作不计入任务记录。该模块没有自动打开认证标签页的流程；原 YouTube 实现使用 `GM_cookie.list` 获取凭证。
 

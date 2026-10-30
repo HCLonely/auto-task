@@ -153,12 +153,11 @@ export interface WebsiteSocialPayload {
   extra?: Record<string, Array<WebsiteTask>>
 }
 
-export interface SocialToggleDetailResult {
-  success: boolean
-  results: Record<string, Record<string, boolean>>
-}
-
-export type SocialToggleResult = boolean | SocialToggleDetailResult
+/** 兼容网站模块既有类型导出；执行结果直接复用社交模块定义。 */
+export type {
+  SocialTaskDetailResult as SocialToggleDetailResult,
+  SocialTaskResult as SocialToggleResult
+} from '../social/social/types';
 
 export interface bindReturn {
   name: string

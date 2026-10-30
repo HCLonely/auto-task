@@ -2,7 +2,7 @@
 
 面向 Tampermonkey 等浏览器用户脚本。将此目录复制到外部项目，通过 `index.ts` 引入并打包即可。运行时不依赖 Auto-Task、Social 基类、jQuery、全局配置、其他独立模块或第三方 npm 包。
 
-项目 `src/scripts/social/` 现通过兼容包装接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。默认接口标识、浏览器 Bearer 和事务 ID 算法沿用源文件；没有对真实 X 账户执行测试或验证这些接口当前是否可用。
+项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。默认接口标识、浏览器 Bearer 和事务 ID 算法沿用源文件；没有对真实 X 账户执行测试或验证这些接口当前是否可用。
 
 ## 接入示例
 

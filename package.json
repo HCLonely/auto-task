@@ -2,7 +2,8 @@
   "name": "auto-task",
   "version": "5.2.2",
   "change": [
-    "修复：OPQuests验证任务意外中断"
+    "修复：OPQuests验证任务意外中断",
+    "修复：OPQuests关注鉴赏家任务识别错误"
   ],
   "description": "赠Key站自动任务脚本",
   "engines": {

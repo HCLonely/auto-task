@@ -258,7 +258,7 @@ class Opquests extends Website {
           this.tasks.push({
             done: false,
             social: 'steam',
-            type: 'curatorLike',
+            type: /store\.steampowered\.com\/curator\//.test(link) ? 'curator' : 'curatorLike',
             link
           });
           continue;

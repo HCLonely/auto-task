@@ -24,7 +24,7 @@ jobs:
           prerelease: false
           tag_name: v5.2.2
           name: 5.2.2
-          body: '- 修复：换区功能失效'
+          body: '- 修复：OPQuests验证任务意外中断'
           files: |-
             dist/auto-task.user.js
             dist/auto-task.css

@@ -324,6 +324,16 @@ const loadScript = async (): Promise<void> => {
   initializeHotkeys(website);
 
   if (website.after) {
+    if (document.readyState !== 'complete') {
+      debug('等待页面加载完成');
+      await new Promise<void>((resolve) => {
+        window.addEventListener('load', () => {
+          resolve();
+        }, {
+          once: true
+        });
+      });
+    }
     debug('执行网站 after 钩子');
     await website.after();
   }

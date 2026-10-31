@@ -22,6 +22,8 @@ lang: zh-CN
 
 ### 社交模块接入
 
+网站生命周期中，`after()` 钩子在页面加载完成后执行：若 `document.readyState` 尚未达到 `complete`，主入口会等待 `window.load`，已加载完成时直接执行。
+
 `src/scripts/social/clients.ts` 的工厂集中注入配置、GM 存储和日志，返回 `src/modules/social/` 的原生实例。网站直接调用业务方法；项目仅为 `dispose()` 接入幂等监听清理。新平台应在工厂中接入依赖，不新增平台包装类或方法转发。网站结果直接使用 `SocialTaskResult`，读取逐项结果时保留可选链。
 
 `src/modules/website/browser.ts` 通过 `socialClients` 导出工厂，主脚本导入该文件时由 Rollup 映射到 `AutoTaskWebsite.socialClients`。修改入口时需同步这两处，并运行 `npm test`、`npm run rollup` 和 `node build-all-static.js`。本地若存在 `tests/social-clients.cjs`、`tests/module-failure.cjs`，可分别验证实例与存储兼容及失败日志；后者需要本机 Edge，均不连接真实社交账户。测试目录按项目约定忽略。更多职责见 [社交模块接入说明](https://github.com/HCLonely/auto-task/blob/dev/src/scripts/social/README.md)。

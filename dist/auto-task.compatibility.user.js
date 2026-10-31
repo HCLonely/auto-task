@@ -878,6 +878,16 @@ if (missingDependencies.length > 0) {
     initializeUI(website);
     initializeHotkeys(website);
     if (website.after) {
+      if (document.readyState !== 'complete') {
+        debug.debug('等待页面加载完成');
+        await new Promise((resolve => {
+          window.addEventListener('load', (() => {
+            resolve();
+          }), {
+            once: true
+          });
+        }));
+      }
       debug.debug('执行网站 after 钩子');
       await website.after();
     }

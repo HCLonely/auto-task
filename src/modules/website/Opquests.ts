@@ -78,9 +78,11 @@ class Opquests extends Website {
           taskId
         });
         GM_setValue('opquestsVerifyTasks', opquestsVerifyTasks);
-        const [verifyBtn] = $(`#task_id[value="${taskId}"]`).parent()
-          .find('button[type="button"],button[type="submit"]')
-          .has('i.fa-check');
+        const taskButtons = document.querySelector(`#task_id[value="${taskId}"]`)?.parentElement
+          ?.querySelectorAll<HTMLButtonElement>('button[type="button"],button[type="submit"]');
+        const verifyBtn = Array.from(taskButtons ?? []).find(button => {
+          return button.querySelector('i.fa-check');
+        });
         if (verifyBtn) {
           debug('点击验证按钮', verifyBtn);
           verifyBtn.click();

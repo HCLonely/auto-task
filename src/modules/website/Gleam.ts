@@ -15,7 +15,7 @@ import throwError from '../../scripts/tools/throwError';
 import echoLog from '../../scripts/echoLog';
 import __ from '../../scripts/tools/i18n';
 import httpRequest from '../../scripts/tools/httpRequest';
-import { delay } from '../../scripts/tools/tools';
+import { delay, getUuid } from '../../scripts/tools/tools';
 import { globalOptions } from '../../scripts/globalOptions';
 import { debug } from '../../scripts/tools/debug';
 import { normalizeStoredTasks, uniqueWebsiteTasks } from './taskModel';
@@ -25,6 +25,88 @@ declare global {
     _OxA: string;
   }
 }
+
+/** Gleam 待执行请求只存储在此命名空间，避免清理任务历史或用户配置。 */
+const STORAGE_PREFIX = 'gleamPending:v1:';
+const REQUEST_TTL = 30 * 60 * 1000;
+
+interface PendingGleamTask {
+  version: 1;
+  requestId: string;
+  pathname: string;
+  targetUrl: string;
+  createdAt: number;
+  expiresAt: number;
+}
+
+interface PendingGleamTaskEntry {
+  key: string;
+  record: PendingGleamTask;
+}
+
+/** 完整保留 pathname，不合并末尾斜杠或大小写；query/hash 不参与匹配。 */
+const getGleamPathname = (link: string): string => {
+  const url = new URL(link, window.location.href);
+  if (!['http:', 'https:'].includes(url.protocol) || url.hostname !== 'gleam.io') {
+    throw new Error(`Unsupported Gleam URL: ${url.href}`);
+  }
+  return url.pathname;
+};
+
+/** 每次请求独立保存，避免并发更新共享数组时覆盖其他请求。 */
+const createPendingGleamTask = (link: string, requestId: string): PendingGleamTaskEntry => {
+  const pathname = getGleamPathname(link);
+  const createdAt = Date.now();
+  const key = `${STORAGE_PREFIX}${requestId}`;
+  const record: PendingGleamTask = {
+    version: 1,
+    requestId,
+    pathname,
+    targetUrl: link,
+    createdAt,
+    expiresAt: createdAt + REQUEST_TTL
+  };
+  GM_setValue(key, record);
+  return {
+    key,
+    record
+  };
+};
+
+/** 指定键时只删除本次请求；省略参数时删除本功能的全部记录。 */
+const clearPendingGleamTasks = (keys: string[] = GM_listValues()): void => {
+  for (const key of keys) {
+    if (key.startsWith(STORAGE_PREFIX)) {
+      GM_deleteValue(key);
+    }
+  }
+};
+
+/** 读取时清理所有过期或损坏的请求，仅返回完整路径严格相等的有效记录。 */
+const findPendingGleamTasks = (pathname: string): PendingGleamTaskEntry[] => {
+  const entries: PendingGleamTaskEntry[] = [];
+  const now = Date.now();
+  for (const key of GM_listValues()) {
+    if (!key.startsWith(STORAGE_PREFIX)) {
+      continue;
+    }
+    const record = GM_getValue<PendingGleamTask | null>(key, null);
+    if (!record || record.version !== 1 || typeof record.requestId !== 'string'
+      || typeof record.pathname !== 'string' || typeof record.targetUrl !== 'string'
+      || !Number.isFinite(record.createdAt) || !Number.isFinite(record.expiresAt)
+      || record.expiresAt <= now || record.expiresAt <= record.createdAt) {
+      GM_deleteValue(key);
+      continue;
+    }
+    if (record.pathname === pathname) {
+      entries.push({
+        key,
+        record
+      });
+    }
+  }
+  return entries;
+};
 
 /**
  * 表示 Gleam 网站的任务处理类。
@@ -37,6 +119,8 @@ declare global {
  * - `buttons`（`Array<string>`）：可用的操作按钮数组，包括 'doTask'、'undoTask' 和 'verifyTask'。
  */
 class Gleam extends Website {
+  #pendingCleanupRegistered = false;
+  #autoTaskStarted = false;
   name = 'Gleam';
   tasks: Array<WebsiteTask> = [];
   buttons: Array<string> = [
@@ -91,27 +175,46 @@ class Gleam extends Website {
    * 页面加载后的异步方法
    *
    * @remarks
-   * 该方法在特定条件下执行后续操作。
-   * 首先检查当前URL中是否包含特定的查询参数。
-   * 如果包含，则设置一个定时器，检查任务是否完成。
-   * 遍历页面中的每个任务，查找可点击的元素并执行点击操作。
-   * 在每次点击后，等待 1 秒钟以确保操作完成。
-   * 如果未找到特定查询参数，则检查剩余密钥的状态。
-   * 如果检查失败，则记录相应的警告信息。
+   * 按完整 pathname 匹配有效待执行记录，读取时删除过期记录。
+   * 匹配成功后自动验证，完成时删除本次匹配的记录并关闭窗口。
+   * 未匹配时保持普通页面的剩余 Key 检查行为。
    *
    * @returns 无返回值。
    */
   async after(): Promise<void> {
     try {
       debug('开始执行后续操作');
-      if (window.location.hash.includes('8b07d23f4bfa65f9')) {
-        debug('检测到特殊查询参数，开始处理任务');
+      if (this.#autoTaskStarted) {
+        return;
+      }
+      const pendingTasks = findPendingGleamTasks(window.location.pathname);
+      if (pendingTasks.length > 0) {
+        this.#autoTaskStarted = true;
+        debug('检测到匹配完整路径的待执行记录，开始处理任务');
+        const keys = pendingTasks.map(({ key }) => {
+          return key;
+        });
+        const expiresAt = Math.max(...pendingTasks.map(({ record }) => {
+          return record.expiresAt;
+        }));
         const checkComplete = setInterval(() => {
           if ($('.entry-content .entry-method i.fa-check').length > 0) {
             debug('任务已完成，关闭窗口');
             clearInterval(checkComplete);
+            clearPendingGleamTasks(keys);
             window.close();
+          } else if (Date.now() >= expiresAt) {
+            clearInterval(checkComplete);
+            // 只清理已过期记录，保留等待期间新登记的有效请求。
+            findPendingGleamTasks(window.location.pathname);
+            debug('Gleam 自动处理等待超时，停止完成检测');
+            echoLog({}).warning(__('gleamTaskNotice'));
           }
+        }, 1000);
+        window.addEventListener('pagehide', () => {
+          clearInterval(checkComplete);
+        }, {
+          once: true
         });
 
         await this.verifyTask();
@@ -672,7 +775,8 @@ class Gleam extends Website {
    *
    * @remarks
    * 该方法打开一个新的标签页以执行指定的Gleam任务。
-   * 使用 `GM_openInTab` 方法打开任务链接，并在标签页关闭时记录成功信息。
+   * 先登记完整路径再打开链接，不依赖 URL hash。
+   * 父页面离开时删除全部待执行记录，子标签页关闭时删除对应请求。
    * 如果在过程中发生错误，则记录错误信息并返回 false。
    *
    * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
@@ -681,6 +785,7 @@ class Gleam extends Website {
    * @returns 如果任务成功执行，则返回 true；否则返回 false。
    */
   async #doGleamTask(link: string): Promise<boolean> {
+    let pendingKey: string | undefined;
     try {
       debug('执行 Gleam 任务', {
         link
@@ -688,20 +793,34 @@ class Gleam extends Website {
       const logStatus = echoLog({
         text: __('doingGleamTask')
       });
+      // 登记前顺便清理残留过期记录；保存必须早于打开新页面。
+      findPendingGleamTasks(window.location.pathname);
+      const pending = createPendingGleamTask(link, getUuid());
+      pendingKey = pending.key;
+      if (!this.#pendingCleanupRegistered) {
+        window.addEventListener('pagehide', () => {
+          clearPendingGleamTasks();
+        });
+        this.#pendingCleanupRegistered = true;
+      }
       return await new Promise((resolve) => {
-        GM_openInTab(`${link}#8b07d23f4bfa65f9`,
+        GM_openInTab(link,
           {
             active: true,
             insert: true,
             setParent: true
           })
           .onclose = () => {
+            clearPendingGleamTasks([pending.key]);
             debug('任务完成');
             logStatus.success();
             resolve(true);
           };
       });
     } catch (error) {
+      if (pendingKey) {
+        clearPendingGleamTasks([pendingKey]);
+      }
       debug('执行 Gleam 任务失败', {
         error
       });

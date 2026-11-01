@@ -55,9 +55,9 @@ export function containsId(line: string, id: string): boolean {
  * @returns 检查结果；满足条件时为 true，否则为 false。
  */
 export function matchesReply(reply: string, words = SUCCESS): boolean {
-  if (/(?:\b(?:failed|failure|unsuccessful|not\s+(?:successful|joined|applied|playing|resumed))\b|失败|失敗|неудач|ошибк)/i.test(reply)) {
-    return false;
-  }
+  // if (/(?:\b(?:failed|failure|unsuccessful|not\s+(?:successful|joined|applied|playing|resumed))\b|失败|失敗|неудач|ошибк)/i.test(reply)) {
+  //   return false;
+  // }
   return words.some((word) => {
     return new RegExp(/[a-z]/i.test(word) ? `\\b${word}\\b` : word, 'i').test(reply);
   });

@@ -342,6 +342,14 @@ const taskTarget = (event: SocialStatusEvent, platform: string): string => {
   if (!target) {
     return '';
   }
+  // 挂时长事件的目标是逗号分隔的 App ID，每个游戏分别链接到商店页面。
+  if (['Steam', 'SteamASF'].includes(platform) && /^play\.(start|check)$/.test(event.operation) && /^\d+(?:,\d+)*$/.test(target)) {
+    const links = target.split(',').map((id) => {
+      const href = `https://store.steampowered.com/app/${id}/`;
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer" title="${href}">${id}</a>`;
+    });
+    return ` (${links.join(', ')})`;
+  }
   try {
     const href = /^[a-z][a-z\d+.-]*:/i.test(target) ? target : (socialTargetLink(event, platform) || target);
     const url = new URL(href);

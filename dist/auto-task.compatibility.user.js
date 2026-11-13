@@ -44,6 +44,7 @@
 // @include            *://gamesforfarm-testing.ru/*
 // @include            *://mee6.xyz/*
 // @include            *://gamesforfarm.com/*
+// @include            *://give.gamesforfarm.com/*
 
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/history.html
@@ -140,7 +141,7 @@ if (missingDependencies.length > 0) {
 }
 
 
-(function(globalOptions, dialog, steam, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, clients) {
+(function(globalOptions, dialog, steam, youtube, twitch, moduleBridge, index, websiteOptions, __, globalOptionsEdit, browser, debug, echoLog, clients) {
   'use strict';
   const tokenKeyPattern = /token|auth|session|jwt|key|secret|api[-_]?key|bearer|authorization|access[-_]?token|refresh[-_]?token|sid/i;
   const tokenStringPatterns = [ /([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})\.([A-Za-z0-9-_]{10,})/g, /(Bearer|Basic)\s+([A-Za-z0-9\-._~+/]+=*)/gi, /\b([a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})\b/gi, /\b(eyJ[A-Za-z0-9\-_]+)\b/g ];
@@ -674,6 +675,25 @@ if (missingDependencies.length > 0) {
       throwError(error, 'updateChecker');
     }
   };
+  const gffPageHandling = (async () => {
+    if (!/(?:^#|&)autoTaskGFF=/.test(window.location.hash)) {
+      return false;
+    }
+    const host = window.location.hostname;
+    if (host === 'store.steampowered.com' || host === 'steamcommunity.com') {
+      return steam.handleSteamGFFPage({
+        namespace: `${moduleBridge.moduleNamespace('steam')}:gff`,
+        gm: moduleBridge.projectGM('steam')
+      });
+    }
+    if (host === 'www.youtube.com' || host === 'm.youtube.com') {
+      return youtube.handleYoutubeGFFPage({
+        namespace: `${moduleBridge.moduleNamespace('youtube')}:gff`,
+        gm: moduleBridge.projectGM('youtube')
+      });
+    }
+    return false;
+  })();
   try {
     consoleLogHook();
   } catch (error) {
@@ -913,6 +933,9 @@ if (missingDependencies.length > 0) {
   };
   const bootstrap = async () => {
     try {
+      if (await gffPageHandling) {
+        return;
+      }
       if (await steam.handleSteamAuthPage({
         namespace: moduleBridge.moduleNamespace('steam'),
         gm: moduleBridge.projectGM('steam')
@@ -941,4 +964,4 @@ if (missingDependencies.length > 0) {
   } else {
     $(bootstrap);
   }
-})(AutoTaskWebsite.globalOptions, AutoTaskWebsite.dialog, AutoTaskModules.steam, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.socialClients);
+})(AutoTaskWebsite.globalOptions, AutoTaskWebsite.dialog, AutoTaskModules.steam, AutoTaskModules.youtube, AutoTaskModules.twitch, AutoTaskWebsite.moduleBridge, AutoTaskWebsite, AutoTaskWebsite.options, AutoTaskWebsite.i18n, AutoTaskWebsite.globalOptionsEdit, browser, AutoTaskWebsite.debug, AutoTaskWebsite.echoLog, AutoTaskWebsite.socialClients);

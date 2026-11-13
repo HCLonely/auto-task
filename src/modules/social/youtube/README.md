@@ -6,6 +6,18 @@
 
 **认证行为沿用原实现：`init()` 通过尝试订阅验证频道检查凭证，可能实际订阅该频道。** 默认验证频道沿用原配置 `UCrXUsMBcfTVqwAS7DKg9C0Q`，可通过 `verifyChannel` 改为自己的频道。验证操作不计入任务记录。该模块没有自动打开认证标签页的流程；原 YouTube 实现使用 `GM_cookie.list` 获取凭证。
 
+## GFF 扩展页面流程
+
+入口另提供 `YoutubeGFF` 和 `handleYoutubeGFFPage`，项目通过 `createYoutubeGFF()` 注入依赖。GFF 处理频道订阅和视频点赞，提供 `init()`、`do({ channelLinks, videoLinks })`、`on('status', listener)`、`dispose()`；构造选项包含 `gm`、`namespace`、可选 `timeoutMs`（默认 60000）与按输入键配置的 `enabled`。
+
+GFF 初始化只检查 GM 能力，不执行普通 `Youtube.init()` 的验证订阅。同实例所有任务串行，重复输入链接在同批内合并；SteamGFF 使用另一条队列，可与 YouTube 同时各处理一项。
+
+独立接入时，用户脚本应在 `document-start` 尽早执行 `handleYoutubeGFFPage({ gm, namespace })`，父子页使用相同配置；除下面普通模块权限外，还需要 `GM_openInTab`、`GM_addValueChangeListener`、`GM_removeValueChangeListener` 和 `window.close`。仅带有效请求标记的目标页面会被接管。
+
+页面立即尝试修改订阅文字或点赞属性，`load + 1 秒` 后再次修正并至多触发一次添加，然后再等 1 秒回传并关闭。DOM 修改保留原按钮，原始状态快照与修改后的识别状态分开，避免重复点击造成取消。页面动态替换通过有界观察处理，完成、失败和退出均清理。
+
+回传不是扩展存储或网站验证的成功证明；最终由网站自己的扩展验证确定是否完成。
+
 ## 接入示例
 
 在最终用户脚本中配置以下权限，将任务站点替换为实际站点：

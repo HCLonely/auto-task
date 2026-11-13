@@ -115,6 +115,8 @@ export interface WebsiteTask {
   title?: string
   data?: string
   minutes?: number
+  /** 是否通过目标页面的 GFF 扩展识别流程执行；仅严格 true 生效。 */
+  GFF?: boolean
   [key: string]: unknown
 }
 

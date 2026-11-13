@@ -11,7 +11,8 @@ import type { Website, WebsiteClass, WebsiteOptions } from './modules/website/ty
 import consoleLogHook from './scripts/tools/consoleLogHook';
 import { globalOptions } from './scripts/globalOptions';
 import { showDialog } from './scripts/ui/dialog';
-import { handleSteamAuthPage } from './modules/social/steam';
+import { handleSteamAuthPage, handleSteamGFFPage } from './modules/social/steam';
+import { handleYoutubeGFFPage } from './modules/social/youtube';
 import { handleTwitchAuthPage } from './modules/social/twitch';
 import { moduleNamespace, projectGM } from './scripts/social/moduleBridge';
 import { Websites } from './modules/website/index';
@@ -27,6 +28,27 @@ import { debug } from './scripts/tools/debug';
 // import browser from 'browser-tool';
 // import { v4 as uuidv4 } from 'uuid';
 // import fawExtension from './modules/website/freeanywhereExtension';
+
+/** GFF 扩展任务。 */
+const gffPageHandling = (async (): Promise<boolean> => {
+  if (!/(?:^#|&)autoTaskGFF=/.test(window.location.hash)) {
+    return false;
+  }
+  const host = window.location.hostname;
+  if (host === 'store.steampowered.com' || host === 'steamcommunity.com') {
+    return handleSteamGFFPage({
+      namespace: `${moduleNamespace('steam')}:gff`,
+      gm: projectGM('steam')
+    });
+  }
+  if (host === 'www.youtube.com' || host === 'm.youtube.com') {
+    return handleYoutubeGFFPage({
+      namespace: `${moduleNamespace('youtube')}:gff`,
+      gm: projectGM('youtube')
+    });
+  }
+  return false;
+})();
 
 try {
   consoleLogHook();
@@ -370,6 +392,9 @@ const loadScript = async (): Promise<void> => {
  */
 const bootstrap = async (): Promise<void> => {
   try {
+    if (await gffPageHandling) {
+      return;
+    }
     if (await handleSteamAuthPage({
       namespace: moduleNamespace('steam'),
       gm: projectGM('steam')

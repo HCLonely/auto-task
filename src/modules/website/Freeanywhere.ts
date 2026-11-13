@@ -19,6 +19,36 @@ import { debug } from '../../scripts/tools/debug';
 import { globalOptions } from '../../scripts/globalOptions';
 import { normalizeStoredTasks } from './taskModel';
 
+type GFFExtensionState = 'installed' | 'missing' | 'unknown';
+
+/** 仅扩展脚本已实现的六类任务可以增加 GFF 标记。 */
+const GFF_TASK_TYPES: Record<string, { social: string; type: string }> = {
+  steam_game_sub: {
+    social: 'steam',
+    type: 'follow'
+  },
+  steam_curator_sub: {
+    social: 'steam',
+    type: 'curator'
+  },
+  steam_guides_sub: {
+    social: 'steam',
+    type: 'guide'
+  },
+  steam_manual_favourite: {
+    social: 'steam',
+    type: 'workshop'
+  },
+  youtube_channel_sub: {
+    social: 'youtube',
+    type: 'channel'
+  },
+  youtube_video_like: {
+    social: 'youtube',
+    type: 'like'
+  }
+};
+
 /**
  * FreeAnyWhere 类用于处理与 FreeAnywhere 网站相关的任务和操作。
  *
@@ -36,6 +66,13 @@ class FreeAnyWhere extends Website {
   name = 'FreeAnyWhere';
   verifyTasks: Array<fawTaskInfo> = [];
   games!: Record<string, { playtime_forever: number }>;
+  private useGFF = false;
+  protected gffExtensionState: GFFExtensionState = 'unknown';
+
+  /** 预留扩展安装检测；当前分类只依据页面标记，不猜测扩展是否安装。 */
+  protected async detectGFFExtension(): Promise<GFFExtensionState> {
+    return 'unknown';
+  }
   buttons: Array<string> = [
     'doTask',
     'undoTask',
@@ -44,12 +81,12 @@ class FreeAnyWhere extends Website {
   ];
 
   /**
-   * 检查当前窗口的域名是否为 'freeanywhere.net'
+   * 检查当前窗口的域名是否为 'give.gamesforfarm.com', 'freeanywhere.net'
    *
    * @returns 如果域名匹配则返回 true，否则返回 false
    */
   static test(): boolean {
-    const isMatch = window.location.host === 'freeanywhere.net';
+    const isMatch = ['give.gamesforfarm.com', 'freeanywhere.net'].includes(window.location.host);
     debug('检查网站匹配', {
       host: window.location.host,
       isMatch
@@ -103,9 +140,7 @@ class FreeAnyWhere extends Website {
       });
 
       if ($('.task-check-extension').length > 0) {
-        debug('需要扩展，暂不支持');
-        logStatus.warning(__('needExtensionToDoTask'));
-        return false;
+        debug('扩展任务将通过 GFF 页面流程执行');
       }
 
       this.initialized = true;
@@ -152,6 +187,23 @@ class FreeAnyWhere extends Website {
           tasks: this.tasks
         });
         return true;
+      }
+
+      if (action === 'do') {
+        this.useGFF = $('.task-check-extension').length > 0;
+        this.gffExtensionState = 'unknown';
+        if (this.useGFF) {
+          try {
+            this.gffExtensionState = await this.detectGFFExtension();
+          } catch (error) {
+            debug('扩展安装状态暂不可确认', {
+              error
+            });
+          }
+          debug('GFF 扩展检测状态', {
+            state: this.gffExtensionState
+          });
+        }
       }
 
       const tasks = $('div.game__content-tasks__task').map((index, element) => {
@@ -267,6 +319,27 @@ class FreeAnyWhere extends Website {
         return;
       }
 
+      const gffTask = type && Object.hasOwn(GFF_TASK_TYPES, type) ? GFF_TASK_TYPES[type] : undefined;
+      if (gffTask && link) {
+        if (gffTask.type === 'guide' && !this.useGFF) {
+          echoLog({}).warning(__('unSupporttedTaskType'));
+          return;
+        }
+        this.tasks.push({
+          done: isSuccess,
+          social: gffTask.social,
+          type: gffTask.type,
+          link,
+          id,
+          title,
+          data,
+          ...(this.useGFF ? {
+            GFF: true
+          } : {})
+        });
+        return;
+      }
+
       debug('处理特定类型任务', {
         type,
         action,
@@ -278,19 +351,6 @@ class FreeAnyWhere extends Website {
             debug('跳过任务', {
               type
             });
-            break;
-          case 'steam_game_sub':
-            if (link) {
-              this.tasks.push({
-                done: isSuccess,
-                social: 'steam',
-                type: 'follow',
-                link,
-                id,
-                title,
-                data
-              });
-            }
             break;
           case 'steam_game_wishlist':
             if (link) {
@@ -311,19 +371,6 @@ class FreeAnyWhere extends Website {
                 done: isSuccess,
                 social: 'steam',
                 type: 'group',
-                link,
-                id,
-                title,
-                data
-              });
-            }
-            break;
-          case 'steam_curator_sub':
-            if (link) {
-              this.tasks.push({
-                done: isSuccess,
-                social: 'steam',
-                type: 'curator',
                 link,
                 id,
                 title,
@@ -371,19 +418,6 @@ class FreeAnyWhere extends Website {
           case 'discord_server_sub':
             debug('跳过 Discord 任务');
             echoLog({}).warning(`${__('unSupporttedTaskType')}`);
-            break;
-          case 'youtube_channel_sub':
-            if (link) {
-              this.tasks.push({
-                done: isSuccess,
-                social: 'youtube',
-                type: 'channel',
-                link,
-                id,
-                title,
-                data
-              });
-            }
             break;
           case 'steam_game_playtime':
             if (link) {
@@ -469,8 +503,9 @@ class FreeAnyWhere extends Website {
       debug('任务验证结果', {
         result
       });
-      echoLog({}).success(__('allTasksComplete'));
-
+      const allSuccess = result.every((item) => {
+        return item.status === 'fulfilled' && item.value === true;
+      });
       const tasksNotDone = $('.game__content-tasks__task').toArray()
         .find((el) => {
           return !$(el).hasClass('done');
@@ -482,11 +517,11 @@ class FreeAnyWhere extends Website {
         $('.js-get-key').removeClass('inactive');
       }
 
-      if (result.every((item) => {
-        return item.status === 'fulfilled' && item.value === true;
-      })) {
+      if (allSuccess && !tasksNotDone) {
+        echoLog({}).success(__('allTasksComplete'));
         return !!await this.getKey(true);
       }
+      echoLog({}).error(__('moduleFailed'));
       return false;
     } catch (error) {
       debug('验证任务失败', {
@@ -667,9 +702,7 @@ class FreeAnyWhere extends Website {
    * 验证任务的私有异步方法
    *
    * @remarks
-   * 该方法根据页面上是否存在扩展检查元素来决定使用哪种验证方式：
-   * 1. 如果存在".task-check-extension"元素，则使用扩展验证方式
-   * 2. 如果不存在，则使用普通验证方式
+   * 按当前任务行选择扩展或普通验证，不因其他任务需要扩展而跳过本项。
    * 验证失败时会记录错误信息并返回false
    *
    * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
@@ -679,13 +712,17 @@ class FreeAnyWhere extends Website {
    */
   async #verify(task: fawTaskInfo): Promise<boolean> {
     try {
-      if ($('.task-check-extension').length > 0) {
-        debug('需要扩展，跳过验证', {
-          task
-        });
-        echoLog({}).warning(__('skipExtensionToVerifyTask'));
-        // return this.#verifyWithExtension(task);
+      const element = this.#findTaskElement(task.id);
+      if (!element) {
         return false;
+      }
+      if (element.classList.contains('done')) {
+        return true;
+      }
+      const extension = element.dataset.extension;
+      if (element.querySelector('.task-check-extension') ||
+        (extension && extension !== 'false' && extension !== '0')) {
+        return this.#verifyWithExtension(task);
       }
       debug('使用普通方式验证任务', {
         task
@@ -698,6 +735,80 @@ class FreeAnyWhere extends Website {
       throwError(error as Error, 'Freeanywhere.verify');
       return false;
     }
+  }
+
+  /** 按网站任务 ID 定位，避免把外部 ID 插入 CSS 选择器。 */
+  #findTaskElement(id: string): HTMLElement | undefined {
+    return Array.from(document.querySelectorAll<HTMLElement>('.game__content-tasks__task')).find((element) => {
+      return element.dataset.id === id;
+    });
+  }
+
+  /** 点击扩展验证并等待网站自身更新任务；GM 回传不能替代该验证。 */
+  async #verifyWithExtension(task: fawTaskInfo): Promise<boolean> {
+    const element = this.#findTaskElement(task.id);
+    const button = element?.querySelector<HTMLElement>('.task-check-extension');
+    const logStatus = echoLog({
+      text: `${__('verifyingTask')}${task.title.trim()}`
+    });
+    if (!element || !button) {
+      logStatus.warning(__('verifyExtensionNeeded'));
+      return false;
+    }
+    return new Promise<boolean>((resolve) => {
+      let settled = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const finish = (success: boolean): void => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        if (timer !== undefined) {
+          clearTimeout(timer);
+        }
+        observer.disconnect();
+        window.removeEventListener('pagehide', onLeave);
+        if (success) {
+          logStatus.success();
+        } else {
+          logStatus.error(__('moduleFailed'));
+        }
+        resolve(success);
+      };
+      const check = (): void => {
+        const current = this.#findTaskElement(task.id);
+        if (current?.classList.contains('done')) {
+          finish(true);
+        } else if (current?.classList.contains('error')) {
+          finish(false);
+        }
+      };
+      const onLeave = (): void => {
+        finish(false);
+      };
+      const observer = new MutationObserver(check);
+      try {
+        // 网站可能替换整行任务，观察父级变化后重新按 ID 定位。
+        observer.observe(document.body || document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class'],
+          childList: true,
+          subtree: true
+        });
+        timer = setTimeout(() => {
+          finish(false);
+        }, 30000);
+        window.addEventListener('pagehide', onLeave);
+        element.classList.remove('error');
+        button.click();
+        check();
+      } catch (error) {
+        debug('扩展验证启动失败', {
+          error
+        });
+        finish(false);
+      }
+    });
   }
 
   /**
@@ -729,10 +840,8 @@ class FreeAnyWhere extends Website {
       const extension = $parrent.find('.task-check-extension').length > 0 || $parrent.data('extension');
 
       if (extension) {
-        logStatus.warning(__('verifyExtensionNeeded'));
-        $parrent.find('.task-check-extension')[0].click();
-        return false;
-      };
+        return this.#verifyWithExtension(task);
+      }
 
       $parrent.find('.task-check').addClass('loading');
 

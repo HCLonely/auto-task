@@ -20,6 +20,8 @@ import type { GMAuthAPI, InitType, PlayState, SteamListener, SteamOptions, Steam
 export * from './types';
 export { default as SteamWeb } from './steamWeb';
 export { default as SteamASF } from './steamASF';
+export { SteamGFF, handleSteamGFFPage } from './steamGFF';
+export type { SteamGFFTaskOptions } from './steamGFF';
 export { createGMHttpClient } from './steamWeb/adapters/gmHttp';
 export type { GMRequest, GMRequestOptions, GMRawResponse } from './steamWeb/adapters/gmHttp';
 

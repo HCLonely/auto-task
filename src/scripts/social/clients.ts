@@ -1,9 +1,9 @@
-import Steam, { createGMHttpClient as createSteamHttp } from '../../modules/social/steam';
+import Steam, { SteamGFF, createGMHttpClient as createSteamHttp } from '../../modules/social/steam';
 import Reddit, { createGMHttpClient as createRedditHttp } from '../../modules/social/reddit';
 import Twitch, { createGMHttpClient as createTwitchHttp } from '../../modules/social/twitch';
 import Twitter, { createGMHttpClient as createTwitterHttp } from '../../modules/social/twitter';
 import Vk, { createGMHttpClient as createVkHttp } from '../../modules/social/vk';
-import Youtube, { createGMHttpClient as createYoutubeHttp } from '../../modules/social/youtube';
+import Youtube, { YoutubeGFF, createGMHttpClient as createYoutubeHttp } from '../../modules/social/youtube';
 import SteamASF, { createGMHttpClient as createSteamASFHttp } from '../../modules/social/steam/steamASF';
 import type { SocialModule } from '../../modules/social/social/types';
 import { globalOptions } from '../globalOptions';
@@ -44,6 +44,32 @@ export const createSteam = (): Steam => {
     undoTask: globalOptions.undoTask.steam,
     autoChangeRegion: true
   }), 'Steam');
+};
+
+/** 创建独立 GFF 实例；不初始化普通 Steam 的 HTTP/ASF 认证。 */
+export const createSteamGFF = (): SteamGFF => {
+  return connectProjectModule(new SteamGFF({
+    gm: projectGM('steam'),
+    namespace: `${moduleNamespace('steam')}:gff`,
+    enabled: {
+      followLinks: globalOptions.doTask.steam.follows,
+      curatorLinks: globalOptions.doTask.steam.curators,
+      workshopLinks: globalOptions.doTask.steam.workshops,
+      guideLinks: true
+    }
+  }), 'SteamGFF');
+};
+
+/** 创建独立 GFF 实例，避免普通 YouTube init 的验证订阅。 */
+export const createYoutubeGFF = (): YoutubeGFF => {
+  return connectProjectModule(new YoutubeGFF({
+    gm: projectGM('youtube'),
+    namespace: `${moduleNamespace('youtube')}:gff`,
+    enabled: {
+      channelLinks: globalOptions.doTask.youtube.channels,
+      videoLinks: globalOptions.doTask.youtube.likes
+    }
+  }), 'YoutubeGFF');
 };
 
 /** 创建原生 Reddit 模块，注入项目配置、存储与状态日志。 */

@@ -44,6 +44,7 @@
 // @include            *://gamesforfarm-testing.ru/*
 // @include            *://mee6.xyz/*
 // @include            *://gamesforfarm.com/*
+// @include            *://give.gamesforfarm.com/*
 
 // @include            https://auto-task.hclonely.com/setting.html
 // @include            https://auto-task.hclonely.com/history.html

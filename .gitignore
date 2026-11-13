@@ -16,3 +16,5 @@ doc/docs/.vitepress/cache/
 doc/docs/public/api/
 /docs/
 tests/
+
+DebugTool/

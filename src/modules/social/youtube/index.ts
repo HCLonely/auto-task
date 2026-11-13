@@ -19,6 +19,8 @@ import { doLikeVideo, undoLikeVideo } from './features/videos';
 import type { InfoOptions, InfoType, SocialTaskResult, StatusListener, TaskOptions, YoutubeInfo, YoutubeOptions, YoutubeTasks } from './types';
 
 export * from './types';
+export { YoutubeGFF, handleYoutubeGFFPage } from './youtubeGFF';
+export type { YoutubeGFFTaskOptions } from './youtubeGFF';
 export { createGMHttpClient } from './adapters/gmHttp';
 export type { GMRequest, GMRequestOptions, GMRawResponse } from './adapters/gmHttp';
 export { createGMCookieReader } from './adapters/gmCookies';

@@ -17,7 +17,7 @@ import type Twitter from '../social/twitter';
 import type Vk from '../social/vk';
 import type Youtube from '../social/youtube';
 import type Steam from '../social/steam';
-import { createSteam, createReddit, createTwitch, createTwitter, createVk, createYoutube } from '../../scripts/social/clients';
+import { createSteam, createReddit, createTwitch, createTwitter, createVk, createYoutube, createSteamGFF, createYoutubeGFF } from '../../scripts/social/clients';
 import type { SocialTaskResult } from '../social/social/types';
 import { visitLink } from '../../scripts/tools/tools';
 import echoLog from '../../scripts/echoLog';
@@ -25,8 +25,11 @@ import __ from '../../scripts/tools/i18n';
 import { debug } from '../../scripts/tools/debug';
 import {
   getSocialPayloadEntry,
+  getGFFPayloadEntry,
+  partitionTasksForExecution,
   selectTasksForAction,
   toSocialPayload,
+  toGFFPayload,
   uniqueWebsiteTasks
 } from './taskModel';
 
@@ -65,6 +68,11 @@ abstract class Website {
   protected initialized = false;
   protected resetSteamAreaAfterTasks = true;
   private socialOptions = '';
+  private gffOptions = '';
+  private gffClients: {
+    steam?: ReturnType<typeof createSteamGFF>;
+    youtube?: ReturnType<typeof createYoutubeGFF>;
+  } = {};
   protected steamTaskType = {
     steamStore: false,
     steamCommunity: false
@@ -415,7 +423,11 @@ abstract class Website {
       }
 
       const selectedTasks = selectTasksForAction(this.tasks, action);
-      const payload = toSocialPayload(selectedTasks, (task) => {
+      const groups = partitionTasksForExecution(selectedTasks, action);
+      const normalTasks = groups.normalTasks;
+      const gffPayload = toGFFPayload([...groups.steamGFFTasks, ...groups.youtubeGFFTasks]);
+      const hasGFF = groups.steamGFFTasks.length > 0 || groups.youtubeGFFTasks.length > 0;
+      const payload = toSocialPayload(normalTasks, (task) => {
         debug('发现未知任务，无法转换社交 payload', {
           social: task.social,
           type: task.type,
@@ -424,13 +436,16 @@ abstract class Website {
       });
 
       debug('初始化社交媒体');
-      if (!(await this.initSocial(payload))) {
+      const normalReady = normalTasks.length === 0 || await this.initSocial(payload);
+      if (!normalReady && !hasGFF) {
         debug('社交媒体初始化失败');
         return false;
       }
       const pro: Array<Promise<{
         social: string;
         result: SocialTaskResult;
+        tasks?: Array<WebsiteTask>;
+        gff?: boolean;
       }>> = [];
       const doTask = action === 'do';
       const targetDone = doTask;
@@ -438,13 +453,10 @@ abstract class Website {
       /**
        * 将社交平台执行结果应用到网站任务状态。
        *
-       * @param social - 社交平台实例或名称。
+       * @param socialTasks - 本次执行集合；不扩大到同平台其他执行通道。
        * @param result - 当前操作结果。
        */
-      const applySocialResult = (social: string, result: SocialTaskResult) => {
-        const socialTasks = selectedTasks.filter((task) => {
-          return task.social === social;
-        });
+      const applySocialResult = (socialTasks: Array<WebsiteTask>, result: SocialTaskResult, gff = false) => {
         if (typeof result === 'boolean') {
           if (result) {
             for (const task of socialTasks) {
@@ -455,7 +467,7 @@ abstract class Website {
         }
 
         for (const task of socialTasks) {
-          const entry = getSocialPayloadEntry(task);
+          const entry = gff ? getGFFPayloadEntry(task) : getSocialPayloadEntry(task);
           if (!entry) {
             continue;
           }
@@ -474,52 +486,95 @@ abstract class Website {
        */
       const pushSocialTask = (
         social: string,
-        promise: Promise<SocialTaskResult>
+        promise: Promise<SocialTaskResult>,
+        tasks = normalTasks.filter((task) => {
+          return task.social === social;
+        }),
+        gff = false
       ) => {
         pro.push(promise.then((result) => {
           return {
             social,
-            result
+            result,
+            tasks,
+            gff
           };
         }));
       };
+
+      if (!normalReady) {
+        pushSocialTask('initialization', Promise.resolve(false), normalTasks);
+      }
+      if (groups.unsupportedTasks.length > 0) {
+        for (const task of groups.unsupportedTasks) {
+          debug('任务缺少支持的执行通道', {
+            social: task.social,
+            type: task.type,
+            action
+          });
+          echoLog({}).warning(__('unSupporttedTaskType'));
+        }
+        pushSocialTask('unsupported', Promise.resolve(false), groups.unsupportedTasks);
+      }
+      if (hasGFF) {
+        const options = JSON.stringify([globalOptions.doTask.steam, globalOptions.doTask.youtube]);
+        if (this.gffOptions && this.gffOptions !== options) {
+          this.gffClients.steam?.dispose();
+          this.gffClients.youtube?.dispose();
+          this.gffClients = {};
+        }
+        this.gffOptions = options;
+        if (gffPayload.steam) {
+          const client = this.gffClients.steam ||= createSteamGFF();
+          pushSocialTask('steam', client.init().then((ready) => {
+            return ready ? client.do(gffPayload.steam) : false;
+          }), groups.steamGFFTasks, true);
+        }
+        if (gffPayload.youtube) {
+          const client = this.gffClients.youtube ||= createYoutubeGFF();
+          pushSocialTask('youtube', client.init().then((ready) => {
+            return ready ? client.do(gffPayload.youtube) : false;
+          }), groups.youtubeGFFTasks, true);
+        }
+      }
 
       // 处理各个社交媒体的任务
       // if (this.socialInitialized.instagram === true && this.social.instagram) {
       //   debug('处理 Instagram 任务');
       //   pro.push(this.social.instagram.toggle({ doTask, ...tasks.instagram }));
       // }
-      if (this.socialInitialized.reddit === true && this.social.reddit) {
+      if (normalReady && payload.reddit && this.socialInitialized.reddit === true && this.social.reddit) {
         debug('处理 Reddit 任务');
         pushSocialTask('reddit', this.social.reddit[doTask ? 'do' : 'undo']({
           ...payload.reddit
         }));
       }
-      if (this.socialInitialized.twitch === true && this.social.twitch) {
+      if (normalReady && payload.twitch && this.socialInitialized.twitch === true && this.social.twitch) {
         debug('处理 Twitch 任务');
         pushSocialTask('twitch', this.social.twitch[doTask ? 'do' : 'undo']({
           ...payload.twitch
         }));
       }
-      if (this.socialInitialized.twitter === true && this.social.twitter) {
+      if (normalReady && payload.twitter && this.socialInitialized.twitter === true && this.social.twitter) {
         debug('处理 Twitter 任务');
         pushSocialTask('twitter', this.social.twitter[doTask ? 'do' : 'undo']({
           ...payload.twitter
         }));
       }
-      if (this.socialInitialized.vk === true && this.social.vk) {
+      if (normalReady && payload.vk && this.socialInitialized.vk === true && this.social.vk) {
         debug('处理 VK 任务');
         pushSocialTask('vk', this.social.vk[doTask ? 'do' : 'undo']({
           ...payload.vk
         }));
       }
-      if (this.socialInitialized.youtube === true && this.social.youtube) {
+      if (normalReady && payload.youtube && this.socialInitialized.youtube === true && this.social.youtube) {
         debug('处理 YouTube 任务');
         pushSocialTask('youtube', this.social.youtube[doTask ? 'do' : 'undo']({
           ...payload.youtube
         }));
       }
       if (
+        normalReady && payload.steam &&
         (this.steamTaskType.steamCommunity ? this.socialInitialized.steamCommunity === true : true) &&
         (this.steamTaskType.steamStore ? this.socialInitialized.steamStore === true : true) &&
         this.social.steam
@@ -532,7 +587,7 @@ abstract class Website {
       }
 
       // 处理链接任务
-      if (this.social.visitLink && payload.links && doTask) {
+      if (normalReady && this.social.visitLink && payload.links && doTask) {
         debug('处理链接任务', {
           linksCount: payload.links.length
         });
@@ -554,7 +609,7 @@ abstract class Website {
       }
 
       // 处理额外任务
-      if (doTask && payload.extra && this.extraDoTask) {
+      if (normalReady && doTask && payload.extra && this.extraDoTask) {
         const hasExtra = Object.values(payload.extra).reduce((total, arr) => {
           return [...total, ...arr];
         }).length > 0;
@@ -572,11 +627,11 @@ abstract class Website {
       debug('等待所有任务完成');
       const results = await Promise.all(pro);
       for (const {
-        social, result
+        social, result, tasks, gff
       } of results) {
         if (social === 'links') {
           if (typeof result !== 'boolean') {
-            for (const task of selectedTasks.filter((selectedTask) => {
+            for (const task of normalTasks.filter((selectedTask) => {
               return selectedTask.social === 'links';
             })) {
               if (result.results.visit?.[task.link]) {
@@ -589,14 +644,14 @@ abstract class Website {
         if (social === 'extra') {
           if (typeof result === 'boolean') {
             if (result) {
-              for (const task of selectedTasks.filter((selectedTask) => {
+              for (const task of normalTasks.filter((selectedTask) => {
                 return selectedTask.social === 'extra';
               })) {
                 task.done = targetDone;
               }
             }
           } else {
-            for (const task of selectedTasks.filter((selectedTask) => {
+            for (const task of normalTasks.filter((selectedTask) => {
               return selectedTask.social === 'extra';
             })) {
               if (result.results[task.type]?.[task.link]) {
@@ -606,7 +661,7 @@ abstract class Website {
           }
           continue;
         }
-        applySocialResult(social, result);
+        applySocialResult(tasks || [], result, gff);
       }
 
       if (!results.every(({ result }) => {

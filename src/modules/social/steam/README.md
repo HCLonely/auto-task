@@ -4,6 +4,18 @@
 
 项目 `src/scripts/social/` 通过 clients.ts 工厂创建原生模块实例并接入本目录，详见 [项目接入说明](../../../scripts/social/README.md)。整合层不依赖 `Social`、`globalOptions`、日志 UI、国际化、jQuery 或项目全局类型。
 
+## GFF 扩展页面流程
+
+入口另提供 `SteamGFF` 和 `handleSteamGFFPage`。项目通过 `createSteamGFF()` 注入 GM 存储、命名空间和日志，处理游戏关注、鉴赏家关注、指南作者关注及 sharedfiles 收藏；它不初始化 SteamWeb/ASF 认证，也不提供模拟撤销。撤销复用普通 Steam 的已有接口，指南作者撤销仍不支持。
+
+`SteamGFF` 提供 `init()`、`do({ followLinks, curatorLinks, guideLinks, workshopLinks })`、`on('status', listener)` 和 `dispose()`。构造选项传入 `gm`、`namespace`，可设置 `timeoutMs`（默认 60000）和按输入键索引的 `enabled` 开关。同实例全部类型及重复 `do()` 调用共用串行队列，同批同类型同原始链接只执行一次。
+
+独立接入时，目标域名也必须匹配同一用户脚本，并在 `document-start` 尽早调用 `handleSteamGFFPage({ gm, namespace })`，先于普通授权处理和 DOM ready；目标页与父页传入相同 GM 适配和命名空间。使用上例的 GM 存储、开页、变化监听权限，另允许 `window.close`。处理器只认领带有效请求标记的页面，不影响普通访问。
+
+目标页立即尝试修改识别 DOM，节点缺失时有界观察，在 `load + 1 秒` 后再次修正并至多触发一次添加，最后等 1 秒回传并关闭。收藏最多刷新一次，新文档沿用同一请求并重新提前修改 DOM，让扩展的加载初始化读取状态，以绕过原扩展收藏点击回调的大小写错误；刷新不重置超时、不提前完成，也不重复点击。
+
+GM 回传代表页面流程完成，不能证明扩展自己的存储已写入；按项目约定，用户提前关闭且没有明确失败回传时也视为执行完成，网站验证仍单独进行。扩展是否实际安装需调用方检测；Freeanywhere 当前使用页面标记并预留检测接口。
+
 ## 使用示例
 
 最终用户脚本应包含下面的权限。将 `example.com` 和 IPC 主机替换为实际地址；只用 Web 时可省略 IPC 主机权限，只用 ASF 时可省略开页认证相关权限和 Steam 页面匹配。

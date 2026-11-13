@@ -18,6 +18,16 @@
 - 页面离开、失败实例替换、临时查询结束时释放监听。配置或白名单变化后，下次网站任务执行会重新初始化模块。
 - 网站请求工具仍供网站自身使用，社交模块不经过它的日志和重试逻辑。
 
+## GFF 扩展任务
+
+`createSteamGFF()`、`createYoutubeGFF()` 也返回原生模块实例，使用 `autoTask:steam:gff`、`autoTask:youtube:gff` 命名空间。网站在转换链接数组前按严格的 `GFF === true` 分流；普通任务和 GFF 任务的初始化及结果回写集合独立，普通模块认证失败不覆盖 GFF 已完成结果。仅有 GFF 任务时不初始化普通社交模块。
+
+Freeanywhere 页面存在 `.task-check-extension` 时，六类扩展支持任务添加 `GFF: true`；预留的 `detectGFFExtension()` 默认返回 `unknown`，当前不改变分类。`undo` 走已有真实撤销，指南作者关注没有真实撤销实现，会明确报告不支持。
+
+脚本入口在 DOM ready 和授权页处理之前认领 GFF 子页，立即尝试修正 DOM，`load + 1 秒` 后再次修正并至多一次添加。收藏在同一标签页最多刷新一次，刷新后再次提前修改，父页继续等待原请求。每项任务有独立请求 ID、GM 键、关闭句柄和超时；同平台串行、不同平台独立，同批同类型同链接只执行一次并回写全部对应任务。
+
+父页通过完成回传或关页收尾一次。手动关页且没有明确失败回传时，按约定视为执行完成；GM 完成不等于网站验证完成。Freeanywhere 点击每项扩展验证按钮并等待网站自己标记 `done`，失败或 30 秒超时不进入领取逻辑。
+
 ## GM 存储与认证
 
 模块命名空间为 `autoTask:<platform>`。Steam Web 为 `autoTask:steam:web`，ASF 为 `autoTask:steam:asf`。
@@ -50,3 +60,20 @@ node build-all-static.js
 
 `npm test` 运行 ESLint 和 TypeScript 类型检查。`tests/social-clients.cjs` 验证原生实例、方法、监听清理及 GM 存储兼容；`tests/module-failure.cjs` 使用本机 Edge 验证错误日志。两者使用模拟 GM / HTTP，不操作真实账户。测试目录按项目约定被 Git 忽略，脚本只在本地存在时可运行。
 真实平台登录状态、网页结构和接口可用性仍需在用户脚本环境中联调。
+
+GFF 自动检查运行以下命令，不使用 Playwright，也不启动自动浏览器：
+
+```sh
+node tests/gff-task-model.cjs
+node tests/gff-tab-task.cjs
+node tests/gff-page-lifecycle.cjs
+node tests/gff-core-cancellation.cjs
+node tests/gff-steam-dom.cjs
+node tests/gff-youtube-dom.cjs
+node tests/gff-extension-simulation.cjs
+node tests/gff-website-routing.cjs
+node tests/gff-bootstrap.cjs
+node tests/gff-freeanywhere-verify.cjs
+```
+
+Node 模拟不能证明真实扩展隔离环境中的事件传播，该部分以及收藏刷新需人工联调。新增测试仍位于已忽略的 `tests/`。

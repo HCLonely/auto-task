@@ -228,6 +228,18 @@ const socialLabels: Record<string, Record<string, string>> = {
  * @returns 处理后的字符串。
  */
 const taskLabel = (event: SocialStatusEvent, platform: string): string => {
+  if (platform === 'SteamGFF') {
+    const types: Record<string, string> = {
+      followLinks: 'follows',
+      curatorLinks: 'curators',
+      workshopLinks: 'workshops'
+    };
+    const type = types[String(event.details?.taskType)];
+    return type ? __(`moduleTask_${type}_do`) : __('moduleTask');
+  }
+  if (platform === 'YoutubeGFF') {
+    return __(event.details?.taskType === 'videoLinks' ? 'moduleActionLikeVideo' : 'moduleActionSubscribeChannel');
+  }
   const type = platform === 'Steam' ? steamTaskType(event) : undefined;
   if (type && (event.details?.action === 'do' || event.details?.action === 'undo')) {
     return __(`moduleTask_${type}_${event.details.action}`);

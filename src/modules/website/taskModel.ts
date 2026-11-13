@@ -60,6 +60,16 @@ const SOCIAL_PAYLOAD_TYPE_MAP: Record<string, string> = {
   'youtube.like': 'videoLinks'
 };
 
+/** GFF 支持范围独立于普通模块，指南关注不扩展 Steam 真实接口。 */
+const GFF_PAYLOAD_TYPE_MAP: Record<string, string> = {
+  'steam.follow': 'followLinks',
+  'steam.curator': 'curatorLinks',
+  'steam.guide': 'guideLinks',
+  'steam.workshop': 'workshopLinks',
+  'youtube.channel': 'channelLinks',
+  'youtube.like': 'videoLinks'
+};
+
 /**
  * 检查数据是否符合网站任务结构。
  *
@@ -75,6 +85,7 @@ const isWebsiteTask = (value: unknown): value is WebsiteTask => {
     typeof task.social === 'string' && task.social !== 'discord' &&
     typeof task.type === 'string' &&
     typeof task.link === 'string' &&
+    (!('GFF' in task) || typeof task.GFF === 'boolean') &&
     (!('minutes' in task) || typeof task.minutes === 'number') &&
     (!('id' in task) || typeof task.id === 'string' || typeof task.id === 'number') &&
     (!('title' in task) || typeof task.title === 'string') &&
@@ -189,6 +200,7 @@ const getTaskKey = (task: WebsiteTask): string => {
     task.social,
     task.type,
     task.link,
+    task.GFF === true,
     task.minutes ?? null,
     task.id ?? null,
     task.data ?? null
@@ -300,12 +312,77 @@ const getSocialPayloadEntry = (
   };
 };
 
+/** 获取 GFF 逐项结果使用的输入键，保留原始链接作为回写键。 */
+const getGFFPayloadEntry = (task: WebsiteTask): { type: string; value: string } | null => {
+  const type = GFF_PAYLOAD_TYPE_MAP[`${task.social}.${task.type}`];
+  if (!type) {
+    return null;
+  }
+  return {
+    type,
+    value: task.link
+  };
+};
+
+/** 在链接数组转换前按执行方向分流，保留任务引用与所属集合。 */
+const partitionTasksForExecution = (tasks: Array<WebsiteTask>, action: 'do' | 'undo') => {
+  const groups = {
+    normalTasks: [] as Array<WebsiteTask>,
+    steamGFFTasks: [] as Array<WebsiteTask>,
+    youtubeGFFTasks: [] as Array<WebsiteTask>,
+    unsupportedTasks: [] as Array<WebsiteTask>
+  };
+  for (const task of tasks) {
+    const entry = getGFFPayloadEntry(task);
+    if (action === 'do' && task.GFF === true) {
+      if (entry && task.social === 'steam') {
+        groups.steamGFFTasks.push(task);
+      } else if (entry && task.social === 'youtube') {
+        groups.youtubeGFFTasks.push(task);
+      } else {
+        groups.unsupportedTasks.push(task);
+      }
+    } else if (task.social === 'steam' && task.type === 'guide') {
+      groups.unsupportedTasks.push(task);
+    } else {
+      groups.normalTasks.push(task);
+    }
+  }
+  return groups;
+};
+
+/** 同批同类型同原始链接只打开一次，结果可回写到多条网站任务。 */
+const toGFFPayload = (tasks: Array<WebsiteTask>): {
+  steam?: Record<string, Array<string>>;
+  youtube?: Record<string, Array<string>>;
+} => {
+  const payload: {
+    steam?: Record<string, Array<string>>;
+    youtube?: Record<string, Array<string>>;
+  } = {};
+  for (const task of tasks) {
+    const entry = getGFFPayloadEntry(task);
+    if (!entry || (task.social !== 'steam' && task.social !== 'youtube')) {
+      continue;
+    }
+    const platform = payload[task.social] ||= {};
+    const links = platform[entry.type] ||= [];
+    if (!links.includes(entry.value)) {
+      links.push(entry.value);
+    }
+  }
+  return payload;
+};
+
 export {
+  getGFFPayloadEntry,
   getSocialPayloadEntry,
   isWebsiteTask,
   normalizeLegacyTasks,
   normalizeStoredTasks,
+  partitionTasksForExecution,
   selectTasksForAction,
   toSocialPayload,
+  toGFFPayload,
   uniqueWebsiteTasks
 };

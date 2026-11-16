@@ -314,6 +314,19 @@ const checkVersionAndNotice = (): void => {
 };
 
 /**
+ * 检查并点击Gleam的X授权。
+ */
+const checkGleamXAuth = (): void => {
+  if (window.location.hostname === 'x.com' && window.location.pathname === '/i/oauth2/authorize') {
+    const params = new URLSearchParams(window.location.search);
+
+    if (params.get('redirect_uri') === 'https://gleam.io/contestant_backdoor/resume_oauth/twitter') {
+      $('button.group.x-button[data-slot="xds-button"]').eq(1)?.[0]?.click();
+    }
+  }
+};
+
+/**
  * 加载网站任务脚本并初始化运行环境。
  *
  * @returns 在操作完成后兑现的 Promise。
@@ -379,6 +392,7 @@ const loadScript = async (): Promise<void> => {
     echoLog({}).warning(__('debugModeNotice'));
   }
 
+  checkGleamXAuth();
   await checkSteamASFStatus();
   checkVersionAndNotice();
   updateChecker();

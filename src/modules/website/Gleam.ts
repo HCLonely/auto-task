@@ -34,6 +34,7 @@ interface PendingGleamTask {
   version: 1;
   requestId: string;
   pathname: string;
+  redirectedPathname?: string;
   targetUrl: string;
   createdAt: number;
   expiresAt: number;
@@ -54,14 +55,16 @@ const getGleamPathname = (link: string): string => {
 };
 
 /** 每次请求独立保存，避免并发更新共享数组时覆盖其他请求。 */
-const createPendingGleamTask = (link: string, requestId: string): PendingGleamTaskEntry => {
+const createPendingGleamTask = (link: string, requestId: string, redirectedUrl = link): PendingGleamTaskEntry => {
   const pathname = getGleamPathname(link);
+  const redirectedPathname = getGleamPathname(redirectedUrl);
   const createdAt = Date.now();
   const key = `${STORAGE_PREFIX}${requestId}`;
   const record: PendingGleamTask = {
     version: 1,
     requestId,
     pathname,
+    redirectedPathname,
     targetUrl: link,
     createdAt,
     expiresAt: createdAt + REQUEST_TTL
@@ -71,6 +74,41 @@ const createPendingGleamTask = (link: string, requestId: string): PendingGleamTa
     key,
     record
   };
+};
+
+/** 只登记实际 HTTP 响应确认的最终完整路径，不根据活动代码或标题猜测。 */
+const resolveGleamTaskLink = async (link: string): Promise<string> => {
+  getGleamPathname(link);
+  try {
+    const {
+      result, data
+    } = await httpRequest({
+      url: link,
+      method: 'GET',
+      redirect: 'follow',
+      timeout: 15000
+    }, 2);
+    if (result === 'Success' && data?.finalUrl) {
+      const finalUrl = new URL(data.finalUrl, link).href;
+      // 验证最终地址仍属于 Gleam；不将外站重定向登记为活动。
+      getGleamPathname(finalUrl);
+      debug('已解析 Gleam 任务最终路径', {
+        originalPathname: getGleamPathname(link),
+        finalPathname: getGleamPathname(finalUrl)
+      });
+      return finalUrl;
+    }
+    debug('未能解析 Gleam 重定向，保留原路径', {
+      pathname: getGleamPathname(link),
+      result,
+      status: data?.status
+    });
+  } catch (error) {
+    debug('解析 Gleam 重定向失败，保留原路径', {
+      error
+    });
+  }
+  return link;
 };
 
 /** 指定键时只删除本次请求；省略参数时删除本功能的全部记录。 */
@@ -93,12 +131,13 @@ const findPendingGleamTasks = (pathname: string): PendingGleamTaskEntry[] => {
     const record = GM_getValue<PendingGleamTask | null>(key, null);
     if (!record || record.version !== 1 || typeof record.requestId !== 'string'
       || typeof record.pathname !== 'string' || typeof record.targetUrl !== 'string'
+      || (record.redirectedPathname !== undefined && typeof record.redirectedPathname !== 'string')
       || !Number.isFinite(record.createdAt) || !Number.isFinite(record.expiresAt)
       || record.expiresAt <= now || record.expiresAt <= record.createdAt) {
       GM_deleteValue(key);
       continue;
     }
-    if (record.pathname === pathname) {
+    if (record.pathname === pathname || record.redirectedPathname === pathname) {
       entries.push({
         key,
         record
@@ -120,6 +159,7 @@ const findPendingGleamTasks = (pathname: string): PendingGleamTaskEntry[] => {
  */
 class Gleam extends Website {
   #pendingCleanupRegistered = false;
+  #parentLeaving = false;
   #autoTaskStarted = false;
   name = 'Gleam';
   tasks: Array<WebsiteTask> = [];
@@ -176,7 +216,8 @@ class Gleam extends Website {
    *
    * @remarks
    * 按完整 pathname 匹配有效待执行记录，读取时删除过期记录。
-   * 匹配成功后自动验证，完成时删除本次匹配的记录并关闭窗口。
+   * 原路径及 HTTP 重定向后的完整路径均可匹配；完成后关闭窗口。
+   * 对应请求交由父页面的 onclose 清理，避免删除其他尚未加载的子页面记录。
    * 未匹配时保持普通页面的剩余 Key 检查行为。
    *
    * @returns 无返回值。
@@ -191,9 +232,6 @@ class Gleam extends Website {
       if (pendingTasks.length > 0) {
         this.#autoTaskStarted = true;
         debug('检测到匹配完整路径的待执行记录，开始处理任务');
-        const keys = pendingTasks.map(({ key }) => {
-          return key;
-        });
         const expiresAt = Math.max(...pendingTasks.map(({ record }) => {
           return record.expiresAt;
         }));
@@ -201,7 +239,8 @@ class Gleam extends Website {
           if ($('.entry-content .entry-method i.fa-check').length > 0) {
             debug('任务已完成，关闭窗口');
             clearInterval(checkComplete);
-            clearPendingGleamTasks(keys);
+            // 子页面不知道自己对应哪个开页请求，不能批量删除同路径记录。
+            // 由父页面的 onclose 按创建时的 key 删除对应请求。
             window.close();
           } else if (Date.now() >= expiresAt) {
             clearInterval(checkComplete);
@@ -793,16 +832,22 @@ class Gleam extends Website {
       const logStatus = echoLog({
         text: __('doingGleamTask')
       });
-      // 登记前顺便清理残留过期记录；保存必须早于打开新页面。
-      findPendingGleamTasks(window.location.pathname);
-      const pending = createPendingGleamTask(link, getUuid());
-      pendingKey = pending.key;
       if (!this.#pendingCleanupRegistered) {
         window.addEventListener('pagehide', () => {
+          this.#parentLeaving = true;
           clearPendingGleamTasks();
         });
         this.#pendingCleanupRegistered = true;
       }
+      const redirectedUrl = await resolveGleamTaskLink(link);
+      // 父页面离开后，尚未完成的解析请求不得重新登记记录或打开页面。
+      if (this.#parentLeaving) {
+        return false;
+      }
+      // 登记前顺便清理残留过期记录；保存必须早于打开新页面。
+      findPendingGleamTasks(window.location.pathname);
+      const pending = createPendingGleamTask(link, getUuid(), redirectedUrl);
+      pendingKey = pending.key;
       return await new Promise((resolve) => {
         GM_openInTab(link,
           {

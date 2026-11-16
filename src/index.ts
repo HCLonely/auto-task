@@ -321,7 +321,10 @@ const checkGleamXAuth = (): void => {
     const params = new URLSearchParams(window.location.search);
 
     if (params.get('redirect_uri') === 'https://gleam.io/contestant_backdoor/resume_oauth/twitter') {
-      $('button.group.x-button[data-slot="xds-button"]').eq(1)?.[0]?.click();
+      $('button.group.x-button[data-slot="xds-button"]')?.[1]?.click();
+      setTimeout(() => {
+        $('button.group.x-button[data-slot="xds-button"]')?.[1]?.click();
+      }, 5000);
     }
   }
 };
@@ -333,6 +336,8 @@ const checkGleamXAuth = (): void => {
  */
 const loadScript = async (): Promise<void> => {
   debug('主程序入口 loadScript 开始');
+  checkGleamXAuth();
+
   let website: Website | undefined;
   for (const Website of (Websites as unknown as WebsiteClass[])) {
     if (Website.test()) {
@@ -392,7 +397,6 @@ const loadScript = async (): Promise<void> => {
     echoLog({}).warning(__('debugModeNotice'));
   }
 
-  checkGleamXAuth();
   await checkSteamASFStatus();
   checkVersionAndNotice();
   updateChecker();

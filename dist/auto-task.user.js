@@ -37,6 +37,7 @@
 // @include            *://*.reddit.com/*
 // @include            *://twitter.com/settings/account?k*
 // @include            *://x.com/settings/account*
+// @include            *://x.com/i/oauth2/authorize*
 // @include            *://steamcommunity.com/*
 // @include            *://store.steampowered.com/*
 
@@ -878,12 +879,16 @@ if (missingDependencies.length > 0) {
     if (window.location.hostname === 'x.com' && window.location.pathname === '/i/oauth2/authorize') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('redirect_uri') === 'https://gleam.io/contestant_backdoor/resume_oauth/twitter') {
-        $('button.group.x-button[data-slot="xds-button"]').eq(1)?.[0]?.click();
+        $('button.group.x-button[data-slot="xds-button"]')?.[1]?.click();
+        setTimeout((() => {
+          $('button.group.x-button[data-slot="xds-button"]')?.[1]?.click();
+        }), 5e3);
       }
     }
   };
   const loadScript = async () => {
     debug.debug('主程序入口 loadScript 开始');
+    checkGleamXAuth();
     let website;
     for (const Website of index.Websites) {
       if (Website.test()) {
@@ -935,7 +940,6 @@ if (missingDependencies.length > 0) {
     if (window.DEBUG) {
       echoLog.default({}).warning(__.default('debugModeNotice'));
     }
-    checkGleamXAuth();
     await checkSteamASFStatus();
     checkVersionAndNotice();
     updateChecker();

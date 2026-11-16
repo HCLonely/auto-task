@@ -660,7 +660,7 @@ class Gleam extends Website {
    *
    * @remarks
    * 该方法遍历页面中的所有任务，按顺序执行以下步骤：
-   * 1. 检查是否存在人机验证，如果存在则立即返回
+   * 1. 检查是否存在人机验证，如果存在则等待验证完成后继续当前任务
    * 2. 对于每个未完成的任务：
    *    - 点击任务信息展开详情
    *    - 处理可点击的按钮元素
@@ -673,7 +673,7 @@ class Gleam extends Website {
    *
    * 已捕获的异常通过失败返回值交付，不会从对应的 catch 分支继续抛出。
    *
-   * @returns 如果所有任务成功验证，则返回 true；如果发生错误，则返回 false；如果需要人机验证，则返回验证提示。
+   * @returns 如果所有任务成功验证，则返回 true；如果发生错误，则返回 false。
    */
   async verifyTask(): Promise<any> {
     try {
@@ -686,11 +686,8 @@ class Gleam extends Website {
       unsafeWindow._OxA = '_OxA';
 
       for (const task of tasks) {
-        const campaign = await this.#checkCampaign();
-        if (campaign) {
-          logStatus.warning(__('campaignNeeded'));
-          return this.verifyTask();
-        }
+        // 人机验证结束后保留当前循环位置，继续处理本次任务。
+        await this.#checkCampaign();
 
         const $task = $(task);
         if ($task.find('i.fa-check').length > 0) {

@@ -37,6 +37,7 @@
 // @include            *://*.reddit.com/*
 // @include            *://twitter.com/settings/account?k*
 // @include            *://x.com/settings/account*
+// @include            *://x.com/i/oauth2/authorize*
 // @include            *://steamcommunity.com/*
 // @include            *://store.steampowered.com/*
 

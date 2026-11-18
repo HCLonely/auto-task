@@ -19,9 +19,9 @@ import type { Context } from '../context';
 export function updateStoreAuthTab(ctx: Context): Promise<boolean> {
   return ctx.run('auth.store.tab', undefined, async (child) => {
     try {
-      console.debug('auth.store.tab');
-      return false;
-      // return await requestTabAuth(child, 'store');
+      // console.debug('auth.store.tab');
+      // return false;
+      return await requestTabAuth(child, 'store');
     } catch {
       child.reportError();
       return false;
@@ -38,9 +38,9 @@ export function updateStoreAuthTab(ctx: Context): Promise<boolean> {
 export function updateCommunityAuthTab(ctx: Context): Promise<boolean> {
   return ctx.run('auth.community.tab', undefined, async (child) => {
     try {
-      console.debug('auth.community.tab');
-      return false;
-      // return await requestTabAuth(child, 'community');
+      // console.debug('auth.community.tab');
+      // return false;
+      return await requestTabAuth(child, 'community');
     } catch {
       child.reportError();
       return false;

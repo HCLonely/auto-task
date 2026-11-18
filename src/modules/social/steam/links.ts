@@ -66,7 +66,9 @@ export function parseLink(type: TaskType, link: string): ParsedLink | undefined 
         case 'workshops': case 'workshopVotes':
           id = url.hostname === 'steamcommunity.com' && ['sharedfiles', 'workshop'].includes(parts[0]) ? numeric(url.searchParams.get('id') || '') : undefined;
           break;
-        case 'curators': id = url.hostname === 'store.steampowered.com' && parts[0] === 'curator' ? numeric(parts[1]) : undefined;
+        case 'curators':
+          // 鉴赏家链接可在数字 ID 后附带名称，接口仍只接收数字 ID。
+          id = url.hostname === 'store.steampowered.com' && parts[0] === 'curator' ? parts[1]?.match(/^(\d+)(?:-[^/]+)?$/)?.[1] : undefined;
           break;
         case 'curatorLikes':
           if (url.hostname === 'store.steampowered.com' && ['developer', 'publisher', 'franchise'].includes(parts[0]) && parts[1]) {

@@ -37,7 +37,8 @@ const controls = (request: GFFRequest): {
     throw new Error('GFF_STEAM_TARGET_MISMATCH');
   }
   if (request.taskType === 'curatorLinks') {
-    const pathId = target.pathname.match(/^\/curator\/(\d+)(?:\/|$)/)?.[1];
+    // 兼容带名称的鉴赏家链接，并保留与页面按钮 ID 的一致性校验。
+    const pathId = target.pathname.match(/^\/curator\/(\d+)(?:-[^/]+)?(?:\/|$)/)?.[1];
     if (target.hostname !== 'store.steampowered.com' || !pathId) {
       throw new Error('GFF_CURATOR_TARGET_INVALID');
     }
